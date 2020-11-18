@@ -1,0 +1,65 @@
+<!-- Fragment for Requested Group Purchasing: institute & requested amount screen -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+	
+	<l:VerticalLayout width="100%" >
+		
+		<l:content>
+			
+			<VBox id="idProductSelectionLists" fitContainer="true" alignItems="Stretch">
+				<items>
+
+					<!-- Input list -->
+					<Table
+						id="idRequestedGroupPurchasingDisplayTable"
+						mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'None' }" 
+						delete="onDeleteRequestedGroupPurchasing"
+						items="{
+							path: 'fastAppData>/RequestedGroupPurchasing',
+							filters: [ 
+								{ path : '_sOperation', operator : 'NE', value1 : 'DELETE'}
+							]
+							}">
+						
+						<!-- Header -->
+						<headerToolbar>
+							<Toolbar visible="{= ${fastAppData>/EditMode} === true ? true : false }">
+								<ToolbarSpacer></ToolbarSpacer>
+								<Label text="Institute to add"/>
+								<Select id="idInstituteRequestedGroupPurch" selectedKey="" items="{ path: 'fastAppData>/InstituteWithChildren/'}" enabled="true">
+									<core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
+								</Select>
+								<Button icon="sap-icon://add" press="onAddInstituteGroupPurchasing" />
+							</Toolbar>
+						</headerToolbar>
+						
+						<columns>
+							<Column>
+								<Text text="Institute" />
+							</Column>
+							<Column>
+								<Text text="Requested" />
+							</Column>
+						</columns>
+						<items>
+						<ColumnListItem>
+							<cells>
+								<Text text="{fastAppData>Institute/InstituteName}" />
+								<Input	placeholder="Requested amount" value="{fastAppData>Requested}" type="Number" enabled="{= ${fastAppData>/EditMode} === true ? true : false }"/>												
+							</cells>
+						</ColumnListItem>
+						</items>
+					</Table>
+							
+				</items>
+			</VBox>
+			
+		</l:content>
+		
+	</l:VerticalLayout>
+	
+</core:FragmentDefinition>

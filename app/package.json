@@ -1,0 +1,33 @@
+{
+  "name": "app",
+  "description": "",
+  "devDependencies": {
+    "ui5-middleware-simpleproxy": "^0.6.0"
+  },
+  "scripts": {
+    "postinstall": "npm run build",
+    "start": "node node_modules/@sap/approuter/approuter.js",
+    "serve": "ui5 serve",
+    "build": "npm run build:uilib && npm run build:tender && npm run build:epa && npm run build:contractsapp && npm run build:landingspage",
+    "build:tender": "cd webapp/tender && npm run build",
+    "build:epa": "cd webapp/epa && npm run build",
+    "build:contractsapp": "cd webapp/contractsapp && npm run build",
+    "build:landingspage": "cd webapp/landingspage && npm run build",
+    "build:uilib": "cd webapp/uilib && npm run build",
+    "install": "npm run install:uilib && npm run install:tender && npm run install:epa && npm run install:contractsapp && npm run install:landingspage",
+    "install:tender": "cd webapp/tender && npm install",
+    "install:epa": "cd webapp/epa && npm install",
+    "install:contractsapp": "cd webapp/contractsapp && npm install",
+    "install:landingspage": "cd webapp/landingspage && npm install",
+    "install:uilib": "cd webapp/uilib && npm install"
+  },
+  "dependencies": {
+    "@ui5/cli": "^2.0.2",
+    "@sap/approuter": "^6"
+  },
+  "ui5": {
+    "dependencies": [
+      "ui5-middleware-simpleproxy"
+    ]
+  }
+}

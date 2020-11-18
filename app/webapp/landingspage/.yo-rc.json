@@ -1,0 +1,16 @@
+{
+  "@sapui5/generator-sapui5-templates": {
+    "promptValues": {
+      "ApplicationTitle": "Landingspage",
+      "ApplicationDescription": "",
+      "FLP": false,
+      "ServiceBaseUri": "http://localhost:4004/FAST/epa",
+      "DatasourceUrl": "/FAST/epa",
+      "ObjectCollection": "PT_TMCTRYFake",
+      "ObjectCollection_Key": "CountryCode",
+      "Object_Identifier": "CountryName",
+      "Object_Number": "Region",
+      "Object_UnitOfMeasure": ""
+    }
+  }
+}

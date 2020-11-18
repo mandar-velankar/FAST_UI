@@ -1,0 +1,30 @@
+{
+	"mVersionDependency": {
+		"UR.baseLib.sap_belize": "10.30.7.312330.0",
+		"UR.baseLib": "10.30.7.312330.0",
+		"UR": "10.30.7.312330.0"
+	},
+	"sEntity": "Theme",
+	"sId": "fast0",
+	"sLabel": "FAST THEME",
+	"oExtends": "UR.baseLib.sap_belize",
+	"aBuildFiles": [
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_legacy"
+	],
+	"aFiles": [
+		"base",
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_legacy"
+	],
+	"aBundled": [
+		"fast0--Contrast"
+	],
+	"sTextDirections": "LTR",
+	"sType": "STANDARD",
+	"sThemability": "PUBLIC"
+}

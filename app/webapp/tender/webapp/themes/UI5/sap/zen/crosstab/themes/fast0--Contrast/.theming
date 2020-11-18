@@ -1,0 +1,16 @@
+{
+	"mVersionDependency": {
+		"UI5.sap/zen/crosstab.sap_belize_plus": "1.64.0",
+		"UI5.sap/zen/crosstab": "1.64.0",
+		"UI5": "1.64.1"
+	},
+	"sEntity": "Theme",
+	"sId": "fast0--Contrast",
+	"oExtends": "UI5.sap/zen/crosstab.sap_belize_plus",
+	"aBundled": [
+		"fast0"
+	],
+	"sBuildOptions": "SKIP",
+	"sType": "ABSTRACT",
+	"sThemability": "PRIVATE"
+}

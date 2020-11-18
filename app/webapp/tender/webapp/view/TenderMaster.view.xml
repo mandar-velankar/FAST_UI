@@ -1,0 +1,208 @@
+<mvc:View id="TenderMasterViewId" controllerName="FAST_NS0FAST0.controller.TenderMaster" xmlns="sap.m" xmlns:f="sap.f"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:fb="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable">
+	<f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false" class="sapUiNoMargin">
+		
+		<!-- Tender title: Existing Tenders -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Title text="{i18n>tenderHeader}"/>
+				</f:heading>
+			</f:DynamicPageTitle>
+		</f:title>
+		
+		<!-- Page content -->
+		<f:content >
+			
+			<!-- Table with all the tenders -->
+			<Table id="tendersMasterTable" width="auto" 
+										   showNoData="true" 
+										   alternateRowColors="true"
+										   updateFinished="onFinishedBindingTendersTable"
+										   growing="true"
+										   growingScrollToLoad="false"
+										   growingThreshold="15">
+				
+				<!-- Table header: search, sort, add tenders -->
+				<headerToolbar>
+					<OverflowToolbar visible="{= ${fastAppData>/LayoutType/} === 'OneColumn' }" >
+						
+						<!-- Filter for Country 
+						<Select id="idSlctCountry" forceSelection="true" selectedKey="SA" items="{ path: 'fastData>/PT_TMCTRY', sorter: { path: 'CountryName' }, filters: [{ path : 'Region', operator : 'EQ', value1 : 'MEA'}] }"
+							change=".setFilter">
+							<core:Item key="{fastData>CountryCode}" text="{fastData>CountryName}"/>
+						</Select>
+						-->
+						<Select id="idSlctCountry" forceSelection="true" selectedKey="SA" items="{ path: 'fastAppData>/UserCountries/results/', sorter: { path: 'COUNTRY_NAME' } }"
+							change=".setFilter">
+							<core:Item key="{fastAppData>COUNTRY_CODE}" text="{fastAppData>COUNTRY_NAME}"/>
+						</Select>
+						
+						<!-- Filter for Brand -->
+						<Select id="idSlctBrand" forceSelection="true" change=".setFilter">
+						</Select>
+						
+						<!-- Filter for Status -->
+						<Select id="idSlctStatus" forceSelection="true" change=".setFilter" visible="true">
+							<items>
+								<core:Item text="Awaiting Approval"/>
+								<core:Item text="Offer Created"/>
+								<core:Item text="Offer Approved"/>
+								<core:Item text="Offer Rejected"/>
+								<core:Item text="Quotation Submitted"/>
+								<core:Item text="Results Recorded"/>
+								<core:Item text="Delivery Ongoing"/>
+								<core:Item text="Wholesale Offer"/>
+								<core:Item text="Offer Declined"/>
+								<core:Item text="Tender Closed"/>
+								<core:Item text="Cancelled"/>
+								<core:Item text="All"/>
+							</items>
+						</Select>
+						
+						<!-- Filter for tender origin --><!-- https://trello.com/c/zvdSpAJ7-->
+						<Select id="idSlctTenderOrigin" forceSelection="true" change=".setFilter" items="{ path: 'fastAppData>/CountryTenderOrigin/', sorter: { path: 'TENDER_ORIGIN_ID' } }" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">
+							<items>
+								<!--<core:Item key="{fastAppData>TenderOrigin/CODE}" text="{fastAppData>TenderOrigin/NAME}"/>-->
+								<core:Item key="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? ${fastAppData>TenderOrigin/CODE} : 'All'}" text="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? ${fastAppData>TenderOrigin/NAME} : 'All'}" />
+							</items> 
+						</Select>
+						
+						<!-- Colomn sorting -->
+						<Select id="idSlctColSort" forceSelection="true" items="{ path: 'oJsonSortColList>/'}" change=".onChangeColSort" visible="false">
+							<core:Item text="{oJsonSortColList>Name}"/>
+						</Select>
+						<CheckBox id="idCheckBoxInactive" text="{i18n>seeInactive}" selected= "false" select=".setFilter"/>
+						<Button text="{i18n>Column}" icon="sap-icon://display" press="onSugestSel"/>
+						
+						<!-- SPACE -->
+						<ToolbarSpacer/>
+						<SearchField id="idSearch" search=".setFilter" width="17.5rem" />
+						
+						<!-- Button for adding a new tender -->
+						<Button icon="sap-icon://add" text="Create New" press=".onAdd"/>
+						<!--<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onSort"/>-->
+				
+					</OverflowToolbar>
+				</headerToolbar>
+				
+				<!-- message indicating filtering/sorting -->
+				<infoToolbar>
+					<OverflowToolbar id="vsdFilterBar" visible="false">
+						<Text id="vsdFilterLabel" />
+					</OverflowToolbar>
+				</infoToolbar>
+				
+				<!-- Columns -->
+				<columns>
+					
+					<!-- country -->
+					<Column minScreenWidth="920px" width="4rem">
+						<header>
+							<ObjectIdentifier title="{i18n>Country}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- tender id -->
+					<Column id="TenderTableTenderID" minScreenWidth="920px" width="7rem">
+						<header>
+							<ObjectIdentifier title="{i18n>TenderID}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- tender name -->
+					<Column minScreenWidth="920px" width="12rem">
+						<header>
+							<ObjectIdentifier title="{i18n>TenderName}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- Institute -->
+					<Column minScreenWidth="920px" width="6rem">
+						<header>
+							<ObjectIdentifier title="{i18n>Institute}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- offerID -->
+					<!-- this column will never show as pop-in, beceause 1 column should not have a minScreenWidth and always be visible, other wise https://github.com/SAP/openui5/issues/1396 -->
+					<Column id="TenderTableOfferID" width="6rem">
+						<header>
+							<ObjectIdentifier title="{i18n>OfferID}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- value -->
+					<Column minScreenWidth="920px" width="5rem">
+						<header>
+							<ObjectIdentifier title="{i18n>Value}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- status -->
+					<Column minScreenWidth="920px" demandPopin="true" popinDisplay="Inline" width="5rem">
+						<header>
+							<ObjectIdentifier title="{i18n>OfferStatus}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- publication date -->
+					<Column minScreenWidth="920px" width="6rem">
+						<header>
+							<ObjectIdentifier title="{i18n>pubcndte}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- bid due date -->
+					<Column minScreenWidth="920px" width="6rem">
+						<header>
+							<ObjectIdentifier title="{i18n>BidDueDate}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- closing date -->
+					<Column minScreenWidth="920px" width="6rem">
+						<header>
+							<ObjectIdentifier title="{i18n>ClosingDate}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- Tender origin, only shown if multiple values exist for country -->
+					<Column id="ColumnTenderOrigin" minScreenWidth="920px" width="6rem" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">
+						<header>
+							<ObjectIdentifier id="objIdTenderOrigin" title="{i18n>tenderOrigin}" titleActive="true" titlePress="onClick" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}"/>
+						</header>
+					</Column>
+					
+					<!-- Distributor is only visible when we are not on master Tender page (="onecolumn" based layout) -->
+					<Column minScreenWidth="920px" demandPopin="true" popinDisplay="Inline" width="6rem" visible="{= ${fastAppData>/LayoutType/} !== 'OneColumn' }">
+						<header>
+							<ObjectIdentifier title="{i18n>Distributor}" titleActive="true" titlePress="onClick" />
+						</header>
+					</Column>
+					
+					<!-- OfferDate is only visible when we are not on master Tender page (="onecolumn" based layout)  -->
+					<Column minScreenWidth="920px" demandPopin="true" popinDisplay="Inline" width="6rem" visible="{= ${fastAppData>/LayoutType/} !== 'OneColumn' }">
+						<header>
+							<ObjectIdentifier title="{i18n>intrnlduedte}" titleActive="true" titlePress="onClick" />
+						</header>
+					</Column>
+					
+				</columns>
+				
+			</Table>
+		</f:content>
+		
+		
+		<!-- DynamicPage Footer: for accepting or rejecting changes: TODO add press -->
+		<f:footer>
+			<OverflowToolbar>
+				<ToolbarSpacer/>
+				<Button type="Accept" text="{i18n>Accept}"/>
+				<Button type="Reject" text="{i18n>Reject}"/>
+			</OverflowToolbar>
+		</f:footer>
+		
+	</f:DynamicPage>
+</mvc:View>

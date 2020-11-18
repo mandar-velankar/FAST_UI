@@ -1,0 +1,64 @@
+specVersion: '1.0'
+metadata:
+  name: ui
+type: application
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      ext: "xml,json,properties"
+      port: 35729
+      watchPath: "webapp"
+  - name: proxy
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      srv_api: 
+        target: http://localhost:4004
+        auth:
+          user: 
+          pass: 
+builder:
+  customTasks:
+  - name: ui5-task-transpile-gen
+    afterTask: replaceVersion
+  bundles:
+  - bundleDefinition:
+      name: FAST_NS0FAST0/Component-preload.js
+      defaultFileTypes:
+      - ".js"
+      - ".json"
+      - ".xml"
+      - ".html"
+      - ".library"
+      sections:
+      - mode: raw
+        filters:
+        - FAST_NS0FAST0/regenerator-runtime/runtime.js
+      - mode: preload
+        filters:
+        - FAST_NS0FAST0/manifest.json
+        - FAST_NS0FAST0/controller/**
+        - FAST_NS0FAST0/Component.js
+        - FAST_NS0FAST0/i18n/**
+        - FAST_NS0FAST0/model/**
+        - FAST_NS0FAST0/util/**
+        - FAST_NS0FAST0/view/**
+        - FAST_NS0FAST0/libs/**
+        - FAST_NS0FAST0/test/**
+        resolve: false
+        sort: true
+        declareModules: false
+    bundleOptions:
+      optimize: true
+      usePredefineCalls: true
+---
+specVersion: "1.0"
+kind: extension
+type: server-middleware
+metadata:
+  name: proxy
+middleware:
+  path: lib/middleware/proxy.js

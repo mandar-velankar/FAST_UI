@@ -1,0 +1,240 @@
+<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.OfferProducts" xmlns="sap.m" xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:t="sap.ui.table" xmlns:u="sap.uxap">
+	
+	<!-- Product OFFER - EDIT mode -->
+	<u:ObjectPageSubSection >
+		
+		<!--<u:blocks>-->
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell >
+					<VBox>
+						
+						<!-- FORM WITH INPUT FIELDS: Distributer name, Internal due date, WholeSaleOffer, Selling Company,... -->
+						<form:SimpleForm editable="true" id="editForm" maxContainerCols="3" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+							emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm">
+							<form:content>
+								
+								<core:Title/>
+								
+								<Label text="{i18n>didtrbtrnme}" design="Bold" required="true"/>
+								
+								<Select id="idDistributorName" 
+									enabled="false"
+									selectedKey="{fastAppData>/EditOffer/DistributorID}"
+									items="{ path: 'fastData>/InstituteDistributor', sorter: { path: 'DISTRIBUTOR_NAME' } }"
+									change="onChangeDistributor">
+									<core:Item text="{fastData>DISTRIBUTOR_NAME}" key="{fastData>DISTRIBUTOR_ID}"/>
+								</Select>
+
+								<Label text="{i18n>selncmpny}" design="Bold" required="true"/>
+								<Select id="idSellingCompany" 
+										selectedKey="{fastAppData>/EditOffer/SellingCompany}" 
+										items="{ path: 'fastData>/CountryLegalEntity', sorter: { path: 'LegalEntityName' } }"
+										change="onChangeSellingCompany">
+									<core:Item text="{fastData>LegalEntityName}" key="{fastData>LegalEntityCode}"/>
+								</Select>
+								<core:Title/>
+								
+								<Label text="{i18n>intrnlduedte}" required="true"/>
+								<!--<DatePicker id="idintrDueDte" value="{path :'fastAppData>/EditOffer/InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
+								<DatePicker id="idintrDueDte" minDate="{dateModel>/minDate}" value="{path :'fastAppData>/EditOffer/InternalBidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								
+								<Label text="{i18n>ofrduedte}"/>
+								<!--<Text text="{path :'fastData>BidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>-->
+								<DatePicker id="idOrfDueDate" value="{path :'fastData>BidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+								
+								<core:Title/>
+								
+								<Label text="{i18n>whlseofr}" required="true"/>
+								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}">
+									<items>
+										<core:Item text="No" key="No"/>
+										<core:Item text="Yes" key="Yes"/>
+									</items>
+								</Select>
+
+								<Label text="{i18n>newOfferDate}" required="true" visible="{= (${fastAppData>/NewOfferPressed} === false &amp;&amp; ((${fastAppData>/ReviewedOfferPressed} === true || ${fastAppData>/ContinuedOfferPressed} === true) || ( (${fastAppData>/ReviewedOfferPressed} === false &amp;&amp; ${fastAppData>/ContinuedOfferPressed} === false) &amp;&amp; (${fastAppData>/EditOffer/RevisedOfferNo} !== 0 || ${fastAppData>/EditOffer/ContinuationOfferNo} !== 0)))) ? true : false }"/>
+					
+								<DatePicker id="idNewOfferDate" minDate="{dateModel>/minDate}" required="true" value="{path :'fastAppData>/EditOffer/NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= (${fastAppData>/NewOfferPressed} === false &amp;&amp; ((${fastAppData>/ReviewedOfferPressed} === true || ${fastAppData>/ContinuedOfferPressed} === true) || ( (${fastAppData>/ReviewedOfferPressed} === false &amp;&amp; ${fastAppData>/ContinuedOfferPressed} === false) &amp;&amp; (${fastAppData>/EditOffer/RevisedOfferNo} !== 0 || ${fastAppData>/EditOffer/ContinuationOfferNo} !== 0)))) ? true : false }"/>
+														
+								<!-- <Text id="idDistID" text="{fastAppData>/EditOffer/Distributor/DistributorID}" visible="false"/> -->
+								
+							</form:content>
+						</form:SimpleForm>
+						
+						<!-- Table with the products -->
+							<!-- removed for When navigating back from QUOTATION to OFFER PRODUCTS, Edit mode doesn't show products
+								 TBD w/ Nils why this should be here. Delete / display functionality seems to be working properly 
+								 without this filter. -->
+							<!--filters : [
+                            		{ path : '_sOperation', operator : 'NE', value1 : 'DELETE'}
+                        	  ]-->
+						<t:Table id="editofferProductId" 
+							   rows="{
+									path : 'fastAppData>/EditOffer/Product/results/', 
+									sorter : {
+									            path : 'SORTER' 
+									         }}"
+							   visibleRowCount="15" 
+							   alternateRowColors="true" 
+							   width="100%">
+							<t:toolbar>
+								<Toolbar design="Solid">
+									
+									<ToolbarSpacer/>
+									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
+									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer"/>
+									<Button text="{i18n>Deleteprod}" icon="sap-icon://delete" press="onDeleteProductForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
+								</Toolbar>
+							</t:toolbar>
+							<t:columns>
+								<t:Column width="400px">
+									<Label id="idProductLabel" text="{i18n>product}" wrapping="true" required="true"/>
+									<t:template>
+										<Input value="{fastAppData>SKU/PRODUCTPACKNAME}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="200px">
+									<Label id="idReferenceLabel" text="{i18n>reference}" wrapping="true" required="false"/>
+									<t:template>
+										<Input type="Text" id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}" editable="true" maxLength="255"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idAlternateOfferLabel" text="{i18n>alternate}" wrapping="true" required="true"/>
+									<t:template>
+										<Select selectedKey="{fastAppData>AlternateOfferYN}">
+											<items>
+												<core:Item text="No" key="No"/>
+												<core:Item text="Alternative to requested products" key="Alternative to requested products"/>
+												<core:Item text="Alternative to quoted products" key="Alternative to quoted products"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idRequestedVolumeLabel" text="{i18n>Requested}" wrapping="true" required="true"/>
+									<t:template>
+										<HBox>
+											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}"/>
+											<Button icon="sap-icon://edit" press="onPressEditRequestedVolume" visible="{= ${fastAppData>/Tender/GroupPurchasing} === 2 ? true : false}"/>
+										</HBox>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idUomLabel" text="{i18n>Unitpack}" wrapping="true" required="true"/>
+									<t:template>
+										<Select selectedKey="{fastAppData>UnitPerPack}">
+											<items>
+												<core:Item text="Unit" key="Unit"/>
+												<core:Item text="Pack" key="Pack"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idSampleLabel" text="{i18n>Sample}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Text" value="{fastAppData>SampleYN}" placeholder="{i18n>Sample}" editable="true" />
+										<Select selectedKey="{fastAppData>SampleYN}" change="onChangeSampleYN">
+											<items>
+												<core:Item text="Yes" key="Yes"/>
+												<core:Item text="No" key="No"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+								<t:Column width="100px">
+									<Label id="idQuantityLabel" text="{i18n>Quantity}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Number" value="{fastAppData>SampleQuantity}" placeholder="{i18n>Quantity}" editable="{= ${fastAppData>SampleYN} === 'Yes' }"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idDocumentsLabel" text="{i18n>Documents}" wrapping="true" required="true"/>
+									<t:template>
+										<Select selectedKey="{fastAppData>DocumentsRequired}">
+											<items>
+												<core:Item text="Yes" key="Yes"/>
+												<core:Item text="No" key="No"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idFirstShipmentLabel" text="{i18n>FirstShipment}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idNolotsLabel" text="{i18n>NoLots}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idInShipmentsLabel" text="{i18n>inshipmnths}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idPaymentTermsLabel" text="{i18n>PaymentTerms}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px">
+									<Label id="idIncoTermsLabel" text="{i18n>INCOTerms}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true"/>
+									</t:template>
+								</t:Column>
+								<t:Column width="200px">
+									<Label id="idDeclineLabel" text="{i18n>Decline}" wrapping="true" required="true"/>
+									<t:template>
+										<Select  selectedKey="{fastAppData>ActiveProduct}" change="onChangeDecline">
+											<items>
+												<core:Item text="Product Included" key="1"/>
+												<core:Item text="Product Declined" key="2"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+								<t:Column width="300px">
+									<Label id="idCommentLabel" text="{i18n>Comment}" wrapping="true" required="true"/>
+									<t:template>
+										<Input type="Text" value="{fastAppData>Comment}" placeholder="{i18n>Comment}" editable="{= ${fastAppData>ActiveProduct} === 2 || ${fastAppData>ActiveProduct} === '2'}"/>
+									</t:template>
+								</t:Column>
+							</t:columns>
+						</t:Table>
+						
+					</VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	<u:ObjectPageSubSection title="Product Info">
+		<u:blocks>
+			<Label text="" visible="false"/>
+		</u:blocks>
+	</u:ObjectPageSubSection>
+</core:FragmentDefinition>

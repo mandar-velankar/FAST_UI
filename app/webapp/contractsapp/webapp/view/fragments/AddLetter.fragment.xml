@@ -1,0 +1,143 @@
+<!-- Fragment for Adding a letter to the product on delivery tracking tab -->
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:core="sap.ui.core">
+
+	<Dialog title="Add Letter" stretch="false" contentWidth="50%" binding="{ctr>/currentContract/selectedProduct/temporaryLetter}">
+
+		<buttons>
+			<Button text="Add Letter" press="onAddLetterDialogConfirm" />
+			<Button text="Cancel" press="onAddLetterDialogCancel" />
+		</buttons>
+
+		<content>
+			<Grid xmlns="sap.ui.layout" defaultSpan="L12 M6 S12" width="auto" class="sapUiSizeCompact" position="Center">
+				<content>
+					<form.SimpleForm xmlns="sap.ui.layout" maxContainerCols="2" visible="true" id="idLetterForm" editable="true" labelMinWidth="0" layout="ResponsiveGridLayout" labelSpanL="5" labelSpanM="1" emptySpanL="1" emptySpanM="1" columnsL="2" columnsM="2">
+						<content>
+							<core:Title text="Add Information for Letter below"/>
+
+							<!-- Reason for letter -->
+							<Label xmlns="sap.m" text="{i18n>ReasonForLetter}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<Input xmlns="sap.m" value="{ctr>reasonForLetter}" required="true">
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</Input>
+
+							<!-- Quantity -->
+							<Label xmlns="sap.m" text="{i18n>Quantity}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<Input xmlns="sap.m" id="idQUANTITY" value="{ctr>quantity}" type="Number" required="true">
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</Input>
+
+							<!-- Batch -->
+							<Label xmlns="sap.m" text="{i18n>Batch}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<Input xmlns="sap.m" value="{ctr>batch}" required="true">
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</Input>
+
+							<!-- Requested Delivery Date -->
+							<Label xmlns="sap.m" text="{i18n>ManufacturingDate}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<DatePicker xmlns="sap.m"  value="{path :'ctr>manufacturingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" tooltip="{i18n>EffDate}" placeholder="{i18n>Select_date}" required="true">
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</DatePicker>
+
+							<!-- EXPIRYDATE Date -->
+							<Label xmlns="sap.m" text="{i18n>ExpiryDate}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<DatePicker xmlns="sap.m" value="{path :'ctr>expiryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" tooltip="{i18n>EffDate}" placeholder="{i18n>Select_date}" required="true">
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</DatePicker>
+
+							<!-- RETURNDATE Date -->
+							<Label xmlns="sap.m" text="{i18n>ReturnDate}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<DatePicker xmlns="sap.m" value="{path :'ctr>returnDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" tooltip="{i18n>EffDate}" placeholder="{i18n>Select_date}" required="true">
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</DatePicker>
+
+							<!-- RETURNEDQTY -->
+							<Label xmlns="sap.m" text="{i18n>ReturnedQty}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<Input xmlns="sap.m" value="{ctr>returnedQuantity}" type="Number" required="true">
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</Input>
+
+							<!-- Unit of measurement -->
+							<Label xmlns="sap.m" text="{i18n>UOM}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<Select xmlns="sap.m" selectedKey="{ctr>uoM}" required="true">
+								<items>
+									<core:Item text="" key=""/>
+									<core:Item text="Unit" key="Unit"/>
+									<core:Item text="Pack" key="Pack"/>
+								</items>
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</Select>
+
+							<!-- Institute or the childeren -->
+							<Label xmlns="sap.m" text="{i18n>Institute}" required="true" visible="{= ${ctr>/currentContract/groupPurchasing} === 1 || ${ctr>/currentContract/groupPurchasing} === 2 ? true : false}">
+								<layoutData>
+									<l:GridData span="L4 M4 S4"/>
+								</layoutData>
+							</Label>
+							<Select xmlns="sap.m" id="idInstituteLetter" items="{ path: 'ctr>/institutesChildren', sorter: { path: 'instituteName' } }" selectedKey="{ctr>instituteId}" visible="{= ${ctr>/currentContract/groupPurchasing} === 1 || ${ctr>/currentContract/groupPurchasing} === 2 ? true : false}">
+								<items>
+									<core:Item key="{ctr>instituteID}" text="{ctr>instituteName}"/>
+								</items>
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</Select>
+
+						</content>
+					</form.SimpleForm>
+				</content>
+			</Grid>
+		</content>
+	</Dialog>
+</core:FragmentDefinition>

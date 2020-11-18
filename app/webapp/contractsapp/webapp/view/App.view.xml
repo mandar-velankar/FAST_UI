@@ -1,0 +1,14 @@
+<mvc:View controllerName="com.bayer.tender.contracts.controller.App" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:f="sap.f" xmlns:tnt="sap.tnt" displayBlock="true">
+
+		<App
+			id="app"
+			busy="{appView>/busy}"
+			width="100%" busyIndicatorDelay="100%">
+			<f:FlexibleColumnLayout
+				id="layout"
+				layout="{appView>/layout}"
+				backgroundDesign="Translucent">
+			</f:FlexibleColumnLayout>
+		</App>
+
+</mvc:View>

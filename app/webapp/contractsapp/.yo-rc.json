@@ -1,0 +1,21 @@
+{
+  "@sapui5/generator-sapui5-templates": {
+    "promptValues": {
+      "ApplicationTitle": "Contracts App",
+      "ApplicationDescription": "Contracts App",
+      "FLP": false,
+      "ServiceBaseUri": "http://localhost:4004/FAST/ctr",
+      "DatasourceUrl": "/FAST/ctr",
+      "ObjectCollection": "Contracts",
+      "ObjectCollection_Key": "ContractId",
+      "Object_Identifier": "Contract",
+      "Object_Number": "stock",
+      "Object_UnitOfMeasure": "",
+      "LineItemCollection": "",
+      "LineItemCollection_Key": "",
+      "LineItem_Identifier": "",
+      "LineItem_Number": "",
+      "LineItem_UnitOfMeasure": ""
+    }
+  }
+}

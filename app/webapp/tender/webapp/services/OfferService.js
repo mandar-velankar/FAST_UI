@@ -1,0 +1,149 @@
+sap.ui.define([
+	"FAST_NS0FAST0/services/BaseService",
+	"FAST_NS0FAST0/model/services",
+	"FAST_NS0FAST0/libs/momentjs/moment.min",
+	"FAST_NS0FAST0/model/userinfo"
+], function (BaseService, Services, MomentJS, UserInfo) {
+	"use strict";
+
+	var OfferService = BaseService.extend("FAST_NS0FAST0.services.OfferService", {
+		constructor: function (model) {
+			BaseService.call(this, model);
+		},
+		getPerson: function (oOffer) {
+
+			//get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/PT_TMOFRS", {
+				OfferID: oOffer.OfferID
+			});
+			
+			//Expand, filters...
+			var mParameters = {
+				/*
+				urlParameters: {
+					$expand: "PersonHasSkills"
+				}
+				*/
+			};
+			
+			//Read
+			return this.odata(sPath).get(mParameters);
+			
+		},
+		createOffer:function(oOfferToSave){
+			
+			//path of offer that is selected
+			var sPath = "/PT_TMOFRS";
+
+			//Create
+			return this.odata(sPath).post(oOfferToSave);
+			
+		},
+		
+		//update existing offer
+		updateOffer: function (oOfferToSave) {
+
+			//get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/PT_TMOFRS", {
+				OfferID: oOfferToSave.OfferID
+			});
+
+			//Update
+			return this.odata(sPath).put(oOfferToSave);
+
+		},
+		
+		//create offer status
+		createOfferStatus: function (oOfferStatusSaveInfo) {
+
+			//path of offer that is selected
+			var sPath = "/PT_TMTNOFST";
+
+			//Create
+			return this.odata(sPath).post(oOfferStatusSaveInfo);
+
+		},
+
+		//update offer status
+		updateOfferStatus: function (oOfferStatusSaveInfo) {
+
+			var oModel = Services.getDefaultModel();
+
+			//path
+			var sPath = oModel.createKey("/PT_TMTNOFST", {
+				TenderID: oOfferStatusSaveInfo.TenderID,
+				OfferID: oOfferStatusSaveInfo.OfferID,
+				Active: oOfferStatusSaveInfo.Active
+			});
+
+			//Update existing offerstatus in offer table
+			return this.odata(sPath).put(oOfferStatusSaveInfo);
+
+		},
+		
+		//convert offer to Save
+		getConvertOfferToSave: function (oOfferSaveInfo) {
+
+			//Convert odata to structure that can be used to save
+			var oOfferToSave = {};
+
+			oOfferToSave.TenderID = oOfferSaveInfo.TenderID;
+			oOfferToSave.OfferID = oOfferSaveInfo.OfferID;
+			oOfferToSave.CountryCode = oOfferSaveInfo.CountryCode;
+			oOfferToSave.TenderOfferNo = Number(oOfferSaveInfo.TenderOfferNo);
+			oOfferToSave.RevisedOfferNo = Number(oOfferSaveInfo.RevisedOfferNo);
+			oOfferToSave.ActiveOffer = Number(oOfferSaveInfo.ActiveOffer);
+			oOfferToSave.CreationDate = moment().utc().toDate();
+			oOfferToSave.SubmissionDate = null; //"00000000";
+			oOfferToSave.SubmittedOn = moment().utc().toDate();
+			oOfferToSave.SubmittedBy = UserInfo.getCWID();
+			oOfferToSave.Active = Number(oOfferSaveInfo.Active);
+			oOfferToSave.DistributorID = Number(oOfferSaveInfo.DistributorID);
+			oOfferToSave.InternalBidDueDate = oOfferSaveInfo.InternalBidDueDate;
+			oOfferToSave.SellingCompany = oOfferSaveInfo.SellingCompany;
+			oOfferToSave.ProductCount = Number(oOfferSaveInfo.ProductCount);
+			oOfferToSave.Currency = oOfferSaveInfo.Currency;
+			oOfferToSave.ManualSaveStatus = oOfferSaveInfo.ManualSaveStatus;
+			oOfferToSave.WholesaleOffer = oOfferSaveInfo.WholesaleOffer;
+			oOfferToSave.Comment = oOfferSaveInfo.Comment;
+			oOfferToSave.OfferRevisionSplitNo = Number(oOfferSaveInfo.OfferRevisionSplitNo);
+			oOfferToSave.NewOfferDueDate = oOfferSaveInfo.NewOfferDueDate;
+			oOfferToSave.ContinuationOfferNo = Number(oOfferSaveInfo.ContinuationOfferNo);
+			oOfferToSave.FOCType = oOfferSaveInfo.FOCType;
+			oOfferToSave.DEFAULT_FOC_ABS_PCT = oOfferSaveInfo.DEFAULT_FOC_ABS_PCT;
+
+			return oOfferToSave;
+
+		},
+		
+			//get information to save the status of an offer in the corresponding table PT_TMNOFST
+		getConvertOfferStatusToSave: function (oOfferSaveInfo, sStatus) {
+
+			var oOfferStatusSaveInfo = {};
+
+			//when on quotation page, status is set differently (no offer to save, offer already existing in model)
+			if (!oOfferSaveInfo.OfferID) {
+				oOfferSaveInfo = Services.getLoadedOffer(Services.getSelectedOfferID()); //that.getDefaultModel().getProperty(sSelectedOfferPath);
+
+			}
+
+			//status offer
+			oOfferStatusSaveInfo.TenderID = oOfferSaveInfo.TenderID;
+			oOfferStatusSaveInfo.OfferID = oOfferSaveInfo.OfferID;
+			oOfferStatusSaveInfo.CountryCode = oOfferSaveInfo.CountryCode;
+			oOfferStatusSaveInfo.Active = oOfferSaveInfo.Active;
+			oOfferStatusSaveInfo.STATUS = sStatus;
+			oOfferStatusSaveInfo.Date = moment().utc().toDate();
+
+			return oOfferStatusSaveInfo;
+
+		}
+	});
+	return OfferService;
+});

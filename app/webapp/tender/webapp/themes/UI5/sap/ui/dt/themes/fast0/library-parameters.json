@@ -1,0 +1,18 @@
+{
+	"default": {
+		"_sap_ui_dt_Overlay_FocusColor": "#108000",
+		"_sap_ui_dt_Overlay_TargetZoneColor": "#427cac",
+		"_sap_ui_dt_Overlay_SelectionColor": "#33f",
+		"_sap_ui_dt_Overlay_CuttedColor": "#FFFFFF",
+		"_sap_ui_dt_ContextMenu_InnerShadow": "#d5e3ef",
+		"_sap_ui_dt_ContextMenu_Border": "#000000",
+		"_sap_ui_dt_ContextMenu_Belize_Border": "#3f5161"
+	},
+	"scopes": {
+		"sapContrast": {
+			"_sap_ui_dt_Overlay_FocusColor": "#fff",
+			"_sap_ui_dt_Overlay_TargetZoneColor": "#91c8f6",
+			"_sap_ui_dt_ContextMenu_InnerShadow": "#fff"
+		}
+	}
+}

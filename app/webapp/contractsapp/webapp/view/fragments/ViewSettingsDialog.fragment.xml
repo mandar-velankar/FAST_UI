@@ -1,0 +1,27 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+
+	<ViewSettingsDialog
+		id="viewSettingsDialog"
+		confirm=".onConfirmViewSettingsDialog">
+		<sortItems>
+			<ViewSettingsItem
+				text="{i18n>Contract}"
+				key="contractNumber"
+				selected="true"/>
+			<ViewSettingsItem
+				text="{i18n>Institute}"
+				key="institute/instituteName"/>
+			<ViewSettingsItem
+				text="{i18n>Distributor}"
+				key="distributor/distributorName"/>
+			<ViewSettingsItem
+				text="{i18n>Value}"
+				key="offerValue"/>
+			<ViewSettingsItem
+				text="{i18n>Contract Date}"
+				key="contractDate"/>
+		</sortItems>
+	</ViewSettingsDialog>
+</core:FragmentDefinition>

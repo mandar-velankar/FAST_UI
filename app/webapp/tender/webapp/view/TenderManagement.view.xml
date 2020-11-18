@@ -1,0 +1,4 @@
+<mvc:View id="TenderManagementViewId" controllerName="FAST_NS0FAST0.controller.TenderManagement" displayBlock="true" height="100%"  xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.f">
+	<FlexibleColumnLayout id="flexibleColumnLayout" stateChange=".onStateChanged" layout="{/layout}"></FlexibleColumnLayout>
+</mvc:View>

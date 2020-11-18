@@ -1,0 +1,10 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout">
+    <l:VerticalLayout width="100%">
+        <Label text="Template"></Label>
+        <TextArea rows="30" width="100%" value="{Template}"/>
+        <Label text="Header template"></Label>
+        <TextArea rows="30" width="100%" value="{HeaderTemplate}" placeholder="header"/>
+        <Label text="Footer template"></Label>
+        <TextArea rows="30" width="100%" value="{FooterTemplate}" placeholder="footer"/>
+    </l:VerticalLayout>
+</core:FragmentDefinition>

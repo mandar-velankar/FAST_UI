@@ -1,0 +1,407 @@
+<mvc:View
+	controllerName="com.bayer.tender.contracts.controller.Detail"
+	xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" 
+	xmlns:viz="sap.viz.ui5.controls" 
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+	<!-- ObjectPage Layout -->
+	<ObjectPageLayout 
+		id="DetailPage" 
+		showTitleInHeaderContent="true" 
+		alwaysShowContentHeader="true" 
+		preserveHeaderStateOnScroll="false"
+		headerContentPinnable="true" 
+		isChildPage="true" 
+		toggleHeaderOnTitleClick="true" 
+		showFooter="false" 
+		upperCaseAnchorBar="false"
+		enableLazyLoading="false" 
+		useIconTabBar="true" 
+		navigate="onNavigate"
+		selectedSection="basicInformationId"
+		showAnchorBarPopover="false">
+
+	<!-- APP TITLE & NAVIGATION BUTTONS -->
+		<headerTitle>
+			<ObjectPageDynamicHeaderTitle>
+				
+				<!-- Heading part that is used when heading is not collapsed -->
+				<expandedHeading>
+					<m:Title text="{fastData>TenderID}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
+				</expandedHeading>
+				
+				<!-- Heading part that is always visible also when collapsed -->
+				<!-- <snappedHeading>
+					<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Center">
+						<m:FlexBox wrap="NoWrap" fitContainer="true" alignItems="Center" class="sapUiTinyMarginEnd" >
+							 -->
+							<!-- LOGO 
+							<m:VBox fitContainer="true">
+								<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="S" displayShape="Square" class="sapUiTinyMarginEnd"/>
+							</m:VBox>
+							-->
+							
+							<!-- Selected tender ID & offer ID + product Name is always visible -->
+							<!-- <m:VBox alignItems="Start" justifyContent="Start" fitContainer="true">
+								<m:items>
+									
+									<m:Title text="{fastData>TenderID}" wrapping="true"/> -->
+									
+									<!-- Offer & Product next to each other -->
+									<!-- <m:HBox>
+										<m:items> -->
+											
+											<!-- Offer -->
+											<!-- <m:VBox> 
+												<m:items>
+													<m:Label text="{i18n>offerID}:" labelFor="selectedOfferIDinHeading" />
+													<m:Text id="selectedOfferIDinHeading" text="{= ${fastAppData>/SelectedOfferID} === '' ? 'No offer selected' : ${fastAppData>/SelectedOfferID} }"/>
+												</m:items>
+											</m:VBox> -->
+
+											<!-- Empty -->
+											<!-- <m:VBox> 
+												<m:items>
+													<m:Label text="" width="8rem"/>
+												</m:items>
+											</m:VBox> -->
+											
+											<!-- product -->
+											<!-- <m:VBox>
+												<m:items>
+													<m:Label text="{i18n>productnme}:" labelFor="selectedProductNameinHeading"/>
+													<m:Text id="selectedProductNameinHeading" text="{= ${ctr>/currentContract/selectedProduct} ? ${ctr>/currentContract/selectedProduct/product/pRODUCTPACKNAME} : 'No product selected'}"/>													
+												</m:items>
+											</m:VBox>
+
+											
+										</m:items>
+									</m:HBox>
+									
+								</m:items>
+							</m:VBox>
+						</m:FlexBox>
+					</m:FlexBox>
+				</snappedHeading> -->
+				
+				<!-- WINDOW ACTIONS -->
+				<navigationActions>
+					<m:OverflowToolbarButton id="enterFullScreenButton" type="Transparent" icon="sap-icon://full-screen" press=".toggleFullScreen"
+						tooltip="Enter Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
+					<m:OverflowToolbarButton id="exitFullScreenButton" type="Transparent" icon="sap-icon://exit-full-screen" press=".toggleFullScreen"
+						tooltip="Exit Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"/>
+					<m:OverflowToolbarButton id="closeScreenButton" type="Transparent" icon="sap-icon://decline" press=".handleClose" tooltip="Close column"
+						visible="true"/>
+				</navigationActions>
+				
+				<!-- ACTIONS -->
+				<actions>
+					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="{= ${ctr>/deleteEnabled} }" />
+					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="true"/>
+					<m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true"/>
+					<!--<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>-->
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${ctr>/editMode} === false &amp;&amp; ${ctr>/editEnabled} ? true : false }"/>
+				</actions>
+				
+			</ObjectPageDynamicHeaderTitle>
+		</headerTitle>
+
+			<!-- HEADER INFORMATION: this part will be collapsed when scrolling down -->
+		<headerContent>
+			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+				
+				<!-- LOGO 
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="L" displayShape="Square" class="sapUiTinyMarginEnd"></f:Avatar>
+				-->
+				
+				<!-- INSTITUTE INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="{i18n>Institute}"/>
+					<m:Text id="idhdrInstNme" text="{ctr>/currentContract/institute/instituteName}"/>
+					<m:Text id="idhdrInstID" text="{ctr>/currentContract/institute/instituteID}" visible="false"/>
+				</m:VBox>
+				
+				<!-- SELECTED CONTRACT -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="{i18n>ContractNumber}"/>
+					<m:Text  text="{ctr>/currentContract/contractNumber}"/>
+				</m:VBox>
+
+				<!-- SELECTED PRODUCT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="{i18n>productnme}"/>
+					<m:Text text="{= ${ctr>/currentContract/selectedProduct} ? ${ctr>/currentContract/selectedProduct/product/pRODUCTPACKNAME} : 'No product selected'}"/>
+				</m:VBox>				
+				
+			</m:FlexBox>
+		</headerContent>
+
+		<sections>
+			<!-- CONTRACT INFORMATION TAB -->
+			<ObjectPageSection id="contractInformationId" title="Contract"  visible="{= ${ctr>/editModeDelivery} ? false : true}">
+					<ObjectPageSubSection mode="Expanded">
+						<l:BlockLayout background="Light">
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+
+									<!-- WARNINGSTRIP EDIT MODE "{= ${ctr>/currentContract/channel} === 'Other' ? false : true}"-->
+									<m:MessageStrip
+										id="msgWarningEdit"
+										text="You can't edit this contract information. Only contracts created within the contracting app can be changed."
+										type="Warning"
+										showIcon="true"
+										showCloseButton="true"
+										visible= "false"
+										class="sapUiMediumMarginBottom">
+									</m:MessageStrip>
+
+									<!-- FORM WITH OFFER DATA -->
+									<form:SimpleForm id="offerDetailForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout"  labelSpanL="12" labelSpanM="12"
+											emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm" visible="true">
+											<form:content>
+												<core:Title/>
+
+												<!-- Distributor -->
+												<m:Label text="{i18n>didtrbtrnme}" required="true"/>
+												<m:Select id="idDistributor" 
+														selectedKey="{ctr>/currentContract/distributorId}"
+														items="{ path: 'ctr>/distributors', sorter: { path: 'distributorName' } }"
+														change="onChangeDistributor"
+														enabled="{= ${ctr>/editMode} === true ? true : false}">
+													<core:Item text="{ctr>distributorName}" key="{ctr>distributorID}"/>
+												</m:Select>
+
+												<!-- Selling company -->
+												<m:Label text="{i18n>selncmpny}"  required="true"/>
+												<m:Select id="idSellingCompany" 
+														selectedKey="{ctr>/currentContract/sellingCompanyCode}"
+														items="{ path: 'ctr>/sellingCompanies', sorter: { path: 'legalEntityName' } }"
+														change="onChangeSellingCompany"
+														enabled="{= ${ctr>/editMode} === true ? true : false}">
+													<core:Item text="{ctr>legalEntityName}" key="{ctr>legalEntityCode}" />
+												</m:Select>
+												<core:Title/>
+
+												<!-- Contract Date -->
+												<m:Label text="{i18n>contractdate}" required="true"/>
+												<m:DatePicker 
+													id="idContractDate" 
+													value="{
+														path :'ctr>/currentContract/contractDate', 
+														type: 'sap.ui.model.type.Date', 
+														formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+													}" 
+													enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+												<core:Title/>
+
+												<!-- Channel -->
+												<m:Label text="{i18n>channel}" required="true"/>
+												<m:Select selectedKey="{ctr>/currentContract/channel}" enabled="false">
+													<m:items>
+														<core:Item text="Tender" key="Tender"/>
+														<core:Item text="Other" key="Other"/>
+													</m:items>
+												</m:Select>
+
+										</form:content>
+									</form:SimpleForm>
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
+						</l:BlockLayout>
+					</ObjectPageSubSection>
+
+					<!-- PRODUCT INFO TABLE -->
+					<ObjectPageSubSection title="{i18n>prodinfo}">
+						<actions>							
+							<m:Button text="{i18n>NewProduct}" enabled="{= ${ctr>/editMode} === true ? true : false}" icon="sap-icon://add" press="onCreateProduct"/>							
+						</actions>
+						<blocks>
+							<m:Table id="ProductsTableID" 
+									mode="{= ${ctr>/editMode} === true ? 'Delete' : 'SingleSelectMaster'}"
+									delete="onDeleteProduct"
+									selectionChange="onProductItemSelect"
+									items="{
+										path: 'ctr>/currentContract/products',
+										sorter: {path: 'sorter', descending: false},
+										filters: [
+											{path: 'enabled', operator: 'EQ', value1: true}
+										]
+									}">
+								<m:columns>
+									<m:Column width="16rem">
+										<m:Label text="{i18n>product}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="7rem">
+										<m:Label text="{i18n>reference}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="8rem">
+										<m:Label text="{i18n>Requested}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="8rem">
+										<m:Label text="{i18n>Unitpack}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="8rem">
+										<m:Label text="{i18n>OfferPrice}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="8rem">
+										<m:Label text="{i18n>Discount}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="8rem">
+										<m:Label text="{i18n>CommissionRate}" wrapping="true"/>
+									</m:Column>
+								</m:columns>
+								<m:items>
+									<m:ColumnListItem id="productTableListID" 
+										type="{= ${ctr>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
+										press="onProductItemSelect"
+										detailPress="onProductItemSelect">
+										<m:cells>
+
+											<m:Text id="productPackNameID" text="{ctr>product/pRODUCTPACKNAME}"/> 
+											<!--<m:Text text="{ctr>reference}"/>-->
+											<m:Input value="{ctr>reference}" enabled="false"/>
+											<!--<m:Text text="{parts:[{path:'ctr>requestedVolume'}], formatter: '.formatter.requestedAmount'}"/>-->
+											<!-- <m:Input value="{parts:[{path:'ctr>requestedVolume'}], formatter: '.formatter.requestedAmount'}" enabled="{= ${ctr>/editMode} === true ? true : false}"/> -->
+											<m:Input 
+												id="idRequestedVolume"
+												value="{
+													path:'ctr>requestedVolume', 
+													type: '.customTypes.RequestedVolume'
+												}" 
+												enabled="false"/>
+											<!--<m:Text text="{ctr>uoM}"/>-->
+											<m:Select selectedKey="{ctr>uoM}" enabled="false" >
+													<core:Item key="Unit" text="Unit"/>
+													<core:Item key="Pack" text="Pack"/>
+											</m:Select>
+											<!--<m:Text text="{parts:[{path:'ctr>offerPrice'}, {path:'ctr>/currentContract/currency'}], formatter:'.formatter.price'}"/>-->
+											<m:Input 
+												value="{
+													path:'ctr>offerPrice', 
+													type: '.customTypes.OfferPrice'
+												}"
+												enabled="false"
+												change="onOfferPriceChange"
+												description="{ctr>/currentContract/currency}"/>
+											<m:Text id="productDiscountId" text="{parts:[{path:'ctr>discount'}], formatter: '.formatter.percentage'}"/>
+											<!--<m:Text text="{parts:[{path:'ctr>commissionRate'}], formatter: '.formatter.percentage'}"/>-->
+											<m:Input 
+												id="idCommissionRate"
+												value="{
+													path:'ctr>commissionRate',
+													type: '.customTypes.CommissionRate'
+												}"
+												description="%" 
+												enabled="false"/>
+
+										</m:cells>
+									</m:ColumnListItem>
+								</m:items>
+							</m:Table>
+						</blocks>
+					</ObjectPageSubSection>
+
+					<!-- FORM WITH Product DATA -->
+					<ObjectPageSubSection id="idProductDetailSection" title="Product Details" visible="false">
+						<blocks>
+							<m:VBox width="100%">
+								<form:SimpleForm id="idProductDetailForm" editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
+									class="editableForm" visible="true">
+									<form:content>
+										<m:Label text="{i18n>samplesyn}" />
+										<m:Select id="idProductDetailsamples" selectedKey="{ctr>/currentContract/selectedProduct/SampleYN}"
+											enabled="{= ${ctr>/editMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/GroupPurchasing} !== 0 ? true : false}">
+											<core:Item key="No" text="No"/>
+											<core:Item key="Yes" text="Yes"/>
+										</m:Select>
+										<m:Label text="{i18n>samples}" required="{= ${ctr>/editMode} &amp;&amp; ${ctr>/currentContract/selectedProduct/SampleYN} === 'Yes' ? true : false}" />
+										<m:Input value="{ctr>/currentContract/selectedProduct/samples}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>firstshipment}" required="false"/>
+										<m:Input value="{ctr>/currentContract/selectedProduct/firstShipment}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>numberoflots}" required="false"/>
+										<m:Input value="{ctr>/currentContract/selectedProduct/noofLots}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>intervalshipments}" required="false"/>
+										<m:Input value="{ctr>/currentContract/selectedProduct/intervalBetweenShipments}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>paymentterms}" required="false"/>
+										<m:Input value="{ctr>/currentContract/selectedProduct/paymentTerms}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>incoterms}" required="false"/>
+										<m:Input value="{ctr>/currentContract/selectedProduct/incoTerms}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="" required="false"/>
+										<m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
+											<m:items>
+												<m:SegmentedButtonItem icon="sap-icon://accept" text="Close" press="onConfirmProduct"
+													visible="{= ${ctr>/editMode} === true ? true : false}"/>
+												<!--<m:SegmentedButtonItem icon="sap-icon://sys-cancel" text="Cancel" press="onCancelDeliveryEdit" visible="{= ${ctr>/editMode} === true ? true : false}" />-->
+											</m:items>
+										</m:SegmentedButton>
+									</form:content>
+								</form:SimpleForm>
+							</m:VBox>
+						</blocks>
+					</ObjectPageSubSection>
+			</ObjectPageSection>
+
+			<!-- DELIVERY TRACKING TAB -->
+			<ObjectPageSection id="deliveryTrackingId" title="Delivery Tracking" visible="{= ${ctr>/editModeContract} ? false : true}">
+				<subSections>
+					
+					<!-- Products table -->
+					<ObjectPageSubSection id="idDelivTrackProductsSubsection" title="Tender Offer" visible="{= ${ctr>/editMode} === true ? false : true}">
+						<blocks>
+							<mvc:XMLView id="deliveryTrackingProductsViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingProducts"/>
+						</blocks>
+					</ObjectPageSubSection>
+
+					<!-- Deliveries -->
+					<ObjectPageSubSection id="idDelivTrackDeliveriesSubsection" title="Deliveries">
+						<blocks>
+							<mvc:XMLView id="deliveryTrackingDeliveriesViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingDeliveries"/>
+						</blocks>
+					</ObjectPageSubSection>
+
+					<!-- Delivery Details -->
+					<ObjectPageSubSection id="idDelivTrackDeliveryDetailsSubsection" title="Delivery Details" visible="false">
+						<blocks>
+							<mvc:XMLView id="deliveryTrackingDeliveryDetailsViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingDeliveryDetails"/>
+						</blocks>
+					</ObjectPageSubSection>
+
+					<!-- Letters -->
+					<ObjectPageSubSection id="idDelivTrackLettersSubsection" title="Letters" visible="true">
+						<blocks>
+							<mvc:XMLView id="deliveryTrackingLettersViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingLetters"/>
+						</blocks>
+					</ObjectPageSubSection>
+
+					<!-- Letters Detail -->
+					<ObjectPageSubSection id="idDelivTrackLetterDetailsSubSection" title="Letter Details" visible="false">
+						<blocks>
+							<mvc:XMLView id="deliveryTrackingLetterDetailsViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingLetterDetails"/>
+						</blocks>
+					</ObjectPageSubSection>
+
+
+				</subSections>
+			</ObjectPageSection>
+
+		</sections>
+
+		<!-- footer bar-->
+		<footer>
+			<m:OverflowToolbar>
+				<m:ToolbarSpacer />
+				<m:Button type="Accept" text="Save" press="onFooterSavePress()"/>
+				<m:Button type="Reject" text="Cancel" press="onFooterCancelPress()"/>
+			</m:OverflowToolbar>
+		</footer>
+		
+	</ObjectPageLayout>
+</mvc:View>

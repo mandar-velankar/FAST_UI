@@ -1,0 +1,6787 @@
+sap.ui.define([
+	"sap/ui/core/mvc/Controller",
+	"sap/m/MessageToast",
+	"../controller/OfferProducts",
+	"sap/m/Button",
+	"sap/m/Dialog",
+	"sap/ui/core/BusyIndicator",
+	"sap/m/Label",
+	"sap/ui/model/Sorter",
+	"FAST_NS0FAST0/model/formatter",
+	"FAST_NS0FAST0/utils/Formatter",
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/core/Fragment",
+	"FAST_NS0FAST0/model/services",
+	"FAST_NS0FAST0/model/userinfo",
+	"FAST_NS0FAST0/model/quotation",
+	"FAST_NS0FAST0/model/financial",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+	"sap/m/Token",
+	"sap/m/Tokenizer",
+	"FAST_NS0FAST0/libs/ranking/Ranking"
+], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
+	Fragment, Services,
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking) {
+	"use strict";
+
+	//global variable for the resource bundle - TODO not best practice
+	var bundle;
+
+	return Controller.extend("FAST_NS0FAST0.controller.Detail", {
+
+		//GENERAL METHODS FOR ALL TABS/PAGES & SECTIONS
+		//---------------------------------------------
+		//Formatting functions
+		formatter: formatter,
+
+		//initialitation of the detail page
+		onInit: function () {
+
+			//get resource bundle for translations or texts
+			this.oOwnerComponent = this.getOwnerComponent();
+			bundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+
+			//keep router and model locally in this controller
+			this.oRouter = this.oOwnerComponent.getRouter();
+			this.oModel = this.oOwnerComponent.getModel();
+
+			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
+			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
+
+			Services.setRouterObject(this.oRouter);
+
+			//TODO: talk about better solution with Wouter
+			//Keep services object in Financial
+			Financial.setServices(Services);
+
+			//attach the onTenderMatched method to handle routing between pages + load correct data
+			this.oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this);
+			this.oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);
+			
+			jQuery.sap.require("sap.ui.model.json.JSONModel");
+			var oDateModel = new sap.ui.model.json.JSONModel({
+				minDate: new Date()
+			});	
+			this.getView().setModel(oDateModel, "dateModel");
+
+		},
+
+		delete: function (oEvent) {
+			if (1 === 1) {
+				console.log("test");
+			}
+		},
+
+		_FOCProdBund1UpdateFinished: function () {
+			return false;
+		},
+
+		//Go to sharepoint folder
+		_onFolderButtonPress: function (oEvent) {
+			var url =
+				"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
+			var countryCode = Services.getCountryCodeofSelectedTender();
+			var tenderId = Services.getSelectedTenderID();;
+			url = url.replace("$CountryCode", countryCode);
+			url = url.replace("$TenderId", tenderId);
+			window.open(url);
+		},
+
+		//Navigation between TenderMaster & Detail pages routing is matched
+		_onTenderMatched: function (oEvent) {
+
+			//keep this as that
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			/*
+			//default model keep in service file, if URL routing straight to detail... (for example sending somebody an url to check specific offer)
+			if (!Services.getDefaultModel()){
+				//this.getView().getModel("fastData").refresh(true);
+				Services.setDefaultModel(this.getView().getModel("fastData"));
+			} else {
+				//Services.getDefaultModel().refresh(true);
+			}
+			*/
+
+			//get the tenderID/country from the navigation parameters
+			var sTenderID = oEvent.getParameter("arguments").tender;
+			var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
+			var sOfferID = oEvent.getParameter("arguments").offer;
+			var sTab = oEvent.getParameter("arguments").tab || Services.getBasicInformationPageSectionID();
+			var sLayout = oEvent.getParameter("arguments").layout;
+			var bSamePage = oEvent.getParameter("arguments").samePage || false; //on enter or exit fullscreen, we stay on same page so nothing need to happen
+			var oObjectPage = that.getView().byId("DetailPage");
+			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+
+			that._country = sCountry;
+
+			//keep layout and bind it to the view, so we can show, hide elements based on layout (onecolumn, twocolumn, ....)
+			//to use for hiding or display certain fields
+			oFastAppDataModel.setProperty("/LayoutType", sLayout);
+			Services.setLayoutType(sLayout);
+
+			Services.setSelectedTab(sTab);
+
+			//build tender path
+			var sTenderPath = "";
+			if (sTenderID) {
+				//example: PT_TMTEND(TenderID='SA-100-TEST-AH',Active=1)
+				sTenderPath = "/PT_TMTEND('" + sTenderID + "')";
+			} else {
+				sTenderPath = "/PT_TMTEND";
+			}
+
+			//keep selected tender + tender path & countrycode
+			Services.setSelectedTenderPath(sTenderPath);
+			Services.setSelectedTenderID(sTenderID);
+			Services.setSelectedCountry(sCountry);
+			Services.setSelectedOfferID(sOfferID);
+
+			//bind data from model to view (=tender info) (expand institute so its still shown)
+			if (sTenderPath !== "/PT_TMTEND('1')") {
+				that.getView().bindElement({
+					path: sTenderPath,
+					model: "fastData",
+					groupId: "Detail-onTenderMatched-PT_TMTEND", //this avoids failing on this binding will also fail the following services.calls
+					parameters: {
+						expand: "Institute,Origin"
+					}
+				});
+			}
+
+			//handle full screen buttons depending on layout 
+			//TODO the symantic helper class exists for this usecase, as long as you keep to the standard we can use it in the same way https://sapui5.hana.ondemand.com/#/topic/933965ba8c0440308e1e3233be7bc52f.html
+			if (oEvent.getParameter("arguments").layout === "MidColumnFullScreen") {
+				that.getView().byId("enterFullScreenButton").setVisible(false);
+				that.getView().byId("exitFullScreenButton").setVisible(true);
+
+			} else if (oEvent.getParameter("arguments").layout === "TwoColumnsMidExpanded") {
+				that.getView().byId("exitFullScreenButton").setVisible(false);
+				that.getView().byId("enterFullScreenButton").setVisible(true);
+			}
+
+			//when we enter or exit fullscreen for a page, we stay on the same page so nothing needs to be reloaded, only view layout changes
+			if (!bSamePage) {
+
+				//build image model to show images on the view (binding the source)
+				var oRootPath = jQuery.sap.getModulePath("FAST_NS0FAST0.images");
+				var oImageModel = new sap.ui.model.json.JSONModel({
+					path: oRootPath
+				});
+				that.getView().setModel(oImageModel, "imageModel");
+
+				//refresh data of main model fastData, good to do when somebody changed data in the back (while you already opened this tender)
+				that.getView().getModel("fastData").refresh(true);
+
+				//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
+				var sNewTenderNo = Services.getNewTenderNo();
+
+				//when a new tender is created, the tender ID = 1 // or we are creating a new tender
+				if (sTenderPath === "/PT_TMTEND('1')" || sNewTenderNo) {
+
+					//new tender = show basic info edit screen & make ready to save new tender
+					that._NewTenderMatched(that);
+					var oObjectPage = that.getView().byId("DetailPage");
+					//bar with tabs is not shown
+					oObjectPage.setShowAnchorBar(false);
+
+				} else if (sTenderPath === "/PT_TMTEND") {
+
+					//When detail screen is closed, we go back to the Tender master screen with all the tenders
+					//Footer with accept/reject button are no longer displayed
+					that.getView().byId("DetailPage").setShowFooter(true);
+					//Bar with tabs is shown
+					oObjectPage.setShowAnchorBar(true);
+					Services.setEditMode(false);
+
+				} else {
+
+					//existing tender = show basic info in display screen
+					that._ExistingTenderMatched(that, sTab);
+					//bar with tabs is shown
+					oObjectPage.setShowAnchorBar(true);
+					//init selected section (tab) (for if we navigate directly to a specific tab)
+					//that._initSection(sTab);
+				}
+			}
+
+		},
+
+		//on new tender matched
+		_NewTenderMatched: function (that) {
+
+			//fastappdata model
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get the tender id from the screen beceause it might not be created yet
+			var sTenderID = that.getView().byId("tenderId").getProperty("text");
+			Services.setSelectedTenderID(sTenderID);
+
+			//CurrentTender on FASTAPPDATA model for easy access, so we can move step by step to FastAppData model binding on basic information tab TODO currently we only use the dates in this way, we should use all fields in this way
+			var oTenderNew = Services.getService('Tender').getEmptyTender();
+			oFastAppDataModel.setProperty("/EditTender/", oTenderNew);
+
+			//new tender --> = show edit mode with corresponding fragment
+			that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
+
+			//if new Tender is created, the following fields are editable
+			that.getView().byId("idClassification").setEnabled(true);
+			that.getView().byId("idInstituteType").setEnabled(true);
+			that.getView().byId("idInstituteName").setEnabled(true);
+			that.getView().byId("idTenderChannel").setEnabled(true);
+			that.getView().byId("idGroupPurchasingEdit").setEnabled(true);
+
+			var sCountryCode = Services.getSelectedCountry();
+			var aFilter = [];
+			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+
+			//apply country filter on tender type
+			var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
+			oTenderType.bindItems({
+				path: "fastData>/CountryTenderType",
+				filters: aFilter,
+				parameters: {
+					"expand": "TenderType"
+				},
+				template: new sap.ui.core.Item({
+					text: "{fastData>TenderType/NAME}",
+					key: "{fastData>TenderType/ID}"
+				})
+			});
+
+			//Mexico changes
+			//apply country filter on sales type
+			var oSalesType = that.getView().byId("idSelectSalesTypeEdit");
+			oSalesType.bindItems({
+				path: "fastData>/CountrySalesType",
+				filters: aFilter,
+				parameters: {
+					"expand": "SalesType"
+				},
+				template: new sap.ui.core.Item({
+					text: "{fastData>SalesType/NAME}",
+					key: "{fastData>SalesType/ID}"
+				})
+			});
+
+			//apply country filter on tender origin
+			var oTenderOrigin = that.getView().byId("idSelectTenderOriginEdit");
+			oTenderOrigin.bindItems({
+				path: "fastData>/CountryTenderOrigin",
+				filters: aFilter,
+				parameters: {
+					"expand": "TenderOrigin"
+				},
+				template: new sap.ui.core.Item({
+					text: "{fastData>TenderOrigin/NAME}",
+					key: "{fastData>TenderOrigin/ID}"
+				})
+			});
+
+			//apply country filter on contract type
+			var oContractType = that.getView().byId("idSelectContractTypeEdit");
+			oContractType.bindItems({
+				path: "fastData>/CountryContractType",
+				filters: aFilter,
+				parameters: {
+					"expand": "ContractType"
+				},
+				template: new sap.ui.core.Item({
+					text: "{fastData>ContractType/NAME}",
+					key: "{fastData>ContractType/ID}"
+				})
+			});
+
+			//should salestype be visible on the screen based on data back-end
+			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
+				oSalesType.setVisible(bShowSalesType);
+			});
+
+			//should tendertype be visible on the screen based on data back-end
+			$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+				oTenderType.setVisible(bShowTenderType);
+			});
+
+			//should tenderorigin be visible on the screen based on data back-end
+			$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
+				oTenderOrigin.setVisible(bShowTenderOrigin);
+			});
+
+			//should ContractType be visible on the screen based on data back-end
+			$.when(Services.checkShowContractType()).done(function (bShowContractType) {
+				oContractType.setVisible(bShowContractType);
+			});
+			// Dunno why but binding not always found
+			// var oBinding = oTenderType.getBinding("items");
+			// //set filter for country on tender type: only when binding of tendertype is found
+			// if(oBinding){
+			// 	oBinding.filter(aFilter);
+			// }
+			oTenderType.setEnabled(true);
+
+			//Mexico
+			oSalesType.setEnabled(true);
+			oTenderOrigin.setEnabled(true);
+			oContractType.setEnabled(true);
+
+			//Keep track that we are in change modus
+			Services.setEditMode(true);
+
+			//this way we can use a seperate layer, adding deleting... and afterords saving
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			that.getView().setModel(oFastAppDataModel, "fastAppData");
+
+			//set new tender ID 
+			$.when(Services.loadNewTenderID()).done(function (sNewTenderID) {
+				//keep idNewTenderID (TODO: should we not use setSelectedTenderID for this? delete field)
+				that.getView().byId("idNewTenderID").setValue(sNewTenderID);
+			});
+
+			//Does the table with award criteria exist on the page? 
+			//idAwrdEdit = the award criteria table found in BasicInformationEdit fragment
+			if (that.byId("idAwrdEdit")) {
+
+				//Bind model for the award criteria
+				var sPath = "/PT_TMAWRDCR"; //award criteria table
+				var AwardModel = new sap.ui.model.json.JSONModel();
+
+				//filters used in the award critiria call
+				var aFilters = [];
+				aFilters.push(new sap.ui.model.Filter("TENDERID", sap.ui.model.FilterOperator.EQ, sTenderID));
+				aFilters.push(new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1));
+				var oModel = that.getOwnerComponent().getModel("fastData");
+
+				//Reading the back end data from the award critiria TODO this should be in the service file
+				oModel.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+						//data received is set to the award model
+						AwardModel.setData({
+							Data: oData.results
+						});
+						that.getView().setModel(AwardModel, "tabModel");
+						// that.byId("awardCriteriaId").setModel(AwardModel, "tabModel");
+						that.byId("idAwrdEdit").setModel(AwardModel, "tabModel"); //TODO tabModel = awardCriteria model? Use better name?
+					},
+					error: function (oError) {
+						Services.showErrorMessage(oError, "Loading award criteria");
+					}
+				});
+
+			}
+
+			//TODO is there no better way for not overloading the detail screen- same approach for all tabs
+			//show fragment for TAB: Offer products
+			that._showSectionFragment("OfferProductsView", "offerProductsId");
+
+			//show fragment for TAB: Financial Offer
+			that._showSectionFragment("FinancialOfferView", "financialOfferId");
+
+			//show footer with accept/reject button (this is not shown on the Tender master screen)
+			that.getView().byId("DetailPage").setShowFooter(true);
+			Services.setEditMode(true);
+
+			//disable buttons when creating new tender
+			//that.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
+			that.getView().byId("editButtonId").setEnabled(false);
+			that.getView().byId("cloneButtonId").setEnabled(false);
+			that.getView().byId("deleteTenderButtonId").setEnabled(false);
+
+			// that.getView().byId("DetailPage").setShowAnchorBar(false);
+
+			//Default basic information tab is shown + subsection
+			that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
+			that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
+
+		},
+
+		//existing tender matched
+		_ExistingTenderMatched: function (that, sTab) {
+
+			//get selected Tender Path
+			var sTenderID = Services.getSelectedTenderID();
+			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			//var sOfferID  = Services.getSelectedOfferID();
+
+			//if tender is already loaded, we will not load data again (refresh should be done after saving)
+			var bLoadedCheck = true;
+
+			//In this case we have selected a tender, we will load all data from the database
+			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+				//this way we can use a seperate layer, adding deleting... and afterords saving
+				var oFastAppDataModel = Services.getFastAppDataModel();
+				that.getView().setModel(oFastAppDataModel, "fastAppData");
+
+				//get loaded tender & bind it for easy access
+				var oTender = Services.getLoadedTender();
+				oFastAppDataModel.setProperty("/EditTender/", oTender);
+
+				//should tendertype be visible on the basic info screen?
+				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+					that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+				});
+
+				/* Mexico */
+				//should tenderorigin be visible on the basic info screen?
+				$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
+					that.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
+				});
+
+				//should salestype be visible on the basic info screen?
+				$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
+					that.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
+				});
+
+				//should salestype be visible on the basic info screen?
+				$.when(Services.checkShowContractType()).done(function (bShowContractType) {
+					that.getView().byId("idSelectContractType").setVisible(bShowContractType);
+				});
+				/* End of MExico */
+
+				//should group purchasing be visible on the screen based on data back-end
+				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+					that.getView().byId("idGroupPurchasing").setVisible(true);
+				});
+
+				//vanaf hier 
+
+				//Keep track that we are in display modus
+				Services.setEditMode(false);
+
+				//existing tender --> = show display mode for BasicInformation view
+				that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
+
+				//if awardCriteria exists on the basic information tab
+				if (that.byId("awardCriteriaId")) {
+
+					//Bind model for the award criteria
+					var sPath = "/PT_TMAWRDCR"; //table with award criteria
+					var oAwardModel = new sap.ui.model.json.JSONModel();
+
+					//filters used in the award critiria call
+					var aFilters = [];
+					aFilters.push(new sap.ui.model.Filter("TENDERID", sap.ui.model.FilterOperator.EQ, sTenderID));
+					aFilters.push(new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1));
+					var oDefaultModel = that.getOwnerComponent().getModel("fastData");
+
+					//Reading the back end data from the award critiria TODO this should be in the service file
+					oDefaultModel.read(sPath, {
+						filters: aFilters,
+						success: function (oData, oResponse) {
+							oAwardModel.setData({
+								Data: oData.results
+							});
+							that.getView().setModel(oAwardModel, "tabModel");
+							that.byId("awardCriteriaId").setModel(oAwardModel, "tabModel");
+						},
+						error: function (oError) {
+							Services.showErrorMessage(oError, "Loading award criteria");
+						}
+					});
+
+				}
+
+				//TODO is there no better way for not overloading the detail screen- same approach for all tabs
+				//show fragment for TAB: Offer products				
+				that._showSectionFragment("OfferProductsView", "offerProductsId");
+
+				//show fragment for TAB: FinancialOffer
+				that._showSectionFragment("FinancialOfferView", "financialOfferId");
+
+				//show footer with accept/reject button (this is not shown on the Tender master screen)
+				that.getView().byId("DetailPage").setShowFooter(false);
+				Services.setEditMode(false);
+
+				//make buttons visible when selected existing tender
+				that.getView().byId("editButtonId").setVisible(true);
+				/*if( Services.getLoadedOffer(Services.getSelectedOfferID()) && (Services.getLoadedOffer(Services.getSelectedOfferID()).Active !== 1 || Services.getLoadedOffer(Services.getSelectedOfferID()).ActiveOffer !== 1)){*/
+				if (oOffer && (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1)) {
+					that.getView().byId("editButtonId").setEnabled(false);
+				} else {
+					that.getView().byId("editButtonId").setEnabled(true);
+				}
+				that.getView().byId("cloneButtonId").setVisible(true);
+				that.getView().byId("cloneButtonId").setEnabled(true);
+				that.getView().byId("deleteTenderButtonId").setEnabled(true);
+
+				if (!sTab || sTab === Services.getBasicInformationPageSectionID()) {
+					//Default basic information tab is shown
+					that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
+					that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
+				} else {
+					//Show selected section
+					that.byId("DetailPage").setSelectedSection(sTab);
+
+				}
+
+				//keep offer selected
+				//Services.setSelectedOfferID(sOfferID);
+
+				//init selected section (tab) + select selected offer again (for if we navigate directly to a specific tab)
+				//check on binding finished
+				that._initSection(sTab);
+
+			});
+
+		},
+
+		//array for holding the page fragments that are already loaded TODO keep in seperate file so this controller is not overloaded
+		_pageFragments: {},
+
+		//get pagefragement and keep it in the controller
+		_getPageFragment: function (sFragmentName) {
+
+			//Page fragment as it exists in this controller
+			var oPageFragment = this._pageFragments[sFragmentName];
+
+			if (oPageFragment) {
+				return oPageFragment;
+			}
+
+			//if not yet exists... get fragment from project folder
+			oPageFragment = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view." + sFragmentName, this);
+
+			//keep fragment in controller
+			this._pageFragments[sFragmentName] = oPageFragment;
+			return this._pageFragments[sFragmentName];
+
+		},
+
+		//show the corresponding Subsection Fragment (only used for BasicInformation)
+		_showSubSectionFragment: function (sFragmentName, sPageSubSectionId) {
+
+			var oPage = this.byId(sPageSubSectionId);
+			var oBlocks = oPage.getBlocks();
+			oPage.addBlock(this._getPageFragment(sFragmentName));
+			//removes the subsection that exists in the basic info
+			oBlocks.forEach(function (oBlock) {
+				oPage.removeBlock(oBlock);
+			});
+			//oPage.addBlock(this._getPageFragment(sFragmentName));
+
+		},
+
+		//show the corresponding Fragment 
+		_showSectionFragment: function (sFragmentName, sPageSectionId) {
+
+			var oPage = this.byId(sPageSectionId);
+			var aSubSections = oPage.getSubSections();
+			//get all the subsections from the fragment
+			var aNewSubSection = this._getPageFragment(sFragmentName);
+
+			//add new sections for page
+			aNewSubSection.forEach(function (oSubSection) {
+				oPage.addSubSection(oSubSection);
+			});
+
+			//remove all subsection that are not the same as the newly added
+			aSubSections.forEach(function (oSubSection) {
+				//do not remove recently added subsections, only the others... otherwise we have an empty tab = no tab
+				var iIndex = aNewSubSection.findIndex(x => x.sId === oSubSection.sId);
+				if (iIndex === -1) {
+					//if its not found in the newly added subsections, we should remove it
+					oPage.removeSubSection(oSubSection);
+				}
+			});
+
+		},
+
+		//Block expanding the panel, beceause we are fasing out this logic
+		onExpandOfferTable: function (oEvent) {
+			var oPanel = oEvent.getSource();
+			oPanel.setExpanded(false);
+
+			MessageToast.show('Use left pannel for navigating between offers...', {
+				duration: 3000, // default
+				width: "15em", // default
+				my: "center center",
+				at: "center center",
+				of: window, // default
+				offset: "0 0", // default
+				collision: "fit fit", // default
+				onClose: null, // default
+				autoClose: true, // default
+				animationTimingFunction: "ease", // default
+				animationDuration: 1000, // default
+				closeOnBrowserNavigation: true // default
+			});
+		},
+
+		//when deleting an offer, we want to select the first existing offer
+		_selectFirstOfferInLeftPane: function (sOfferID) {
+
+			//Set selected offer in left pane
+			var oTendersMasterTable = Services.getTendersMasterTable();
+			var aItems = oTendersMasterTable.getItems();
+			var iIndexColumnOfferID = oTendersMasterTable.getParent().getParent().byId("TenderTableOfferID").getOrder();
+
+			//refresh
+			Services.getDefaultModel().refresh(true);
+
+			//If first offer exist
+			if (aItems && aItems.length > 1) {
+
+				//Select first offer that is not equal to offer that is deleted
+				var bOfferSelected = false;
+				aItems.forEach(function (oItem) {
+					if (oItem.getCells()[iIndexColumnOfferID].getTitle() !== sOfferID && bOfferSelected === false) {
+
+						oTendersMasterTable.setSelectedItem(oItem, true);
+						oItem.setSelected(true);
+						oItem.setActive(true);
+						oItem.firePress();
+						oItem.setActive(true);
+
+						bOfferSelected = true;
+
+					}
+				});
+
+			} else {
+
+				//if no offers exist or only 1 offer, then this is the offer we are deleting
+				Services.clearSelectedOffer();
+
+				//open basic info tab of tender
+				var sBasicInfoTabID = Services.getBasicInformationPageSectionID();
+				var oBasicInfoTab = this.getView().byId(sBasicInfoTabID);
+				var oDetailObjectPage = this.getView().byId("DetailPage");
+				oDetailObjectPage.setSelectedSection(sBasicInfoTabID);
+
+			}
+
+		},
+
+		//after save... we want to reselect the offer in the left pane
+		_selectOfferInLeftPane: function (sOfferID) {
+
+			//Set selected offer in left pane
+			var oTendersMasterTable = Services.getTendersMasterTable();
+			var aItems = oTendersMasterTable.getItems();
+			var iIndexColumnOfferID = oTendersMasterTable.getParent().getParent().byId("TenderTableOfferID").getOrder();
+
+			if (Services.getSelectedProductID()) {
+				var sSelectedProductId = Services.getSelectedProductID();
+				var sSelectedProductPath = Services.getSelectedProductPath();
+				var sSelectedProductName = Services.getSelectedProductName();
+			}
+
+			//Select again the same offer
+			aItems.forEach(function (oItem) {
+				if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+
+					oTendersMasterTable.setSelectedItem(oItem, true);
+					oItem.setSelected(true);
+					oItem.setActive(true);
+					oItem.firePress();
+					oItem.setActive(true);
+
+				}
+			});
+
+			if (sSelectedProductId) {
+				Services.setSelectedProductID(sSelectedProductId);
+				Services.setSelectedProductPath(sSelectedProductPath);
+				Services.setSelectedProductName(sSelectedProductName);
+			}
+
+		},
+
+		//on navigation we want to reselect the same offer
+		_selectOfferInOfferTable: function (sTableID, sColumnOfferID) {
+
+			var that = this;
+
+			//Check if we are on the master page, if yes check is not needed
+			if (that.oModel.getProperty("/layout") === "OneColumn") {
+				return;
+			}
+
+			var sOfferID = Services.getSelectedOfferID();
+
+			//check which tab is open
+			var oDetailPage = that.getView().byId("DetailPage"),
+				bCurrentShowFooterState = oDetailPage.getShowFooter(),
+				sSelectedSection = oDetailPage.getSelectedSection();
+
+			//Get offer table
+			var oOffersTable = that.getView().byId(sTableID);
+
+			//if there is an offer selected, we should reselect if possible
+			if (sOfferID && oOffersTable) {
+
+				//get items of offertable
+				var aItems = oOffersTable.getItems();
+				var iIndexColumnOfferID = this.getView().byId(sColumnOfferID).getOrder();
+				var bOfferFound = false;
+
+				//Select again the same offer
+				aItems.forEach(function (oItem) {
+					if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+						oOffersTable.setSelectedItem(oItem, true);
+						oItem.setSelected(true);
+						oItem.setActive(true);
+						oItem.firePress();
+						oItem.setActive(true);
+						bOfferFound = true;
+						//to check if edit can be clicked
+						Services.setSelectedOfferAvailable(true);
+					}
+				});
+
+				if (!bOfferFound) {
+					//to check if edit can be clicked
+					Services.setSelectedOfferAvailable(false);
+					//edit button is disabled
+					MessageToast.show('Selected offer is not in the correct status.. Please select an other offer...', {
+						duration: 3000, // default
+						width: "15em", // default
+						my: "center center",
+						at: "center center",
+						of: window, // default
+						offset: "0 0", // default
+						collision: "fit fit", // default
+						onClose: null, // default
+						autoClose: true, // default
+						animationTimingFunction: "ease", // default
+						animationDuration: 1000, // default
+						closeOnBrowserNavigation: true // default
+					});
+
+					//for offer products tab, do not show details
+					var oOfferProducts = that.getView().byId("offerDetailForm");
+					if (oOfferProducts) {
+						oOfferProducts.setVisible(false);
+					}
+				}
+
+			} else {
+
+				//only on master list, basic info, offer products it is possible that you don't have an offer selected.
+				//other tabs should always have an offer selected.
+				if (
+					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getQuotationPageSectionID() ||
+					sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
+				)
+				//edit button is disabled
+				MessageToast.show('There is no offer selected. Please first select an offer in left pane...', {
+					duration: 3000, // default
+					width: "15em", // default
+					my: "center center",
+					at: "center center",
+					of: window, // default
+					offset: "0 0", // default
+					collision: "fit fit", // default
+					onClose: null, // default
+					autoClose: true, // default
+					animationTimingFunction: "ease", // default
+					animationDuration: 1000, // default
+					closeOnBrowserNavigation: true // default
+				});
+			}
+
+			return bOfferFound;
+
+		},
+
+		//based on the Selected/Active Section, we initialize certain fields
+		_initSection: function (sSelectedSection) { 
+			
+			var that = this;
+
+			//clearing when swithcing between tabs
+			Services.clearSelectedProduct();
+			Services.clearOfferSaveInfo();
+			Services.clearProductsSaveInfo();
+			Services.clearResultsForProducts();
+			Quotation.clearQuotationOfferProducts();
+			
+			Services.clearDeliveriesSaveInfo();
+				Services.clearLettersSaveInfo();
+				Services.clearProductsForOffer();
+				Services.clearDeliveriesForProduct();
+				Services.clearLettersForProduct();
+
+			//Check on wich tab we are
+			switch (sSelectedSection) {
+
+				//Basic information tab
+			case Services.getBasicInformationPageSectionID():
+
+				//clone button only enabled on basic info page
+				that.getView().byId("cloneButtonId").setEnabled(true);
+				that.getView().byId("deleteTenderButtonId").setEnabled(true);
+				break;
+
+				//Offer products tab
+			case Services.getOfferProductPageSectionID():
+
+				//Offer details form: first hide, beceause if offer selected is not selectable for this tab, it should not be visible
+				var oOfferProducts = that.getView().byId("offerDetailForm");
+				oOfferProducts.setVisible(false);
+
+				//Offer Products: clear previously selected (.unbindRows method gives an error in console, so we could not use this, thats why we bind empty model)
+				var oTable = that.byId("offerProductId");
+				if (oTable) {
+					var aTableData = [];
+					var oModelEmpty = new sap.ui.model.json.JSONModel(aTableData);
+					oTable.setModel(oModelEmpty, "EmptyModel");
+					oTable.bindRows({
+						path: "/",
+						model: "EmptyModel",
+					});
+				}
+
+				//check if offer is valid for selection
+				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+					//set binding Correct for ProductOfferPage & selected offer
+					that.onProductOfferItemPress();
+				} else {
+					//message offer not available for tab
+					MessageToast.show('Selected offer is not in the correct status.. Please select an other offer...', {
+						duration: 3000, // default
+						width: "15em", // default
+						my: "center center",
+						at: "center center",
+						of: window, // default
+						offset: "0 0", // default
+						collision: "fit fit", // default
+						onClose: null, // default
+						autoClose: true, // default
+						animationTimingFunction: "ease", // default
+						animationDuration: 1000, // default
+						closeOnBrowserNavigation: true // default
+					});
+				}
+
+				break;
+
+				//Financial offer tab
+			case Services.getFinancialOfferPageSectionID():
+
+				var oOfferProducts = that.byId("idFinancialOfferViewProduct");
+				oOfferProducts.destroyItems();
+				oOfferProducts = that.byId("tenderHistoryId");
+				oOfferProducts.destroyItems();
+
+				//check if offer is valid for selection
+				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+
+					//Financial Offer: Tender offer Subsection
+					var oFinOfferSubSection = that.byId("FinTenderOfferSubsection");
+					if (oFinOfferSubSection) {
+						oFinOfferSubSection.setVisible(true);
+					}
+
+					//Financial Offer: Pricing offer subsection
+					var oFinPricingSubSection = that.byId("FinPricingOfferSubsection");
+					if (oFinPricingSubSection) {
+						oFinPricingSubSection.setVisible(true);
+					}
+
+					//Financial Offer: Tender History subsection
+					var oFinHistorySubSection = that.byId("FinTenderHistorySubsection");
+					if (oFinHistorySubSection) {
+						oFinHistorySubSection.setVisible(true);
+					}
+
+					//Financial Offer: No offer subsection
+					var oFinNoOfferSubsection = that.byId("FinNoOfferSubsection");
+					if (oFinNoOfferSubsection) {
+						oFinNoOfferSubsection.setVisible(false);
+					}
+
+					//set binding Correct for ProductOfferPage & selected offer
+					that.onFinancialOfferItemPress();
+
+				} else {
+
+					//Financial Offer: Tender offer Subsection
+					var oFinOfferSubSection = that.byId("FinTenderOfferSubsection");
+					if (oFinOfferSubSection) {
+						oFinOfferSubSection.setVisible(false);
+					}
+
+					//Financial Offer: Pricing offer subsection
+					var oFinPricingSubSection = that.byId("FinPricingOfferSubsection");
+					if (oFinPricingSubSection) {
+						oFinPricingSubSection.setVisible(false);
+					}
+
+					//Financial Offer: Tender History subsection
+					var oFinHistorySubSection = that.byId("FinTenderHistorySubsection");
+					if (oFinHistorySubSection) {
+						oFinHistorySubSection.setVisible(false);
+					}
+
+					//Financial Offer: No offer subsection
+					var oFinNoOfferSubsection = that.byId("FinNoOfferSubsection");
+					if (oFinNoOfferSubsection) {
+						oFinNoOfferSubsection.setVisible(true);
+					}
+
+				}
+
+				break;
+
+				//Quotation tab	
+			case Services.getQuotationPageSectionID():
+
+				//
+				that.byId("IdQuotationInfo").setVisible(false);
+				that.byId("IdQuotationInfo2").setVisible(false);
+				that.byId("idQofferValidity").setEnabled(false);
+				that.byId("idCustomRemark").setEnabled(false);
+				that.byId("idSelectIssuedBy").setEnabled(false);
+				that.byId("idSelectCompanyStamp").setEnabled(false);
+
+				//reselect same offer if it exists, otherwise clear offer selected
+				//that._selectOfferInOfferTable("quotationOffersTableViewID","quotationOffersTableOfferID");
+				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+					//Quotation offer - subsection
+					var oQuotationSubSection = that.byId("QuotationOfferSubsection");
+					if (oQuotationSubSection) {
+						oQuotationSubSection.setVisible(true);
+					}
+
+					//Quotation offer: No offer subsection
+					var oQuotationNoOfferSubsection = that.byId("QuotationNoOfferSubsection");
+					if (oQuotationNoOfferSubsection) {
+						oQuotationNoOfferSubsection.setVisible(false);
+					}
+
+					that.onQuotationOfferItemPress();
+				} else {
+
+					//Quotation offer - subsection
+					var oQuotationSubSection = that.byId("QuotationOfferSubsection");
+					if (oQuotationSubSection) {
+						oQuotationSubSection.setVisible(false);
+					}
+
+					//Quotation offer: No offer subsection
+					var oQuotationNoOfferSubsection = that.byId("QuotationNoOfferSubsection");
+					if (oQuotationNoOfferSubsection) {
+						oQuotationNoOfferSubsection.setVisible(true);
+					}
+
+				}
+				break;
+
+				//Results tab
+			case Services.getTenderResultsPageSectionID():
+
+				//reselect same offer if it exists, otherwise clear offer selected
+				//that._selectOfferInOfferTable("tenderResultsOfferTableViewID","tenderResultsOfferTableOfferID");
+				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+
+					//Tender Results - subsection
+					var oFinHistorySubSection = that.byId("TenderResOfferSubsection");
+					if (oFinHistorySubSection) {
+						oFinHistorySubSection.setVisible(false);
+					}
+
+					//Tender Results - awarded companies
+					var oFinHistorySubSection = that.byId("TenderResOfferAwardedComp");
+					if (oFinHistorySubSection) {
+						oFinHistorySubSection.setVisible(true);
+					}
+
+					//Quotation offer: No offer subsection
+					var oFinNoOfferSubsection = that.byId("TenderResNoOfferSubsection");
+					if (oFinNoOfferSubsection) {
+						oFinNoOfferSubsection.setVisible(false);
+					}
+
+					that.onTenderResultsOfferPress();
+				} else {
+
+					//Tender Results - subsection
+					var oTenderResOfferSubSection = that.byId("TenderResOfferSubsection");
+					if (oTenderResOfferSubSection) {
+						oTenderResOfferSubSection.setVisible(false);
+					}
+
+					//Tender Results - awarded companies
+					var oAwardedCompSubSection = that.byId("TenderResOfferAwardedComp");
+					if (oAwardedCompSubSection) {
+						oAwardedCompSubSection.setVisible(false);
+					}
+
+					//Quotation offer: No offer subsection
+					var oTenderResNoOfferSubsection = that.byId("TenderResNoOfferSubsection");
+					if (oTenderResNoOfferSubsection) {
+						oTenderResNoOfferSubsection.setVisible(true);
+					}
+
+				}
+				break;
+
+				//Delivery Tracking
+				case Services.getDeliveryTrackingPageSectionID():
+					
+					//reselect same offer if it exists, otherwise clear offer selected
+					//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
+					if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()),sSelectedSection)){
+
+						//Deliveries - subsection
+						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
+						if (oDelivTrackOfferSubSection) {
+							oDelivTrackOfferSubSection.setVisible(true);
+						}
+
+						//Deliveries - Deliveries
+						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
+						if (oDelivTrackDeliveriesSubSection) {
+							oDelivTrackDeliveriesSubSection.setVisible(true);
+						}
+
+						//Deliveries - Delivery Detail
+						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
+						if (oDeliveryDetailSubSection) {
+							oDeliveryDetailSubSection.setVisible(false);
+						}
+
+						//Deliveries - Letters
+						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
+						if (oDelivTrackLettersSubSection) {
+							oDelivTrackLettersSubSection.setVisible(true);
+						}
+
+						//Deliveries - Letter Details
+						var oLetterDetailSubSection = that.oDeliveryTrackingView.byId("idLetterDetailSection");
+						if (oLetterDetailSubSection) {
+							oLetterDetailSubSection.setVisible(false);
+						}
+
+						//Deliveries - No offer subsection
+						var oDelivTrackNoOfferSubsection = that.oDeliveryTrackingView.byId("DelivTrackNoOfferSubsection");
+						if (oDelivTrackNoOfferSubsection) {
+							oDelivTrackNoOfferSubsection.setVisible(false);
+						}	
+
+						that.oDeliveryTrackingController.onDelivryTrackingOfferPress();
+					} else {
+
+						//Deliveries - subsection
+						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
+						if (oDelivTrackOfferSubSection) {
+							oDelivTrackOfferSubSection.setVisible(false);
+						}
+
+						//Deliveries - Deliveries
+						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
+						if (oDelivTrackDeliveriesSubSection) {
+							oDelivTrackDeliveriesSubSection.setVisible(false);
+						}
+
+						//Deliveries - Delivery Detail
+						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
+						if (oDeliveryDetailSubSection) {
+							oDeliveryDetailSubSection.setVisible(false);
+						}
+
+						//Deliveries - Letters
+						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
+						if (oDelivTrackLettersSubSection) {
+							oDelivTrackLettersSubSection.setVisible(false);
+						}
+
+						//Deliveries - Letter Details
+						var oLetterDetailSubSection = that.oDeliveryTrackingView.byId("idLetterDetailSection");
+						if (oLetterDetailSubSection) {
+							oLetterDetailSubSection.setVisible(false);
+						}
+
+						//Deliveries - No offer subsection
+						var oDelivTrackNoOfferSubsection = that.oDeliveryTrackingView.byId("DelivTrackNoOfferSubsection");
+						if (oDelivTrackNoOfferSubsection) {
+							oDelivTrackNoOfferSubsection.setVisible(true);
+						}
+
+					}
+					break;
+
+			default:
+				//disable clone & delete button
+				that.getView().byId("cloneButtonId").setEnabled(false);
+				that.getView().byId("deleteTenderButtonId").setEnabled(false);
+			}
+		},
+
+		//Navigation
+		onNavigate: function (oControlEvent) {
+
+			var that = this;
+
+			var oDetailPage = that.getView().byId("DetailPage"),
+				bCurrentShowFooterState = oDetailPage.getShowFooter(),
+				sSelectedSection = oDetailPage.getSelectedSection();
+
+			//Change navigation parameters
+			that._initSection(sSelectedSection);
+
+			//go to on route matched and handle it there
+			var sLayout = oControlEvent.getSource().getParent().getParent().getParent().getProperty("layout") || "TwoColumnsMidExpanded";
+			var sTenderID = Services.getSelectedTenderID();
+			var sOfferID = Services.getSelectedOfferID();
+			this.oRouter.navTo("detail", {
+				layout: sLayout,
+				tender: sTenderID,
+				offer: sOfferID,
+				tab: sSelectedSection,
+				country: this._country
+			});
+
+			//if in edit mode, give message first
+			if (bCurrentShowFooterState) {
+				sap.m.MessageBox.show("Must Save first", { //TODO this doesn't work as it should be
+					icon: sap.m.MessageBox.Icon.ERROR,
+					onClose: function (evt) {
+						return false;
+					}
+				});
+			}
+
+		},
+
+		//GENERAL METHODS FOR THE ACTION BUTTONS
+		//--------------------------------------
+
+		//Refreshing app data
+		onRefresh: function (oEvent) {
+
+			var that = this;
+
+			//In this case we have selected a tender, we will load all data from the database
+			var sTenderID = Services.getSelectedTenderID();
+			var sOfferID = Services.getSelectedOfferID();
+
+			//models
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oDefaultModel = Services.getDefaultModel();
+
+			//we will force reloading (false=no check on tender already loaded)
+			var bLoadedCheck = false;
+
+			if (sTenderID) {
+				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+					//this way we can use a seperate layer, adding deleting... and afterords saving
+					oFastAppDataModel.refresh(true);
+					oDefaultModel.refresh(true);
+
+					//refresh tenders master table (left pane)
+					Services.refreshTendersMasterTable(sTenderID);
+
+					//Set selected offer in left pane
+					that._selectOfferInLeftPane(sOfferID);
+
+					//get section
+					var sSelectedSection = that.getView().getContent()[0].getSelectedSection();
+
+					//get offers table + index of offerID column
+					var oOffersTableResult = that._getOfferTableForTab(sSelectedSection);
+
+					//only when oOffersTable is found
+					if (oOffersTableResult._oOffersTable) {
+
+						that._selectOfferInOfferTable(oOffersTableResult._sOfferTableID, oOffersTableResult._sOfferColumnID);
+
+					}
+
+					//reselect same offer if it exists, otherwise clear offer selected
+					//that._selectOfferInOfferTable("productOffersTableViewID","productOffersTableOfferID");
+
+					//for Quotation tab offer should be selected again.
+					if (that.getView().getContent()[0].getSelectedSection() == Services.getBasicInformationPageSectionID()) {
+
+						//edit tender is same again
+						var oTender = Services.getLoadedTender();
+						oFastAppDataModel.setProperty("/EditTender", oTender);
+
+					}
+
+					//for Quotation tab offer should be selected again.
+					if (that.getView().getContent()[0].getSelectedSection() == Services.getQuotationPageSectionID() && Services.checkOfferVisibleForTab(
+							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//QUOTATION TAB
+						//select offer again
+						that.onQuotationOfferItemPress();
+					}
+
+					if (that.getView().getContent()[0].getSelectedSection() == Services.getFinancialOfferPageSectionID() && Services.checkOfferVisibleForTab(
+							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//QUOTATION TAB
+						//select offer again
+						that.onFinancialOfferItemPress();
+					}
+
+					if (that.getView().getContent()[0].getSelectedSection() == Services.getDeliveryTrackingPageSectionID() && Services.checkOfferVisibleForTab(
+							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//DELIVERY TAB
+						//select offer again
+						that.oDeliveryTrackingController.onDelivryTrackingOfferPress();
+					}
+
+					if (that.getView().getContent()[0].getSelectedSection() == Services.getTenderResultsPageSectionID() && Services.checkOfferVisibleForTab(
+							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//Tender Results
+						//select offer again
+						that.onTenderResultsOfferPress();
+					}
+
+				});
+			}
+
+		},
+
+		//Edit action or clone button button on top of the screen is pressed
+		//add offer button or add reviewed offer is pressed
+		//save or cancel button below is pressed
+		onEditToggleButtonPress: function (oEvent) {
+			var that = this;
+			var oObjectPage = that.getView().byId("DetailPage"),
+				bCurrentShowFooterState = oObjectPage.getShowFooter();
+			var sSelectedSection = oObjectPage.getSelectedSection();
+			//in some cases edit/creation mode is not allowed
+			var bStatusNotAllowingEdit = false;
+			var bStatusNotAllowingContinuedRevised = false;
+			var bScreenNotAllowingEdit = false;
+			var bEditAllowed = true; //default we allow editing
+			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+
+			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
+			if (bCurrentShowFooterState === true) {
+
+				//Keep track that we are in display modus
+				Services.setEditMode(false);
+
+				//We are currently in EDIT mode & we go to VIEW mode
+				switch (sSelectedSection) {
+				case Services.getBasicInformationPageSectionID():
+					//BASIC INFORMATION TAB
+					//back to default (only when new tender, these fields should be editable, also after save of new tender & back to edit mode)
+					that.getView().byId("idClassification").setEnabled(false);
+					that.getView().byId("idInstituteType").setEnabled(false);
+					that.getView().byId("idInstituteName").setEnabled(false);
+					that.getView().byId("idTenderChannel").setEnabled(false);
+					that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
+					that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
+					//Mexico
+					that.getView().byId("idSelectSalesTypeEdit").setEnabled(false);
+					that.getView().byId("idSelectTenderOriginEdit").setEnabled(false);
+					that.getView().byId("idSelectContractTypeEdit").setEnabled(false);
+					//End of mexico
+
+					//should tendertype be visible on the basic info screen?
+					$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
+						that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+					});
+
+					/* Mexico */
+					$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
+						that.getView().byId("idSelectSalesTypeEdit").setVisible(bShowSalesType);
+						that.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
+					});
+
+					$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
+						that.getView().byId("idSelectTenderOriginEdit").setVisible(bShowTenderOrigin);
+						that.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
+					});
+
+					$.when(Services.checkShowContractType()).done(function (bShowContractType) {
+						that.getView().byId("idSelectContractTypeEdit").setVisible(bShowContractType);
+						that.getView().byId("idSelectContractType").setVisible(bShowContractType);
+					});
+					/* End of mexico */
+
+					//should group purchasing be visible on the screen based on data back-end
+					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+						that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
+					});
+
+					that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
+
+					that.bindAwardCriteria();
+					break;
+				case Services.getOfferProductPageSectionID():
+					//OFFER PRODUCTS TAB
+					that._showSectionFragment("OfferProductsView", "offerProductsId");
+					//TODO reload of data needed?
+					break;
+				case Services.getFinancialOfferPageSectionID():
+					//FINANCIAL OFFER TAB
+					that._showSectionFragment("FinancialOfferView", "financialOfferId");
+
+					//check for approval enabled 
+					var sSelectedOfferPath = Services.getSelectedOfferPath();
+					var sSelectedOfferID = Services.getSelectedOfferID();
+
+					var oDefaultModel = Services.getDefaultModel();
+					var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+
+					var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+					if (bEnableApproval && sSelectedOfferID !== '' && oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+						that.byId("ApprovalButtonId").setEnabled(true);
+					} else {
+						that.byId("ApprovalButtonId").setEnabled(false);
+					}
+
+					break;
+				case Services.getQuotationPageSectionID():
+					that.getView().byId("idQofferValidity").setEnabled(false);
+					that.getView().byId("idCustomRemark").setEnabled(false);
+					that.getView().byId("idSelectIssuedBy").setEnabled(false);
+					that.getView().byId("idSelectCompanyStamp").setEnabled(false);
+					that.getView().byId("idDelayInSubmission").setVisible(true);
+					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
+					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+						that.getView().byId("btnDownloadQuotation").setVisible(true);
+					}
+					that.getView().byId("btnSubmitQuotation").setVisible(true);
+					break;
+				case Services.getTenderResultsPageSectionID():
+					//TENDER RESULTS TAB
+					that.onTenderResultsOfferPress(oEvent);
+					//FOR THE NEW tree table
+					//that.onOutcomeTableEditMode();
+					that.onEditOutcomTreeTable();
+					break;
+				case Services.getDeliveryTrackingPageSectionID():
+					//DELIVERY TRACKING TAB
+					that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
+					//that.getView().byId("idDelDelv").setVisible(false);
+					that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
+					//that.getView().byId("idDelLtr").setVisible(false);
+				}
+				// this.onOutcomeTableEditMode();
+
+			} else {
+				//We are currently in display mode and go to edit mode
+
+				//check the offer status
+				$.when(Services.checkOfferStatus()).done(function (oData) {
+
+					//Functional description: https://trello.com/c/BCDzFpd0 + https://trello.com/c/F9OEyemn
+
+					//Status in which editing is not allowed for (product offer, financial offer, quotation)
+					var aStatusNoEdit = [
+						"Awaiting Approval",
+						"Quotation Submitted",
+						"Results Recorded",
+						"Delivery Ongoing"
+					];
+
+					//Status in which editing is not allowed for (results, delivery)
+					var aStatusNoEditResultsDeliveries = [
+						"Awaiting Approval"
+					];
+
+					//Status which is not allowing to create a continued offer or revised offer
+					//other statusses will allow edit while creating a revised or continued offer (creation modus)
+					var aStatusNoContinuedNoRevised = [
+						"Awaiting Approval"
+					];
+
+					//screens where the edit mode is not allowed in combination with the status
+					var aScreensNoEdit = [
+						//Services.getBasicInformationPageSectionID(),
+						Services.getOfferProductPageSectionID(),
+						Services.getFinancialOfferPageSectionID(),
+						Services.getQuotationPageSectionID(),
+						Services.getTenderResultsPageSectionID(),
+						Services.getDeliveryTrackingPageSectionID()
+					];
+
+					//check if status is allowing edit
+					if (sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()) {
+						//Results & Delivery tracking different status allowing edit
+						if ($.inArray(oData.STATUS, aStatusNoEditResultsDeliveries) === -1) {
+							bStatusNotAllowingEdit = false;
+						} else {
+							bStatusNotAllowingEdit = true;
+						}
+					} else {
+						//all other allowing edit (except for basic)
+						if ($.inArray(oData.STATUS, aStatusNoEdit) === -1) {
+							bStatusNotAllowingEdit = false;
+						} else {
+							bStatusNotAllowingEdit = true;
+						}
+					}
+
+					//check if status is allowing edit
+					if ($.inArray(oData.STATUS, aStatusNoContinuedNoRevised) === -1) {
+						bStatusNotAllowingContinuedRevised = false;
+					} else {
+						bStatusNotAllowingContinuedRevised = true;
+					}
+
+					//check if screen is allowing edit
+					if ($.inArray(sSelectedSection, aScreensNoEdit) === -1) {
+						bScreenNotAllowingEdit = false;
+					} else {
+						bScreenNotAllowingEdit = true;
+					}
+
+					//Check if offer button is pressed: reviewed or continued new offer button (or clone button pressed)
+					var bCreateOfferModus = Services.getCreationModusOffer();
+
+					//creation modus = different logic for allowing edit
+					if (bCreateOfferModus) {
+
+						//we are in creation modus: reviewed or continued new offer button (or clone button pressed)
+						//status not allowing
+						if (bStatusNotAllowingContinuedRevised) {
+							bEditAllowed = false;
+						} else {
+							bEditAllowed = true;
+						}
+
+					} else {
+
+						//we are in edit mode of an existing offer (NOT reviewed nor continued)
+
+						if (bStatusNotAllowingEdit && bScreenNotAllowingEdit) {
+							bEditAllowed = false;
+						} else {
+							bEditAllowed = true;
+						}
+
+					}
+
+					var sOfferID = Services.getSelectedOfferID();
+
+					//check if offer is available for tab (if not edit mode is not allowed)
+					//if(sOfferID && !that._checkOfferValidForTab(sOfferID)){
+					if (sOfferID && !Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+						bEditAllowed = false;
+					}
+
+					//if editing is not allowed (combination status, page, creation modus yes/no..)
+					if (!bEditAllowed) {
+						//go back to display mode
+						that.onEditToggleButtonPress();
+						sap.m.MessageBox.warning("Status of offer is not allowing to go to edit mode.", {});
+						return;
+					}
+
+					//Keep track that we are in display
+					Services.setEditMode(true);
+
+					//updateExisting TODO still needed?
+					this.updateExisting = true;
+					switch (sSelectedSection) {
+
+					case Services.getBasicInformationPageSectionID():
+
+						/*initialize country filter for particular fields (tender type, tender origin, sales type, contract type) */
+						var sCountryCode = Services.getSelectedCountry();
+						var aFilter = [];
+						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+
+						//BASIC INFORMATION TAB
+						that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
+
+						//these fields should be disabled
+						that.getView().byId("idClassification").setEnabled(false);
+						that.getView().byId("idInstituteType").setEnabled(false);
+						that.getView().byId("idInstituteName").setEnabled(false);
+						that.getView().byId("idTenderChannel").setEnabled(false);
+						that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
+						that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
+						that.getView().byId("idSelectSalesTypeEdit").setEnabled(false);
+						that.getView().byId("idSelectTenderOriginEdit").setEnabled(false);
+						that.getView().byId("idSelectContractTypeEdit").setEnabled(false);
+
+						//apply country filter on tender type
+						var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
+						oTenderType.bindItems({
+							path: "fastData>/CountryTenderType",
+							filters: aFilter,
+							parameters: {
+								"expand": "TenderType"
+							},
+							template: new sap.ui.core.Item({
+								text: "{fastData>TenderType/NAME}",
+								key: "{fastData>TenderType/ID}"
+							})
+						});
+
+						//should tendertype be visible on the screen?
+						$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+							oTenderType.setVisible(bShowTenderType);
+						});
+
+						//should group purchasing be visible on the screen based on data back-end
+						$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+							that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
+						});
+
+						/* Mexico */
+						//apply country filter on sales type
+						var oSalesType = that.getView().byId("idSelectSalesTypeEdit");
+						oSalesType.bindItems({
+							path: "fastData>/CountrySalesType",
+							filters: aFilter,
+							parameters: {
+								"expand": "SalesType"
+							},
+							template: new sap.ui.core.Item({
+								text: "{fastData>SalesType/NAME}",
+								key: "{fastData>SalesType/ID}"
+							})
+						});
+
+						//should salestype be visible on the screen?
+						$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
+							oSalesType.setVisible(bShowSalesType);
+						});
+
+						//apply country filter on tender origin
+						var oTenderOrigin = that.getView().byId("idSelectTenderOriginEdit");
+						oTenderOrigin.bindItems({
+							path: "fastData>/CountryTenderOrigin",
+							filters: aFilter,
+							parameters: {
+								"expand": "TenderOrigin"
+							},
+							template: new sap.ui.core.Item({
+								text: "{fastData>TenderOrigin/NAME}",
+								key: "{fastData>TenderOrigin/ID}"
+							})
+						});
+
+						//should tender origin be visible on the screen?
+						$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
+							oTenderOrigin.setVisible(bShowTenderOrigin);
+						});
+
+						//apply country filter on contract type
+						var oContractType = that.getView().byId("idSelectContractTypeEdit");
+						oContractType.bindItems({
+							path: "fastData>/CountryContractType",
+							filters: aFilter,
+							parameters: {
+								"expand": "ContractType"
+							},
+							template: new sap.ui.core.Item({
+								text: "{fastData>ContractType/NAME}",
+								key: "{fastData>ContractType/ID}"
+							})
+						});
+
+						//should contract type be visible on the screen?
+						$.when(Services.checkShowContractType()).done(function (bShowContractType) {
+							oContractType.setVisible(bShowContractType);
+						});
+
+						/* End of mexico */
+
+						// Dunno why but binding is not always found
+						// var oBinding = oTenderType.getBinding("items");
+						// //set filter for country on tender type: only when binding of tendertype is found
+						// if(oBinding){
+						// 	oBinding.filter(aFilter);
+						// }
+						that.bindAwardCriteria();
+						break;
+
+					case Services.getOfferProductPageSectionID():
+						//OFFER PRODUCTS TAB
+						that._showSectionFragment("OfferProductsEdit", "offerProductsId");
+						var sOfferID = Services.getSelectedOfferID();
+						//in case of reviewed offer, we want to keep the offer?
+						if (!Services.getReviewedOfferPressed()) {
+							Services.setSelectedOfferID(sOfferID); //keep selected offerID for later use TODO: find better place to fit this method
+						}
+
+						//we add the new offer to be addeded, so we can bind the edit view to it
+						Services.addNewOfferToFastAppDataModel();
+
+						//apply filter on countrycode for selling company
+						var sCountryCode = Services.getCountryCodeofSelectedTender();
+						var aFilter = [];
+						aFilter.push(new Filter("CountryCode", FilterOperator.EQ, sCountryCode));
+						var oList = that.getView().byId("idSellingCompany");
+						var oBinding = oList.getBinding("items");
+						oBinding.filter(aFilter);
+
+						//apply filter on countrycode and institute for distributor
+						var sInstituteId = Services.getInstituteIDofSelectedTender();
+						var sChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+						var sSellingCompanyID = that.byId("idSellingCompany").getSelectedKey();
+						//if no selling company selected, take first selling company in line
+						if (!sSellingCompanyID) {
+							//load possible selling companies for country
+							Services.loadSellingCompaniesForCountry(sCountryCode).then(function (aSellingCompany) {
+								if (aSellingCompany) {
+									//take first selling company in list
+									sSellingCompanyID = aSellingCompany[0].LegalEntityCode;
+
+									//newly filter
+									aFilter = [];
+									aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+									aFilter.push(new Filter("INSTITUTE_ID", FilterOperator.EQ, sInstituteId));
+									aFilter.push(new Filter("CHANNEL", FilterOperator.EQ, sChannel));
+									aFilter.push(new Filter("LEGAL_ENTITY_CODE", FilterOperator.EQ, sSellingCompanyID));
+									oList = that.getView().byId("idDistributorName");
+									oBinding = oList.getBinding("items");
+									oBinding.filter(aFilter);
+
+									//set default selling company
+									Services.getFastAppDataModel().setProperty("/EditOffer/SellingCompany", sSellingCompanyID);
+								}
+							});
+						} else {
+							//set selling company
+							Services.getFastAppDataModel().setProperty("/EditOffer/SellingCompany", sSellingCompanyID);
+						}
+
+						//TODO: check if this can be removed, or the one higher up
+						aFilter = [];
+						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+						aFilter.push(new Filter("INSTITUTE_ID", FilterOperator.EQ, sInstituteId));
+						aFilter.push(new Filter("CHANNEL", FilterOperator.EQ, sChannel));
+						aFilter.push(new Filter("LEGAL_ENTITY_CODE", FilterOperator.EQ, sSellingCompanyID));
+						oList = that.getView().byId("idDistributorName");
+						oBinding = oList.getBinding("items");
+						oBinding.filter(aFilter);
+
+						//oList.getItems()[0]
+
+						//keep default selected distributor
+						var sDistributorID = that.getView().byId("idDistributorName").getSelectedKey();
+						Services.setSelectedDistributorID(sDistributorID);
+						Services.setPrevSelectedDistributorID(sDistributorID);
+
+						//keep default selected selling company
+						var sSellingCompanyID = that.getView().byId("idSellingCompany").getSelectedKey();
+						Services.setSelectedSellingCompanyID(sSellingCompanyID);
+						Services.setPrevSelectedSellingCompanyID(sSellingCompanyID);
+
+						//make fields mandatory based on list
+						var sMandatoryFields = Services.getMandatoryFields(sCountryCode, Services.getOfferProductPageSectionID());
+						if (sMandatoryFields.length > 0) {
+							//in case mandatory fields have been specified for the given country, set these fields as mandatory. 
+							//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
+							//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
+
+							for (var i = 0; i < sMandatoryFields.length; i++) {
+								that.getView().byId(sMandatoryFields[i].field).setProperty("required", sMandatoryFields[i].required);
+							}
+
+						}
+						//only in creation modus of an offer we will be able to set the distributor id
+						var oDistributor = that.getView().byId("idDistributorName");
+						if (Services.getCreationModusOffer()) {
+							oDistributor.setEnabled(true);
+						} else {
+							oDistributor.setEnabled(false);
+						}
+						break;
+
+					case Services.getFinancialOfferPageSectionID():
+						//FINANCIAL OFFER TAB
+						that._showSectionFragment("FinancialOfferEdit", "financialOfferId");
+						that.setFinancialOfferEditBinding();
+						break;
+					case Services.getQuotationPageSectionID():
+						//that.getView().byId("idQofferDate").setEnabled(true);
+						that.getView().byId("idQofferValidity").setEnabled(true);
+						that.getView().byId("idCustomRemark").setEnabled(true);
+						that.getView().byId("idSelectIssuedBy").setEnabled(true);
+						that.getView().byId("idSelectCompanyStamp").setEnabled(true);
+						that.getView().byId("idDelayInSubmission").setVisible(false);
+						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
+						that.getView().byId("btnDownloadQuotation").setVisible(false);
+						that.getView().byId("btnSubmitQuotation").setVisible(false);
+						break;
+					case Services.getTenderResultsPageSectionID():
+						//TENDER RESULTS TAB
+						that.onTenderResultsOfferPress(oEvent);
+						//FOR THE NEW tree table
+						//that.onOutcomeTableEditMode();
+						that.onEditOutcomTreeTable();
+						break;
+
+					case Services.getDeliveryTrackingPageSectionID():
+						//DELIVERY TRACKING TAB
+						that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
+						//that.getView().byId("idDelDelv").setVisible(true);
+						that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(true);
+						//that.getView().byId("idDelLtr").setVisible(true);
+						break;
+
+					}
+
+				});
+
+			}
+
+			//if editing is not allowed (combination status, page, creation modus yes/no..)
+			if (!bEditAllowed) {
+				//we should stay in display
+				return;
+			}
+
+			//switch between edit mode and display mode by showing/hiding footer
+			oObjectPage.setShowAnchorBar(bCurrentShowFooterState);
+			oObjectPage.setShowFooter(!bCurrentShowFooterState);
+
+			//Make an array of the Action buttons, so they can be enabled/disabled
+			var ToggleEnabledButtons = [
+				//"deleteButtonId",
+				"deleteTenderButtonId",
+				"editButtonId",
+				"cloneButtonId",
+				"refreshButtonId"
+			];
+
+			//enable, disable each action button
+			ToggleEnabledButtons.forEach(function (updateButtonId) {
+				var updateButton = that.byId(updateButtonId);
+				updateButton.setEnabled(bCurrentShowFooterState);
+				updateButton.setVisible(true);
+			});
+
+		},
+
+		//Delete tender
+		onDeleteTenderPress: function (oEvent) {
+
+			//that is this, to keep reference to controller
+			var that = this;
+
+			//successfully created clone
+			sap.m.MessageBox.warning("Are you sure you want to delete the tender?", {
+				actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.ABORT],
+				styleClass: "sapUiSizeCompact",
+				onClose: function (sAction) {
+					if (sAction === "ABORT") {
+						sap.m.MessageToast.show("...aborted...");
+					} else {
+						that._deleteTender();
+					}
+
+				}
+			});
+
+		},
+
+		//Delete tender continue
+		_deleteTender: function () {
+
+			var that = this;
+
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var aOffers = oFastAppDataModel.getProperty("/Tender/Offer/results");
+
+			//first of all we say that Deletion is allowed
+			var bStatusAllowingDelete = true;
+
+			//catch all promises in an array
+			let promises = [];
+
+			//check if offers exists
+			if (aOffers) {
+
+				//loop at offers 
+				aOffers.forEach(function (oOffer, index) {
+
+					//check only valid for active offers... inactive offers can be deleted even in wrong status
+					if (oOffer.Active === 1) {
+
+						//check the offer status
+						promises.push($.when(Services.checkOfferStatus(oOffer.TenderID, oOffer.OfferID)).done(function (oData) {
+
+							//Status in which deleting of the offer is not allowed
+							var aStatusNoDelete = [
+								"Awaiting Approval",
+								"Quotation Submitted",
+								"Results Recorded",
+								"Delivery Ongoing"
+							];
+
+							//check if status is within the list of statusses wich do not allow deletion
+							if ($.inArray(oData.STATUS, aStatusNoDelete) !== -1) {
+								bStatusAllowingDelete = false;
+							}
+
+						}));
+
+					} else {
+						//go back to display mode				
+						sap.m.MessageBox.warning("There is an offer in this tender with a status wich is not allowed for deletion.", {});
+						return;
+					}
+
+				});
+
+			} else {
+				//it is allowed to delete a tender without offers
+				bStatusAllowingDelete = true;
+			}
+
+			//if all checks on status are done
+			Promise.all(promises).then((result) => {
+
+				//no deletion possible
+				if (bStatusAllowingDelete) {
+
+					//execute deletion
+					Services.saveSoftDeleteTender().then(function (oResult) {
+
+						//go back to master
+						that.handleClose();
+
+						//deletion success
+						MessageToast.show("Tender is successfully removed..");
+
+					});
+
+				} else {
+
+					//go back to display mode				
+					sap.m.MessageBox.warning("There is an offer in this tender with a status wich is not allowed for deletion.", {});
+					return;
+
+				}
+
+			});
+
+		},
+
+		//Edit button is pressed
+		onEditButtonPress: function () {
+
+			// keep track of button that is pressed
+			Services.setEditPressed(true);
+
+			//Selected offerID
+			var sOfferID = Services.getSelectedOfferID();
+			Services.setSelectedOfferID(sOfferID); //keep selected offerID for later use TODO: find better place to fit this method
+
+			//get selected productID
+			var sProductCode = Services.getSelectedProductID();
+
+			//check what the selected section is
+			var oObjectPage = this.getView().byId("DetailPage");
+			var sSelectedSection = oObjectPage.getSelectedSection();
+
+			//check if selected offer was available in table
+			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable(true);
+
+			if (sOfferID && bSelectedOfferAvailable) {
+				//ProductID should be selected on some tabs
+				if (
+					(sSelectedSection === Services.getDeliveryTrackingPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID()) &&
+					!sProductCode
+				) {
+					sap.m.MessageBox.warning("First select an product to edit.", {});
+				} else {
+					//switch to correct view edit/display
+					this.onEditToggleButtonPress();
+				}
+
+			} else {
+				//warning should only appear on Offerproduct tab
+				if (sSelectedSection !== Services.getBasicInformationPageSectionID()) {
+					sap.m.MessageBox.warning("First select an offer to edit.", {});
+				} else {
+					//switch to correct view edit/display
+					this.onEditToggleButtonPress();
+				}
+			}
+
+		},
+
+		//Clone action button on top of the screen
+		onCloneButtonPress: function () {
+
+			//that is this, to keep reference to controller
+			var that = this;
+
+			//successfully created clone
+			sap.m.MessageBox.warning(
+				"Are you sure you want to create a clone? This will include: Tender & Award Criteria, Offers, Products, Prices...", {
+					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.ABORT],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "ABORT") {
+							sap.m.MessageToast.show("...aborted...");
+						} else {
+							that._cloneTender();
+						}
+					}
+				});
+
+		},
+
+		_cloneTender: function () {
+
+			//that is this, to keep reference to controller
+			var that = this;
+			var oOfferFragment = new OfferProducts();
+
+			//keep track that the clone button is pressed
+			Services.setClonePressed(true);
+
+			//Deep copy of Tender to save
+			var oFastAppData = Services.getFastAppDataModel();
+			let oTenderToClone = $.extend(true, {}, oFastAppData.getProperty("/Tender"));
+
+			//convert dates
+			if (moment(oTenderToClone.PublicationDate).year() < 1900) {
+				oTenderToClone.PublicationDate = null;
+			}
+			if (moment(oTenderToClone.BidDueDate).year() < 1900) {
+				oTenderToClone.BidDueDate = null;
+			}
+			if (moment(oTenderToClone.AwardDate).year() < 1900) {
+				oTenderToClone.AwardDate = null;
+			}
+			if (moment(oTenderToClone.NextPublicationDye).year() < 1900) {
+				oTenderToClone.NextPublicationDye = null;
+			}
+
+			//check if original data is valid (could be invalid due to data inconcistancy)
+			//if data of origanal clone is not valid, end-user should fix original Tender data first
+			var oTenderToCheck = Services.getService('Tender').getConvertTenderToSave(oTenderToClone);
+
+			//check if data is correct for the original tender
+			//if this fails, the end-user should change original tender first
+			var bCheckForTenderToClone = true;
+			if (Services.checkBasicInfo(oTenderToCheck, bCheckForTenderToClone)) {
+
+				Services.saveCloneTender(oTenderToClone, oOfferFragment).then(function (oResult) {
+
+					//successfully created clone
+					sap.m.MessageBox.success("Clone created with ID (" + oResult.TenderID + ").", {
+						actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction === "CLOSE") {
+								sap.m.MessageToast.show("Clone creation done...");
+							} else {
+
+								//clear everything thats needed to be cleared
+								Services.clearAllForBasicInfoPage();
+								Services.clearAllForOfferProductPage();
+								Services.clearAllForTenderResultsPage();
+								Services.clearAllForDeliveryTrackingPage();
+								Services.clearSelectedOffer();
+								Services.clearSelectedProduct();
+
+								//switch to display mode
+								that.onEditToggleButtonPress();
+
+								//navigate to newly saved Tender
+								that.oRouter.navTo("detail", {
+									layout: "TwoColumnsMidExpanded",
+									tender: oResult.TenderID,
+									offer: oResult.OfferID,
+									tab: Services.getBasicInformationPageSectionID(), //basic information tab
+									country: that._country
+								});
+
+							}
+						}
+					});
+
+				});
+
+			}
+
+		},
+
+		//FOOTER action button SAVE
+		onCancelButtonPress: function (oEvent) {
+
+			//get the selected tender path
+			var sTenderPath = Services.getSelectedTenderPath();
+			var sTenderID = Services.getSelectedTenderID();
+
+			var that = this;
+
+			//when we cancel, we load the data again, so changes are undone
+			var bLoadedCheck = false;
+
+			//we are no longer in edit mode
+			Services.getEditMode(false);
+
+			//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
+			var sNewTenderNo = Services.getNewTenderNo();
+
+			if (sTenderPath === "/PT_TMTEND('1')" || sNewTenderNo) {
+
+				//clear everything thats needed to be cleared when going back to the masters screen
+				Services.clearAllForBasicInfoPage();
+				Services.clearAllForOfferProductPage();
+				Services.clearAllForTenderResultsPage();
+				Services.clearAllForDeliveryTrackingPage();
+				Services.clearSelectedOffer();
+				Services.clearSelectedProduct();
+
+				//we go back to tender master screen
+				this.oRouter.navTo("master", {
+					layout: "OneColumn",
+					tender: sTenderPath,
+					country: this._country
+				});
+
+			} else {
+
+				//we stay on the screen and reload the data 
+
+				//get selected section
+				var oObjectPage = that.getView().byId("DetailPage"),
+					bCurrentShowFooterState = oObjectPage.getShowFooter();
+				var sSelectedSection = oObjectPage.getSelectedSection();
+
+				//data model
+				var oFastAppDataModel = Services.getFastAppDataModel();
+
+				//keep selected offerID & offerPath
+				var sSelectedOfferID = Services.getSelectedOfferID();
+				var sSelectedOfferPath = Services.getSelectedOfferPath();
+
+				//clear data so it can be loaded again (we should clear more specific as shown below)
+				//oFastAppDataModel.setData(null);
+
+				//In this case we might have done some changes in the fastAppData model, we will load all data from the database again
+				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+					//clear everything thats needed to be cleared when going back to the masters screen
+					switch (sSelectedSection) {
+					case Services.getBasicInformationPageSectionID():
+
+						//editTender binding
+						var oTender = Services.getLoadedTender();
+						oFastAppDataModel.setProperty("/EditTender/", oTender);
+
+					case Services.getOfferProductPageSectionID():
+
+						//if we are on Offer Product Page we should clear the following
+						Services.clearAllForOfferProductPage();
+
+						break;
+					case Services.getFinancialOfferPageSectionID():
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelFinancialOfferTableID").setExpanded(true);
+
+						//make sure selected offer & product is still shown
+						Services.setSelectedOfferID(sSelectedOfferID);
+						Services.setSelectedOfferPath(sSelectedOfferPath);
+
+						//check for approval enabled 
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						that.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+						//select offer again
+						that.onFinancialOfferItemPress();
+
+						break;
+					case Services.getQuotationPageSectionID():
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelQuotationOfferTableID").setExpanded(true);
+
+						//make sure selected offer & product is still shown
+						Services.setSelectedOfferID(sSelectedOfferID);
+						Services.setSelectedOfferPath(sSelectedOfferPath);
+
+						//select offer again
+						that.onQuotationOfferItemPress();
+						break;
+					case Services.getTenderResultsPageSectionID():
+
+						//Clear all fields for delivery tracking
+						Services.clearAllForTenderResultsPage();
+
+						//make sure selected offer & product is still shown
+						Services.setSelectedOfferID(sSelectedOfferID);
+						Services.setSelectedOfferPath(sSelectedOfferPath);
+
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelTenderResultsOfferTableID").setExpanded(true);
+
+						//select offer again
+						that.onTenderResultsOfferPress();
+						break;
+					case Services.getDeliveryTrackingPageSectionID():
+
+						//Clear all fields for delivery tracking
+						Services.clearAllForDeliveryTrackingPage();
+
+						//Set selected offer in left pane
+						that._selectOfferInLeftPane(sSelectedOfferID);
+
+						//reselect same offer if it exists, otherwise clear offer selected
+						//TODO when offer table is removed on each tab, this will no longer be needed
+						//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
+
+						if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+							that.oDeliveryTrackingController.onDelivryTrackingOfferPress();
+						}
+
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelDeliveryTrackingOfferTableID").setExpanded(true);
+						that.getView().byId("deliveryTrackingViewId").byId("idDeliveryDetailSection").setVisible(false);
+						that.getView().byId("deliveryTrackingViewId").byId("idLetterDetailSection").setVisible(false);
+						break;
+					}
+
+					//switch between View/Edit
+					that.onEditToggleButtonPress();
+
+					//this way we can use a seperate layer, adding deleting... and afterords saving
+					that.getView().setModel(oFastAppDataModel, "fastAppData");
+
+				});
+
+			}
+
+		},
+
+		//when save button is pressed on top of split layout
+		onSaveButtonPress: function (oEvent) {
+
+			var that = this;
+			var sSelectedSection = that.getView().getContent()[0].getSelectedSection();
+
+			//Check which sub section of the page is currently selected
+			switch (sSelectedSection) {
+
+			case Services.getBasicInformationPageSectionID():
+
+				//BASIC INFORMATION TAB
+				that._onSaveBasicInfo(oEvent);
+				break;
+
+			case Services.getOfferProductPageSectionID():
+
+				//OFFER PRODUCTS TAB
+				that._onSaveOfferProduct(oEvent);
+				break;
+
+			case Services.getFinancialOfferPageSectionID():
+
+				//FINANCIAL OFFER TAB
+				that._onSaveFinancialOffer(oEvent);
+				break;
+
+			case Services.getQuotationPageSectionID():
+
+				//QUOTATION TAB
+				that._onSaveQuotation(oEvent);
+				break;
+
+			case Services.getTenderResultsPageSectionID():
+
+				//TENDER RESULTS TAB
+				var path = oEvent.getSource().getBindingContext("fastData").getPath();
+				var oRefre = oEvent.getSource();
+				that._onSaveTenderResults(path, oRefre);
+				break;
+
+			case Services.getDeliveryTrackingPageSectionID():
+
+				//DELIVERY TRACKING TAB
+				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
+				this.oDeliveryTrackingView.byId("idDeliveryDetailSection").setVisible(false);
+				this.oDeliveryTrackingView.byId("idLetterDetailSection").setVisible(false);
+				break;
+
+			default:
+				// code block
+			}
+
+		},
+
+		//get offertable & offerID column index
+		_getOfferTableForTab: function (sSelectedSection) {
+
+			var that = this;
+
+			//init
+			var oOffersTable = null;
+			var iIndexColumnOfferID = 0;
+			var sOfferTableID = "";
+			var sOfferColumnID = "";
+
+			//Check on wich tab we are
+			switch (sSelectedSection) {
+
+				//Basic information tab
+			case Services.getBasicInformationPageSectionID():
+
+				//no offer table available on this tab
+				break;
+
+				//Offer products tab
+			case Services.getOfferProductPageSectionID():
+
+				//Get offer table + column from where we can check if offer is valid for tab
+				//oOffersTable = that.getView().byId("productOffersTableViewID");
+				//iIndexColumnOfferID = this.getView().byId("productOffersTableOfferID").getOrder();	
+
+				break;
+
+				//Financial offer tab
+			case Services.getFinancialOfferPageSectionID():
+
+				//Get offer table + column from where we can check if offer is valid for tab
+				//oOffersTable = that.getView().byId("financialOffersTableViewID");
+				//iIndexColumnOfferID = this.getView().byId("financialOffersTableOfferID").getOrder();	
+
+				break;
+
+				//Quotation tab	
+			case Services.getQuotationPageSectionID():
+
+				//Get offer table + column from where we can check if offer is valid for tab
+
+				//oOffersTable = that.getView().byId("quotationOffersTableViewID");
+				//iIndexColumnOfferID = this.getView().byId("quotationOffersTableOfferID").getOrder();
+
+				break;
+
+				//Results tab
+			case Services.getTenderResultsPageSectionID():
+
+				//Get offer table + column from where we can check if offer is valid for tab
+				//	oOffersTable = that.getView().byId("tenderResultsOfferTableViewID");
+				//	iIndexColumnOfferID = this.getView().byId("tenderResultsOfferTableOfferID").getOrder();
+
+				break;
+
+				//Delivery Tracking
+			case Services.getDeliveryTrackingPageSectionID():
+
+				//Get offer table + column from where we can check if offer is valid for tab
+				//	oOffersTable = that.getView().byId("deliveryTrackingOfferTableViewID");
+				//	iIndexColumnOfferID = this.getView().byId("deliveryTrackingOfferTableOfferID").getOrder();	
+
+				break;
+
+			default:
+
+				//Nothing
+				break;
+
+			}
+
+			if (oOffersTable) {
+				sOfferTableID = oOffersTable.getId();
+				if (iIndexColumnOfferID >= 0) {
+					sOfferColumnID = oOffersTable.getColumns()[iIndexColumnOfferID].getId();
+				}
+			}
+
+			//return result
+			var oResult = {
+				_oOffersTable: oOffersTable,
+				_sOfferTableID: sOfferTableID,
+				_iIndexColumnOfferID: iIndexColumnOfferID,
+				_sOfferColumnID: sOfferColumnID
+			}
+
+			return oResult;
+
+		},
+
+		//NAVIGATION ACTIONS
+		//------------------
+
+		//NAVIGATION ACTION: Full screen
+		handleFullScreen: function () {
+
+			//get parameters
+			var sTenderID = Services.getSelectedTenderID();
+			var sOfferID = Services.getSelectedOfferID();
+			var sTab = Services.getSelectedTab();
+
+			this.oRouter.navTo("detail", {
+				layout: "MidColumnFullScreen",
+				tender: sTenderID,
+				offer: sOfferID,
+				tab: sTab,
+				country: this._country,
+				samePage: true
+			});
+
+			//TODO this can be handled in a more default SAP way: check https://sapui5.hana.ondemand.com/#/topic/933965ba8c0440308e1e3233be7bc52f.html
+			this.getView().byId("enterFullScreenButton").setVisible(false);
+			this.getView().byId("exitFullScreenButton").setVisible(true);
+
+		},
+
+		//NAVIGATION ACTION: Exit Full screen
+		handleExitFullScreen: function () {
+
+			//get current selected tender
+			var sTenderID = Services.getSelectedTenderID();
+			var sOfferID = Services.getSelectedOfferID();
+			var sTab = Services.getSelectedTab();
+
+			//we change layout
+			this.oRouter.navTo("detail", {
+				layout: "TwoColumnsMidExpanded",
+				tender: sTenderID,
+				offer: sOfferID,
+				tab: sTab,
+				country: this._country,
+				samePage: true
+			});
+
+			this.getView().byId("exitFullScreenButton").setVisible(false);
+			this.getView().byId("enterFullScreenButton").setVisible(true);
+
+		},
+
+		//NAVIGATION ACTION: Closing current view
+		handleClose: function () {
+			var sTenderID = Services.getSelectedTenderID();
+
+			//clear everything thats needed to be cleared when going back to the masters screen
+			Services.clearAllForBasicInfoPage();
+			Services.clearAllForOfferProductPage();
+			Services.clearAllForDeliveryTrackingPage();
+			Services.clearAllForTenderResultsPage();
+
+			//clearing when going back to the main screen
+			Services.clearSelectedOffer();
+			Services.clearSelectedProduct();
+
+			Services.clearProductsForOffer();
+			Services.clearResultsForProducts();
+			Services.clearDeliveriesForProduct();
+			Services.clearLettersForProduct();
+			Quotation.clearQuotationOfferProducts();
+
+			//tender should no longer be selected
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			oFastAppDataModel.setProperty("/Tender", null);
+
+			//navigate back to master screen
+			this.oRouter.navTo("master", {
+				layout: "OneColumn",
+				tender: sTenderID,
+				country: this._country
+			});
+
+		},
+
+		//DELIVERY TRACKING TAB & FINANCIAL OFFER TAB
+		//-------------------------------------------
+
+		//when items are bound and displayed on the view, we should select the first item
+		onBindingItemsFinished: function (oEvent) {
+
+			var that = this;
+
+			//if we are in financial offer tab, we should auto select first product
+			var oObjectPage = this.getView().byId("DetailPage");
+			var sSelectedSection = oObjectPage.getSelectedSection();
+
+			//check the page we are on, only for finacial offer page this is applicable 
+			//+ not if navigate back to the tender master page (so selectedtender is back to PT_TMTEND)
+			if (
+				Services.getSelectedTenderPath() !== '/PT_TMTEND' && (sSelectedSection === Services.getFinancialOfferPageSectionID())
+			) {
+
+				var oListProducts = {};
+
+				//depending on the tab we are on.. we should select first product of table
+				switch (sSelectedSection) {
+				case Services.getFinancialOfferPageSectionID():
+					oListProducts = this.getView().byId("idFinancialOfferViewProduct");
+					break;
+					// case Services.getDeliveryTrackingPageSectionID():
+					// 	oListProducts = this.getView().byId("idDeliveryTrackViewProduct");
+					// 	break;
+				}
+
+				//check if offer is valid for selection
+				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+
+					//if table is found		
+					if (!$.isEmptyObject(oListProducts)) {
+						var aItems = oListProducts.getItems();
+						if (aItems[0]) {
+							var sProductPath = Services.getSelectedProductPath();
+							if (!sProductPath) {
+								oListProducts.setSelectedItem(aItems[0], true);
+								aItems[0].setSelected(true);
+								//aItems[0].setActive(true);
+
+								//if no product is selected, we should select the first product in the list
+								sProductPath = aItems[0].getBindingContextPath();
+								Services.setSelectedProductPath(sProductPath);
+							}
+
+							//depending on the tab we are on, we should call deferent method
+							switch (sSelectedSection) {
+							case Services.getFinancialOfferPageSectionID():
+								that.onFinancialOfferProductItemPress(oEvent, sProductPath);
+								break;
+								// case Services.getDeliveryTrackingPageSectionID():
+								// 	that.onDeliveryTrackProductItemSelect();
+								// 	break;
+							}
+
+						}
+					}
+
+				}
+			}
+
+		},
+
+		//FINANCIAL OFFER TAB
+		//-------------------
+
+		//click on offer on FINANCIAL OFFER TAB
+		onFinancialOfferItemPress: function () {
+
+			//this is that
+			var that = this;
+
+			//get page
+			var oDetailPage = that.getView().byId("DetailPage"),
+				bCurrentShowFooterState = oDetailPage.getShowFooter(),
+				sSelectedSection = oDetailPage.getSelectedSection();
+
+			//get selected offerID
+			var sOfferID = Services.getSelectedOfferID();
+
+			//get default model
+			var oDefaultModel = Services.getDefaultModel();
+
+			//get & keep offerPath 
+			var sOfferPath = oDefaultModel.createKey("/PT_TMOFRS", {
+				OfferID: sOfferID
+			});
+			Services.setSelectedOfferPath(sOfferPath);
+
+			//if you click on an offer it is available (sometimes it is not availble when you switch between tabs)
+			Services.setSelectedOfferAvailable(true);
+
+			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			Services.setSelectedDistributorID(oOffer.DistributorID);
+
+			//Financial offer data	
+			var offerFragment = new OfferProducts();
+			var oDetailController = that;
+			offerFragment.setFinancialOfferDisplayBinding(oDetailController);
+			var oSection = this.byId("FinPricingOfferSubsection");
+			oSection.setVisible(false);
+
+			//check for approval enabled 
+			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+
+			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+				bEnableApproval = false;
+			}
+
+			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+		},
+
+		//click on product on FINANCIAL OFFER TAB
+		onFinancialOfferProductItemPress: function (oEvent, sProductPath) {
+
+			var oPricingSection = this.byId("FinPricingOfferSubsection");
+			if (oPricingSection) {
+				oPricingSection.setVisible(true);
+			}
+
+			oPricingSection = this.byId("idPricingOffer");
+			if (oPricingSection) {
+				oPricingSection.setVisible(true);
+			}
+			var offerFragment = new OfferProducts();
+			if (!sProductPath) {
+				sProductPath = oEvent.getSource().getBindingContext("fastData").getPath();
+			}
+			this.pPath = sProductPath; //todo is this needed, should we work with selectedProductPath
+
+			//keep selected product
+			var oDefaultModel = Services.getDefaultModel();
+			if (oDefaultModel) {
+				var oProduct = oDefaultModel.getProperty(sProductPath);
+			}
+			if (oProduct) {
+				var sProductName = oDefaultModel.getProperty("/" + oProduct.SKU.__ref).PRODUCTPACKNAME;
+				Services.setSelectedProductPath(sProductPath);
+				if (sProductName) {
+					Services.setSelectedProductName(sProductName);
+				}
+				Services.setSelectedProductID(oProduct.ProductCode);
+			}
+
+			//Product selected
+			offerFragment.onProductSelected(this, sProductPath);
+
+		},
+
+		//Approval button on Finacial page
+		onApprovalsPress: function (oEvent) {
+
+			//get selected offer
+			var sOfferID = Services.getSelectedOfferID();
+			var that = this;
+
+			//Check if offer is selected
+			if (sOfferID) {
+
+				//check the offer status
+				$.when(Services.checkOfferStatus()).done(function (oData) {
+
+					//Cancel of appproval is only possible when offer status = "Awaiting Approval"
+					var bCancelEnabled = false;
+					var bSendApprovalEnabled = false;
+
+					if (oData.STATUS === "Awaiting Approval") {
+						bCancelEnabled = true;
+					}
+
+					if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "Delivery Ongoing") {
+						bSendApprovalEnabled = true;
+					}
+
+					//load additional approval data
+					$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
+
+						//show dialog
+						if (!that._oDialogApproval) {
+							that._oDialogApproval = new sap.m.Dialog("handleApprovalDialog", {
+								//title: bundle.getText("Approvals"),
+								resizable: true, //user is able to resize
+								stretch: true, //dialog is as big as possible
+								buttons: [
+									new sap.m.Button({
+										id: "btnSendApproval",
+										text: bundle.getText("SendApprReq"),
+										tap: [that.onSendApprovals, that],
+										enabled: bSendApprovalEnabled
+									}),
+									new sap.m.Button({
+										id: "btnCancelApproval",
+										text: bundle.getText("CancelApprReq"),
+										tap: [that.onCancelApprovals, that],
+										enabled: bCancelEnabled
+									}),
+									new sap.m.Button("btnCloseApproval", {
+										id: "btnCloseApproval",
+										text: bundle.getText("Close"),
+										tap: [that.onCloseApprovalsDialog, that]
+									})
+								],
+								//content with all fields that need to be filled
+								content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.HandleApprovals", that)]
+									// End of content of dialog
+							});
+						} else {
+							//if dialog already build...
+							sap.ui.getCore().byId("btnCancelApproval").setEnabled(bCancelEnabled);
+							sap.ui.getCore().byId("btnSendApproval").setEnabled(bSendApprovalEnabled);
+						}
+						that.getView().addDependent(that._oDialogApproval);
+						that._oDialogApproval.open();
+
+						//Set grouping Mandatory or Optional
+						var mGroupFunctions = {
+							MandatoryOptional: function (oContext) {
+								var sApproverTypeSection = oContext.getProperty("ApproverTypeSection");
+								var key, text;
+
+								//check for approvertypes that indicate they are mandatory approvers
+								if (sApproverTypeSection === 1) {
+									//Mandatory
+									key = "Mandatory";
+									text = "Mandatory Approvals";
+								} else {
+									key = "Optional";
+									text = "Optional Approvals";
+								}
+								return {
+									key: key,
+									text: text
+								};
+							}
+						};
+
+						//Get table of approvals
+						var oTable = sap.ui.getCore().byId("idMandatoryTable"),
+							oBinding = oTable.getBinding("items"),
+							sPath,
+							bDescending,
+							vGroup,
+							aGroups = [];
+
+						//Actual grouping
+						sPath = "MandatoryOptional";
+						bDescending = false;
+						vGroup = mGroupFunctions[sPath];
+						aGroups.push(new Sorter(sPath, bDescending, vGroup));
+						// apply the selected group settings
+						oBinding.sort(aGroups);
+
+					});
+				});
+			} else {
+
+				//message saying you have to select an offer first
+				sap.m.MessageBox.warning("First select an offer to approve.", {});
+
+			}
+
+		},
+
+		//Text input field on approval
+		handleLiveChange: function (oEvent) {
+			var oTextArea = oEvent.getSource(),
+				iValueLength = oTextArea.getValue().length,
+				iMaxLength = oTextArea.getMaxLength(),
+				sState = iValueLength > iMaxLength ? "Warning" : "None";
+
+			oTextArea.setValueState(sState);
+		},
+
+		//send approvals = save to database & change status
+		onSendApprovals: function (oEvent) {
+
+			//that is this
+			var that = this;
+
+			//Keep track that we pressed Send Approval button
+			Services.setSendApprovalsPressed(true);
+
+			//Approval Status + Offer Status
+			var sApprovalStatus = "Processing"; //workflow will change this status to "Notification Sent"
+			//var sOfferStatus = "Awaiting Approval";
+			var sOfferStatus = "Offer Created";
+
+			//save Approvals (&status) + change offer status
+			$.when(Services.saveApprovals(sApprovalStatus, sOfferStatus)).done(function (oDataTenderOffer) {
+
+				var sOfferID = Services.getSelectedOfferID();
+
+				//when saving is finished
+				$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
+					//load data again
+					Services.getDefaultModel().refresh(true);
+				});
+
+				//approvals are send again so on offer level we let offer now approvals are send.
+				//used for the conditional re-approvals 
+				//Description: https://trello.com/c/np1g69g7
+				var oOffer = Services.getLoadedOffer(sOfferID);
+				var iApprovals_sent = oOffer.APPROVALS_SENT + 1;
+				Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+					//Error during save
+					Services.showErrorMessage(oError, "Background saving for approvals sent field");
+				});
+
+			});
+
+		},
+
+		//cancel approvals = save to database & change status
+		onCancelApprovals: function (oEvent) {
+
+			//Keep track that we pressed Cancel Approval button
+			Services.setCancelApprovalsPressed(true);
+
+			//Approval Status + Offer Status
+			var sApprovalStatus = "Cancelling";
+			var sOfferStatus = "Offer Created";
+
+			//save Approvals (&status) + change offer status
+			$.when(Services.saveApprovals(sApprovalStatus, sOfferStatus)).done(function (oDataTenderOffer) {
+
+				var sOfferID = Services.getSelectedOfferID();
+				//when saving is finished
+				$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
+					//load data again
+					Services.getDefaultModel().refresh(true);
+				});
+
+			});
+
+		},
+
+		//When you cancel the handle approvals dialog
+		onCloseApprovalsDialog: function (oEvent) {
+
+			//clear indication that a button is pressed
+			Services.clearApprovalButtonsPressed();
+
+			//close the dialog
+			this._oDialogApproval.close();
+
+		},
+
+		//Refresh
+		onRefreshApprovalsPress: function (oEvent) {
+
+			var sOfferID = Services.getSelectedOfferID();
+			//when saving is finished
+			$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
+				//load data again
+			});
+
+		},
+
+		//Filter for history table
+		onHistoryFilterCheck: function (oEvent) {
+			var offerFragment = new OfferProducts();
+			var productPath = Services.getSelectedProductPath();
+			this.pPath = productPath;
+			offerFragment.onHistoryFilterCheck(this);
+		},
+
+		//BASIC INFORMATION TAB
+		//---------------------
+		//delete method for award criteria table on basic information tab (edit mode)
+		handleDelete: function (oEvent) {
+			var selectedRow = oEvent.getSource().getParent();
+			selectedRow.setVisible(false);
+		},
+
+		//?
+		setInstituteList: function (oSelection) {
+			this.byId("idInstituteName").setValue("");
+		},
+
+		//Reset institute name
+		resetInstituteName: function (oEvent) {
+			this.byId("idInstituteName").setValue("...Select Institute");
+		},
+
+		//save basic information (tender info)
+		_onSaveBasicInfo: function (oEvent) {
+
+			var that = this;
+
+			//receive Basic info from screen to save as tender
+			var oSaveBasicInfo = {};
+			oSaveBasicInfo.TenderID = this.byId("idTenderID").getValue();
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//TenderID="" means its new tender
+			if (oSaveBasicInfo.TenderID === "") {
+
+				//CREATION MODUS
+
+				//call seperate method for adding new tender
+				this.onAddBasicInformation(oEvent);
+
+			} else {
+
+				//CHANGE MODUS
+				//get tender from default model 
+				var oTender = Services.getFastAppDataModel().getProperty("/EditTender");
+
+				oSaveBasicInfo.TenderName = this.byId("idTenderName").getValue();
+				oSaveBasicInfo.CountryCode = this._country;
+				oSaveBasicInfo.Active = 1;
+
+				if (this.getView().byId("idhdrInstID").getText()) {
+					oSaveBasicInfo.InstituteID = this.getView().byId("idhdrInstID").getText();
+				} else {
+					oSaveBasicInfo.InstituteID = this.getView().byId("idInstituteID").getValue();
+				}
+
+				oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
+				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
+				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
+				oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
+
+				oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
+				oSaveBasicInfo.BidDueDate = (oTender.BidDueDate) ? oTender.BidDueDate : null;
+				oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
+				oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
+
+				oSaveBasicInfo.TenderStatus = this.byId("idTenderStatus").getSelectedKey();
+
+				/* Mexico */
+				oSaveBasicInfo.SALES_TYPE_ID = this.byId("idSelectSalesTypeEdit").getSelectedKey();
+				oSaveBasicInfo.TENDER_ORIGIN_ID = this.byId("idSelectTenderOriginEdit").getSelectedKey();
+				oSaveBasicInfo.CONTRACT_TYPE_ID = this.byId("idSelectContractTypeEdit").getSelectedKey();
+
+				if (!this.byId("idContractLength").getValue()) {
+					oSaveBasicInfo.ContractLength = 12;
+				} else {
+					oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
+				}
+				if (!this.byId("idContractExtenseion").getValue()) {
+					oSaveBasicInfo.ContractExtenseion = 0;
+				} else {
+					oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
+				}
+
+				//TEMP TenderId fix
+				oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
+				//oSaveBasicInfo.TenderNo = Services.getFastAppDataModel().getProperty("/Tender").TenderNo; //oSaveBasicInfo.TenderID.split("-")[2];
+				oSaveBasicInfo.TenderNo = Services.getDefaultModel().getProperty(Services.getSelectedTenderPath()).TenderNo;
+
+				//Check if data is correct
+				if (Services.checkBasicInfo(oSaveBasicInfo)) {
+
+					//if everything is ok, do the saving
+					var that = this;
+					var path = oEvent.getSource().getBindingContext("fastData").getPath();
+					var oRefre = oEvent.getSource();
+
+					//convert Tender data for saving
+					var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
+
+					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(function (oResult) {
+
+						//after saving we reload tender info even if it is already loaded
+						var sTenderID = Services.getSelectedTenderID();
+						var bLoadedCheck = false;
+
+						//load tender data again so refresh is done
+						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+							//bind tender again
+							var oTender = Services.getLoadedTender();
+							oFastAppDataModel.setProperty("/EditTender/", oTender);
+
+							//everything is saved and loaded correctly for the new tender
+							//clear all, they will be set again when route matched on detail
+							Services.setSelectedOfferID("");
+							Services.setSelectedOfferPath("");
+							Services.setSelectedProductID("");
+							Services.setSelectedProductName("");
+							Services.setSelectedProductPath("");
+						});
+
+					}).catch(function (oError) {
+						if (oError === "checkFailed") {
+							//message already provided in check
+						}
+					});
+				}
+
+			}
+
+		},
+
+		//Preparing information to create a new tender
+		onAddBasicInformation: function (oEvent) {
+
+			var that = this;
+
+			var oSaveBasicInfo = {};
+			this.getView().byId("tenderId").setText(Services.getSelectedTenderID());
+
+			//TODO use this binding for every field, now its only filled for dates 
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oTender = oFastAppDataModel.getProperty("/EditTender");
+
+			this.getView().byId("idhdrInstID").setText(this.byId("idInstituteID").getValue());
+			this.getView().byId("idHdrTndrNme").setText(this.byId("idTenderName").getValue());
+			oSaveBasicInfo.TenderID = Services.getSelectedTenderID();
+			oSaveBasicInfo.TenderName = this.byId("idTenderName").getValue();
+			oSaveBasicInfo.CountryCode = this._country;
+			oSaveBasicInfo.Active = 1;
+			if (this.getView().byId("idhdrInstID").getText()) {
+				oSaveBasicInfo.InstituteID = this.getView().byId("idhdrInstID").getText();
+			} else {
+				oSaveBasicInfo.InstituteID = this.getView().byId("idInstituteID").getValue();
+			}
+			oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
+			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
+			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
+			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
+
+			oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
+			oSaveBasicInfo.BidDueDate = (oTender.BidDueDate) ? oTender.BidDueDate : null;
+			oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
+			oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
+
+			oSaveBasicInfo.TenderStatus = "Open";
+			if (!this.byId("idContractLength").getValue()) {
+				oSaveBasicInfo.ContractLength = 12;
+			} else {
+				oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
+			}
+			if (!this.byId("idContractExtenseion").getValue()) {
+				oSaveBasicInfo.ContractExtenseion = 0;
+			} else {
+				oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
+			}
+
+			/* Mexico */
+			oSaveBasicInfo.SALES_TYPE_ID = this.byId("idSelectSalesTypeEdit").getSelectedKey();
+			oSaveBasicInfo.TENDER_ORIGIN_ID = this.byId("idSelectTenderOriginEdit").getSelectedKey();
+			oSaveBasicInfo.CONTRACT_TYPE_ID = this.byId("idSelectContractTypeEdit").getSelectedKey();
+
+			//TEMP
+			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
+			oSaveBasicInfo.TenderNo = Services.getNewTenderNo(); //oSaveBasicInfo.TenderID.split("-")[2];
+
+			//check info to save
+			if (Services.checkBasicInfo(oSaveBasicInfo)) {
+
+				//convert Tender data for saving
+				var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
+
+				that.createBasicTenderInfo(oTenderToSave).then(function (oSaveResults) {
+
+					//if save is executed succesfully
+					if (oSaveResults) {
+
+						//Save of tender is executed
+
+						//after saving we reload tender info even if it is already loaded
+						var sTenderID = Services.getSelectedTenderID();
+						var bLoadedCheck = false;
+
+						//load tender data so its in the FastAppData model in the same way as for an existing tender
+						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+							//everything is saved and loaded correctly for the new tender
+							//clear all, they will be set again when route matched on detail
+							Services.setSelectedOfferID("");
+							Services.setSelectedOfferPath("");
+							Services.setSelectedProductID("");
+							Services.setSelectedProductName("");
+							Services.setSelectedProductPath("");
+						});
+
+					}
+
+				}).catch(function (oError) {
+					if (oError === "checkFailed") {
+						//message already provided in check
+					}
+				});
+
+			}
+		},
+
+		//submits changes in batch for the basic information tab
+		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh) {
+
+			//keep track of controller object
+			var that = this;
+
+			//catch all promises in an array
+			let promises = [];
+
+			//get change batch ready to save Tender & Basic info in 1 go
+			var oModel = Services.getDefaultModel(); //new sap.ui.model.odata.ODataModel(Services.getConnectionString());
+
+			//change data
+			/*oTenderToSave.PublicationDate = moment(oTenderToSave.PublicationDate).toDate();
+			oTenderToSave.BidDueDate = moment(oTenderToSave.BidDueDate).toDate();*/
+			oTenderToSave.SubmittedOn = moment().utc().toDate();
+			oTenderToSave.SubmittedBy = UserInfo.getCWID();
+
+			//Award criteria should be saved as well
+			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+
+			//data awardcriteria model
+			var oAwDt = that.byId("idAwrdEdit").getModel("tabModel").getData();
+
+			//check if awardCriteria is valid
+			if (!Services.checkAwardCriteria(aAwardCriteria)) {
+				return Promise.reject(new Error("checkFailed"));
+			}
+
+			//Update tender
+			promises.push(Services.getService('Tender').updateTender(oTenderToSave, "PUT"));
+
+			//loop over the awardcriteria and add them to save array
+			aAwardCriteria.forEach(function (oAwardCriteria, iIndex) {
+
+				//keep award criteria to save
+				var oAwardCriteriaToSave = {
+					TENDERID: that.byId("idTenderID").getValue(),
+					COUNTRYCODE: that._country,
+					Active: 1,
+					AwardCriteria: oAwardCriteria.mAggregations.cells[0].getProperty("value"),
+					Weight: String(oAwardCriteria.mAggregations.cells[1].getProperty("value") / 100),
+					SUBMITTEDON: moment().utc().toDate(),
+					Submittedby: UserInfo.getCWID()
+				};
+
+				//Check that award criteria is complete, everything is filled + make sum of all weight + if we need to delete, add, or change the awardcriteria
+				if (oAwardCriteria.getVisible()) {
+
+					if (oAwDt.Data[iIndex].__metadata !== undefined) {
+
+						//update existing award criteria
+						promises.push(Services.getService('AwardCriteria').updateAwardCriteria(oAwardCriteriaToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Update of AwardCriteria");
+							throw new Error(oError);
+						}));
+
+					} else {
+
+						//save new award criteria
+						promises.push(Services.getService('AwardCriteria').createAwardCriteria(oAwardCriteriaToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Saving of new AwardCriteria");
+							throw new Error(oError);
+						}));
+
+					}
+
+				} else {
+
+					//if award criteria is removed
+					if (oAwDt.Data[iIndex].__metadata !== undefined) {
+
+						//remove award criteria as to be deleted
+						promises.push(Services.getService('AwardCriteria').removeAwardCriteria(oAwardCriteriaToSave));
+
+					}
+
+					oAwardCriteria.setVisible(true);
+
+				}
+
+			});
+
+			//if all promises pushed from the loop have received their answer
+			return Promise.all(promises).then((result) => {
+
+				that.getView().getModel("fastData").refresh(true);
+				oRefresh.getModel("fastData").refresh(true);
+				$.when(Services.loadAllFastAppDataForProdOffer(Services.getSelectedTenderID(), false)).done(function (oDataTenderOffer) {
+					sap.m.MessageBox.success("Tender Updated Successfully", {});
+					that.onEditToggleButtonPress();
+				});
+
+			}).catch(function (oError) {
+				//failed
+				Services.showErrorMessage(oError, "Saving of basic information");
+			});
+
+		},
+
+		//Actual creation of the new tender TODO this should be in the service file
+		createBasicTenderInfo: function (oTenderToSave) {
+
+			//keep track of controller object
+			var that = this;
+
+			//catch all promises in an array
+			let promises = [];
+
+			//get default model
+			var oModel = Services.getDefaultModel(); //new sap.ui.model.odata.ODataModel(Services.getConnectionString());
+
+			//Award criteria should be saved as well
+			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+
+			//check if awardCriteria is valid
+			if (!Services.checkAwardCriteria(aAwardCriteria)) {
+				return Promise.reject(new Error("checkFailed"));
+			}
+
+			//Create tender
+			promises.push(Services.getService('Tender').createTender(oTenderToSave));
+
+			//loop over the awardcriteria and add them to save array
+			aAwardCriteria.forEach(function (oAwardCriteria) {
+
+				//keep award criteria to save
+				var oAwardCriteriaToSave = {
+					TENDERID: Services.getSelectedTenderID(),
+					Active: 1,
+					COUNTRYCODE: that._country,
+					AwardCriteria: oAwardCriteria.mAggregations.cells[0].getProperty("value"),
+					Weight: String(oAwardCriteria.mAggregations.cells[1].getProperty("value") / 100),
+					SUBMITTEDON: moment().utc().toDate(),
+					Submittedby: UserInfo.getCWID()
+				};
+
+				//Check that award criteria is complete, everything is filled + make sum of all weight
+				if (oAwardCriteria.getVisible()) {
+
+					//save award criteria
+					promises.push(Services.getService('AwardCriteria').createAwardCriteria(oAwardCriteriaToSave).catch(function (oError) {
+						//show error message
+						Services.showErrorMessage(oError, "Saving of new AwardCriteria");
+						throw new Error(oError);
+					}));
+
+				} else {
+
+					oAwardCriteria.setVisible(true);
+
+				}
+
+			});
+
+			//if all promises pushed from the loop have received their answer
+			return Promise.all(promises).then((result) => {
+
+				//success
+				sap.m.MessageBox.success("Tender Created Successfully", {});
+
+				var sTenderPath = "/PT_TMTEND('" + Services.getSelectedTenderID() + "')";
+				that.getView().bindElement({
+					path: sTenderPath,
+					parameters: {
+						expand: "Institute"
+					},
+					model: "fastData"
+				});
+
+				//keep created tenderID & path as selected
+				Services.setSelectedTenderID(Services.getSelectedTenderID());
+				Services.setSelectedTenderPath(sTenderPath);
+
+				//move back to display
+				that.onEditToggleButtonPress();
+
+				//clearing all ()
+				Services.clearAllForBasicInfoPage();
+
+			}).catch(function (error) {
+				//failed
+				sap.m.MessageBox.error("Tender Creation failed", {});
+			});
+
+		},
+
+		//when toggled between edit/display mode
+		bindAwardCriteria: function () {
+
+			//keep track of controller object
+			var that = this;
+
+			//get tenderID
+			var TenderID = this.getView().byId("tenderId").getProperty("text"); //TODO this should be Services.getSelectedTenderID();
+
+			//Path for reading the award criteria
+			var sPath = "/PT_TMAWRDCR";
+
+			//model for binding to award table
+			var AwardModel = new sap.ui.model.json.JSONModel();
+
+			//filters
+			var aFilters = [];
+			aFilters.push(new sap.ui.model.Filter("TENDERID", sap.ui.model.FilterOperator.EQ, TenderID));
+			aFilters.push(new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1));
+
+			//reading default model
+			var oModel = this.getOwnerComponent().getModel("fastData");
+			oModel.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					//bind award criteria to model that will be used for binding to award table
+					AwardModel.setData({
+						Data: oData.results
+					});
+					that.getView().setModel(AwardModel, "tabModel");
+
+					//depending 
+					if (that.getView().byId("DetailPage").getShowFooter() === false) {
+						//award table on display mode (basicinformationView.xml)
+						that.byId("awardCriteriaId").setModel(AwardModel, "tabModel");
+					} else {
+						//award table on edit mode (basicinformationEdit.xml)
+						that.byId("idAwrdEdit").setModel(AwardModel, "tabModel");
+					}
+
+				},
+				error: function (oError) {
+					//error message
+					Services.showErrorMessage(oError, "Loading award criteria");
+				}
+			});
+
+		},
+
+		//Adding an award criteria
+		onAddPressAwrd: function (oEvent) {
+			var that = this;
+			var tabLength;
+			var oSlctpge = that.getView().byId("DetailPage").getShowFooter();
+
+			//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
+			var sNewTenderNo = Services.getNewTenderNo();
+			var sTenderPath = Services.getSelectedTenderPath();
+
+			if (sTenderPath === "/PT_TMTEND('1')" || sNewTenderNo) {
+				tabLength = that.byId("idAwrdEdit").getModel("tabModel");
+			} else if (sTenderPath !== "/PT_TMTEND('1')" && oSlctpge === "false") {
+				tabLength = that.byId("awardCriteriaId").getModel("tabModel");
+			} else {
+				tabLength = that.byId("idAwrdEdit").getModel("tabModel");
+			}
+			var tabLengthData = tabLength.getData().Data;
+
+			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+			for (var i = 0; i < aAwardCriteria.length; i++) {
+				tabLengthData[i].AwardCriteria = aAwardCriteria[i].mAggregations.cells[0].getProperty("value");
+				tabLengthData[i].Weight = aAwardCriteria[i].mAggregations.cells[1].getProperty("value") / 100;
+			}
+
+			tabLength.getData().Data.push({
+				TENDERID: "",
+				COUNTRYCODE: that._country,
+				Active: 1,
+				AwardCriteria: "",
+				Weight: 0
+			});
+			tabLength.refresh(true);
+
+		},
+
+		//OFFER PRODUCTS TAB
+		//------------------
+		//click on offer on  "OFFER PRODUCT TAB "
+		onProductOfferItemPress: function (oEvent) {
+
+			//this is that
+			var that = this;
+
+			//FastAppData Model
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get selected offer
+			var sOfferID = Services.getSelectedOfferID();
+
+			//get & keep offerPath
+			//var sOfferPath = oEvent.getSource().getBindingContext("fastAppData").getPath(); //oEvent.getSource().getBindingContext("fastData").getPath();
+			var sOfferPath = Services.getLoadedOfferPath(sOfferID);
+			Services.setSelectedOfferPath(sOfferPath);
+
+			//keep the selected offerID so we have it on the financial offer tab as well
+			//var oOffer = oFastAppDataModel.getProperty(sOfferPath); //before oDefaultModel
+			var oOffer = Services.getLoadedOffer(sOfferID)
+
+			//var sOfferID = oOffer.OfferID;
+			//Services.setSelectedOfferID(sOfferID);
+
+			//if you click on an offer it is available (sometimes it is not availble when you switch between tabs)
+			Services.setSelectedOfferAvailable(true);
+
+			//at this point no product should be selected.
+			Services.setSelectedProductID("");
+			Services.setSelectedProductName("");
+			Services.setSelectedProductPath("");
+
+			//binding for offer details form
+			var oForm = that.byId("offerDetailForm");
+			oForm.bindElement({
+				path: sOfferPath,
+				model: "fastAppData"
+			});
+			oForm.setVisible(true);
+
+			//offerproduct table binding
+			var oTable = that.byId("offerProductId");
+			var sProductPath = sOfferPath + "/Product/results";
+			var oFilter = [new sap.ui.model.Filter("Active", "EQ", 1)];
+			var oSorter = new sap.ui.model.Sorter({
+				path: "SORTER",
+				descending: false
+			});
+			oTable.bindRows({
+				path: sProductPath,
+				model: "fastAppData",
+				filters: oFilter,
+				sorter: oSorter
+			});
+
+		},
+
+		//Delete offer button is clicked
+		onDeleteProductOffer: function (oEvent) {
+
+			var sOfferIDToDelete = Services.getSelectedOfferID();
+			var that = this;
+
+			//do we have an offer selected?
+			if (sOfferIDToDelete) {
+				//check the offer status
+				$.when(Services.checkOfferStatus()).done(function (oData) {
+
+					//Status in which deleting of the offer is not allowed
+					var aStatusNoDelete = [
+						"Awaiting Approval",
+						"Quotation Submitted",
+						"Results Recorded",
+						"Delivery Ongoing"
+					];
+
+					//check if status is allowing delete,
+					if ($.inArray(oData.STATUS, aStatusNoDelete) === -1) {
+						var bStatusNotAllowingDelete = false;
+					} else {
+						var bStatusNotAllowingDelete = true;
+					}
+
+					//no deletion possible
+					if (bStatusNotAllowingDelete) {
+						//go back to display mode				
+						sap.m.MessageBox.warning("Status of offer is not allowing deletion.", {});
+						return;
+					} else {
+
+						Services.saveSoftDeleteOffer().then(function (oResult) {
+
+							//reload all data
+							that.onRefresh();
+
+							//select first offer in left pane
+							that._selectFirstOfferInLeftPane(sOfferIDToDelete);
+
+						});
+
+					}
+
+				});
+
+			} else {
+
+				//go back to display mode				
+				sap.m.MessageBox.warning("No offer selected for deletion.", {});
+				return;
+
+			}
+
+		},
+
+		//Reviewed offer button is clicked
+		//revised offer, when the offer has been lost (on client side) => you expect to be in "Results Recorded" state at that point (but you might directly want to create revised offer, without recording results)
+		onReviewProductOffer: function (oEvent) {
+
+			var sOfferID = Services.getSelectedOfferID();
+			var that = this;
+
+			//keep track from where we are entering
+			Services.setReviewedOfferPressed(true);
+
+			//Selected offerID
+			Services.setSelectedOfferID(sOfferID); //keep selected offerID for later use TODO: find better place to fit this method
+
+			//at this point no product should be selected.
+			Services.setSelectedProductID("");
+			Services.setSelectedProductName("");
+			Services.setSelectedProductPath("");
+
+			//sometimes offer is selected but it is not availble when you switch between tabs)
+			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable();
+			
+			if (sOfferID && bSelectedOfferAvailable) {
+
+				// Now using download link on sharepoint
+				$.when(Services.checkOfferStatus()).done(function (oData) {
+
+					if (
+						oData.STATUS === "Quotation Submitted" ||
+						oData.STATUS === "Results Recorded"
+					) {
+
+						//Show a different view depending on what is
+						that.onEditToggleButtonPress();
+
+						//Review for offer - sOfferID (temp. Text)
+						var sReviewOfferFor = "Creating revised offer for: " + sOfferID;
+						Services.getFastAppDataModel().setProperty("/SelectedOfferID", sReviewOfferFor);
+
+						//OFFER PRODUCTS TAB IS SHOWN
+						that.byId("DetailPage").setSelectedSection(Services.getOfferProductPageSectionID());
+						that.updateExisting = false;
+
+					} else {
+
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted' or in 'Results Recorded'.", {});
+
+					}
+
+				});
+
+			} else {
+
+				sap.m.MessageBox.warning("First select an offer to Revise.", {});
+
+			}
+
+		},
+
+		//continued offer button is pressed
+		//continued offer is typically when you're creating a new offer to the client as continuation of same tender. You typically expect that, by that time, offer should be in "Delivery Ongoing" status BUT, it is possible that delivery information would not be available yet (hence in "Results Recorded") state. It is unlikely, but it is also conceivable results would not have been recorded yet (hence in "Quotation Submitted")
+		onContinuedProductOffer: function (oEvent) {
+
+			var sOfferID = Services.getSelectedOfferID();
+			var that = this;
+
+			//keep track from where we are entering
+			Services.setContinuedOfferPressed(true);
+
+			//Selected offerID
+			Services.setSelectedOfferID(sOfferID); //keep selected offerID for later use TODO: find better place to fit this method
+
+			//at this point no product should be selected.
+			Services.setSelectedProductID("");
+			Services.setSelectedProductName("");
+			Services.setSelectedProductPath("");
+
+			//sometimes offer is selected but it is not availble when you switch between tabs)
+			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable();
+
+			if (sOfferID && bSelectedOfferAvailable) {
+
+				// Now using download link on sharepoint
+				$.when(Services.checkOfferStatus()).done(function (oData) {
+
+					if (
+						oData.STATUS === "Quotation Submitted" ||
+						oData.STATUS === "Results Recorded" ||
+						oData.STATUS === "Delivery Ongoing"
+					) {
+
+						//Show a different view depending on what is
+						that.onEditToggleButtonPress();
+
+						//Review for offer - sOfferID (temp. Text)
+						var sReviewOfferFor = "Creating continued offer for: " + sOfferID;
+						Services.getFastAppDataModel().setProperty("/SelectedOfferID", sReviewOfferFor);
+
+						//OFFER PRODUCTS TAB IS SHOWN
+						that.byId("DetailPage").setSelectedSection(Services.getOfferProductPageSectionID());
+						that.updateExisting = false;
+
+					} else {
+
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'Results Recorded' or 'Delivery Ongoing'.", {});
+
+					}
+
+				});
+
+			} else {
+
+				sap.m.MessageBox.warning("First select an offer to Revise.", {});
+
+			}
+
+		},
+
+		//Saving on Offer product tab
+		_onSaveOfferProduct: function (oEvent) {
+
+			var oFastAppData = Services.getFastAppDataModel();
+			var that = this;
+
+			// open loading indicator (used beceause higher z-index then loading dialog & other dialogs)
+			BusyIndicator.show();
+
+			//OFFER PRODUCTS TAB - SAVE button
+			var bError = false;
+
+			//products to save that are visible in the table
+			var aProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+
+			//TODO: we could do it in the same way we do it for Deliveries, Letters, GroupPurchasing - PUT when loaded, POST when we add, DELETE when PUT becomes DELETE
+			//add products again that were ready to be deleted (they are not visible on EditOffer/product/results)
+			//they should be added again, beceause they still need to be saved (as deleted)
+			var aProductsBefore = Services.getProductsSaveInfo();
+			if (aProductsBefore) {
+				aProductsBefore.forEach(function (oProduct, index) {
+					if (oProduct._sOperation === "DELETE") {
+						aProducts.push(oProduct);
+					}
+				});
+				Services.setProductsSaveInfo(aProducts);
+			}
+
+			//check for mandatory fields
+			if (aProducts) {
+				var aMandatoryFields = Services.getMandatoryFields(Services.getSelectedCountry(), Services.getOfferProductPageSectionID());
+				var aMessages = [];
+				var iMsgCount = 0;
+				var sErroneousFields = "";
+
+				aProducts.forEach(function (oProduct, index) {
+					if (aMandatoryFields.length > 0) {
+						for (var i = 0; i < aMandatoryFields.length; i++) {
+							if (oProduct[aMandatoryFields[i].model] === "" && aMandatoryFields[i].required === true) {
+								bError = true;
+								iMsgCount = iMsgCount + 1;
+
+								if (sErroneousFields === "") {
+									sErroneousFields = that.byId(aMandatoryFields[i].field).getText();
+								} else {
+									sErroneousFields = sErroneousFields + '\n' + that.byId(aMandatoryFields[i].field).getText();
+								}
+							}
+						}
+					}
+
+					if (bError) {
+						var oMessage = {
+							type: 'Error',
+							title: 'Please enter all mandatory fields for product' + ' ' + oProduct.SKU.PRODUCTPACKNAME,
+							description: sErroneousFields,
+							subtitle: oProduct.SKU.PRODUCTPACKNAME,
+							counter: iMsgCount
+						}
+						aMessages.push(oMessage);
+
+						//clear the message count & the field list per product
+						iMsgCount = 0;
+						sErroneousFields = "";
+					}
+
+					bError = false;
+				});
+
+				//show message view
+				if (aMessages.length > 0) {
+					Services.showMessageCompositeView('Error', aMessages, 'Error');
+
+					// close loading that blocks everything
+					BusyIndicator.hide();
+
+					return;
+				}
+
+			}
+
+			//Prepare offer to be saved
+			bError = this.prepSaveProductOffer();
+			if (bError) {
+
+				// close loading that blocks everything
+				BusyIndicator.hide();
+
+				return;
+			}
+
+			//SAVE ALL DATA - Product offer + matching products
+			var sSelectedOfferID = Services.getSelectedOfferID();
+			var sOfferPath = "";
+			if (sSelectedOfferID) {
+				sOfferPath = "/PT_TMOFRS('" + sSelectedOfferID + "')";
+			}
+
+			//TODO merge to financial.js --> & set get on service file instead of passing it on to the methods...
+			var oOfferFragment = new OfferProducts();
+			Services.setFinancialModel(oOfferFragment);
+
+			//$.when(Services.saveProductOfferAll(sOfferPath)).done(function (oSaveResults) {
+			Services.saveProductOfferAll(sOfferPath).then(function (oSaveResults) {
+				//When at least the savProductOffer has succeeded
+				//Load 2 models again with data from database
+				//clear necesarry globals
+				if (oSaveResults.saveProductOffer === true) {
+
+					//refresh the default model (FastData) for the display view
+					Services.getDefaultModel().refresh(true);
+
+					//In this case we might dit some changes in the fastAppData model, we will load all data from the database again
+					//otherwise nextOfferID is f.e still the one that is already created
+					var sTenderID = Services.getSelectedTenderID();
+
+					//we will load tender again after save is done
+					var bLoadedCheck = false;
+
+					$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+						//go back to display view
+						that.onEditToggleButtonPress();
+
+						//this way we can use a seperate layer, adding deleting... and afterords saving
+						var oFastAppDataModel = Services.getFastAppDataModel();
+
+						oFastAppDataModel.refresh(true); //get sorting already right so the new offer is at right position
+						that.getView().setModel(oFastAppDataModel, "fastAppData");
+
+						//select saved item again in view
+						if (oSaveResults.saveProductOfferID !== "") {
+
+							//set selected offer
+							Services.setSelectedOfferID(oSaveResults.saveProductOfferID);
+
+							//refresh tenders master table (left pane)
+							Services.refreshTendersMasterTable(sTenderID);
+
+							//Set selected offer in left pane
+							that._selectOfferInLeftPane(oSaveResults.saveProductOfferID);
+
+						}
+
+						// close loading that blocks everything
+						BusyIndicator.hide();
+
+					});
+
+				}
+
+			}).catch(function (oError) {
+				// close loading that blocks everything
+				BusyIndicator.hide();
+			});
+
+		},
+
+		//decline all products underneath the offer with 1 reason
+		onDeclineAllProductsForOffer: function (oEvent) {
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			//show dialog
+			if (!that._oDialogDeclineProducts) {
+				that._oDialogDeclineProducts = new sap.m.Dialog("handleDeclineDialog", {
+					title: bundle.getText("DeclineProduct"),
+					resizable: true, //user is able to resize
+					stretch: false, //dialog is as big as possible
+					contentHeight: '30%',
+					contentWidth: '30%',
+					buttons: [
+						new sap.m.Button({
+							id: "btnDeclineProducts",
+							text: bundle.getText("DeclineProduct"),
+							tap: [that.onDeclineAllProductsForOfferConfirm, that]
+
+						}),
+						new sap.m.Button({
+							id: "btnCloseDeclineProducts",
+							text: bundle.getText("Close"),
+							tap: [that.onCloseProductsDeclineDialog, that]
+						})
+
+					],
+					//content with all fields that need to be filled
+					content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.DeclineAllProductsForOffer", that)]
+						// End of content of dialog
+				});
+			}
+
+			//boolean for enabling decline button
+			var bEnabled = false;
+			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 0) {
+				bEnabled = true;
+			} else {
+				bEnabled = false;
+			}
+			sap.ui.getCore().byId("btnDeclineProducts").setEnabled(bEnabled);
+
+			//set as dependent so we have binding available
+			that.getView().addDependent(that._oDialogDeclineProducts);
+			that._oDialogDeclineProducts.open();
+		},
+
+		//decline all ProductsForOffer
+		onDeclineAllProductsForOfferConfirm: function (oEvent) {
+
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get products that are loaded
+			var aProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results/");
+			var sComment = sap.ui.getCore().byId("reasonForDeclineId").getValue();
+
+			//loop at all the products and change the comment & decline
+			aProducts.forEach(function (oProduct, iIndex) {
+				oProduct.ActiveProduct = 2; //=decline
+				oProduct.Comment = sComment; //copy comment
+			});
+
+			//set changed products
+			oFastAppDataModel.setProperty("/EditOffer/Product/results/", aProducts);
+
+			//close dialog
+			that._oDialogDeclineProducts.close();
+
+		},
+
+		//close dialog for declining products
+		onCloseProductsDeclineDialog: function (oEvent) {
+			var that = this;
+			//close dialog
+			that._oDialogDeclineProducts.close();
+		},
+
+		//show dialog for adding a Product offer: OfferProductsEdit.fragment.xml
+		onAddProductForOffer: function (oEvent) {
+
+			//distributor id is set on page form and should be used (instead of requested) when adding product
+			//payment terms and inco terns should set based on information in view providing product
+
+			//data declarations
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var that = this;
+			Services.setSelectedDistributorID(that.getView().byId("idDistributorName").getSelectedKey());
+			//clear fields
+			oFastAppDataModel.setProperty("/ProductCollection", null);
+			//oFastAppDataModel.setProperty("/ProductCollectionOutput", null);
+
+			//if dialog exists destroy it first, so we always set dialog buttons in correct state
+			if (that._oDialog) {
+				that._oDialog.destroy();
+			}
+
+			that._oDialog = new sap.m.Dialog("addProductDialog", {
+				title: bundle.getText("Addprod"),
+				stretch: true,
+				buttons: [new sap.m.Button({
+						id: "idAddProductsBtn",
+						text: bundle.getText("Apply"),
+						enabled: true,
+						tap: [that.onAddProductDialogConfirm, that]
+
+					})
+
+					/*cancel is no longer possible, that should be done on offer screen,
+					new sap.m.Button({
+						text: bundle.getText("Cancel"),
+						tap: [that.onCancelAddProductSearch, that]
+
+					})
+					*/
+
+				],
+				//content with all fields that need to be filled
+				content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.SelectBrandProductList", that)]
+					// End of content of dialog
+			});
+
+			that.getView().addDependent(that._oDialog);
+			that._oDialog.open();
+
+			//Clear all fields
+			var oBrandList = sap.ui.getCore().byId("idBrandList");
+			var aBrandTokens = [];
+			oBrandList.setTokens(aBrandTokens);
+
+		},
+
+		//when deleting a product
+		onDeleteProductForOffer: function () {
+
+			//Deleting products
+			var oTableProducts = this.byId("editofferProductId");
+			var aProductTableRows = oTableProducts.getRows();
+			var aIndexSelectedRows = oTableProducts.getSelectedIndices();
+
+			var aProductsToRemove = [];
+			var oProductToRemove = {};
+			var aExistingProducts = Services.getProductsSaveInfo();
+
+			//already deleted products are not visible in table, so indexselectedrows should ignore these products
+			//but they still need to be available for saving
+			var aExistingProductsWhithoutAlreadyDeleted = aExistingProducts.filter(function (oCurrent) {
+				return oCurrent._sOperation !== 'DELETE';
+			});
+
+			//loop at selected rows
+			aIndexSelectedRows.forEach(function (iSelectedIndex, iIndex) {
+
+				if (aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex]) {
+
+					//Add selected products so they can be removed from the database
+					oProductToRemove = {};
+					oProductToRemove.ProductCode = aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex].ProductCode;
+					aProductsToRemove.push(oProductToRemove);
+
+				}
+
+			});
+
+			//remove products
+			Services.removeProductsSaveInfo(aProductsToRemove);
+
+			//no selection anymore
+			oTableProducts.clearSelection();
+
+		},
+
+		//OFFER PRODUCTS - TENDER OFFER - CREATE OFFER BUTTON 
+		onCreateProductOffer: function (oEvent) {
+
+			//keep track from where we are entering 
+			Services.setNewOfferPressed(true);
+
+			//clear selected offer
+			Services.setSelectedOfferID("");
+			Services.setSelectedOfferPath("");
+
+			//show different view
+			this.onEditToggleButtonPress();
+
+			//beceause onEditToggleButtonPress button has bound the current offer to the table
+			//these fields should be cleared, and refilled by the user
+			this.byId("idDistributorName").setValue();
+			this.byId("idSellingCompany").setValue();
+			this.byId("idintrDueDte").setValue();
+			this.byId("idWhleSle").setValue();
+
+			//at this point no product should be selected.
+			Services.setSelectedProductID("");
+			Services.setSelectedProductName("");
+			Services.setSelectedProductPath("");
+
+			//But show text that we are creating a new offer. (temp. Text)
+			var sNewOfferTemp = "Creating a new offer ";
+			Services.getFastAppDataModel().setProperty("/SelectedOfferID", sNewOfferTemp);
+
+			//OFFER PRODUCTS TAB is shown
+			this.byId("DetailPage").setSelectedSection(Services.getOfferProductPageSectionID());
+
+			//TODO should also clear products table
+			this.updateExisting = false;
+
+		},
+
+		//When in edit mode button to add a product is clicked - Offer products - Offerproductsedit.fragment
+		onAddProductDialogConfirm: function (oEvent) {
+
+			//data declarations
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var that = this;
+
+			//add productpack sku after product is added to the fastappdatamodel
+			//otherwise the structure of the object is not correct to use in the save
+			//these are not saved to the database (not existing in PT_TMOFPR) but still displayed in the product table in edit mode
+			//so we need the binding seperatly for the newly added ones
+			//SKU so name is displayed in the page
+
+			//products with newly added product included
+			var sPath = "/EditOffer/Product/results";
+			var aProductsAfterAdd = oFastAppDataModel.getProperty(sPath);
+
+			if (aProductsAfterAdd) {
+				$.when(Services.convProductsForBinding(aProductsAfterAdd)).done(function (aProductsForBinding) {
+
+					//Bind the product objects (including the newly added & extended product)
+					oFastAppDataModel.setProperty(sPath, aProductsForBinding);
+
+					//close the dialog
+					that._oDialog.close();
+
+					//sort again by refresh items binding
+					var oEditOfferProductTable = that.getView().byId("editofferProductId");
+					if (oEditOfferProductTable) {
+						//refresh table with new items or existing
+						if (oEditOfferProductTable.getBinding("items"))
+							oEditOfferProductTable.getBinding("items").refresh(true);
+						else {
+							oEditOfferProductTable.getBinding().refresh(true);
+						}
+					}
+				});
+			} else {
+				//close the dialog
+				that._oDialog.close();
+			}
+		},
+
+		//OFFER PRODUCTS SAVE is clicked
+		prepSaveProductOffer: function () {
+
+			//get fast app data model
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+
+			//check on mandatory fields
+			if (
+				//this.byId("idDistributorName").getSelectedKey() === "" ||
+				//Services.getSelectedDistributorID() === "" ||
+				oFastAppDataModel.getProperty("/EditOffer/DistributorID") === "" ||
+				this.byId("idintrDueDte").getValue() === "" ||
+				this.byId("idSellingCompany").getSelectedKey() === "" ||
+				this.byId("idWhleSle").getSelectedItem().getKey() === "" ||
+				//new offer date only exists in continued or reviewed offer - but in this case it is a mandatory field
+				(
+					(Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed()) && (this.byId("idNewOfferDate").getValue() === "")
+				)
+			) {
+				sap.m.MessageBox.error("Please enter all the mandatory fields.");
+				return true;
+			}
+
+			//keep the selected distributor ID
+			Services.setSelectedDistributorID(this.byId("idDistributorName").getSelectedKey());
+
+			//Varriable ready
+			var oOfferSaveInfo = {};
+			var that = this;
+
+			//In edit mode, the offer is available, so we should take that offerID to do the saving
+			if (Services.getEditPressed()) {
+				var sOfferID = Services.getSelectedOfferID();
+				var TenderOfferNo = Services.getSelectedTenderOfferNo();
+				var RevisedOfferNo = Services.getSelectedRevisedOfferNo();
+				var ContinuedOfferNo = Services.getSelectedContinuedOfferNo();
+			} else {
+				//When the offer is not yet available/existing in the database: get next offer ID
+				var sNextOfferID = Services.getNextOfferID();
+
+				//Get new offerID
+				var Tenderoff = Services.getSelectedTenderID();
+				var Sellingoff = that.byId("idSellingCompany").getSelectedKey(); //NILS_CHECK: that.byId("idSellingCompany").getValue();
+				if (((!Services.getReviewedOfferPressed() && !Services.getContinuedOfferPressed()) || Services.getClonePressed())) {
+					var sOfferID = Tenderoff + "-" + sNextOfferID;
+					var TenderOfferNo = sNextOfferID;
+					var ContinuedOfferNo = 0;
+					var RevisedOfferNo = 0;
+				} else {
+					var TenderOfferNo = Services.getSelectedTenderOfferNo();
+					if (Services.getContinuedOfferPressed()) {
+						var ContinuedOfferNo = Services.getNextContinuedOfferNo();
+						var sOfferID = Tenderoff + "-" + TenderOfferNo + "-C" + ContinuedOfferNo;
+						var RevisedOfferNo = 0;
+					}
+					if (Services.getReviewedOfferPressed()) {
+						var RevisedOfferNo = Services.getNextRevisedOfferNo();
+						sOfferID = Tenderoff + "-" + TenderOfferNo + "-R" + RevisedOfferNo;
+						var ContinuedOfferNo = 0;
+					}
+
+				}
+
+				//display the new offer id that will be created (don't set as selected yet?)
+				Services.getFastAppDataModel().setProperty("/SelectedOfferID", sOfferID);
+
+			}
+
+			oOfferSaveInfo.OfferID = sOfferID;
+
+			//Fill all data needed for the save of the new product for the offer
+			oOfferSaveInfo.TenderID = Services.getSelectedTenderID();
+			oOfferSaveInfo.CountryCode = that._country;
+			oOfferSaveInfo.TenderOfferNo = TenderOfferNo;
+			oOfferSaveInfo.RevisedOfferNo = RevisedOfferNo;
+			oOfferSaveInfo.ActiveOffer = "1"; //Tenderoffer count for active record
+
+			//Creation Date
+			oOfferSaveInfo.CreationDate = moment().utc().toDate(); //Formatter.saveDateTime(Services.getDateToday());
+
+			oOfferSaveInfo.SubmissionDate = null;
+			oOfferSaveInfo.SubmittedOn = moment().utc().toDate();
+			oOfferSaveInfo.SubmittedBy = UserInfo.getCWID();
+			oOfferSaveInfo.Active = 1;
+
+			//get the distributorID
+			oOfferSaveInfo.DistributorID = Services.getSelectedDistributorID();
+
+			// oOfferSaveInfo.InternalBidDueDate = moment(Formatter.saveDateTime(that.byId("idintrDueDte").getValue())).utc().toDate(); //Formatter.saveDateTime(that.byId("idintrDueDte").getValue());
+			oOfferSaveInfo.InternalBidDueDate = oFastAppDataModel.getProperty("/EditOffer/InternalBidDueDate");
+			oOfferSaveInfo.SellingCompany = that.byId("idSellingCompany").getSelectedKey(); //NILS_CHECK:that.byId("idSellingCompany").getValue();
+
+			oOfferSaveInfo.ProductCount = "3"; //No. of products in product table
+			oOfferSaveInfo.Currency = oFastAppDataModel.getProperty("/EditOffer/Currency");
+			oOfferSaveInfo.ManualSaveStatus = "Yes";
+			oOfferSaveInfo.WholesaleOffer = that.byId("idWhleSle").getSelectedItem().getKey();
+			//oOfferSaveInfo.Comment = that.byId("idComment").getValue();
+			oOfferSaveInfo.OfferRevisionSplitNo = "0";
+			
+			if(oOffer){
+				oOfferSaveInfo.FOCType = oOffer.FOCType;
+				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = oOffer.DEFAULT_FOC_ABS_PCT;
+			}else{
+				oOfferSaveInfo.FOCType = "";
+				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
+			}
+			
+			if (!Services.getNewOfferPressed() && (Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed() || Number(
+					oFastAppDataModel.getProperty("/EditOffer/RevisedOfferNo")) !== 0 || Number(oFastAppDataModel.getProperty(
+					"/EditOffer/ContinuationOfferNo") !== 0))) {
+
+				oOfferSaveInfo.NewOfferDueDate = oFastAppDataModel.getProperty("/EditOffer/NewOfferDueDate");
+
+			} else {
+				oOfferSaveInfo.NewOfferDueDate = moment().utc().toDate(); //Formatter.saveDateTime(Services.getDateToday());
+			}
+			oOfferSaveInfo.ContinuationOfferNo = ContinuedOfferNo;
+			oOfferSaveInfo.APPROVALS_SENT = 0;
+
+			/* 13/02/2020 - Offer products check on internal due date */
+			if (oFastAppDataModel.oData.Tender.BidDueDate != null) {
+				var bidDueDate = oFastAppDataModel.oData.Tender.BidDueDate;
+			}
+
+			//are we in Continued or Revised offer (edit or creation) yes/no
+			var bContinuedOrRevised = !Services.getNewOfferPressed() && (
+				Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed() || oFastAppDataModel.getProperty(
+					"/EditOffer/RevisedOfferNo") !== 0 || oFastAppDataModel.getProperty("/EditOffer/ContinuationOfferNo") !== 0
+			);
+
+			//check if we are in Revised/Continued offer or we are creating a new offer
+			if (bContinuedOrRevised) {
+				//revised offer or continued offer (creation modus or edit modus)
+				var checkDueDate = oOfferSaveInfo.NewOfferDueDate;
+			} else {
+				//creating a new offer or changing an existing offer that is not revised or continued
+				var checkDueDate = bidDueDate;
+			}
+
+			//check if internal date is not after due date
+			if (moment(oOfferSaveInfo.InternalBidDueDate).isAfter(checkDueDate)) {
+				sap.m.MessageBox.error(
+					"Internal due date can not be after offer due date. Or in case of Reviewed, continued offer, after new offer due date");
+				return true;
+			}
+
+			//keep Offer info, that will be saved later on.
+			Services.setOfferSaveInfo(oOfferSaveInfo);
+
+			//bind to form
+			return false;
+		},
+
+		//if a product is selected in the product input list
+		onSelectionChangeProductListInput: function (oEvt) {
+
+			var oList = oEvt.getSource();
+			var oLabel = sap.ui.getCore().byId("idFilterLabelInput");
+			var oInfoToolbar = sap.ui.getCore().byId("idInfoToolbarInput");
+
+			// With the 'getSelectedContexts' function you can access the context paths
+			// of all list items that have been selected, regardless of any current
+			// filter on the aggregation binding.
+			var aContexts = oList.getSelectedContexts(true);
+
+			// update UI
+			var bSelected = (aContexts && aContexts.length > 0);
+			var sText = (bSelected) ? aContexts.length + " selected" : null;
+			oInfoToolbar.setVisible(bSelected);
+			oLabel.setText(sText);
+
+		},
+
+		//if a product is selected in the product input list
+		onSelectionChangeProductListOutput: function (oEvt) {
+
+			var oList = oEvt.getSource();
+			var oLabel = sap.ui.getCore().byId("idFilterLabelOutput");
+			var oInfoToolbar = sap.ui.getCore().byId("idInfoToolbarOutput");
+			// With the 'getSelectedContexts' function you can access the context paths
+			// of all list items that have been selected, regardless of any current
+			// filter on the aggregation binding.
+			var aContexts = oList.getSelectedContexts(true);
+
+			// update UI
+			var bSelected = (aContexts && aContexts.length > 0);
+			var sText = (bSelected) ? aContexts.length + " selected" : null;
+			oInfoToolbar.setVisible(bSelected);
+			oLabel.setText(sText);
+
+		},
+
+		//Add product to output list
+		onPressAddProductToOutputList: function (oEvent) {
+
+			//get input & output list for products
+			var that = this;
+			var oListInput = sap.ui.getCore().byId("idListProductsInput");
+			var oListOutput = sap.ui.getCore().byId("idListProductsOutput");
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sPathProducts = "/EditOffer/Product/results/";
+			var aProducts = oFastAppDataModel.getProperty(sPathProducts);
+			var bExisting = false;
+			var oInfoToolbar = sap.ui.getCore().byId("idInfoToolbarInput");
+			//var oButtonAddSelected = sap.ui.getCore().byId("idAddProductsBtn");
+
+			// With the 'getSelectedContexts' function you can access the context paths
+			// of all list items that have been selected, regardless of any current
+			// filter on the aggregation binding.
+			var aContexts = oListInput.getSelectedContexts(true);
+
+			//In edit mode, the offer is available, so we should take that offerID to do the saving
+			if (Services.getEditPressed()) {
+				var sOfferID = Services.getSelectedOfferID();
+			} else {
+				//When the offer is not yet available/existing in the database: create the offer ID
+				var sNextOfferID = Services.getNextOfferID();
+				//TenderID
+				var sTenderID = that.getView().byId("tenderId").getText();
+				//Selling company
+				var sSellingCompanyID = that.byId("idSellingCompany").getSelectedKey(); //NILS_CHECK: that.byId("idSellingCompany").getValue();
+				//Product ID 
+				if ((!Services.getReviewedOfferPressed() && !Services.getContinuedOfferPressed()) || Services.getClonePressed()) {
+					var sOfferID = sTenderID + "-" + sNextOfferID;
+				} else {
+					var TenderOfferNo = Services.getSelectedTenderOfferNo();
+					if (Services.getContinuedOfferPressed()) {
+						var ContinuedOfferNo = Services.getNextContinuedOfferNo();
+						var sOfferID = sTenderID + "-" + TenderOfferNo + "-C" + ContinuedOfferNo;
+					}
+					if (Services.getReviewedOfferPressed()) {
+						var RevisedOfferNo = Services.getNextRevisedOfferNo();
+						var sOfferID = sTenderID + "-" + TenderOfferNo + "-R" + RevisedOfferNo;
+					}
+				}
+			}
+
+			//loop over the selected products from input list
+			aContexts.forEach(function (oContext, index) {
+
+				//first selected product
+				var oProduct = oFastAppDataModel.getProperty(oContext.sPath);
+
+				//Are there already products added? if yes we should check if this is not a double
+				if (aProducts) {
+					var iIndex = aProducts.findIndex(x => x.ProductCode === oProduct.PRODUCT_ID);
+					if (iIndex === -1) {
+						//not found
+						bExisting = false;
+					} else {
+						bExisting = true;
+					}
+				} else {
+					//no products yet
+					aProducts = [];
+					bExisting = false;
+				}
+
+				//product can only be added once
+				if (bExisting) {
+
+					//product already exists
+					sap.m.MessageBox.error("Product(" + oProduct.PRODUCT_NAME + ") is already added.");
+
+				} else {
+
+					//make an empty array to add the product
+					var oAddProduct = {};
+
+					//filling the data available
+					oAddProduct.TenderID = Services.getSelectedTenderID(); //that.getView().byId("tenderId").getProperty("text");
+					oAddProduct.OfferID = sOfferID;
+					oAddProduct.CountryCode = oProduct.COUNTRY_CODE;
+					oAddProduct.SubmittedOn = moment().utc().toDate();
+					oAddProduct.SubmittedBy = UserInfo.getCWID();
+					oAddProduct.Active = 1;
+					oAddProduct.ProductCode = oProduct.PRODUCT_ID;
+					oAddProduct.Reference = "";
+					oAddProduct.AlternateOfferYN = "No";
+					oAddProduct.RequestedVolume = "";
+					oAddProduct.UnitPerPack = "Unit";
+					oAddProduct.SampleYN = "No";
+					oAddProduct.SampleQuantity = 0;
+					oAddProduct.DocumentsRequired = "No";
+					oAddProduct.FirstShipment = "";
+					oAddProduct.NoofLots = "";
+					oAddProduct.IntervalBetweenShipments = "";
+					oAddProduct.NoOfTier = 0;
+					oAddProduct.DiscOrOffer = "";
+					oAddProduct.PaymentTerms = oProduct.PAYMENT_TERMS;
+					oAddProduct.DistributorID = oProduct.DISTRIBUTOR_ID;
+					oAddProduct.SNo = 0;
+					oAddProduct.ActiveProduct = 1;
+					oAddProduct.Comment = "";
+					oAddProduct.INCOTerms = oProduct.INCO_TERMS;
+					oAddProduct.SKU = {
+						PRODUCTPACKNAME: oProduct.PRODUCT_NAME
+					};
+					if (aProducts && aProducts.length) {
+						oAddProduct.SORTER = aProducts.length; //added as last in the list
+					} else {
+						oAddProduct.SORTER = 0; //first product
+					}
+					oAddProduct.DEFAULT_COMMISSION_RATE = oProduct.COMMISSION_RATE; //default comission rate
+					oAddProduct._sOperation = 'POST';
+
+					aProducts.push(oAddProduct);
+
+					//Adding the product to be saved later on + added to FastDataModel for binding
+					//We use POST to indicate that the product does not exist yet in the database
+					//Services.addProductsSaveInfo(oAddProduct, "POST");
+
+					//table binding with the seleced offer
+					Services.addNewProductToFastAppDataModel();
+
+				}
+
+			});
+
+			//sort
+			aProducts = Services.sortByKeyAsc(aProducts, "ApproverTypeSection");
+
+			//add to binding
+			oFastAppDataModel.setProperty(sPathProducts, aProducts);
+
+			//no selection anymore
+			oListInput.removeSelections();
+			oListOutput.removeSelections();
+			oInfoToolbar.setVisible(false);
+			//oButtonAddSelected.setEnabled(true);
+		},
+
+		//Remove product from output list
+		onPressRemoveProductFromOutputList: function (oEvent) {
+
+			var oList = sap.ui.getCore().byId("idListProductsOutput");
+			var oInfoToolbar = sap.ui.getCore().byId("idInfoToolbarOutput");
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sPathProducts = "/EditOffer/Product/results/";
+			var aProducts = oFastAppDataModel.getProperty(sPathProducts);
+			//var oButtonAddSelected = sap.ui.getCore().byId("idAddProductsBtn");
+			var aProductsToRemove = [];
+			var oProductToRemove = {};
+
+			// With the 'getSelectedContexts' function you can access the context paths
+			// of all list items that have been selected, regardless of any current
+			// filter on the aggregation binding.
+			var aContexts = oList.getSelectedContexts(true);
+
+			aContexts.forEach(function (oContext, index) {
+
+				//get selected product
+				var oProduct = oFastAppDataModel.getProperty(oContext.sPath);
+
+				//remove it from the products
+				aProducts.splice(aProducts.indexOf(oProduct), 1);
+
+				//if s_operation is PUT, the product is already existing in back-end
+				oProductToRemove = {};
+				oProductToRemove.ProductCode = oProduct.ProductCode;
+				aProductsToRemove.push(oProductToRemove);
+
+			});
+
+			//remove from binding model
+			oFastAppDataModel.setProperty(sPathProducts, aProducts);
+
+			//remove products to be saved
+			Services.removeProductsSaveInfo(aProductsToRemove);
+
+			//no selection anymore
+			//oList.removeSelections();
+			oInfoToolbar.setVisible(false);
+
+		},
+
+		//move product up
+		moveUp: function () {
+			this.moveSelectedItem("Up");
+		},
+		//move product down
+		moveDown: function () {
+			this.moveSelectedItem("Down");
+		},
+		//move selected item
+		moveSelectedItem: function (sDirection) {
+			var oListOutput = sap.ui.getCore().byId("idListProductsOutput");
+			Ranking.getSelectedItemContext(oListOutput, function (oSelectedItemContext, iSelectedItemIndex) {
+				var iSiblingItemIndex = iSelectedItemIndex + (sDirection === "Up" ? -1 : 1);
+				var oSiblingItem = oListOutput.getItems()[iSiblingItemIndex];
+				var oSiblingItemContext = oSiblingItem.getBindingContext("fastAppData");
+				if (!oSiblingItemContext) {
+					return;
+				}
+
+				// swap the selected and the siblings rank
+				var oProductsModel = oListOutput.getModel("fastAppData");
+				var iSiblingItemRank = oSiblingItemContext.getProperty("SORTER");
+				var iSelectedItemRank = oSelectedItemContext.getProperty("SORTER");
+
+				oProductsModel.setProperty("SORTER", iSiblingItemRank, oSelectedItemContext);
+				oProductsModel.setProperty("SORTER", iSelectedItemRank, oSiblingItemContext);
+
+				//sort again by refresh items binding
+				oListOutput.getBinding("items").refresh(true);
+
+				// after move select the sibling
+				oListOutput.getItems()[iSiblingItemIndex].setSelected(true);
+			});
+		},
+
+		//Select Brand: when you click on the F4 for Brands on adding a product to the offer of the tender
+		brandNameList_f4: function () {
+
+			//that is this
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//selection
+			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			var sDistributorID = Services.getSelectedDistributorID(); //DISTRIBUTOR_ID
+			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var aBrandTokens = [];
+			that.aBrandProducts = [];
+
+			//Check if distributor is selected						
+			if (sDistributorID) {
+
+				//load the corresponding products for the input list
+				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+					aCommercialAgreement)).done(function (oData) {
+
+					//check if results are found
+					if (oData && oData.results.length > 0) {
+
+						//keep brand products
+						that.aBrandProducts = oData.results;
+
+						//only keep unique brands... this way we also know there are valid products underneath these...
+						var aUniqueBrands = Array.from(new Set(oData.results.map(x => x.BRAND_ID)))
+							.map(BRAND_ID => {
+								return {
+									BRAND_ID: BRAND_ID,
+									BRAND_NAME: oData.results.find(x => x.BRAND_ID === BRAND_ID).BRAND_NAME
+								};
+							});
+
+						//for binding stateModel
+						var oBrandResults = {
+							results: aUniqueBrands
+						};
+
+						//binding statemodel to value help popup
+						var stateModel = new sap.ui.model.json.JSONModel();
+						stateModel.setData(oBrandResults);
+						if (!that._valueHelpSelectBrandDialog) {
+							that._valueHelpSelectBrandDialog = new sap.m.SelectDialog({
+								title: bundle.getText("brandnme"),
+								multiSelect: true,
+								rememberSelections: true,
+								items: {
+									path: "/results",
+									template: new sap.m.StandardListItem({
+										title: "{BRAND_NAME}",
+										description: "{BRAND_ID}",
+										//active: true
+									})
+								},
+								liveChange: function (oEvent) {
+									var sValue = oEvent.getParameter("value");
+									var oFilter = new sap.ui.model.Filter("BRAND_NAME", sap.ui.model.FilterOperator.Contains, sValue);
+									oEvent.getSource().getBinding("items").filter([oFilter]);
+								},
+								confirm: function (oEvent) {
+									that._handleCloseBrandNameList(oEvent);
+								},
+								cancel: function (oEvent) {
+									that._handleCloseBrandNameList(oEvent);
+								}
+							});
+						}
+
+						that._valueHelpSelectBrandDialog.setModel(stateModel);
+						that._valueHelpSelectBrandDialog.open();
+
+					} else {
+						MessageToast.show("There are no brands to display.");
+					}
+
+				});
+
+			} else {
+				sap.m.MessageBox.show("Select Distributor name first!", sap.m.MessageBox.Icon.ERROR);
+			}
+
+		},
+
+		_handleCloseBrandNameList: function (oEvent) {
+
+			//general
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//no selection anymore
+			sap.ui.getCore().byId("idInfoToolbarInput").setVisible(false);
+			var oListInput = sap.ui.getCore().byId("idListProductsInput");
+			oListInput.removeSelections();
+
+			//selected brands
+			var aContexts = oEvent.getParameter("selectedContexts");
+			if (aContexts && aContexts.length) {
+
+				MessageToast.show("The following brands where selected: " + aContexts.map(function (oContext) {
+					return oContext.getObject().BRAND_NAME;
+				}).join(", "));
+
+				//get multi input box
+				var oBrandList = sap.ui.getCore().byId("idBrandList");
+				var aBrandTokens = [];
+				var aBrands = [];
+
+				//push the selected brands 
+				aContexts.map(function (oContext) {
+
+					var oToken = new Token({
+						text: oContext.getObject().BRAND_NAME,
+						key: oContext.getObject().BRAND_ID
+					});
+					aBrandTokens.push(oToken);
+
+					//Brands for filtering
+					var oBrand = {
+						BRAND_ID: oContext.getObject().BRAND_ID
+					}
+					aBrands.push(oBrand);
+				});
+
+				//add the array of tokens to the multi input
+				oBrandList.setTokens(aBrandTokens);
+
+				//Filter brand products to find only the products of the selected brand
+				const aFilteredBrandProducts = that.aBrandProducts.filter(
+					(elem) => aBrands.find(({
+						BRAND_ID
+					}) => elem.BRAND_ID === BRAND_ID)
+				);
+
+				//load the corresponding products for the input list based on selected brands
+				//$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity, aCommercialAgreement, aBrandTokens)).done(function(oData){
+				//loaded
+				//path where the products should be stored
+				var sPathProductCollection = "/ProductCollection";
+
+				//path is updated with the products
+				oFastAppDataModel.setProperty(sPathProductCollection, aFilteredBrandProducts);
+				//});
+
+			} else {
+
+				MessageToast.show("No new item was selected.");
+
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		},
+
+		//When the user is adding or removing a token
+		onBrandTokenChange: function (oEvent) {
+
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get multi input box
+			var oBrandList = sap.ui.getCore().byId("idBrandList");
+			var oDefaultModel = Services.getDefaultModel();
+
+			//Brands already existing in the multi input field
+			that._aBrandTokens = oBrandList.getTokens();
+
+			//added brands
+			if (oEvent.getParameter('type') === Tokenizer.TokenUpdateType.Added) {
+				var aBrandsAdded = oEvent.getParameter("addedTokens");
+				aBrandsAdded.forEach(function (iIndex, oBrandToken) {
+					that._aBrandTokens.push(oBrandToken);
+				});
+			}
+
+			//removed brands
+			if (oEvent.getParameter('type') === Tokenizer.TokenUpdateType.Removed) {
+				var aBrandsRemoved = oEvent.getParameter("removedTokens");
+				aBrandsRemoved.forEach(function (oRemovedBrandToken, iIndex) {
+					that._aBrandTokens = $.grep(that._aBrandTokens, function (oBrandToken) {
+						return oBrandToken.getProperty("key") != oRemovedBrandToken.getProperty("key");
+					});
+				});
+			}
+
+			//load the corresponding products for the input list
+			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			var sDistributorID = Services.getSelectedDistributorID(); //DISTRIBUTOR_ID
+			var oProductInputList = sap.ui.getCore().byId("idListProductsInput");
+			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+
+			//load products for list
+			if (that._aBrandTokens && that._aBrandTokens.length > 0) {
+				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+					aCommercialAgreement, that._aBrandTokens)).done(function (oData) {
+					//loaded products
+
+					//path where the products should be stored
+					var sPathProductCollection = "/ProductCollection";
+
+					//path is updated with the products
+					oFastAppDataModel.setProperty(sPathProductCollection, oData.results);
+
+					oProductInputList.getBinding("items").refresh(true);
+				});
+			} else {
+				//path for clearing
+				var sPathProductCollection = "/ProductCollection";
+
+				var aEmpty = [];
+
+				//path is updated with the products
+				oFastAppDataModel.setProperty(sPathProductCollection, aEmpty);
+
+				//refresh empty list
+				oProductInputList.getBinding("items").refresh(true);
+			}
+
+		},
+
+		InstituteName_f4: function (oEvent) {
+			var model_f4 = this.getView().getModel("fastData");
+			var sPath = "/PT_TMINST";
+			var data;
+			var aFilters = [];
+			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
+				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, this.byId("idInstituteType").getProperty("selectedKey"))
+			);
+			var that = this;
+			model_f4.read(sPath, {
+				filters: aFilters,
+				success: function (OData, oResponse) {
+					data = OData;
+					var stateModel = new sap.ui.model.json.JSONModel();
+
+					//sort on institute name
+					data.results = Services.sortByKeyAsc(data.results, "InstituteName");
+
+					stateModel.setData(data);
+					that.valueHelpBasicInsSlctDialog = new sap.m.SelectDialog({
+						title: bundle.getText("institnme"),
+						multiSelect: false,
+						items: {
+							path: "/results",
+							template: new sap.m.StandardListItem({
+								title: "{InstituteName}",
+								//description: "{InstituteID}",
+								//active: true,
+								//beceause we no longer have the selected instituteID visible, we keep it in the customData of the list item
+								customData: new sap.ui.core.CustomData({
+									key: "InstituteID",
+									value: "{InstituteID}"
+								})
+							})
+						},
+						liveChange: function (oEvent) {
+							var sValue = oEvent.getParameter("value");
+							var oFilter = new sap.ui.model.Filter("InstituteName", sap.ui.model.FilterOperator.Contains, sValue);
+							oEvent.getSource().getBinding("items").filter([oFilter]);
+						},
+						confirm: handleCloseInstituteName,
+						cancel: handleCloseInstituteName
+					});
+					that.valueHelpBasicInsSlctDialog.setModel(stateModel);
+					that.valueHelpBasicInsSlctDialog.open();
+
+				},
+				error: function (oError) {
+
+					Services.showErrorMessage(oError, "Institute loading");
+
+				}
+			});
+			var handleCloseInstituteName = function (oEvent) {
+				var oSelectedItem = oEvent.getParameter("selectedItem");
+				if (oSelectedItem) {
+					that.byId("idInstituteName").setValue(oSelectedItem.getTitle());
+					//that.byId("idInstituteID").setValue(oSelectedItem.getDescription());
+					//that.getView().byId("idhdrInstID").setText(oSelectedItem.getDescription());
+					var sSelectedInstituteID = oSelectedItem.data("InstituteID");
+					that.byId("idInstituteID").setValue(sSelectedInstituteID);
+					that.getView().byId("idhdrInstID").setText(sSelectedInstituteID);
+
+					//should group purchasing be visible on the screen based on data back-end
+					var sCountry = Services.getSelectedCountry();
+					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) {
+						if (bShowGroupPurchasing === false) {
+							//default no =  0
+							that.getView().byId("idGroupPurchasingEdit").setSelectedKey(0);
+						}
+						that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
+					});
+
+					//should tender channel be defaulted/forced on distributor?
+					$.when(Services.checkTenderChannelOnDistributor(sCountry, sSelectedInstituteID)).done(function (bTenderChannelOnDistributor) {
+						//default on Distributor
+						if (bTenderChannelOnDistributor) {
+							that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+							that.getView().byId("idTenderChannel").setEnabled(false);
+						} else {
+							that.getView().byId("idTenderChannel").setEnabled(true);
+						}
+					});
+				}
+				oEvent.getSource().getBinding("items").filter([]);
+			};
+
+		},
+
+		//ProductOfferEdit fragment: Value help for Distriubtor name 
+		onChangeDistributor: function (oEvent) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
+				var that = this;
+
+				sap.m.MessageBox.warning("Are you sure you want to change the Distributor? Existing products will be removed.", {
+					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "YES") {
+							var oTableProducts = that.byId("editofferProductId");
+							oTableProducts.selectAll();
+							that.onDeleteProductForOffer();
+							Services.setSelectedDistributorID(that.getView().byId("idDistributorName").getSelectedKey());
+							Services.setPrevSelectedDistributorID(Services.getSelectedDistributorID());
+							that.getView().byId("idDistributorName").setSelectedKey(Services.getSelectedDistributorID());
+						} else {
+							that.getView().byId("idDistributorName").setSelectedKey(Services.getPrevSelectedDistributorID());
+						}
+					}
+				});
+			} else {
+				Services.setSelectedDistributorID(this.getView().byId("idDistributorName").getSelectedKey());
+				Services.setPrevSelectedDistributorID(Services.getSelectedDistributorID());
+			};
+		},
+
+		//when selecting a new selling company
+		onChangeSellingCompany: function (oEvent) {
+
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var that = this;
+			var sCountryCode = Services.getCountryCodeofSelectedTender();
+			var sInstituteId = Services.getInstituteIDofSelectedTender();
+			var sChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+
+			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
+
+				sap.m.MessageBox.warning("Are you sure you want to change the Selling commpany? Existing products will be removed.", {
+					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "YES") {
+							var oTableProducts = that.byId("editofferProductId");
+							oTableProducts.selectAll();
+							that.onDeleteProductForOffer();
+							Services.setSelectedSellingCompanyID(that.getView().byId("idSellingCompany").getSelectedKey());
+							Services.setPrevSelectedSellingCompanyID(Services.getSelectedSellingCompanyID());
+							that.getView().byId("idSellingCompany").setSelectedKey(Services.getSelectedSellingCompanyID());
+						} else {
+							that.getView().byId("idSellingCompany").setSelectedKey(Services.getPrevSelectedSellingCompanyID());
+						}
+					}
+				});
+			} else {
+				Services.setSelectedSellingCompanyID(this.getView().byId("idSellingCompany").getSelectedKey());
+				Services.setPrevSelectedSellingCompanyID(Services.getSelectedSellingCompanyID());
+			};
+
+			//refresh binding & filter for distributor
+			//TODO: refactoring
+			var sSellingCompanyID = that.byId("idSellingCompany").getSelectedKey();
+			Services.readInstituteDistributor(sCountryCode, sInstituteId, sChannel, sSellingCompanyID).then(function (oData) {
+				if (oData && oData.results.length === 0) {
+					that.getView().byId("idDistributorName").setSelectedKey("");
+					oFastAppDataModel.setProperty("/EditOffer/DistributorID", "");
+					//oFastAppDataModel.setProperty(Services.getLoadedOfferPath(Services.getSelectedOfferID()) + "/Distributor/DistributorName", "");
+				} else {
+					oFastAppDataModel.setProperty("/EditOffer/DistributorID", oData.results[0].DISTRIBUTOR_ID);
+				}
+
+				var aFilter = [];
+				aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+				aFilter.push(new Filter("INSTITUTE_ID", FilterOperator.EQ, sInstituteId));
+				aFilter.push(new Filter("CHANNEL", FilterOperator.EQ, sChannel));
+				aFilter.push(new Filter("LEGAL_ENTITY_CODE", FilterOperator.EQ, sSellingCompanyID));
+
+				var oList = that.getView().byId("idDistributorName");
+				var oBinding = oList.getBinding("items");
+				oBinding.filter(aFilter);
+				oList.setEnabled(true);
+			});
+		},
+
+		onSlctSmYN: function (oEvent) {
+			var oSlct = sap.ui.getCore().byId("idSampleYN").getSelectedItem().getText();
+			if (oSlct === "Yes") {
+				sap.ui.getCore().byId("idSampleQuantity").setEnabled(true);
+			} else {
+				sap.ui.getCore().byId("idSampleQuantity").setEnabled(false);
+			}
+		},
+
+		//Show RequestedVolume		
+		onPressShowRequestedVolume: function (oEvent) {
+			var that = this;
+			that.loadRequestedGroupPurchasingDialog(oEvent);
+		},
+
+		//Edit RequestedVolume
+		onPressEditRequestedVolume: function (oEvent) {
+			var that = this;
+			that.loadRequestedGroupPurchasingDialog(oEvent);
+		},
+
+		//Called when showing & editing requested volume
+		loadRequestedGroupPurchasingDialog: function (oEvent) {
+
+			//general
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//are we in edit mode?
+			var bEdit = Services.getEditMode();
+
+			//on which product are we clicking
+			var oRequestedVolumeCell = oEvent.getSource().getParent();
+			var aRequestedVolumeCellItems = oRequestedVolumeCell.getItems();
+			var oRequestedVolumeInput = aRequestedVolumeCellItems[0];
+
+			//What is the currently selected Product info
+			var oCurrentRow = oRequestedVolumeCell.getParent();
+			var iIndexRow = oCurrentRow.getIndex();
+			var sBindingPathProduct = oCurrentRow.getParent().getBinding().getPath() + iIndexRow + "/";
+			var sOfferID = Services.getSelectedOfferID();
+
+			if (bEdit) {
+				//in edit mode we get the products from the edit offer
+				var aProducts = oFastAppDataModel.getProperty("/EditOffer/Product/");
+			} else {
+				//in desplay mode we get the products from the loaded
+				var aProducts = Services.getLoadedProductsForOffer(sOfferID);
+			}
+
+			//sorting
+			Services.sortByKeyAsc(aProducts.results, "SORTER");
+
+			//get current selected product
+			var oSelectedProduct = aProducts.results[iIndexRow];
+
+			//check if groupPurchasing is found for this product (new products don't have these)
+			if (oSelectedProduct.GroupPurchasing && oSelectedProduct.GroupPurchasing.results) {
+				var aAllGroupPurchasing = oSelectedProduct.GroupPurchasing.results;
+			}
+
+			//only bind the Group purchasing institutions who have a requeted amount
+			var aRequestedGroupPurchasing = [];
+
+			if (aAllGroupPurchasing && aAllGroupPurchasing.length > 0) {
+
+				//loop at the results of the group purchasing
+				aAllGroupPurchasing.forEach(function (oGroupPurchasing, iIndex) {
+
+					//check if the group purchasing has a requested amount
+					if (oGroupPurchasing.Requested && oGroupPurchasing.Requested > 0) {
+						//keep
+						aRequestedGroupPurchasing.push(oGroupPurchasing);
+					}
+
+				});
+			}
+
+			if (!bEdit && aRequestedGroupPurchasing.length === 0) {
+				//no institutes exist with requested amounts, go to edit mode to add them
+				sap.m.MessageToast.show("There are no requested amounts for institutes.");
+				return;
+			}
+
+			//bind it to the display popup
+			if (aRequestedGroupPurchasing && aRequestedGroupPurchasing.length >= 0) {
+
+				//keep on fastappdata model
+				oFastAppDataModel.setProperty("/RequestedGroupPurchasing", aRequestedGroupPurchasing);
+
+				//if dialog exists destroy it first, so we always set dialog buttons in correct state
+				if (that._oDialog) {
+					that._oDialog.destroy();
+				}
+
+				//create the dialog again
+				that._oDialog = new sap.m.Dialog("idShowDialogRequestedGroupPurchasingDisplay", {
+					title: 'Requested Group Purchasing',
+					buttons: [
+						//if edit mode = true, this button is visible
+						new sap.m.Button({
+							text: bundle.getText("Confirm"),
+							visible: bEdit,
+							type: "Accept",
+							tap: [that.onConfirmRequestedGroupPurchasing, that]
+
+						}),
+						//if edit mode = true, this button is visible
+						new sap.m.Button({
+							text: bundle.getText("Cancel"),
+							visible: bEdit,
+							type: "Reject",
+							tap: [that.onCancelRequestedGroupPurchasing, that]
+						}),
+						//if edit mode = true, this button is visible
+						new sap.m.Button({
+							text: bundle.getText("Close"),
+							visible: !bEdit,
+							type: "Reject",
+							tap: [that.onCloseRequestedGroupPurchasing, that]
+						})
+					],
+					//content with all fields that need to be filled
+					content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.RequestedGroupPurchasing", that)]
+				});
+
+				//add custom data to dialog so if we add a new requested institute, we know for which product we are adding it
+				that._oDialog.data("SelectedProduct", oSelectedProduct);
+
+				//add original requested group purchasing, so we can go back to this version on canceling
+				var aOriginalRequestedGroupPurchasing = $.extend(true, {}, aRequestedGroupPurchasing);
+				that._oDialog.data("OriginalRequestedGroupPurchasing", aOriginalRequestedGroupPurchasing);
+
+				//keep binding path of the selected product
+				that._oDialog.data("SelectedProductPath", sBindingPathProduct);
+
+				that.getView().addDependent(that._oDialog);
+				that._oDialog.open();
+
+			}
+
+		},
+
+		//closing requested group purchasing dialog
+		onCloseRequestedGroupPurchasing: function (oEvent) {
+			//close the dialog
+			var that = this;
+			that._oDialog.close();
+		},
+
+		//closing requested group purchasing dialog
+		onCancelRequestedGroupPurchasing: function (oEvent) {
+
+			//general
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//go back to original requested group purchasing
+			var aRequestedGroupPurchasing = that._oDialog.data("OriginalRequestedGroupPurchasing");
+			oFastAppDataModel.setProperty("/RequestedGroupPurchasing", aRequestedGroupPurchasing);
+
+			//close dialog
+			that._oDialog.close();
+
+		},
+
+		//when add institute is pressed on the requested group purchasing dialog
+		onAddInstituteGroupPurchasing: function (oEvent) {
+
+			//general
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			var sInstituteID = Number(sap.ui.getCore().byId("idInstituteRequestedGroupPurch").getSelectedKey());
+			var sCountry = Services.getSelectedCountry();
+			var sDistributorID = Services.getSelectedDistributorID();
+			var oSelectedProduct = that._oDialog.data("SelectedProduct");
+
+			//get requested group Purchasing
+			var aRequestedGroupPurchasing = oFastAppDataModel.getProperty("/RequestedGroupPurchasing");
+
+			//default it is an POST, new institute in database
+			var sOperation = "POST";
+
+			//check if institute already exist in requested group purchasing.
+			var iIndex = aRequestedGroupPurchasing.findIndex(x => x.InstituteID === sInstituteID);
+
+			//if institute already existing in group purchasing as an institute that was ready to be deleted from database
+			//this user deleted the institute in pop-up & then added it again... we now need to change DELETE into PUT (update)
+			if (iIndex !== -1 && aRequestedGroupPurchasing[iIndex]._sOperation === "DELETE") {
+
+				sOperation = "PUT";
+
+				//only grep institutes that is not the one we are trying to add (so actually remove selected institute from array)
+				var aRequestedGroupPurchasing = $.grep(aRequestedGroupPurchasing, function (e) {
+					return e.InstituteID != sInstituteID;
+				});
+
+				//say that index = -1 so that the institute is added again as a put
+				iIndex = -1;
+
+			}
+
+			if (iIndex === -1) {
+
+				//load name of institute (&other data which we not use at this point)
+				var bWithChilderen = false;
+				$.when(Services.loadInstitute(sCountry, sInstituteID, bWithChilderen)).done(function (oInstitute) {
+
+					//check count results
+					if (oInstitute) {
+
+						var oRequestedGroupPurchasing = {
+							TenderID: oSelectedProduct.TenderID,
+							OfferID: oSelectedProduct.OfferID,
+							RegionCode: "",
+							CountryCode: sCountry,
+							SubmittedOn: moment().utc().toDate(),
+							SubmittedBy: UserInfo.getCWID(),
+							Active: 1,
+							ProductCode: oSelectedProduct.ProductCode,
+							InstituteID: sInstituteID,
+							Institute: oInstitute,
+							DistributorID: oSelectedProduct.DistributorID,
+							Requested: "",
+							KeyForRestore: "",
+							_sOperation: sOperation
+						};
+
+						//add to the binding
+						aRequestedGroupPurchasing.push(oRequestedGroupPurchasing);
+						oFastAppDataModel.setProperty("/RequestedGroupPurchasing", aRequestedGroupPurchasing);
+
+					}
+
+				});
+			} else {
+
+				//no institutes exist with requested amounts, go to edit mode to add them
+				sap.m.MessageToast.show("This institute is already existing in the list.");
+
+			}
+
+		},
+
+		//delete requested group purchasing
+		onDeleteRequestedGroupPurchasing: function (oEvent) {
+
+			//general
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get path of item to be deleted
+			var sPathSelectedRequest = oEvent.getParameter('listItem').getBindingContextPath();
+			var iIndex = parseInt(sPathSelectedRequest.substring(sPathSelectedRequest.lastIndexOf('/') + 1));
+
+			//delete item from list binding
+			var aRequestedGroupPurchasing = oFastAppDataModel.getProperty("/RequestedGroupPurchasing");
+			if (aRequestedGroupPurchasing[iIndex]._sOperation === "PUT") {
+				//in this case the group purchasing for this institute already exists in the back-end tables
+				//so we keep it but put it as DELETE operation
+				aRequestedGroupPurchasing[iIndex]._sOperation = "DELETE";
+			} else {
+				//group purchasing for this institute does not exists in the back-end tables
+				//so we can delete it without deleting it in back-end during save
+				aRequestedGroupPurchasing.splice(iIndex, 1);
+			}
+
+			//change binding
+			oFastAppDataModel.setProperty("/RequestedGroupPurchasing", aRequestedGroupPurchasing);
+
+			//update bindings other wise filtering on DELETE is not applied for new binding
+			oFastAppDataModel.updateBindings(true);
+		},
+
+		//saving the requested group purchasing
+		onConfirmRequestedGroupPurchasing: function (oEvent) {
+			//close the dialog
+
+			//general
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get selected product for dialog
+			var oSelectedProduct = that._oDialog.data("SelectedProduct");
+
+			//calculate sum of requested amounts
+			var sSumRequestedVolume = 0;
+			var aRequestedGroupPurchasing = oFastAppDataModel.getProperty("/RequestedGroupPurchasing");
+
+			//if requested group purchasing exists calculate
+			if (aRequestedGroupPurchasing && aRequestedGroupPurchasing.length > 0) {
+
+				//loop at the results of the group purchasing
+				aRequestedGroupPurchasing.forEach(function (oGroupPurchasing, iIndex) {
+
+					//check if the group purchasing has a requested amount
+					if (oGroupPurchasing.Requested && oGroupPurchasing.Requested > 0 && oGroupPurchasing._sOperation !== "DELETE") {
+						sSumRequestedVolume = sSumRequestedVolume + Number(oGroupPurchasing.Requested);
+					}
+
+				});
+			}
+
+			//keep result on product
+			oSelectedProduct.RequestedVolume = sSumRequestedVolume;
+
+			//keep new group purchasing at product level
+			if (oSelectedProduct.GroupPurchasing && oSelectedProduct.GroupPurchasing.results) {
+				oSelectedProduct.GroupPurchasing.results = aRequestedGroupPurchasing;
+			} else {
+
+				//results doesn't exist, add it first so we can bind to it
+				var oResults = {
+					results: []
+				}
+				oResults.results = aRequestedGroupPurchasing;
+				oSelectedProduct.GroupPurchasing = oResults;
+
+			}
+
+			//change binding
+			var sBindingPathProduct = that._oDialog.data("SelectedProductPath");
+			oFastAppDataModel.setProperty(sBindingPathProduct, oSelectedProduct);
+
+			//close dialog
+			that._oDialog.close();
+		},
+
+		//FINANCIAL OFFER TAB
+		//-------------------
+
+		//binding finished on offer table
+		/*
+		onFinancialOffersTableFinished: function (oEvent) {
+			//Check if financialOffer Tab is opened, other wise this should not be selected
+			if(Services.getSelectedTab() === Services.getFinancialOfferPageSectionID()){
+				//that is this
+				var that  = this;
+				
+				//reselect same offer if it exists, otherwise clear offer selected
+				that._selectOfferInOfferTable("financialOffersTableViewID","financialOffersTableOfferID");				
+			}
+		},	
+		*/
+
+		//currency or other fields are changed on the financial offer tab (in edit mode)
+		onEditFinancialOffer: function (oEvent) {
+			var offerFragment = new OfferProducts();
+			offerFragment.updateFinancialOffer(oEvent, this);
+			//price is changed
+			//Financial.setPricingChanged(true);               
+		},
+
+		//Save in footer is clicked & financial offer tab is openened
+		_onSaveFinancialOffer: function (oEvent) {
+
+			//TODO use these when we have converted the edit view binding to the fastAppDataModel
+			var sPathSelectedOffer = Services.getSelectedOfferPath();
+			var sPathSelectedProduct = Services.getSelectedProductPath();
+			var oDefaultModel = Services.getDefaultModel();
+			var sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID); //oDefaultModel.getProperty(sPathSelectedOffer);
+			var oProduct = oDefaultModel.getProperty(sPathSelectedProduct); //includes all navigation properties with latest data
+
+			//catch all promises in an array
+			let promises = [];
+			var that = this;
+
+			//if all back-end load promsises are done
+			var oDeferred_all = $.Deferred();
+
+			//TODO: this is not needed if you use above variable OfferProducts (define)
+			var offerFragment = new OfferProducts();
+
+			//Update page to make sure screen data is calculated (automatic if user pressed enter when changing value but not otherwise)
+			offerFragment.updateFinancialOffer(oEvent, that);
+
+			var oNewPriceInfo = {};
+			var aChangeOperations = [];
+
+			var oModel = Services.getDefaultModel(); //new sap.ui.model.odata.ODataModel(Services.getConnectionString());
+			var sPath = Services.getSelectedOfferPath();
+
+			//Generic problem check for possible session lost (this should be solved by session timeout implementation)
+			if (sPath === undefined || that.pPath === undefined) {
+				sap.m.MessageBox.show("Something went wrong, please contact administrator", {
+					title: "Error",
+					icon: sap.m.MessageBox.Icon.ERROR,
+					onClose: function () {}
+				});
+				return;
+			}
+
+			//Root offer information //TODO replace with oOffer = same
+			//var offerInfo = that.getView().getModel("fastData").getProperty(sPath);
+
+			//Products information in offer TODO replace with oProduct = samne
+			var offerValues = that.getView().getModel("fastData").getProperty(that.pPath); //Property or Object (was object)
+			//var productId = Services.getSelectedProductID(); TODO: does not work (second part to reset at bottom of method)
+			//var productName = Services.getSelectedProductName(); TODO: does not work (second part to reset at bottom of method)
+			//var productValues = that.getView().getModel("fastData").getObject("/" + offerValues.SKU.__ref);
+
+			//TODO get tenderID, offerID, CountryCode in the same way
+			var tenderId = oOffer.TenderID; //offerInfo.TenderID;
+			var offerId = oOffer.OfferID; //offerInfo.OfferID;
+			var countryCode = oOffer.CountryCode; //offerInfo.CountryCode;
+
+			//TODO change usage of __ref only possible after edit view is bound to fastAppData model, so we have all navigation properties available
+
+			//Existing price data path for product
+			var priceLink = offerValues.Price;
+			var pricePath = (priceLink !== undefined && priceLink !== null) ? priceLink.__ref : null;
+
+			//Number of items in pack used for unit conversion depending on if offer is for units or packs
+			var packFactor = this.getView().getModel("fastData").getProperty("/" + offerValues.SKU
+				.__ref).PACKFACTOR;
+
+			//Unit for offer (Unit or Pack)
+			var offerUnit = offerValues.UnitPerPack;
+
+			//Currency of the offer (for new offers offer.Currency is not yet filled, thats why we need to take it from the view)
+			var offerCurrency = that.byId("idEditCurrency").getSelectedKey();
+
+			//Registered Price
+			var regPriceValues = {
+				CURRENCY: offerCurrency,
+				UOM: offerUnit,
+				REGISTERED_PRICE: 0
+			};
+
+			var oRegisterdPrice;
+			var iRegPrice = "";
+
+			//Get registered price from master data through navigation property, if exists
+			if (offerValues.RegisteredPrice !== null) {
+				/*regPriceValues = that.getView().getModel("fastData").getObject("/" + offerValues.RegisteredPrice.__ref);
+				regPriceValues.REGISTERED_PRICE = parseFloat(regPriceValues.REGISTERED_PRICE);*/
+				promises.push(offerFragment.loadCountryRegisteredPrice(Services.getSelectedCountry(), offerValues.UnitPerPack, Services.getSelectedProductID(),
+					offerCurrency).then(function (sRegisteredPrice) {
+					if (sRegisteredPrice) {
+						regPriceValues.REGISTERED_PRICE = parseFloat(sRegisteredPrice.REGISTERED_PRICE);
+					} else {
+						regPriceValues.REGISTERED_PRICE = 0;
+					}
+
+					oRegisterdPrice = regPriceValues;
+				}));
+			}
+			//Registered Price
+
+			//Rates for country from offer currency to EUR
+			/*
+			var budgetRatePath = "/ExchangeRates(COUNTRY_CODE='" + "" +
+				"',CURRENCY_FROM='" + offerCurrency + "',CURRENCY_TO='EUR',X_TYPE='Budget')";
+			var budgetRate = this.getView().getModel("fastData").getObject(budgetRatePath).X_RATE;
+			//get budget
+			var spotRatePath = "/ExchangeRates(COUNTRY_CODE='" + "" +
+				"',CURRENCY_FROM='" + offerCurrency + "',CURRENCY_TO='EUR',X_TYPE='Monthly Average')";
+			var spotRate = this.getView().getModel("fastData").getObject(spotRatePath).X_RATE;
+			*/
+
+			//load Budget rate again from database
+			var sCountry = "";
+			var sX_TYPE = "Budget";
+			var sCurrencyFrom = offerCurrency;
+			var sCurrencyTo = "EUR";
+			var iBudgetRate = null;
+			promises.push(offerFragment.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(function (oData) {
+				if (oData !== false) {
+					iBudgetRate = oData.X_RATE;
+				}
+			}));
+
+			//load Spot rate again from database
+			var sCountry = "";
+			var sX_TYPE = "Monthly Average";
+			var sCurrencyFrom = offerCurrency;
+			var sCurrencyTo = "EUR";
+			var iSpotRate = null;
+			promises.push(offerFragment.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(function (oData) {
+				if (oData !== false) {
+					iSpotRate = oData.X_RATE;
+				}
+			}));
+
+
+			//Rates: eventually, we get
+			//	+ either registeredRate=0 (=> we don't have a registered price i that currency)
+			//	+ or the registeredRate to convert registered price (if it exists) to offer currency
+
+			//if all promises received = meaning all data is loaded from back-end
+			Promise.all(promises).then((result) => {
+
+				//if all saving promises are done
+				let promises_saving = [];
+
+				$.when(offerFragment.loadNewCalcRegPrice(oOffer, oProduct, oRegisterdPrice, offerCurrency)).done(function (oData) {
+					iRegPrice = oData;
+					//when registered price could not be calculated due to not found we should not continue
+					if (iRegPrice === false) {
+						return;
+					}
+
+					//TODO after edit view binding is done to fastAppData model, we can take cogsValues from navigation prop (that is used directly)
+					//COGS
+					var cogsValues = {
+						COGS: 0
+					};
+					//Getting the up-to-date COGS values from master data if exists
+					if (offerValues.Cogs !== null) {
+						cogsValues = that.getView().getModel("fastData").getObject("/" + offerValues.Cogs.__ref);
+					}
+					//COGS
+
+					//Update offer
+					var oOfferSaveInfo = {};
+					oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
+					oOfferSaveInfo.Currency = that.byId("idEditCurrency").getSelectedKey();
+					oOfferSaveInfo.FOCType = that.byId("idEditFOCType").getSelectedKey();
+					//default foc abolute or percentage is decided on first product price thats saved... so if empty, save
+					//if(!offerInfo.DEFAULT_FOC_ABS_PCT){
+					if (!oOffer.DEFAULT_FOC_ABS_PCT) {
+						oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+					}
+
+					var setCurrency = oOfferSaveInfo.Currency;
+					//update offer
+					promises_saving.push(Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+						//show error message
+						Services.showErrorMessage(oError, "Update of offer");
+						//promises must fail as well
+						throw new Error(oError);
+					}));
+
+					//Registered price we have on screen (same as up-to-date master data one (iRegPrice) BUT already converted to offer currency)
+					var sCifPrice = that.byId("idEditPriceOffer_idCifPrice").getValue();
+					var regPrice = parseFloat(sCifPrice.replace(",", ""));
+
+					if (that.byId("idEditPriceOffer_idOfferPrice").getValue() === "") {
+						sap.m.MessageBox.show("No offer price was set", {
+							title: "Error",
+							icon: sap.m.MessageBox.Icon.ERROR,
+							onClose: function () {}
+						});
+						return;
+					}
+
+					//Offer price as set on screen
+					var offerPrice = parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", ""));
+
+					//Checking that offer price is lower than registered one - saving is not allowed if not
+					//if (regPrice !== 0 && Math.round(10000*offerPrice) > Math.round(10000*regPrice)) {
+					if (!offerFragment.checkOfferPriceLowerRegisterPrice(offerPrice, regPrice)) {
+						sap.m.MessageBox.show("Offer price cannot be higher than registered price", {
+							title: "Error",
+							icon: sap.m.MessageBox.Icon.ERROR,
+							onClose: function () {}
+						});
+						return;
+					}
+
+					//Set price for product
+					oNewPriceInfo = {
+						TenderID: tenderId,
+						OfferID: offerId,
+						CountryCode: countryCode,
+						ProductCode: that._productCode,
+						SubmittedOn: moment().utc().toDate(),
+						SubmittedBy: UserInfo.getCWID(),
+						Active: 1,
+						Tier: 0,
+						VolumeFrom: 0,
+						VolumeTo: 0,
+						RegPrice: iRegPrice, //regPriceValues.REGISTERED_PRICE * registeredRate,
+						FOC: (that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey() === "PCT") ? that.byId("idEditPriceOffer_idFoc").getValue() /
+							100 : that.byId("idEditPriceOffer_idFoc").getValue(),
+						FOCType: that.byId("idEditFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
+						Discount: that.byId("idEditPriceOffer_idDiscount").getValue() / 100,
+						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", "")),
+						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
+						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replace(",", "")),
+						WholesalePrice: that.byId("idEditPriceOffer_idWhlseofr").getSelectedKey(),
+						COGS: cogsValues.COGS,
+						SpotRate: iSpotRate,
+						BudgetRate: iBudgetRate,
+						Scenario: 0,
+						FOC_ABS_PCT: that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey(),
+						FOCProduct_Bundled_1: Number(that.byId("idEditPriceOffer_idFOCProdBund1").getSelectedKey()), //FOC ADDITIONAL PRODUCT
+						FOC_ABS_PCT_Bundled_1: that.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey(), //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
+						FOC_Bundled_1: (that.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey() === "PCT") ? that.byId(
+							"idEditPriceOffer_idFoc1").getValue() / 100 : that.byId("idEditPriceOffer_idFoc1").getValue(), //FOC ADDITIONAL PROD VALUE
+						ActiveTier: 0,
+						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replace(",", "")),
+						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replace(",", "")),
+						PRICE_UPDATE: 0
+					};
+
+					//convert price to save
+					var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
+
+					if (pricePath !== null) {
+						//update Price
+						promises_saving.push(Services.getService('Price').updatePrice(oPriceToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Update of Price");
+							//promises must fail as well
+							throw new Error(oError);
+						}));
+					} else {
+						//create Price
+						promises_saving.push(Services.getService('Price').createPrice(oPriceToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Creation of Price");
+							//promises must fail as well
+							throw new Error(oError);
+						}));
+					}
+
+					//check if any of the pricing data is changed
+					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
+
+						//if oOriginalPrices = false, they were not found, and we are creating new
+						if (oOriginalPrices !== false) {
+							//otherwise they were found and the check results for price update should be used
+							oNewPriceInfo.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+						}
+
+						//Save all scenario's
+						promises_saving.push(that._saveFinancialOfferScenario(oNewPriceInfo, offerValues));
+
+						//if all promises pushed from the loop have received their answer
+						Promise.all(promises_saving).then((result) => {
+
+							//this method is actually no longer needed, Offerstatus is always "Offer created", never "Results recorded"
+							//$.when(that._updateFinancialOfferStatus(oNewPriceInfo, oOffer.OfferStatus)).then(function () {
+							//save offer status as tender recorded... 
+							$.when(Services.saveOfferStatus("Offer Created")).done(function (oSaveStatus) {
+
+								//In that case we might dit some changes in the fastAppData model, we will load all data from the database again
+								//otherwise nextOfferID is f.e still the one that is already created
+								var sTenderPath = Services.getSelectedTenderPath();
+								var sTenderID = Services.getSelectedTenderID();
+
+								//we will load tender again after save is done
+								var bLoadedCheck = false;
+
+								$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+									//set selected offer ID
+									Services.setSelectedOfferID(offerId);
+									Services.setSelectedOfferPath(sPath);
+
+									//Selected offer binding
+									var oOffer = Services.getLoadedOffer(offerId);
+									Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+									//Services.setSelectedProductID(productId);
+									//Services.setSelectedProductName(productName);
+
+									//switch from edit to display
+									that.onEditToggleButtonPress();
+									that.byId("idCurrency").setSelectedKey(setCurrency);
+
+									//show success message
+									sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
+
+									//refresh tenders master table (left pane)
+									Services.refreshTendersMasterTable(sTenderID);
+
+									//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+									var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
+									Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+										//Error during save
+										Services.showErrorMessage(oError, "Background saving for approvals sent field");
+									});
+
+								});
+							});
+
+						}).catch(function (oError) {
+
+							//error message
+							Services.showErrorMessage(oError, "Saving financial offer");
+
+						});
+
+						/*
+								oModel.addBatchChangeOperations(aChangeOperations);
+								oModel.submitBatch(function (oData, oResponse, oError) {
+									if (oError.length > 0) {
+										
+										//error message
+										Services.showErrorMessage(oError, "Saving financial offer");
+										
+									} else {
+										
+										//this method is actually no longer needed, Offerstatus is always "Offer created", never "Results recorded"
+										//$.when(that._updateFinancialOfferStatus(oNewPriceInfo, oOffer.OfferStatus)).then(function () {
+										//save offer status as tender recorded... 
+										$.when(Services.saveOfferStatus("Offer Created")).done(function(oSaveStatus){
+	
+											//In that case we might dit some changes in the fastAppData model, we will load all data from the database again
+					                    	//otherwise nextOfferID is f.e still the one that is already created
+						                    var sTenderPath = Services.getSelectedTenderPath();
+						                    var sTenderID = Services.getSelectedTenderID();
+							
+											//we will load tender again after save is done
+											var bLoadedCheck = false; 
+											
+						                    $.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+	
+												//set selected offer ID
+												Services.setSelectedOfferID(offerId);
+												Services.setSelectedOfferPath(sPath);
+												
+												//Selected offer binding
+												var oOffer = Services.getLoadedOffer(offerId);
+												Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+												//Services.setSelectedProductID(productId);
+												//Services.setSelectedProductName(productName);
+												
+												//switch from edit to display
+						                    	that.onEditToggleButtonPress();
+												that.byId("idCurrency").setSelectedKey(setCurrency);
+												
+												//show success message
+						                    	sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
+						                    	
+						                    	//refresh tenders master table (left pane)
+												Services.refreshTendersMasterTable(sTenderID);	
+										
+						                    	//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+												var iApprovals_sent = oOffer.APPROVALS_SENT;	//offerInfo.APPROVALS_SENT;
+												that.saveOfferApprovalSent(iApprovals_sent).catch(function (oError){
+														//Error during save
+														that.showErrorMessage(oError, "Background saving for approvals sent field");						
+												});
+												
+						                    });
+										});
+										
+									}
+								});
+								*/
+					});
+				});
+
+				//return aProductsForBinding;
+				//oDeferred_all.resolve(aProductsForBinding);
+			});
+
+			//uncomment this line if you want the saving method to wait for results...
+			//return oDeferred_all.promise();
+
+		},
+
+		//saving of scenario's
+		_saveFinancialOfferScenario: function (saveInfo, offerValues) {
+
+			//that is this
+			var that = this;
+
+			//wait for all saving to be done
+			let promises = [];
+			var oModel = Services.getDefaultModel(); //new sap.ui.model.odata.ODataModel(Services.getConnectionString());
+
+			//loop & get values for each scenario
+			var scenarioList = (offerValues.Scenario && offerValues.Scenario.__list) ? offerValues.Scenario.__list : offerValues.Scenario; //once we are fully on FASTCAP, we can use offerValues.Scenario as the value without the check on list
+			for (var i = 1; i < 4; i++) {
+				var scenarioPrice = this.byId("idEditPriceOfferScenario" + i + "_idOfferPrice").getValue().replace(",", "");
+				if (scenarioPrice === "") {
+					scenarioPrice = this.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", "");
+				}
+
+				//Scenario get info from screen
+				var oScenarioSaveInfo = {
+					TenderID: saveInfo.TenderID,
+					OfferID: saveInfo.OfferID,
+					CountryCode: saveInfo.CountryCode,
+					ProductCode: saveInfo.ProductCode,
+					SubmittedOn: moment().utc().toDate(),
+					SubmitedBy: UserInfo.getCWID(), //TODO change database column name submi(T)ted & change to uppercase in general
+					Active: 1,
+					Scenario: i,
+					Name: this.byId("idEditPriceOfferScenario" + i + "_idName").getValue(),
+					Description: this.byId("idEditPriceOfferScenario" + i + "_idDescription").getValue(),
+					Volume: offerValues.RequestedVolume,
+					OfferPrice: scenarioPrice,
+					FOC_ABS_PCT: this.byId("idEditPriceOfferScenario" + i + "_idFocAbsPct").getSelectedKey(),
+					FOC: (this.byId("idEditPriceOfferScenario" + i + "_idFocAbsPct").getSelectedKey() === "PCT") ? this.byId(
+						"idEditPriceOfferScenario" + i + "_idFoc").getValue() / 100 : this.byId("idEditPriceOfferScenario" + i + "_idFoc").getValue(),
+					FOCType: this.byId("idEditFOCType").getSelectedKey(), //this.byId("idEditPriceOfferScenario" + i + "_idFocType").getSelectedKey(),
+					FOC_ABS_PCT_Bundled_1: this.byId("idEditPriceOfferScenario" + i + "_idFocAbsPct1").getSelectedKey(),
+					FOC_Bundled_1: parseFloat((this.byId("idEditPriceOfferScenario" + i + "_idFocAbsPct1").getSelectedKey() === "PCT") ? this.byId(
+						"idEditPriceOfferScenario" + i + "_idFoc1").getValue() / 100 : this.byId("idEditPriceOfferScenario" + i + "_idFoc1").getValue()),
+					FOCProduct_Bundled_1: Number(this.byId("idEditPriceOfferScenario" + i + "_idFOCProdBund1").getSelectedKey())
+				};
+
+				//Convert scenario object for saving
+				var oScenarioToSave = Services.getService('Scenario').getConvertScenarioToSave(oScenarioSaveInfo);
+
+				//Path for finding scenariolist
+				var sScenarioPath = "PT_SCENARIOPLAN(OfferID='" + oScenarioSaveInfo.OfferID + "',ProductCode=" + oScenarioSaveInfo.ProductCode +
+					",Active=1,Scenario=" + oScenarioSaveInfo.Scenario + ")";
+
+				//create or save scenario	
+				if (scenarioList && scenarioList.includes(sScenarioPath)) {
+					//update existing scenario
+					promises.push(Services.getService('Scenario').updateScenario(oScenarioToSave).catch(function (oError) {
+						Services.showErrorMessage(oError, "Updating scenario");
+						throw new Error(oError);
+					}));
+				} else {
+					//create scenario
+					promises.push(Services.getService('Scenario').createScenario(oScenarioToSave).catch(function (oError) {
+						Services.showErrorMessage(oError, "Creating scenario");
+						throw new Error(oError);
+					}));
+				}
+
+			}
+
+			//all scenario's are saved
+			//if all promises pushed from the loop have received their answer
+			//when finished
+			return Promise.all(promises).then((oResult) => {
+
+				//success (can be more then 1 result in result)	
+				return oResult;
+
+			}).catch(function (oError) {
+
+				//throw a new error for current change
+				throw new Error(oError);
+
+			});
+
+		},
+
+		//in financial offer change mode
+		setFinancialOfferEditBinding: function () {
+
+			//that is this
+			var that = this;
+
+			this.byId("idScenarioPlanner").setVisible(false);
+			this.byId("idPricingOffer").setVisible(false);
+
+			//get offer & product path
+			var sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID);
+
+			var sOfferPath = Services.getSelectedOfferPath();
+
+			var sProductPath = sOfferPath + "/Product";
+
+			//only if selected offer
+			if (sOfferPath) {
+
+				//get & keep offer
+				//Services.getDefaultModel().getProperty(sOfferPath);
+				Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+
+				//if currency is set on offer, we should disable the selection of the currency
+				var oCurrency = that.byId("idEditCurrency");
+				if (oOffer.Currency && oOffer.Currency !== "NULL") {
+					oCurrency.setEnabled(false);
+				} else {
+					oCurrency.setEnabled(true);
+				}
+
+				oCurrency.bindItems({
+					path: "fastData>/CountryCurrency",
+					filters: [new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, that._country)],
+					sorter: new sap.ui.model.Sorter("SORTER"),
+					template: new sap.ui.core.Item({
+						text: "{fastData>CURRENCY}",
+						key: "{fastData>CURRENCY}"
+					})
+				});
+				oCurrency.setSelectedKey(oOffer.Currency);
+
+				//Foc type is saved together with first product thats saved
+				var oEditFocType = that.byId("idEditFOCType");
+				if (oOffer.FOCType) {
+					oEditFocType.setEnabled(false);
+				} else {
+					oEditFocType.setEnabled(true);
+				}
+
+				var oFinancialOfferTemplate = new sap.m.ColumnListItem({
+					type: "Navigation",
+					press: that.onFinancialOfferProductItemPress.bind(that),
+					cells: [
+						//Product
+						new sap.m.Text({
+							text: "{fastData>SKU/PRODUCTPACKNAME}"
+						}),
+						//Volume
+						new sap.m.Text({
+							text: "{fastData>RequestedVolume}"
+						}),
+						//UoM
+						new sap.m.Text({
+							text: "{fastData>UnitPerPack}"
+						}),
+						//Net Price
+						new sap.m.ObjectNumber({
+							number: {
+								parts: [{
+									path: "Price/NetPrice",
+									model: "fastData"
+								}, {
+									path: "fastAppData>EditOffer/Currency",
+									model: "fastAppData"
+								}],
+								formatter: formatter.price
+							}
+						}),
+						//Offer Price
+						new sap.m.ObjectNumber({
+							number: {
+								parts: [{
+									path: "Price/OfferPrice",
+									model: "fastData"
+								}, {
+									path: "fastAppData>EditOffer/Currency",
+									model: "fastAppData"
+								}],
+								formatter: formatter.price
+							}
+						}),
+						//cogs
+						new sap.m.ObjectNumber({
+							number: {
+								parts: [{
+									path: "fastData>Price/COGS"
+								}, {
+									path: "fastAppData>EditOffer/Currency"
+								}, {
+									path: "fastData>UnitPerPack"
+								}, {
+									path: "fastData>SKU/PACKFACTOR"
+								}],
+								formatter: formatter.cogs
+							}
+						}),
+						//gross sales
+						new sap.m.ObjectNumber({
+							number: {
+								parts: [{
+									path: "fastData>Price/OfferPrice"
+								}, {
+									path: "fastData>RequestedVolume"
+								}, {
+									path: "fastAppData>EditOffer/Currency"
+								}],
+								formatter: formatter.grossSales
+							}
+						}),
+						//net sales
+						new sap.m.ObjectNumber({
+							number: {
+								parts: [{
+									path: "fastData>Price/NetPrice"
+								}, {
+									path: "fastData>RequestedVolume"
+								}, {
+									path: "fastAppData>EditOffer/Currency"
+								}, {
+									path: "fastData>Price/FOC"
+								}, {
+									path: "fastData>Price/FOC_ABS_PCT"
+								}, {
+									path: "fastData>Price/FOCType"
+								}],
+								formatter: formatter.netSales
+							}
+						}),
+						//Profitability
+						new sap.m.ObjectNumber({
+							number: {
+								parts: [{
+									path: "fastData>Price/NetPrice"
+								}, {
+									path: "fastData>Price/COGS"
+								}, {
+									path: "fastData>RequestedVolume"
+								}, {
+									path: "fastAppData>EditOffer/Currency"
+								}, {
+									path: "fastData>Price/SpotRate"
+								}, {
+									path: "fastData>Price/FOC"
+								}, {
+									path: "fastData>Price/FOC_ABS_PCT"
+								}, {
+									path: "fastData>Price/FOCType"
+								}, {
+									path: "fastData>UnitPerPack"
+								}, {
+									path: "fastData>SKU/PACKFACTOR"
+								}, {
+									path: "fastData>Price/FOC_Bundled_1"
+								}, {
+									path: "fastData>Price/FOC_ABS_PCT_Bundled_1"
+								}, {
+									path: "fastData>Price/Bundled_1_Cogs/COGS"
+								}, {
+									path: "fastData>Price/Bundled_1_SKU/PACKFACTOR"
+								}],
+								formatter: formatter.profit
+							},
+
+							state: {
+								parts: [{
+									path: "fastData>Price/NetPrice"
+								}, {
+									path: "fastData>Price/COGS"
+								}, {
+									path: "fastData>RequestedVolume"
+								}, {
+									path: "fastAppData>EditOffer/Currency"
+								}, {
+									path: "fastData>Price/SpotRate"
+								}, {
+									path: "fastData>Price/FOC"
+								}, {
+									path: "fastData>Price/FOC_ABS_PCT"
+								}, {
+									path: "fastData>Price/FOCType"
+								}, {
+									path: "fastData>UnitPerPack"
+								}, {
+									path: "fastData>SKU/PACKFACTOR"
+								}, {
+									path: "fastData>Price/FOC_Bundled_1"
+								}, {
+									path: "fastData>Price/FOC_ABS_PCT_Bundled_1"
+								}, {
+									path: "fastData>Price/Bundled_1_Cogs/COGS"
+								}, {
+									path: "fastData>Price/Bundled_1_SKU/PACKFACTOR"
+								}],
+								formatter: formatter.profitState
+							}
+						})
+					]
+				});
+
+				//Products table
+				var oSorter = new sap.ui.model.Sorter('SORTER');
+				var oTable = that.byId("idEditFinancialOfferViewProduct");
+				oTable.bindItems({
+					path: sProductPath,
+					model: "fastData",
+					filters: [
+						new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1),
+						new sap.ui.model.Filter("ActiveProduct", sap.ui.model.FilterOperator.NE, 2)
+					],
+					sorter: oSorter,
+					parameters: {
+						expand: "SKU,Price,RegisteredPrice,Cogs,Scenario,Price/Bundled_1_Cogs,Price/Bundled_1_SKU"
+					},
+					template: oFinancialOfferTemplate
+				});
+			}
+		},
+		onToggleScenarioPlanner: function (oEvent) {
+			var oScenarioPlanner = this.byId("idScenarioPlanner");
+			var oPricingOffer = this.byId("idPricingOffer");
+			oScenarioPlanner.setVisible(!oScenarioPlanner.getVisible());
+			oPricingOffer.setVisible(!oPricingOffer.getVisible());
+		},
+		onSelectScenario: function (oEvent) {
+			var buttonId = oEvent.getParameters().id;
+			var idScenario = buttonId[buttonId.length - 1];
+
+			this.byId("idEditPriceOffer_idOfferPrice").setValue(this.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue());
+			//this.byId("idEditPriceOffer_idFocType").setSelectedKey(this.byId("idEditPriceOfferScenario" + idScenario + "_idFocType").getSelectedKey());
+			this.byId("idEditPriceOffer_idFocAbsPct").setSelectedKey(this.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey());
+			this.byId("idEditPriceOffer_idFoc").setValue(this.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue());
+			//update additional FOC as well
+			this.byId("idEditPriceOffer_idFOCProdBund1").setSelectedKey(this.byId("idEditPriceOfferScenario" + idScenario + "_idFOCProdBund1").getSelectedKey());
+			this.byId("idEditPriceOffer_idFocAbsPct1").setSelectedKey(this.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct1").getSelectedKey());
+			this.byId("idEditPriceOffer_idFoc1").setValue(this.byId("idEditPriceOfferScenario" + idScenario + "_idFoc1").getValue());
+
+			this.onEditFinancialOffer(oEvent);
+			this.onToggleScenarioPlanner(oEvent);
+
+		},
+
+		//QUOTATION TAB
+		//-------------
+		onQuotationOfferItemPress: function (oEvent) {
+
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			if (oEvent) { //if you enter this method from the edit button, the oEvent is empty & offer path is already set
+				var sSelectedOfferPath = oEvent.getSource().getBindingContext("fastData").getPath();
+				Services.setSelectedOfferPath(sSelectedOfferPath);
+			} else {
+				var sSelectedOfferPath = Services.getSelectedOfferPath();
+			}
+
+			//Product path
+			var sProductPath = sSelectedOfferPath + "/Product";
+
+			//get & keep selected offerID
+			//var sSelectedOfferID = that.getView().getModel("fastData").getProperty(sSelectedOfferPath).OfferID;
+			var sSelectedOfferID = Services.getSelectedOfferID();
+			Services.setSelectedOfferID(sSelectedOfferID);
+
+			//if you click on an offer it is available (sometimes it is not availble when you switch between tabs)
+			Services.setSelectedOfferAvailable(true);
+
+			//Selected offer
+			var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+			oFastAppDataModel.setProperty("/EditOffer/", oOffer);
+
+			//at this point no product should be selected.
+			Services.setSelectedProductID("");
+			Services.setSelectedProductName("");
+			Services.setSelectedProductPath("");
+			Quotation.setDelayInSubmission(null);
+
+			//hide offer table, so there is more space on the screen
+			/*
+			if(sSelectedOfferID){
+				that.getView().byId("panelQuotationOfferTableID").setExpanded(false);
+			}
+			*/
+
+			//get products that are loaded
+			var aProducts = Services.getLoadedProductsForOffer(sSelectedOfferID);
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//load quotation data
+			$.when(Quotation.loadOfferAndProductValidationInfo()).done(function (oData) {
+
+			});
+
+			//set to fastappdata model for easy access on the view
+			oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
+			var oForm = that.byId("IdQuotationInfo");
+			oForm.setVisible(true);
+			oForm.bindElement({
+				path: sSelectedOfferPath,
+				model: "fastData"
+			});
+			oForm = that.byId("IdQuotationInfo2");
+			oForm.setVisible(true);
+			oForm.bindElement({
+				path: sSelectedOfferPath,
+				model: "fastData"
+			});
+
+			//bind offer of default model to data to switch
+			var oSwitch = that.byId("idDelayInSubmission");
+			oSwitch.bindElement({
+				path: sSelectedOfferPath,
+				model: "fastData"
+			});
+
+			var sOfferStatus = oOffer.OfferStatus.STATUS;
+			var sOfferDate = "";
+			if (oOffer && oOffer.Quotation) {
+				sOfferDate = oOffer.Quotation.OfferDate;
+			}
+
+			//check if there needs to be an update (already existing and erpost)
+			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(function (oData) {
+
+				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
+
+				//enable or disable download button 
+				var enableDownload = false;
+				if (sOfferStatus !== "Offer Created" && (oQuotation && oQuotation.UPDATED === 1)) {
+					enableDownload = true;
+				}
+				that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+
+				//enable or disable submit button
+				var enableSubmit = false;
+				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1)) {
+					enableSubmit = true;
+				}
+				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
+
+			});
+
+		},
+
+
+		//switchDelayInSubmission on or off
+		onSwitchDelayInSubmission: function (oEvent) {
+
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			var bDelayInSubmission = oEvent.getParameters("state").state;
+
+			//keep delay in submission
+			if (bDelayInSubmission) {
+				//true
+				Quotation.setDelayInSubmission('Yes');
+			} else {
+				//false
+				Quotation.setDelayInSubmission('No');
+			}
+
+			//offerdate for quotation path
+			var sOfferDate = oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"); //that.byId("idQofferDate").getValue();
+
+			//do the save of the quotation
+			$.when(Quotation.saveDelayInSubmission(Quotation.getDelayInSubmission(), sOfferDate)).done(function (oSaveStatus) {
+				//message
+				sap.m.MessageToast.show("Saved the delay in submission");
+			});
+		},
+
+		onDownloadQuotation: function (oEvent) {
+			// Now using download link on sharepoint
+			$.when(Services.checkOfferStatus()).done(function (oData) {
+				var url = (oData.STATUS !== "Awaiting Approval") ?
+					"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf" :
+					"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/System_Data/System_TMP/Quotation_$OfferId.pdf";
+				var countryCode = Services.getCountryCodeofSelectedTender();
+				var tenderId = Services.getSelectedTenderID();
+				var offerId = Services.getSelectedOfferID();
+				url = url.replace("$CountryCode", countryCode);
+				url = url.replace("$TenderId", tenderId);
+				url = url.replace("$OfferId", offerId);
+				window.open(url);
+			});
+
+			// KEEP!!! OUTDATED BUT MIGHT BE RE-USED!!!
+			// var oModel = new sap.ui.model.odata.ODataModel(Services.getConnectionString());
+			// var sOfferID = this.getView().byId("headerOfferId").getText(); //get selected offerid
+			// if (!sOfferID) {
+			// 	sap.m.MessageBox.warning("First select an offer for quotation.", {});
+			// 	return;
+			// }
+			// var sSelectedOfferPath = Services.getSelectedOfferPath();
+			// var oOffer = this.getView().getModel("fastData").getProperty(sSelectedOfferPath);
+			// var sSelectedOfferID = oOffer.OfferID;
+			// var aProducts = Services.getLoadedProductsForOffer(sSelectedOfferID);
+			// oModel.read(sSelectedOfferPath, {
+			// 	urlParameters: {
+			// 		"$expand": "Distributor,SellingCompanyDetails"
+			// 	},
+			// 	success: function (oData, oResponse) {
+			// 		Quotation.createWordQuotation(oData, aProducts);
+			// 	},
+			// 	error: function fnError(response) {
+			// 		var a = 1;
+			// 	}
+			// });
+		},
+
+		//when submitting quotation, we will save data in the quotation tab + set the correct status on the offer
+		onSaveDefaultQuotation: function (oEvent) {
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			$.when(Services.checkOfferStatus()).done(function (oData) {
+				var sStatus = oData.STATUS;
+				var aStatusNoEdit = [
+					"Awaiting Approval" //,
+				];
+				if ($.inArray(sStatus, aStatusNoEdit) !== -1) {
+					sap.m.MessageBox.warning("Quotation cannot be saved, offer is in status Awating approval.", {});
+				} else {
+					//keep the latest state of switch delay in submission
+					var bDelayInSubmission = that.byId("idDelayInSubmission").getState();
+
+					//keep delay in submission (needed when you don't click on the switch first)
+					if (bDelayInSubmission) {
+						//true
+						Quotation.setDelayInSubmission('Yes');
+					} else {
+						//false
+						Quotation.setDelayInSubmission('No');
+					}
+
+					var quotationFields = {
+						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
+						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+						CustomRemark: that.byId("idCustomRemark").getValue(),
+						IssuedBy: that.byId("idSelectIssuedBy").getSelectedKey(),
+						CompanyStamp: that.byId("idSelectCompanyStamp").getSelectedKey()
+					};
+
+					//do the save of the quotation with UPDATED to 1
+					$.when(Quotation.saveQuotation(quotationFields, 1)).done(function (bSave) {
+
+						var oFastAppDataModel = Services.getFastAppDataModel();
+						//var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
+
+						//check if there needs to be an update (already existing and erpost)
+						$.when(Quotation.loadQuotationForSelectedOffer(quotationFields.OfferDate)).done(function (oData) {
+
+							var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
+
+							//get updated status
+							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
+
+							var enableSubmit = false;
+							if (sStatus === "Offer Approved" && (oQuotation)) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+								enableSubmit = true;
+							}
+							that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
+
+							//enable or disable download button 
+							var enableDownload = false;
+							if (sStatus !== "Offer Created" && (oQuotation)) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+								enableDownload = true;
+							}
+							that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+
+							//refresh everything
+							that.onRefresh();
+
+						});
+
+					});
+				}
+			});
+		},
+		onSubmitQuotation: function (oEvent) {
+
+			//that is this
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			$.when(Services.checkOfferStatus()).done(function (oData) {
+				var aStatusNoEdit = [
+					"Awaiting Approval" //,
+				];
+				if ($.inArray(oData.STATUS, aStatusNoEdit) !== -1) {
+					sap.m.MessageBox.warning("Quotation cannot be submitted, offer is awating approval.", {});
+				} else {
+					//keep the latest state of switch delay in submission
+					var bDelayInSubmission = that.byId("idDelayInSubmission").getState();
+
+					//keep delay in submission (needed when you don't click on the switch first)
+					if (bDelayInSubmission) {
+						//true
+						Quotation.setDelayInSubmission('Yes');
+					} else {
+						//false
+						Quotation.setDelayInSubmission('No');
+					}
+
+					var quotationFields = {
+						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
+						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+						CustomRemark: that.byId("idCustomRemark").getValue(),
+						IssuedBy: that.byId("idSelectIssuedBy").getSelectedKey(),
+						CompanyStamp: that.byId("idSelectCompanyStamp").getSelectedKey()
+					};
+
+					//do the save of the quotation
+					$.when(Quotation.submitQuotation(quotationFields)).done(function (oSaveStatus) {
+						//refresh everything
+						that.onRefresh();
+					});
+				}
+			});
+		},
+		_onSaveQuotation: function (oEvent) {
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			var quotationFields = {
+				OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
+				OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+				CustomRemark: this.byId("idCustomRemark").getValue(),
+				IssuedBy: this.byId("idSelectIssuedBy").getSelectedKey(),
+				CompanyStamp: this.byId("idSelectCompanyStamp").getSelectedKey()
+			};
+
+			//keep selected offer
+			var sOfferID = Services.getSelectedOfferID();
+			var sOfferPath = Services.getSelectedOfferPath();
+
+			//do the save of the quotation
+			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
+
+				//Refresh (beceause offer is reselected in onRefresh as well)
+				that.onRefresh();
+
+			});
+
+			this.onEditToggleButtonPress();
+
+		},
+
+		//TENDER RESULTS TAB
+		//-------------------
+
+		//Method for loading products for offer + so edit can be done for PT_TMTRRES
+		//TODO: remove logic to retrieve data for original outcome table 
+
+		onTenderResultsOfferPress: function (oEvent) {
+
+			//that = this
+			var that = this;
+
+			//var oModel = that.getView().getModel("fastData");
+			//var aFilters = [];
+
+			//get & keep the path of the offer we selected
+			if (oEvent) { //if you enter this method from the edit button, the oEvent is empty & offer path is already set
+				var sSelectedOfferPath = oEvent.getSource().getBindingContext("fastData").getPath();
+				Services.setSelectedOfferPath(sSelectedOfferPath);
+			} else {
+				var sSelectedOfferPath = Services.getSelectedOfferPath();
+			}
+
+			//getting selected offer on the new way.
+			var sSelectedOfferID = Services.getSelectedOfferID(); //this.getView().getModel("fastData").getProperty(sSelectedOfferPath).OfferID;
+
+			//Get offer table + column from where we can check if offer is valid for tab
+			//var oOffersTable = that.getView().byId("tenderResultsOfferTableViewID");
+			//var iIndexColumnOfferID = this.getView().byId("tenderResultsOfferTableOfferID").getOrder();
+
+			//check if offer is selected & valid for current tab (page section)
+			//if(sSelectedOfferID && Services.checkOfferValidForTab(sSelectedOfferID, iIndexColumnOfferID, oOffersTable)){
+			if (sSelectedOfferID && Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), Services.getTenderResultsPageSectionID())) {
+
+				//indicate that tree table is loading
+				var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				oOutcomeTreeTable.setBusy(true);
+
+				//Product path
+				var sProductPath = sSelectedOfferPath + "/Product";
+
+				//Services.setSelectedOfferID(sSelectedOfferID);
+
+				//if you click on an offer it is available (sometimes it is not availble when you switch between tabs)
+				Services.setSelectedOfferAvailable(true);
+				//hide offer table so there is more space on the screen
+				/*
+				if(sSelectedOfferID){
+					that.getView().byId("panelTenderResultsOfferTableID").setExpanded(false);
+				}
+				*/
+
+				//get products that are loaded
+				var aProducts = Services.getLoadedProductsForOffer(sSelectedOfferID);
+
+				//catch all promises in an array
+				let promises = [];
+
+				//build dynamic list for outcome reasons
+				aProducts.results.forEach(function (oProduct, iIndex) {
+					/*
+					promises.push($.when(Services.loadCompetitorResults(sSelectedOfferID, oProduct.ProductCode, iIndex)).done(function(oCompetitorResultsNew){
+						var oCompetitors = oCompetitorResultsNew;
+					}));
+					*/
+					//loop at each result to check outcome & corresponding reasons
+					oProduct.Results.results.forEach(function (oResult) {
+
+						//TODO localy keep all outcome results and select localy correct values from list
+
+						//load outcome reasons for bayer product results
+						promises.push($.when(Services.loadOutcomeReasons(oResult.Outcome, iIndex)).done(function (oOutcomeReasons) {
+							//keep list of outcome reasons with the correct product (Product & Results = 1 to 1)
+							//aProducts.results[oOutcomeReasons.index].Results.results[0].ListOutcomeReasons = oOutcomeReasons.results;
+							oResult.ListOutcomeReasons = oOutcomeReasons.results;
+
+						}));
+
+						//load outcome reasons for competitor results
+						if (oResult.CompetitorResult && oResult.CompetitorResult.results) {
+							//for each competitor in product result
+							oResult.CompetitorResult.results.forEach(function (oCompetitorResult) {
+								promises.push($.when(Services.loadOutcomeReasons(oCompetitorResult.OUTCOME, iIndex)).done(function (oOutcomeReasonsComp) {
+									//keep list of outcome reasons with the correct product (Product & Results = 1 to 1)
+									oCompetitorResult.ListOutcomeReasons = oOutcomeReasonsComp.results;
+
+								}));
+							});
+						}
+
+					});
+
+				});
+
+				//load currency for country (dropdown)
+				var sCountry = Services.getSelectedCountry();
+				promises.push($.when(Services.loadCountryCurrency(sCountry)).done(function (oTenderData) {
+					//do nothing
+				}));
+
+				//if all promises pushed from the loop have received their answer
+				Promise.all(promises).then((result) => {
+					//TODO Is this still needed? we now use /ResultsForProducts (but maybe for the other tabs Delivery track or quoatation?
+					var oFastAppDataModel = Services.getFastAppDataModel();
+					oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
+
+					//empty array 
+					var aResultsForProducts = [];
+					var aResultsForTree = [];
+
+					aProducts.results.forEach(function (oProduct, iIndex) {
+
+						//Product must be active to be shown in the tree-table (this filtering can not be done in view, beceause of bug in standard SAPUI5 for tree table https://github.com/SAP/openui5/issues/1822)
+						if (oProduct.Active === 1 && oProduct.ActiveProduct !== 2) {
+
+							//are there results
+							if (oProduct.Results && oProduct.Results.results.length > 0) {
+								oProduct.Results.results.forEach(function (oResult) {
+									//Results, repeat product for each result
+									var oResultsForProducts = {
+										oProduct: {},
+										oResult: {}
+									};
+									//add product
+									oResultsForProducts.oProduct = oProduct;
+									oResultsForProducts.oResult = oResult;
+									aResultsForProducts.push(oResultsForProducts);
+
+									//build tree
+									if (oResult.CompetitorResult && oResult.CompetitorResult.results) {
+										var aCompetitorResult = [];
+
+										//for each competitor in product result
+										oResult.CompetitorResult.results.forEach(function (oCompetitorResult) {
+
+											//default reason if empty & edit mode
+											/*if( (oCompetitorResult.OUTCOME === 'Won' || oCompetitorResult.OUTCOME === 'Lost') && (oCompetitorResult.REASON === '' || oCompetitorResult.REASON === 'Not Specified') ){
+												oCompetitorResult.REASON = 'Not Specified';
+											} else {
+												oCompetitorResult.REASON = oCompetitorResult.REASON;
+											}*/
+
+											var oCompetitorResultForView = {
+												OFFERID: oCompetitorResult.OFFERID,
+												PRODUCTCODE: oCompetitorResult.PRODUCTCODE,
+												PRODUCT: oCompetitorResult.AWARDEDPRODUCT,
+												OUTCOME: oCompetitorResult.OUTCOME,
+												UOM: oCompetitorResult.UOM,
+												REQUESTEDVOLUME: null,
+												AWARDEDQTY: oCompetitorResult.AWARDEDQTY,
+												REASON: oCompetitorResult.REASON,
+												COMMENT: oCompetitorResult.COMMENT,
+												AWARDEDCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
+												AWARDEDPRODUCT: oCompetitorResult.AWARDEDPRODUCT,
+												AWARDEDPRICE: oCompetitorResult.AWARDEDPRICE,
+												FOC: oProduct.Price.FOC,
+												FOCTYPE: oProduct.Price.FOCType,
+												FOC_ABS_PCT: oProduct.Price.FOC_ABS_PCT,
+												UNITPERPACK: oProduct.UnitPerPack,
+												CURRENCY: oCompetitorResult.CURRENCY,
+												LISTOUTCOMEREASONS: oCompetitorResult.ListOutcomeReasons,
+												_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
+											}
+											aCompetitorResult.push(oCompetitorResultForView);
+										});
+									}
+
+									//Bayer product that will be saved in PT_TMTRRES
+									/* when awarded QTY is not yet filled, it will take the requested volume as default value*/
+									if (oResult.AwardedQty === "") {
+										var sAwardedQtyBayer = oProduct.RequestedVolume;
+									} else {
+										sAwardedQtyBayer = oResult.AwardedQty;
+									}
+
+									//default reason if empty & edit mode
+									/*if( (oResult.Outcome === 'Won' || oResult.Outcome === 'Lost') && (oResult.Reason === '' || oResult.Reason === 'Not Specified') ){
+										oResult.Reason = 'Not Specified';
+									} else {
+										oResult.Reason = oResult.Reason;
+									}*/
+
+									//offerprice not always existing
+									var iAwardedPrice = null;
+									if (oProduct && oProduct.Price && oProduct.Price.OfferPrice) {
+										iAwardedPrice = oProduct.Price.OfferPrice;
+									}
+									var oBayerProduct = {
+										OFFERID: oProduct.OfferID,
+										PRODUCTCODE: oProduct.ProductCode,
+										PRODUCT: oProduct.SKU.PRODUCTPACKNAME,
+										ERRORINSUBMISSION: oResult.ErrorInSubmission,
+										OUTCOME: oResult.Outcome,
+										//UOM: oResult.UoM,
+										UOM: oProduct.UnitPerPack,
+										//AWARDEDQTY: oResult.AwardedQty,
+										//AWARDEDQTY: oProduct.RequestedVolume,
+										REQUESTEDVOLUME: oProduct.RequestedVolume,
+										AWARDEDQTY: sAwardedQtyBayer,
+										REASON: oResult.Reason,
+										COMMENT: oResult.Comment,
+										AWARDEDCOMPANY: "Bayer",
+										AWARDEDPRODUCT: oProduct.SKU.PRODUCTPACKNAME,
+										AWARDEDPRICE: iAwardedPrice,
+										FOC: oProduct.Price.FOC,
+										FOCTYPE: oProduct.Price.FOCType,
+										FOC_ABS_PCT: oProduct.Price.FOC_ABS_PCT,
+										UNITPERPACK: oProduct.UnitPerPack,
+										//CURRENCY: oResult.Currency,
+										CURRENCY: oProduct.Offer.Currency,
+										LISTOUTCOMEREASONS: oResult.ListOutcomeReasons,
+										OutcomeLevel: aCompetitorResult,
+										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
+									}
+
+									var oResultsForTree = {
+										OutcomeLevel: oBayerProduct
+									}
+
+									aResultsForTree.push(oResultsForTree.OutcomeLevel);
+
+								});
+
+							} else {
+								//never happens? beceause we always add an empty result when loading ProductsForOffers
+							}
+
+						}
+
+					});
+
+					oFastAppDataModel.setProperty("/ResultsForProducts/", aResultsForProducts);
+					oFastAppDataModel.setProperty("/ResultsForTree/", aResultsForTree);
+
+					//apply filter for outcome tree table
+					oOutcomeTreeTable.getBinding("rows").filter(
+						new Filter({
+							path: "_sOperation",
+							operator: "NE",
+							value1: "DELETE",
+						})
+					);
+					oOutcomeTreeTable.setBusy(false);
+
+				})
+
+			}
+
+		},
+
+		//collapse hyrarchie of tree table
+		onCollapseOutcome: function () {
+			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			oOutcomeTreeTable.collapseAll();
+		},
+
+		//Expand hyrarchie of tree table
+		onExpandOutcome: function () {
+			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			oOutcomeTreeTable.expandToLevel(1);
+		},
+
+		//add awarded company results
+		onAddAwardedProduct: function (oEvent) {
+
+			//get model & selected row
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
+			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+
+			//check if a product is selected
+			if (oRowContext === null) {
+				sap.m.MessageToast.show("Please first select the line where you want to add a product...");
+				return;
+			}
+
+			//get path of selected product (This can be a Bayer product or an Awarded product)
+			var sPathSelectedRow = oRowContext.getPath();
+
+			//check if selected product is an awarded product (the path includes OutcomeLevel/xx)
+			if(sPathSelectedRow.includes("/OutcomeLevel")){ 
+				//get path of parent (BayerProduct)
+				sPathSelectedRow = sPathSelectedRow.substring(0,sPathSelectedRow.indexOf("/OutcomeLevel"));
+			}
+
+			//get main path for the rewarded 
+			var sPathSelectedRowSubLevel = sPathSelectedRow + "/OutcomeLevel";
+			var aCompetitorsForSelectedRow = oFastAppDataModel.getProperty(sPathSelectedRowSubLevel);
+			if (!aCompetitorsForSelectedRow) {
+				aCompetitorsForSelectedRow = [];
+			}
+
+			//Add new awarded product
+			var oBayerProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
+			var oNewRewardedProduct = Services.getService('Product').getEmptyProductResult();
+			
+			//fill necesary data
+			oNewRewardedProduct.OFFERID = oBayerProduct.OFFERID;
+			oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
+			aCompetitorsForSelectedRow.push(oNewRewardedProduct);
+			oFastAppDataModel.setProperty(sPathSelectedRowSubLevel, aCompetitorsForSelectedRow);
+
+		},
+
+		//remove awarded company results
+		onDeleteAwardedProduct: function (oEvent) {
+
+			//get model & selected row
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
+			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+			
+			//check if a product is selected
+			if (oRowContext === null) {
+				sap.m.MessageToast.show("Select an awarded product to delete");
+				return;
+			}
+
+			var sPathSelectedRow = oRowContext.getPath();
+			var iRowIndexAwarded = sPathSelectedRow.split('/')[4];
+			var iRowIndexParent = sPathSelectedRow.split('/')[2];
+
+			var sPathResultsForTree = "/ResultsForTree";
+			var sPathResultsForTreeAwarded = "/ResultsForTree/" + iRowIndexParent + "/OutcomeLevel/";
+
+			//TODO in the future iLevel should just not be 0 so every line will be able to select the awarded product
+			if (sPathSelectedRow.includes("/OutcomeLevel")) {
+
+				//delete rewarded product
+				var oAwardedProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
+
+				if (oAwardedProduct._sOperation === "PUT") {
+					//in this case the awarded product for this institute already exists in the back-end tables
+					//so we keep it but put it as DELETE operation
+					oAwardedProduct._sOperation = "DELETE";
+					oFastAppDataModel.setProperty(sPathSelectedRow, oAwardedProduct);
+				} else {
+					//awarded product for this institute does not exists in the back-end tables
+					//so we can delete it without deleting it in back-end during save
+					var aResultsForTreeAwarded = oFastAppDataModel.getProperty(sPathResultsForTreeAwarded);
+					var aResultsForTree = oFastAppDataModel.getProperty(sPathResultsForTree);
+					aResultsForTreeAwarded.splice(iRowIndexAwarded, 1);
+					//oFastAppDataModel.setProperty(sPathResultsForTree,aResultsForTree);
+					oFastAppDataModel.setProperty(sPathResultsForTree, aResultsForTree);
+				}
+
+			} else {
+				//message that you 
+				sap.m.MessageToast.show("Select an awarded product to delete");
+			}
+
+		},
+
+		onEditOutcomTreeTable: function () {
+			/*	
+			var oTable = this.getView().byId("idOutcomeTable");
+				var oRows = oTable.getRows();
+				var oItem = {};
+				
+				var aCellsDisplayOnly = [0, 1, 2, 3, 4];
+				
+				var bEditMode = Services.getEditMode();
+				
+				oRows.forEach(function (oRow) {
+					oItem = oRow.getCells();
+					
+					for (var i = 0; i < oItem.length; i++) {
+						if (bEditMode === true) {
+								//if awarded company (9), product (10) or price (11)
+							if (i === 1 || i === 0 || i === 2 ) {
+									//outcome (6) is won
+									if( oItem[7].getSelectedKey() === "Won"){
+										//these fields are disabled and have default values
+										oItem[i].setProperty("editable", false);
+										oItem[1].setValue("Bayer");
+										oItem[0].setValue(oItem[0].getValue()); //product won is product selected
+										oItem[2].setValue(oItem[2].getValue()); //price won is price selected
+									}
+									
+									//outcome (6) is lost
+									if( oItem[7].getSelectedKey() === "Lost"){
+										oItem[i].setProperty("editable", true);
+										oItem[1].setValue("");
+										oItem[0].setValue("");
+										oItem[2].setValue("0");
+									}
+							} else {
+								oItem[i].setProperty("editable", true);
+							}
+							
+							
+						}
+					}
+				});
+				*/
+		},
+
+		//when changing outcome in results table
+		onChangeOutcome: function (oEvent) {
+
+			//get products that are bound to this table
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get results from tree binding
+			var sPathResultsForTree = "/ResultsForTree";
+			var aResultsForTree = oFastAppDataModel.getProperty(sPathResultsForTree);
+
+			//get selected value
+			var oOutcomeDrop = oEvent.getSource();
+			var sOutcome = oOutcomeDrop.getSelectedItem().getKey();
+			var iIndex = oOutcomeDrop.getParent().getIndex();
+			var sBindingPath = oOutcomeDrop.getBindingContext("fastAppData").getPath();
+			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+
+			var oReasonResultsDrop = this.byId("resultsForTreeReason");
+
+			//if outcome is lost or won, the reason is enabled otherwise it is disabled
+			if (sOutcome === "Won" || sOutcome === "Lost") {
+
+				//load list of reasons depending on won or lost + change binding of reason
+				$.when(Services.loadOutcomeReasons(sOutcome, iIndex)).done(function (oOutcomeReasons) {
+					oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+				});
+
+				oFastAppDataModel.getProperty(sBindingPath).REASON = "Not Specified";
+
+			} else {
+				//clear list of outcome reasons for this product
+				var aListOutcomeReasons = [];
+				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, aListOutcomeReasons);
+			}
+
+		},
+
+		//saving the tender results page
+		//TODO move to services file (refactoring)
+		_onSaveTenderResults: function (sPathIn, oModelrf) {
+
+			//FastAppDataModel
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var aMessages = [];
+			var bError = false;
+
+			//model for saving
+			var oModel = Services.getDefaultModel(); //new sap.ui.model.odata.ODataModel(Services.getConnectionString());
+			var that = this;
+
+			//get fastData model
+			var oDefaultData = Services.getDefaultModel();
+			var sOfferPath = Services.getSelectedOfferPath();
+
+			let promises = [];
+			var oBayerResultToSave = {};
+
+			//var offerid = this.getView().getModel("fastData").getProperty(path).OfferID;
+			var sOfferID = Services.getSelectedOfferID();
+			var sTenderID = Services.getSelectedTenderID();
+			var sInstituteID = Services.getInstituteIDofSelectedTender();
+			var sCountryCode = Services.getCountryCodeofSelectedTender();
+
+			//products of offer
+			var aResultsForProducts = oFastAppDataModel.getProperty("/ResultsForProducts");
+			var aResultsForTree = oFastAppDataModel.getProperty("/ResultsForTree");
+			
+			aResultsForTree.forEach(function(oResultForTree, iIndex) {
+				//loop at competitors awarded results
+				if (oResultForTree.OutcomeLevel && oResultForTree.OutcomeLevel.length > 0) {
+					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
+						if(oResultForTree._sOperation !== "DELETE"){
+							if(!oOutcomeLevel.AWARDEDCOMPANY || !oOutcomeLevel.PRODUCT){
+								var oMessage = {
+									type: 'Error',
+									title: 'Please enter all mandatory fields.',
+								};
+
+								aMessages.push(oMessage);
+								bError = true;
+							}
+						}
+					});
+				}
+			});
+
+			if(bError){
+				Services.showMessageCompositeView('Error', aMessages, 'Error');
+				return;
+			}
+
+			//loop at each row TODO this can be handeled by using binding in the same way as on the other tabs, so no looping over rows...
+			aResultsForTree.forEach(function (oResultForTree, iIndex) {
+
+				//only if we are in a cell with a product
+				if (oResultForTree) {
+
+					//push data for saving
+					oBayerResultToSave = {
+						TenderID: sTenderID,
+						OfferID: sOfferID,
+						CountryCode: sCountryCode,
+						InstituteID: sInstituteID, //Number(aCells["14"].getSelectedKey()),
+						ProductCode: oResultForTree.PRODUCTCODE,
+						SubmittedOn: moment().utc().toDate(),
+						SubmittedBy: UserInfo.getCWID(),
+						Active: 1,
+						ErrorInSubmission: oResultForTree.ERRORINSUBMISSION,
+						Outcome: oResultForTree.OUTCOME,
+						AwardedCompany: oResultForTree.AWARDEDCOMPANY, //"Bayer",
+						AwardedProduct: oResultForTree.AWARDEDPRODUCT, //0
+						AwardedPrice: (oResultForTree.AWARDEDPRICE === "" || oResultForTree.AWARDEDPRICE === null) ? null : oResultForTree.AWARDEDPRICE
+							.toString(), //2
+						Currency: oResultForTree.CURRENCY,
+						AwardedQty: (oResultForTree.AWARDEDQTY !== "") ? oResultForTree.AWARDEDQTY : "0",
+						// AwardedQty: sAwardedQty
+						UoM: oResultForTree.UOM,
+						Reason: oResultForTree.REASON,
+						Comment: oResultForTree.COMMENT,
+						AwardedTier: 0
+					};
+
+					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
+					switch (oResultForTree._sOperation) {
+					case "POST":
+						//create new Result (Bayer)
+						promises.push(Services.getService('Result').createResult(oBayerResultToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Creation of Bayer Result");
+							//promises must fail as well
+							throw new Error(oError);
+						}));
+						oBayerResultToSave = {};
+						break;
+					case "PUT":
+						//update Result (Bayer)
+						promises.push(Services.getService('Result').updateResult(oBayerResultToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Updating of Bayer Result");
+							//promises must fail as well
+							throw new Error(oError);
+						}));
+						oBayerResultToSave = {};
+						break;
+					default:
+						//update Result (Bayer)
+						promises.push(Services.getService('Result').updateResult(oBayerResultToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Updating of Bayer Result");
+							//promises must fail as well
+							throw new Error(oError);
+						}));
+						oBayerResultToSave = {};
+						break;
+					}
+
+					//loop at competitors awarded results
+					if (oResultForTree.OutcomeLevel && oResultForTree.OutcomeLevel.length > 0) {
+						oResultForTree.OutcomeLevel.forEach(function (oCompetitorResult, iIndex) {
+							//competitor results
+							var oCompetitorResultToSave = Services.getService('CompetitorResult').getConvertCompetitorResultToSave(oCompetitorResult);
+							//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
+							switch (oCompetitorResult._sOperation) {
+							case "POST":
+								//create Result (Competitor)
+								promises.push(Services.getService('CompetitorResult').createCompetitorResult(oCompetitorResultToSave).catch(function (
+									oError) {
+									//show error message
+									Services.showErrorMessage(oError, "Create Result");
+									//promises must fail as well
+									throw new Error(oError);
+								}));
+								oCompetitorResultToSave = {};
+								break;
+							case "PUT":
+								//update Result (Competitor)
+								promises.push(Services.getService('CompetitorResult').updateCompetitorResult(oCompetitorResultToSave).catch(function (
+									oError) {
+									//show error message
+									Services.showErrorMessage(oError, "Updating of Competitor Result");
+									//promises must fail as well
+									throw new Error(oError);
+								}));
+								oCompetitorResultToSave = {};
+								break;
+							case "DELETE":
+								//remove Result (Competitor)
+								promises.push(Services.getService('CompetitorResult').removeCompetitorResult(oCompetitorResultToSave).catch(function (
+									oError) {
+									//show error message
+									Services.showErrorMessage(oError, "Removing of Competitor Result");
+									//promises must fail as well
+									throw new Error(oError);
+								}));
+								oCompetitorResultToSave = {};
+								break;
+							default:
+								break;
+							}
+						});
+					}
+
+				}
+
+			});
+
+			//DOING THE ACCUAL SAVE
+			Promise.all(promises).then((result) => {
+
+				var sTenderPath = Services.getSelectedTenderPath();
+				var sTenderID = Services.getSelectedTenderID();
+				var sOfferID = Services.getSelectedOfferID();
+
+				//we will load tender again after save is done
+				var bLoadedCheck = false;
+
+				//load all data again
+				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+					//give message that everything was updated
+					sap.m.MessageBox.success("Tender Results Updated Successfully", {});
+
+					//save offer status as tender recorded... 
+					$.when(Services.saveOfferStatus("Results Recorded")).done(function (oSaveStatus) {
+
+						//FOR THE NEW tree table
+						//that.onOutcomeTableEditMode();
+						that.onEditOutcomTreeTable();
+
+						that.getView().getModel("fastData").refresh(true);
+						oModelrf.getModel("fastData").refresh(true);
+						that.onEditToggleButtonPress();
+						//Services.setSelectedTenderID(sTenderID);
+
+						//clear all input
+						var bKeepSelectedOffer = true;
+						Services.clearAllForDeliveryTrackingPage(bKeepSelectedOffer);
+
+						//this way we can use a seperate layer, adding deleting... and afterords saving
+						var oFastAppDataModel = Services.getFastAppDataModel();
+						that.getView().setModel(oFastAppDataModel, "fastAppData");
+
+						//refresh & load everything + re-select
+						that.onRefresh();
+
+					});
+
+				});
+
+			}).catch(function (oError) {
+
+				//error message
+				Services.showErrorMessage(oError, "Saving tender results");
+			});
+
+		},
+
+		onChangeSampleYN: function (oEvent) {
+			//get selected value
+			var oSampleYN = oEvent.getSource();
+			var sSample = oSampleYN.getSelectedItem().getKey();
+
+			//get cells from same row as oOutcomeDrop
+			var aCells = oSampleYN.getParent().getCells();
+			if (sSample === "No") {
+				aCells[6].setValue("0");
+			}
+		},
+
+		onChangeDecline: function (oEvent) {
+			//get selected value
+			var oDecline = oEvent.getSource();
+			var sDecline = oDecline.getSelectedItem().getKey();
+
+			//get cells from same row as oOutcomeDrop
+			var aCells = oDecline.getParent().getCells();
+			if (sDecline === "1") {
+				aCells[14].setValue("");
+			}
+		}
+
+	});
+});

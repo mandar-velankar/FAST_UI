@@ -1,0 +1,122 @@
+<mvc:View
+	controllerName="com.bayer.tender.contracts.controller.Master"
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core">
+	<f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
+		<!-- DynamicPage Title -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Title text="Contracts"/>
+				</f:heading>
+			</f:DynamicPageTitle>
+		</f:title>
+
+		<!-- DynamicPage Content -->
+		<f:content>
+			<VBox fitContainer="true">
+				<OverflowToolbar class="sapFDynamicPageAlignContent">
+					<!-- Filter for Country -->
+					<Select id="idSlctCountry" forceSelection="true" selectedKey="SA" items="{ path: 'ctr>/countries', sorter: { path: 'countryName' } }"
+							change=".setFilter">
+							<core:Item key="{ctr>countryCode}" text="{ctr>countryName}"/>
+					</Select>
+
+					<!-- Filter for Status -->
+					<Select id="idSlctChannel" forceSelection="true" change=".setFilter" visible="true">
+						<items>
+							<core:Item key="All" text="All"/>
+							<core:Item key="Tender" text="Tenders"/>
+							<core:Item key="Other" text="Other"/>
+						</items>		
+					</Select>
+					<ToolbarSpacer/>
+					
+					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
+					<OverflowToolbarButton icon="sap-icon://add" text="Add" type="Transparent" press=".onAddNewContract"/>
+					<!--<OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter"/>-->
+					<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onOpenViewSettings"/>
+				</OverflowToolbar>
+				<Table
+					id="list"
+					inset="false"
+					items="{
+						path: 'ctr>/contracts',
+						sorter: {
+							path: 'contractDate',
+							descending: true
+						}
+					}"
+					class="sapFDynamicPageAlignContent"
+					width="auto"
+					updateFinished=".onUpdateFinished"
+					alternateRowColors="true"
+					autoPopinMode="true"
+					contextualWidth="Auto" 
+					popinLayout="GridSmall"
+					growing="true"
+					growingThreshold="15"
+					growingScrollToLoad="false">
+					<columns>
+						<Column width="6em" importance="None">
+							<Text text="Channel"/>
+						</Column>
+						<Column	width="6em" importance="None">
+							<Text text="Country"/>
+						</Column>
+						<Column width="12em" importance="High">
+							<Text text="Contract"/>
+						</Column>
+						<Column width="12em" importance="Low" popinDisplay="Inline">
+							<Text text="Institute"/>
+						</Column>
+						<Column width="12em" importance="Low" popinDisplay="Inline">
+							<Text text="Distributor"/>
+						</Column>
+						<Column width="12em" importance="High">
+							<Text text="Value"/>
+						</Column>
+						<Column width="12em" importance="Low" popinDisplay="Inline">
+							<Text text="Contract Date"/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem type="Navigation" press=".onSelectionChange">
+							<cells>
+								<Text text="{ctr>channel}"/>
+								<Text text="{ctr>countryCode}"/>
+								<ObjectIdentifier text="{ctr>contractNumber}"/>
+								<Text text="{ctr>institute/instituteName}"/>
+								<Text text="{ctr>distributor/distributorName}"/>
+								<Text text="{
+										path:'ctr>offerValue', 
+										type: '.customTypes.OfferPrice'
+									} {ctr>currency}"
+								/>
+								<Text text="{
+										path: 'ctr>contractDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</f:content>
+
+		<!-- DynamicPage Footer -->
+		<f:footer>
+			<OverflowToolbar>
+				<ToolbarSpacer/>
+				<Button type="Accept" text="Accept"/>
+				<Button type="Reject" text="Reject"/>
+			</OverflowToolbar>
+		</f:footer>
+	</f:DynamicPage>
+</mvc:View>

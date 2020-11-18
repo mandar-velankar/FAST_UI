@@ -1,0 +1,42 @@
+<mvc:View controllerName="com.bayer.tender.contracts.controller.DeliveryTracking" xmlns="sap.uxap" xmlns:m="sap.m" xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:t="sap.ui.table" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+	
+		
+			<m:VBox width="100%">
+				<form:SimpleForm id="idLetterDetailForm" editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
+					class="editableForm" visible="true">
+					<form:content>
+						
+						<!-- Institute or the childeren -->
+						<m:Label text="{i18n>Institute}" required="{= ${ctr>/editMode} === true ? true : false}" visible="{= ${ctr>/currentContract/groupPurchasing} === 1 || ${ctr>/currentContract/groupPurchasing} === 2 ? true : false}" />
+						<m:Select id="idLetterDetailInstituteID" items="{ path: 'ctr>/institutesChildren', sorter: { path: 'instituteName' }  }" selectedKey="{ctr>/currentContract/selectedProduct/selectedLetter/instituteId}" visible="{= ${ctr>/currentContract/groupPurchasing} === 1 || ${ctr>/currentContract/groupPurchasing} === 2 ? true : false}" enabled="{= ${ctr>/editMode} === true ? true : false}">		
+							<core:Item key="{ctr>instituteID}" text="{ctr>instituteName}"/>
+						</m:Select>
+
+						<m:Label text="Manufacturing date" wrapping="true" required="{= ${ctr>/editMode} === true ? true : false}"/>
+						<m:DatePicker id="idManufacturingDate"
+									value="{path :'ctr>/currentContract/selectedProduct/selectedLetter/manufacturingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+									tooltip="Manufacturing Date" enabled="false" placeholder="Manufacturing Date"/>
+
+						<m:Label text="Expiry Date" wrapping="true" required="{= ${ctr>/editMode} === true ? true : false}"/>
+						<m:DatePicker id="idExpiryDate"
+									value="{path :'ctr>/currentContract/selectedProduct/selectedLetter/expiryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+									tooltip="Expiration Date" enabled="{= ${ctr>/editMode} === true ? true : false}" placeholder="Expiration Date"/>
+
+						<!-- Competitor -->
+						<m:Label text="" required="false"/>
+						<m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
+							<m:items>
+								<m:SegmentedButtonItem icon="sap-icon://accept" text="Close" press="onConfirmLetter"
+									visible="{= ${ctr>/editMode} === true ? true : false}"/>
+								<!--<m:SegmentedButtonItem icon="sap-icon://sys-cancel" text="Cancel" press="onCancelDeliveryEdit" visible="{= ${ctr>/editMode} === true ? true : false}" />-->
+							</m:items>
+						</m:SegmentedButton>
+					</form:content>
+				</form:SimpleForm>
+			</m:VBox>
+		
+
+	
+</mvc:View>

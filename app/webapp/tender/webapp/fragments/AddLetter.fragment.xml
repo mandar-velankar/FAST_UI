@@ -1,0 +1,205 @@
+<!-- Fragment for Adding a letter to the product on delivery tracking tab -->
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core">
+	<Grid xmlns="sap.ui.layout" defaultSpan="L12 M6 S12" width="auto" class="sapUiSizeCompact" position="Center">
+		<content>
+			<form.SimpleForm xmlns="sap.ui.layout" maxContainerCols="2" visible="true" id="idLetterForm" editable="true" labelMinWidth="0"
+				layout="ResponsiveGridLayout" labelSpanL="5" labelSpanM="1" emptySpanL="1" emptySpanM="1" columnsL="2" columnsM="2">
+				<content>
+					<core:Title text="Add Information for Letter below"/>
+
+					<!-- SNO key is now filled by database auto increment  
+					<Label xmlns="sap.m" text="{i18n>SNOletter}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Input xmlns="sap.m" id="idSNO" value="" type="Number" required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Input>
+					-->
+					
+					<!-- Reason for letter -->
+					<Label xmlns="sap.m" text="{i18n>ReasonForLetter}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Input xmlns="sap.m" id="idREASONFORLETTER" value="{fastAppData>/EditLetter/REASONFORLETTER}" required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Input>
+					
+					<!-- Quantity -->
+					<Label xmlns="sap.m" text="{i18n>Quantity}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Input xmlns="sap.m" id="idQUANTITY" value="{fastAppData>/EditLetter/QUANTITY}" type="Number" required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Input>
+
+					<!-- Batch -->
+					<Label xmlns="sap.m" text="{i18n>Batch}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Input xmlns="sap.m" id="idBATCH" value="{fastAppData>/EditLetter/BATCH}" required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Input>
+					
+					<!-- Requested Delivery Date -->
+					<Label xmlns="sap.m" text="{i18n>ManufacturingDate}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<!--
+					<DatePicker 
+						xmlns="sap.m" 
+						valueFormat="dd-MM-yyyy" 
+						displayFormat="dd.MM.yyyy" 
+						placeholder="{i18n>Select_date}" 
+						tooltip="{i18n>EffDate}" 
+						value="" 
+						id="idMANUFACTURINGDATE"
+						required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</DatePicker>
+					-->
+					<DatePicker
+						xmlns="sap.m"
+						id="idMANUFACTURINGDATE"
+						value="{path :'fastAppData>/EditLetter/MANUFACTURINGDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+						tooltip="{i18n>EffDate}" 
+						placeholder="{i18n>Select_date}"
+						required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>	
+					</DatePicker>
+					
+					<!-- EXPIRYDATE Date -->
+					<Label xmlns="sap.m" text="{i18n>ExpiryDate}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<!--
+					<DatePicker 
+						xmlns="sap.m" 
+						valueFormat="dd-MM-yyyy" 
+						displayFormat="dd.MM.yyyy" 
+						placeholder="{i18n>Select_date}" 
+						tooltip="{i18n>EffDate}" 
+						value="" 
+						id="idEXPIRYDATE"
+						required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</DatePicker>					
+					-->
+					<DatePicker
+						xmlns="sap.m"
+						id="idEXPIRYDATE"
+						value="{path :'fastAppData>/EditLetter/EXPIRYDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+						tooltip="{i18n>EffDate}" 
+						placeholder="{i18n>Select_date}"
+						required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>	
+					</DatePicker>
+					
+					<!-- RETURNDATE Date -->
+					<Label xmlns="sap.m" text="{i18n>ReturnDate}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<!--
+					<DatePicker 
+						xmlns="sap.m" 
+						valueFormat="dd-MM-yyyy" 
+						displayFormat="dd.MM.yyyy" 
+						placeholder="{i18n>Select_date}" 
+						tooltip="{i18n>EffDate}" 
+						value="" 
+						id="idRETURNDATE"
+						required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</DatePicker>
+					-->
+					<DatePicker
+						xmlns="sap.m"
+						id="idRETURNDATE"
+						value="{path :'fastAppData>/EditLetter/RETURNDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+						tooltip="{i18n>EffDate}" 
+						placeholder="{i18n>Select_date}"
+						required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>	
+					</DatePicker>
+					
+	        		<!-- RETURNEDQTY -->
+					<Label xmlns="sap.m" text="{i18n>ReturnedQty}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Input xmlns="sap.m" id="idRETURNEDQTY" value="{fastAppData>/EditLetter/RETURNEDQTY}" type="Number" required="true">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Input>
+					
+					<!-- Unit of measurement -->
+					<Label xmlns="sap.m" text="{i18n>UOM}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Select xmlns="sap.m" id="idUOM" selectedKey="{fastAppData>/EditLetter/UOM}">
+						<items>
+							<core:Item text="Unit" key="Unit"/>
+							<core:Item text="Pack" key="Pack"/>
+						</items>
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Select>
+
+					<!-- Institute or the childeren -->
+					<Label  xmlns="sap.m" text="{i18n>Institute}" required="true" >
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Select  xmlns="sap.m" id="idInstituteLetter" items="{ path: 'fastAppData>/InstituteWithChildren/' }" selectedKey="{fastAppData>/EditLetter/INSTITUTEID}">
+						<items>
+							<core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
+						</items>
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Select>
+					
+				</content>
+			</form.SimpleForm>
+		</content>
+	</Grid>
+</core:FragmentDefinition>

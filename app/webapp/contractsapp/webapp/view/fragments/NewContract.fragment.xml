@@ -1,0 +1,121 @@
+<!-- Fragment for Creating a new contract -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+
+	<Dialog title="Create New Contract" stretch="true">
+		<buttons>
+			<Button text="Save" press="onSaveNewContract" />
+			<Button text="Cancel" press="onCancelNewContract" />
+		</buttons>
+
+
+		<!-- FORM WITH OFFER DATA -->
+		<form:SimpleForm 
+			id="offerDetailForm" 
+			editable="true" 
+			maxContainerCols="2" 
+			layout="ResponsiveGridLayout"  
+			labelSpanL="12" 
+			labelSpanM="12"
+			emptySpanL="0" 
+			emptySpanM="0" 
+			columnsL="2" 
+			columnsM="2" 
+			class="editableForm" 
+			visible="true">
+
+			<form:content>
+			<core:Title/>
+
+				<!-- Contract Number -->
+				<Label text="{i18n>ContractNumber}"/>
+				<Input id="idNewContractNumber" value="{ctr>/newContract/contractNumber}" required="true" change="_onValidateContractNo"/>
+
+				<!-- Country for which to create the contract -->
+				<Label text="{i18n>Country}" required="true"/>
+				<Select id="idCountryNewContract" 
+						selectedKey="{ctr>/newContract/countryCode}"
+						change=".onChangeCountry"
+						items="{ path: 'ctr>/countries', sorter: { path: 'countryName' } }"
+						enabled="true">
+					<core:Item text="{ctr>countryName}" key="{ctr>countryCode}"/>
+				</Select>
+
+				<!-- Currency -->
+				<Label text="{i18n>Currency}" required="true" />
+				<Select id="idCurrencyNewContract" selectedKey="{ctr>/newContract/currency}" items="{ path: 'ctr>/currencies/', sorter: { path: 'cOUNTRY_CODE' } }">
+					<core:Item key="{ctr>cURRENCY}" text="{ctr>cURRENCY}"/>
+				</Select>
+
+				<!-- Institute -->
+				<Label text="{i18n>Institute}" required="true"/>
+				<Select id="idInstituteNewContract" 
+						selectedKey="{ctr>/newContract/instituteId}"
+						items="{ path: 'ctr>/institutes', sorter: { path: 'instituteName' } }"
+						enabled="true">
+					<core:Item text="{ctr>instituteName}" key="{ctr>instituteID}"/>
+				</Select>
+
+				<!-- Distributor -->
+				<Label text="{i18n>didtrbtrnme}" required="true"/>
+				<Select id="idDistributorNewContract" 
+						selectedKey="{ctr>/newContract/distributorId}"
+						items="{ path: 'ctr>/distributors', sorter: { path: 'distributorName' } }"
+						enabled="true">
+					<core:Item text="{ctr>distributorName}" key="{ctr>distributorID}"/>
+				</Select>
+
+				<!-- Selling company -->
+				<Label text="{i18n>selncmpny}"  required="true"/>
+				<Select id="idSellingCompanyNewContract" 
+						selectedKey="{ctr>/newContract/sellingCompanyCode}"
+						items="{ path: 'ctr>/sellingCompanies', sorter: { path: 'legalEntityName' } }"
+						change="onChangeSellingCompany"
+						enabled="true">
+					<core:Item text="{ctr>legalEntityName}" key="{ctr>legalEntityCode}" />
+				</Select>
+				<core:Title/>
+
+				<!-- Contract Date -->
+				<Label text="{i18n>contractdate}" required="true"/>
+				<DatePicker 
+					id="idContractDateNewContract" 
+					value="{
+						path :'ctr>/newContract/contractDate', 
+						type: 'sap.ui.model.type.Date', 
+						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+					}" 
+					enabled="true"/>
+				<core:Title/>
+
+				<!-- Contract channel -->
+				<Label text="{i18n>channel}" required="true"/>
+				<Select id="idChannelNewContract"
+						selectedKey="{ctr>/newContract/channelId}" 
+						items="{ 
+							path: 'ctr>/channels',
+							filters: [
+								{path: 'channelName', operator: 'NE', value1: 'Tender'}
+							]
+						}"
+						enabled="true"
+				>
+					<items>
+						<core:Item text="{ctr>channelName}" key="{ctr>iD}" />
+					</items>
+				</Select>
+				
+
+			</form:content>
+		</form:SimpleForm>
+
+				
+				
+
+
+   	</Dialog>	
+</core:FragmentDefinition>

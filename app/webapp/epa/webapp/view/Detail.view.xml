@@ -1,0 +1,310 @@
+<mvc:View controllerName="com.bayer.tender.epa.controller.Detail" 
+	xmlns="sap.m" 
+	xmlns:semantic="sap.f.semantic" 
+	xmlns:form="sap.ui.layout.form"
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.uxap" 
+	xmlns:l="sap.ui.layout"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:viz="sap.viz.ui5.controls"
+	xmlns:tnt="sap.tnt"
+	height="100%">
+
+	<semantic:SemanticPage id="detailPage" busy="{epa>/group/busy}" busyIndicatorDelay="0" class="sapUiNoMarginLeft" >
+
+		<semantic:titleHeading>
+			<Title text="{i18n>detailPage}" level="H2"/>
+		</semantic:titleHeading>
+	
+		<semantic:content>
+			<VBox class="sapUiNoMarginLeft">
+				<Panel expandable="true" 
+					   headerText="{i18n>groupInstitutes}" 
+					   width="100%"
+					   backgroundDesign="Solid" class="sapUiNoMarginLeft">
+					<content>
+						<List backgroundDesign="Solid"
+							  items="{ path: 'epa>/currentInstituteGroup/institutes'}">
+							<StandardListItem title="{epa>instituteName}" />
+						</List>
+					</content>
+				</Panel>
+				<!-- <Input value="{epa>/group/countryName}"/> -->
+
+				<Panel expandable="false" headerText="{i18n>productSelection}" width="100%">
+					<content>
+						<form:SimpleForm id="idProductSelection" editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="1" labelSpanL="1" labelSpanM="1" labelSpanS="1"
+										 adjustLabelSpan="false" columnsXL="1" columnsL="1" columnsM="1"
+										 singleContainerFullSize="false">
+							<form:content>
+								<Label text="Division"/>
+								<Select id="idDivision" selectedKey=""  items="{path:'epa>/divisionsForCountry/divisions'}" change="onDivisionSelectionChange">
+									<items>
+										<core:Item text="{epa>division}" key="{epa>division}"/>
+									</items>
+								</Select>	
+								<Label text="Brand"/>
+								<Select id="idBrand" selectedKey="" items="{path:'epa>brands'}" change="onBrandSelectionChange">
+									<items>
+										<core:Item text="{epa>brand}" key="{epa>brandId}"/>
+									</items>
+								</Select>
+								<Label text="Product"/>
+								<Select id="idProduct" selectedKey="" items="{path:'epa>products'}" change="onProductSelectionChange">
+									<items>
+										<core:Item text="{epa>product}" key="{epa>productId}"/>
+									</items>
+								</Select>
+								<Label text="Currency"/>
+								<Input id="idCurrency" editable="false" value="{epa>prices/currency}"/>		
+							</form:content>
+						</form:SimpleForm>
+					</content>
+				</Panel>
+
+				<Panel expandable="false" width="100%">
+					<headerToolbar>
+							<OverflowToolbar>
+							<Title text="{i18n>pricingData}"/>
+							<tnt:InfoLabel
+								text="{epa>/latestApprovalRequests/overallApprovalStatus}"
+								displayOnly="true"
+								colorScheme= "{
+									parts: [
+										{path: 'epa>/latestApprovalRequests/overallApprovalStatus'}
+									],
+									formatter: '.formatter.overallApprovalStatus'
+								}" 
+							/>
+							<ToolbarSpacer />
+							<Button id="idBtnEditPricingData" text="Edit" visible="false" 
+								enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' &amp;&amp; ${epa>/editMode} === false }" 
+								press=".onEditModePress"
+							/>
+						</OverflowToolbar>
+					</headerToolbar>
+					<content>
+						<form:SimpleForm id="idPricingData" editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="1" labelSpanL="1" labelSpanM="1" labelSpanS="1"
+										 adjustLabelSpan="false" columnsXL="1" columnsL="1" columnsM="1"
+										 singleContainerFullSize="false">
+							<form:content>
+
+								<Label text="CIF"/>
+								<Input value="{epa>/currentInstituteGroup/pricingData/cif}" editable="false"/>
+								<Text text="THB"/>
+
+								<Label text="DISC"/>
+								<Input value="{ 
+									path: 'epa>/currentInstituteGroup/pricingData/discount',
+									formatter: '.formatter.discountPercentage'
+								}" editable="false" />
+								<Text text="%"/>
+
+								<Label text="MSP"/>
+								<Input 
+									id="idInputMSP"
+									liveChange="validateMSP"
+									value="{epa>/currentInstituteGroup/pricingData/msp}" 
+									enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' &amp;&amp; ${epa>/editMode} === true }" 
+								/>
+								<Text text="THB" class="sapUiSmallMarginBottom"/>
+								
+								<Label text=""/>
+								<HBox>
+									<Button id="idBtnSaveMSP" text="Save" type="Accept" press="onSave" visible="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' &amp;&amp; ${epa>/editMode} === true }" class="sapUiTinyMarginEnd"/>
+									<Button text="Cancel" type="Reject" press="onCancel" visible="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' &amp;&amp; ${epa>/editMode} === true }" />	
+								</HBox>
+									
+							</form:content>
+						</form:SimpleForm>
+					</content>
+			    </Panel>
+
+				<Panel expandable="true" headerText="{i18n>representation}" width="100%">
+					<content>
+						<!--'waterfall' + 'line' -->
+						<viz:VizFrame 
+							id="idListToNetChart1" 
+							uiConfig="{applicationSet:'fiori'}" 
+							height='20rem' 
+							width="100%" 
+							vizType='waterfall'
+                        	renderComplete="handleRenderComplete" 
+							legendVisible="false" />
+					</content>
+				</Panel>
+
+				<Panel expandable="true" expanded="true" headerText="{i18n>approvals}" width="100%">
+					<content>
+					<!--items="{path: 'fastAppData>/ApprovalsSelectedOffer', parameters: {'expand': 'ApproverList'}}" -->
+						<Table id="idMandatoryTable" alternateRowColors="true" selectionChange=".onDeliveryItemSelect" items="{path:'epa>/latestApprovalRequests/approvalRequests', templateShareable:false}">
+								
+								<!-- table header with title & buttons -->
+								<headerToolbar>
+										<OverflowToolbar>
+											<content>
+												<Title text="Mandatory/Optional approvals" level="H2"/>
+												<ToolbarSpacer />
+												<!-- This will be handled outside this application -->
+												<Button id="idBtnSendApprovals" icon="sap-icon://employee-approvals" text="Send" type="Accept" 
+													visible="{= 
+														${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval'
+													}" 
+													enabled="{= 
+														${epa>/editMode} === false &amp;&amp;
+														${epa>/currentInstituteGroup/pricingData/msp} !== 'undefined' &amp;&amp;
+														${epa>/currentInstituteGroup/pricingData/msp} > 0
+													}" 
+													press="onSendApprovals"/>
+												<Button icon="sap-icon://employee-rejections" text="Cancel" type="Reject" 
+													visible="{= ${epa>/latestApprovalRequests/overallApprovalStatus} === 'Awaiting Approval' }" 
+													press="onCancelApprovals"/>
+												<Button id="idBtnRefreshApprovals" icon="sap-icon://refresh" text="{i18n>Refresh}" type="Default" press="onRefreshApprovalsPress" enabled="false"/>
+											</content>
+										</OverflowToolbar>
+								</headerToolbar>
+								
+								<!-- columns -->
+								<columns>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="10rem">
+										<Label text="{i18n>Approver}"/>
+									</Column>
+									<!-- <Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
+										<Label text="{i18n>Content}"/>
+									</Column> -->
+									<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
+										<Label text="{i18n>Status}"/>
+									</Column>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
+										<Label text="{i18n>Send}"/>
+									</Column>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="20rem">
+										<Label text="{i18n>Name}"/>
+									</Column>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="9rem">
+										<Label text="{i18n>RequiredAction}"/>
+									</Column>
+									<!-- <Column minScreenWidth="Tablet" demandPopin="true">
+										<Label text="{i18n>SendersComment}"/>
+									</Column>
+									<Column minScreenWidth="Tablet" demandPopin="true">
+										<Label text="{i18n>ApproverComment}"/>
+									</Column>-->
+								</columns>
+								
+								<!-- rows -->
+								<items>
+									
+									<ColumnListItem type="DetailAndActive" detailPress=".onApprovalItemDetail" press='.onApprovalItemSelect'>
+										
+										<cells>
+											
+											<!-- Approver Type -->
+											<Label text="{epa>approverType}"/>
+											
+											<!-- Content -->
+											<!-- <Label text="{epa>}"/> -->
+										
+											<!-- Status -->
+											<ObjectStatus
+												class="sapUiSmallMarginBottom"
+												text="{epa>approvalStatus}"
+											/>
+											
+											<!-- Sending -->
+											<Select selectedKey="{epa>sending}" 
+													enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' }" >
+												<items>
+													<core:Item text="No" key="No"/>
+													<core:Item text="Yes" key="Yes"/>
+												</items>
+											</Select>
+											
+											<!-- Name -->
+											<Select id="idApproverName" selectedKey="{epa>approverName}" enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' }" width="300px" items="{path:'epa>countryApprovers', templateShareable:false}">
+												<items>
+													<core:Item text="{epa>approverName}" key="{epa>approverName}"/>
+												</items>
+											</Select>
+											<!--<Select selectedKey="{fastAppData>ApproverEmailID}" 
+													items="{ path: 'fastAppData>ApproverList/results', templateShareable: false }" 
+													width="250px" 
+													enabled="{= ${fastAppData>ApprovalStatus} !== 'Waiting' &amp;&amp; ${fastAppData>ApprovalStatus} !== 'Processing' &amp;&amp; ${fastAppData>ApprovalStatus} !== 'Cancelling'}">
+												<core:Item text="{fastAppData>ApproverName}" key="{fastAppData>ApproverEmailID}"/>
+											</Select>-->
+											
+											<!-- Content -->
+											<!--<Label text="{fastAppData>REQUIRED_ACTION}"/>-->
+											<Select id="idReqAction" selectedKey="{epa>requiredAction}" enabled="false">
+												<items>
+													<core:Item text="Notification" key="Notification"/>
+													<core:Item text="Approval" key="Approval"/>
+												</items>
+											</Select>
+											
+										</cells>
+										
+									</ColumnListItem>
+									
+								</items>
+								
+						</Table>
+
+						<form:SimpleForm title="Approval Comments" id="idApprovalDetailForm" editable="true" maxContainerCols="1" layout="ResponsiveGridLayout" labelSpanXL="2" labelSpanL="2" labelSpanM="2" labelSpanS="2"
+										 adjustLabelSpan="false" columnsXL="1" columnsL="1" columnsM="1" class="editableForm" visible="false" singleContainerFullSize="false">
+							<form:content>
+								<!-- Sender's Comment  -->
+								<Label text="Sender's Comment"/>
+								<TextArea value="{epa>senderComment}" 
+								          showExceededText="true" 
+										  maxLength="500" 
+										  valueLiveUpdate="false" liveChange="handleLiveChange" 
+										  enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval'}"/>
+											
+								<!-- Approver's Comment-->  
+								<Label text="Approver's Comment"/>
+								<TextArea value="{epa>approverComment}" 
+										  showExceededText="true" 
+										  maxLength="500"
+										  valueLiveUpdate="false" 
+										  liveChange="handleLiveChange" 
+										  enabled="false"/>
+
+								<Label text=""/>
+								<SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
+									<items>
+										<SegmentedButtonItem icon="sap-icon://accept" text="Confirm" press="onConfirmApproval" />
+									</items>
+								</SegmentedButton>
+							</form:content>
+						</form:SimpleForm>
+					</content>
+				</Panel>
+			</VBox>
+		</semantic:content>
+		
+		<semantic:closeAction>
+			<semantic:CloseAction id="closeColumn" press=".onCloseDetailPress"/>
+		</semantic:closeAction>
+		<!-- <semantic:titleMainAction>
+			<semantic:TitleMainAction text="Edit" enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' &amp;&amp; ${epa>/editMode} === false }" press=".onEditModePress" />
+		</semantic:titleMainAction> -->
+		<semantic:fullScreenAction>
+			<semantic:FullScreenAction id="enterFullScreen" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" press=".toggleFullScreen"/>
+		</semantic:fullScreenAction>
+		<semantic:exitFullScreenAction>
+			<semantic:ExitFullScreenAction id="exitFullScreen" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}" press=".toggleFullScreen"/>
+		</semantic:exitFullScreenAction>
+
+		<!-- Semantic Footer Buttons -->
+
+		<!-- <semantic:positiveAction>
+        	<semantic:PositiveAction text="Save" press="onSave"/>
+		</semantic:positiveAction>
+		<semantic:negativeAction>
+			<semantic:NegativeAction text="Cancel" press="onCancel"/>
+		</semantic:negativeAction> -->
+
+	</semantic:SemanticPage>
+
+</mvc:View>

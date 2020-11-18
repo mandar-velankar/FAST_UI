@@ -1,0 +1,47 @@
+<!-- Fragment for Declining all the products for the offer - Product offer screen -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+	
+	<l:VerticalLayout
+		width="100%" >
+		
+		<l:content>
+			
+			<VBox fitContainer="true" alignItems="Stretch">
+				<items>
+							<!-- empty line -->
+							<Label></Label>
+							
+							<!-- message strip -->
+							<MessageStrip
+								id="MessageStripDeclineID"
+								text="You will be declining all the products for this offer. Be sure to save afterwards.."
+								enableFormattedText="true"
+								showIcon="true"
+								showCloseButton="true"
+								class="sapUiMediumMarginBottom">
+							</MessageStrip>
+							
+							<!-- Comment for declining -->
+							<TextArea id="reasonForDeclineId"
+									value="" 
+									placeholder="Please fill in the comment for declining"
+									showExceededText="true" 
+									maxLength="500" 
+									width="100%" 
+									valueState="{= ${fastAppData>ApproverComment}.length > 500 ? 'Warning' : 'None' }" 
+									valueLiveUpdate="false" 
+									liveChange="handleLiveChange" 
+									enabled="{= ${fastAppData>/EditOffer/Product/results/length} >= 0 }"/> <!-- if no products exist, we should not be able to decline -->
+				</items>
+			</VBox>
+			
+		</l:content>
+		
+	</l:VerticalLayout>
+	
+</core:FragmentDefinition>
