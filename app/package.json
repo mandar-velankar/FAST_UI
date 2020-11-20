@@ -3,7 +3,6 @@
   "description": "",
   "private": true,
   "devDependencies": {
-    "@ui5/cli": "2.6.4",
     "ui5-middleware-simpleproxy": "^0.6.0"
   },
   "scripts": {
@@ -13,6 +12,7 @@
     "build": "ui5 build --clean-dest"
   },
   "dependencies": {
+    "@ui5/cli": "2.6.4",
     "@sap/approuter": "^6"
   },
   "ui5": {
