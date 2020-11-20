@@ -1,5 +1,5 @@
 {
-  "name": "contracts",
+  "name": "FASTUI-app-contractsapp",
   "description": "",
   "scripts": {
     "build": "ui5 build",

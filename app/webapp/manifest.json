@@ -1,9 +1,47 @@
 {
-    "_version": "1.12.0",
-    "sap.app": {
-      "id": "fastcap-ui",
-      "applicationVersion": {
-        "version": "1.0.0"
-      }
-    }
-  }
+	"_version": "1.7.0",
+	"sap.app": {
+		"id": "com.bayer.tender",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "Root app",
+		"description": "Root app"
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": [
+			"sap_belize"
+		]
+	},
+	"sap.ui5": {
+		"dependencies": {
+			"minUI5Version": "1.30.0",
+			"libs": {
+				"sap.f": {},
+				"sap.m": {}
+			}
+		},
+		"resourceRoots":{
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": false
+		}
+	}
+}

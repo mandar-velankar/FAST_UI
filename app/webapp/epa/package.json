@@ -1,5 +1,5 @@
 {
-  "name": "epa",
+  "name": "FASTUI-app-epa",
   "description": "",
   "scripts": {
     "build": "ui5 build",

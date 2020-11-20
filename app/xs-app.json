@@ -36,7 +36,7 @@
     {
       "source": "^/app/(.*)$",
       "target": "$1",
-      "localDir": "webapp/landingspage/dist"
+      "localDir": "dist/landingspage/webapp"
     },
     {
       "source": "^/appdebug/(.*)$",
@@ -46,27 +46,27 @@
     {
       "source": "^/epa/(.*)$",
       "target": "$1",
-      "localDir": "webapp/epa/dist"
+      "localDir": "dist/epa/webapp"
     },
     {
-      "source": "^/contractsapp/(.*)$",
+      "source": "^/contracts/(.*)$",
       "target": "$1",
-      "localDir": "webapp/contractsapp/dist"
+      "localDir": "dist/contracts/webapp"
     },
     {
       "source": "^/tender/(.*)$",
       "target": "$1",
-      "localDir": "webapp/tender/dist"
+      "localDir": "dist/tender/webapp"
     },
     {
       "source": "^/uilib/(.*)$",
       "target": "$1",
-      "localDir": "webapp/uilib/dist/resources/com/bayer/tender/uilib"
+      "localDir": "dist/uilib/src/com/bayer/tender/uilib"
     },
     {
       "source": "^/pdf/(.*)$",
       "target": "$1",
-      "localDir": "webapp/pdf"
+      "localDir": "dist/pdf"
     }
   ]
 }

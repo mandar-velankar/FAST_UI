@@ -1,10 +1,13 @@
-ID: FAST-UI
+ID: FASTUI
 _schema-version: '2.1'
 version: 0.4.1
 modules:
-  - name: FAST-app
+  - name: FASTUI-app
     type: html5
     path: app
+    parameters:
+      memory: 2048M
+      disk-quota: 4096M
     requires:
       - name: srv_api
         group: destinations
@@ -12,9 +15,9 @@ modules:
           forwardAuthToken: true
           name: srv_api
           url: '~{url}'
-      - name: uaa_FAST-UI
+      - name: uaa_FASTUI
 resources:
-  - name: uaa_FAST-UI
+  - name: uaa_FASTUI
     parameters:
       path: ./xs-security.json
       service-plan: default

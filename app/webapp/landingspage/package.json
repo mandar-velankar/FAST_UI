@@ -1,5 +1,5 @@
 {
-  "name": "landingspage",
+  "name": "FASTUI-app-landingspage",
   "description": "",
   "scripts": {
     "build": "ui5 build",
