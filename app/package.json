@@ -3,7 +3,6 @@
   "description": "",
   "private": true,
   "devDependencies": {
-    "ui5-middleware-simpleproxy": "^0.6.0"
   },
   "scripts": {
     "postinstall": "npm run build",
@@ -13,7 +12,8 @@
   },
   "dependencies": {
     "@ui5/cli": "2.6.4",
-    "@sap/approuter": "^6"
+    "@sap/approuter": "^6",
+    "ui5-middleware-simpleproxy": "^0.6.0"
   },
   "ui5": {
     "dependencies": [
