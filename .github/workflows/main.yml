@@ -30,7 +30,7 @@ jobs:
       - name: Build MTA
         run: npm run build:xsa
       - name: Upload Artifact
-        uses: actions/upload-artifact@master	
-        with:	
+        uses: actions/upload-artifact@master
+        with:
           name: FASTCAP-Frontend
           path: ./mta_archives/FASTCAP-Frontend.mtar
