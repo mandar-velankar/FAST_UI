@@ -33,4 +33,4 @@ jobs:
         uses: actions/upload-artifact@master	
         with:	
           name: mta
-          path: ./mta_archives/FASTUI_0.4.1.mtar
+          path: ./mta_archives/FASTCAP-Frontend.mtar

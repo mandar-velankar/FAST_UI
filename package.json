@@ -15,7 +15,7 @@
   "scripts": {
     "setup": "cd app && npm install",
     "build:xs-security": "cds compile srv/ --to xsuaa  > xs-security.json",
-    "build:xsa": "mbt build -p=xsa",
+    "build:xsa": "mbt build -p=xsa --mtar=FASTCAP-Frontend.mtar",
     "build:cf": "mbt build -p=cf",
     "deploy:cf": "cf deploy mta_archives/FAST-UI_0.4.1.mtar -e cf.mtaext"
   }
