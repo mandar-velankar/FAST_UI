@@ -2,8 +2,7 @@
   "name": "FASTUI-app",
   "description": "",
   "private": true,
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "postinstall": "npm run build",
     "start": "node node_modules/@sap/approuter/approuter.js",
