@@ -3,6 +3,6 @@ ID: FASTUI.extension
 extends: FASTUI
 
 resources:
-  - name: uaa_FASTUI
+  - name: uaa_FAST
     parameters:
       service-plan: application

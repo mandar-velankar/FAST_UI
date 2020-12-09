@@ -15,9 +15,9 @@ modules:
           forwardAuthToken: true
           name: srv_api
           url: '~{url}'
-      - name: uaa_FASTUI
+      - name: uaa_FAST
 resources:
-  - name: uaa_FASTUI
+  - name: uaa_FAST
     parameters:
       path: ./xs-security.json
       service-plan: default
