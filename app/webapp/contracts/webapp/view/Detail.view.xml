@@ -114,7 +114,7 @@
 			</ObjectPageDynamicHeaderTitle>
 		</headerTitle>
 
-			<!-- HEADER INFORMATION: this part will be collapsed when scrolling down -->
+		<!-- HEADER INFORMATION: this part will be collapsed when scrolling down -->
 		<headerContent>
 			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
 				

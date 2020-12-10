@@ -14,22 +14,15 @@
 			<Label text="{i18n>tenderref}" design="Bold" required="true"/>
 			<Input id="idTenderName" value="{fastData>TenderName}" />
 			<Label text="{i18n>clasficn}" design="Bold" required="true"/>
-			<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false">
+			<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}">
 				<items><!--RFQ/Tender/Budgetary Quote/Patient Access Programme-->
-					<core:Item text="RFQ" key="RFQ"/>
-					<core:Item text="Tender" key="Tender"/>
-					<core:Item text="Budgetary Quote" key="Budgetary Quote"/>
-					<core:Item text="Patient Access Programme" key="Patient Access Programme"/>
+					<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}"/>
 				</items>
 			</Select>
 			<Label text="{i18n>insttyp}" design="Bold" required="true"/>
-			<Select id="idInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="resetInstituteName" enabled="false">
+			<Select id="idInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="resetInstituteName" enabled="false" items="{ path: 'fastAppData>/CountryChannels'}">
 				<items>
-					<core:Item text="Public" key="Public"/>
-					<core:Item text="Semi-Governmental" key="Semi-Governmental"/>
-					<core:Item text="Aid Agency" key="Aid Agency"/>
-					<core:Item text="Private" key="Private"/>
-					<core:Item text="NGO-NPO" key="NGO-NPO"/>
+					<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
 				</items>
 			</Select>
 

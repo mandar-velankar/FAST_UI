@@ -178,6 +178,9 @@ sap.ui.define([
 				//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
 				var sNewTenderNo = Services.getNewTenderNo();
 
+				Services.loadCountryClassifications(sCountry);
+				Services.loadCountryChannels(sCountry);
+
 				//when a new tender is created, the tender ID = 1 // or we are creating a new tender
 				if (sTenderPath === "/PT_TMTEND('1')" || sNewTenderNo) {
 
@@ -2546,100 +2549,116 @@ sap.ui.define([
 			//Check if offer is selected
 			if (sOfferID) {
 
-				//check the offer status
-				$.when(Services.checkOfferStatus()).done(function (oData) {
+				//loading offer validation
+				$.when(Services.loadOfferValidation(sOfferID)).done(function(oData){
+					if(oData.results[0].IN_POLICY === false){
+						$.when(Services.loadOfferProductValidation(sOfferID)).done(function(oData){
+							let aProducts = oData.results;
+							let aProductsNotValid = aProducts.filter(product => product.IN_POLICY === false);
+							let productNames = aProductsNotValid.map(product => product.PRODUCTNAME);
 
-					//Cancel of appproval is only possible when offer status = "Awaiting Approval"
-					var bCancelEnabled = false;
-					var bSendApprovalEnabled = false;
-
-					if (oData.STATUS === "Awaiting Approval") {
-						bCancelEnabled = true;
-					}
-
-					if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "Delivery Ongoing") {
-						bSendApprovalEnabled = true;
-					}
-
-					//load additional approval data
-					$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
-
-						//show dialog
-						if (!that._oDialogApproval) {
-							that._oDialogApproval = new sap.m.Dialog("handleApprovalDialog", {
-								//title: bundle.getText("Approvals"),
-								resizable: true, //user is able to resize
-								stretch: true, //dialog is as big as possible
-								buttons: [
-									new sap.m.Button({
-										id: "btnSendApproval",
-										text: bundle.getText("SendApprReq"),
-										tap: [that.onSendApprovals, that],
-										enabled: bSendApprovalEnabled
-									}),
-									new sap.m.Button({
-										id: "btnCancelApproval",
-										text: bundle.getText("CancelApprReq"),
-										tap: [that.onCancelApprovals, that],
-										enabled: bCancelEnabled
-									}),
-									new sap.m.Button("btnCloseApproval", {
-										id: "btnCloseApproval",
-										text: bundle.getText("Close"),
-										tap: [that.onCloseApprovalsDialog, that]
-									})
-								],
-								//content with all fields that need to be filled
-								content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.HandleApprovals", that)]
-									// End of content of dialog
-							});
-						} else {
-							//if dialog already build...
-							sap.ui.getCore().byId("btnCancelApproval").setEnabled(bCancelEnabled);
-							sap.ui.getCore().byId("btnSendApproval").setEnabled(bSendApprovalEnabled);
-						}
-						that.getView().addDependent(that._oDialogApproval);
-						that._oDialogApproval.open();
-
-						//Set grouping Mandatory or Optional
-						var mGroupFunctions = {
-							MandatoryOptional: function (oContext) {
-								var sApproverTypeSection = oContext.getProperty("ApproverTypeSection");
-								var key, text;
-
-								//check for approvertypes that indicate they are mandatory approvers
-								if (sApproverTypeSection === 1) {
-									//Mandatory
-									key = "Mandatory";
-									text = "Mandatory Approvals";
-								} else {
-									key = "Optional";
-									text = "Optional Approvals";
-								}
-								return {
-									key: key,
-									text: text
-								};
+							if(aProductsNotValid.length > 0 ){
+								sap.m.MessageBox.error(`The following products do not have prices that comply with their pricing policy: \n\n ${productNames.join()}`);
 							}
-						};
+						});
+					} else {
 
-						//Get table of approvals
-						var oTable = sap.ui.getCore().byId("idMandatoryTable"),
-							oBinding = oTable.getBinding("items"),
-							sPath,
-							bDescending,
-							vGroup,
-							aGroups = [];
+						//check the offer status
+						$.when(Services.checkOfferStatus()).done(function (oData) {
 
-						//Actual grouping
-						sPath = "MandatoryOptional";
-						bDescending = false;
-						vGroup = mGroupFunctions[sPath];
-						aGroups.push(new Sorter(sPath, bDescending, vGroup));
-						// apply the selected group settings
-						oBinding.sort(aGroups);
+							//Cancel of appproval is only possible when offer status = "Awaiting Approval"
+							var bCancelEnabled = false;
+							var bSendApprovalEnabled = false;
 
-					});
+							if (oData.STATUS === "Awaiting Approval") {
+								bCancelEnabled = true;
+							}
+
+							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "Delivery Ongoing") {
+								bSendApprovalEnabled = true;
+							}
+
+							//load additional approval data
+							$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
+
+								//show dialog
+								if (!that._oDialogApproval) {
+									that._oDialogApproval = new sap.m.Dialog("handleApprovalDialog", {
+										//title: bundle.getText("Approvals"),
+										resizable: true, //user is able to resize
+										stretch: true, //dialog is as big as possible
+										buttons: [
+											new sap.m.Button({
+												id: "btnSendApproval",
+												text: bundle.getText("SendApprReq"),
+												tap: [that.onSendApprovals, that],
+												enabled: bSendApprovalEnabled
+											}),
+											new sap.m.Button({
+												id: "btnCancelApproval",
+												text: bundle.getText("CancelApprReq"),
+												tap: [that.onCancelApprovals, that],
+												enabled: bCancelEnabled
+											}),
+											new sap.m.Button("btnCloseApproval", {
+												id: "btnCloseApproval",
+												text: bundle.getText("Close"),
+												tap: [that.onCloseApprovalsDialog, that]
+											})
+										],
+										//content with all fields that need to be filled
+										content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.HandleApprovals", that)]
+											// End of content of dialog
+									});
+								} else {
+									//if dialog already build...
+									sap.ui.getCore().byId("btnCancelApproval").setEnabled(bCancelEnabled);
+									sap.ui.getCore().byId("btnSendApproval").setEnabled(bSendApprovalEnabled);
+								}
+								that.getView().addDependent(that._oDialogApproval);
+								that._oDialogApproval.open();
+
+								//Set grouping Mandatory or Optional
+								var mGroupFunctions = {
+									MandatoryOptional: function (oContext) {
+										var sApproverTypeSection = oContext.getProperty("ApproverTypeSection");
+										var key, text;
+
+										//check for approvertypes that indicate they are mandatory approvers
+										if (sApproverTypeSection === 1) {
+											//Mandatory
+											key = "Mandatory";
+											text = "Mandatory Approvals";
+										} else {
+											key = "Optional";
+											text = "Optional Approvals";
+										}
+										return {
+											key: key,
+											text: text
+										};
+									}
+								};
+
+								//Get table of approvals
+								var oTable = sap.ui.getCore().byId("idMandatoryTable"),
+									oBinding = oTable.getBinding("items"),
+									sPath,
+									bDescending,
+									vGroup,
+									aGroups = [];
+
+								//Actual grouping
+								sPath = "MandatoryOptional";
+								bDescending = false;
+								vGroup = mGroupFunctions[sPath];
+								aGroups.push(new Sorter(sPath, bDescending, vGroup));
+								// apply the selected group settings
+								oBinding.sort(aGroups);
+
+							});
+						});
+					}
 				});
 			} else {
 

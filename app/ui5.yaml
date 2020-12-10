@@ -33,6 +33,7 @@ builder:
               - "!com/bayer/tender/landingspage/**"
               - "!com/bayer/tender/templates/**"
               - "!com/bayer/tender/tender/**"
+              - "!com/bayer/tender/ppa/**"
               - "!com/bayer/tender/uilib/**"
             resolve: false
             sort: true
@@ -130,6 +131,30 @@ builder:
               - com/bayer/tender/tender/webapp/service/**
               - com/bayer/tender/tender/webapp/state/**
               - com/bayer/tender/tender/webapp/view/**
+            resolve: false
+            sort: true
+      bundleOptions:
+        optimize: true
+        usePredefineCalls: true
+    - bundleDefinition:
+        name: "com/bayer/tender/ppa/webapp/Component-preload.js"
+        defaultFileTypes:
+        - ".js"
+        - ".json"
+        - ".xml"
+        - ".html"
+        - ".library"
+        sections:
+          - mode: preload
+            filters:
+              - com/bayer/tender/ppa/webapp/Component.js
+              - com/bayer/tender/ppa/webapp/manifest.json
+              - com/bayer/tender/ppa/webapp/controller/**
+              - com/bayer/tender/ppa/webapp/i18n/**
+              - com/bayer/tender/ppa/webapp/model/**
+              - com/bayer/tender/ppa/webapp/service/**
+              - com/bayer/tender/ppa/webapp/state/**
+              - com/bayer/tender/ppa/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:

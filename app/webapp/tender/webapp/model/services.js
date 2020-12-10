@@ -1549,6 +1549,110 @@ sap.ui.define([
 			return oDeferred.promise();
 
 		},
+		
+		//load country classifications
+		loadCountryClassifications: function (sCountry) {
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sCountryClassificationPath = "/CountryClassifications";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sCountryClassificationPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryClassifications = oData.results;
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryClassifications", aCountryClassifications);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryClassifications);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country classifications");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
+		//load country channels
+		loadCountryChannels: function (sCountry) {
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sCountryChannelsPath = "/CountryChannels";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("ChannelCountry", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sCountryChannelsPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryChannels = oData.results;
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryChannels", aCountryChannels);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryChannels);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country channels");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
 
 		//load new tender ID from DB
 		loadNewTenderID: function () {
@@ -2120,6 +2224,122 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 
+		},
+
+		//load offer validation  for offer
+		loadOfferValidation: function(sOfferID){
+							
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+			
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+			
+			var that = this;
+			
+			var sOfferValidationPath = "/OfferValidation";
+			
+			var aFilters = [];
+			
+			if(sOfferID){
+				var oCountryFilter = new sap.ui.model.Filter("OFFERID", sap.ui.model.FilterOperator.EQ, sOfferID);
+				aFilters.push(oCountryFilter);
+			}
+			
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sOfferValidationPath, {
+					filters: aFilters,
+					success: function(oData, oResponse) {
+						
+						//Offer validation data
+						var oOfferValidation = oData.results[0];
+						
+						//data received is set to the award model
+						oFastAppDataModel.setProperty("/OfferValidation", oOfferValidation);
+						
+						//let the callback be triggered
+						oDeferred.resolve(oData);
+					
+					},
+					error: function(oError) {
+						
+						// close loading dialog
+						if (that._LoadingDialogOfferProductValidation) {
+							that._LoadingDialogOfferProductValidation.close();
+						}
+				
+						//show error message
+						that.showErrorMessage(oError, "Loading of quotation offer validation");
+						
+						//let the callback be triggered
+						oDeferred.reject(oError);
+					
+					}
+			});						
+			
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();	
+		},
+
+		//load offer product validation
+		loadOfferProductValidation: function(sOfferID){
+			
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+			
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+			
+			var that = this;
+			
+			var sOfferProductValidationPath = "/OfferProductValidation";
+			
+			var aFilters = [];
+			
+			if(sOfferID){
+				var oCountryFilter = new sap.ui.model.Filter("OFFER_ID", sap.ui.model.FilterOperator.EQ, sOfferID);
+				aFilters.push(oCountryFilter);
+			}
+			
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sOfferProductValidationPath, {
+					filters: aFilters,
+					success: function(oData, oResponse) {
+						
+						//catch the offer products
+						var aOfferProductValidation = oData.results;
+						//aOfferProductValidation = this.sortByKeyAsc(aOfferProductValidation, "SORTER");
+						
+						//data received is set 
+						oFastAppDataModel.setProperty("/OfferProductValidation", aOfferProductValidation);
+						
+						//let the callback be triggered
+						oDeferred.resolve(oData);
+					
+					},
+					error: function(oError) {
+
+						// close loading dialog
+						if (that._LoadingDialogOfferProductValidation) {
+							that._LoadingDialogOfferProductValidation.close();
+						}
+						
+						//show error message
+						this.showErrorMessage(oError, "Loading of quotation offer product validation");
+						
+						//let the callback be triggered
+						oDeferred.reject(oError);
+					
+					}
+			});						
+			
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();	
 		},
 
 		//Load FOC additional brand product data

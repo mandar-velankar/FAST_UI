@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="PolicyService" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+                <EntitySet Name="BrandProducts" EntityType="PolicyService.BrandProducts"/>
+                <EntitySet Name="Brands" EntityType="PolicyService.Brands"/>
+            </EntityContainer>
+            <EntityType Name="BrandProducts">
+                <Key>
+                    <PropertyRef Name="CountryCode"/>
+                    <PropertyRef Name="BrandId"/>
+                    <PropertyRef Name="Division"/>
+                </Key>
+                <Property Name="CountryCode" Type="Edm.String" MaxLength="2" Nullable="false"/>
+                <Property Name="BrandId" Type="Edm.String" MaxLength="50" Nullable="false"/>
+                <Property Name="Division" Type="Edm.String" MaxLength="100" Nullable="false"/>
+                <Property Name="ProductPackId" Type="Edm.Int32"/>
+                <Property Name="ProductName" Type="Edm.String" MaxLength="100"/>
+            </EntityType>
+            <EntityType Name="Brands">
+                <Key>
+                    <PropertyRef Name="CountryCode"/>
+                    <PropertyRef Name="BrandId"/>
+                    <PropertyRef Name="Division"/>
+                </Key>
+                <Property Name="CountryCode" Type="Edm.String" MaxLength="2" Nullable="false"/>
+                <Property Name="BrandId" Type="Edm.String" MaxLength="50" Nullable="false"/>
+                <Property Name="Division" Type="Edm.String" MaxLength="100" Nullable="false"/>
+                <Property Name="BrandName" Type="Edm.String" MaxLength="500"/>
+            </EntityType>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

@@ -1,0 +1,33 @@
+{
+	"name": "ppa",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Settinng policy for pricing",
+	"keywords": [
+		"ui5",
+		"openui5",
+		"sapui5"
+	],
+	"main": "webapp/index.html",
+	"scripts": {
+		"build": "ui5 build",
+		"start": "ui5 serve -o index.html"
+	},
+	"remarkConfig": {
+		"plugins": [
+			"remark-preset-lint-consistent"
+		]
+	},
+	"devDependencies": {
+		"rimraf": "3.0.0",
+		"@ui5/cli": "2.0.3",
+		"@ui5/fs": "2.0.1",
+		"@ui5/logger": "2.0.0",
+		"@sap/ux-ui5-tooling": "1"
+	},
+	"ui5": {
+		"dependencies": [
+			"@sap/ux-ui5-tooling"
+		]
+	}
+}

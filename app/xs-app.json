@@ -59,6 +59,11 @@
       "localDir": "dist/tender/webapp"
     },
     {
+      "source": "^/ppa/(.*)$",
+      "target": "$1",
+      "localDir": "dist/ppa/webapp"
+    },
+    {
       "source": "^/uilib/(.*)$",
       "target": "$1",
       "localDir": "dist/uilib/src/com/bayer/tender/uilib"

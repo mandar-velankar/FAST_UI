@@ -575,6 +575,9 @@
 							<m:Column width="12%">
 								<m:Text text="{i18n>Total}"/>
 							</m:Column>
+							<m:Column width="12%" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
+								<m:Text text="{i18n>TotalWithVAT}"/>
+							</m:Column>
 						</m:columns>
 						<m:items>
 							<m:ColumnListItem>
@@ -624,6 +627,12 @@
 										{path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
 										{path: 'fastAppData>CURRENCY'}
 									], formatter:'.formatter.price'}"/>
+
+									<m:Text text="{parts: [
+										{path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY_VAT'}, 
+										{path: 'fastAppData>CURRENCY'}
+									], formatter:'.formatter.price'}"/>
+									
 								</m:cells>
 							</m:ColumnListItem>
 						</m:items>
@@ -658,6 +667,26 @@
 															<m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS})"/>
 														</m:items>
 													</m:VBox>
+
+												</m:items>
+											</m:HBox>
+											<m:HBox class="sapUiSmallMarginTop"  visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
+												<m:items>
+													
+													<!-- total amount -->
+													<m:VBox width="50%">
+														<m:Label text="{i18n>TotalAmountWithVAT}" design="Bold"/>
+													</m:VBox>
+													<m:VBox width="50%" alignItems="End">
+														<m:items>
+															<m:Text text="{parts: [
+																{path: 'fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS_VAT'}, 
+																{path: 'fastAppData>/OfferValidation/CURRENCY'}
+															], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd"/>	
+															<m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS_VAT})"/>
+														</m:items>
+													</m:VBox>
+
 												</m:items>
 											</m:HBox>
 											<m:Toolbar width="100%" height="1px"/>

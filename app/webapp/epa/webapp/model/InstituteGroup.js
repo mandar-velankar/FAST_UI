@@ -11,6 +11,7 @@ sap.ui.define([
             this.pricingData = {
                 discount: null,
                 msp: null,
+                nsm: null,
                 cif: null,
                 approvalStatus: "Price Approved" // hard coded
             };
@@ -28,6 +29,19 @@ sap.ui.define([
         
         getMSP: function(){
             return this.pricingData.msp;
+        },
+
+        setNSP: function(value){
+            if(value){
+                this.pricingData.nsp = Number(value);
+                if(this.pricingData.cif){
+                    this.calculateDiscount();
+                }
+            }
+        },
+        
+        getNSP: function(){
+            return this.pricingData.nsp;
         },
 
         setCIF: function(value){

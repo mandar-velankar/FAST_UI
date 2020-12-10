@@ -22,15 +22,16 @@ sap.ui.define([
 		/* =========================================================== */
 
 		onInit : function () {
-
-			this.previousMSP = "";
-			this.oSemanticPage = this.byId("detailPage");
-			this.epaState = this.getOwnerComponent().getState(this.getOwnerComponent().EPA);
-			this.setModel(this.epaState.getModel(), "epa");
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
-
+			this.previousMSP = "";
+			this.previousNSP = "";
+			this.oInputMSP = this.byId("idInputMSP");
+			this.oInputNSP = this.byId("idInputNSP");
+			this.oSemanticPage = this.byId("detailPage");
+			this.epaState = this.getOwnerComponent().getState(this.getOwnerComponent().EPA);
+			this.setModel(this.epaState.getModel(), "epa");
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
 		},
 
@@ -312,47 +313,65 @@ sap.ui.define([
 
 		onEditModePress: function(oEvent){
 			this.previousMSP = this.epaState.data.currentInstituteGroup.pricingData.msp;
+			this.previousNSP = this.epaState.data.currentInstituteGroup.pricingData.nsp;
 			this.epaState.setEditMode(true);
 		},
 
-		/**
-		 * Validates the inserted MSP value. Gives warning.
-		 */
-		validateMSP: function(oEvent){
+		validatePricingData: function(oEvent){
 
-			const msp = oEvent && Number(oEvent.getParameter("newValue")) || Number(this.epaState.data.currentInstituteGroup.pricingData.msp);
-			const floorPrice = Number(this.epaState.data.currentInstituteGroup.pricingData.pricingObj.floorPrice.price);
-			const cif = Number(this.epaState.data.currentInstituteGroup.pricingData.cif);
-			const oInput = this.byId("idInputMSP");
+			const sourceId = oEvent.getSource().getId();
 			const oSaveBtn = this.byId("idBtnSaveMSP");
 			oSaveBtn.setEnabled(true);
+
+			const msp = oEvent && sourceId === this.oInputMSP.getId() && Number(oEvent.getParameter("newValue")) || Number(this.epaState.data.currentInstituteGroup.pricingData.msp);
+			const nsp = oEvent && sourceId === this.oInputNSP.getId() && Number(oEvent.getParameter("newValue")) || Number(this.epaState.data.currentInstituteGroup.pricingData.nsp);
+
+			const floorPrice = Number(this.epaState.data.currentInstituteGroup.pricingData.pricingObj.floorPrice.price);
+			const cif = Number(this.epaState.data.currentInstituteGroup.pricingData.cif);
+			
 			
 			if(oEvent && !oEvent.getParameter("newValue")){
 				oSaveBtn.setEnabled(false);
 			}
 
 			if(msp < floorPrice){
-				oInput.setValueState("Warning");
-				oInput.setValueStateText("MSP value is below our floor price. Are you sure you want to continue?");
+				this.oInputMSP.setValueState("Warning");
+				this.oInputMSP.setValueStateText("MSP value is below our floor price. Are you sure you want to continue?");
 			}else if(msp > cif){
-				oInput.setValueState("Error");
-				oInput.setValueStateText("MSP value cannot be higher than the CIF value.");
+				this.oInputMSP.setValueState("Error");
+				this.oInputMSP.setValueStateText("MSP value cannot be higher than the CIF value.");
 				oSaveBtn.setEnabled(false);
+			}else{
+				this.oInputMSP.setValueState("None");
+				this.oInputMSP.setValueStateText();
 			}
-			else{
-				oInput.setValueState("None");
-				oInput.setValueStateText();
+
+			if(nsp > msp){
+				this.oInputNSP.setValueState("Error");
+				this.oInputNSP.setValueStateText("NSP value cannot be higher than the CIF value.");
+				oSaveBtn.setEnabled(false);
+			}else if(nsp < floorPrice){
+				this.oInputNSP.setValueState("Warning");
+				this.oInputNSP.setValueStateText("NSP value is below our floor price. Are you sure you want to continue?");
+			}else if(nsp > cif){
+				this.oInputNSP.setValueState("Error");
+				this.oInputNSP.setValueStateText("NSP value cannot be higher than the CIF value.");
+				oSaveBtn.setEnabled(false);
+			}else{
+				this.oInputNSP.setValueState("None");
+				this.oInputNSP.setValueStateText();
 			}
+
 		},
 
 		/**
 		 * Event handler for semantic:PositiveAction
 		 */
 		onSave: function(){
-			this.saveMSP().then(this.refreshPriceChart.bind(this));
+			this.savePricingData().then(this.refreshPriceChart.bind(this));
 		},
 
-		saveMSP: function () {
+		savePricingData: function () {
 
 			this.getView().setBusy(true);
 
@@ -361,7 +380,8 @@ sap.ui.define([
 			const effectiveDate = new Date();
 			const uom = this.epaState.getCurrentInstituteGroup().productData.getPrices().registeredPrice.uoM;
 			const currency = this.epaState.getCurrentInstituteGroup().productData.getPrices().registeredPrice.currency;
-			const price = +this.epaState.getCurrentInstituteGroup().getMSP();
+			const msp = +this.epaState.getCurrentInstituteGroup().getMSP();
+			const nsp = +this.epaState.getCurrentInstituteGroup().getNSP();
 
 			const oInstituteGroupPrice = {
 				"InstituteGroupId": instituteGroupId,
@@ -369,7 +389,8 @@ sap.ui.define([
 				"EffectiveDate": effectiveDate,
 				"UoM": uom,
 				"Currency": currency,
-				"Price": price
+				"MSP": msp,
+				"NSP": nsp
 			};
 
 			return this.epaState.createInstituteGroupPrice(oInstituteGroupPrice)
@@ -392,10 +413,12 @@ sap.ui.define([
 		onCancel: function(oEvent){
 
 			const msp = this.previousMSP; // previousMSP is set in the validateMSP()
-			const oInput = this.byId("idInputMSP");
+			const nsp = this.previousNSP; // previousNSP is set in the validateNSP()
 
-			oInput.setValue(msp);
-			this.validateMSP();
+			this.oInputMSP.setValue(msp);
+			this.oInputNSP.setValue(nsp);
+
+			this.validatePricingData();
 
 			this.epaState.setEditMode(false);
 		},
@@ -498,7 +521,7 @@ sap.ui.define([
 			if(this.sProductPackId){
 
 				
-				this.getMSP(this.currentinstGroupId,this.sProductPackId).then(res => {
+				this.getMspNsp(this.currentinstGroupId,this.sProductPackId).then(res => {
 
 					//Set CIF price & calculate prices
 					this.epaState.getCurrentInstituteGroup().setCIF(oSelectedProduct.getRegisteredPrice().price);
@@ -507,13 +530,14 @@ sap.ui.define([
 						cif:  oSelectedProduct.getRegisteredPrice().price,
 						discount : this.epaState.getCurrentInstituteGroup().getDiscount(),
 						msp: this.epaState.getCurrentInstituteGroup().getMSP(),
+						nsp: this.epaState.getCurrentInstituteGroup().getNSP(),
 						pricingObj: this.epaState.getCurrentInstituteGroup().productData.prices
 					};
 					this.epaState.setPricing(oPricing);
 					//chart display
 					this._setPriceChart("idListToNetChart1", oPricing);
 
-					this.validateMSP();
+					this.validatePricingData();
 				});
 				
 				this.getLatestApprovalRequests(this.sCountryCode, this.sInstituteGroupId, this.sProductPackId, this.sDivision);
@@ -535,8 +559,8 @@ sap.ui.define([
 			btnRefresh.setEnabled(bEnabled);
 		},
 
-		getMSP: function (currentinstGroupId,sProductPackId) {
-			return this.epaState.getMSP(currentinstGroupId,sProductPackId)
+		getMspNsp: function (currentinstGroupId,sProductPackId) {
+			return this.epaState.getInstituteGroupPriceLatest(currentinstGroupId,sProductPackId)
 			.catch((error) => {
 				console.error(error);
 				this.getView().setBusy(false);

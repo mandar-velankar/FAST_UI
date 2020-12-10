@@ -1,0 +1,499 @@
+<!-- Fragment for policy tab -->
+<core:FragmentDefinition 
+	xmlns:u="sap.uxap" 	
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:l="sap.ui.layout"
+	xmlns:form="sap.ui.layout.form">
+
+	<VBox>
+
+		<!-- Brand Policy panel -->
+		<Panel expandable="false" width="100%">
+
+			<!-- Toolbar for Brand Policy -->
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="Brand Policy for {ppa>/brand/brandName} "/>
+					<ToolbarSpacer />
+					<Button id="idBtnEditEffctvDate" text="Edit" visible="true" 
+							enabled="{= !${ppa>/productPolicy/mspEditMode} }" 
+							press=".onEditEffctvDate"
+					/>
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+				<form:SimpleForm 
+					editable="true" layout="ResponsiveGridLayout" 
+					labelSpanL="1" labelSpanM="1" labelSpanS="1"
+					columnsXL="1" columnsL="1" columnsM="1"
+					adjustLabelSpan="false" 
+					singleContainerFullSize="false">
+					
+					<form:content>
+						<VBox>
+							<HBox>
+
+								<!-- Labels -->
+								<VBox width="100px">
+									<Text text="Effective Date:"/>
+								</VBox>
+
+								<!-- Effective Date -->
+								<VBox>
+									<DatePicker
+										id="idEffectiveDate"
+										tooltip="{i18n>Effective Date}"
+										placeholder="{i18n>Select_date}"
+										change="handleEffectiveDateChange"
+										enabled="false"
+										value="{
+											path :'ppa>/brandPolicy/effectiveDate', 
+											type: 'sap.ui.model.type.Date', 
+											formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}
+										}"
+										class="sapUiSmallMarginBottom"
+									/>
+								</VBox>
+							</HBox>	
+							<!-- Save & Cancel buttons -->
+							<HBox>
+								<HBox width="100%" alignItems="center">
+									<Button id="idBtnSaveEffctvDate" text="Save" type="Accept" press="onSaveEffctvDate" visible="false" class="sapUiTinyMarginEnd"/>
+									<Button id="idBtnCancelEffctvDate" text="Cancel" type="Reject" press="onCancelEffctvDate" visible="false" />	
+								</HBox>	
+							</HBox>
+						</VBox>
+					</form:content>
+				</form:SimpleForm>
+			</content>
+		</Panel>
+
+		<!-- Products Panel -->
+		<Panel expandable="false" width="100%">
+			<!-- Toolbar for Products panel -->
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="Products"/>
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+				<!-- diferent colour for backround products table-->
+				<l:BlockLayout background="Light">
+
+					<l:BlockLayoutRow>
+						<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+
+							<!--TABLE WITH PRODUCTS FOR DELIVERY TRACKING -->
+							<Table id="idProductsTable" inset="false" 
+								class="sapFDynamicPageAlignContent" width="auto"
+								visible="true"
+								mode="SingleSelectMaster"
+								selectionChange="onProductItemSelect"
+								items="{path:'ppa>/products', templateShareable:false}">
+
+								<!-- table header with title & buttons -->
+								<headerToolbar>
+										<OverflowToolbar>
+											<content>
+												<ToolbarSpacer />
+												<!-- This will be handled outside this application -->
+												<Button id="idBtnRefreshPolicy" icon="sap-icon://refresh" text="{i18n>Refresh}" type="Default" press="onRefreshPolicyPress" enabled="true"/>
+											</content>
+										</OverflowToolbar>
+								</headerToolbar>
+
+								<columns>
+									<Column>
+										<Text text="{i18n>product}"/>
+									</Column>
+									<Column>
+										<Text text="{i18n>listPrice}"/>
+									</Column>
+									<Column>
+										<Text text="{i18n>mspStatus}"/>
+									</Column>
+									<Column>
+										<Text text="{i18n>nspStatus}"/>
+									</Column>
+								</columns>
+								<items>
+									<ColumnListItem type="Navigation">
+										<cells>
+											<Text text="{ppa>productName}"/>
+										</cells>
+										<cells>
+											<Text text="{
+													path:'ppa>listPrice', 
+													type: '.customTypes.Price'
+												} {ppa>currency}"
+											/>
+										</cells>
+										<cells>
+											<ObjectStatus
+												class="sapUiSmallMarginBottom"
+												text="{ppa>mspStatus}"
+												state="{parts:[{path:'ppa>mspStatus'}], formatter: '.formatter.status'}"
+											/>
+										</cells>
+										<cells>
+											<ObjectStatus
+												class="sapUiSmallMarginBottom"
+												text="{ppa>nspStatus}"
+												state="{parts:[{path:'ppa>nspStatus'}], formatter: '.formatter.status'}"
+											/>
+										</cells>
+									</ColumnListItem>
+								</items>
+							</Table>
+
+						</l:BlockLayoutCell>
+					</l:BlockLayoutRow>
+				</l:BlockLayout>
+
+			</content>
+		</Panel>
+
+		<!-- MSP panel -->
+		<Panel id="MspPanelId" expandable="true" expanded="{ppa>/mspPanelExpanded}" visible="{ppa>/mspPanelExpandable}" width="100%">
+
+			<!-- Toolbar for MSP panel -->
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="{i18n>mspPricingPolicy}"/>
+					<ToolbarSpacer />
+					<Button id="idBtnEditMspPolicy" text="Edit" visible="true" 
+							enabled="{= !${ppa>/productPolicy/mspEditMode} }" 
+							press=".onEditModeMSP"
+					/>
+				</OverflowToolbar>
+			</headerToolbar>
+
+			<content>
+			
+				
+				<form:SimpleForm id="idMspPricingPolicy" editable="true" title="" layout="ResponsiveGridLayout" 
+						labelSpanL="1" labelSpanM="1" labelSpanS="1"
+						columnsXL="1" columnsL="1" columnsM="1"
+						adjustLabelSpan="false" 
+						singleContainerFullSize="false">
+						
+						<form:content>
+							<VBox>
+
+								<!-- Input table for MSP :TODO make dynamic in next sprint -->
+								<HBox id="idMspHbox">
+
+									<!-- Labels -->
+									<VBox width="250px">
+										<Text text=""/>
+										<Text text="NSM/SM/FM" />
+										<Text text="HBU" />
+										<Text text="CDH" />
+									</VBox>
+
+									<!-- Government -->
+									<VBox>
+										<Text text="Goverment" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/NSMSMFM_Government', 
+												type: '.customTypes.Price'
+											}" 
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/HBU_Government', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/CDH_Government', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+									</VBox>
+
+									<!-- Private -->
+									<VBox>
+										<Text text="Private" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/NSMSMFM_Private', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/HBU_Private', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/CDH_Private', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+									</VBox>
+
+									<!-- Clinic -->
+									<VBox>
+										<Text text="Clinic" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/NSMSMFM_Clinic', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/HBU_Clinic', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/CDH_Clinic', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+									</VBox>
+
+									<!-- OTC -->
+									<VBox>
+										<Text text="OTC" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/NSMSMFM_OTC', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/HBU_OTC', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/mspPrices/CDH_OTC', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/mspEditMode} }"
+										/>
+									</VBox>
+
+								</HBox>	
+								
+								<!-- Save & Cancel buttons -->
+								<HBox>
+									<Label text="" width="250px"/>
+									<HBox width="100%" alignItems="center">
+										<Button id="idBtnSaveMSP" text="Save" type="Accept" press="onSaveMSP" visible="{= ${ppa>/productPolicy/mspEditMode} ? ${ppa>/productPolicy/mspEditMode} : false }" class="sapUiTinyMarginEnd"/>
+										<Button text="Cancel" type="Reject" press="onCancelMSP" visible="{= ${ppa>/productPolicy/mspEditMode} ? ${ppa>/productPolicy/mspEditMode} : false }" />	
+									</HBox>	
+								</HBox>
+							</VBox>
+						</form:content>
+	
+				</form:SimpleForm>
+
+			</content>
+
+		</Panel>
+
+		<!-- NSP Panel -->
+		<Panel id="NspPanelId" expandable="true" expanded="{ppa>/nspPanelExpanded}" visible="{ppa>/nspPanelExpandable}" width="100%">
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="{i18n>nspPricingPolicy}"/>
+					<ToolbarSpacer />
+					<Button id="idBtnEditNspPolicy" text="Edit" visible="true" 
+							enabled="{= !${ppa>/productPolicy/nspEditMode} }" 
+							press=".onEditModeNSP"
+					/>
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+				<form:SimpleForm id="idNspPricingPolicy" editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="1" labelSpanL="1" labelSpanM="1" labelSpanS="1"
+								 adjustLabelSpan="false" columnsXL="1" columnsL="1" columnsM="1"
+								 singleContainerFullSize="false">
+						
+						<form:content>
+							<VBox>
+
+								<!-- Input table for NSP :TODO make dynamic in next sprint -->
+								<HBox id="idNspHbox">
+
+									<!-- Labels -->
+									<VBox width="250px">
+										<Text text=""/>
+										<Text text="NSM/SM/FM" />
+										<Text text="HBU" />
+										<Text text="CDH" />
+									</VBox>
+
+									<!-- Government -->
+									<VBox>
+										<Text text="Goverment" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/NSMSMFM_Government', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/HBU_Government', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/CDH_Government', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+									</VBox>
+
+									<!-- Private -->
+									<VBox>
+										<Text text="Private" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/NSMSMFM_Private', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/HBU_Private', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/CDH_Private', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+									</VBox>
+
+									<!-- Clinic -->
+									<VBox>
+										<Text text="Clinic" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/NSMSMFM_Clinic', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/HBU_Clinic', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/CDH_Clinic', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+									</VBox>
+
+									<!-- OTC -->
+									<VBox>
+										<Text text="OTC" textAlign="Center"/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/NSMSMFM_OTC', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/HBU_OTC', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+										<Input 
+											liveChange="validatePrice"
+											value="{
+												path:'ppa>/productPolicy/nspPrices/CDH_OTC', 
+												type: '.customTypes.Price'
+											}"
+											editable="{= ${ppa>/productPolicy/nspEditMode} }"
+										/>
+									</VBox>
+
+								</HBox>
+
+								<!-- Save & Cancel buttons -->
+								<HBox>
+									<Label text="" width="250px"/>
+									<HBox width="100%" alignItems="center">
+										<Button id="idBtnSaveNSP" text="Save" type="Accept" press="onSaveNSP" visible="{= ${ppa>/productPolicy/nspEditMode} ? ${ppa>/productPolicy/nspEditMode} : false }" class="sapUiTinyMarginEnd"/>
+										<Button text="Cancel" type="Reject" press="onCancelNSP" visible="{= ${ppa>/productPolicy/nspEditMode} ? ${ppa>/productPolicy/nspEditMode} : false }" />	
+									</HBox>
+								</HBox>
+
+							</VBox>
+						</form:content>
+	
+				</form:SimpleForm>
+			</content>
+
+		</Panel>
+	</VBox>
+
+</core:FragmentDefinition>

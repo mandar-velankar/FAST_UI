@@ -1,0 +1,44 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+
+	<ViewSettingsDialog
+		id="viewSettingsDialog"
+		confirm=".onConfirmViewSettingsDialog">
+		<sortItems>
+			<ViewSettingsItem
+				text="{i18n>sortByBrand}"
+				key="BrandName"
+				selected="true"
+			/>
+		</sortItems>
+		<filterItems>
+			<ViewSettingsFilterItem
+				id="filterCountryItems"
+				text="{i18n>Country}"
+				multiSelect="false"
+				items="{path: 'ppa>/countries'}">
+				<items>
+					<ViewSettingsItem 
+						selected="{= ${ppa>countryCode} === 'TH'}"
+						key="{ppa>countryCode}"
+						text="{ppa>countryName}" 
+					/>
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem
+				id="filterDivisionItems"
+				text="{i18n>Division}"
+				multiSelect="false"
+				items="{path: 'ppa>/divisions'}">
+				<items>
+					<ViewSettingsItem 
+						key="{ppa>divisionId}"
+						text="{ppa>divisionName}" 
+					/>
+				</items>
+			</ViewSettingsFilterItem>
+		</filterItems>
+	</ViewSettingsDialog>
+
+</core:FragmentDefinition>

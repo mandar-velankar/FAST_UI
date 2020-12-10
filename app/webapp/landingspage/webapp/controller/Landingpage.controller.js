@@ -35,6 +35,7 @@ sap.ui.define([
 			var oTileModel = new JSONModel({
 				tender: false,
 				epa:false,
+				ppa:false,
 				contract:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
@@ -44,6 +45,9 @@ sap.ui.define([
 			});
 			this.getView().getModel("epaData").metadataLoaded(true).then(function(){
 				oTileModel.setProperty("/epa",true);
+			});
+			this.getView().getModel("ppaData").metadataLoaded(true).then(function(){
+				oTileModel.setProperty("/ppa",true);
 			});
 			this.getView().getModel("contractData").metadataLoaded(true).then(function(){
 				oTileModel.setProperty("/contract",true);
@@ -86,6 +90,13 @@ sap.ui.define([
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("epa");
+		},
+
+		onTilePpaManagementPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("ppa");
 		},
 
 		onTileContractManagementPress: function (event) {

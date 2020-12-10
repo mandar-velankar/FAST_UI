@@ -1,0 +1,137 @@
+<!-- Fragment for approvals tab -->
+<core:FragmentDefinition 
+	xmlns:u="sap.uxap" 	
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:tnt="sap.tnt">
+
+	<VBox>
+		<Panel expandable="false" expanded="true" width="100%">
+			<content>
+				<Table id="idMandatoryTable" alternateRowColors="true" selectionChange=".onApprovalItemSelect" items="{path:'ppa>/approvalRequest/approvals', templateShareable:false}">
+						
+						<!-- table header with title & buttons -->
+						<headerToolbar>
+								<OverflowToolbar>
+									<content>
+										<Title text="{i18n>approvals}" level="H2"/>
+										<tnt:InfoLabel
+											text="{ppa>/approvalRequest/status}"
+											displayOnly="true"
+										/>
+										<ToolbarSpacer />
+										<!-- This will be handled outside this application -->
+										<Button id="idBtnSendApprovals" icon="sap-icon://employee-approvals" text="Send" type="Accept" 
+												visible="{=	${ppa>/approvalRequest/status} !== 'Awaiting Approval' }"  
+												enabled="true" press="onSendApprovals"/>
+										<Button icon="sap-icon://employee-rejections" text="Cancel" type="Reject" 
+												visible="{= ${ppa>/approvalRequest/status} === 'Awaiting Approval' }" 
+												press="onCancelApprovals"/>
+										<Button id="idBtnRefreshApprovals" icon="sap-icon://refresh" text="{i18n>Refresh}" type="Default" press="onRefreshApprovalsPress" enabled="true"/>
+									</content>
+								</OverflowToolbar>
+						</headerToolbar>
+						
+						<!-- columns -->
+						<columns>
+							<Column minScreenWidth="Tablet" demandPopin="true" width="10rem">
+								<Label text="{i18n>Approver}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
+								<Label text="{i18n>Status}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
+								<Label text="{i18n>Send}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true" width="20rem">
+								<Label text="{i18n>Name}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true" width="9rem">
+								<Label text="{i18n>RequiredAction}"/>
+							</Column>
+						</columns>
+						
+						<!-- rows -->
+						<items>
+							
+							<ColumnListItem type="DetailAndActive" detailPress=".onApprovalItemDetail" press='.onApprovalItemSelect'>
+								
+								<cells>
+									
+									<!-- Approver Type -->
+									<Label text="{ppa>approverType/approverType}"/>
+								
+									<!-- Status -->
+									<ObjectStatus
+										class="sapUiSmallMarginBottom"
+										text="{= ${ppa>approvalStatus} ? ${ppa>approvalStatus} : 'Not Sent' }"
+									/>
+									
+									<!-- Sending -->
+									<Select selectedKey="{ppa>sending}" 
+											enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; ${ppa>approverType/mandatory} !== true }" >
+										<items>
+											<core:Item text="No" key="No"/>
+											<core:Item text="Yes" key="Yes"/>
+										</items>
+									</Select>
+									
+									<!-- Name -->
+									<Select id="idApproverName" selectedKey="{ppa>countryApprover_ID}" enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' }" width="300px" items="{path:'ppa>approverType/countryApprovers', templateShareable:false}">
+										<items>
+											<core:Item text="{ppa>approverName}" key="{ppa>iD}"/>
+										</items>
+									</Select>
+									
+									<!-- Content -->
+									<Select id="idReqAction" selectedKey="{ppa>requiredAction}" enabled="false">
+										<items>
+											<core:Item text="Approval" key="Approval"/>
+											<core:Item text="Notification" key="Notification"/>
+										</items>
+									</Select>
+									
+								</cells>
+								
+							</ColumnListItem>
+							
+						</items>
+						
+				</Table>
+
+				<form:SimpleForm title="Approval Comments" id="idApprovalDetailForm" editable="true" maxContainerCols="1" layout="ResponsiveGridLayout" labelSpanXL="2" labelSpanL="2" labelSpanM="2" labelSpanS="2"
+									adjustLabelSpan="false" columnsXL="1" columnsL="1" columnsM="1" class="editableForm" visible="false" singleContainerFullSize="false">
+					<form:content>
+						<!-- Sender's Comment  -->
+						<Label text="Sender's Comment"/>
+						<TextArea value="{ppa>senderComment}" 
+									showExceededText="true" 
+									maxLength="500" 
+									valueLiveUpdate="false" liveChange="handleLiveChange" 
+									enabled="true"/>
+									
+						<!-- Approver's Comment-->  
+						<Label text="Approver's Comment"/>
+						<TextArea value="{ppa>approverComment}" 
+									showExceededText="true" 
+									maxLength="500"
+									valueLiveUpdate="false" 
+									liveChange="handleLiveChange" 
+									enabled="false"/>
+
+						<Label text=""/>
+						<SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
+							<items>
+								<SegmentedButtonItem icon="sap-icon://accept" text="Confirm" press="onConfirmApproval" />
+							</items>
+						</SegmentedButton>
+					</form:content>
+				</form:SimpleForm>
+			</content>
+		</Panel>
+	</VBox>
+
+</core:FragmentDefinition>

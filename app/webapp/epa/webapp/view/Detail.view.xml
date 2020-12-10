@@ -103,8 +103,17 @@
 								<Label text="MSP"/>
 								<Input 
 									id="idInputMSP"
-									liveChange="validateMSP"
+									liveChange="validatePricingData"
 									value="{epa>/currentInstituteGroup/pricingData/msp}" 
+									enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' &amp;&amp; ${epa>/editMode} === true }" 
+								/>
+								<Text text="THB"/>
+
+								<Label text="NSP"/>
+								<Input 
+									id="idInputNSP"
+									liveChange="validatePricingData"
+									value="{epa>/currentInstituteGroup/pricingData/nsp}" 
 									enabled="{= ${epa>/latestApprovalRequests/overallApprovalStatus} !== 'Awaiting Approval' &amp;&amp; ${epa>/editMode} === true }" 
 								/>
 								<Text text="THB" class="sapUiSmallMarginBottom"/>

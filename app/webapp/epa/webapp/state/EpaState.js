@@ -72,12 +72,19 @@ sap.ui.define([
 			});
 		},
 
-		getMSP: function(iInstituteGroupId,iProductPackId){
+		/**
+		 * Fetches MSP and NSP for a given institute group
+		 * @param {} iInstituteGroupId 
+		 * @param {*} iProductPackId 
+		 */
+		getInstituteGroupPriceLatest: function(iInstituteGroupId,iProductPackId){
+			
 			return this.getService().getInstituteGroupPriceLatest(iInstituteGroupId,iProductPackId).then((response) => {
 				
 				if(response.data.results.length > 0){
 					let oInstituteGroup = this.getInstituteGroupById(iInstituteGroupId);
-					oInstituteGroup.setMSP(response.data.results[0].Price);
+					oInstituteGroup.setMSP(response.data.results[0].MSP);
+					oInstituteGroup.setNSP(response.data.results[0].NSP);
 					this.updateModel();
 				}
 

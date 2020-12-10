@@ -28,6 +28,14 @@
 					"localUri": "localService/metadata.xml"
 				}
 			},
+			"policyService": {
+				"uri": "/FAST/ppa/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml"
+				}
+			},
 			"contractService": {
 				"uri": "/FAST/ctr/",
 				"type": "OData",
@@ -82,6 +90,12 @@
 				"componentData": {},
 				"lazy": true
 			},
+			"ppaComponent": {
+				"name": "com.bayer.tender.ppa",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
 			"contractComponent": {
 				"name": "com.bayer.tender.contracts",
 				"settings": {},
@@ -128,6 +142,10 @@
 				"dataSource": "epaService",
 				"preload": true
 			},
+			"ppaData": {
+				"dataSource": "policyService",
+				"preload": true
+			},
 			"contractData": {
 				"dataSource": "contractService",
 				"preload": true
@@ -170,6 +188,14 @@
 					}
 				},
 				{
+					"name": "ppa",
+					"pattern": "ppa",
+					"target": {
+						"name": "ppa",
+						"prefix": "p"
+					}
+				},
+				{
 					"name": "contract",
 					"pattern": "contract",
 					"target": {
@@ -197,6 +223,10 @@
 				"epa": {
 					"type": "Component",
 					"usage": "epaComponent"
+				},
+				"ppa": {
+					"type": "Component",
+					"usage": "ppaComponent"
 				},
 				"contract": {
 					"type": "Component",

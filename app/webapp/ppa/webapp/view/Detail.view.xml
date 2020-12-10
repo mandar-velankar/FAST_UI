@@ -1,0 +1,91 @@
+<mvc:View
+	controllerName="com.bayer.tender.ppa.controller.Detail"
+	xmlns="sap.uxap" 
+	xmlns:m="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:mvc="sap.ui.core.mvc">
+
+	<ObjectPageLayout 
+		id="detailPage"
+		busy="{detailView>/busy}"
+		busyIndicatorDelay="{detailView>/delay}"
+		showTitleInHeaderContent="true" 
+		alwaysShowContentHeader="true" 
+		preserveHeaderStateOnScroll="false"
+		headerContentPinnable="true" 
+		isChildPage="true" 
+		toggleHeaderOnTitleClick="true" 
+		showFooter="false" 
+		upperCaseAnchorBar="false"
+		enableLazyLoading="false" 
+		useIconTabBar="true" 
+		navigate="onNavigate"
+		selectedSection="policyPageSection"
+		showAnchorBarPopover="false">
+
+		<headerTitle>
+			<ObjectPageDynamicHeaderTitle>
+
+				<!-- Title of detail page -->
+				<expandedHeading>
+					<m:Title text="{i18n>titleDetailPage}" level="H2"/>
+				</expandedHeading>
+
+				<!-- WINDOW ACTIONS -->
+				<navigationActions>
+					<m:OverflowToolbarButton id="enterFullScreenButton" type="Transparent" icon="sap-icon://full-screen" press=".toggleFullScreen"
+						tooltip="Enter Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
+					<m:OverflowToolbarButton id="exitFullScreenButton" type="Transparent" icon="sap-icon://exit-full-screen" press=".toggleFullScreen"
+						tooltip="Exit Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"/>
+					<m:OverflowToolbarButton id="closeScreenButton" type="Transparent" icon="sap-icon://decline" press=".onCloseDetailPress" tooltip="Close column"
+						visible="true"/>
+				</navigationActions>
+				
+				<!-- ACTIONS 
+				<actions>
+					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="{= ${ctr>/deleteEnabled} }" />
+					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="true"/>
+					<m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${ctr>/editMode} === false &amp;&amp; ${ctr>/editEnabled} ? true : false }"/>
+				</actions>
+				-->
+				
+			</ObjectPageDynamicHeaderTitle>
+		</headerTitle>
+
+		<!-- Sections with diferent tabs -->
+		<sections>
+
+			<!-- POLICY SECTION -->
+			<ObjectPageSection id="policyPageSection" title="Policy">
+
+				<!-- Sub section if needed, at this moment only 1 is needed -->
+				<subSections>
+					
+					<!-- Policy -->
+					<ObjectPageSubSection id="policyPageSubSection" title="{i18n>policy}">
+						<core:Fragment fragmentName="com.bayer.tender.ppa.view.fragments.Policy" type="XML"/>
+					</ObjectPageSubSection>
+
+				</subSections>
+			</ObjectPageSection>
+
+			<!-- APPROVALS SECTION -->
+			<ObjectPageSection id="approvalsPageSection" title="Approvals">
+
+				<subSections>
+					
+					<!-- Approvals -->
+					<ObjectPageSubSection id="approvalsPageSubSection" title="{i18n>approvals}">
+						<core:Fragment fragmentName="com.bayer.tender.ppa.view.fragments.Approvals" type="XML"/>
+					</ObjectPageSubSection>
+
+				</subSections>
+			</ObjectPageSection>
+
+		</sections>
+
+	</ObjectPageLayout>
+
+</mvc:View>

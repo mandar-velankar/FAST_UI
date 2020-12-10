@@ -22,7 +22,7 @@ resources:
       path: ./xs-security.json
       service-plan: default
       service: xsuaa
-    type: org.cloudfoundry.managed-service
+    type: org.cloudfoundry.existing-service
   - name: srv_api
     type: configuration
     parameters:

@@ -38,6 +38,17 @@
 
 								<GenericTile 
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Pricing Policy Management" 
+									press="onTilePpaManagementPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/ppa}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
+
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Contract Management" 
 									press="onTileContractManagementPress" 
 									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
