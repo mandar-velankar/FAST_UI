@@ -628,6 +628,7 @@ sap.ui.define([
 			this.ppaState.getProductPolicy(policyId).then(() => {
 				this.setMspEditMode(false);
 				this.byId("idBtnEditNspPolicy").setEnabled(true);
+				this.byId("idBtnEditMspPolicy").setEnabled(true);
 				this.getView().setBusy(false);
 			});
 
@@ -646,6 +647,7 @@ sap.ui.define([
 
 			this.ppaState.getProductPolicy(policyId).then(() => {
 				this.setNspEditMode(false);
+				this.byId("idBtnEditNspPolicy").setEnabled(true);
 				this.byId("idBtnEditMspPolicy").setEnabled(true);
 				this.getView().setBusy(false);
 			});
