@@ -2,6 +2,7 @@ sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseState",
 	"../model/Brand",
 	"../model/BrandPolicy",
+	"../model/AggregatedBrandPolicy",
 	"../model/Product",
   	"../model/Country",
 	"../model/Division",
@@ -10,7 +11,7 @@ sap.ui.define([
 	"../model/Price",
 	"../model/ApprovalRequest",
 	"../model/CountryApprover"
-], function (BaseState, Brand, BrandPolicy, Product, Country, Division, Channel, Policy, Price, ApprovalRequest, CountryApprover) {
+], function (BaseState, Brand, BrandPolicy, AggregatedBrandPolicy, Product, Country, Division, Channel, Policy, Price, ApprovalRequest, CountryApprover) {
 	"use strict";
 	var ppaState = BaseState.extend("com.bayer.tender.ppa.state.PpaState", {
 		constructor: function (oService) {
@@ -18,6 +19,7 @@ sap.ui.define([
 			this.data = {
 				brand: {},
 				brandPolicy: {},
+				aggregatedBrandPolicy: {},
 				products: [],
 				selectedProduct: {},
 				countries: [],
@@ -79,12 +81,118 @@ sap.ui.define([
 			});
 		},
 
-		//Get brand policy
+		// Get brand policy
 		getBrandPolicy: function (sCountryCode, sBrandId, sDivision) {
 			this.setProperty("brandPolicy", new BrandPolicy());
 			return this.getService().getBrandPolicy(sCountryCode, sBrandId, sDivision).then((response) => {
 				this.setProperty("brandPolicy", new BrandPolicy(response.data.results[0]));				
 				return this.getProperty("brandPolicy");
+			});
+		},
+
+		//Get brand policy by ID
+		getBrandPolicyById: function (id) {
+			return this.getService().getBrandPolicyById(id);
+		},
+
+		//Get Aggregated Brand Policy
+		getAggregatedBrandPolicy: function (sCountryCode, sBrandId, sDivision) {
+			this.setProperty("aggregatedBrandPolicy", new AggregatedBrandPolicy());
+			return this.getService().getAggregatedBrandPolicy(sCountryCode, sBrandId, sDivision).then(async (response) => {
+				const result = response.data.results[0];
+				//if(result){
+
+					
+					//fromDate 
+					let oNewFromDate = new Date()
+					oNewFromDate.setHours(0,0,0,0);
+
+					//toDate 
+					let oNewToDate = new Date("9999-12-31")
+					oNewToDate.setHours(0,0,0,0);
+
+					// Convert to UTC time
+					const timeOffsetInMS = oNewToDate.getTimezoneOffset() * 60000;
+					oNewToDate.setTime(oNewToDate.getTime() - timeOffsetInMS);
+
+					// get approved brand policy
+					const newBrandPolicy = {
+						data : {
+							ValidFrom       : oNewFromDate,
+							ValidTo         : oNewToDate,
+							CountryCode     : sCountryCode,
+							Division        : sDivision,
+							BrandId         : sBrandId,
+							Status          : "Draft"
+						}
+					};
+
+					//get draft brand policy (if non exists, we create an empty BrandPolicy structure + empty product policy Structure)
+					const draft = result && result.IDDraft ? await this.getBrandPolicyById(result.IDDraft) : newBrandPolicy;			// if there is no draft product policy yet, create an empty one
+					
+					//If products policies are not existing, we create for each product an empty policy
+					if(!draft.data.ProductPolicies){
+						draft.data["ProductPolicies"] = {};
+						draft.data.ProductPolicies["results"] = [];
+					}
+
+					if(draft && draft.data && draft.data.ProductPolicies.results.length !== this.data.products.length){
+
+						 const aProductPolicies = draft.data.ProductPolicies.results;
+
+						 let newProducts = this.data.products.map(product => {
+
+							//does product already exist?
+							const prodPack = aProductPolicies.find(prod => prod.ProductPackId === product.productPackId);
+							
+							if(prodPack){
+								return prodPack;
+							}else{
+								let oEmptyProductPolicy = {
+									CountryCode : product.countryCode,
+									Division : product.division,
+									BrandId : product.brandId,
+									ProductPackId : product.productPackId,
+									Currency : product.currency,
+									MspStatus : product.mspStatus,
+									NspStatus : product.nspStatus,
+									BrandPolicy_ID : result && result.IDDraft ? result.IDDraft : null
+								};
+								return oEmptyProductPolicy;
+							}
+
+						});
+
+						draft.data.ProductPolicies.results = newProducts;
+
+					}
+
+					// get approved brand policy
+					const approved = result && result.IDLatestApproved ? await this.getBrandPolicyById(result.IDLatestApproved) : null;
+
+					//add channels so they can be used to build price fields
+					approved && approved.data && (approved.data["channels"] = this.data.channels);
+					draft && draft.data && (draft.data["channels"] = this.data.channels);
+
+					let newAggregated = {
+						BrandId: sBrandId, 
+						CountryCode: sCountryCode,
+						Division: sDivision,
+						IDDraft: null,
+						IDLatestApproved: null
+					}
+
+					const aggregatedObj = result || newAggregated;
+	
+					const data = {
+						...aggregatedObj,
+						LatestApprovedPolicy: approved && approved.data,
+						DraftPolicy: draft && draft.data
+					};
+
+					this.setProperty("aggregatedBrandPolicy", new AggregatedBrandPolicy(data));				
+					return this.getProperty("aggregatedBrandPolicy");
+				//}
 			});
 		},
 
@@ -103,6 +211,14 @@ sap.ui.define([
 			});
 		},
 
+		getProductNameById: function (sProductPackId){
+			if(sProductPackId){
+				let aProducts = this.getProperty("products");
+				let aProduct = aProducts.filter(product => product.productPackId === sProductPackId);
+				return aProduct[0].productName; //should always be one
+			}
+		},
+
 		setSelectedProduct: function(product){
 			this.setProperty("selectedProduct", product);
 		},
@@ -111,48 +227,61 @@ sap.ui.define([
 			return this.getProperty("selectedProduct");
 		},
 
-		/**
-		 * Get Policy for product
-		 * @param {*} sProductPolicyId 
-		 * @returns {} Promise
-		 */
+		// /**
+		//  * Get Policy for product
+		//  * @param {*} sProductPolicyId 
+		//  * @returns {} Promise
+		//  */
 		getProductPolicy: function (sProductPolicyId) {
 
-			if(sProductPolicyId){
-				return this.getService().getProductPolicy(sProductPolicyId).then((PolicyResponse) => {
-					let oPolicy = new Policy(PolicyResponse.data);
-					oPolicy.setChannels(this.data.channels);
-					this.setProperty("productPolicy", oPolicy);
-					return this.getProperty("productPolicy");
-				});
-			}else{
+		 	if(sProductPolicyId){
+		 		return this.getService().getProductPolicy(sProductPolicyId).then((PolicyResponse) => {
+		 			let oPolicy = new Policy(PolicyResponse.data);
+		 			oPolicy.setChannels(this.data.channels);
+		 			this.setProperty("draftProductPolicy", oPolicy);
+		 			return this.getProperty("draftProductPolicy");
+		 		});
+		 	}else{
 				
-				//for creating with empty Policy structure (to be able to create)
-				let oSelectedProduct = this.getSelectedProduct();
-				let oPolicy = {
-					//iD : "",
-					countryCode : oSelectedProduct.countryCode,
-					division : oSelectedProduct.division,
-					brandId : oSelectedProduct.brandId,
-					productPackId : oSelectedProduct.productPackId,
-					currency : oSelectedProduct.currency,
-					mspStatus : oSelectedProduct.mspStatus,
-					nspStatus : oSelectedProduct.nspStatus,
-					channels : this.data.channels
-				}
+		 		//for creating with empty Policy structure (to be able to create)
+		 		let oSelectedProduct = this.getSelectedProduct();
+		 		let oPolicy = {
+		 			//iD : "",
+		 			countryCode : oSelectedProduct.countryCode,
+		 			division : oSelectedProduct.division,
+		 			brandId : oSelectedProduct.brandId,
+		 			productPackId : oSelectedProduct.productPackId,
+		 			currency : oSelectedProduct.currency,
+		 			mspStatus : oSelectedProduct.mspStatus,
+		 			nspStatus : oSelectedProduct.nspStatus,
+		 			channels : this.data.channels
+		 		}
 
-				let oNewPolicy = new Policy(oPolicy);
-				//oNewPolicy.setChannels(this.data.channels);
+		 		let oNewPolicy = new Policy(oPolicy);
+		 		//oNewPolicy.setChannels(this.data.channels);
 
-				this.setProperty("productPolicy", oNewPolicy);
-				return Promise.resolve(this.getProperty("productPolicy"));
+		 		this.setProperty("draftProductPolicy", oNewPolicy);
+		 		return Promise.resolve(this.getProperty("draftProductPolicy"));
 
-			}
+		 	}
 			
 		},
-
+		
 		getSelectedProductPolicy: function(){
-			return this.getProperty("productPolicy");
+
+			const selectedProduct = this.getSelectedProduct();
+			const approvedProductPolicy = this.data.aggregatedBrandPolicy.getApprovedBrandPolicy() && this.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicy(selectedProduct.productPackId);
+			const draftProductPolicy = this.data.aggregatedBrandPolicy.getDraftBrandPolicy() && this.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicy(selectedProduct.productPackId);
+
+			const data = {
+				...selectedProduct,
+				approvedProductPolicy: approvedProductPolicy || {},
+				draftProductPolicy: draftProductPolicy,
+			};
+
+			this.setSelectedProduct(data);
+
+			return Promise.resolve(this.getProperty("selectedProduct"));
 		},
 
 		/**
@@ -236,7 +365,7 @@ sap.ui.define([
 			this.setProperty("countries", []);
 			return this.getService().getUserCountries().then(response => {
 				const results = response.data.results;
-				const countries = results.map(counry => new Country(counry.Country));
+				const countries = results.map(country => new Country(country.Country));
 				this.setProperty("countries", countries);
 				return this.getProperty("countries");
 			});
@@ -306,31 +435,31 @@ sap.ui.define([
 
 
 		//saving prices (all prices will be saved or updated)
-		savePrices: function (sCase){
+		savePrices: function (sCase, oDraftProductPolicy){
 
 			//Selected Product, its product policy
-			let oProductPolicy = this.data.productPolicy;
+			//let oDraftProductPolicy = this.getSelectedProduct().draftProductPolicy; //this.data.aggregatedBrandPolicy.draftBrandPolicy; //this.data.productPolicy;
 			
 			//match prices from UI structured object to actual price object
-			oProductPolicy.matchPrices();
+			oDraftProductPolicy.matchPrices();
 
 			//set status to draft
 			switch(sCase) {
 				case "MSP":
-					oProductPolicy.mspStatus = "Draft";
+					oDraftProductPolicy.mspStatus = "Draft";
 				  break;
 				case "NSP":
-					oProductPolicy.nspStatus = "Draft";
+					oDraftProductPolicy.nspStatus = "Draft";
 				  break;
 				default:
 				  // code block
 			}
 			
 			//if id exists, update, otherwise create
-			if(!oProductPolicy.iD){
-				return this.createPolicy(oProductPolicy);
+			if(!oDraftProductPolicy.iD){
+				return this.createPolicy(oDraftProductPolicy);
 			}else{
-				return this.updatePolicy(oProductPolicy);
+				return this.updatePolicy(oDraftProductPolicy);
 			}			
     },
 
@@ -342,21 +471,44 @@ sap.ui.define([
 			return this.getService().updateBrandPolicy(oBrandPolicy);
 		},
 
-		saveEffectiveDate: function(){
-			if(this.data.brandPolicy.iD){
-				return this.updateBrandPolicy(this.data.brandPolicy);
+		//saving the BrandPolicy
+		saveBrandPolicy: function(){
+
+			//Get draft & get approved
+			let oAggregatedBrandPolicy = this.data.aggregatedBrandPolicy;
+			let oDraftBrandPolicy    = this.data.aggregatedBrandPolicy.getDraftBrandPolicy();
+			let oApprovedBrandPolicy = this.data.aggregatedBrandPolicy.getApprovedBrandPolicy();
+			let promises = [];
+
+        	//1. if latest approved version exist, we should update its validTo date = (effective date - 1sec)
+            if(oApprovedBrandPolicy && oApprovedBrandPolicy.iD){
+				var newValidToDate = new Date(oDraftBrandPolicy.validFrom.getFullYear(), oDraftBrandPolicy.validFrom.getMonth(), oDraftBrandPolicy.validFrom.getDate() - 1, 23,59,59);
+
+				// Convert to UTC time
+				const timeOffsetInMS = newValidToDate.getTimezoneOffset() * 60000;
+				newValidToDate.setTime(newValidToDate.getTime() - timeOffsetInMS);
+
+                oApprovedBrandPolicy.validTo = newValidToDate;
+                promises.push(this.updateBrandPolicy(oApprovedBrandPolicy));
+			};
+
+			//2. does draft exist
+			if(oDraftBrandPolicy.iD){
+				//do we have a brand in draft
+				promises.push(this.updateBrandPolicy(oDraftBrandPolicy));
 			}else{
-
-				this.data.brandPolicy.countryCode = this.data.brand.countryCode;
-				this.data.brandPolicy.division = this.data.brand.division;
-				this.data.brandPolicy.brandId = this.data.brand.brandId;
-
-				return this.createBrandPolicy(this.data.brandPolicy);
+				//create new draft
+				promises.push(this.createBrandPolicy(oDraftBrandPolicy));
+				
 			}
+
+			return Promise.all(promises);
+
 		},
 
 		setBrandPolicyEffectiveDate: function(date){
-			this.data.brandPolicy.effectiveDate = date;
+			this.data.aggregatedBrandPolicy.getDraftBrandPolicy().validFrom = date;
+			//this.data.brandPolicy.validFrom = date;
 		},
 
 		//saving approvals (cancel or send will have different statusses)

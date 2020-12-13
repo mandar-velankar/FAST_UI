@@ -31,6 +31,11 @@ sap.ui.define([
 			this.ppaState = this.getOwnerComponent().getState(this.getOwnerComponent().PPA);
 			this.setModel(this.ppaState.getModel(), "ppa");
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
+
+			var oDateModel = new sap.ui.model.json.JSONModel({
+				minDate: new Date()
+			});	
+			this.getView().setModel(oDateModel, "dateModel");
 		},
 
 		/* =========================================================== */
@@ -112,6 +117,7 @@ sap.ui.define([
 					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(brand => {
 						this.ppaState.getApprovalRequest(brand);
 						this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+						this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 					});
 					
 					this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision);
@@ -155,21 +161,41 @@ sap.ui.define([
 				
 			}
 
-			//const selectedProduct = oEvent.getSource().getBindingContext("ppa").getObject();
-			//const selectedProduct;
-			this.ppaState.setSelectedProduct(selectedProduct);
+			if(this.byId("idEffectiveDate").getDateValue()){
+
+				//const selectedProduct = oEvent.getSource().getBindingContext("ppa").getObject();
+				//const selectedProduct;
+				this.ppaState.setSelectedProduct(selectedProduct);
+
+				//Load the aggregated Brand Policy & store the draft & latestapproved product policy
+				this.ppaState.getSelectedProductPolicy().then(() => {
+					// Set panel panels expanded
+					this.ppaState.setMspPanelExpanded(true);
+					this.ppaState.setNspPanelExpanded(true);
+					this.ppaState.setMspExpandable(true);
+					this.ppaState.setNspExpandable(true);
+					this.getView().setBusy(false);
+				}).catch((error) => {
+					this.getView().setBusy(false);
+				});
+			} else {
+				const msgErrorEffectiveDate = 'Please enter an effective date before creating a new policy.';
+				sap.m.MessageBox.error(msgErrorEffectiveDate, {});
+				oProductsTable.removeSelections(true)
+				this.getView().setBusy(false);
+			}
 
 			// Load the corresponding Product Policy
-			this.ppaState.getProductPolicy(selectedProduct.policyId).then(() => {
-				// Set panel panels expanded
-				this.ppaState.setMspPanelExpanded(true);
-				this.ppaState.setNspPanelExpanded(true);
-				this.ppaState.setMspExpandable(true);
-				this.ppaState.setNspExpandable(true);
-				this.getView().setBusy(false);
-			}).catch((error) => {
-				this.getView().setBusy(false);
-			});
+			// this.ppaState.getProductPolicy(selectedProduct.policyId).then(() => {
+			// 	// Set panel panels expanded
+			// 	this.ppaState.setMspPanelExpanded(true);
+			// 	this.ppaState.setNspPanelExpanded(true);
+			// 	this.ppaState.setMspExpandable(true);
+			// 	this.ppaState.setNspExpandable(true);
+			// 	this.getView().setBusy(false);
+			// }).catch((error) => {
+			// 	this.getView().setBusy(false);
+			// });
 
 			
 	
@@ -212,15 +238,34 @@ sap.ui.define([
 			});
 		},
 
+		// /**
+		//  * Get BrandPolicy
+		//  * @param {*} sCountryCode 
+		//  * @param {*} iBrandId 
+		//  * @param {*} sDivision 
+		//  */
+		getBrandPolicy: function (sCountryCode, iBrandId, sDivision) {
+			this.getView().setBusy(true);
+			return this.ppaState.getBrandPolicy(sCountryCode, iBrandId, sDivision).then((brandPolicy) => {
+				this.getView().setBusy(false);
+				return brandPolicy;
+			}).catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			});
+		},
+
 		/**
-		 * Get BrandPolicy
+		 * Get AggregatedBrandPolicy
 		 * @param {*} sCountryCode 
 		 * @param {*} iBrandId 
 		 * @param {*} sDivision 
 		 */
-		getBrandPolicy: function (sCountryCode, iBrandId, sDivision) {
+		getAggregatedBrandPolicy: function (sCountryCode, iBrandId, sDivision) {
 			this.getView().setBusy(true);
-			return this.ppaState.getBrandPolicy(sCountryCode, iBrandId, sDivision).then((brandPolicy) => {
+			return this.ppaState.getAggregatedBrandPolicy(sCountryCode, iBrandId, sDivision).then((brandPolicy) => {
 				this.getView().setBusy(false);
 				return brandPolicy;
 			}).catch((error) => {
@@ -434,18 +479,38 @@ sap.ui.define([
 		 */
 		onSendApprovals: function(oEvent){
 
+			var that = this;
+
 			//show loading screen
 			this.getView().setBusy(true);
+			let aProductsNotValid = this.onValidatePricesAtApproval();
 
-			// if (!this.currentCountryCode || !this.currentBrandId || !this.currentDivision) {
-			// 	sap.m.MessageBox.warning("No brand selected. Please select a brand from the brands section.", {});
-			// 	return;
-			// }
-						
+			if(aProductsNotValid.length > 0 ){
+
+				let productNames = aProductsNotValid.map(product => product);
+
+				//add products list
+				sap.m.MessageBox.warning(`Prices for the following products are missing. Do you want to continue? \n\n ${productNames.join('\n')}`, {
+					actions: ["Continue", sap.m.MessageBox.Action.CANCEL],
+					emphasizedAction: "Continue",
+					onClose: function(sAction){
+						switch(sAction){
+							case "Continue" : that._sendApprovals();
+							case "CANCEL"   : that.getView().setBusy(false);
+						}
+					}
+				});
+			} else {
+					that._sendApprovals();
+			}
+			//});
 			// TODO: check if setCancelApprovalsPressed is necessary - is not used at the moment
 			// Keep track that we pressed Send Approval button
 			// this.ppaState.setSendApprovalsPressed(true);
 
+		},
+
+		_sendApprovals: function(){
 			//save Approvals (&status)
 			this.ppaState.sendApprovals("Processing").then(() => {
 				this.getView().setBusy(false);
@@ -453,7 +518,33 @@ sap.ui.define([
 
 			//disable edit mode
 			this.ppaState.setEditMode(false);
-			
+		},
+
+		onValidatePricesAtApproval: function(){
+
+			let aInvalidProducts = [];
+
+			//validate if all products have prices assigned
+			let aProducts = this.ppaState.getProperty('products');
+			let oDraftBrandPolicy = this.ppaState.data.aggregatedBrandPolicy.draftBrandPolicy;
+
+			//let promises = oDraftBrandPolicy.productPolicies.map(oProductPolicy => {
+			if(oDraftBrandPolicy){
+				oDraftBrandPolicy.productPolicies.forEach(oProductPolicy => {
+					if(oProductPolicy && oProductPolicy.policyPrices.length > 0 ){
+						for(let i = 0; i < oProductPolicy.policyPrices.length; i++){
+							if(oProductPolicy.policyPrices[i].price === '0' || oProductPolicy.policyPrices[i] === null){
+								aInvalidProducts.push(this.ppaState.getProductNameById(oProductPolicy.productPackId));
+								break;
+							}
+						}
+					} else {
+						aInvalidProducts.push(this.ppaState.getProductNameById(oProductPolicy.productPackId));
+					}
+				});
+			}
+
+			return aInvalidProducts;
 		},
 
 		/**
@@ -487,21 +578,44 @@ sap.ui.define([
 		},
 
 		onEditModeMSP: function(oEvent){
-			if(!this.ppaState.isEmpty(this.ppaState.getSelectedProductPolicy())){
-				this.setMspEditMode(true);
-				this.setNspEditMode(false);
-				this.ppaState.setMspPanelExpanded(true);
-				this.byId("idBtnEditNspPolicy").setEnabled(false);
+
+			if(this.checkEffectiveDateChanged()){
+				if(!this.ppaState.isEmpty(this.ppaState.getSelectedProduct().draftProductPolicy)){
+					this.setMspEditMode(true);
+					this.setNspEditMode(false);
+					this.ppaState.setMspPanelExpanded(true);
+					this.byId("idBtnEditMspPolicy").setEnabled(false);
+					this.byId("idBtnEditNspPolicy").setEnabled(false);
+				}
 			}
 		},
 
 		onEditModeNSP: function(oEvent){
-			if(!this.ppaState.isEmpty(this.ppaState.getSelectedProductPolicy())){
-				this.setMspEditMode(false);
-				this.setNspEditMode(true);
-				this.ppaState.setNspPanelExpanded(true);
-				this.byId("idBtnEditMspPolicy").setEnabled(false);
+
+			if(this.checkEffectiveDateChanged()){
+				if(!this.ppaState.isEmpty(this.ppaState.getSelectedProduct().draftProductPolicy)){
+					this.setMspEditMode(false);
+					this.setNspEditMode(true);
+					this.ppaState.setNspPanelExpanded(true);
+					this.byId("idBtnEditMspPolicy").setEnabled(false);
+					this.byId("idBtnEditNspPolicy").setEnabled(false);
+				}
 			}
+		},
+
+		checkEffectiveDateChanged: function(){
+			let dEffectiveDate = new Date(this.byId("idEffectiveDate").getDateValue()).toDateString();
+			let LatestApprovalEffectiveDate = new Date(this.ppaState.data.brand.validFrom).toDateString();
+
+			if(dEffectiveDate && ( !LatestApprovalEffectiveDate || LatestApprovalEffectiveDate <= dEffectiveDate)) {
+				return true
+			} else {
+				const msgErrorEffectiveDate = 'Please enter a new effective date before entering a new pricing policy.';
+				sap.m.MessageBox.error(msgErrorEffectiveDate, {});
+
+				return false;
+			}	
+      
 		},
 
 		onCancelMSP: function(oEvent){
@@ -542,15 +656,15 @@ sap.ui.define([
 		},
 
 		setMspEditMode: function(bMode){
-			if(!this.ppaState.isEmpty(this.ppaState.getSelectedProductPolicy())){
-				this.ppaState.getSelectedProductPolicy().setMspEditMode(bMode);
+			if(!this.ppaState.isEmpty(this.ppaState.getSelectedProduct().draftProductPolicy)){
+				this.ppaState.getSelectedProduct().draftProductPolicy.setMspEditMode(bMode);
 				this.ppaState.updateModel();
 			}
 		},
 
 		setNspEditMode: function(bMode){
-			if(!this.ppaState.isEmpty(this.ppaState.getSelectedProductPolicy())){
-				this.ppaState.getSelectedProductPolicy().setNspEditMode(bMode);
+			if(!this.ppaState.isEmpty(this.ppaState.getSelectedProduct().draftProductPolicy)){
+				this.ppaState.getSelectedProduct().draftProductPolicy.setNspEditMode(bMode);
 				this.ppaState.updateModel();
 			}
 		},
@@ -563,8 +677,10 @@ sap.ui.define([
 			//show loading screen
 			this.getView().setBusy(true);
 
+			let oDraftProductPolicy = this.ppaState.getSelectedProduct().draftProductPolicy;
+
 			//save prices
-			this.savePrices("MSP").then(() => {
+			this.savePrices("MSP", oDraftProductPolicy).then(() => {
 				
 				//Reload policy so status is shown & PolicyID will be captured
 				this.onRefreshPolicyPress();
@@ -597,8 +713,10 @@ sap.ui.define([
 			//show loading screen
 			this.getView().setBusy(true);
 
+			let oDraftProductPolicy = this.ppaState.getSelectedProduct().draftProductPolicy;
+
 			//save prices
-			this.savePrices("NSP").then(() => {
+			this.savePrices("NSP", oDraftProductPolicy).then(() => {
 
 				//Reload policy so status is shown & PolicyID will be captured
 				this.onRefreshPolicyPress();
@@ -624,9 +742,9 @@ sap.ui.define([
 		/**
 		* Save prices as a whole
 		*/
-		savePrices: function(sCase){
+		savePrices: function(sCase, oDraftProductPolicy){
 			//Save prices
-			return this.ppaState.savePrices(sCase);
+			return this.ppaState.savePrices(sCase, oDraftProductPolicy);
 		},
 
 		/**
@@ -660,21 +778,30 @@ sap.ui.define([
 
 			}
 			
+			//reload aggregated Policy (so id's are filled from back-end)
+			this.ppaState.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+
 			//reload Products
 			this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
 				
+				
 				//get Product Table & selected product within table
 				let oProductsTable = this.byId("idProductsTable");
-				let oSelectedProduct = this.getView().getModel('ppa').getProperty(oProductsTable.getSelectedItem().getBindingContextPath());		
-				this.ppaState.setSelectedProduct(oSelectedProduct);
+				if(oProductsTable.getSelectedItem()){
 
-				// Load the corresponding Product Policy
-				this.ppaState.getProductPolicy(oSelectedProduct.policyId).then(() => {
-					this.getView().setBusy(false);
-				}).catch((error) => {
-					this.getView().setBusy(false);
-				});
+					let oSelectedProduct = this.getView().getModel('ppa').getProperty(oProductsTable.getSelectedItem().getBindingContextPath());		
+					/*
+					this.ppaState.setSelectedProduct(oSelectedProduct);
+					*/
+				
+					// Load the corresponding Product Policy
+					this.ppaState.getProductPolicy(oSelectedProduct.policyId).then(() => {
+						this.getView().setBusy(false);
+					}).catch((error) => {
+						this.getView().setBusy(false);
+					});
 
+				}
 			}).catch((error) => {
 				console.error(error);
 				this.getView().setBusy(false);
@@ -697,9 +824,38 @@ sap.ui.define([
 			
 			//show busy indicator
 			this.getView().setBusy(true);
-
 			this.setEffectiveDateEditMode(false);
-			this.ppaState.saveEffectiveDate().then(() => {
+
+			//EffectiveDate
+			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
+
+			// Convert to UTC time
+			const timeOffsetInMS = dEffectiveDate.getTimezoneOffset() * 60000;
+			dEffectiveDate.setTime(dEffectiveDate.getTime() - timeOffsetInMS);
+
+			this.ppaState.setBrandPolicyEffectiveDate(dEffectiveDate);
+
+			//Save Brand Policy
+			this.ppaState.saveBrandPolicy().then((response) => {
+
+				//get draft version
+				const draftPolicy  = response.find(res => res.data.Status.indexOf("Draft") > -1);
+
+				//load full data again (otherwise we have to re-create the empty productPolicy here)
+				this.ppaState.getAggregatedBrandPolicy(draftPolicy.data.CountryCode, draftPolicy.data.BrandId, draftPolicy.data.Division).then((brandPolicy) => {
+					//Success message
+					const msgSuccess = 'Effective date has been updated.';
+					sap.m.MessageBox.success(msgSuccess, {});
+					
+					this.refreshMasterViewBrandListBinding();
+					this.getView().setBusy(false);
+				});
+
+
+				
+				/*
+				//update the draft brand policy
+				draftPolicy && this.ppaState.data.aggregatedBrandPolicy.setDraftBrandPolicy(draftPolicy.data);
 
 				//Success message
 				const msgSuccess = 'Effective date has been updated.';
@@ -707,7 +863,9 @@ sap.ui.define([
 				
 				this.refreshMasterViewBrandListBinding();
 				this.getView().setBusy(false);
+				*/
 			});
+
 		},
 
 		refreshMasterViewBrandListBinding: function(){
@@ -745,16 +903,17 @@ sap.ui.define([
 
 			const vBox = oEvent.getSource().getParent();
 			const aVboxInputObjects = vBox.getItems().filter(oInput => oInput.getMetadata()._sClassName.indexOf("sap.m.Input") > -1);
-			const sPanel = oEvent.getSource().getBindingPath("value").split("/")[2];
+			const sPanel = oEvent.getSource().getBindingPath("value").split("/")[3];
 			const oSaveBtn = sPanel.indexOf("mspPrices") > -1 ? this.byId("idBtnSaveMSP") : this.byId("idBtnSaveNSP");
 			
 			let bValid = true;
-			let aValidations = aVboxInputObjects.map(oInput => this.validateInput(oInput));
-			let bInValid = aValidations.find(valid => valid === false);
+			// let aValidations = aVboxInputObjects.map(oInput => this.validateInput(oInput));
+			bValid = this.validateInput(oEvent.getSource());
+			//let bInValid = aValidations.find(valid => valid === false);
 
-			if(typeof bInValid !== "undefined" && !bInValid){
+			/*if(typeof bInValid !== "undefined" && !bInValid){
 				bValid = false;
-			}
+			}*/
 
 			// toogle the save button 
 			oSaveBtn.setEnabled(bValid);
@@ -765,17 +924,30 @@ sap.ui.define([
 
 			const priceType = new this.customTypes.Price();
 			const sPath = oInput.getBindingPath("value").split("/").pop();
-			const sPanel = oInput.getBindingPath("value").split("/")[2];
+			const sPanel = oInput.getBindingPath("value").split("/")[3];
 			const sChannel  = oInput.getBindingPath("value").split("/").pop().split("_").pop();
 			const sRole = oInput.getBindingPath("value").split("/").pop().split("_")[0];
 			const price = +priceType.parseValue(oInput.getValue());
-			const policyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProductPolicy().mspPrices : this.ppaState.getSelectedProductPolicy().nspPrices;
+
+			const approvedPolicyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().approvedProductPolicy.mspPrices : this.ppaState.getSelectedProduct().approvedProductPolicy.nspPrices;
+			//const percDifferences = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().MspPricePercDiff : this.ppaState.getSelectedProduct().NspPricePercDiff;
+			if(sPanel.indexOf("mspPrices") > -1){
+				if(approvedPolicyPrices){
+					this.ppaState.getSelectedProduct().MspPricePercDiff[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "%";
+				}
+			} else {
+				if(approvedPolicyPrices){
+					this.ppaState.getSelectedProduct().NspPricePercDiff[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "%";
+				}
+			}
+			//const priceDifferencePerc = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "...%";
 			const sPriceType = sPanel.indexOf("mspPrices") > -1 ? "msp" : "nsp";
 
 			let bValid = true;
 
 			// we need to set the price here because the new price is not yet available in the state at this moment.
-			policyPrices[sPath] = price;
+			//policyPrices[sPath] = price;
+			//percDifferences[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "...%";
 
 			const selectedProduct = this.ppaState.getSelectedProduct();
 			const listPrice = +selectedProduct.listPrice;
@@ -800,6 +972,29 @@ sap.ui.define([
 				oInput.setValueStateText();
 			}
 
+			return bValid;
+		},
+
+		calculatePriceDifference: function(sDraftPrice, sValidatedPrice){
+			return Math.round((sDraftPrice - sValidatedPrice)/(sValidatedPrice) * 100);
+		},
+
+		validateEffectiveDate: function(oInput){ 
+			
+			let bValid = true;
+			const sDraftDate = oInput.oSource.getDateValue();
+			const ApprovedPolicyValidFrom = this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy ? this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy.validFrom : undefined;
+
+			if(ApprovedPolicyValidFrom){
+				if(sDraftDate < ApprovedPolicyValidFrom){
+					bValid = false;
+					oInput.oSource.setValueState("Error");
+					oInput.oSource.setValueStateText("The new effective date should be higher than the currently approved valid from date.");
+				}else{
+					oInput.oSource.setValueState("None");
+					oInput.oSource.setValueStateText();
+				}
+			}
 			
 			return bValid;
 		},
@@ -809,7 +1004,7 @@ sap.ui.define([
 			let bValid = true;
 			let msg = "";
 
-			const oChannelPrices = this.ppaState.getSelectedProductPolicy().getPricesForChannelByPriceType(sPriceType,sChannel);
+			const oChannelPrices = this.ppaState.getSelectedProduct().draftProductPolicy.getPricesForChannelByPriceType(sPriceType,sChannel);
 
 			switch(sRole){
 				case "CDH":
@@ -841,7 +1036,7 @@ sap.ui.define([
 			let bValid = false;
 			let msg = "";
 
-			const oRolPrices = this.ppaState.getSelectedProductPolicy().getPricesForChannelByRole(sRole, sChannel);
+			const oRolPrices = this.ppaState.getSelectedProduct().draftProductPolicy.getPricesForChannelByRole(sRole, sChannel);
 
 			if(oRolPrices["NSP_Price"] > oRolPrices["MSP_Price"]){
 				msg = "NSP price is higher than the MSP price";
@@ -855,6 +1050,108 @@ sap.ui.define([
 			};
 
 		},
+
+		// 
+		// Price Reduction Methods
+		// 
+
+		onEditPriceReduction: function(){
+			this.setPriceReductionEditMode(true);
+		},
+
+		setPriceReductionEditMode: function(bEnabled){
+			this.byId("idBtnEditPriceReduction").setEnabled(!bEnabled);
+			this.byId("idMspPriceReductionInput").setEnabled(bEnabled);
+			this.byId("idNspPriceReductionInput").setEnabled(bEnabled);
+			this.byId("idBtnSavePriceReduction").setVisible(bEnabled);
+			this.byId("idBtnCancelPriceReduction").setVisible(bEnabled);
+		},
+
+		onSavePriceReduction: function(oEvent){
+
+			const bApprovedProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy();
+
+			if(!bApprovedProductPolicies){
+				sap.m.MessageBox.error("There are no approved product policies available.\nPrice reduction can't be calculated");
+				return;
+			}
+			
+			this.setPriceReductionEditMode(false);
+			this.calculatePriceReduction();
+			this.savePriceReductions().then(() => { 
+				this.clearPriceReductionInputFields()
+			});
+			
+		},
+
+		/**
+		 * Calculates price reduction for all products
+		 */
+		calculatePriceReduction: function(){
+
+			const mspReductionPercentage = +this.byId("idMspPriceReductionInput").getValue();
+			const nspReductionPercentage = +this.byId("idNspPriceReductionInput").getValue();
+
+			const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
+			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+
+			for(let i=0; i < approvedProductPolicies.length; i++){
+
+				const apporvedMspPrices = approvedProductPolicies[i].getMspPrices();
+				const apporvedNspPrices = approvedProductPolicies[i].getNspPrices();
+				const draftMspPrices = draftProductPolicies[i].getMspPrices();
+				const draftNspPrices = draftProductPolicies[i].getNspPrices();
+
+				this.applyReduction(mspReductionPercentage, apporvedMspPrices, draftMspPrices);
+				this.applyReduction(nspReductionPercentage, apporvedNspPrices, draftNspPrices);
+
+				this.ppaState.updateModel();
+
+			}
+		},
+
+		/**
+		 * Applies price reduction to the approved prices and 
+		 * updates the draft prices accordingly based on the reduction percentage
+		 */
+		applyReduction: function(reductionPercentage, apporvedPrices, draftPrices){
+			if(reductionPercentage > 0){
+				for (const rol_channel in apporvedPrices) {
+					let price = +apporvedPrices[rol_channel];
+					if(price > 0){
+						draftPrices[rol_channel] = (+apporvedPrices[rol_channel] / (1 + reductionPercentage / 100)).toFixed(2); // two digits after the comma
+					}
+				}
+			}			
+		},
+
+		savePriceReductions: function(){
+
+			let promises = [];
+			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+
+			draftProductPolicies.forEach(productPolicy => {
+				promises.push(this.savePrices("MSP", productPolicy));
+				promises.push(this.savePrices("NSP", productPolicy));
+			});
+
+			return Promise.all(promises);
+		},
+
+		onCancelPriceReduction: function(oEvent){
+			this.setPriceReductionEditMode(false);
+			this.clearPriceReductionInputFields();
+			
+		},
+
+		clearPriceReductionInputFields: function(){
+			this.byId("idMspPriceReductionInput").setValue();
+			this.byId("idNspPriceReductionInput").setValue();
+		},
+
+		handleEffectiveDateChange: function(oInput){
+			this.validateEffectiveDate(oInput);
+		}
 
 
     

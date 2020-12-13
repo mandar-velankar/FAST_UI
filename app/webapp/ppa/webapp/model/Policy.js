@@ -8,20 +8,23 @@ sap.ui.define([
         constructor: function (data) {
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
-            if (data && data.ID) { //ID is not existing we should go to creation
+
+            //keep channels
+            if(data && data.channels){
+                this.setChannels(data.channels);
+            }
+
+            //ID is not existing we should go to creation
+            if (data && data.ID) { 
                 
                 //Set prices as objects
                 data.PolicyPrices && data.PolicyPrices.results && this.setPolicyPrices(data.PolicyPrices.results);
+                //data.ProductPolicies && data.ProductPolicies.results && this.setPolicyPrices(data.ProductPolicies.results);
 
                 //Array for easy binding to view (MSP & NSP prices)
                 this.setPolicyPricesArray(this.getPolicyPrices());
                 
             }else{ 
-
-                //keep channels
-                if(data.channels){
-                    this.setChannels(data.channels);
-                }
 
                 //if no data exist create empty prices
                 let oMspPrices = this.getEmptyPriceStructure();
@@ -369,11 +372,11 @@ sap.ui.define([
                 "countryCode", 
                 "division", 
                 "brandId", 
-                "productPackId", 
-                "effectiveDate", 
+                "productPackId",
                 "currency", 
                 "mspStatus", 
-                "nspStatus"
+                "nspStatus",
+                "brandPolicy_ID"
             ]);
         },
 

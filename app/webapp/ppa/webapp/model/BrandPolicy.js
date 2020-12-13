@@ -1,16 +1,61 @@
 sap.ui.define([
-    "com/bayer/tender/uilib/objects/BaseObject"
-], function (BaseObject) {
+    "com/bayer/tender/uilib/objects/BaseObject",
+    "./Policy"
+], function (BaseObject, Policy) {
     "use strict";
 
     var brandPolicy = BaseObject.extend("com.bayer.tender.ppa.model.BrandPolicy", {
         constructor: function (data) {
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
-            // if (data) {
-            //     //copy array's manually to objects
-            //     //data.Products && this.setProducts(data.Products.results);
-            // }
+
+            //keep channels
+            if(data && data.channels){
+                this.setChannels(data.channels);
+            }
+
+            if (data) {
+                //copy array's manually to objects
+                data.ProductPolicies && this.setProductPolicies(data.ProductPolicies.results);
+            }
+        },
+
+        /**
+         * get Channels
+         * @param {*} aChannels 
+         */
+        getChannels: function(){
+            return this.channels || [];
+        },
+
+        /**
+         * set channels
+         * @param {*} aChannels 
+         */
+        setChannels: function(aChannels){
+            if(aChannels){
+                this.channels = aChannels;
+            }
+        },
+
+        setProductPolicies: function (productPolicy) {
+            if(productPolicy){
+                this.productPolicies = productPolicy.map(policy => {
+                    //set channels on policy
+                    policy["channels"] = this.getChannels();
+                    return new Policy(policy);
+                });
+            }
+        },
+
+        getProductPolicies: function () {
+            return this.productPolicies || [];
+        },
+
+        getProductPolicy: function (productPackId) { 
+            if(productPackId){
+                return this.getProductPolicies().find(policy => policy.productPackId === productPackId);
+            } 
         },
         
         //<property>Changed function
@@ -21,10 +66,12 @@ sap.ui.define([
         getJSON: function () {
             return this.getJSONObject([
                 "iD", 
+                "validFrom",
+                "validTo",
                 "countryCode",
                 "division",
                 "brandId",
-                "effectiveDate"
+                "status"
             ]);
         },
 

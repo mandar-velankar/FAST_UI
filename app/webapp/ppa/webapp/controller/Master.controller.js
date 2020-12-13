@@ -104,7 +104,13 @@ sap.ui.define([
 			var sQuery = oEvent.getParameter("query") || oEvent.getParameters().newValue;
 
 			if (sQuery) {
-				this._oListFilterState.aSearch = [new Filter("BrandName", FilterOperator.Contains, sQuery)];
+				let oFilter = new Filter({
+					path: "BrandName",
+					operator: FilterOperator.Contains,
+					value1: sQuery,
+					caseSensitive: false
+				});
+				this._oListFilterState.aSearch = [oFilter];
 			} else {
 				this._oListFilterState.aSearch = [];
 			}

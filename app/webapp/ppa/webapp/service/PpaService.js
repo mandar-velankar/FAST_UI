@@ -309,7 +309,7 @@ sap.ui.define([
 		},
 
 		/** 
-     * Get BrandPolicy 
+     	* Get BrandPolicy 
 		 * @param {*} sCountryCode 
 		 * @param {*} sBrandId 
 		 * @param {*} sDivision 
@@ -317,6 +317,66 @@ sap.ui.define([
 		getBrandPolicy: function(sCountryCode, iBrandId, sDivision){
 			//Path to read
 			var sPath = "/BrandPolicies";
+
+			//FILTER COUNTRY CODE
+			var oCountryFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			//FILTER BRANDID
+			var oBrandFilter = new Filter({
+				path: 'BrandId',
+				operator: FilterOperator.EQ,
+				value1: iBrandId
+			});
+
+			//FILTER DIVISION
+			var oDivisionFilter = new Filter({
+				path: 'Division',
+				operator: FilterOperator.EQ,
+				value1: sDivision
+			});
+
+			//Parameters
+			var mParameters = {
+				filters: [oCountryFilter, oBrandFilter, oDivisionFilter]
+			};
+
+			//call back-end
+			return this.odata(sPath).get(mParameters);
+		},
+
+		/** 
+     	* Get BrandPolicy by ID
+		 * @param {id} GUID 
+		 */
+		getBrandPolicyById: function(id){
+			const sKey = this.model.createKey("/BrandPolicies", {
+				ID: id
+			});
+
+			var mParameters = {
+				urlParameters: {
+					"$expand": "ProductPolicies/PolicyPrices/Channel"
+				}
+			};
+
+			return this.odata(sKey).get(mParameters);
+		},
+
+		/** 
+     	* Get AggregatedBrandPolicy 
+		 * @param {*} sCountryCode 
+		 * @param {*} sBrandId 
+		 * @param {*} sDivision 
+		 * 
+		 * @return - a segregated list of BrandPolicies with LatestApproved and Draft policy ID's
+		 */
+		getAggregatedBrandPolicy: function(sCountryCode, iBrandId, sDivision){
+			//Path to read
+			var sPath = "/AggregatedBrandPolicies";
 
 			//FILTER COUNTRY CODE
 			var oCountryFilter = new Filter({
