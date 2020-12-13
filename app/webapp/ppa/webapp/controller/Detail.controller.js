@@ -533,7 +533,7 @@ sap.ui.define([
 				oDraftBrandPolicy.productPolicies.forEach(oProductPolicy => {
 					if(oProductPolicy && oProductPolicy.policyPrices.length > 0 ){
 						for(let i = 0; i < oProductPolicy.policyPrices.length; i++){
-							if(oProductPolicy.policyPrices[i].price === '0' || oProductPolicy.policyPrices[i] === null){
+							if(oProductPolicy.policyPrices[i].price === '0' || oProductPolicy.policyPrices[i] === null || oProductPolicy.policyPrices[i].price === ""){
 								aInvalidProducts.push(this.ppaState.getProductNameById(oProductPolicy.productPackId));
 								break;
 							}
