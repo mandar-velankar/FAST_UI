@@ -174,6 +174,7 @@ sap.ui.define([
 					this.ppaState.setNspPanelExpanded(true);
 					this.ppaState.setMspExpandable(true);
 					this.ppaState.setNspExpandable(true);
+					this.calculatePriceDifferenceProductSelect(selectedProduct);
 					this.getView().setBusy(false);
 				}).catch((error) => {
 					this.getView().setBusy(false);
@@ -199,6 +200,21 @@ sap.ui.define([
 
 			
 	
+		},
+
+		calculatePriceDifferenceProductSelect: function(selectedProduct){
+			const approvedMspPolicyPrices = this.ppaState.getSelectedProduct().approvedProductPolicy.mspPrices;
+			const approvedNspPolicyPrices = this.ppaState.getSelectedProduct().approvedProductPolicy.nspPrices;
+			const draftMspPolicyPrices = this.ppaState.getSelectedProduct().draftProductPolicy.mspPrices;
+			const draftNspPolicyPrices = this.ppaState.getSelectedProduct().draftProductPolicy.nspPrices;
+
+			for(let mspPriceType in draftMspPolicyPrices ) {
+				selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+			}
+
+			for(let nspPriceType in draftNspPolicyPrices ) {
+				selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+			}
 		},
 
 		/**
@@ -1118,6 +1134,8 @@ sap.ui.define([
 				this.ppaState.updateModel();
 
 			}
+
+			this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 		},
 
 		/**
