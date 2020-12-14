@@ -930,7 +930,7 @@ sap.ui.define([
 			const sChannel  = oInput.getBindingPath("value").split("/").pop().split("_").pop();
 			const sRole = oInput.getBindingPath("value").split("/").pop().split("_")[0];
 			const price = +priceType.parseValue(oInput.getValue());
-
+			const policyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().draftProductPolicy.mspPrices : this.ppaState.getSelectedProduct().draftProductPolicy.nspPrices;
 			const approvedPolicyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().approvedProductPolicy.mspPrices : this.ppaState.getSelectedProduct().approvedProductPolicy.nspPrices;
 			//const percDifferences = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().MspPricePercDiff : this.ppaState.getSelectedProduct().NspPricePercDiff;
 			if(sPanel.indexOf("mspPrices") > -1){
@@ -948,7 +948,7 @@ sap.ui.define([
 			let bValid = true;
 
 			// we need to set the price here because the new price is not yet available in the state at this moment.
-			//policyPrices[sPath] = price;
+			policyPrices[sPath] = price;
 			//percDifferences[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "...%";
 
 			const selectedProduct = this.ppaState.getSelectedProduct();
