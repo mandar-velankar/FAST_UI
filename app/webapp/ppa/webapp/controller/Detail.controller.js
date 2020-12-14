@@ -779,36 +779,38 @@ sap.ui.define([
 			}
 			
 			//reload aggregated Policy (so id's are filled from back-end)
-			this.ppaState.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+			this.ppaState.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
 
-			//reload Products
-			this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
-				
-				
-				//get Product Table & selected product within table
-				let oProductsTable = this.byId("idProductsTable");
-				if(oProductsTable.getSelectedItem()){
+				//reload Products
+				this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
+					
+					
+					//get Product Table & selected product within table
+					let oProductsTable = this.byId("idProductsTable");
+					if(oProductsTable.getSelectedItem()){
 
-					let oSelectedProduct = this.getView().getModel('ppa').getProperty(oProductsTable.getSelectedItem().getBindingContextPath());		
-					/*
-					this.ppaState.setSelectedProduct(oSelectedProduct);
-					*/
-				
-					// Load the corresponding Product Policy
-					this.ppaState.getProductPolicy(oSelectedProduct.policyId).then(() => {
+						let oSelectedProduct = this.getView().getModel('ppa').getProperty(oProductsTable.getSelectedItem().getBindingContextPath());		
+						//this.ppaState.setSelectedProduct(oSelectedProduct);
+						
 						this.getView().setBusy(false);
-					}).catch((error) => {
-						this.getView().setBusy(false);
-					});
+					
+						// Load the corresponding Product Policy ==> allready done by using the aggregated
+						this.ppaState.getProductPolicy(oSelectedProduct.policyId).then(() => {
+							this.getView().setBusy(false);
+						}).catch((error) => {
+							this.getView().setBusy(false);
+						});
+						
 
-				}
-			}).catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+					}
+				}).catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				});
+
 			});
-			
 
 			
 			
