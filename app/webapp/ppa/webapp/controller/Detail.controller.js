@@ -116,7 +116,12 @@ sap.ui.define([
 
 					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(brand => {
 						this.ppaState.getApprovalRequest(brand);
-						this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+						this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(brand => {
+							if(this.ppaState.data.brandPolicy.status === 'Approved'){
+								this.setMspEditMode(false);
+								this.setNspEditMode(false);
+							}
+						});
 						this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 					});
 					
@@ -167,15 +172,19 @@ sap.ui.define([
 				//const selectedProduct;
 				this.ppaState.setSelectedProduct(selectedProduct);
 
-				//Load the aggregated Brand Policy & store the draft & latestapproved product policy
+					//Load the aggregated Brand Policy & store the draft & latestapproved product policy
 				this.ppaState.getSelectedProductPolicy().then(() => {
-					// Set panel panels expanded
-					this.ppaState.setMspPanelExpanded(true);
-					this.ppaState.setNspPanelExpanded(true);
-					this.ppaState.setMspExpandable(true);
-					this.ppaState.setNspExpandable(true);
-					this.calculatePriceDifferenceProductSelect(selectedProduct);
-					this.getView().setBusy(false);
+					this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
+						// Set panel panels expanded
+						this.ppaState.setMspPanelExpanded(true);
+						this.ppaState.setNspPanelExpanded(true);
+						this.ppaState.setMspExpandable(true);
+						this.ppaState.setNspExpandable(true);
+						this.calculatePriceDifferenceProductSelect(selectedProduct);
+						this.getView().setBusy(false);
+					}).catch((error) => {
+						this.getView().setBusy(false);
+					});
 				}).catch((error) => {
 					this.getView().setBusy(false);
 				});
@@ -867,6 +876,10 @@ sap.ui.define([
 
 				//load full data again (otherwise we have to re-create the empty productPolicy here)
 				this.ppaState.getAggregatedBrandPolicy(draftPolicy.data.CountryCode, draftPolicy.data.BrandId, draftPolicy.data.Division).then((brandPolicy) => {
+					//refresh brandpolicy & brand
+					this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+
 					//Success message
 					const msgSuccess = 'Effective date has been updated.';
 					sap.m.MessageBox.success(msgSuccess, {});

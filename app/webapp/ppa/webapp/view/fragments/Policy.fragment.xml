@@ -87,7 +87,7 @@
 							<Title text="Price reduction"/>
 							<ToolbarSpacer />
 							<Button id="idBtnEditPriceReduction" text="Edit" visible="true" 
-									enabled="{= !!${ppa>/brand/validFrom} }" 
+									enabled="{= ${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom} }" 
 									press="onEditPriceReduction"
 							/>
 						</OverflowToolbar>
@@ -248,7 +248,7 @@
 					<Title text="{i18n>mspPricingPolicy}"/>
 					<ToolbarSpacer />
 					<Button id="idBtnEditMspPolicy" text="Edit" visible="true" 
-							enabled="{= !${ppa>/productPolicy/mspEditMode} }" 
+							enabled="{= ${ppa>/brandPolicy/status} === 'Approved' ? false : !${ppa>/productPolicy/mspEditMode} }"
 							press=".onEditModeMSP"
 					/>
 				</OverflowToolbar>
@@ -575,7 +575,7 @@
 					<Title text="{i18n>nspPricingPolicy}"/>
 					<ToolbarSpacer />
 					<Button id="idBtnEditNspPolicy" text="Edit" visible="true" 
-							enabled="{= !${ppa>/productPolicy/nspEditMode} }" 
+							enabled="{= ${ppa>/brandPolicy/status} === 'Approved' ? false : !${ppa>/productPolicy/nspEditMode} }"
 							press=".onEditModeNSP"
 					/>
 				</OverflowToolbar>
