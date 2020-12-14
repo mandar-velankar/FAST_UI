@@ -167,14 +167,19 @@ sap.ui.define([
 				//const selectedProduct;
 				this.ppaState.setSelectedProduct(selectedProduct);
 
-				//Load the aggregated Brand Policy & store the draft & latestapproved product policy
+					//Load the aggregated Brand Policy & store the draft & latestapproved product policy
 				this.ppaState.getSelectedProductPolicy().then(() => {
-					// Set panel panels expanded
-					this.ppaState.setMspPanelExpanded(true);
-					this.ppaState.setNspPanelExpanded(true);
-					this.ppaState.setMspExpandable(true);
-					this.ppaState.setNspExpandable(true);
-					this.getView().setBusy(false);
+					this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
+						// Set panel panels expanded
+						this.ppaState.setMspPanelExpanded(true);
+						this.ppaState.setNspPanelExpanded(true);
+						this.ppaState.setMspExpandable(true);
+						this.ppaState.setNspExpandable(true);
+						this.calculatePriceDifferenceProductSelect(selectedProduct);
+						this.getView().setBusy(false);
+					}).catch((error) => {
+						this.getView().setBusy(false);
+					});
 				}).catch((error) => {
 					this.getView().setBusy(false);
 				});
@@ -199,6 +204,25 @@ sap.ui.define([
 
 			
 	
+		},
+
+		calculatePriceDifferenceProductSelect: function(selectedProduct){
+			const approvedMspPolicyPrices = this.ppaState.getSelectedProduct().approvedProductPolicy.mspPrices;
+			const approvedNspPolicyPrices = this.ppaState.getSelectedProduct().approvedProductPolicy.nspPrices;
+			const draftMspPolicyPrices = this.ppaState.getSelectedProduct().draftProductPolicy.mspPrices;
+			const draftNspPolicyPrices = this.ppaState.getSelectedProduct().draftProductPolicy.nspPrices;
+
+			for(let mspPriceType in draftMspPolicyPrices ) {
+				if(draftMspPolicyPrices[mspPriceType] !== "" || pprovedMspPolicyPrices[mspPriceType] !== ""){
+					selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+				}
+			}
+
+			for(let nspPriceType in draftNspPolicyPrices ) {
+				if(draftMspPolicyPrices[nspPriceType] !== "" || pprovedMspPolicyPrices[nspPriceType] !== ""){
+					selectedProduct.NspPricePercDiff[nspPriceType] = this.calculatePriceDifference(+draftNspPolicyPrices[nspPriceType], +approvedNspPolicyPrices[nspPriceType]) + "%";
+				}
+			}
 		},
 
 		/**
@@ -847,12 +871,20 @@ sap.ui.define([
 
 				//load full data again (otherwise we have to re-create the empty productPolicy here)
 				this.ppaState.getAggregatedBrandPolicy(draftPolicy.data.CountryCode, draftPolicy.data.BrandId, draftPolicy.data.Division).then((brandPolicy) => {
+					//refresh brandpolicy & brand
+					this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+
 					//Success message
 					const msgSuccess = 'Effective date has been updated.';
 					sap.m.MessageBox.success(msgSuccess, {});
 					
 					this.refreshMasterViewBrandListBinding();
-					this.getView().setBusy(false);
+					this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
+
+						this.getView().setBusy(false);
+
+					});
 				});
 
 
@@ -1081,9 +1113,15 @@ sap.ui.define([
 			}
 			
 			this.setPriceReductionEditMode(false);
+
+			sap.ui.core.BusyIndicator.show(0);
 			this.calculatePriceReduction();
+
+			// save reduction 
 			this.savePriceReductions().then(() => { 
-				this.clearPriceReductionInputFields()
+				sap.ui.core.BusyIndicator.hide();
+				sap.m.MessageBox.success("Price reduction successfully saved");
+				this.clearPriceReductionInputFields();
 			});
 			
 		},
@@ -1112,6 +1150,8 @@ sap.ui.define([
 				this.ppaState.updateModel();
 
 			}
+
+			this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 		},
 
 		/**
