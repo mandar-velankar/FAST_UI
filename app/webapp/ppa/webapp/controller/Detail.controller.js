@@ -533,7 +533,7 @@ sap.ui.define([
 				oDraftBrandPolicy.productPolicies.forEach(oProductPolicy => {
 					if(oProductPolicy && oProductPolicy.policyPrices.length > 0 ){
 						for(let i = 0; i < oProductPolicy.policyPrices.length; i++){
-							if(oProductPolicy.policyPrices[i].price === '0' || oProductPolicy.policyPrices[i] === null){
+							if(oProductPolicy.policyPrices[i].price === '0' || oProductPolicy.policyPrices[i] === null || oProductPolicy.policyPrices[i].price === ""){
 								aInvalidProducts.push(this.ppaState.getProductNameById(oProductPolicy.productPackId));
 								break;
 							}
@@ -628,6 +628,7 @@ sap.ui.define([
 			this.ppaState.getProductPolicy(policyId).then(() => {
 				this.setMspEditMode(false);
 				this.byId("idBtnEditNspPolicy").setEnabled(true);
+				this.byId("idBtnEditMspPolicy").setEnabled(true);
 				this.getView().setBusy(false);
 			});
 
@@ -646,6 +647,7 @@ sap.ui.define([
 
 			this.ppaState.getProductPolicy(policyId).then(() => {
 				this.setNspEditMode(false);
+				this.byId("idBtnEditNspPolicy").setEnabled(true);
 				this.byId("idBtnEditMspPolicy").setEnabled(true);
 				this.getView().setBusy(false);
 			});
@@ -928,7 +930,7 @@ sap.ui.define([
 			const sChannel  = oInput.getBindingPath("value").split("/").pop().split("_").pop();
 			const sRole = oInput.getBindingPath("value").split("/").pop().split("_")[0];
 			const price = +priceType.parseValue(oInput.getValue());
-
+			const policyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().draftProductPolicy.mspPrices : this.ppaState.getSelectedProduct().draftProductPolicy.nspPrices;
 			const approvedPolicyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().approvedProductPolicy.mspPrices : this.ppaState.getSelectedProduct().approvedProductPolicy.nspPrices;
 			//const percDifferences = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().MspPricePercDiff : this.ppaState.getSelectedProduct().NspPricePercDiff;
 			if(sPanel.indexOf("mspPrices") > -1){
@@ -946,7 +948,7 @@ sap.ui.define([
 			let bValid = true;
 
 			// we need to set the price here because the new price is not yet available in the state at this moment.
-			//policyPrices[sPath] = price;
+			policyPrices[sPath] = price;
 			//percDifferences[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "...%";
 
 			const selectedProduct = this.ppaState.getSelectedProduct();
@@ -1119,7 +1121,8 @@ sap.ui.define([
 				for (const rol_channel in apporvedPrices) {
 					let price = +apporvedPrices[rol_channel];
 					if(price > 0){
-						draftPrices[rol_channel] = (+apporvedPrices[rol_channel] / (1 + reductionPercentage / 100)).toFixed(2); // two digits after the comma
+						//draftPrices[rol_channel] = (+apporvedPrices[rol_channel] / (1 + reductionPercentage / 100)).toFixed(2); // two digits after the comma
+						draftPrices[rol_channel] = (+apporvedPrices[rol_channel] - (apporvedPrices[rol_channel] * reductionPercentage / 100)).toFixed(2);
 					}
 				}
 			}			
