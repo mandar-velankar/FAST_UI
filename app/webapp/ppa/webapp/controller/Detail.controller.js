@@ -209,11 +209,15 @@ sap.ui.define([
 			const draftNspPolicyPrices = this.ppaState.getSelectedProduct().draftProductPolicy.nspPrices;
 
 			for(let mspPriceType in draftMspPolicyPrices ) {
-				selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+				if(draftMspPolicyPrices[mspPriceType] !== "" || pprovedMspPolicyPrices[mspPriceType] !== ""){
+					selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+				}
 			}
 
 			for(let nspPriceType in draftNspPolicyPrices ) {
-				selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+				if(draftMspPolicyPrices[mspPriceType] !== "" || pprovedMspPolicyPrices[mspPriceType] !== ""){
+					selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+				}
 			}
 		},
 
