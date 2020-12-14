@@ -237,7 +237,11 @@ sap.ui.define([
 		 	if(sProductPolicyId){
 		 		return this.getService().getProductPolicy(sProductPolicyId).then((PolicyResponse) => {
 		 			let oPolicy = new Policy(PolicyResponse.data);
-		 			oPolicy.setChannels(this.data.channels);
+					oPolicy.setChannels(this.data.channels);
+
+					this.getSelectedProduct().draftProductPolicy = oPolicy;
+
+					//not sure if this is needed
 		 			this.setProperty("draftProductPolicy", oPolicy);
 		 			return this.getProperty("draftProductPolicy");
 		 		});
