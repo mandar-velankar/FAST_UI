@@ -880,7 +880,11 @@ sap.ui.define([
 					sap.m.MessageBox.success(msgSuccess, {});
 					
 					this.refreshMasterViewBrandListBinding();
-					this.getView().setBusy(false);
+					this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
+
+						this.getView().setBusy(false);
+
+					});
 				});
 
 
