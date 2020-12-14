@@ -116,12 +116,7 @@ sap.ui.define([
 
 					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(brand => {
 						this.ppaState.getApprovalRequest(brand);
-						this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(brand => {
-							if(this.ppaState.data.brandPolicy.status === 'Approved'){
-								this.setMspEditMode(false);
-								this.setNspEditMode(false);
-							}
-						});
+						this.getBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 						this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 					});
 					
