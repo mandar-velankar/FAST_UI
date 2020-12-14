@@ -87,7 +87,7 @@
 							<Title text="Price reduction"/>
 							<ToolbarSpacer />
 							<Button id="idBtnEditPriceReduction" text="Edit" visible="true" 
-									enabled="{= !!${ppa>/brand/validFrom} }" 
+									enabled="{= ${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom} }" 
 									press="onEditPriceReduction"
 							/>
 						</OverflowToolbar>
@@ -248,7 +248,7 @@
 					<Title text="{i18n>mspPricingPolicy}"/>
 					<ToolbarSpacer />
 					<Button id="idBtnEditMspPolicy" text="Edit" visible="true" 
-							enabled="{= !${ppa>/productPolicy/mspEditMode} }" 
+							enabled="{= ${ppa>/brandPolicy/status} === 'Approved' ? false : !${ppa>/productPolicy/mspEditMode} }"
 							press=".onEditModeMSP"
 					/>
 				</OverflowToolbar>
@@ -288,6 +288,7 @@
 													type: '.customTypes.Price'
 												}" 
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -296,6 +297,7 @@
 													type: '.customTypes.Price'
 												}" 
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -307,6 +309,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -315,6 +318,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -326,6 +330,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -334,6 +339,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -350,6 +356,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -358,6 +365,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -369,6 +377,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Private}" class="sapUiSmallMarginBegin sapUiSmallMarginEnd"/>
 											<Input 
@@ -377,6 +386,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -388,6 +398,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -396,6 +407,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -412,6 +424,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Clinic}" class="sapUiSmallMarginBegin sapUiSmallMarginEnd" />
 											<Input 
@@ -420,6 +433,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -431,6 +445,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -439,6 +454,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -450,6 +466,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -458,6 +475,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -474,6 +492,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -482,6 +501,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -493,6 +513,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -501,6 +522,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -512,6 +534,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -520,6 +543,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -551,7 +575,7 @@
 					<Title text="{i18n>nspPricingPolicy}"/>
 					<ToolbarSpacer />
 					<Button id="idBtnEditNspPolicy" text="Edit" visible="true" 
-							enabled="{= !${ppa>/productPolicy/nspEditMode} }" 
+							enabled="{= ${ppa>/brandPolicy/status} === 'Approved' ? false : !${ppa>/productPolicy/nspEditMode} }"
 							press=".onEditModeNSP"
 					/>
 				</OverflowToolbar>
@@ -586,6 +610,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -594,6 +619,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -605,6 +631,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -613,6 +640,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -624,6 +652,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -632,6 +661,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -648,6 +678,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -656,6 +687,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -667,6 +699,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -675,6 +708,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -686,6 +720,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -694,6 +729,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -710,6 +746,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -718,6 +755,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -729,6 +767,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -737,6 +776,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -748,6 +788,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -756,6 +797,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -772,6 +814,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -780,6 +823,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -791,6 +835,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -799,6 +844,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
@@ -810,6 +856,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 											<Input 
@@ -818,6 +865,7 @@
 													type: '.customTypes.Price'
 												}"
 												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
 											/>
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
