@@ -72,7 +72,14 @@
 			},
 			"": {
 				"dataSource": "mainService",
-				"preload": true
+				"preload": true,
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "Request",
+					"defaultUpdateMethod": "PUT",
+					"useBatch": true
+				}
 			}
 		},
 
