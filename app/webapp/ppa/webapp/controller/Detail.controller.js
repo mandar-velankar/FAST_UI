@@ -1081,9 +1081,15 @@ sap.ui.define([
 			}
 			
 			this.setPriceReductionEditMode(false);
+
+			sap.ui.core.BusyIndicator.show(0);
 			this.calculatePriceReduction();
+
+			// save reduction 
 			this.savePriceReductions().then(() => { 
-				this.clearPriceReductionInputFields()
+				sap.ui.core.BusyIndicator.hide();
+				sap.m.MessageBox.success("Price reduction successfully saved");
+				this.clearPriceReductionInputFields();
 			});
 			
 		},
