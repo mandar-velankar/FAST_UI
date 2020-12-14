@@ -1121,7 +1121,8 @@ sap.ui.define([
 				for (const rol_channel in apporvedPrices) {
 					let price = +apporvedPrices[rol_channel];
 					if(price > 0){
-						draftPrices[rol_channel] = (+apporvedPrices[rol_channel] / (1 + reductionPercentage / 100)).toFixed(2); // two digits after the comma
+						//draftPrices[rol_channel] = (+apporvedPrices[rol_channel] / (1 + reductionPercentage / 100)).toFixed(2); // two digits after the comma
+						draftPrices[rol_channel] = (+apporvedPrices[rol_channel] - (apporvedPrices[rol_channel] * reductionPercentage / 100)).toFixed(2);
 					}
 				}
 			}			
