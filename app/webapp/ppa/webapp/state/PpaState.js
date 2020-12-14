@@ -85,7 +85,8 @@ sap.ui.define([
 		getBrandPolicy: function (sCountryCode, sBrandId, sDivision) {
 			this.setProperty("brandPolicy", new BrandPolicy());
 			return this.getService().getBrandPolicy(sCountryCode, sBrandId, sDivision).then((response) => {
-				this.setProperty("brandPolicy", new BrandPolicy(response.data.results[0]));				
+				let activeBrandPolicy = response.data.results.find(brand => brand.ValidTo.getFullYear() === 9999);
+				this.setProperty("brandPolicy", new BrandPolicy(activeBrandPolicy));				
 				return this.getProperty("brandPolicy");
 			});
 		},
