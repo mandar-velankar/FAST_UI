@@ -213,13 +213,13 @@ sap.ui.define([
 			const draftNspPolicyPrices = this.ppaState.getSelectedProduct().draftProductPolicy.nspPrices;
 
 			for(let mspPriceType in draftMspPolicyPrices ) {
-				if(draftMspPolicyPrices[mspPriceType] !== "" || pprovedMspPolicyPrices[mspPriceType] !== ""){
+				if(draftMspPolicyPrices[mspPriceType] !== "" || approvedMspPolicyPrices[mspPriceType] !== ""){
 					selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
 				}
 			}
 
 			for(let nspPriceType in draftNspPolicyPrices ) {
-				if(draftMspPolicyPrices[nspPriceType] !== "" || pprovedMspPolicyPrices[nspPriceType] !== ""){
+				if(draftMspPolicyPrices[nspPriceType] !== "" || approvedMspPolicyPrices[nspPriceType] !== ""){
 					selectedProduct.NspPricePercDiff[nspPriceType] = this.calculatePriceDifference(+draftNspPolicyPrices[nspPriceType], +approvedNspPolicyPrices[nspPriceType]) + "%";
 				}
 			}
@@ -1172,14 +1172,8 @@ sap.ui.define([
 
 		savePriceReductions: function(){
 
-			let promises = [];
 			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
-
-			draftProductPolicies.forEach(productPolicy => {
-				promises.push(this.savePrices("MSP", productPolicy));
-				promises.push(this.savePrices("NSP", productPolicy));
-			});
-
+			const promises = draftProductPolicies.map(productPolicy => this.ppaState.saveProductPolicyPrices(productPolicy));
 			return Promise.all(promises);
 		},
 

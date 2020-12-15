@@ -290,7 +290,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Government}"/>
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/NSMSMFM_Government', 
@@ -311,7 +313,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Government}"/>
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/HBU_Government', 
@@ -332,7 +336,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Government}"/>
+											</VBox>									
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Government', 
@@ -358,7 +364,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Private}"/>
+											</VBox>													
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/NSMSMFM_Private', 
@@ -379,7 +387,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Private}" class="sapUiSmallMarginBegin sapUiSmallMarginEnd"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Private}"/>
+											</VBox>	
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/HBU_Private', 
@@ -400,7 +410,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Private}"/>
+											</VBox>												
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Private', 
@@ -426,7 +438,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Clinic}" class="sapUiSmallMarginBegin sapUiSmallMarginEnd" />
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_Clinic}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/NSMSMFM_Clinic', 
@@ -447,7 +461,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_Clinic}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/HBU_Clinic', 
@@ -468,7 +484,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Clinic}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Clinic', 
@@ -494,7 +512,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_OTC}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/NSMSMFM_OTC', 
@@ -515,7 +535,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_OTC}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/HBU_OTC', 
@@ -536,7 +558,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_OTC}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_OTC', 
@@ -612,7 +636,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Government}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/NSMSMFM_Government', 
@@ -633,7 +659,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Government}"/>
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/HBU_Government', 
@@ -654,7 +682,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Government}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Government}"/>
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Government', 
@@ -680,7 +710,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Private}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/NSMSMFM_Private', 
@@ -701,7 +733,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Private}"/>
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/HBU_Private', 
@@ -722,7 +756,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Private}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Private}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Private', 
@@ -748,7 +784,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_Clinic}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/NSMSMFM_Clinic', 
@@ -769,7 +807,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_Clinic}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/HBU_Clinic', 
@@ -790,7 +830,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Clinic}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Clinic}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Clinic', 
@@ -816,7 +858,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/NSMSMFM_OTC}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/NSMSMFM_OTC', 
@@ -837,7 +881,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_OTC}" />
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/HBU_OTC', 
@@ -858,7 +904,9 @@
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
-											<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_OTC}" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_OTC}"/>
+											</VBox>
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_OTC', 
