@@ -359,7 +359,7 @@ sap.ui.define([
 
 			this.setProperty("approvalRequest", new ApprovalRequest(data));
 
-			return this.getProperty("approvalRequest");
+			return Promise.resolve(this.getProperty("approvalRequest"));
 
 		},
 
@@ -466,7 +466,21 @@ sap.ui.define([
 			}else{
 				return this.updatePolicy(oDraftProductPolicy);
 			}			
-    },
+		},
+		
+		//save all prices for a given product policy 
+		saveProductPolicyPrices: function (oProductPolicy){
+			
+			//match prices from UI structured object to actual price object
+			oProductPolicy.matchPrices();
+
+			//if id exists, update, otherwise create
+			if(!oProductPolicy.iD){
+				return this.createPolicy(oProductPolicy);
+			}else{
+				return this.updatePolicy(oProductPolicy);
+			}			
+    	},
 
 		createBrandPolicy: function (oBrandPolicy) {
 			return this.getService().createBrandPolicy(oBrandPolicy);
