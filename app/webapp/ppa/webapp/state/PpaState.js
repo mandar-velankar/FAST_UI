@@ -359,7 +359,7 @@ sap.ui.define([
 
 			this.setProperty("approvalRequest", new ApprovalRequest(data));
 
-			return this.getProperty("approvalRequest");
+			return Promise.resolve(this.getProperty("approvalRequest"));
 
 		},
 
