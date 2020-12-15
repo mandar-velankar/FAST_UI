@@ -37,16 +37,16 @@
 						
 						<!-- columns -->
 						<columns>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="10rem">
+							<Column minScreenWidth="Tablet" demandPopin="true" width="15rem">
 								<Label text="{i18n>Approver}"/>
 							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
+							<Column minScreenWidth="Tablet" demandPopin="true" width="5rem">
 								<Label text="{i18n>Status}"/>
 							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
+							<Column minScreenWidth="Tablet" demandPopin="true" width="5rem">
 								<Label text="{i18n>Send}"/>
 							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="20rem">
+							<Column minScreenWidth="Tablet" demandPopin="true" width="15rem">
 								<Label text="{i18n>Name}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true" width="9rem">

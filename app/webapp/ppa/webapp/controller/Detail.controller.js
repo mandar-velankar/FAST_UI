@@ -787,7 +787,12 @@ sap.ui.define([
 				return;
 			}
 
-			this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+			const oTable = this.byId("idMandatoryTable");
+			oTable.setBusyIndicatorDelay(0);
+			oTable.setBusy(true);
+
+			//this.getApprovals(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+			this.ppaState.getApprovalRequest(this.ppaState.data.brand).then(() =>oTable.setBusy(false));
 
 		},
 
