@@ -787,7 +787,7 @@ sap.ui.define([
 				return;
 			}
 
-			this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+			this.getApprovals(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 
 		},
 
