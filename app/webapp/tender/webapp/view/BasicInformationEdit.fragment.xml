@@ -87,6 +87,20 @@
 			</Select>
 			<!-- Mexico: end of changes -->
 			
+			<!-- Thailand: Procurement Method-->
+			 <Label id="idLabelProcurementMethod" text="{i18n>procurementmethod}" design="Bold" required="true" visible="true"/>
+			<Select id="idSelectProcurementMethod" 
+				selectedKey="{fastData>PROCUREMENT_METHOD_ID}" 
+				enabled="false"
+				items="{ path: '', sorter: { path: '' } }"
+				change="onSelectionChangeProcurementMethod">
+				<core:Item text="" key="" />
+			</Select>
+
+			<Label id="idLabelProcurementReason" text="{i18n>procurementmethodreason}" design="Bold" required="true" visible="true"/>
+			<Input id="idProcurementReason" value="{fastData>PROCUREMENT_METHOD_REASON}" enabled="true" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
+			<!-- End of Thailand Changes-->
+
 			<core:Title text="Timeline"/>
 			<Label text="{i18n>pubcndte}" design="Bold" required="true"/>
 			<!--<DatePicker id="idPublicationDate" value="{path :'fastData>PublicationDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->

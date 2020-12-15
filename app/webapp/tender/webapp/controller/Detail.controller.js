@@ -297,6 +297,16 @@ sap.ui.define([
 				})
 			});
 
+			let oProcurementMethod = that.getView().byId("idSelectProcurementMethod");
+			oProcurementMethod.bindItems({
+				path: "fastData>/CountryProcurementMethod",
+				filters: aFilter,
+				template: new sap.ui.core.Item({
+					text: "{fastData>PROCUREMENT_METHOD_ID}",
+					key: "{fastData>PROCUREMENT_METHOD_ID}"
+				})
+			});
+
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
 				oSalesType.setVisible(bShowSalesType);
@@ -316,6 +326,11 @@ sap.ui.define([
 			$.when(Services.checkShowContractType()).done(function (bShowContractType) {
 				oContractType.setVisible(bShowContractType);
 			});
+
+			//should ContractType be visible on the screen based on data back-end
+			$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
+				oProcurementMethod.setVisible(bShowProcurementMethod);
+			});
 			// Dunno why but binding not always found
 			// var oBinding = oTenderType.getBinding("items");
 			// //set filter for country on tender type: only when binding of tendertype is found
@@ -328,6 +343,9 @@ sap.ui.define([
 			oSalesType.setEnabled(true);
 			oTenderOrigin.setEnabled(true);
 			oContractType.setEnabled(true);
+
+			//Thailand
+			oProcurementMethod.setEnabled(true);
 
 			//Keep track that we are in change modus
 			Services.setEditMode(true);
@@ -443,6 +461,12 @@ sap.ui.define([
 					that.getView().byId("idSelectContractType").setVisible(bShowContractType);
 				});
 				/* End of MExico */
+
+				/* Thailand */
+				$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
+					oProcurementMethod.setVisible(bShowProcurementMethod);
+				});
+				/* End of Thailand */
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
@@ -1306,6 +1330,12 @@ sap.ui.define([
 						that.getView().byId("idSelectContractType").setVisible(bShowContractType);
 					});
 					/* End of mexico */
+
+					/* Thailand */
+					$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
+						oProcurementMethod.setVisible(bShowProcurementMethod);
+					});
+					/* End of Thailand */
 
 					//should group purchasing be visible on the screen based on data back-end
 					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
@@ -4286,6 +4316,15 @@ sap.ui.define([
 			//oList.removeSelections();
 			oInfoToolbar.setVisible(false);
 
+		},
+
+		onSelectionChangeProcurementMethod: function(oEvent){
+			let oProcurementReason = this.byId("idProcurementReason");
+			if(this.byId("idSelectProcurementMethod").getSelectedKey() === 'Other'){
+				oProcurementReason.setVisible(true);
+			} else {
+				oProcurementReason.setVisible(false);
+			}
 		},
 
 		//move product up
