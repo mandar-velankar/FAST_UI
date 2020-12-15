@@ -81,8 +81,8 @@ sap.ui.define([
 			});
 		},
 
-		// Get brand policy
-		getBrandPolicy: function (sCountryCode, sBrandId, sDivision) {
+		// Get active brand policy (the one that is valid till the end of time 9999)
+		getActiveBrandPolicy: function (sCountryCode, sBrandId, sDivision) {
 			this.setProperty("brandPolicy", new BrandPolicy());
 			return this.getService().getBrandPolicy(sCountryCode, sBrandId, sDivision).then((response) => {
 				let activeBrandPolicy = response.data.results.find(brand => brand.ValidTo.getFullYear() === 9999);
@@ -447,6 +447,10 @@ sap.ui.define([
 			
 			//match prices from UI structured object to actual price object
 			oDraftProductPolicy.matchPrices();
+
+			//first initialize both msp & nsp status to "No Policy yet"
+			oDraftProductPolicy.mspStatus = "No Policy yet";
+			oDraftProductPolicy.nspStatus = "No Policy yet";
 
 			//set status to draft
 			switch(sCase) {
