@@ -1173,14 +1173,20 @@ sap.ui.define([
 				if(mspReductionPercentage > 0){
 					draftProductPolicy.mspStatus = 'Draft';
 				}else{
-					draftProductPolicy.mspStatus = 'No Policy yet';
+					//if not yet on draft, then we could say that status will be set from Approved to "No Policy yet"
+					if(draftProductPolicy.mspStatus !== 'Draft'){
+						draftProductPolicy.mspStatus = 'No Policy yet';
+					}
 				}
 	
 				//if NSP reduction is applied --> nsp = draft
 				if(nspReductionPercentage > 0){
 					draftProductPolicy.nspStatus = 'Draft';
 				}else{
-					draftProductPolicy.nspStatus = 'No Policy yet';
+					//if not yet on draft, then we could say that status will be set from Approved to "No Policy yet"
+					if(draftProductPolicy.mspStatus !== 'Draft'){
+						draftProductPolicy.nspStatus = 'No Policy yet';
+					}
 				}
 
 			});
