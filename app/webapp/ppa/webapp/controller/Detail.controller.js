@@ -184,8 +184,8 @@ sap.ui.define([
 					this.getView().setBusy(false);
 				});
 			} else {
-				const msgErrorEffectiveDate = 'Please enter an effective date before creating a new policy.';
-				sap.m.MessageBox.error(msgErrorEffectiveDate, {});
+				const msgWarningEffectiveDate = 'Please enter an effective date before creating a new policy.';
+				sap.m.MessageBox.warning(msgWarningEffectiveDate, {});
 				oProductsTable.removeSelections(true)
 				this.getView().setBusy(false);
 			}

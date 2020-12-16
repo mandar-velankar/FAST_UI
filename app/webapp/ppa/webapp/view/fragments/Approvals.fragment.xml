@@ -108,7 +108,7 @@
 						<!-- Sender's Comment  -->
 						<Label text="Sender's Comment"/>
 						<TextArea value="{ppa>senderComment}" 
-									showExceededText="true" 
+									showExceededText="false" 
 									maxLength="500" 
 									valueLiveUpdate="false" liveChange="handleLiveChange" 
 									enabled="true"/>
@@ -116,7 +116,7 @@
 						<!-- Approver's Comment-->  
 						<Label text="Approver's Comment"/>
 						<TextArea value="{ppa>approverComment}" 
-									showExceededText="true" 
+									showExceededText="false" 
 									maxLength="500"
 									valueLiveUpdate="false" 
 									liveChange="handleLiveChange" 
