@@ -449,8 +449,8 @@ sap.ui.define([
 			oDraftProductPolicy.matchPrices();
 
 			//first initialize both msp & nsp status to "No Policy yet"
-			oDraftProductPolicy.mspStatus = "No Policy yet";
-			oDraftProductPolicy.nspStatus = "No Policy yet";
+			//oDraftProductPolicy.mspStatus = "No Policy yet";
+			//oDraftProductPolicy.nspStatus = "No Policy yet";
 
 			//set status to draft
 			switch(sCase) {
