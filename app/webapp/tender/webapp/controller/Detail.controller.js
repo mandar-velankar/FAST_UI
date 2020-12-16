@@ -2890,7 +2890,7 @@ sap.ui.define([
 
 				/* Thailand */
 				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
-				oSaveBasicInfo.PROCUREMENT_REASON = this.byId("idProcurementReasonEdit").getValue();
+				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
 
 
 				//Check if data is correct
@@ -2986,6 +2986,10 @@ sap.ui.define([
 			oSaveBasicInfo.SALES_TYPE_ID = this.byId("idSelectSalesTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TENDER_ORIGIN_ID = this.byId("idSelectTenderOriginEdit").getSelectedKey();
 			oSaveBasicInfo.CONTRACT_TYPE_ID = this.byId("idSelectContractTypeEdit").getSelectedKey();
+
+			/* Thailand */
+			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
+			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
 
 			//TEMP
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;

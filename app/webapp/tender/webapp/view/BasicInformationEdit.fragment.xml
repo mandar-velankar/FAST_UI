@@ -98,7 +98,7 @@
 			</Select>
 
 			<Label id="idLabelProcurementReasonEdit" text="{i18n>procurementmethodreason}" design="Bold" required="true" visible="true"/>
-			<Input id="idProcurementReasonEdit" value="{fastData>PROCUREMENT_REASON}" enabled="true" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
+			<Input id="idProcurementReasonEdit" value="{fastData>PROCUREMENT_REASON}" enabled="false" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
 			<!-- End of Thailand Changes-->
 
 			<core:Title text="Timeline"/>
