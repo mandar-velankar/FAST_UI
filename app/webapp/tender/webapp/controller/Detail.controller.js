@@ -297,7 +297,7 @@ sap.ui.define([
 				})
 			});
 
-			let oProcurementMethod = that.getView().byId("idSelectProcurementMethod");
+			let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
 				filters: aFilter,
@@ -464,7 +464,7 @@ sap.ui.define([
 
 				/* Thailand */
 				$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
-					oProcurementMethod.setVisible(bShowProcurementMethod);
+					that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
 				});
 				/* End of Thailand */
 
@@ -1333,7 +1333,8 @@ sap.ui.define([
 
 					/* Thailand */
 					$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
-						oProcurementMethod.setVisible(bShowProcurementMethod);
+						that.getView().byId("idSelectProcurementMethodEdit").setVisible(bShowProcurementMethod);
+						that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
 					});
 					/* End of Thailand */
 
@@ -2887,6 +2888,11 @@ sap.ui.define([
 				//oSaveBasicInfo.TenderNo = Services.getFastAppDataModel().getProperty("/Tender").TenderNo; //oSaveBasicInfo.TenderID.split("-")[2];
 				oSaveBasicInfo.TenderNo = Services.getDefaultModel().getProperty(Services.getSelectedTenderPath()).TenderNo;
 
+				/* Thailand */
+				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
+				oSaveBasicInfo.PROCUREMENT_REASON = this.byId("idProcurementReasonEdit").getValue();
+
+
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
 
@@ -4319,8 +4325,8 @@ sap.ui.define([
 		},
 
 		onSelectionChangeProcurementMethod: function(oEvent){
-			let oProcurementReason = this.byId("idProcurementReason");
-			if(this.byId("idSelectProcurementMethod").getSelectedKey() === 'Other'){
+			let oProcurementReason = this.byId("idProcurementReasonEdit");
+			if(this.byId("idSelectProcurementMethodEdit").getSelectedKey() === 'Other'){
 				oProcurementReason.setVisible(true);
 			} else {
 				oProcurementReason.setVisible(false);
