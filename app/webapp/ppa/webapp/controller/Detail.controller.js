@@ -175,7 +175,7 @@ sap.ui.define([
 						this.ppaState.setNspPanelExpanded(true);
 						this.ppaState.setMspExpandable(true);
 						this.ppaState.setNspExpandable(true);
-						this.calculatePriceDifferenceProductSelect(selectedProduct);
+						this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 						this.getView().setBusy(false);
 					}).catch((error) => {
 						this.getView().setBusy(false);
@@ -227,6 +227,8 @@ sap.ui.define([
 						selectedProduct.NspPricePercDiff[nspPriceType] = this.calculatePriceDifference(+draftNspPolicyPrices[nspPriceType], +approvedNspPolicyPrices[nspPriceType]) + "%";
 					}
 				}
+
+				this.ppaState.updateModel();
 
 			}
 		},
@@ -948,22 +950,30 @@ sap.ui.define([
 
 		validatePrice: function(oEvent){
 
-			const vBox = oEvent.getSource().getParent();
-			const aVboxInputObjects = vBox.getItems().filter(oInput => oInput.getMetadata()._sClassName.indexOf("sap.m.Input") > -1);
+			const sPath = oEvent.getSource().getBindingPath("value").split("/").pop();
+			const sChannel  = oEvent.getSource().getBindingPath("value").split("/").pop().split("_").pop();
 			const sPanel = oEvent.getSource().getBindingPath("value").split("/")[3];
+			const sSection = sPanel.substr(0,3).toUpperCase();
+
+			// const vBox = oEvent.getSource().getParent();
+			// const aVboxInputObjects = vBox.getItems().filter(oInput => oInput.getMetadata()._sClassName.indexOf("sap.m.Input") > -1);
+			// const sPanel = oEvent.getSource().getBindingPath("value").split("/")[3];
+			const aInputObjects = this.getView().getControlsByFieldGroupId([sSection,sChannel]);
 			const oSaveBtn = sPanel.indexOf("mspPrices") > -1 ? this.byId("idBtnSaveMSP") : this.byId("idBtnSaveNSP");
 			
 			let bValid = true;
-			// let aValidations = aVboxInputObjects.map(oInput => this.validateInput(oInput));
-			bValid = this.validateInput(oEvent.getSource());
-			//let bInValid = aValidations.find(valid => valid === false);
+			let aValidations = aInputObjects.map(oInput => this.validateInput(oInput));
+			// bValid = this.validateInput(oEvent.getSource());
+			let bInValid = aValidations.find(valid => valid === false);
 
-			/*if(typeof bInValid !== "undefined" && !bInValid){
+			if(typeof bInValid !== "undefined" && !bInValid){
 				bValid = false;
-			}*/
+			}
 
 			// toogle the save button 
 			oSaveBtn.setEnabled(bValid);
+
+			this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 			
 		},
 
@@ -976,17 +986,18 @@ sap.ui.define([
 			const sRole = oInput.getBindingPath("value").split("/").pop().split("_")[0];
 			const price = +priceType.parseValue(oInput.getValue());
 			const policyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().draftProductPolicy.mspPrices : this.ppaState.getSelectedProduct().draftProductPolicy.nspPrices;
-			const approvedPolicyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().approvedProductPolicy.mspPrices : this.ppaState.getSelectedProduct().approvedProductPolicy.nspPrices;
-			//const percDifferences = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().MspPricePercDiff : this.ppaState.getSelectedProduct().NspPricePercDiff;
-			if(sPanel.indexOf("mspPrices") > -1){
-				if(approvedPolicyPrices){
-					this.ppaState.getSelectedProduct().MspPricePercDiff[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "%";
-				}
-			} else {
-				if(approvedPolicyPrices){
-					this.ppaState.getSelectedProduct().NspPricePercDiff[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "%";
-				}
-			}
+
+			// const approvedPolicyPrices = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().approvedProductPolicy.mspPrices : this.ppaState.getSelectedProduct().approvedProductPolicy.nspPrices;
+			// //const percDifferences = sPanel.indexOf("mspPrices") > -1 ? this.ppaState.getSelectedProduct().MspPricePercDiff : this.ppaState.getSelectedProduct().NspPricePercDiff;
+			// if(sPanel.indexOf("mspPrices") > -1){
+			// 	if(approvedPolicyPrices){
+			// 		this.ppaState.getSelectedProduct().MspPricePercDiff[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "%";
+			// 	}
+			// } else {
+			// 	if(approvedPolicyPrices){
+			// 		this.ppaState.getSelectedProduct().NspPricePercDiff[sPath] = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "%";
+			// 	}
+			// }
 			//const priceDifferencePerc = Math.round(this.calculatePriceDifference(price, Number(approvedPolicyPrices[sPath]))) + "...%";
 			const sPriceType = sPanel.indexOf("mspPrices") > -1 ? "msp" : "nsp";
 
