@@ -516,25 +516,33 @@ sap.ui.define([
 			//show loading screen
 			this.getView().setBusy(true);
 			let aProductsNotValid = this.onValidatePricesAtApproval();
+			let bApprovalsValid = this.onValidateApprovals();
+			
+			if(bApprovalsValid){
+				if(aProductsNotValid.length > 0 ){
 
-			if(aProductsNotValid.length > 0 ){
-
-				let productNames = aProductsNotValid.map(product => product);
-
-				//add products list
-				sap.m.MessageBox.warning(`Prices for the following products are missing. Do you want to continue? \n\n ${productNames.join('\n')}`, {
-					actions: ["Continue", sap.m.MessageBox.Action.CANCEL],
-					emphasizedAction: "Continue",
-					onClose: function(sAction){
-						switch(sAction){
-							case "Continue" : that._sendApprovals();
-							case "CANCEL"   : that.getView().setBusy(false);
+					let productNames = aProductsNotValid.map(product => product);
+	
+					//add products list
+					sap.m.MessageBox.warning(`Prices for the following products are missing. Do you want to continue? \n\n ${productNames.join('\n')}`, {
+						actions: ["Continue", sap.m.MessageBox.Action.CANCEL],
+						emphasizedAction: "Continue",
+						onClose: function(sAction){
+							switch(sAction){
+								case "Continue" : that._sendApprovals();
+								case "CANCEL"   : that.getView().setBusy(false);
+							}
 						}
-					}
-				});
-			} else {
-					that._sendApprovals();
+					});
+				} else {
+						that._sendApprovals();
+				}
+			}else{
+				//show error
+				this.getView().setBusy(false);
+				sap.m.MessageBox.error("Comments can not be longer then 500 characters");					
 			}
+
 			//});
 			// TODO: check if setCancelApprovalsPressed is necessary - is not used at the moment
 			// Keep track that we pressed Send Approval button
@@ -550,6 +558,32 @@ sap.ui.define([
 
 			//disable edit mode
 			this.ppaState.setEditMode(false);
+		},
+
+		//are the approvals valid to be send?..
+		onValidateApprovals: function (){
+			
+			let bApprovalsValid = true;
+			let aApprovalsToBeSent = this.ppaState.getApprovalsToBeSent();
+
+			aApprovalsToBeSent.map(approval=>{
+
+				//comment can not be longer then 500
+				if(approval.senderComment){
+					bApprovalsValid = approval.senderComment.length > 499 ? false : bApprovalsValid;
+				}
+					
+				//comment can not be longer then 500
+				if(approval.approverComment){
+					bApprovalsValid = approval.approverComment.length > 499 ? false : bApprovalsValid;
+				}
+				
+				return approval;
+			})
+
+			return bApprovalsValid;
+			
+			
 		},
 
 		onValidatePricesAtApproval: function(){
@@ -1244,6 +1278,16 @@ sap.ui.define([
 
 		handleEffectiveDateChange: function(oInput){
 			this.validateEffectiveDate(oInput);
+		},
+
+		//Text input field on approval
+		handleLiveChange: function (oEvent) {
+			var oTextArea = oEvent.getSource(),
+				iValueLength = oTextArea.getValue().length,
+				iMaxLength = oTextArea.getMaxLength(),
+				sState = iValueLength > iMaxLength ? "Error" : "None";
+		
+			oTextArea.setValueState(sState);
 		}
 
 
