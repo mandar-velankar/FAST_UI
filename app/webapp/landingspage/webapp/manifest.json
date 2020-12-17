@@ -20,24 +20,8 @@
 					"localUri": "localService/sxtender.xsodata/metadata.xml"
 				}
 			},
-			"epaService": {
-				"uri": "/FAST/epa/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/metadata.xml"
-				}
-			},
-			"policyService": {
-				"uri": "/FAST/ppa/",
-				"type": "OData",
-				"settings": {
-					"odataVersion": "2.0",
-					"localUri": "localService/metadata.xml"
-				}
-			},
-			"contractService": {
-				"uri": "/FAST/ctr/",
+			"accessService": {
+				"uri": "/FAST/access/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
@@ -138,16 +122,8 @@
 				"dataSource": "sxtender.xsodata",
 				"preload": true
 			},
-			"epaData": {
-				"dataSource": "epaService",
-				"preload": true
-			},
-			"ppaData": {
-				"dataSource": "policyService",
-				"preload": true
-			},
-			"contractData": {
-				"dataSource": "contractService",
+			"access": {
+				"dataSource": "accessService",
 				"preload": true
 			}
 		},		
