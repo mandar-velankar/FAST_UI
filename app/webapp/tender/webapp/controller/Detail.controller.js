@@ -298,6 +298,7 @@ sap.ui.define([
 			});
 
 			let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
 				filters: aFilter,
@@ -346,6 +347,7 @@ sap.ui.define([
 
 			//Thailand
 			oProcurementMethod.setEnabled(true);
+			oProducrementReason.setEnabled(true);
 
 			//Keep track that we are in change modus
 			Services.setEditMode(true);
