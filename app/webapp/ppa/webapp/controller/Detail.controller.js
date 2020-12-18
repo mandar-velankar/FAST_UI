@@ -32,8 +32,10 @@ sap.ui.define([
 			this.setModel(this.ppaState.getModel(), "ppa");
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
 
+			
 			var oDateModel = new sap.ui.model.json.JSONModel({
-				minDate: new Date()
+				minDate: new Date(),
+				enabled: false
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 		},
@@ -516,25 +518,33 @@ sap.ui.define([
 			//show loading screen
 			this.getView().setBusy(true);
 			let aProductsNotValid = this.onValidatePricesAtApproval();
+			let bApprovalsValid = this.onValidateApprovals();
+			
+			if(bApprovalsValid){
+				if(aProductsNotValid.length > 0 ){
 
-			if(aProductsNotValid.length > 0 ){
-
-				let productNames = aProductsNotValid.map(product => product);
-
-				//add products list
-				sap.m.MessageBox.warning(`Prices for the following products are missing. Do you want to continue? \n\n ${productNames.join('\n')}`, {
-					actions: ["Continue", sap.m.MessageBox.Action.CANCEL],
-					emphasizedAction: "Continue",
-					onClose: function(sAction){
-						switch(sAction){
-							case "Continue" : that._sendApprovals();
-							case "CANCEL"   : that.getView().setBusy(false);
+					let productNames = aProductsNotValid.map(product => product);
+	
+					//add products list
+					sap.m.MessageBox.warning(`Prices for the following products are missing. Do you want to continue? \n\n ${productNames.join('\n')}`, {
+						actions: ["Continue", sap.m.MessageBox.Action.CANCEL],
+						emphasizedAction: "Continue",
+						onClose: function(sAction){
+							switch(sAction){
+								case "Continue" : that._sendApprovals();
+								case "CANCEL"   : that.getView().setBusy(false);
+							}
 						}
-					}
-				});
-			} else {
-					that._sendApprovals();
+					});
+				} else {
+						that._sendApprovals();
+				}
+			}else{
+				//show error
+				this.getView().setBusy(false);
+				sap.m.MessageBox.error("Comments can not be longer then 500 characters");					
 			}
+
 			//});
 			// TODO: check if setCancelApprovalsPressed is necessary - is not used at the moment
 			// Keep track that we pressed Send Approval button
@@ -550,6 +560,32 @@ sap.ui.define([
 
 			//disable edit mode
 			this.ppaState.setEditMode(false);
+		},
+
+		//are the approvals valid to be send?..
+		onValidateApprovals: function (){
+			
+			let bApprovalsValid = true;
+			let aApprovalsToBeSent = this.ppaState.getApprovalsToBeSent();
+
+			aApprovalsToBeSent.map(approval=>{
+
+				//comment can not be longer then 500
+				if(approval.senderComment){
+					bApprovalsValid = approval.senderComment.length > 499 ? false : bApprovalsValid;
+				}
+					
+				//comment can not be longer then 500
+				if(approval.approverComment){
+					bApprovalsValid = approval.approverComment.length > 499 ? false : bApprovalsValid;
+				}
+				
+				return approval;
+			})
+
+			return bApprovalsValid;
+			
+			
 		},
 
 		onValidatePricesAtApproval: function(){
@@ -888,6 +924,9 @@ sap.ui.define([
 					this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 
+					// Change the approval statuses to 'Not Sent' 
+					this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
+
 					//Success message
 					const msgSuccess = 'Effective date has been updated.';
 					sap.m.MessageBox.success(msgSuccess, {});
@@ -929,6 +968,7 @@ sap.ui.define([
 			// refresh BrandPolicy and Brand
 			this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 			this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+			this.getView().getModel("dateModel").setProperty("/enabled", false);
 		},
 
 		setEffectiveDateEditMode: function(bEnabled){
@@ -1035,26 +1075,6 @@ sap.ui.define([
 
 		calculatePriceDifference: function(sDraftPrice, sValidatedPrice){
 			return Math.round((sDraftPrice - sValidatedPrice)/(sValidatedPrice) * 100);
-		},
-
-		validateEffectiveDate: function(oInput){ 
-			
-			let bValid = true;
-			const sDraftDate = oInput.oSource.getDateValue();
-			const ApprovedPolicyValidFrom = this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy ? this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy.validFrom : undefined;
-
-			if(ApprovedPolicyValidFrom){
-				if(sDraftDate < ApprovedPolicyValidFrom){
-					bValid = false;
-					oInput.oSource.setValueState("Error");
-					oInput.oSource.setValueStateText("The new effective date should be higher than the currently approved valid from date.");
-				}else{
-					oInput.oSource.setValueState("None");
-					oInput.oSource.setValueStateText();
-				}
-			}
-			
-			return bValid;
 		},
 
 		validateChannelPrices: function(sPriceType, sChannel, sRole){
@@ -1244,6 +1264,38 @@ sap.ui.define([
 
 		handleEffectiveDateChange: function(oInput){
 			this.validateEffectiveDate(oInput);
+		},
+
+		validateEffectiveDate: function(oInput){ 
+			
+			let bValid = true;
+			const sDraftDate = oInput.oSource.getDateValue();
+			const ApprovedPolicyValidFrom = this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy ? this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy.validFrom : undefined;
+
+			if(ApprovedPolicyValidFrom){
+				if(sDraftDate <= ApprovedPolicyValidFrom){
+					bValid = false;
+					oInput.oSource.setValueState("Error");
+					oInput.oSource.setValueStateText("The new effective date should be higher than the currently approved valid from date.");
+				}else{
+					oInput.oSource.setValueState("None");
+					oInput.oSource.setValueStateText();
+				}
+			}
+			
+			this.getView().getModel("dateModel").setProperty("/enabled", bValid);
+
+			return bValid;
+		},
+
+		//Text input field on approval
+		handleLiveChange: function (oEvent) {
+			var oTextArea = oEvent.getSource(),
+				iValueLength = oTextArea.getValue().length,
+				iMaxLength = oTextArea.getMaxLength(),
+				sState = iValueLength > iMaxLength ? "Error" : "None";
+		
+			oTextArea.setValueState(sState);
 		}
 
 

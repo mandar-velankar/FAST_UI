@@ -26,6 +26,15 @@ sap.ui.define([
             
         },
 
+
+        getApprovals: function(){
+            return this.approvals;
+        },
+
+        setStatusApprovals: function(sStatus){
+            this.getApprovals().forEach(approval => approval.setApprovalStatus(sStatus));
+        },
+
         setSubmittedApprovals: function(approvals){
             if(approvals && approvals instanceof Array){
                 this.submittedApprovals = approvals.map(approval => new Approval(approval));
