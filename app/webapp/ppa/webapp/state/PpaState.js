@@ -448,9 +448,15 @@ sap.ui.define([
 			//match prices from UI structured object to actual price object
 			oDraftProductPolicy.matchPrices();
 
-			//first initialize both msp & nsp status to "No Policy yet"
-			//oDraftProductPolicy.mspStatus = "No Policy yet";
-			//oDraftProductPolicy.nspStatus = "No Policy yet";
+			//if we still have an approved status - first initialize both msp & nsp status to "No Policy yet"
+			if(oDraftProductPolicy.mspStatus === "Approved"){
+				oDraftProductPolicy.mspStatus = "No Policy yet";
+			}
+			
+			if(oDraftProductPolicy.nspStatus === "Approved"){
+				oDraftProductPolicy.nspStatus = "No Policy yet";
+			}
+			
 
 			//set status to draft
 			switch(sCase) {
