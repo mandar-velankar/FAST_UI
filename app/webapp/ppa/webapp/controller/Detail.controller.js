@@ -32,8 +32,10 @@ sap.ui.define([
 			this.setModel(this.ppaState.getModel(), "ppa");
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
 
+			
 			var oDateModel = new sap.ui.model.json.JSONModel({
-				minDate: new Date()
+				minDate: new Date(),
+				enabled: false
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 		},
@@ -963,6 +965,7 @@ sap.ui.define([
 			// refresh BrandPolicy and Brand
 			this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 			this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+			this.getView().getModel("dateModel").setProperty("/enabled", false);
 		},
 
 		setEffectiveDateEditMode: function(bEnabled){
@@ -1069,26 +1072,6 @@ sap.ui.define([
 
 		calculatePriceDifference: function(sDraftPrice, sValidatedPrice){
 			return Math.round((sDraftPrice - sValidatedPrice)/(sValidatedPrice) * 100);
-		},
-
-		validateEffectiveDate: function(oInput){ 
-			
-			let bValid = true;
-			const sDraftDate = oInput.oSource.getDateValue();
-			const ApprovedPolicyValidFrom = this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy ? this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy.validFrom : undefined;
-
-			if(ApprovedPolicyValidFrom){
-				if(sDraftDate < ApprovedPolicyValidFrom){
-					bValid = false;
-					oInput.oSource.setValueState("Error");
-					oInput.oSource.setValueStateText("The new effective date should be higher than the currently approved valid from date.");
-				}else{
-					oInput.oSource.setValueState("None");
-					oInput.oSource.setValueStateText();
-				}
-			}
-			
-			return bValid;
 		},
 
 		validateChannelPrices: function(sPriceType, sChannel, sRole){
@@ -1278,6 +1261,28 @@ sap.ui.define([
 
 		handleEffectiveDateChange: function(oInput){
 			this.validateEffectiveDate(oInput);
+		},
+
+		validateEffectiveDate: function(oInput){ 
+			
+			let bValid = true;
+			const sDraftDate = oInput.oSource.getDateValue();
+			const ApprovedPolicyValidFrom = this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy ? this.ppaState.data.aggregatedBrandPolicy.approvedBrandPolicy.validFrom : undefined;
+
+			if(ApprovedPolicyValidFrom){
+				if(sDraftDate <= ApprovedPolicyValidFrom){
+					bValid = false;
+					oInput.oSource.setValueState("Error");
+					oInput.oSource.setValueStateText("The new effective date should be higher than the currently approved valid from date.");
+				}else{
+					oInput.oSource.setValueState("None");
+					oInput.oSource.setValueStateText();
+				}
+			}
+			
+			this.getView().getModel("dateModel").setProperty("/enabled", bValid);
+
+			return bValid;
 		},
 
 		//Text input field on approval

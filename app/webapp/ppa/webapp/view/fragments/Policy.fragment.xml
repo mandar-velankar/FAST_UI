@@ -69,7 +69,7 @@
 									<!-- Save & Cancel buttons -->
 									<HBox>
 										<HBox width="100%" alignItems="center" class="sapUiSmallMarginTop">
-											<Button id="idBtnSaveEffctvDate" text="Save" type="Accept" press="onSaveEffctvDate" visible="false" class="sapUiTinyMarginEnd"/>
+											<Button id="idBtnSaveEffctvDate" text="Save" type="Accept" press="onSaveEffctvDate" visible="false" enabled="{dateModel>/enabled}" class="sapUiTinyMarginEnd"/>
 											<Button id="idBtnCancelEffctvDate" text="Cancel" type="Reject" press="onCancelEffctvDate" visible="false" />	
 										</HBox>	
 									</HBox>
