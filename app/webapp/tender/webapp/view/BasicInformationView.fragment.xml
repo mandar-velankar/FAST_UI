@@ -60,6 +60,19 @@
 					<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 			</Select>
 			<!-- End of Mexico Changes-->
+
+			<!-- Thailand: Procurement Method-->
+			<Label id="idLabelProcurementMethod" text="{i18n>procurementmethod}" design="Bold" required="true" visible="true"/>
+			<Select id="idSelectProcurementMethod" 
+				selectedKey="{fastData>PROCUREMENT_METHOD_ID}" 
+				enabled="false" 
+				items="{ path: 'fastData>/CountryProcurementMethod', sorter: { path: 'PROCUREMENT_METHOD_ID' } }">
+					<core:Item text="{fastData>PROCUREMENT_METHOD_ID}" key="{fastData>PROCUREMENT_METHOD_ID}"/>
+			</Select>
+
+			<Label id="idLabelProcurementReason" text="{i18n>procurementmethodreason}" design="Bold" required="true" visible="true"/>
+			<Input id="idProcurementReason" value="{fastData>PROCUREMENT_REASON}" enabled="false" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
+			<!-- End of Thailand Changes-->
 			
 			<!-- Block Timeline -->
 			<core:Title text="Timeline"/>
