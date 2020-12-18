@@ -1,5 +1,4 @@
 {
-  "welcomeFile": "/index.html",
   "authenticationMethod": "route",
   "logout": {
     "logoutEndpoint": "/do/logout"
@@ -22,13 +21,6 @@
     {
       "source": "/FAST/PolicyPricingService/(.*)$",
       "target": "/FAST/ppa/$1",
-      "authenticationType": "basic",
-      "destination": "srv_api",
-      "csrfProtection": true
-    },
-    {
-      "source": "/reporting/(.*)$",
-      "target": "/FAST/$1",
       "authenticationType": "basic",
       "destination": "srv_api",
       "csrfProtection": true
@@ -79,6 +71,13 @@
       "source": "^/pdf/(.*)$",
       "target": "$1",
       "localDir": "dist/pdf"
+    },
+    {
+      "source": "^(.*)$",
+      "target": "/FAST$1",
+      "authenticationType": "basic",
+      "destination": "srv_api",
+      "csrfProtection": true
     }
   ]
 }
