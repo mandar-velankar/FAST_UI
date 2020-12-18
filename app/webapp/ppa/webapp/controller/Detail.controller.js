@@ -924,6 +924,9 @@ sap.ui.define([
 					this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 
+					// Change the approval statuses to 'Not Sent' 
+					this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
+
 					//Success message
 					const msgSuccess = 'Effective date has been updated.';
 					sap.m.MessageBox.success(msgSuccess, {});
