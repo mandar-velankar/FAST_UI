@@ -297,6 +297,17 @@ sap.ui.define([
 				})
 			});
 
+			let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
+			oProcurementMethod.bindItems({
+				path: "fastData>/CountryProcurementMethod",
+				filters: aFilter,
+				template: new sap.ui.core.Item({
+					text: "{fastData>PROCUREMENT_METHOD_ID}",
+					key: "{fastData>PROCUREMENT_METHOD_ID}"
+				})
+			});
+
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
 				oSalesType.setVisible(bShowSalesType);
@@ -316,6 +327,11 @@ sap.ui.define([
 			$.when(Services.checkShowContractType()).done(function (bShowContractType) {
 				oContractType.setVisible(bShowContractType);
 			});
+
+			//should ContractType be visible on the screen based on data back-end
+			$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
+				oProcurementMethod.setVisible(bShowProcurementMethod);
+			});
 			// Dunno why but binding not always found
 			// var oBinding = oTenderType.getBinding("items");
 			// //set filter for country on tender type: only when binding of tendertype is found
@@ -328,6 +344,10 @@ sap.ui.define([
 			oSalesType.setEnabled(true);
 			oTenderOrigin.setEnabled(true);
 			oContractType.setEnabled(true);
+
+			//Thailand
+			oProcurementMethod.setEnabled(true);
+			oProducrementReason.setEnabled(true);
 
 			//Keep track that we are in change modus
 			Services.setEditMode(true);
@@ -443,6 +463,12 @@ sap.ui.define([
 					that.getView().byId("idSelectContractType").setVisible(bShowContractType);
 				});
 				/* End of MExico */
+
+				/* Thailand */
+				$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
+					that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
+				});
+				/* End of Thailand */
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
@@ -1306,6 +1332,13 @@ sap.ui.define([
 						that.getView().byId("idSelectContractType").setVisible(bShowContractType);
 					});
 					/* End of mexico */
+
+					/* Thailand */
+					$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
+						that.getView().byId("idSelectProcurementMethodEdit").setVisible(bShowProcurementMethod);
+						that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
+					});
+					/* End of Thailand */
 
 					//should group purchasing be visible on the screen based on data back-end
 					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
@@ -2857,6 +2890,11 @@ sap.ui.define([
 				//oSaveBasicInfo.TenderNo = Services.getFastAppDataModel().getProperty("/Tender").TenderNo; //oSaveBasicInfo.TenderID.split("-")[2];
 				oSaveBasicInfo.TenderNo = Services.getDefaultModel().getProperty(Services.getSelectedTenderPath()).TenderNo;
 
+				/* Thailand */
+				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
+				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
+
+
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
 
@@ -2950,6 +2988,10 @@ sap.ui.define([
 			oSaveBasicInfo.SALES_TYPE_ID = this.byId("idSelectSalesTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TENDER_ORIGIN_ID = this.byId("idSelectTenderOriginEdit").getSelectedKey();
 			oSaveBasicInfo.CONTRACT_TYPE_ID = this.byId("idSelectContractTypeEdit").getSelectedKey();
+
+			/* Thailand */
+			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
+			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
 
 			//TEMP
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
@@ -4286,6 +4328,15 @@ sap.ui.define([
 			//oList.removeSelections();
 			oInfoToolbar.setVisible(false);
 
+		},
+
+		onSelectionChangeProcurementMethod: function(oEvent){
+			let oProcurementReason = this.byId("idProcurementReasonEdit");
+			if(this.byId("idSelectProcurementMethodEdit").getSelectedKey() === 'Other'){
+				oProcurementReason.setVisible(true);
+			} else {
+				oProcurementReason.setVisible(false);
+			}
 		},
 
 		//move product up

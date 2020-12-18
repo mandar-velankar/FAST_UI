@@ -69,7 +69,7 @@
 									<!-- Save & Cancel buttons -->
 									<HBox>
 										<HBox width="100%" alignItems="center" class="sapUiSmallMarginTop">
-											<Button id="idBtnSaveEffctvDate" text="Save" type="Accept" press="onSaveEffctvDate" visible="false" class="sapUiTinyMarginEnd"/>
+											<Button id="idBtnSaveEffctvDate" text="Save" type="Accept" press="onSaveEffctvDate" visible="false" enabled="{dateModel>/enabled}" class="sapUiTinyMarginEnd"/>
 											<Button id="idBtnCancelEffctvDate" text="Cancel" type="Reject" press="onCancelEffctvDate" visible="false" />	
 										</HBox>	
 									</HBox>
@@ -282,6 +282,7 @@
 										<Text text="Goverment" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Government"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/NSMSMFM_Government', 
@@ -305,6 +306,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Government"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/HBU_Government', 
@@ -328,6 +330,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Government"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Government', 
@@ -356,6 +359,7 @@
 										<Text text="Private" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Private"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/NSMSMFM_Private', 
@@ -379,6 +383,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Private"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/HBU_Private', 
@@ -402,6 +407,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Private"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Private', 
@@ -430,6 +436,7 @@
 										<Text text="Clinic" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Clinic"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/NSMSMFM_Clinic', 
@@ -453,6 +460,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Clinic"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/HBU_Clinic', 
@@ -476,6 +484,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,Clinic"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Clinic', 
@@ -504,6 +513,7 @@
 										<Text text="OTC" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,OTC"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/NSMSMFM_OTC', 
@@ -526,7 +536,8 @@
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
 										<HBox>
-											<Input 
+											<Input
+												fieldGroupIds="MSP,OTC" 
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/HBU_OTC', 
@@ -550,6 +561,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="MSP,OTC"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_OTC', 
@@ -628,6 +640,7 @@
 										<Text text="Goverment" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Government"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/NSMSMFM_Government', 
@@ -651,6 +664,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Government"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/HBU_Government', 
@@ -674,6 +688,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Government"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Government', 
@@ -702,6 +717,7 @@
 										<Text text="Private" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Private"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/NSMSMFM_Private', 
@@ -725,6 +741,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Private"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/HBU_Private', 
@@ -748,6 +765,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Private"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Private', 
@@ -776,6 +794,7 @@
 										<Text text="Clinic" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Clinic"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/NSMSMFM_Clinic', 
@@ -799,6 +818,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Clinic"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/HBU_Clinic', 
@@ -822,6 +842,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,Clinic"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Clinic', 
@@ -850,6 +871,7 @@
 										<Text text="OTC" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,OTC"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/NSMSMFM_OTC', 
@@ -873,6 +895,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,OTC"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/HBU_OTC', 
@@ -896,6 +919,7 @@
 										</HBox>
 										<HBox>
 											<Input 
+												fieldGroupIds="NSP,OTC"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_OTC', 

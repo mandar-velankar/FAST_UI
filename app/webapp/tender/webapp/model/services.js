@@ -3428,6 +3428,89 @@ sap.ui.define([
 
 		},
 
+		/* Thailand implementation */
+		checkShowProcurementMethod: function () {
+
+			var that = this;
+
+			//lets work with callbacks: 
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+
+			//path for reading
+			var sPath = "/CountryProcurementMethod";
+
+			//filters
+			var aFilters = [];
+
+			//filter country
+			var sCountryCode = that.getSelectedCountry();
+
+			var oFilter = new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, sCountryCode);
+			//Add to filter array
+			aFilters.push(oFilter);
+
+			// instantiate loading dialog
+			if (!that._LoadingDialog) {
+				that._LoadingDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.Loading", that);
+			}
+
+			// open loading dialog
+			that._LoadingDialog.open();
+
+			if (sPath) {
+
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						//show tender type
+						var bShowProcurementMethod = false;
+
+						//check length
+						if (oData.results) {
+							if (oData.results.length > 1) {
+								//als er meer dan 1 tendertypes gevonden worden
+								bShowProcurementMethod = true;
+							}
+						}
+
+						// CLOSE loading dialog
+						if (that._LoadingDialog) {
+							that._LoadingDialog.close();
+						}
+
+						//let the callback be triggered
+						oDeferred.resolve(bShowProcurementMethod);
+
+					},
+					error: function (oError) {
+
+						// CLOSE loading dialog
+						if (that._LoadingDialog) {
+							that._LoadingDialog.close();
+						}
+
+						//Error
+						that.showErrorMessage(oError, "Checking to show Procurement Method");
+
+						//let the callback be triggered
+						oDeferred.reject(oError);
+
+					}
+				});
+			}
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
+		/* end of thailand implementation */
+
 		//Savers
 		//--------
 
