@@ -688,7 +688,7 @@ sap.ui.define([
 
 		onCancelMSP: function(oEvent){
 			// reload the corresponding Product Policy
-			const policyId = this.ppaState.getSelectedProduct().policyId;
+			const policyId = this.ppaState.getSelectedProduct().draftProductPolicy.iD;
 
 			//show loading screen
 			this.getView().setBusy(true);
@@ -697,18 +697,21 @@ sap.ui.define([
 				this.setMspEditMode(false);
 				this.byId("idBtnEditNspPolicy").setEnabled(true);
 				this.byId("idBtnEditMspPolicy").setEnabled(true);
+
+				// clear the input values states which are in error
+				this.clearPricingPolicyValueStates("MSP");
+
+				// this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+
 				this.getView().setBusy(false);
 			});
 
-			// clear the input values states which are in error
-			const oHbox = this.byId("idMspPricingPolicy").getContent()[0].getItems()[0];
-			this.clearPricingPolicyValueStates(oHbox);
 			
 		},
 
 		onCancelNSP: function(oEvent){
 			// reload the corresponding Product Policy
-			const policyId = this.ppaState.getSelectedProduct().policyId;
+			const policyId = this.ppaState.getSelectedProduct().draftProductPolicy.iD;
 
 			//show loading screen
 			this.getView().setBusy(true);
@@ -721,8 +724,17 @@ sap.ui.define([
 			});
 
 			// clear the input values states which are in error
-			const oHbox = this.byId("idNspPricingPolicy").getContent()[0].getItems()[0];
-			this.clearPricingPolicyValueStates(oHbox);
+			this.clearPricingPolicyValueStates("NSP");
+
+			// this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+		},
+
+		clearPricingPolicyValueStates: function(sSection){
+			const aInputObjects = this.getView().getControlsByFieldGroupId(sSection);
+			aInputObjects.map(oInput => { 
+				oInput.setValueState("None");
+				oInput.setValueStateText();
+			});
 		},
 
 		setMspEditMode: function(bMode){
@@ -976,16 +988,6 @@ sap.ui.define([
 			this.byId("idEffectiveDate").setEnabled(bEnabled);
 			this.byId("idBtnSaveEffctvDate").setVisible(bEnabled);
 			this.byId("idBtnCancelEffctvDate").setVisible(bEnabled);
-		},
-
-		clearPricingPolicyValueStates: function(hBox){
-			hBox.getItems().forEach(vBox => {
-				const aVboxInputObjects = vBox.getItems().filter(oInput => oInput.getMetadata()._sClassName.indexOf("sap.m.Input") > -1);
-				aVboxInputObjects.map(oInput => { 
-					oInput.setValueState("None");
-					oInput.setValueStateText();
-				});
-			});
 		},
 
 		validatePrice: function(oEvent){
