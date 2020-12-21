@@ -996,6 +996,7 @@
 													<m:items>
 														<core:Item text="" key=""/>
 														<core:Item text="Decision Pending" key="Decision Pending"/>
+														<core:Item text="FOC negotiation" key="FOC negotiation"/>
 														<core:Item text="Won" key="Won"/>
 														<core:Item text="Lost" key="Lost"/>
 														<core:Item text="Cancelled" key="Cancelled"/>
