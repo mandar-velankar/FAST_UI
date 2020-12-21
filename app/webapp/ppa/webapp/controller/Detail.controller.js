@@ -688,7 +688,7 @@ sap.ui.define([
 
 		onCancelMSP: function(oEvent){
 			// reload the corresponding Product Policy
-			const policyId = this.ppaState.getSelectedProduct().policyId;
+			const policyId = this.ppaState.getSelectedProduct().draftProductPolicy.iD;
 
 			//show loading screen
 			this.getView().setBusy(true);
@@ -697,18 +697,21 @@ sap.ui.define([
 				this.setMspEditMode(false);
 				this.byId("idBtnEditNspPolicy").setEnabled(true);
 				this.byId("idBtnEditMspPolicy").setEnabled(true);
+
+				// clear the input values states which are in error
+				this.clearPricingPolicyValueStates("MSP");
+
+				// this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+
 				this.getView().setBusy(false);
 			});
 
-			// clear the input values states which are in error
-			const oHbox = this.byId("idMspPricingPolicy").getContent()[0].getItems()[0];
-			this.clearPricingPolicyValueStates(oHbox);
 			
 		},
 
 		onCancelNSP: function(oEvent){
 			// reload the corresponding Product Policy
-			const policyId = this.ppaState.getSelectedProduct().policyId;
+			const policyId = this.ppaState.getSelectedProduct().draftProductPolicy.iD;
 
 			//show loading screen
 			this.getView().setBusy(true);
@@ -721,8 +724,17 @@ sap.ui.define([
 			});
 
 			// clear the input values states which are in error
-			const oHbox = this.byId("idNspPricingPolicy").getContent()[0].getItems()[0];
-			this.clearPricingPolicyValueStates(oHbox);
+			this.clearPricingPolicyValueStates("NSP");
+
+			// this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+		},
+
+		clearPricingPolicyValueStates: function(sSection){
+			const aInputObjects = this.getView().getControlsByFieldGroupId(sSection);
+			aInputObjects.map(oInput => { 
+				oInput.setValueState("None");
+				oInput.setValueStateText();
+			});
 		},
 
 		setMspEditMode: function(bMode){
@@ -978,16 +990,6 @@ sap.ui.define([
 			this.byId("idBtnCancelEffctvDate").setVisible(bEnabled);
 		},
 
-		clearPricingPolicyValueStates: function(hBox){
-			hBox.getItems().forEach(vBox => {
-				const aVboxInputObjects = vBox.getItems().filter(oInput => oInput.getMetadata()._sClassName.indexOf("sap.m.Input") > -1);
-				aVboxInputObjects.map(oInput => { 
-					oInput.setValueState("None");
-					oInput.setValueStateText();
-				});
-			});
-		},
-
 		validatePrice: function(oEvent){
 
 			const sPath = oEvent.getSource().getBindingPath("value").split("/").pop();
@@ -1190,7 +1192,7 @@ sap.ui.define([
 			draftProductPolicies.map(draftProductPolicy => {
 
 				//if MSP reduction is applied --> msp = draft
-				if(mspReductionPercentage > 0){
+				if(mspReductionPercentage >= 0){
 					draftProductPolicy.mspStatus = 'Draft';
 				}else{
 					//if not yet on draft, then we could say that status will be set from Approved to "No Policy yet"
@@ -1200,7 +1202,7 @@ sap.ui.define([
 				}
 	
 				//if NSP reduction is applied --> nsp = draft
-				if(nspReductionPercentage > 0){
+				if(nspReductionPercentage >= 0){
 					draftProductPolicy.nspStatus = 'Draft';
 				}else{
 					//if not yet on draft, then we could say that status will be set from Approved to "No Policy yet"
@@ -1233,7 +1235,7 @@ sap.ui.define([
 		 * updates the draft prices accordingly based on the reduction percentage
 		 */
 		applyReduction: function(reductionPercentage, apporvedPrices, draftPrices){
-			if(reductionPercentage > 0){
+			if(reductionPercentage >= 0){
 				for (const rol_channel in apporvedPrices) {
 					let price = +apporvedPrices[rol_channel];
 					if(price > 0){

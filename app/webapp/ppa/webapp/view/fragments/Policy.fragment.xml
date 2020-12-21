@@ -114,6 +114,7 @@
 												id="idMspPriceReductionInput"
 												type="Number"
 												enabled="false"
+												value="0"
 												editable="{= ${ppa>/productPolicy/priceReductionEditMode} }"
 											/>
 										</VBox>
@@ -132,6 +133,7 @@
 												id="idNspPriceReductionInput"
 												type="Number"
 												enabled="false"
+												value="0"
 												editable="{= ${ppa>/productPolicy/priceReductionEditMode} }"
 											/>
 										</VBox>
