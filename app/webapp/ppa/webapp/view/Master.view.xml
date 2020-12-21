@@ -23,7 +23,7 @@
 				items="{
 					path: '/Brands',
 					sorter: {
-						path: 'BrandId',
+						path: 'BrandName',
 						descending: false
 					},
 					filters: [{
