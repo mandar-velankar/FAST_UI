@@ -1192,7 +1192,7 @@ sap.ui.define([
 			draftProductPolicies.map(draftProductPolicy => {
 
 				//if MSP reduction is applied --> msp = draft
-				if(mspReductionPercentage > 0){
+				if(mspReductionPercentage >= 0){
 					draftProductPolicy.mspStatus = 'Draft';
 				}else{
 					//if not yet on draft, then we could say that status will be set from Approved to "No Policy yet"
@@ -1202,7 +1202,7 @@ sap.ui.define([
 				}
 	
 				//if NSP reduction is applied --> nsp = draft
-				if(nspReductionPercentage > 0){
+				if(nspReductionPercentage >= 0){
 					draftProductPolicy.nspStatus = 'Draft';
 				}else{
 					//if not yet on draft, then we could say that status will be set from Approved to "No Policy yet"
@@ -1235,7 +1235,7 @@ sap.ui.define([
 		 * updates the draft prices accordingly based on the reduction percentage
 		 */
 		applyReduction: function(reductionPercentage, apporvedPrices, draftPrices){
-			if(reductionPercentage > 0){
+			if(reductionPercentage >= 0){
 				for (const rol_channel in apporvedPrices) {
 					let price = +apporvedPrices[rol_channel];
 					if(price > 0){
