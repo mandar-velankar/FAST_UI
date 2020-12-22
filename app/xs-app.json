@@ -73,8 +73,15 @@
       "localDir": "dist/pdf"
     },
     {
-      "source": "^(.*)$",
-      "target": "/FAST$1",
+      "source": "^/reporting/(.*)$",
+      "target": "/FAST/$1",
+      "authenticationType": "basic",
+      "destination": "srv_api",
+      "csrfProtection": true
+    },
+    {
+      "source": "^/(.*)$",
+      "target": "/FAST/$1",
       "authenticationType": "basic",
       "destination": "srv_api",
       "csrfProtection": true
