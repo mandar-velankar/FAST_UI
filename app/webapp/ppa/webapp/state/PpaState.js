@@ -240,11 +240,10 @@ sap.ui.define([
 		 			let oPolicy = new Policy(PolicyResponse.data);
 					oPolicy.setChannels(this.data.channels);
 
+					this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oPolicy);
 					this.getSelectedProduct().draftProductPolicy = oPolicy;
 
-					//not sure if this is needed
-		 			this.setProperty("draftProductPolicy", oPolicy);
-		 			return this.getProperty("draftProductPolicy");
+		 			return this.getSelectedProduct().draftProductPolicy;
 		 		});
 		 	}else{
 				
@@ -254,7 +253,8 @@ sap.ui.define([
 		 			//iD : "",
 		 			countryCode : oSelectedProduct.countryCode,
 		 			division : oSelectedProduct.division,
-		 			brandId : oSelectedProduct.brandId,
+					brandId : oSelectedProduct.brandId,
+					brandPolicy_ID: oSelectedProduct.draftProductPolicy.brandPolicy_ID,
 		 			productPackId : oSelectedProduct.productPackId,
 		 			currency : oSelectedProduct.currency,
 		 			mspStatus : oSelectedProduct.mspStatus,
@@ -263,10 +263,12 @@ sap.ui.define([
 		 		}
 
 		 		let oNewPolicy = new Policy(oPolicy);
-		 		//oNewPolicy.setChannels(this.data.channels);
 
-		 		this.setProperty("draftProductPolicy", oNewPolicy);
-		 		return Promise.resolve(this.getProperty("draftProductPolicy"));
+				// set the new policy
+				this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oNewPolicy);
+				oSelectedProduct.draftProductPolicy = oNewPolicy;
+
+		 		return Promise.resolve(oSelectedProduct);
 
 		 	}
 			
