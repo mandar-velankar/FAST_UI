@@ -921,7 +921,7 @@ sap.ui.define([
 			//EffectiveDate
 			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
 
-			// Convert to UTC time
+			// Convert EffectiveDate to UTC time
 			const timeOffsetInMS = dEffectiveDate.getTimezoneOffset() * 60000;
 			dEffectiveDate.setTime(dEffectiveDate.getTime() - timeOffsetInMS);
 
@@ -954,19 +954,6 @@ sap.ui.define([
 					});
 				});
 
-
-				
-				/*
-				//update the draft brand policy
-				draftPolicy && this.ppaState.data.aggregatedBrandPolicy.setDraftBrandPolicy(draftPolicy.data);
-
-				//Success message
-				const msgSuccess = 'Effective date has been updated.';
-				sap.m.MessageBox.success(msgSuccess, {});
-				
-				this.refreshMasterViewBrandListBinding();
-				this.getView().setBusy(false);
-				*/
 			});
 
 		},
@@ -1165,7 +1152,7 @@ sap.ui.define([
 			this.calculatePriceReduction();
 
 			// save reduction 
-			this.savePriceReductions().then(() => { 
+			this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => { 
 
 				//rebuild the aggregation object so we have all id's channels .. correctly refreshed & set
 				this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
@@ -1249,12 +1236,12 @@ sap.ui.define([
 			}			
 		},
 
-		savePriceReductions: function(){
+		// savePriceReductions: function(){
 
-			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
-			const promises = draftProductPolicies.map(productPolicy => this.ppaState.saveProductPolicyPrices(productPolicy));
-			return Promise.all(promises);
-		},
+		// 	const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+		// 	const promises = draftProductPolicies.map(productPolicy => this.ppaState.saveProductPolicyPrices(productPolicy));
+		// 	return Promise.all(promises);
+		// },
 
 		onCancelPriceReduction: function(oEvent){
 			this.setPriceReductionEditMode(false);
