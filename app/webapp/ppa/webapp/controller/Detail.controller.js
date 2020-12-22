@@ -701,7 +701,7 @@ sap.ui.define([
 				// clear the input values states which are in error
 				this.clearPricingPolicyValueStates("MSP");
 
-				// this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+				this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 
 				this.getView().setBusy(false);
 			});
@@ -720,13 +720,16 @@ sap.ui.define([
 				this.setNspEditMode(false);
 				this.byId("idBtnEditNspPolicy").setEnabled(true);
 				this.byId("idBtnEditMspPolicy").setEnabled(true);
+
+				// clear the input values states which are in error
+				this.clearPricingPolicyValueStates("NSP");
+
+				this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+
 				this.getView().setBusy(false);
 			});
 
-			// clear the input values states which are in error
-			this.clearPricingPolicyValueStates("NSP");
-
-			// this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+			
 		},
 
 		clearPricingPolicyValueStates: function(sSection){
