@@ -84,6 +84,13 @@ sap.ui.define([
 			this.currentBrandId =  oEvent.getParameter("arguments").BrandId;
 			this.currentDivision = oEvent.getParameter("arguments").Division;
 
+			//Close panels when you select a new brand (this forces you to first select a product)
+			this.ppaState.setMspPanelExpanded(false);
+			this.ppaState.setNspPanelExpanded(false);
+
+			this.ppaState.setMspExpandable(false);
+			this.ppaState.setNspExpandable(false);
+
 			//set layout as split view
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 
