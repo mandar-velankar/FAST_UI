@@ -444,7 +444,7 @@ sap.ui.define([
 		 * Updates approval request statuses in the backend
 		 * @param {*} status 
 		 */
-		setAndUpdateApprovalRequestStatuses: function(status){ debugger;
+		setAndUpdateApprovalRequestStatuses: function(status){ 
 			if(status){
 				const approvals = this.data.approvalRequest.getApprovals();
 				const approvalsPending = approvals[0].approvalStatus.toLowerCase().indexOf("not sent") === - 1;
