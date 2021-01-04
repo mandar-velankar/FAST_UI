@@ -1277,6 +1277,7 @@ sap.ui.define([
 		//save or cancel button below is pressed
 		onEditToggleButtonPress: function (oEvent) {
 			var that = this;
+			let sCountry = Services.getSelectedCountry();
 			var oObjectPage = that.getView().byId("DetailPage"),
 				bCurrentShowFooterState = oObjectPage.getShowFooter();
 			var sSelectedSection = oObjectPage.getSelectedSection();
@@ -1297,6 +1298,9 @@ sap.ui.define([
 				switch (sSelectedSection) {
 				case Services.getBasicInformationPageSectionID():
 					//BASIC INFORMATION TAB
+					Services.loadCountryClassifications(sCountry);
+					Services.loadCountryChannels(sCountry);
+
 					//back to default (only when new tender, these fields should be editable, also after save of new tender & back to edit mode)
 					that.getView().byId("idClassification").setEnabled(false);
 					that.getView().byId("idInstituteType").setEnabled(false);

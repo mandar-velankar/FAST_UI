@@ -37,35 +37,50 @@
 								<VBox>
 									<HBox>
 										<!-- Labels -->
-										<VBox width="100px">
-											<Text text="Effective Date:"/>
+										<VBox width="200px">
+											<Text text="Draft Effective Date:"/>
 										</VBox>
 										<!-- Effective Date -->
 										<VBox>
-                      <DatePicker
-                        id="idEffectiveDate"
-                        tooltip="{i18n>Effective Date}"
-                        placeholder="{i18n>Select_date}"
-                        change="handleEffectiveDateChange"
-                        enabled="false"
-						minDate="{dateModel>/minDate}"
-                        value="{
-									path :'ppa>/brand/validFrom', 
-									type: 'sap.ui.model.type.Date', 
-									formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}
-								}"
-                      />
+											<DatePicker
+												id="idEffectiveDate"
+												tooltip="{i18n>Effective Date}"
+												placeholder="{i18n>Select_date}"
+												change="handleEffectiveDateChange"
+												enabled="false"
+												minDate="{dateModel>/minDate}"
+												value="{
+															path :'ppa>/aggregatedBrandPolicy/draftBrandPolicy/validFrom',
+															type: 'sap.ui.model.type.Date', 
+															formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}
+														}"
+											/>
 										</VBox>
 									</HBox>	
-									<!--DUMMY PLACEHOLDERS-->
+
 									<HBox>
-										<VBox width="100px">
-											<Text text=""/>
+										<!-- Labels -->
+										<VBox width="200px">
+											<Text text="Last Approved Effective Date:"/>
 										</VBox>
+										<!-- Effective Date -->
 										<VBox>
-											<Text text=""/>
+											<DatePicker
+												id="idLatestApprEffectiveDate"
+												tooltip="{i18n>Effective Date}"
+												placeholder="{i18n>Select_date}"
+												change="handleEffectiveDateChange"
+												enabled="false"
+												minDate="{dateModel>/minDate}"
+												value="{
+															path :'ppa>/brand/validFrom', 
+															type: 'sap.ui.model.type.Date', 
+															formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}
+														}"
+											/>
 										</VBox>
-									</HBox>
+									</HBox>	
+									
 									<!-- Save & Cancel buttons -->
 									<HBox>
 										<HBox width="100%" alignItems="center" class="sapUiSmallMarginTop">
