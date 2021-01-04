@@ -60,6 +60,8 @@ sap.ui.define([
 			this.initialize();
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
+			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
+
 			this.getRouter().attachBypassed(this.onBypassed, this);
 		},
 
@@ -295,6 +297,20 @@ sap.ui.define([
 			this.getModel("appView").setProperty("/layout", "OneColumn");
 		},
 
+		_onObjectMatched:function(oEvent){
+			
+			//catch parameters from URL & keep on controller
+			this.currentCountryCode = oEvent.getParameter("arguments").CountryCode;
+			this.currentBrandId =  oEvent.getParameter("arguments").BrandId;
+			this.currentDivision = oEvent.getParameter("arguments").Division;
+
+			// reselect the brand when reloading the page
+			const sBindingPath = `/Brands(CountryCode='${this.currentCountryCode}',BrandId='${this.currentBrandId}',Division='${this.currentDivision}')`;
+			this.getOwnerComponent().oListSelector.selectAListItem(sBindingPath);
+
+		},
+
+
 		/**
 		 * Shows the selected item on the detail page
 		 * On phones a additional history entry is created
@@ -307,12 +323,12 @@ sap.ui.define([
 			// set the layout property of FCL control to show two columns
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 
-			//Close panels when you select a new brand (this forces you to first select a product)
-			this.ppaState.setMspPanelExpanded(false);
-			this.ppaState.setNspPanelExpanded(false);
+			// //Close panels when you select a new brand (this forces you to first select a product)
+			// this.ppaState.setMspPanelExpanded(false);
+			// this.ppaState.setNspPanelExpanded(false);
 
-			this.ppaState.setMspExpandable(false);
-			this.ppaState.setNspExpandable(false);
+			// this.ppaState.setMspExpandable(false);
+			// this.ppaState.setNspExpandable(false);
 
 			//navigate to detail page
 			this.getRouter().navTo("object", {
