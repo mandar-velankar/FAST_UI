@@ -68,6 +68,7 @@ sap.ui.define([
                     newApproval.initialize();
                     newApproval.setApproverType(approverType);
                     newApproval.setAction("create");
+                    newApproval.setApprovalStatus("Not Sent");
                     newApproval.setCountryCode(this.brand.countryCode);
                     newApproval.setBrandId(this.brand.brandId);
                     newApproval.setDivision(this.brand.division);

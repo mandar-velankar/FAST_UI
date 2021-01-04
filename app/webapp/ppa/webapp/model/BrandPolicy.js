@@ -57,6 +57,27 @@ sap.ui.define([
                 return this.getProductPolicies().find(policy => policy.productPackId === productPackId);
             } 
         },
+
+        setProductPolicy: function (oPolicy) { 
+            try {
+                if(oPolicy){
+                    this.setProductPolicyByProductPackId(oPolicy.productPackId,oPolicy);
+                }  
+            }
+            catch(err) {
+                throw new Error(err);
+            }
+        },
+
+        setProductPolicyByProductPackId: function (productPackId, oPolicy) {
+            try {
+                const oldPolicyIndex = this.getProductPolicies().findIndex(policy => policy.productPackId === productPackId);
+                this.getProductPolicies()[oldPolicyIndex] = oPolicy;
+            }
+            catch(err) {
+                throw new Error(err);
+            }
+        },
         
         //<property>Changed function
         // countryCodeChanged: function (state, event) {

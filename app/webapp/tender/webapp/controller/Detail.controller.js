@@ -1300,7 +1300,7 @@ sap.ui.define([
 					//BASIC INFORMATION TAB
 					Services.loadCountryClassifications(sCountry);
 					Services.loadCountryChannels(sCountry);
-					
+
 					//back to default (only when new tender, these fields should be editable, also after save of new tender & back to edit mode)
 					that.getView().byId("idClassification").setEnabled(false);
 					that.getView().byId("idInstituteType").setEnabled(false);
