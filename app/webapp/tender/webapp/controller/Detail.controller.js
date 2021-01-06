@@ -3011,7 +3011,7 @@ sap.ui.define([
 				that.createBasicTenderInfo(oTenderToSave).then(function (oSaveResults) {
 
 					//if save is executed succesfully
-					if (oSaveResults) {
+					// if (oSaveResults) {
 
 						//Save of tender is executed
 
@@ -3030,7 +3030,7 @@ sap.ui.define([
 							Services.setSelectedProductPath("");
 						});
 
-					}
+					// }
 
 				}).catch(function (oError) {
 					if (oError === "checkFailed") {
