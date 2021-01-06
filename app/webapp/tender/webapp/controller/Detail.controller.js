@@ -472,7 +472,7 @@ sap.ui.define([
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
-					that.getView().byId("idGroupPurchasing").setVisible(true);
+					that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 				});
 
 				//vanaf hier 
@@ -1345,8 +1345,9 @@ sap.ui.define([
 					/* End of Thailand */
 
 					//should group purchasing be visible on the screen based on data back-end
-					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) { 
 						that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
+						that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 					});
 
 					that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
@@ -1563,7 +1564,7 @@ sap.ui.define([
 						});
 
 						//should group purchasing be visible on the screen based on data back-end
-						$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+						$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) { 
 							that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
 						});
 
@@ -4669,7 +4670,7 @@ sap.ui.define([
 
 					//should group purchasing be visible on the screen based on data back-end
 					var sCountry = Services.getSelectedCountry();
-					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) {
+					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) { 
 						if (bShowGroupPurchasing === false) {
 							//default no =  0
 							that.getView().byId("idGroupPurchasingEdit").setSelectedKey(0);
