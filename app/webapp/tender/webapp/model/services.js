@@ -3067,7 +3067,7 @@ sap.ui.define([
 
 			//institute
 			if (!sInstituteID) {
-				sInstituteID = that.getInstituteIDofSelectedTender();
+				sInstituteID = that.getInstituteIDofSelectedTender() || this.getDefaultModel().getProperty(this.getSelectedTenderPath()).InstituteID;
 			}
 
 			//mandatory to have institute
