@@ -67,6 +67,7 @@ sap.ui.define([
 							uri += '?';
 							var argcount = 0;
 							for (var key in args) {
+								// eslint-disable-next-line
 								if (args.hasOwnProperty(key)) {
 									if (argcount++) {
 										uri += '&';
@@ -78,6 +79,7 @@ sap.ui.define([
 						if (args && (method === 'POST' || method === 'PUT')) {
 							var data = {};
 							for (var keyp in args) {
+								// eslint-disable-next-line
 								if (args.hasOwnProperty(keyp)) {
 									data[keyp] = args[keyp];
 								}
@@ -90,6 +92,7 @@ sap.ui.define([
 							client.setRequestHeader("content-type", "application/json");
 						}
 						for (var keyh in headers) {
+							// eslint-disable-next-line
 							if (headers.hasOwnProperty(keyh)) {
 								client.setRequestHeader(keyh, headers[keyh]);
 							}
