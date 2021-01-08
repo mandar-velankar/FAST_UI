@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install modules
+      working-directory: ./app
+      run: npm i
     - name: Run a ESLint
       working-directory: ./app
       run: npm run lint
