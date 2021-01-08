@@ -9,4 +9,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run a ESLint
+      working-directory: ./app
       run: npm run lint
