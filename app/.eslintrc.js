@@ -29,7 +29,7 @@ module.exports = {
             "args": "none"
         }],
         "radix": 2,
-        "keyword-spacing": 1,
+        "keyword-spacing": 0,
         "space-unary-ops": 2,
         "wrap-iife": [2, "any"],
         "camelcase": 1,
@@ -59,6 +59,7 @@ module.exports = {
         "comma-spacing": 0,
         "no-multi-spaces": 0,
         "no-shadow": 0,
-        "no-irregular-whitespace": 0
+        "no-irregular-whitespace": 0,
+        "no-fallthrough":[2, { "commentPattern": "break[\\s\\w]*omitted" }]
     }
 };
