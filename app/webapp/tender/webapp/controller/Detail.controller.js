@@ -65,7 +65,15 @@ sap.ui.define([
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 
+			// Responsibility Assignment Model - this model can be used to set the visibility of the controls for a specific country in the user interface
+			this._oRaModel = new sap.ui.model.json.JSONModel({
+				visibleCountry: ""
+			});	
+			this.getView().setModel(this._oRaModel, "raModel");
+
+
 		},
+
 
 		delete: function (oEvent) {
 			if (1 === 1) {
@@ -105,6 +113,9 @@ sap.ui.define([
 			}
 			*/
 
+			// hide country specific fields
+			this._initializeCountrySpecificFields();
+
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
 			var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
@@ -116,6 +127,9 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 
 			that._country = sCountry;
+
+			// set the visible country
+			this._oRaModel.setProperty("/visibleCountry", sCountry);
 
 			//keep layout and bind it to the view, so we can show, hide elements based on layout (onecolumn, twocolumn, ....)
 			//to use for hiding or display certain fields
@@ -6900,7 +6914,85 @@ sap.ui.define([
 			if (sDecline === "1") {
 				aCells[14].setValue("");
 			}
-		}
+		},
+
+		_initializeCountrySpecificFields: function(){
+
+			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").setVisible(false);
+			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").setVisible(false);
+			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").setVisible(false);
+			this.byId("idSpecifications") && this.byId("idSpecifications").setVisible(false);
+
+			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").clearSelection();
+			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
+			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
+			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
+		},
+
+		onClassificationChange: async function(oEvent){ 
+
+			let sCountry = this._country;
+			let sClassificationId = oEvent.getSource().getSelectedItem().data("classificationId");
+
+			this._initializeCountrySpecificFields();
+			
+			if(sClassificationId){ 
+				const aBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(sCountry, sClassificationId);
+				const aSpecifications = await Services.loadCountrySpecifications(sCountry, sClassificationId);
+
+				if(aBindingTypeLevel1.length > 0){
+					this.byId("idBiddingTypeLevel1").setVisible(true);
+				}
+
+				if(aSpecifications.length > 0){
+					this.byId("idSpecifications").setVisible(true);
+				}
+
+				this.byId("idBiddingTypeLevel2").getItems().length > 0 ? this.byId("idBiddingTypeLevel2").destroyItems() : "";
+				this.byId("idBiddingTypeLevel3").getItems().length > 0 ? this.byId("idBiddingTypeLevel3").destroyItems() : "";
+			}
+
+		},
+
+		onBiddingTypeLevel1Change: async function(oEvent){
+
+			let sCountry = this._country;
+			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().getKey();
+
+			this.byId("idBiddingTypeLevel2").setVisible(false);
+			this.byId("idBiddingTypeLevel3").setVisible(false);
+			this.byId("idBiddingTypeLevel2").clearSelection();
+			this.byId("idBiddingTypeLevel3").clearSelection();
+
+			if(sBindingTypeLevel1Id){
+				const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
+
+				if(aBindingTypeLevel2.length > 0){
+					this.byId("idBiddingTypeLevel2").setVisible(true);
+				}
+
+			}
+		},
+
+		onBiddingTypeLevel2Change: async function(oEvent){ 
+
+			let sCountry = this._country;
+			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().getKey();
+
+			this.byId("idBiddingTypeLevel3").setVisible(false);
+			this.byId("idBiddingTypeLevel3").clearSelection();
+
+			if(sBindingTypeLevel2Id){
+				const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
+
+				if(aBindingTypeLevel3.length > 0){
+					this.byId("idBiddingTypeLevel3").setVisible(true);
+				}
+
+			}
+
+		},
+
 
 	});
 });

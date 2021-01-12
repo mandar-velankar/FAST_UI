@@ -11,6 +11,16 @@
 			<Input value="{fastData>TenderName}" enabled="false"/>
 			<Label text="{i18n>clasficn}" design="Bold" required="true"/>
 			<Input value="{fastData>Classification}" enabled="false"/>
+			<!-- Argentina only -->
+			<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true"/>
+			<Input value="{fastData>CountryBindingTypeLevel1}" enabled="false"/>
+			<Label text="{i18n>BiddingTypeLevel2}" design="Bold" required="true"/>
+			<Input value="{fastData>CountryBindingTypeLevel2}" enabled="false"/>
+			<Label text="{i18n>BiddingTypeLevel3}" design="Bold" required="true"/>
+			<Input value="{fastData>CountryBindingTypeLevel3}" enabled="false"/>
+			<Label text="{i18n>Specifications}" design="Bold" required="true"/>
+			<Input value="{fastData>Specifications}" enabled="false"/>
+			<!-- /Argentina only -->
 			<Label text="{i18n>insttyp}" design="Bold" required="true"/>
 			<Input value="{fastData>Institute/InstituteType}" enabled="false"/>
 			<Label text="{i18n>institnme}" design="Bold"  required="true"/>

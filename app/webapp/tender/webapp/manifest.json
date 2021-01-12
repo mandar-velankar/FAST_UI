@@ -82,7 +82,8 @@
 				"settings": {
 					"defaultOperationMode": "Server",
 					"defaultBindingMode": "OneWay",
-					"defaultCountMode": "Request"
+					"defaultCountMode": "Request",
+					"useBatch": false
 				},
 				"dataSource": "sxtender.xsodata",
 				"preload": true

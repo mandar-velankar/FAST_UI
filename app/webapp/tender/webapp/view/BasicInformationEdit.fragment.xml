@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
-	xmlns:l="sap.ui.layout">
+	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 	<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 		adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
 		singleContainerFullSize="false" backgroundDesign="Solid">
@@ -14,11 +14,42 @@
 			<Label text="{i18n>tenderref}" design="Bold" required="true"/>
 			<Input id="idTenderName" value="{fastData>TenderName}" />
 			<Label text="{i18n>clasficn}" design="Bold" required="true"/>
-			<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}">
+			<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" change="onClassificationChange" >
 				<items><!--RFQ/Tender/Budgetary Quote/Patient Access Programme-->
-					<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}"/>
+					<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}" app:classificationId="{fastAppData>ID}"/>
 				</items>
 			</Select>
+			<!-- Argentina only -->
+			<Label text="{i18n>Bidding Type Level 1}" design="Bold" required="true"/>
+			<Select id="idBiddingTypeLevel1" selectedKey="{fastData>BiddingTypeLevel1}"  visible="false" items="{ path: 'fastAppData>/CountryBindingTypeLevel1'}" change="onBiddingTypeLevel1Change">
+				<items>
+					<core:Item text="{fastAppData>Name}" key="{fastAppData>ID}" />
+				</items>
+			</Select>
+			<Label text="{i18n>Bidding Type Level 2}" design="Bold" required="true"/>
+			<Select id="idBiddingTypeLevel2" selectedKey="{fastData>BiddingTypeLevel2}" visible="false" items="{ path: 'fastAppData>/CountryBindingTypeLevel2'}" change="onBiddingTypeLevel2Change">
+				<items>
+					<core:Item text="{fastAppData>Name}" key="{fastAppData>ID}"/>
+				</items>
+			</Select>
+			<Label text="{i18n>Bidding Type Level 3}" design="Bold" required="true"/>
+			<Select id="idBiddingTypeLevel3" selectedKey="{fastData>BiddingTypeLevel3}" visible="false" items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}">
+				<items>
+					<core:Item text="{fastAppData>Name}" key="{fastAppData>ID}"/>
+				</items>
+			</Select>
+			<Label text="{i18n>Specifications}" design="Bold" required="true"/>
+			<MultiComboBox id="idSpecifications" 
+				selectionChange="handleSelectionChange"
+				selectionFinish="handleSelectionFinish"
+				visible="false"
+				items="{
+					path: 'fastAppData>/CountrySpecifications',
+					sorter: { path: 'Name' }
+				}">
+				<core:Item text="{fastAppData>Name}" key="{fastAppData>ID}"/>
+			</MultiComboBox>
+			<!-- /Argentina only -->
 			<Label text="{i18n>insttyp}" design="Bold" required="true"/>
 			<Select id="idInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="resetInstituteName" enabled="false" items="{ path: 'fastAppData>/CountryChannels'}">
 				<items>
