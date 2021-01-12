@@ -231,15 +231,17 @@ sap.ui.define([
 				const draftMspPolicyPrices = selectedProduct.draftProductPolicy.mspPrices;
 				const draftNspPolicyPrices = selectedProduct.draftProductPolicy.nspPrices;
 
-				for(let mspPriceType in draftMspPolicyPrices ) {
-					if(draftMspPolicyPrices[mspPriceType] !== "" || approvedMspPolicyPrices[mspPriceType] !== ""){
-						selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+				if(approvedMspPolicyPrices){
+					for(let mspPriceType in draftMspPolicyPrices ) {
+						if(draftMspPolicyPrices[mspPriceType] !== "" || approvedMspPolicyPrices[mspPriceType] !== ""){
+							selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
+						}
 					}
-				}
 
-				for(let nspPriceType in draftNspPolicyPrices ) {
-					if(draftMspPolicyPrices[nspPriceType] !== "" || approvedMspPolicyPrices[nspPriceType] !== ""){
-						selectedProduct.NspPricePercDiff[nspPriceType] = this.calculatePriceDifference(+draftNspPolicyPrices[nspPriceType], +approvedNspPolicyPrices[nspPriceType]) + "%";
+					for(let nspPriceType in draftNspPolicyPrices ) {
+						if(draftMspPolicyPrices[nspPriceType] !== "" || approvedMspPolicyPrices[nspPriceType] !== ""){
+							selectedProduct.NspPricePercDiff[nspPriceType] = this.calculatePriceDifference(+draftNspPolicyPrices[nspPriceType], +approvedNspPolicyPrices[nspPriceType]) + "%";
+						}
 					}
 				}
 
