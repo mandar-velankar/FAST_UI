@@ -1182,28 +1182,30 @@ sap.ui.define([
 		calculatePriceReduction: function(mspReductionPercentage, nspReductionPercentage, bUpdateStatus){
 
 			
-			const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
-			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+			if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
+				const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
+			
+				const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
 
-			// update the draft product policy status
-			if(bUpdateStatus){
-				this.updateProductPolicyStatus(draftProductPolicies, mspReductionPercentage, nspReductionPercentage);
+				// update the draft product policy status
+				if(bUpdateStatus){
+					this.updateProductPolicyStatus(draftProductPolicies, mspReductionPercentage, nspReductionPercentage);
+				}
+
+				for(let i=0; i < approvedProductPolicies.length; i++){
+
+					const apporvedMspPrices = approvedProductPolicies[i].getMspPrices();
+					const apporvedNspPrices = approvedProductPolicies[i].getNspPrices();
+					const draftMspPrices = draftProductPolicies[i].getMspPrices();
+					const draftNspPrices = draftProductPolicies[i].getNspPrices();
+
+					this.applyReduction(mspReductionPercentage, apporvedMspPrices, draftMspPrices);
+					this.applyReduction(nspReductionPercentage, apporvedNspPrices, draftNspPrices);
+
+					this.ppaState.updateModel();
+
+				}
 			}
-
-			for(let i=0; i < approvedProductPolicies.length; i++){
-
-				const apporvedMspPrices = approvedProductPolicies[i].getMspPrices();
-				const apporvedNspPrices = approvedProductPolicies[i].getNspPrices();
-				const draftMspPrices = draftProductPolicies[i].getMspPrices();
-				const draftNspPrices = draftProductPolicies[i].getNspPrices();
-
-				this.applyReduction(mspReductionPercentage, apporvedMspPrices, draftMspPrices);
-				this.applyReduction(nspReductionPercentage, apporvedNspPrices, draftNspPrices);
-
-				this.ppaState.updateModel();
-
-			}
-
 			this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 		},
 
