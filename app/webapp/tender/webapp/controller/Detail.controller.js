@@ -2261,8 +2261,23 @@ sap.ui.define([
 
 			case Services.getFinancialOfferPageSectionID():
 
+				//show loading screen
+				that.getView().setBusyIndicatorDelay(1); //busy indicator shown immediately
+				that.getView().setBusy(true);
+
 				//FINANCIAL OFFER TAB
-				that._onSaveFinancialOffer(oEvent);
+				var offerFragment = new OfferProducts();
+
+				//offerFragment.updateFinancialOffer(oEvent, this);
+				offerFragment.updateFinancialOffer(oEvent, this).then((response) => {
+
+					//screen is updated with new calculated fields, we can continue with saving
+					that._onSaveFinancialOffer(oEvent).then((response) => {
+						that.getView().setBusy(false);
+					});
+
+				});
+				
 				break;
 
 			case Services.getQuotationPageSectionID():
@@ -5173,7 +5188,13 @@ sap.ui.define([
 		//currency or other fields are changed on the financial offer tab (in edit mode)
 		onEditFinancialOffer: function (oEvent) {
 			var offerFragment = new OfferProducts();
-			offerFragment.updateFinancialOffer(oEvent, this);
+
+			//offerFragment.updateFinancialOffer(oEvent, this);
+			offerFragment.updateFinancialOffer(oEvent, this).then((response) => {
+				//screen is updated
+
+			});
+
 			//price is changed
 			//Financial.setPricingChanged(true);               
 		},
@@ -5200,7 +5221,7 @@ sap.ui.define([
 			var offerFragment = new OfferProducts();
 
 			//Update page to make sure screen data is calculated (automatic if user pressed enter when changing value but not otherwise)
-			offerFragment.updateFinancialOffer(oEvent, that);
+			//offerFragment.updateFinancialOffer(oEvent, that); //this is now done before calling onSaveFinancialOffer
 
 			var oNewPriceInfo = {};
 			var aChangeOperations = [];
@@ -5489,7 +5510,8 @@ sap.ui.define([
 
 									//show success message
 									sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
-
+									oDeferred_all.resolve("saving is done");
+									
 									//refresh tenders master table (left pane)
 									Services.refreshTendersMasterTable(sTenderID);
 
@@ -5508,75 +5530,17 @@ sap.ui.define([
 							//error message
 							Services.showErrorMessage(oError, "Saving financial offer");
 
+							oDeferred_all.reject();
+
 						});
 
-						/*
-								oModel.addBatchChangeOperations(aChangeOperations);
-								oModel.submitBatch(function (oData, oResponse, oError) {
-									if (oError.length > 0) {
-										
-										//error message
-										Services.showErrorMessage(oError, "Saving financial offer");
-										
-									} else {
-										
-										//this method is actually no longer needed, Offerstatus is always "Offer created", never "Results recorded"
-										//$.when(that._updateFinancialOfferStatus(oNewPriceInfo, oOffer.OfferStatus)).then(function () {
-										//save offer status as tender recorded... 
-										$.when(Services.saveOfferStatus("Offer Created")).done(function(oSaveStatus){
-	
-											//In that case we might dit some changes in the fastAppData model, we will load all data from the database again
-					                    	//otherwise nextOfferID is f.e still the one that is already created
-						                    var sTenderPath = Services.getSelectedTenderPath();
-						                    var sTenderID = Services.getSelectedTenderID();
-							
-											//we will load tender again after save is done
-											var bLoadedCheck = false; 
-											
-						                    $.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
-	
-												//set selected offer ID
-												Services.setSelectedOfferID(offerId);
-												Services.setSelectedOfferPath(sPath);
-												
-												//Selected offer binding
-												var oOffer = Services.getLoadedOffer(offerId);
-												Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
-												//Services.setSelectedProductID(productId);
-												//Services.setSelectedProductName(productName);
-												
-												//switch from edit to display
-						                    	that.onEditToggleButtonPress();
-												that.byId("idCurrency").setSelectedKey(setCurrency);
-												
-												//show success message
-						                    	sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
-						                    	
-						                    	//refresh tenders master table (left pane)
-												Services.refreshTendersMasterTable(sTenderID);	
-										
-						                    	//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
-												var iApprovals_sent = oOffer.APPROVALS_SENT;	//offerInfo.APPROVALS_SENT;
-												that.saveOfferApprovalSent(iApprovals_sent).catch(function (oError){
-														//Error during save
-														that.showErrorMessage(oError, "Background saving for approvals sent field");						
-												});
-												
-						                    });
-										});
-										
-									}
-								});
-								*/
 					});
 				});
 
-				//return aProductsForBinding;
-				//oDeferred_all.resolve(aProductsForBinding);
 			});
 
-			//uncomment this line if you want the saving method to wait for results...
-			//return oDeferred_all.promise();
+			//wait saving method to wait for results...
+			return oDeferred_all.promise();
 
 		},
 
