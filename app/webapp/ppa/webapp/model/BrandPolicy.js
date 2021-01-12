@@ -63,8 +63,7 @@ sap.ui.define([
                 if(oPolicy){
                     this.setProductPolicyByProductPackId(oPolicy.productPackId,oPolicy);
                 }  
-            }
-            catch(err) {
+            }catch(err) {
                 throw new Error(err);
             }
         },

@@ -188,7 +188,7 @@ sap.ui.define([
                 for (const price in prices) {
                     const channel = price.split("_").pop();
                     const rol = price.split("_")[0];
-                    if(channel.indexOf(sChannel) > - 1){
+                    if(channel.indexOf(sChannel) > -1){
                         channelPrices[rol] = +prices[price];
                     }
                 }
