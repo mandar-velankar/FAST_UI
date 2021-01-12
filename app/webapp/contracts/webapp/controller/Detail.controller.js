@@ -133,8 +133,8 @@ sap.ui.define([
 					oFirstProduct = aProducts.find(product => product.sorter == 1);
 				}
 
-				this.sProductIdParameter = (this.sProductIdParameter !== undefined) ? this.sProductIdParameter : (oFirstProduct ? oFirstProduct.productPackId || oFirstProduct.productCode : null);
-
+				//this.sProductIdParameter = (this.sProductIdParameter !== undefined) ? this.sProductIdParameter : (oFirstProduct ? oFirstProduct.productPackId || oFirstProduct.productCode : null);
+				this.sProductIdParameter = this.sProductIdParameter || (oFirstProduct && oFirstProduct.productPackId || oFirstProduct.productCode ) || null;
 				if(this.sProductIdParameter){
 					this._selectProductInTable(this.sSectionParameter, this.sProductIdParameter);
 				}
@@ -851,7 +851,7 @@ sap.ui.define([
 				oCtrState.setPrevSelectedDistributorID(oDistributorInput.getSelectedKey());
 				this.ctrState.updateSellingCompany(sellingCompany);
 				this.ctrState.clearProducts();
-			};
+			}
 		},
 
 		_showContainsDeliveriesOrLetters: function(){

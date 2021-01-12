@@ -1,0 +1,27 @@
+name: lint
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install eslint
+      working-directory: ./app
+      run: npm i eslint
+    - name: Run a ESLint
+      working-directory: ./app
+      run: npm run lint
+    - name: Run a install and build ui5
+      working-directory: ./app
+      run: npm i
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Install MTA Build Tool
+      run: npm install -g mbt
+    - name: Build MTA
+      run: npm run build:xsa

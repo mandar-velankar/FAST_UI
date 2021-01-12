@@ -641,6 +641,7 @@ sap.ui.define([
 		 */
 		isEmpty: function(obj) {
 			for(var key in obj) {
+				// eslint-disable-next-line
 				if(obj.hasOwnProperty(key))
 					return false;
 			}

@@ -1,0 +1,3 @@
+webapp/tender/**/*.js
+**/test/**/*.js
+**/localService/**/*.js
