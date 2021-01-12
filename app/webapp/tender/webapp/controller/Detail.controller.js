@@ -236,77 +236,20 @@ sap.ui.define([
 			that.getView().byId("idTenderChannel").setEnabled(true);
 			that.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
+			var oSalesType = this.getView().byId("idSelectSalesTypeEdit");
+			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit");
+			var oTenderType = this.getView().byId("idSelectTenderTypeEdit");
+			var oContractType = this.getView().byId("idSelectContractTypeEdit");
+			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
+
 			var sCountryCode = Services.getSelectedCountry();
 			var aFilter = [];
 			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
-			//apply country filter on tender type
-			var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
-			oTenderType.bindItems({
-				path: "fastData>/CountryTenderType",
-				filters: aFilter,
-				parameters: {
-					"expand": "TenderType"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>TenderType/NAME}",
-					key: "{fastData>TenderType/ID}"
-				})
-			});
-
-			//Mexico changes
-			//apply country filter on sales type
-			var oSalesType = that.getView().byId("idSelectSalesTypeEdit");
-			oSalesType.bindItems({
-				path: "fastData>/CountrySalesType",
-				filters: aFilter,
-				parameters: {
-					"expand": "SalesType"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>SalesType/NAME}",
-					key: "{fastData>SalesType/ID}"
-				})
-			});
-
-			//apply country filter on tender origin
-			var oTenderOrigin = that.getView().byId("idSelectTenderOriginEdit");
-			oTenderOrigin.bindItems({
-				path: "fastData>/CountryTenderOrigin",
-				filters: aFilter,
-				parameters: {
-					"expand": "TenderOrigin"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>TenderOrigin/NAME}",
-					key: "{fastData>TenderOrigin/ID}"
-				})
-			});
-
-			//apply country filter on contract type
-			var oContractType = that.getView().byId("idSelectContractTypeEdit");
-			oContractType.bindItems({
-				path: "fastData>/CountryContractType",
-				filters: aFilter,
-				parameters: {
-					"expand": "ContractType"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>ContractType/NAME}",
-					key: "{fastData>ContractType/ID}"
-				})
-			});
-
-			let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
 			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
-			oProcurementMethod.bindItems({
-				path: "fastData>/CountryProcurementMethod",
-				filters: aFilter,
-				template: new sap.ui.core.Item({
-					text: "{fastData>PROCUREMENT_METHOD_ID}",
-					key: "{fastData>PROCUREMENT_METHOD_ID}"
-				})
-			});
+
+			// apply country filter 
+			this.setCountrySpecificDropDowns(aFilter);
 
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
@@ -338,6 +281,7 @@ sap.ui.define([
 			// if(oBinding){
 			// 	oBinding.filter(aFilter);
 			// }
+			
 			oTenderType.setEnabled(true);
 
 			//Mexico
@@ -418,6 +362,99 @@ sap.ui.define([
 			that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
 			that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 
+		},
+
+		/**
+		 * Set the Country specific dropdown fields on the Basic information tab based upon selected Country
+		 */
+		setCountrySpecificDropDowns: function(aFilter){
+
+			//apply country filter on tender type
+			var oTenderType = this.getView().byId("idSelectTenderTypeEdit") || this.getView().byId("idSelectTenderType");
+
+			if(oTenderType){
+				oTenderType.bindItems({
+					path: "fastData>/CountryTenderType",
+					filters: aFilter,
+					parameters: {
+						"expand": "TenderType"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>TenderType/NAME}",
+						key: "{fastData>TenderType/ID}"
+					})
+				});
+			}
+
+			//Mexico changes
+			//apply country filter on sales type
+			var oSalesType = this.getView().byId("idSelectSalesTypeEdit") || this.getView().byId("idSelectSalesType");
+
+			if(oSalesType){
+				oSalesType.bindItems({
+					path: "fastData>/CountrySalesType",
+					filters: aFilter,
+					parameters: {
+						"expand": "SalesType"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>SalesType/NAME}",
+						key: "{fastData>SalesType/ID}"
+					})
+				});
+			}
+			
+
+			//apply country filter on tender origin
+			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit") || this.getView().byId("idSelectTenderOrigin");
+
+			if(oTenderOrigin){
+				oTenderOrigin.bindItems({
+					path: "fastData>/CountryTenderOrigin",
+					filters: aFilter,
+					parameters: {
+						"expand": "TenderOrigin"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>TenderOrigin/NAME}",
+						key: "{fastData>TenderOrigin/ID}"
+					})
+				});
+			}
+			
+
+			//apply country filter on contract type
+			var oContractType = this.getView().byId("idSelectContractTypeEdit") || this.getView().byId("idSelectContractType");
+
+			if(oContractType){
+				oContractType.bindItems({
+					path: "fastData>/CountryContractType",
+					filters: aFilter,
+					parameters: {
+						"expand": "ContractType"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>ContractType/NAME}",
+						key: "{fastData>ContractType/ID}"
+					})
+				});
+			}
+			
+			
+			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit") || this.getView().byId("idSelectProcurementMethod");
+
+			if(oProcurementMethod){
+				oProcurementMethod.bindItems({
+					path: "fastData>/CountryProcurementMethod",
+					filters: aFilter,
+					template: new sap.ui.core.Item({
+						text: "{fastData>PROCUREMENT_METHOD_ID}",
+						key: "{fastData>PROCUREMENT_METHOD_ID}"
+					})
+				});
+			}
+			
+			
 		},
 
 		//existing tender matched
@@ -1529,6 +1566,13 @@ sap.ui.define([
 						var sCountryCode = Services.getSelectedCountry();
 						var aFilter = [];
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+
+
+						// Reload data
+						Services.loadCountryClassifications(sCountryCode);
+						Services.loadCountryChannels(sCountryCode);
+						that.setCountrySpecificDropDowns();
+
 
 						//BASIC INFORMATION TAB
 						that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
