@@ -8,7 +8,7 @@
   "scripts": {
     "postinstall": "npm run build",
     "start": "node node_modules/@sap/approuter/approuter.js",
-    "lint":"eslint webapp",
+    "lint": "eslint webapp",
     "serve": "ui5 serve",
     "build": "ui5 build --clean-dest"
   },
