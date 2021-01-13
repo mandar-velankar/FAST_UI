@@ -956,7 +956,7 @@ sap.ui.define([
 
 					this.calculatePriceReduction(0, 0, false);
 
-					this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => {
+					//this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => {
 
 						this.closePricingPanels();
 
@@ -970,7 +970,7 @@ sap.ui.define([
 						});
 						
 
-					});
+					//});
 
 					
 
@@ -1183,16 +1183,14 @@ sap.ui.define([
 		 */
 		calculatePriceReduction: function(mspReductionPercentage, nspReductionPercentage, bUpdateStatus){
 
-			
+			// update the draft product policy status
+			if(bUpdateStatus){
+				this.updateProductPolicyStatus(draftProductPolicies, mspReductionPercentage, nspReductionPercentage);
+			}
+
 			if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
 				const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
-			
 				const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
-
-				// update the draft product policy status
-				if(bUpdateStatus){
-					this.updateProductPolicyStatus(draftProductPolicies, mspReductionPercentage, nspReductionPercentage);
-				}
 
 				for(let i=0; i < approvedProductPolicies.length; i++){
 
@@ -1204,10 +1202,10 @@ sap.ui.define([
 					this.applyReduction(mspReductionPercentage, apporvedMspPrices, draftMspPrices);
 					this.applyReduction(nspReductionPercentage, apporvedNspPrices, draftNspPrices);
 
-					this.ppaState.updateModel();
-
 				}
 			}
+			
+			this.ppaState.updateModel();
 			this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 		},
 
