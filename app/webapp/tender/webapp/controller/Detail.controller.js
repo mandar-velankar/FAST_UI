@@ -192,8 +192,13 @@ sap.ui.define([
 				//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
 				var sNewTenderNo = Services.getNewTenderNo();
 
-				Services.loadCountryClassifications(sCountry);
+				Services.loadCountryClassifications(sCountry).then(() => { 
+					let sClassificationId = this.getClassificationId(); 
+					Services.loadCountrySpecifications(sCountry, sClassificationId);
+				});
+
 				Services.loadCountryChannels(sCountry);
+
 
 				//when a new tender is created, the tender ID = 1 // or we are creating a new tender
 				if (sTenderPath === "/PT_TMTEND('1')" || sNewTenderNo) {
@@ -226,6 +231,26 @@ sap.ui.define([
 
 		},
 
+		getClassificationId: function(){
+
+			let classificationId = this.getView().byId("idClassification") && this.getView().byId("idClassification").getSelectedItem() && this.getView().byId("idClassification").getSelectedItem().data("classificationId");
+
+			if(!classificationId){
+
+				let classification = this.getView().byId("idClassificationDisplay") && this.getView().byId("idClassificationDisplay").getValue();
+				let countryClassifications = Services.getFastAppDataModel().getProperty("/CountryClassifications");
+
+				let classificationObj = countryClassifications.filter(item => item.CLASSIFICATION === classification);
+
+				classificationId = classificationObj && classificationObj.length > 0 && classificationObj[0].ID;
+
+			}
+
+			return classificationId;
+		},
+
+		
+
 		//on new tender matched
 		_NewTenderMatched: function (that) {
 
@@ -249,6 +274,9 @@ sap.ui.define([
 			that.getView().byId("idInstituteName").setEnabled(true);
 			that.getView().byId("idTenderChannel").setEnabled(true);
 			that.getView().byId("idGroupPurchasingEdit").setEnabled(true);
+
+			// hide country specific fields
+			this._initializeCountrySpecificFields();
 
 			var oSalesType = this.getView().byId("idSelectSalesTypeEdit");
 			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit");
@@ -295,6 +323,7 @@ sap.ui.define([
 			// if(oBinding){
 			// 	oBinding.filter(aFilter);
 			// }
+
 			
 			oTenderType.setEnabled(true);
 
@@ -526,6 +555,10 @@ sap.ui.define([
 					that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 				});
 
+
+				// get tender Specifications
+				that.getTenderSpecifications(sTenderID);
+
 				//vanaf hier 
 
 				//Keep track that we are in display modus
@@ -605,6 +638,15 @@ sap.ui.define([
 				that._initSection(sTab);
 
 			});
+
+		},
+
+		getTenderSpecifications: async function(sTenderID){
+	
+			const tenderSpecifications = await Services.getService('Specification').getSpecificationsForTender(sTenderID);
+			const selectedKeys = tenderSpecifications && tenderSpecifications.data.results.map(item => item.Name);
+			const oSpecificationsComboBox = this.byId("idSpecificationsDisplay") ||  this.byId("idSpecifications");
+			oSpecificationsComboBox.setSelectedKeys(selectedKeys);
 
 		},
 
@@ -1349,7 +1391,12 @@ sap.ui.define([
 				switch (sSelectedSection) {
 				case Services.getBasicInformationPageSectionID():
 					//BASIC INFORMATION TAB
-					Services.loadCountryClassifications(sCountry);
+
+					Services.loadCountryClassifications(sCountry).then(() => { 
+						let sClassificationId = this.getClassificationId(); 
+						Services.loadCountrySpecifications(sCountry, sClassificationId);
+					});
+
 					Services.loadCountryChannels(sCountry);
 
 					//back to default (only when new tender, these fields should be editable, also after save of new tender & back to edit mode)
@@ -1583,7 +1630,11 @@ sap.ui.define([
 
 
 						// Reload data
-						Services.loadCountryClassifications(sCountryCode);
+						Services.loadCountryClassifications(sCountryCode).then(() => { 
+							let sClassificationId = this.getClassificationId(); 
+							Services.loadCountrySpecifications(sCountry, sClassificationId);
+						});
+
 						Services.loadCountryChannels(sCountryCode);
 						that.setCountrySpecificDropDowns();
 
@@ -2921,6 +2972,11 @@ sap.ui.define([
 				}
 
 				oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
+
+				oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+				oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+				oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
 				oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
@@ -3025,7 +3081,12 @@ sap.ui.define([
 			} else {
 				oSaveBasicInfo.InstituteID = this.getView().byId("idInstituteID").getValue();
 			}
+
 			oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
+			oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+			oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+			oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
@@ -3099,6 +3160,64 @@ sap.ui.define([
 			}
 		},
 
+		saveSpecifications: function(oTenderToSave, action){ debugger;
+			let promises = [];
+			const aSpecifications = this.byId("idSpecifications").getSelectedItems().map(item => item.getText());
+
+			const aSpecificationEntities = aSpecifications.map(sSpecificationName => {
+				return {
+					TenderID: oTenderToSave.TenderID,
+					CountryCode: oTenderToSave.CountryCode,
+					Name: sSpecificationName,
+				};
+			});
+
+
+			switch(action){
+				case "create":
+
+					let createSpecification = aSpecificationEntities.map(function (oSpecification) {
+
+						return Services.getService('Specification').createSpecification(oSpecification)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Saving of new AwardCriteria");
+							throw new Error(oError);
+						});
+
+					});
+
+					promises.push(createSpecification);
+					
+					break;
+				case "update":
+					// first remove all Specifications and then create the new ones ... update = delete + create
+					let updateSpecification = Services.getService('Specification').removeAllSpecificationForTenderID(oTenderToSave.TenderID).then(() => {
+
+						return aSpecificationEntities.map(function (oSpecification) {
+
+							let createSpecification = Services.getService('Specification').createSpecification(oSpecification)
+							.catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Saving of new AwardCriteria");
+								throw new Error(oError);
+							});
+
+							return createSpecification;
+
+						});
+
+					});
+						
+					promises.push(updateSpecification);
+					break;
+			}
+
+			
+
+			return Promise.all(promises);
+		},
+
 		//submits changes in batch for the basic information tab
 		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh) {
 
@@ -3116,6 +3235,9 @@ sap.ui.define([
 			oTenderToSave.BidDueDate = moment(oTenderToSave.BidDueDate).toDate();*/
 			oTenderToSave.SubmittedOn = moment().utc().toDate();
 			oTenderToSave.SubmittedBy = UserInfo.getCWID();
+
+			// Specifications should be saved as well
+			promises.push(that.saveSpecifications(oTenderToSave, "update"));
 
 			//Award criteria should be saved as well
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
@@ -3215,6 +3337,9 @@ sap.ui.define([
 
 			//Award criteria should be saved as well
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+
+			//specification should be saved as well
+			promises.push(that.saveSpecifications(oTenderToSave, "create"));
 
 			//check if awardCriteria is valid
 			if (!Services.checkAwardCriteria(aAwardCriteria)) {
