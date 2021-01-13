@@ -12,11 +12,11 @@
 			<Label text="{i18n>clasficn}" design="Bold" required="true"/>
 			<Input value="{fastData>Classification}" enabled="false"/>
 			<!-- Argentina only -->
-			<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Label text="{i18n>Bidding Type Level 1}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Input value="{fastData>CountryBindingTypeLevel1}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
-			<Label text="{i18n>BiddingTypeLevel2}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Label text="{i18n>Bidding Type Level 2}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Input value="{fastData>CountryBindingTypeLevel2}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
-			<Label text="{i18n>BiddingTypeLevel3}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Label text="{i18n>Bidding Type Level 3}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Input value="{fastData>CountryBindingTypeLevel3}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Label text="{i18n>Specifications}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Input value="{fastData>Specifications}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
