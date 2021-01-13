@@ -1183,6 +1183,8 @@ sap.ui.define([
 		 */
 		calculatePriceReduction: function(mspReductionPercentage, nspReductionPercentage, bUpdateStatus){
 
+			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+
 			// update the draft product policy status
 			if(bUpdateStatus){
 				this.updateProductPolicyStatus(draftProductPolicies, mspReductionPercentage, nspReductionPercentage);
@@ -1190,7 +1192,6 @@ sap.ui.define([
 
 			if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
 				const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
-				const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
 
 				for(let i=0; i < approvedProductPolicies.length; i++){
 
