@@ -169,7 +169,101 @@ sap.ui.define([
 				"model": "AlternateOfferYN",
 				"field": "idAlternateOfferLabel",
 				"required": false
+			},
+			
+			{
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "SKU/PRODUCTPACKNAME",
+				"field": "idProductLabel",
+				"required": false
 			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "RequestedVolume",
+				"field": "idRequestedVolumeLabel",
+				"required": true
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "Reference",
+				"field": "idReferenceLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "UnitPerPack",
+				"field": "idUomLabel",
+				"required": true
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "Comment",
+				"field": "idCommentLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "ActiveProduct",
+				"field": "idDeclineLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "PaymentTerms",
+				"field": "idPaymentTermsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "INCOTerms",
+				"field": "idIncoTermsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "IntervalBetweenShipments",
+				"field": "idInShipmentsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "NoofLots",
+				"field": "idNolotsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "FirstShipment",
+				"field": "idFirstShipmentLabel",
+				"required": true
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "Documents",
+				"field": "idDocumentsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "SampleQuantity",
+				"field": "idQuantityLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "SampleYN",
+				"field": "idSampleLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "AlternateOfferYN",
+				"field": "idAlternateOfferLabel",
+				"required": false
+			},
+			
+			{
 				"country": "OTHERS",
 				"view": "FOR_OFFER_PRODUCT_TAB",
 				"model": "SKU/PRODUCTPACKNAME",
@@ -375,7 +469,7 @@ sap.ui.define([
 			var mandatoryFields = [];
 			var that = this;
 
-			if (sCountry !== "MX") {
+			if (sCountry !== "MX" && sCountry !== "TH") {
 				sCountry = "OTHERS";
 			}
 
