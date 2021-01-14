@@ -954,30 +954,32 @@ sap.ui.define([
 					this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
 					this.refreshMasterViewBrandListBinding();
 
-					this.calculatePriceReduction(0, 0, false);
+					if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
+						this.calculatePriceReduction(0, 0, false);
 
-					this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => {
+						this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => {
 
-						this.closePricingPanels();
-
-						this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then((producs) => {
-
-							//Success message
-							sap.ui.core.BusyIndicator.hide();
-							const msgSuccess = 'Effective date has been updated.';
-							sap.m.MessageBox.success(msgSuccess, {});
-
+							this.handleEffectiveDateUpdate();
 						});
-						
-
-					});
-
-					
-
+					} else {
+						this.handleEffectiveDateUpdate();
+					}
 				});
 
 			});
 
+		},
+
+		handleEffectiveDateUpdate: function(){
+			this.closePricingPanels();
+			this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then((producs) => {
+		
+				//Success message
+				sap.ui.core.BusyIndicator.hide();
+				const msgSuccess = 'Effective date has been updated.';
+				sap.m.MessageBox.success(msgSuccess, {});
+
+			});
 		},
 
 		refreshMasterViewBrandListBinding: function(){
@@ -1183,16 +1185,15 @@ sap.ui.define([
 		 */
 		calculatePriceReduction: function(mspReductionPercentage, nspReductionPercentage, bUpdateStatus){
 
-			
+			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+
+			// update the draft product policy status
+			if(bUpdateStatus){
+				this.updateProductPolicyStatus(draftProductPolicies, mspReductionPercentage, nspReductionPercentage);
+			}
+
 			if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
 				const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
-			
-				const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
-
-				// update the draft product policy status
-				if(bUpdateStatus){
-					this.updateProductPolicyStatus(draftProductPolicies, mspReductionPercentage, nspReductionPercentage);
-				}
 
 				for(let i=0; i < approvedProductPolicies.length; i++){
 
@@ -1204,10 +1205,10 @@ sap.ui.define([
 					this.applyReduction(mspReductionPercentage, apporvedMspPrices, draftMspPrices);
 					this.applyReduction(nspReductionPercentage, apporvedNspPrices, draftNspPrices);
 
-					this.ppaState.updateModel();
-
 				}
 			}
+			
+			this.ppaState.updateModel();
 			this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
 		},
 
