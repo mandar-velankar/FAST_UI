@@ -973,6 +973,13 @@ sap.ui.define([
 		handleEffectiveDateUpdate: function(){
 			this.closePricingPanels();
 			this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then((producs) => {
+
+				let oProductsTable = this.byId("idProductsTable");
+
+				// //products table
+				if(oProductsTable){
+					oProductsTable.removeSelections(true)
+				}
 		
 				//Success message
 				sap.ui.core.BusyIndicator.hide();
