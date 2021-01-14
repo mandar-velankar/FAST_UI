@@ -954,30 +954,32 @@ sap.ui.define([
 					this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
 					this.refreshMasterViewBrandListBinding();
 
-					this.calculatePriceReduction(0, 0, false);
+					if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
+						this.calculatePriceReduction(0, 0, false);
 
-					//this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => {
+						this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => {
 
-						this.closePricingPanels();
-
-						this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then((producs) => {
-
-							//Success message
-							sap.ui.core.BusyIndicator.hide();
-							const msgSuccess = 'Effective date has been updated.';
-							sap.m.MessageBox.success(msgSuccess, {});
-
+							this.handleEffectiveDateUpdate();
 						});
-						
-
-					//});
-
-					
-
+					} else {
+						this.handleEffectiveDateUpdate();
+					}
 				});
 
 			});
 
+		},
+
+		handleEffectiveDateUpdate: function(){
+			this.closePricingPanels();
+			this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then((producs) => {
+		
+				//Success message
+				sap.ui.core.BusyIndicator.hide();
+				const msgSuccess = 'Effective date has been updated.';
+				sap.m.MessageBox.success(msgSuccess, {});
+
+			});
 		},
 
 		refreshMasterViewBrandListBinding: function(){
