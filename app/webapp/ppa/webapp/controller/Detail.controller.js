@@ -231,7 +231,7 @@ sap.ui.define([
 				const draftMspPolicyPrices = selectedProduct.draftProductPolicy.mspPrices;
 				const draftNspPolicyPrices = selectedProduct.draftProductPolicy.nspPrices;
 
-				if(approvedMspPolicyPrices){
+				if(approvedMspPolicyPrices && approvedNspPolicyPrices){
 					for(let mspPriceType in draftMspPolicyPrices ) {
 						if(draftMspPolicyPrices[mspPriceType] !== "" || approvedMspPolicyPrices[mspPriceType] !== ""){
 							selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
