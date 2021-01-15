@@ -1,17 +1,9 @@
 {
-  "welcomeFile": "/index.html",
   "authenticationMethod": "route",
   "logout": {
     "logoutEndpoint": "/do/logout"
   },
   "routes": [
-    {
-      "source": "/ODataDev/(.*)$",
-      "target": "/ODataDev/$1",
-      "authenticationType": "basic",
-      "destination": "srv_api",
-      "csrfProtection": true
-    },
     {
       "source": "/PolicyPricingService/(.*)$",
       "target": "/ppa/$1",
@@ -27,16 +19,16 @@
       "csrfProtection": true
     },
     {
-      "source": "/reporting/(.*)$",
+      "source": "/FAST/(.*)$",
       "target": "/FAST/$1",
-      "authenticationType": "basic",
+      "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": true
     },
     {
-      "source": "/FAST/(.*)$",
-      "target": "/FAST/$1",
-      "authenticationType": "xsuaa",
+      "source": "/ODataDev/(.*)$",
+      "target": "/ODataDev/$1",
+      "authenticationType": "basic",
       "destination": "srv_api",
       "csrfProtection": true
     },
@@ -79,6 +71,20 @@
       "source": "^/pdf/(.*)$",
       "target": "$1",
       "localDir": "dist/pdf"
+    },
+    {
+      "source": "^/reporting/(.*)$",
+      "target": "/FAST/$1",
+      "authenticationType": "basic",
+      "destination": "srv_api",
+      "csrfProtection": true
+    },
+    {
+      "source": "^/(.*)$",
+      "target": "/FAST/$1",
+      "authenticationType": "basic",
+      "destination": "srv_api",
+      "csrfProtection": true
     }
   ]
 }

@@ -8,13 +8,13 @@
   "scripts": {
     "postinstall": "npm run build",
     "start": "node node_modules/@sap/approuter/approuter.js",
-    "lint":"eslint webapp",
+    "lint": "eslint webapp",
     "serve": "ui5 serve",
     "build": "ui5 build --clean-dest"
   },
   "dependencies": {
-    "@sap/approuter": "^6",
     "@ui5/cli": "2.6.4",
+    "@sap/approuter": "^9",
     "ui5-middleware-simpleproxy": "^0.6.0"
   },
   "ui5": {

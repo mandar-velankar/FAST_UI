@@ -65,7 +65,15 @@ sap.ui.define([
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 
+			// Responsibility Assignment Model - this model can be used to set the visibility of the controls for a specific country in the user interface
+			this._oRaModel = new sap.ui.model.json.JSONModel({
+				visibleCountry: ""
+			});	
+			this.getView().setModel(this._oRaModel, "raModel");
+
+
 		},
+
 
 		delete: function (oEvent) {
 			if (1 === 1) {
@@ -105,6 +113,9 @@ sap.ui.define([
 			}
 			*/
 
+			// hide country specific fields
+			this._initializeCountrySpecificFields();
+
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
 			var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
@@ -116,6 +127,9 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 
 			that._country = sCountry;
+
+			// set the visible country
+			this._oRaModel.setProperty("/visibleCountry", sCountry);
 
 			//keep layout and bind it to the view, so we can show, hide elements based on layout (onecolumn, twocolumn, ....)
 			//to use for hiding or display certain fields
@@ -178,8 +192,13 @@ sap.ui.define([
 				//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
 				var sNewTenderNo = Services.getNewTenderNo();
 
-				Services.loadCountryClassifications(sCountry);
+				Services.loadCountryClassifications(sCountry).then(() => { 
+					let sClassificationId = this.getClassificationId(); 
+					Services.loadCountrySpecifications(sCountry, sClassificationId);
+				});
+
 				Services.loadCountryChannels(sCountry);
+
 
 				//when a new tender is created, the tender ID = 1 // or we are creating a new tender
 				if (sTenderPath === "/PT_TMTEND('1')" || sNewTenderNo) {
@@ -212,6 +231,26 @@ sap.ui.define([
 
 		},
 
+		getClassificationId: function(){
+
+			let classificationId = this.getView().byId("idClassification") && this.getView().byId("idClassification").getSelectedItem() && this.getView().byId("idClassification").getSelectedItem().data("classificationId");
+
+			if(!classificationId){
+
+				let classification = this.getView().byId("idClassificationDisplay") && this.getView().byId("idClassificationDisplay").getValue();
+				let countryClassifications = Services.getFastAppDataModel().getProperty("/CountryClassifications");
+
+				let classificationObj = countryClassifications.filter(item => item.CLASSIFICATION === classification);
+
+				classificationId = classificationObj && classificationObj.length > 0 && classificationObj[0].ID;
+
+			}
+
+			return classificationId;
+		},
+
+		
+
 		//on new tender matched
 		_NewTenderMatched: function (that) {
 
@@ -236,77 +275,23 @@ sap.ui.define([
 			that.getView().byId("idTenderChannel").setEnabled(true);
 			that.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
+			// hide country specific fields
+			this._initializeCountrySpecificFields();
+
+			var oSalesType = this.getView().byId("idSelectSalesTypeEdit");
+			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit");
+			var oTenderType = this.getView().byId("idSelectTenderTypeEdit");
+			var oContractType = this.getView().byId("idSelectContractTypeEdit");
+			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
+
 			var sCountryCode = Services.getSelectedCountry();
 			var aFilter = [];
 			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
-			//apply country filter on tender type
-			var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
-			oTenderType.bindItems({
-				path: "fastData>/CountryTenderType",
-				filters: aFilter,
-				parameters: {
-					"expand": "TenderType"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>TenderType/NAME}",
-					key: "{fastData>TenderType/ID}"
-				})
-			});
-
-			//Mexico changes
-			//apply country filter on sales type
-			var oSalesType = that.getView().byId("idSelectSalesTypeEdit");
-			oSalesType.bindItems({
-				path: "fastData>/CountrySalesType",
-				filters: aFilter,
-				parameters: {
-					"expand": "SalesType"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>SalesType/NAME}",
-					key: "{fastData>SalesType/ID}"
-				})
-			});
-
-			//apply country filter on tender origin
-			var oTenderOrigin = that.getView().byId("idSelectTenderOriginEdit");
-			oTenderOrigin.bindItems({
-				path: "fastData>/CountryTenderOrigin",
-				filters: aFilter,
-				parameters: {
-					"expand": "TenderOrigin"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>TenderOrigin/NAME}",
-					key: "{fastData>TenderOrigin/ID}"
-				})
-			});
-
-			//apply country filter on contract type
-			var oContractType = that.getView().byId("idSelectContractTypeEdit");
-			oContractType.bindItems({
-				path: "fastData>/CountryContractType",
-				filters: aFilter,
-				parameters: {
-					"expand": "ContractType"
-				},
-				template: new sap.ui.core.Item({
-					text: "{fastData>ContractType/NAME}",
-					key: "{fastData>ContractType/ID}"
-				})
-			});
-
-			let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
 			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
-			oProcurementMethod.bindItems({
-				path: "fastData>/CountryProcurementMethod",
-				filters: aFilter,
-				template: new sap.ui.core.Item({
-					text: "{fastData>PROCUREMENT_METHOD_ID}",
-					key: "{fastData>PROCUREMENT_METHOD_ID}"
-				})
-			});
+
+			// apply country filter 
+			this.setCountrySpecificDropDowns(aFilter);
 
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
@@ -338,6 +323,8 @@ sap.ui.define([
 			// if(oBinding){
 			// 	oBinding.filter(aFilter);
 			// }
+
+			
 			oTenderType.setEnabled(true);
 
 			//Mexico
@@ -420,6 +407,99 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * Set the Country specific dropdown fields on the Basic information tab based upon selected Country
+		 */
+		setCountrySpecificDropDowns: function(aFilter){
+
+			//apply country filter on tender type
+			var oTenderType = this.getView().byId("idSelectTenderTypeEdit") || this.getView().byId("idSelectTenderType");
+
+			if(oTenderType){
+				oTenderType.bindItems({
+					path: "fastData>/CountryTenderType",
+					filters: aFilter,
+					parameters: {
+						"expand": "TenderType"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>TenderType/NAME}",
+						key: "{fastData>TenderType/ID}"
+					})
+				});
+			}
+
+			//Mexico changes
+			//apply country filter on sales type
+			var oSalesType = this.getView().byId("idSelectSalesTypeEdit") || this.getView().byId("idSelectSalesType");
+
+			if(oSalesType){
+				oSalesType.bindItems({
+					path: "fastData>/CountrySalesType",
+					filters: aFilter,
+					parameters: {
+						"expand": "SalesType"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>SalesType/NAME}",
+						key: "{fastData>SalesType/ID}"
+					})
+				});
+			}
+			
+
+			//apply country filter on tender origin
+			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit") || this.getView().byId("idSelectTenderOrigin");
+
+			if(oTenderOrigin){
+				oTenderOrigin.bindItems({
+					path: "fastData>/CountryTenderOrigin",
+					filters: aFilter,
+					parameters: {
+						"expand": "TenderOrigin"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>TenderOrigin/NAME}",
+						key: "{fastData>TenderOrigin/ID}"
+					})
+				});
+			}
+			
+
+			//apply country filter on contract type
+			var oContractType = this.getView().byId("idSelectContractTypeEdit") || this.getView().byId("idSelectContractType");
+
+			if(oContractType){
+				oContractType.bindItems({
+					path: "fastData>/CountryContractType",
+					filters: aFilter,
+					parameters: {
+						"expand": "ContractType"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>ContractType/NAME}",
+						key: "{fastData>ContractType/ID}"
+					})
+				});
+			}
+			
+			
+			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit") || this.getView().byId("idSelectProcurementMethod");
+
+			if(oProcurementMethod){
+				oProcurementMethod.bindItems({
+					path: "fastData>/CountryProcurementMethod",
+					filters: aFilter,
+					template: new sap.ui.core.Item({
+						text: "{fastData>PROCUREMENT_METHOD_ID}",
+						key: "{fastData>PROCUREMENT_METHOD_ID}"
+					})
+				});
+			}
+			
+			
+		},
+
 		//existing tender matched
 		_ExistingTenderMatched: function (that, sTab) {
 
@@ -472,8 +552,12 @@ sap.ui.define([
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
-					that.getView().byId("idGroupPurchasing").setVisible(true);
+					that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 				});
+
+
+				// get tender Specifications
+				that.getTenderSpecifications(sTenderID);
 
 				//vanaf hier 
 
@@ -554,6 +638,15 @@ sap.ui.define([
 				that._initSection(sTab);
 
 			});
+
+		},
+
+		getTenderSpecifications: async function(sTenderID){
+	
+			const tenderSpecifications = await Services.getService('Specification').getSpecificationsForTender(sTenderID);
+			const selectedKeys = tenderSpecifications && tenderSpecifications.data.results.map(item => item.Name);
+			const oSpecificationsComboBox = this.byId("idSpecificationsDisplay") ||  this.byId("idSpecifications");
+			oSpecificationsComboBox.setSelectedKeys(selectedKeys);
 
 		},
 
@@ -1298,7 +1391,12 @@ sap.ui.define([
 				switch (sSelectedSection) {
 				case Services.getBasicInformationPageSectionID():
 					//BASIC INFORMATION TAB
-					Services.loadCountryClassifications(sCountry);
+
+					Services.loadCountryClassifications(sCountry).then(() => { 
+						let sClassificationId = this.getClassificationId(); 
+						Services.loadCountrySpecifications(sCountry, sClassificationId);
+					});
+
 					Services.loadCountryChannels(sCountry);
 
 					//back to default (only when new tender, these fields should be editable, also after save of new tender & back to edit mode)
@@ -1345,8 +1443,9 @@ sap.ui.define([
 					/* End of Thailand */
 
 					//should group purchasing be visible on the screen based on data back-end
-					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) { 
 						that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
+						that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 					});
 
 					that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
@@ -1529,6 +1628,17 @@ sap.ui.define([
 						var aFilter = [];
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
+
+						// Reload data
+						Services.loadCountryClassifications(sCountryCode).then(() => { 
+							let sClassificationId = this.getClassificationId(); 
+							Services.loadCountrySpecifications(sCountry, sClassificationId);
+						});
+
+						Services.loadCountryChannels(sCountryCode);
+						that.setCountrySpecificDropDowns();
+
+
 						//BASIC INFORMATION TAB
 						that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
 
@@ -1563,7 +1673,7 @@ sap.ui.define([
 						});
 
 						//should group purchasing be visible on the screen based on data back-end
-						$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+						$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) { 
 							that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
 						});
 
@@ -2216,8 +2326,23 @@ sap.ui.define([
 
 			case Services.getFinancialOfferPageSectionID():
 
+				//show loading screen
+				that.getView().setBusyIndicatorDelay(1); //busy indicator shown immediately
+				that.getView().setBusy(true);
+
 				//FINANCIAL OFFER TAB
-				that._onSaveFinancialOffer(oEvent);
+				var offerFragment = new OfferProducts();
+
+				//offerFragment.updateFinancialOffer(oEvent, this);
+				offerFragment.updateFinancialOffer(oEvent, this).then((response) => {
+
+					//screen is updated with new calculated fields, we can continue with saving
+					that._onSaveFinancialOffer(oEvent).then((response) => {
+						that.getView().setBusy(false);
+					});
+
+				});
+				
 				break;
 
 			case Services.getQuotationPageSectionID():
@@ -2862,6 +2987,11 @@ sap.ui.define([
 				}
 
 				oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
+
+				oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+				oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+				oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
 				oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
@@ -2966,7 +3096,12 @@ sap.ui.define([
 			} else {
 				oSaveBasicInfo.InstituteID = this.getView().byId("idInstituteID").getValue();
 			}
+
 			oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
+			oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+			oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+			oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
@@ -3010,7 +3145,7 @@ sap.ui.define([
 				that.createBasicTenderInfo(oTenderToSave).then(function (oSaveResults) {
 
 					//if save is executed succesfully
-					if (oSaveResults) {
+					// if (oSaveResults) {
 
 						//Save of tender is executed
 
@@ -3029,7 +3164,7 @@ sap.ui.define([
 							Services.setSelectedProductPath("");
 						});
 
-					}
+					// }
 
 				}).catch(function (oError) {
 					if (oError === "checkFailed") {
@@ -3038,6 +3173,64 @@ sap.ui.define([
 				});
 
 			}
+		},
+
+		saveSpecifications: function(oTenderToSave, action){ debugger;
+			let promises = [];
+			const aSpecifications = this.byId("idSpecifications").getSelectedItems().map(item => item.getText());
+
+			const aSpecificationEntities = aSpecifications.map(sSpecificationName => {
+				return {
+					TenderID: oTenderToSave.TenderID,
+					CountryCode: oTenderToSave.CountryCode,
+					Name: sSpecificationName,
+				};
+			});
+
+
+			switch(action){
+				case "create":
+
+					let createSpecification = aSpecificationEntities.map(function (oSpecification) {
+
+						return Services.getService('Specification').createSpecification(oSpecification)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Saving of new AwardCriteria");
+							throw new Error(oError);
+						});
+
+					});
+
+					promises.push(createSpecification);
+					
+					break;
+				case "update":
+					// first remove all Specifications and then create the new ones ... update = delete + create
+					let updateSpecification = Services.getService('Specification').removeAllSpecificationForTenderID(oTenderToSave.TenderID).then(() => {
+
+						return aSpecificationEntities.map(function (oSpecification) {
+
+							let createSpecification = Services.getService('Specification').createSpecification(oSpecification)
+							.catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Saving of new AwardCriteria");
+								throw new Error(oError);
+							});
+
+							return createSpecification;
+
+						});
+
+					});
+						
+					promises.push(updateSpecification);
+					break;
+			}
+
+			
+
+			return Promise.all(promises);
 		},
 
 		//submits changes in batch for the basic information tab
@@ -3057,6 +3250,9 @@ sap.ui.define([
 			oTenderToSave.BidDueDate = moment(oTenderToSave.BidDueDate).toDate();*/
 			oTenderToSave.SubmittedOn = moment().utc().toDate();
 			oTenderToSave.SubmittedBy = UserInfo.getCWID();
+
+			// Specifications should be saved as well
+			promises.push(that.saveSpecifications(oTenderToSave, "update"));
 
 			//Award criteria should be saved as well
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
@@ -3156,6 +3352,9 @@ sap.ui.define([
 
 			//Award criteria should be saved as well
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+
+			//specification should be saved as well
+			promises.push(that.saveSpecifications(oTenderToSave, "create"));
 
 			//check if awardCriteria is valid
 			if (!Services.checkAwardCriteria(aAwardCriteria)) {
@@ -4669,7 +4868,7 @@ sap.ui.define([
 
 					//should group purchasing be visible on the screen based on data back-end
 					var sCountry = Services.getSelectedCountry();
-					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) {
+					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) { 
 						if (bShowGroupPurchasing === false) {
 							//default no =  0
 							that.getView().byId("idGroupPurchasingEdit").setSelectedKey(0);
@@ -5128,7 +5327,13 @@ sap.ui.define([
 		//currency or other fields are changed on the financial offer tab (in edit mode)
 		onEditFinancialOffer: function (oEvent) {
 			var offerFragment = new OfferProducts();
-			offerFragment.updateFinancialOffer(oEvent, this);
+
+			//offerFragment.updateFinancialOffer(oEvent, this);
+			offerFragment.updateFinancialOffer(oEvent, this).then((response) => {
+				//screen is updated
+
+			});
+
 			//price is changed
 			//Financial.setPricingChanged(true);               
 		},
@@ -5155,7 +5360,7 @@ sap.ui.define([
 			var offerFragment = new OfferProducts();
 
 			//Update page to make sure screen data is calculated (automatic if user pressed enter when changing value but not otherwise)
-			offerFragment.updateFinancialOffer(oEvent, that);
+			//offerFragment.updateFinancialOffer(oEvent, that); //this is now done before calling onSaveFinancialOffer
 
 			var oNewPriceInfo = {};
 			var aChangeOperations = [];
@@ -5444,7 +5649,8 @@ sap.ui.define([
 
 									//show success message
 									sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
-
+									oDeferred_all.resolve("saving is done");
+									
 									//refresh tenders master table (left pane)
 									Services.refreshTendersMasterTable(sTenderID);
 
@@ -5463,75 +5669,17 @@ sap.ui.define([
 							//error message
 							Services.showErrorMessage(oError, "Saving financial offer");
 
+							oDeferred_all.reject();
+
 						});
 
-						/*
-								oModel.addBatchChangeOperations(aChangeOperations);
-								oModel.submitBatch(function (oData, oResponse, oError) {
-									if (oError.length > 0) {
-										
-										//error message
-										Services.showErrorMessage(oError, "Saving financial offer");
-										
-									} else {
-										
-										//this method is actually no longer needed, Offerstatus is always "Offer created", never "Results recorded"
-										//$.when(that._updateFinancialOfferStatus(oNewPriceInfo, oOffer.OfferStatus)).then(function () {
-										//save offer status as tender recorded... 
-										$.when(Services.saveOfferStatus("Offer Created")).done(function(oSaveStatus){
-	
-											//In that case we might dit some changes in the fastAppData model, we will load all data from the database again
-					                    	//otherwise nextOfferID is f.e still the one that is already created
-						                    var sTenderPath = Services.getSelectedTenderPath();
-						                    var sTenderID = Services.getSelectedTenderID();
-							
-											//we will load tender again after save is done
-											var bLoadedCheck = false; 
-											
-						                    $.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
-	
-												//set selected offer ID
-												Services.setSelectedOfferID(offerId);
-												Services.setSelectedOfferPath(sPath);
-												
-												//Selected offer binding
-												var oOffer = Services.getLoadedOffer(offerId);
-												Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
-												//Services.setSelectedProductID(productId);
-												//Services.setSelectedProductName(productName);
-												
-												//switch from edit to display
-						                    	that.onEditToggleButtonPress();
-												that.byId("idCurrency").setSelectedKey(setCurrency);
-												
-												//show success message
-						                    	sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
-						                    	
-						                    	//refresh tenders master table (left pane)
-												Services.refreshTendersMasterTable(sTenderID);	
-										
-						                    	//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
-												var iApprovals_sent = oOffer.APPROVALS_SENT;	//offerInfo.APPROVALS_SENT;
-												that.saveOfferApprovalSent(iApprovals_sent).catch(function (oError){
-														//Error during save
-														that.showErrorMessage(oError, "Background saving for approvals sent field");						
-												});
-												
-						                    });
-										});
-										
-									}
-								});
-								*/
 					});
 				});
 
-				//return aProductsForBinding;
-				//oDeferred_all.resolve(aProductsForBinding);
 			});
 
-			//uncomment this line if you want the saving method to wait for results...
-			//return oDeferred_all.promise();
+			//wait saving method to wait for results...
+			return oDeferred_all.promise();
 
 		},
 
@@ -6855,7 +7003,85 @@ sap.ui.define([
 			if (sDecline === "1") {
 				aCells[14].setValue("");
 			}
-		}
+		},
+
+		_initializeCountrySpecificFields: function(){
+
+			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").setVisible(false);
+			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").setVisible(false);
+			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").setVisible(false);
+			this.byId("idSpecifications") && this.byId("idSpecifications").setVisible(false);
+
+			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").clearSelection();
+			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
+			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
+			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
+		},
+
+		onClassificationChange: async function(oEvent){ 
+
+			let sCountry = this._country;
+			let sClassificationId = oEvent.getSource().getSelectedItem().data("classificationId");
+
+			this._initializeCountrySpecificFields();
+			
+			if(sClassificationId){ 
+				const aBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(sCountry, sClassificationId);
+				const aSpecifications = await Services.loadCountrySpecifications(sCountry, sClassificationId);
+
+				if(aBindingTypeLevel1.length > 0){
+					this.byId("idBiddingTypeLevel1").setVisible(true);
+				}
+
+				if(aSpecifications.length > 0){
+					this.byId("idSpecifications").setVisible(true);
+				}
+
+				this.byId("idBiddingTypeLevel2").getItems().length > 0 ? this.byId("idBiddingTypeLevel2").destroyItems() : "";
+				this.byId("idBiddingTypeLevel3").getItems().length > 0 ? this.byId("idBiddingTypeLevel3").destroyItems() : "";
+			}
+
+		},
+
+		onBiddingTypeLevel1Change: async function(oEvent){
+
+			let sCountry = this._country;
+			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().getKey();
+
+			this.byId("idBiddingTypeLevel2").setVisible(false);
+			this.byId("idBiddingTypeLevel3").setVisible(false);
+			this.byId("idBiddingTypeLevel2").clearSelection();
+			this.byId("idBiddingTypeLevel3").clearSelection();
+
+			if(sBindingTypeLevel1Id){
+				const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
+
+				if(aBindingTypeLevel2.length > 0){
+					this.byId("idBiddingTypeLevel2").setVisible(true);
+				}
+
+			}
+		},
+
+		onBiddingTypeLevel2Change: async function(oEvent){ 
+
+			let sCountry = this._country;
+			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().getKey();
+
+			this.byId("idBiddingTypeLevel3").setVisible(false);
+			this.byId("idBiddingTypeLevel3").clearSelection();
+
+			if(sBindingTypeLevel2Id){
+				const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
+
+				if(aBindingTypeLevel3.length > 0){
+					this.byId("idBiddingTypeLevel3").setVisible(true);
+				}
+
+			}
+
+		},
+
 
 	});
 });

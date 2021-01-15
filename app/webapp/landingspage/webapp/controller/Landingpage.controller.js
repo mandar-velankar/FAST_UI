@@ -39,19 +39,19 @@ sap.ui.define([
 				contract:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
-
-			this.getView().getModel("fastData").metadataLoaded(true).then(function(){
-				oTileModel.setProperty("/tender",true);
-			});
-			this.getView().getModel("epaData").metadataLoaded(true).then(function(){
-				oTileModel.setProperty("/epa",true);
-			});
-			this.getView().getModel("ppaData").metadataLoaded(true).then(function(){
-				oTileModel.setProperty("/ppa",true);
-			});
-			this.getView().getModel("contractData").metadataLoaded(true).then(function(){
-				oTileModel.setProperty("/contract",true);
-			});
+			this.getView().getModel("access").metadataLoaded().then(() => this.getView().getModel("access").read("/getAccess", { success: (result) => this.getView().getModel("tiles").setData(result) }));
+			// this.getView().getModel("fastData").metadataLoaded(true).then(function(){
+			// 	oTileModel.setProperty("/tender",true);
+			// });
+			// this.getView().getModel("epaData").metadataLoaded(true).then(function(){
+			// 	oTileModel.setProperty("/epa",true);
+			// });
+			// this.getView().getModel("ppaData").metadataLoaded(true).then(function(){
+			// 	oTileModel.setProperty("/ppa",true);
+			// });
+			// this.getView().getModel("contractData").metadataLoaded(true).then(function(){
+			// 	oTileModel.setProperty("/contract",true);
+			// });
 		},
 
 		//Tile tender management
