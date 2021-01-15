@@ -293,6 +293,17 @@ sap.ui.define([
 			// apply country filter 
 			this.setCountrySpecificDropDowns(aFilter);
 
+			let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
+			oProcurementMethod.bindItems({
+				path: "fastData>/CountryProcurementMethod",
+				filters: aFilter,
+				template: new sap.ui.core.Item({
+					text: "{fastData>PROCUREMENT_METHOD_ID}",
+					key: "{fastData>PROCUREMENT_METHOD_ID}"
+				})
+			});
+
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
 				oSalesType.setVisible(bShowSalesType);

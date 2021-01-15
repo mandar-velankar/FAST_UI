@@ -444,6 +444,7 @@ sap.ui.define([
 		 * Updates approval request statuses in the backend
 		 * @param {*} status 
 		 */
+
 		setAndUpdateApprovalRequestStatuses: function(status){ 
 			if(status){
 				const approvals = this.data.approvalRequest.getApprovals();
