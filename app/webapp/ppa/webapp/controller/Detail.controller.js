@@ -1185,6 +1185,13 @@ sap.ui.define([
 			this.calculatePriceReduction(mspReductionPercentage, nspReductionPercentage, true);
 			this.saveDraftPolicyPricesForAllProducts();
 			
+			let oProductsTable = this.byId("idProductsTable");
+
+			// //products table
+			this.closePricingPanels();
+			if(oProductsTable){
+				oProductsTable.removeSelections(true)
+			}
 		},
 
 		/**
