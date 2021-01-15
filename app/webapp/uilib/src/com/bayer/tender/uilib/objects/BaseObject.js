@@ -49,7 +49,7 @@ sap.ui.define([
 						return field === prop;
 					})) {
 					var newPropName = formatter(prop) || prop;
-					to[newPropName] = toString && !(from[prop] instanceof Date) && (typeof from[prop] !== "boolean") ? from[prop].toString() : from[prop] instanceof Date?new Date(from[prop]):from[prop];
+					to[newPropName] = toString && !(from[prop] instanceof Date) && (typeof from[prop] !== "boolean") ? from[prop].toString() : from[prop] instanceof Date?new Date(from[prop]):from[prop];//eslint-disable-line
 				}
 			}
 			return to;
@@ -101,6 +101,7 @@ sap.ui.define([
 		fnMap: function (oObject) {
 			var obj = {};
 			for (var prop in oObject) {
+				// eslint-disable-next-line
 				if (oObject.hasOwnProperty(prop) && typeof (oObject[prop]) !== "object") {
 					obj[prop] = oObject[prop];
 				}

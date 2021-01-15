@@ -1550,6 +1550,9 @@ sap.ui.define([
 			*/
 			
 			var thiss = this;
+
+			//wait for update
+			var oDeferred = $.Deferred();
 			
 			var offerValues = that.getView().getModel("fastData").getObject(that.pPath);
 			var productValues = that.getView().getModel("fastData").getObject("/" + offerValues.SKU.__ref);
@@ -1733,11 +1736,18 @@ sap.ui.define([
 					thiss._updateScenario(that, price, offerValues, 1);
 					thiss._updateScenario(that, price, offerValues, 2);
 					thiss._updateScenario(that, price, offerValues, 3);
-			});
+
+					oDeferred.resolve("all updated on the screen");
+
+				});
 			
 			}).catch(function(error){
-                //failed
+				//failed
+				oDeferred.reject();
 			});
+
+			//wait for result
+			return oDeferred.promise();
 		},
 		
 		//local method for updating the scenario

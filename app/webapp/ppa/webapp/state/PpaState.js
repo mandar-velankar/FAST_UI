@@ -240,11 +240,10 @@ sap.ui.define([
 		 			let oPolicy = new Policy(PolicyResponse.data);
 					oPolicy.setChannels(this.data.channels);
 
+					this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oPolicy);
 					this.getSelectedProduct().draftProductPolicy = oPolicy;
 
-					//not sure if this is needed
-		 			this.setProperty("draftProductPolicy", oPolicy);
-		 			return this.getProperty("draftProductPolicy");
+		 			return this.getSelectedProduct().draftProductPolicy;
 		 		});
 		 	}else{
 				
@@ -254,7 +253,8 @@ sap.ui.define([
 		 			//iD : "",
 		 			countryCode : oSelectedProduct.countryCode,
 		 			division : oSelectedProduct.division,
-		 			brandId : oSelectedProduct.brandId,
+					brandId : oSelectedProduct.brandId,
+					brandPolicy_ID: oSelectedProduct.draftProductPolicy.brandPolicy_ID,
 		 			productPackId : oSelectedProduct.productPackId,
 		 			currency : oSelectedProduct.currency,
 		 			mspStatus : oSelectedProduct.mspStatus,
@@ -263,10 +263,12 @@ sap.ui.define([
 		 		}
 
 		 		let oNewPolicy = new Policy(oPolicy);
-		 		//oNewPolicy.setChannels(this.data.channels);
 
-		 		this.setProperty("draftProductPolicy", oNewPolicy);
-		 		return Promise.resolve(this.getProperty("draftProductPolicy"));
+				// set the new policy
+				this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oNewPolicy);
+				oSelectedProduct.draftProductPolicy = oNewPolicy;
+
+		 		return Promise.resolve(oSelectedProduct);
 
 		 	}
 			
@@ -442,11 +444,13 @@ sap.ui.define([
 		 * Updates approval request statuses in the backend
 		 * @param {*} status 
 		 */
-		setAndUpdateApprovalRequestStatuses: function(status){ debugger;
+
+		setAndUpdateApprovalRequestStatuses: function(status){ 
 			if(status){
 				const approvals = this.data.approvalRequest.getApprovals();
+				const approvalsPending = approvals[0].approvalStatus.toLowerCase().indexOf("not sent") === - 1;
 
-				if(approvals.length > 0){
+				if(approvals.length > 0 && approvalsPending){
 
 					const promises = approvals.map(approval => {
 
@@ -512,7 +516,16 @@ sap.ui.define([
 			}else{
 				return this.updatePolicy(oProductPolicy);
 			}			
-    	},
+		},
+		
+		/**
+		 * This method saves the draft version of policy prices for all products
+		 */
+		saveDraftPolicyPricesForAllProducts: function(){
+			const draftProductPolicies = this.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+			const promises = draftProductPolicies.map(productPolicy => this.saveProductPolicyPrices(productPolicy));
+			return Promise.all(promises);
+		},
 
 		createBrandPolicy: function (oBrandPolicy) {
 			return this.getService().createBrandPolicy(oBrandPolicy);
@@ -559,7 +572,6 @@ sap.ui.define([
 
 		setBrandPolicyEffectiveDate: function(date){
 			this.data.aggregatedBrandPolicy.getDraftBrandPolicy().validFrom = date;
-			//this.data.brandPolicy.validFrom = date;
 		},
 
 		//saving approvals (cancel or send will have different statusses)
@@ -630,6 +642,7 @@ sap.ui.define([
 		 */
 		isEmpty: function(obj) {
 			for(var key in obj) {
+				// eslint-disable-next-line
 				if(obj.hasOwnProperty(key))
 					return false;
 			}

@@ -5,9 +5,10 @@
   "repository": "<Add your repository here>",
   "license": "ISC",
   "dependencies": {
+    "nbt": "^0.8.1"
   },
   "devDependencies": {
-    "mbt": "^1.0.12"
+    "mbt": "^1.1.0"
   },
   "engines": {
     "node": "^10"
