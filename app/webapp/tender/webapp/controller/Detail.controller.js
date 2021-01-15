@@ -293,8 +293,8 @@ sap.ui.define([
 			// apply country filter 
 			this.setCountrySpecificDropDowns(aFilter);
 
-			let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
-			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
+			oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+			oProducrementReason = that.getView().byId("idProcurementReasonEdit");
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
 				filters: aFilter,
