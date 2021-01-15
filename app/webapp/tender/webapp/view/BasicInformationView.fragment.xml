@@ -10,7 +10,25 @@
 			<Label text="{i18n>tenderref}" design="Bold"  required="true"/>
 			<Input value="{fastData>TenderName}" enabled="false"/>
 			<Label text="{i18n>clasficn}" design="Bold" required="true"/>
-			<Input value="{fastData>Classification}" enabled="false"/>
+			<Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" />
+			<!-- Argentina only -->
+			<Label text="{i18n>Bidding Type Level 1}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Input value="{fastData>BindingTypeLevel1}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Label text="{i18n>Bidding Type Level 2}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Input value="{fastData>BindingTypeLevel2}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Label text="{i18n>Bidding Type Level 3}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Input value="{fastData>BindingTypeLevel3}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Label text="{i18n>Specifications}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<MultiComboBox
+				id="idSpecificationsDisplay"
+				visible="{= ${raModel>/visibleCountry} === 'AR'}"
+				items="{
+					path: 'fastAppData>/CountrySpecifications',
+					sorter: { path: 'Name' }
+				}">
+				<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}"/>
+			</MultiComboBox>
+			<!-- /Argentina only -->
 			<Label text="{i18n>insttyp}" design="Bold" required="true"/>
 			<Input value="{fastData>Institute/InstituteType}" enabled="false"/>
 			<Label text="{i18n>institnme}" design="Bold"  required="true"/>

@@ -614,7 +614,7 @@
 									<m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 									<m:Text text="{path :'fastAppData>PRESENTATION'}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 									<!--<m:Text text="{fastAppData>REQUESTED_QUANTITY}"/>-->
-									<m:FormattedText htmlText="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${fastAppData>TOTAL_QUANTITY_UNITS} + ' Units' : ${fastAppData>REQUESTED_QUANTITY} }" class="sapMText"/>
+									<m:FormattedText htmlText="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${fastAppData>PAID_QUANTITY_UNITS} + ' Units' : ${fastAppData>REQUESTED_QUANTITY} }" class="sapMText"/>
 									<m:Text text="{path :'fastAppData>SAMPLES_UNIT'}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"/>
 									<m:FormattedText htmlText="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${fastAppData>FOC_QUANTITY_UNITS} + ' Units' : ${fastAppData>REQUESTED_QUANTITY} }" 
 													 class="sapMText"

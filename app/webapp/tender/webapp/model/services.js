@@ -169,7 +169,101 @@ sap.ui.define([
 				"model": "AlternateOfferYN",
 				"field": "idAlternateOfferLabel",
 				"required": false
+			},
+			
+			{
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "SKU/PRODUCTPACKNAME",
+				"field": "idProductLabel",
+				"required": false
 			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "RequestedVolume",
+				"field": "idRequestedVolumeLabel",
+				"required": true
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "Reference",
+				"field": "idReferenceLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "UnitPerPack",
+				"field": "idUomLabel",
+				"required": true
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "Comment",
+				"field": "idCommentLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "ActiveProduct",
+				"field": "idDeclineLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "PaymentTerms",
+				"field": "idPaymentTermsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "INCOTerms",
+				"field": "idIncoTermsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "IntervalBetweenShipments",
+				"field": "idInShipmentsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "NoofLots",
+				"field": "idNolotsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "FirstShipment",
+				"field": "idFirstShipmentLabel",
+				"required": true
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "Documents",
+				"field": "idDocumentsLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "SampleQuantity",
+				"field": "idQuantityLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "SampleYN",
+				"field": "idSampleLabel",
+				"required": false
+			}, {
+				"country": "TH",
+				"view": "FOR_OFFER_PRODUCT_TAB",
+				"model": "AlternateOfferYN",
+				"field": "idAlternateOfferLabel",
+				"required": false
+			},
+			
+			{
 				"country": "OTHERS",
 				"view": "FOR_OFFER_PRODUCT_TAB",
 				"model": "SKU/PRODUCTPACKNAME",
@@ -375,7 +469,7 @@ sap.ui.define([
 			var mandatoryFields = [];
 			var that = this;
 
-			if (sCountry !== "MX") {
+			if (sCountry !== "MX" && sCountry !== "TH") {
 				sCountry = "OTHERS";
 			}
 
@@ -1578,7 +1672,12 @@ sap.ui.define([
 
 					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
 					var aCountryClassifications = oData.results;
-
+					
+					// add an empty value at the begining of the array. needed for the dropdown
+					if(oData.results.length > 0){
+						aCountryClassifications.unshift({});
+					}
+					
 					//data received is set
 					oFastAppDataModel.setProperty("/CountryClassifications", aCountryClassifications);
 
@@ -1652,6 +1751,241 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 
+		},
+
+		// load CountryBindingTypeLevel1
+		loadCountryBindingTypeLevel1: function(sCountry, sClassificationID) {
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sPath = "/CountryBindingTypeLevel1";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			if (sClassificationID) {
+				let oFilter = new sap.ui.model.Filter("ClassificationID", sap.ui.model.FilterOperator.EQ, sClassificationID);
+				aFilters.push(oFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) { 
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryBindingTypeLevel1 = oData.results;
+
+					// add an empty value at the begining of the array. needed for the dropdown
+					if(oData.results.length > 0){
+						aCountryBindingTypeLevel1.unshift({});
+					}
+
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryBindingTypeLevel1", aCountryBindingTypeLevel1);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryBindingTypeLevel1);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country BindingTypeLevel1");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+		},
+
+		// load CountryBindingTypeLevel2
+		loadCountryBindingTypeLevel2: function(sCountry, sBindingTypeLevel1Id) {
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sPath = "/CountryBindingTypeLevel2";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			if (sBindingTypeLevel1Id) {
+				let oFilter = new sap.ui.model.Filter("BindingTypeLevel1ID", sap.ui.model.FilterOperator.EQ, sBindingTypeLevel1Id);
+				aFilters.push(oFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) { 
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryBindingTypeLevel2 = oData.results;
+
+					// add an empty value at the begining of the array. needed for the dropdown
+					if(oData.results.length > 0){
+						aCountryBindingTypeLevel2.unshift({});
+					}
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryBindingTypeLevel2", aCountryBindingTypeLevel2);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryBindingTypeLevel2);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country BindingTypeLevel2");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+		},
+
+		// load CountryBindingTypeLevel3
+		loadCountryBindingTypeLevel3: function(sCountry, sBindingTypeLevel2Id) { 
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sPath = "/CountryBindingTypeLevel3";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			if (sBindingTypeLevel2Id) {
+				let oFilter = new sap.ui.model.Filter("BindingTypeLevel2ID", sap.ui.model.FilterOperator.EQ, sBindingTypeLevel2Id);
+				aFilters.push(oFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) { 
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryBindingTypeLevel3 = oData.results;
+
+					// add an empty value at the begining of the array. needed for the dropdown
+					if(oData.results.length > 0){
+						aCountryBindingTypeLevel3.unshift({});
+					}
+					
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryBindingTypeLevel3", aCountryBindingTypeLevel3);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryBindingTypeLevel3);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country BindingTypeLevel3");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+		},
+
+		// load CountrySpecifications
+		loadCountrySpecifications: function(sCountry, sClassificationId) { 
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sPath = "/CountrySpecifications";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			if (sClassificationId) {
+				let oFilter = new sap.ui.model.Filter("ClassificationID", sap.ui.model.FilterOperator.EQ, sClassificationId);
+				aFilters.push(oFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) { 
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountrySpecifications = oData.results;
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountrySpecifications", aCountrySpecifications);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountrySpecifications);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country specifications");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
 		},
 
 		//load new tender ID from DB
@@ -3067,7 +3401,7 @@ sap.ui.define([
 
 			//institute
 			if (!sInstituteID) {
-				sInstituteID = that.getInstituteIDofSelectedTender();
+				sInstituteID = that.getInstituteIDofSelectedTender() || this.getDefaultModel().getProperty(this.getSelectedTenderPath()).InstituteID;
 			}
 
 			//mandatory to have institute

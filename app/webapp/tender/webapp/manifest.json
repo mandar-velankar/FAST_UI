@@ -5,7 +5,7 @@
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"applicationVersion": {
-			"version": "1.0.0"
+			"version": "2.0.0"
 		},
 		"title": "{{appTitle}}",
 		"description": "{{appDescription}}",
@@ -82,7 +82,8 @@
 				"settings": {
 					"defaultOperationMode": "Server",
 					"defaultBindingMode": "OneWay",
-					"defaultCountMode": "Request"
+					"defaultCountMode": "Request",
+					"useBatch": false
 				},
 				"dataSource": "sxtender.xsodata",
 				"preload": true

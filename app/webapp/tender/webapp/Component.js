@@ -38,10 +38,11 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/ResultService",
 	"FAST_NS0FAST0/services/ScenarioService",
 	"FAST_NS0FAST0/services/QuotationService",
+	"FAST_NS0FAST0/services/SpecificationService",
 	"sap/ui/Device"
 ], function (UIComponent, JSONModel, fioriLibrary, FlexibleColumnLayoutSemanticHelper, Button, Dialog, Label, MessageToast, Text,
 	TextArea, ODataModel, Services, OfferService, TenderService, ApprovalService, AwardCriteriaService, CompetitorResultService, 
-	DeliveryService, LetterService, GroupPurchasingService, PriceService, ProductService, ResultService, ScenarioService, QuotationService, Device) {
+	DeliveryService, LetterService, GroupPurchasingService, PriceService, ProductService, ResultService, ScenarioService, QuotationService, SpecificationService, Device) {
 	"use strict";
 
 	return UIComponent.extend("FAST_NS0FAST0.Component", {
@@ -96,6 +97,7 @@ sap.ui.define([
 			this.ResultService = new ResultService(oDefaultModel);
 			this.ScenarioService = new ScenarioService(oDefaultModel);
 			this.QuotationService = new QuotationService(oDefaultModel);
+			this.SpecificationService = new SpecificationService(oDefaultModel);
 			
 			Services.setAllServices({
 				OfferService:this.OfferService,
@@ -110,7 +112,8 @@ sap.ui.define([
 				ProductService:this.ProductService,
 				ResultService:this.ResultService,
 				ScenarioService:this.ScenarioService,
-				QuotationService:this.QuotationService
+				QuotationService:this.QuotationService,
+				SpecificationService: this.SpecificationService
 			});
 			
 			// //ADDED FOR SESSION TIMEOUT
