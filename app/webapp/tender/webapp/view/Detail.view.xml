@@ -365,22 +365,22 @@
 													<!-- Offer Party -->
 													<m:VBox width="50%">
 														<m:items>
-															<m:HBox width="50%">
+															<m:HBox width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '60%' : '50%' }">
 																<m:items>
 																	<m:Label text="{i18n>OfferParty}" width="6rem" design="Bold"/>
-																	<m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORNAME}"/>
+																	<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${fastAppData>/Tender/Institute/InstituteType} + ', ' + ${fastAppData>/Tender/Institute/InstituteName} + ', ' + ${fastAppData>/Tender/Institute/CustomerID} : ${fastAppData>/OfferValidation/DISTRIBUTORNAME} }"/>
 																</m:items>
 															</m:HBox>
 															<m:HBox width="50%">
 																<m:items>
-																	<m:Label text="{i18n>Address}" width="6rem"  design="Bold"/>
-																	<m:VBox width="40rem">
+																	<m:Label text="{i18n>Address}" width="6rem"  design="Bold" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
+																	<m:VBox width="40rem" >
 																		<m:items>
 																			<!-- Address -->
-																			<m:FormattedText htmlText="{fastAppData>/OfferValidation/DISTRIBUTORADDRESS}" width="10rem" class="sapMText" />
+																			<m:FormattedText htmlText="{fastAppData>/OfferValidation/DISTRIBUTORADDRESS}" width="10rem" class="sapMText" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 																			
 																			<!-- Tel-->
-																			<m:HBox width="40rem">
+																			<m:HBox width="40rem" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}">
 																				<m:items>
 																					<m:Label text="{i18n>ContactNo}" class="sapUiSmallMarginEnd" design="Bold"/>
 																					<m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORPHONE}"/>
@@ -388,20 +388,28 @@
 																			</m:HBox>
 																			
 																			<!-- Fax -->
-																			<m:HBox width="40rem">
+																			<m:HBox width="40rem" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}">
 																				<m:items>
 																					<m:Label text="{i18n>ContactFax}" class="sapUiSmallMarginEnd" design="Bold"/>
 																					<m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORFAX}"/>
+																				</m:items>
+																			</m:HBox>
+
+																			<!-- Procurement Method (thailand) -->
+																			<m:HBox width="40rem" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
+																				<m:items>
+																					<m:Label text="{i18n>procurementmethod}" class="sapUiSmallMarginEnd" design="Bold"/>
+																					<m:Text text="{fastAppData>/EditTender/PROCUREMENT_METHOD_ID} {fastAppData>/EditTender/PROCUREMENT_REASON}"/>
 																				</m:items>
 																			</m:HBox>
 																		</m:items>
 																	</m:VBox>
 																</m:items>
 															</m:HBox>
-															<m:HBox width="50%">
+															<m:HBox width="50%" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}">
 																<m:items>
-																	<m:Label text="{i18n>Contact}" width="6rem" design="Bold"/>
-																	<m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORCONTACT}"/>
+																	<m:Label text="{i18n>Contact}" width="6rem" design="Bold" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
+																	<m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORCONTACT}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 																</m:items>
 															</m:HBox>
 														</m:items>
@@ -431,7 +439,7 @@
 																	<!-- N° Invoice -->
 																	<m:VBox width="20%">
 																		<m:items>
-																			<m:Label text="{i18n>InvoiceNo}" design="Bold"/>
+																			<m:Label text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${i18n>contractnumber} : ${i18n>InvoiceNo}}" design="Bold"/>
 																			<m:Text text="{fastAppData>/OfferValidation/OFFERID}"/>
 																		</m:items>
 																	</m:VBox>
@@ -467,7 +475,7 @@
 																	<m:VBox width="2%">
 																	</m:VBox>
 																	<!--Selling Company-->
-																	<m:VBox width="18%">
+																	<m:VBox width="18%" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}">
 																		<m:items>
 																			<m:Label text="{i18n>selncmpny}" width="10rem" design="Bold"/>
 																			<m:Text text="{fastAppData>/OfferValidation/SELLINGCOMPANY}"/>
@@ -510,8 +518,8 @@
 														<m:items>
 															<m:VBox>
 																<m:items>
-																	<m:Label text="{i18n>Bank}" width="10rem" design="Bold"/>
-																	<m:FormattedText htmlText="{fastAppData>/OfferValidation/SELLINGCOMPANYBANK}" class="sapMText" />
+																	<m:Label text="{i18n>Bank}" width="10rem" design="Bold" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
+																	<m:FormattedText htmlText="{fastAppData>/OfferValidation/SELLINGCOMPANYBANK}" class="sapMText" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 																</m:items>
 															</m:VBox>
 														</m:items>
@@ -536,62 +544,82 @@
 						inset="false" class="sapFDynamicPageAlignContent" width="auto"
 						alternateRowColors="true" fixedLayout="true">
 						<m:columns>
-							<m:Column width="4%">
-								<m:Text text="{i18n>TenderItemSorter}"/>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '12%' : '4%' }">
+								<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${i18n>contractid} : ${i18n>TenderItemSorter} }"/>
 							</m:Column>
-							<m:Column width="5%">
-								<m:Text text="{i18n>TenderItemCode}"/>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '8%' : '5%' }">
+								<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${i18n>SKUCode} : ${i18n>TenderItemCode} }"/>
 							</m:Column>
-							<m:Column width="12%">
-								<m:Text text="{i18n>BayerProductDescription}"/>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '16%' : '12%' }">
+								<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${i18n>articleName} : ${i18n>BayerProductDescription} }"/>
 							</m:Column>
-							<m:Column width="12%">
-								<m:Text text="{i18n>ManufacturerName}"/>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '0%' : '12%' }">
+								<m:Text text="{i18n>ManufacturerName}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 							</m:Column>
 							<m:Column width="10%">
 								<m:Text text="{i18n>CountryOfOrigin}"/>
 							</m:Column>
-							<m:Column width="7%">
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '0%' : '7%' }" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}">
 								<m:Text text="{i18n>ShelfLife}"/>
 							</m:Column>
-							<m:Column width="5%">
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '6%' : '5%' }">
 								<m:Text text="{i18n>PackFactor}"/>
 							</m:Column>
-							<m:Column width="5%">
-								<m:Text text="{i18n>Presentation}"/>
+							<m:Column width="6%">
+								<m:Text text="{i18n>Presentation}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 							</m:Column>
 							<m:Column width="13%">
 								<m:Text text="{i18n>qQuantity}"/>
 							</m:Column>
+							<m:Column width="7%" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
+								<m:Text text="{i18n>samples}"/>
+							</m:Column>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '9%' : '13%' }">
+								<m:Text text="{i18n>focQtyInUnits}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"/>
+							</m:Column>
 							<!--<m:Column width="6%">-->
 							<!--	<m:Text text="{i18n>FOC}"/>-->
 							<!--</m:Column>-->
-							<m:Column width="8%">
-								<m:Text text="{i18n>UnitPrice}"/>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '12%' : '8%' }">
+								<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${i18n>mspExclVAT} : ${i18n>UnitPrice} }"/>
 							</m:Column>
-							<m:Column width="8%">
-								<m:Text text="{i18n>PackPrice}"/>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '0%' : '8%' }">
+								<m:Text text="{i18n>PackPrice}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true }"/>
+							</m:Column>
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '12%' : '0%' }">
+								<m:Text text="{i18n>mspInclVAT}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"/>
+							</m:Column>
+							<!--<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '12%' : '8%' }">
+								<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${i18n>mspInclVAT} : ${i18n>PackPrice} }"/>
+							</m:Column>-->
+							<m:Column width="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? '10%' : '0%' }" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
+								<m:Text text="{i18n>NSPperPack}"/>
 							</m:Column>
 							<m:Column width="12%">
 								<m:Text text="{i18n>Total}"/>
 							</m:Column>
-							<m:Column width="12%" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
+							<m:Column width="12%">
 								<m:Text text="{i18n>TotalWithVAT}"/>
 							</m:Column>
 						</m:columns>
 						<m:items>
 							<m:ColumnListItem>
 								<m:cells>
-									<m:Text text="{path :'fastAppData>SORTER'}"/>
-									<m:Text text="{parts: [{path :'fastAppData>CODE'}], formatter: '.formatter.nullToBlank'}"/>
-									<m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
-									<m:Text text="{path :'fastAppData>MANUFACTURER'}"/>
+									<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${path :'fastAppData>OFFER_ID'} + '-' + ${path :'fastAppData>SORTER'} : ${path :'fastAppData>SORTER'} }"/>
+									<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${parts: [{path :'fastAppData>SKU'}], formatter: '.formatter.nullToBlank'} : ${parts: [{path :'fastAppData>CODE'}], formatter: '.formatter.nullToBlank'} }"/>
+									<m:Text text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${path :'fastAppData>PRODUCT_UNIT_NAME'} : ${path :'fastAppData>PRODUCTNAME'} }"/>
+									<m:Text text="{path :'fastAppData>MANUFACTURER'}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 									<m:Text text="{path :'fastAppData>COUNTRYOFORIGIN'}"/>
 									<m:Text text="{path :'fastAppData>SHELFLIFE'}"/>
 									<m:Text text="{path :'fastAppData>PACKSIZE'}"/>
-									<m:Text text="{path :'fastAppData>PRESENTATION'}"/>
+									<m:Text text="{path :'fastAppData>PRESENTATION'}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 									<!--<m:Text text="{fastAppData>REQUESTED_QUANTITY}"/>-->
-									<m:FormattedText htmlText="{fastAppData>REQUESTED_QUANTITY}" class="sapMText"/>
+									<m:FormattedText htmlText="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${fastAppData>TOTAL_QUANTITY_UNITS} + ' Units' : ${fastAppData>REQUESTED_QUANTITY} }" class="sapMText"/>
+									<m:Text text="{path :'fastAppData>SAMPLES_UNIT'}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"/>
+									<m:FormattedText htmlText="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? ${fastAppData>FOC_QUANTITY_UNITS} + ' Units' : ${fastAppData>REQUESTED_QUANTITY} }" 
+													 class="sapMText"
+													 visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"/>
+									
 									<!--
 									<m:Text text="{parts: [
 										{path :'fastAppData>FOC'},
@@ -600,7 +628,6 @@
 									-->
 									<!--<m:Text text="{path :'fastAppData>FOC'}"/>-->
 									<m:ObjectStatus
-										class="sapUiSmallMarginBottom"
 										text="{parts: [
 											{path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
 											{path: 'fastAppData>CURRENCY'}
@@ -611,14 +638,29 @@
 									<!--	{path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, -->
 									<!--	{path: 'fastAppData>CURRENCY'}-->
 									<!--], formatter:'.formatter.price'}"/>-->
-									<m:ObjectStatus
-										class="sapUiSmallMarginBottom"
-										text="{parts: [
-											{path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'}, 
-											{path: 'fastAppData>CURRENCY'}
-										], formatter:'.formatter.price'}"
+
+									<!-- fior thailand, use the unit price instead of pack price (incl vat) REQ_PRICE_UNIT_OFFER_CURRENCY_VAT-->
+									<!-- <m:ObjectStatus text="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? {parts: [ {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY_VAT'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'} :
+																{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'} }"
 										state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+									/>-->
+
+									<m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+										state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+										visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"
 									/>
+
+									<m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY_VAT'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+										state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+										visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"
+									/>
+
+									<m:Text text="{parts: [
+										{path: 'fastAppData>NET_PRICE_UNIT_OFFER_CURRENCY'}, 
+										{path: 'fastAppData>CURRENCY'}
+									], formatter:'.formatter.price'}"
+									visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"/>
+
 									<!--<m:Text text="{parts: [-->
 									<!--	{path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'}, -->
 									<!--	{path: 'fastAppData>CURRENCY'}-->
@@ -632,7 +674,6 @@
 										{path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY_VAT'}, 
 										{path: 'fastAppData>CURRENCY'}
 									], formatter:'.formatter.price'}"/>
-									
 								</m:cells>
 							</m:ColumnListItem>
 						</m:items>
@@ -664,7 +705,25 @@
 																{path: 'fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS'}, 
 																{path: 'fastAppData>/OfferValidation/CURRENCY'}
 															], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd"/>	
-															<m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS})"/>
+															<m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS})" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
+														</m:items>
+													</m:VBox>
+
+												</m:items>
+											</m:HBox>
+											<m:HBox class="sapUiSmallMarginTop" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
+												<m:items>
+													
+													<!-- VAT amount -->
+													<m:VBox width="50%">
+														<m:Label text="{i18n>VATAmount}" design="Bold"/>
+													</m:VBox>
+													<m:VBox width="50%" alignItems="End">
+														<m:items>
+															<m:Text text="{parts: [
+																{path: 'fastAppData>/OfferValidation/VAT_TOTAL'}, 
+																{path: 'fastAppData>/OfferValidation/CURRENCY'}
+															], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd"/>
 														</m:items>
 													</m:VBox>
 
@@ -683,14 +742,14 @@
 																{path: 'fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS_VAT'}, 
 																{path: 'fastAppData>/OfferValidation/CURRENCY'}
 															], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd"/>	
-															<m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS_VAT})"/>
+															<m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS_VAT})" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
 														</m:items>
 													</m:VBox>
 
 												</m:items>
 											</m:HBox>
 											<m:Toolbar width="100%" height="1px"/>
-											<m:HBox>
+											<m:HBox visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}">
 												<m:items>
 														
 													<!-- Remarks -->
@@ -711,8 +770,8 @@
 														
 												</m:items>
 											</m:HBox>
-											<m:Toolbar width="100%" height="1px"/>	
-											<m:HBox>
+											<m:Toolbar width="100%" height="1px" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>	
+											<m:HBox visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}">
 												<m:items>
 													<!-- Issued by -->
 													<m:VBox class="sapUiSmallMarginEnd" width="48%">
@@ -937,6 +996,7 @@
 													<m:items>
 														<core:Item text="" key=""/>
 														<core:Item text="Decision Pending" key="Decision Pending"/>
+														<core:Item text="FOC negotiation" key="FOC negotiation"/>
 														<core:Item text="Won" key="Won"/>
 														<core:Item text="Lost" key="Lost"/>
 														<core:Item text="Cancelled" key="Cancelled"/>
@@ -968,7 +1028,7 @@
 			
 			
 			<!-- DELIVERY TRACKING TAB -->
-			<ObjectPageSection id="deliveryTrackingId" title="{i18n>DeliveryTracking}">
+			<ObjectPageSection id="deliveryTrackingId" title="{i18n>DeliveryTracking}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? false : true}">
 				<subSections>
 					<ObjectPageSubSection id="deliveryTrackingSubSectionId">
 						<mvc:XMLView id="deliveryTrackingViewId" viewName="FAST_NS0FAST0.view.DeliveryTracking"/>

@@ -113,6 +113,10 @@ sap.ui.define([
 			oTenderToSave.SALES_TYPE_ID = Number(oTenderSaveInfo.SALES_TYPE_ID);
 			oTenderToSave.TENDER_ORIGIN_ID = Number(oTenderSaveInfo.TENDER_ORIGIN_ID);
 			/* End of mexico */
+			/* Thailand */
+			oTenderToSave.PROCUREMENT_METHOD_ID = oTenderSaveInfo.PROCUREMENT_METHOD_ID;
+			oTenderToSave.PROCUREMENT_REASON = oTenderSaveInfo.PROCUREMENT_REASON;
+			/* End of Thailand */
 
 			return oTenderToSave;
 		},

@@ -26,6 +26,15 @@ sap.ui.define([
             
         },
 
+
+        getApprovals: function(){
+            return this.approvals;
+        },
+
+        setStatusApprovals: function(sStatus){
+            this.getApprovals().forEach(approval => approval.setApprovalStatus(sStatus));
+        },
+
         setSubmittedApprovals: function(approvals){
             if(approvals && approvals instanceof Array){
                 this.submittedApprovals = approvals.map(approval => new Approval(approval));
@@ -59,6 +68,7 @@ sap.ui.define([
                     newApproval.initialize();
                     newApproval.setApproverType(approverType);
                     newApproval.setAction("create");
+                    newApproval.setApprovalStatus("Not Sent");
                     newApproval.setCountryCode(this.brand.countryCode);
                     newApproval.setBrandId(this.brand.brandId);
                     newApproval.setDivision(this.brand.division);

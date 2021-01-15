@@ -23,7 +23,7 @@
 				items="{
 					path: '/Brands',
 					sorter: {
-						path: 'BrandId',
+						path: 'BrandName',
 						descending: false
 					},
 					filters: [{
@@ -76,6 +76,7 @@
 											formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}
 										}" />
 						<ObjectAttribute text="Division: {Division}" />
+						<ObjectAttribute text="{= ${Status} ? 'Status: ' + ${Status} : 'Status: No Policy yet' }" />
 					</ObjectListItem>
 				</items>
 			</List>
