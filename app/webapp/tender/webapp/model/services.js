@@ -1755,6 +1755,12 @@ sap.ui.define([
 
 		// load CountryBindingTypeLevel1
 		loadCountryBindingTypeLevel1: function(sCountry, sClassificationID) {
+
+			// if no country is set don't run this method
+			if(sCountry.indexOf("NA") > -1){
+				return;
+			}
+
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -1816,6 +1822,12 @@ sap.ui.define([
 
 		// load CountryBindingTypeLevel2
 		loadCountryBindingTypeLevel2: function(sCountry, sBindingTypeLevel1Id) {
+
+			// if no country is set don't run this method
+			if(sCountry.indexOf("NA") > -1){
+				return;
+			}
+
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -1875,6 +1887,12 @@ sap.ui.define([
 
 		// load CountryBindingTypeLevel3
 		loadCountryBindingTypeLevel3: function(sCountry, sBindingTypeLevel2Id) { 
+
+			// if no country is set don't run this method
+			if(sCountry.indexOf("NA") > -1){
+				return;
+			}
+
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -1935,6 +1953,13 @@ sap.ui.define([
 
 		// load CountrySpecifications
 		loadCountrySpecifications: function(sCountry, sClassificationId) { 
+
+			// if no country is set don't run this method
+			if(sCountry.indexOf("NA") > -1){
+				return;
+			}
+
+			
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -2135,7 +2160,7 @@ sap.ui.define([
 				oFastDataCalls.read(sTenderPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement"
+						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications"
 					},
 					success: function (oData, oResponse) {
 

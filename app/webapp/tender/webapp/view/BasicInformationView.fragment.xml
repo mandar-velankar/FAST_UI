@@ -13,20 +13,21 @@
 			<Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" />
 			<!-- Argentina only -->
 			<Label text="{i18n>Bidding Type Level 1}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
-			<Input value="{fastData>BindingTypeLevel1}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Input id="idBindingTypeLevel1Display" value="{fastData>BindingTypeLevel1}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Label text="{i18n>Bidding Type Level 2}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
-			<Input value="{fastData>BindingTypeLevel2}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Input id="idBindingTypeLevel2Display" value="{fastData>BindingTypeLevel2}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Label text="{i18n>Bidding Type Level 3}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
-			<Input value="{fastData>BindingTypeLevel3}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+			<Input id="idBindingTypeLevel3Display" value="{fastData>BindingTypeLevel3}" enabled="false" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<Label text="{i18n>Specifications}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
 			<MultiComboBox
 				id="idSpecificationsDisplay"
 				visible="{= ${raModel>/visibleCountry} === 'AR'}"
+				enabled="false"
 				items="{
-					path: 'fastAppData>/CountrySpecifications',
+					path: 'fastData>/Specifications',
 					sorter: { path: 'Name' }
 				}">
-				<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}"/>
+				<core:Item text="{fastData>Name}" key="{fastData>Name}"/>
 			</MultiComboBox>
 			<!-- /Argentina only -->
 			<Label text="{i18n>insttyp}" design="Bold" required="true"/>
