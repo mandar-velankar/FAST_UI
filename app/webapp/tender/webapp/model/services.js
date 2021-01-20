@@ -1757,7 +1757,7 @@ sap.ui.define([
 		loadCountryBindingTypeLevel1: function(sCountry, sClassificationID) {
 
 			// if no country is set don't run this method
-			if(sCountry.indexOf("NA") > -1){
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sClassificationID){
 				return;
 			}
 
@@ -1824,7 +1824,7 @@ sap.ui.define([
 		loadCountryBindingTypeLevel2: function(sCountry, sBindingTypeLevel1Id) {
 
 			// if no country is set don't run this method
-			if(sCountry.indexOf("NA") > -1){
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel1Id){
 				return;
 			}
 
@@ -1889,7 +1889,7 @@ sap.ui.define([
 		loadCountryBindingTypeLevel3: function(sCountry, sBindingTypeLevel2Id) { 
 
 			// if no country is set don't run this method
-			if(sCountry.indexOf("NA") > -1){
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel2Id){
 				return;
 			}
 

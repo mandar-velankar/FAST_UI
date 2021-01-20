@@ -192,7 +192,7 @@ sap.ui.define([
 				//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
 				var sNewTenderNo = Services.getNewTenderNo();
 
-				that.reloadData(sCountry);
+				that.reloadCountrySpecificData(sCountry);
 
 
 				//when a new tender is created, the tender ID = 1 // or we are creating a new tender
@@ -249,7 +249,7 @@ sap.ui.define([
 		},
 
 		/**
-		 * @return reeturns bindingTypeLevel1Id from FastAppDataModel
+		 * @return {String} Returns bindingTypeLevel1Id from FastAppDataModel
 		 */
 		getBindingTypeLevel1Id: async function(){ 
 
@@ -270,7 +270,7 @@ sap.ui.define([
 
 
 		/**
-		 * @return reeturns bindingTypeLevel2Id from FastAppDataModel
+		 * @return {String} Returns bindingTypeLevel2Id from FastAppDataModel
 		 */
 		getBindingTypeLevel2Id: function(){
 
@@ -702,8 +702,8 @@ sap.ui.define([
 
 			// if there are no Specifications then they should not be displayed.
 			if(!selectedKeys || selectedKeys.length <= 0){
-				oSpecificationsComboBox.setVisible(false);
-				oSpecificationsDisplayComboBox.setVisible(false);
+				oSpecificationsComboBox && oSpecificationsComboBox.setVisible(false);
+				oSpecificationsDisplayComboBox && oSpecificationsDisplayComboBox.setVisible(false);
 			}
 
 			oSpecificationsComboBox && oSpecificationsComboBox.setSelectedKeys(selectedKeys);
@@ -756,6 +756,7 @@ sap.ui.define([
 				// if BindingTypeLevel2 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
 				if(!sBindingTypeLevel2Txt){
 					oBiddingTypeLevel2ComboBox.setVisible(false);
+					oBiddingTypeLevel2ComboBox.setBusy(false);
 					return;
 				}
 
@@ -792,6 +793,7 @@ sap.ui.define([
 				// if BindingTypeLevel3 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
 				if(!sBindingTypeLevel3Txt){
 					oBiddingTypeLevel3ComboBox.setVisible(false);
+					oBiddingTypeLevel3ComboBox.setBusy(false);
 					return;
 				}
 
@@ -1554,7 +1556,7 @@ sap.ui.define([
 
 					//BASIC INFORMATION TAB
 
-					that.reloadData(sCountry);
+					that.reloadCountrySpecificData(sCountry);
 
 					//back to default (only when new tender, these fields should be editable, also after save of new tender & back to edit mode)
 					that.getView().byId("idClassification").setEnabled(false);
@@ -1788,7 +1790,7 @@ sap.ui.define([
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
 						// Reload data
-						that.reloadData(sCountryCode);
+						that.reloadCountrySpecificData(sCountryCode);
 
 						//BASIC INFORMATION TAB
 						that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
@@ -2062,7 +2064,7 @@ sap.ui.define([
 
 		},
 
-		reloadData: function(sCountryCode){
+		reloadCountrySpecificData: function(sCountryCode){
 
 			if(!sCountryCode || sCountryCode.indexOf("NA") > -1){
 				return;
@@ -2070,6 +2072,7 @@ sap.ui.define([
 
 			const that = this;
 
+			// fetches dropdown data
 			Services.loadCountryClassifications(sCountryCode).then(() => { 
 				
 				that.getClassificationId().then(async sClassificationId => {
@@ -2090,6 +2093,7 @@ sap.ui.define([
 			Services.loadCountryChannels(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
+			// set the selected keys on the dropdowns
 			that.setTenderBindingTypeLevel1SelectedKey()
 				.then(that.setTenderBindingTypeLevel2SelectedKey.bind(that))
 					.then(that.setTenderBindingTypeLevel3SelectedKeys.bind(that));
@@ -3180,9 +3184,9 @@ sap.ui.define([
 
 				oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
 
-				oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
-				oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
-				oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+				oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem()&& this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+				oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+				oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
 
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
@@ -7251,6 +7255,8 @@ sap.ui.define([
 
 				if(aBindingTypeLevel2.length > 0){
 					this.byId("idBiddingTypeLevel2").setVisible(true);
+				}else{
+					this.byId("idBiddingTypeLevel2").setVisible(false);
 				}
 
 			}
@@ -7269,6 +7275,8 @@ sap.ui.define([
 
 				if(aBindingTypeLevel3.length > 0){
 					this.byId("idBiddingTypeLevel3").setVisible(true);
+				}else{
+					this.byId("idBiddingTypeLevel3").setVisible(false);
 				}
 
 			}

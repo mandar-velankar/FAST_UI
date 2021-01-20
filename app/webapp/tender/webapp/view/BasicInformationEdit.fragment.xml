@@ -23,7 +23,10 @@
 			<Label text="{i18n>Bidding Type Level 1}" design="Bold" required="true"/>
 			<Select id="idBiddingTypeLevel1" 
 				selectedKey="{fastData>BindingTypeLevel1}"  
-				visible="{= ${raModel>/visibleCountry} === 'AR'}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+					(${fastAppData>/CountryBindingTypeLevel1} ? true : false)
+				}" 
 				items="{ path: 'fastAppData>/CountryBindingTypeLevel1'}" 
 				change="onBiddingTypeLevel1Change">
 				<items>
@@ -33,7 +36,10 @@
 			<Label text="{i18n>Bidding Type Level 2}" design="Bold" required="true"/>
 			<Select id="idBiddingTypeLevel2" 
 				selectedKey="{fastData>BiddingTypeLevel2}" 
-				visible="{= ${raModel>/visibleCountry} === 'AR'}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+					(${fastAppData>/CountryBindingTypeLevel2}.length > 0 ? true : false)
+				}" 
 				items="{ path: 'fastAppData>/CountryBindingTypeLevel2'}" 
 				change="onBiddingTypeLevel2Change">
 				<items>
@@ -43,7 +49,10 @@
 			<Label text="{i18n>Bidding Type Level 3}" design="Bold" required="true"/>
 			<Select id="idBiddingTypeLevel3" 
 				selectedKey="{fastData>BiddingTypeLevel3}" 
-				visible="{= ${raModel>/visibleCountry} === 'AR'}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+					(${fastAppData>/CountryBindingTypeLevel3} ? true : false)
+				}" 
 				items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}">
 				<items>
 					<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
