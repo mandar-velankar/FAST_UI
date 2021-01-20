@@ -3949,6 +3949,29 @@ sap.ui.define([
 						promises.push(that.getService('AwardCriteria').createAllAwardCriteria(aAwardCriteria));
 					}
 
+					// only when Specifications exist, they should be created
+					if (oTenderClone.Specifications && oTenderClone.Specifications.results.length > 0) {
+
+						//loop at each specification and change fields to clone data
+						const aSpecifications = oTenderClone.Specifications.results;
+
+						// create new Speficiation entities
+						const newSpecifications = aSpecifications.map(specification =>  {
+
+							const newSpecification = {
+								"TenderID": sNewTenderID,
+								"CountryCode": oTenderToSave.CountryCode,
+								"Name": specification.Name,
+							};
+
+							return newSpecification;
+
+						});
+
+						//create award criteria
+						promises.push(that.getService('Specification').createSpecifications(newSpecifications));
+					}
+
 					//when offers exist
 					if (oTenderClone.Offer) {
 						var aOffers = oTenderClone.Offer.results;
