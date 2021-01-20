@@ -38,7 +38,7 @@
 				selectedKey="{fastData>BiddingTypeLevel2}" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-					(${fastAppData>/CountryBindingTypeLevel2}.length > 0 ? true : false)
+					(${fastAppData>/CountryBindingTypeLevel2} &amp;&amp; ${fastAppData>/CountryBindingTypeLevel2}.length > 0 ? true : false)
 				}" 
 				items="{ path: 'fastAppData>/CountryBindingTypeLevel2'}" 
 				change="onBiddingTypeLevel2Change">
