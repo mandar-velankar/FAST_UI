@@ -94,9 +94,9 @@ sap.ui.define([
 			oTenderToSave.SubmittedBy = oTenderSaveInfo.SubmittedBy;
 			oTenderToSave.Active = Number(oTenderSaveInfo.Active);
 			oTenderToSave.Classification = oTenderSaveInfo.Classification;
-			oTenderToSave.BindingTypeLevel1 = oTenderSaveInfo.CountryBindingTypeLevel1;
-			oTenderToSave.BindingTypeLevel2 = oTenderSaveInfo.CountryBindingTypeLevel2;
-			oTenderToSave.BindingTypeLevel3 = oTenderSaveInfo.CountryBindingTypeLevel3;
+			oTenderToSave.BindingTypeLevel1 = oTenderSaveInfo.BindingTypeLevel1;
+			oTenderToSave.BindingTypeLevel2 = oTenderSaveInfo.BindingTypeLevel2;
+			oTenderToSave.BindingTypeLevel3 = oTenderSaveInfo.BindingTypeLevel3;
 			oTenderToSave.TenderName = oTenderSaveInfo.TenderName;
 			oTenderToSave.InstituteID = Number(oTenderSaveInfo.InstituteID);
 			oTenderToSave.TenderChannel = oTenderSaveInfo.TenderChannel;

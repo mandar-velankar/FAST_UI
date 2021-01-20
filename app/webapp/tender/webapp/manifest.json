@@ -83,6 +83,7 @@
 					"defaultOperationMode": "Server",
 					"defaultBindingMode": "OneWay",
 					"defaultCountMode": "Request",
+					"defaultUpdateMethod": "PUT",
 					"useBatch": false
 				},
 				"dataSource": "sxtender.xsodata",
