@@ -2165,9 +2165,12 @@ sap.ui.define([
 					success: function (oData, oResponse) {
 
 						//data received is set to the award model
+						/*
 						oFastAppDataModel.setData({
 							Tender: oData //oData.results (als er meerdere resultaten zijn)
 						});
+						*/
+						oFastAppDataModel.setProperty("/Tender", oData);
 
 						//Keep institute + childeren list
 						that.bindInstituteWithChildren(oData.Institute);
