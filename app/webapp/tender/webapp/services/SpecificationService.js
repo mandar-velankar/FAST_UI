@@ -30,7 +30,7 @@ sap.ui.define([
 		},
 		
 		//create new specification
-		createSpecification: function (oSpecificationToSave) { debugger;
+		createSpecification: function (oSpecificationToSave) {
 
 			//get model for calls
 			var oModel = Services.getDefaultModel();
@@ -91,7 +91,7 @@ sap.ui.define([
 		},
 
 		//update existing Specification
-		updateSpecification: function (oSpecificationToSave) { debugger;
+		updateSpecification: function (oSpecificationToSave) { 
 
 			//get model for calls
 			var oModel = Services.getDefaultModel();
@@ -108,13 +108,14 @@ sap.ui.define([
 		},
 		
 		//removing Specification
-		removeSpecification: function (oSpecificationToRemove) { debugger;
+		removeSpecification: function (oSpecificationToRemove) {
 
 			//get model for calls
 			var oModel = Services.getDefaultModel();
 
 			//path of offer that is selected
 			var sPath = oModel.createKey("/Specifications", {
+				ID:	oSpecificationToRemove.ID,
 				TenderID: oSpecificationToRemove.TenderID,
 			});
 
@@ -140,10 +141,20 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * Removes all Specifications for a given Tender from the backend
+		 * @param {String} sTenderID 
+		 */
 		removeAllSpecificationForTenderID: function(sTenderID){
 
 			return this.getSpecificationsForTender(sTenderID).then((response) => {
-					debugger;
+
+					const aSpecifications = response.data.results;
+
+					aSpecifications.forEach(item => {
+						return this.removeSpecification(item);
+					});
+
 			});
 			
 		},
