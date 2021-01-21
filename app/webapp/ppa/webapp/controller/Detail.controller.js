@@ -956,8 +956,7 @@ sap.ui.define([
 					if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
 						this.calculatePriceReduction(0, 0, false);
 
-						this.ppaState.saveDraftPolicyPricesForAllProducts().then(() => {
-
+						this.ppaState.saveDraftPolicyPricesForAllProducts().then((response) => {
 							this.handleEffectiveDateUpdate();
 						});
 					} else {
