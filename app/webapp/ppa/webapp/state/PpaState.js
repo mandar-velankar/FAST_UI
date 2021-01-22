@@ -523,7 +523,13 @@ sap.ui.define([
 		 */
 		saveDraftPolicyPricesForAllProducts: function(){
 			const draftProductPolicies = this.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
-			const promises = draftProductPolicies.map(productPolicy => this.saveProductPolicyPrices(productPolicy));
+			const promises = draftProductPolicies.map(productPolicy => {
+				return this.saveProductPolicyPrices(productPolicy).then((response) => {
+					//Keep ID's of created (or updated) ProductPolicy
+					productPolicy.iD = response.data.ID;
+					return productPolicy;
+				});
+			});	
 			return Promise.all(promises);
 		},
 

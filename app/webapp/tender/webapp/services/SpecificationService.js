@@ -30,7 +30,7 @@ sap.ui.define([
 		},
 		
 		//create new specification
-		createSpecification: function (oSpecificationToSave) { debugger;
+		createSpecification: function (oSpecificationToSave) {
 
 			//get model for calls
 			var oModel = Services.getDefaultModel();
@@ -51,9 +51,6 @@ sap.ui.define([
 			
 			//that is this
 			var that = this;
-			
-			//get model for calls
-			var oModel = Services.getDefaultModel();
 
 			//when award criteria exist
 			if (aSpecificationsToSave && aSpecificationsToSave.length > 0) {
@@ -61,11 +58,8 @@ sap.ui.define([
 				//loop at each award criteria and put it into the batch
 				aSpecificationsToSave.forEach(function (oSpecification, iIndex) {
 
-					//convert award criteria to save, with new tenderID
-					var oSpecificationToSave = that.getConvertAwardCriteriaToSave(oSpecification);
-
 					//add awardcriteria to save 1 by 1 as a batch
-					promises.push(that.createAwardCriteria(oSpecificationToSave).catch(function (oError) {
+					promises.push(that.createSpecification(oSpecification).catch(function (oError) {
 						//show error message
 						Services.showErrorMessage(oError, "Saving of new Specification");
 						throw new Error(oError);
@@ -91,7 +85,7 @@ sap.ui.define([
 		},
 
 		//update existing Specification
-		updateSpecification: function (oSpecificationToSave) { debugger;
+		updateSpecification: function (oSpecificationToSave) { 
 
 			//get model for calls
 			var oModel = Services.getDefaultModel();
@@ -108,13 +102,14 @@ sap.ui.define([
 		},
 		
 		//removing Specification
-		removeSpecification: function (oSpecificationToRemove) { debugger;
+		removeSpecification: function (oSpecificationToRemove) {
 
 			//get model for calls
 			var oModel = Services.getDefaultModel();
 
 			//path of offer that is selected
 			var sPath = oModel.createKey("/Specifications", {
+				ID:	oSpecificationToRemove.ID,
 				TenderID: oSpecificationToRemove.TenderID,
 			});
 
@@ -140,31 +135,24 @@ sap.ui.define([
 			});
 		},
 
+		/**
+		 * Removes all Specifications for a given Tender from the backend
+		 * @param {String} sTenderID 
+		 */
 		removeAllSpecificationForTenderID: function(sTenderID){
 
 			return this.getSpecificationsForTender(sTenderID).then((response) => {
-					debugger;
+
+					const aSpecifications = response.data.results;
+
+					aSpecifications.forEach(item => {
+						return this.removeSpecification(item);
+					});
+
 			});
 			
 		},
-		
-		//AwardCriteria to save
-		getConvertAwardCriteriaToSave: function (oAwardCriteriaSaveInfo) {
-
-			//Convert odata to structure that can be used to save
-			var oAwardCriteriaToSave = {};
-
-			oAwardCriteriaToSave.TENDERID = oAwardCriteriaSaveInfo.TENDERID;
-			oAwardCriteriaToSave.COUNTRYCODE = oAwardCriteriaSaveInfo.COUNTRYCODE;
-			oAwardCriteriaToSave.SUBMITTEDON = oAwardCriteriaSaveInfo.SUBMITTEDON;
-			oAwardCriteriaToSave.Submittedby = oAwardCriteriaSaveInfo.Submittedby;
-			oAwardCriteriaToSave.Active = oAwardCriteriaSaveInfo.Active;
-			oAwardCriteriaToSave.AwardCriteria = oAwardCriteriaSaveInfo.AwardCriteria;
-			oAwardCriteriaToSave.Weight = oAwardCriteriaSaveInfo.Weight;
-
-			return oAwardCriteriaToSave;
-
-		}
+	
 	});
 	
 	return SpecificationService;

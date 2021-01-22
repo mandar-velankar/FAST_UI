@@ -192,12 +192,7 @@ sap.ui.define([
 				//check if we are in creation modus of new tender & expanded the view so we come again to onRouteMatched
 				var sNewTenderNo = Services.getNewTenderNo();
 
-				Services.loadCountryClassifications(sCountry).then(() => { 
-					let sClassificationId = this.getClassificationId(); 
-					Services.loadCountrySpecifications(sCountry, sClassificationId);
-				});
-
-				Services.loadCountryChannels(sCountry);
+				that.reloadCountrySpecificData(sCountry);
 
 
 				//when a new tender is created, the tender ID = 1 // or we are creating a new tender
@@ -231,7 +226,7 @@ sap.ui.define([
 
 		},
 
-		getClassificationId: function(){
+		getClassificationId: async function(){ 
 
 			let classificationId = this.getView().byId("idClassification") && this.getView().byId("idClassification").getSelectedItem() && this.getView().byId("idClassification").getSelectedItem().data("classificationId");
 
@@ -240,13 +235,53 @@ sap.ui.define([
 				let classification = this.getView().byId("idClassificationDisplay") && this.getView().byId("idClassificationDisplay").getValue();
 				let countryClassifications = Services.getFastAppDataModel().getProperty("/CountryClassifications");
 
+				if(!countryClassifications){
+					countryClassifications = await Services.loadCountryClassifications(Services.getSelectedCountry());
+				}
+
 				let classificationObj = countryClassifications.filter(item => item.CLASSIFICATION === classification);
 
-				classificationId = classificationObj && classificationObj.length > 0 && classificationObj[0].ID;
+				classificationId = classificationObj && classificationObj.length > 0 ? classificationObj[0].ID : undefined;
 
 			}
 
 			return classificationId;
+		},
+
+		/**
+		 * @return {String} Returns bindingTypeLevel1Id from FastAppDataModel
+		 */
+		getBindingTypeLevel1Id: async function(){ 
+
+			const bindingTypeLevel1Txt = this.getView().byId("idBindingTypeLevel1Display") && this.getView().byId("idBindingTypeLevel1Display").getValue();
+			let aCountryBindingTypeLevel1 = Services.getFastAppDataModel().getProperty("/CountryBindingTypeLevel1");
+
+			if(!aCountryBindingTypeLevel1){
+				const sClassificationId = await this.getClassificationId();
+				aCountryBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(Services.getSelectedCountry(), sClassificationId);
+			}
+
+			const bindingTypeLevel1IdFilter = aCountryBindingTypeLevel1 && aCountryBindingTypeLevel1.filter(item => item.Name && item.Name.indexOf(bindingTypeLevel1Txt) > -1 );
+
+			const bindingTypeLevel1Id =  bindingTypeLevel1IdFilter && bindingTypeLevel1IdFilter instanceof Array && bindingTypeLevel1IdFilter.length > 0 && bindingTypeLevel1IdFilter[0].ID || undefined;
+
+			return bindingTypeLevel1Id;
+		},
+
+
+		/**
+		 * @return {String} Returns bindingTypeLevel2Id from FastAppDataModel
+		 */
+		getBindingTypeLevel2Id: function(){
+
+			const bindingTypeLevel2Txt = this.getView().byId("idBindingTypeLevel2Display") && this.getView().byId("idBindingTypeLevel2Display").getValue();
+			const aCountryBindingTypeLevel2 = Services.getFastAppDataModel().getProperty("/CountryBindingTypeLevel2");
+
+			const bindingTypeLevel2IdFilter = aCountryBindingTypeLevel2 && aCountryBindingTypeLevel2.filter(item => item.Name && item.Name.indexOf(bindingTypeLevel2Txt) > -1 );
+
+			const bindingTypeLevel2Id =  bindingTypeLevel2IdFilter && bindingTypeLevel2IdFilter instanceof Array && bindingTypeLevel2IdFilter.length > 0 && bindingTypeLevel2IdFilter[0].ID || undefined;
+
+			return bindingTypeLevel2Id;
 		},
 
 		
@@ -567,8 +602,8 @@ sap.ui.define([
 				});
 
 
-				// get tender Specifications
-				that.getTenderSpecifications(sTenderID);
+				// this sets the Specifications dropdown
+				that.setTenderSpecificationsSelectedKeys(sTenderID);
 
 				//vanaf hier 
 
@@ -652,13 +687,130 @@ sap.ui.define([
 
 		},
 
-		getTenderSpecifications: async function(sTenderID){
+
+		/**
+		 * Fetches the Specifications from the banck-end and sets them as selected keys on
+		 * ComboBoxes in BasicInformationView and BasicInformationEdit
+		 * @param {ID} sTenderID 
+		 */
+		setTenderSpecificationsSelectedKeys: async function(sTenderID){
 	
 			const tenderSpecifications = await Services.getService('Specification').getSpecificationsForTender(sTenderID);
 			const selectedKeys = tenderSpecifications && tenderSpecifications.data.results.map(item => item.Name);
-			const oSpecificationsComboBox = this.byId("idSpecificationsDisplay") ||  this.byId("idSpecifications");
-			oSpecificationsComboBox.setSelectedKeys(selectedKeys);
+			const oSpecificationsComboBox = this.byId("idSpecifications");
+			const oSpecificationsDisplayComboBox = this.byId("idSpecificationsDisplay");
 
+			// if there are no Specifications then they should not be displayed.
+			if(!selectedKeys || selectedKeys.length <= 0){
+				oSpecificationsComboBox && oSpecificationsComboBox.setVisible(false);
+				oSpecificationsDisplayComboBox && oSpecificationsDisplayComboBox.setVisible(false);
+			}
+
+			oSpecificationsComboBox && oSpecificationsComboBox.setSelectedKeys(selectedKeys);
+			oSpecificationsDisplayComboBox && oSpecificationsDisplayComboBox.setSelectedKeys(selectedKeys);
+
+		},
+
+		/**
+		 * Sets the selected key for BindingTypeLevel1 on BasicInformationEdit page
+		 */
+		setTenderBindingTypeLevel1SelectedKey: async function(){
+
+			const oBiddingTypeLevel1ComboBox = this.byId("idBiddingTypeLevel1"); 
+
+			if(oBiddingTypeLevel1ComboBox){
+				oBiddingTypeLevel1ComboBox.setBusy(true);
+
+				const sCountry = Services.getSelectedCountry();
+				const sClassificationId = await this.getClassificationId();
+				const oBindingTypeLevel1DisplayInput = this.getView().byId("idBindingTypeLevel1Display");
+				const sBindingTypeLevel1Txt = oBindingTypeLevel1DisplayInput && oBindingTypeLevel1DisplayInput.getValue();
+	
+				const aTenderBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(sCountry, sClassificationId);
+				const oTenderBindingTypeLevel1 = aTenderBindingTypeLevel1 && aTenderBindingTypeLevel1.filter(item => item.Name && item.Name.indexOf(sBindingTypeLevel1Txt) > -1);
+	
+				const selectedKey = oTenderBindingTypeLevel1 && oTenderBindingTypeLevel1.length >0 && oTenderBindingTypeLevel1[0].Name || undefined;
+	
+				oBiddingTypeLevel1ComboBox.setBusy(false);
+	
+				return selectedKey && oBiddingTypeLevel1ComboBox.setSelectedKey(selectedKey);
+			}
+
+			return undefined;
+			
+		},
+
+		/**
+		 * Sets the selected key for BindingTypeLevel2 on BasicInformationEdit page
+		 */
+		setTenderBindingTypeLevel2SelectedKey: async function(){
+
+			const oBiddingTypeLevel2ComboBox = this.byId("idBiddingTypeLevel2");
+
+			if(oBiddingTypeLevel2ComboBox){
+				oBiddingTypeLevel2ComboBox.setBusy(true);
+			
+				const oBindingTypeLevel2DisplayInput = this.getView().byId("idBindingTypeLevel2Display");
+				const sBindingTypeLevel2Txt = oBindingTypeLevel2DisplayInput && oBindingTypeLevel2DisplayInput.getValue();
+
+				// if BindingTypeLevel2 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
+				if(!sBindingTypeLevel2Txt){
+					oBiddingTypeLevel2ComboBox.setVisible(false);
+					oBiddingTypeLevel2ComboBox.setBusy(false);
+					return;
+				}
+
+				const sCountry = Services.getSelectedCountry();
+				const sBindingTypeLevel1Id = await this.getBindingTypeLevel1Id();
+				
+				const aTenderBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
+				const oTenderBindingTypeLevel2 = aTenderBindingTypeLevel2 && aTenderBindingTypeLevel2.filter(item => item.Name && item.Name.indexOf(sBindingTypeLevel2Txt) > -1);
+
+				const selectedKey = oTenderBindingTypeLevel2 && oTenderBindingTypeLevel2.length > 0 && oTenderBindingTypeLevel2[0].Name || undefined;
+
+				oBiddingTypeLevel2ComboBox.setBusy(false);
+
+				return selectedKey && oBiddingTypeLevel2ComboBox.setSelectedKey(selectedKey);
+			}
+
+			return undefined;
+			
+		},
+
+		/**
+		 * Sets the selected key for BindingTypeLevel3 on BasicInformationEdit page
+		 */
+		setTenderBindingTypeLevel3SelectedKeys: async function(){
+
+			const oBiddingTypeLevel3ComboBox = this.byId("idBiddingTypeLevel3");
+
+			if(oBiddingTypeLevel3ComboBox){
+				oBiddingTypeLevel3ComboBox.setBusy(true);
+			
+				const oBindingTypeLevel3DisplayInput = this.getView().byId("idBindingTypeLevel3Display");
+				const sBindingTypeLevel3Txt = oBindingTypeLevel3DisplayInput && oBindingTypeLevel3DisplayInput.getValue();
+
+				// if BindingTypeLevel3 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
+				if(!sBindingTypeLevel3Txt){
+					oBiddingTypeLevel3ComboBox.setVisible(false);
+					oBiddingTypeLevel3ComboBox.setBusy(false);
+					return;
+				}
+
+				const sCountry = Services.getSelectedCountry();
+				const sBindingTypeLevel2Id = await this.getBindingTypeLevel2Id();
+				
+				const aTenderBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
+				const oTenderBindingTypeLevel3 = aTenderBindingTypeLevel3 && aTenderBindingTypeLevel3.filter(item => item.Name && item.Name.indexOf(sBindingTypeLevel3Txt) > -1);
+
+				const selectedKey = oTenderBindingTypeLevel3 && oTenderBindingTypeLevel3.length > 0 && oTenderBindingTypeLevel3[0].Name || undefined;
+
+				oBiddingTypeLevel3ComboBox.setBusy(false);
+
+				return selectedKey && oBiddingTypeLevel3ComboBox.setSelectedKey(selectedKey);
+			}
+			
+			return undefined;
 		},
 
 		//array for holding the page fragments that are already loaded TODO keep in seperate file so this controller is not overloaded
@@ -1401,14 +1553,10 @@ sap.ui.define([
 				//We are currently in EDIT mode & we go to VIEW mode
 				switch (sSelectedSection) {
 				case Services.getBasicInformationPageSectionID():
+
 					//BASIC INFORMATION TAB
 
-					Services.loadCountryClassifications(sCountry).then(() => { 
-						let sClassificationId = this.getClassificationId(); 
-						Services.loadCountrySpecifications(sCountry, sClassificationId);
-					});
-
-					Services.loadCountryChannels(sCountry);
+					that.reloadCountrySpecificData(sCountry);
 
 					//back to default (only when new tender, these fields should be editable, also after save of new tender & back to edit mode)
 					that.getView().byId("idClassification").setEnabled(false);
@@ -1512,6 +1660,8 @@ sap.ui.define([
 					//that.getView().byId("idDelDelv").setVisible(false);
 					that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
 					//that.getView().byId("idDelLtr").setVisible(false);
+				break;
+				default:break;
 				}
 				// this.onOutcomeTableEditMode();
 
@@ -1639,16 +1789,8 @@ sap.ui.define([
 						var aFilter = [];
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
-
 						// Reload data
-						Services.loadCountryClassifications(sCountryCode).then(() => { 
-							let sClassificationId = this.getClassificationId(); 
-							Services.loadCountrySpecifications(sCountry, sClassificationId);
-						});
-
-						Services.loadCountryChannels(sCountryCode);
-						that.setCountrySpecificDropDowns();
-
+						that.reloadCountrySpecificData(sCountryCode);
 
 						//BASIC INFORMATION TAB
 						that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
@@ -1883,7 +2025,12 @@ sap.ui.define([
 						//that.getView().byId("idDelLtr").setVisible(true);
 						break;
 
+						
+					default: 
+							break;
 					}
+
+					
 
 				});
 
@@ -1914,6 +2061,44 @@ sap.ui.define([
 				updateButton.setEnabled(bCurrentShowFooterState);
 				updateButton.setVisible(true);
 			});
+
+		},
+
+		reloadCountrySpecificData: function(sCountryCode){
+
+			if(!sCountryCode || sCountryCode.indexOf("NA") > -1){
+				return;
+			}
+
+			const that = this;
+
+			// fetches dropdown data
+			Services.loadCountryClassifications(sCountryCode).then(() => { 
+				
+				that.getClassificationId().then(async sClassificationId => {
+					if(sClassificationId){
+						Services.loadCountrySpecifications(sCountryCode, sClassificationId);
+						Services.loadCountryBindingTypeLevel1(sCountryCode, sClassificationId);
+					}
+
+					let sBindingTypeLevel1Id = await that.getBindingTypeLevel1Id();
+					let sBindingTypeLevel2Id = await that.getBindingTypeLevel2Id();
+					
+					Services.loadCountryBindingTypeLevel2(sCountryCode, sBindingTypeLevel1Id);
+					Services.loadCountryBindingTypeLevel3(sCountryCode, sBindingTypeLevel2Id);
+				}); 
+				
+			});
+
+			Services.loadCountryChannels(sCountryCode);
+			that.setCountrySpecificDropDowns();
+
+			// set the selected keys on the dropdowns
+			that.setTenderBindingTypeLevel1SelectedKey()
+				.then(that.setTenderBindingTypeLevel2SelectedKey.bind(that))
+					.then(that.setTenderBindingTypeLevel3SelectedKeys.bind(that));
+			
+			that.setTenderSpecificationsSelectedKeys(Services.getSelectedTenderID());
 
 		},
 
@@ -2999,9 +3184,9 @@ sap.ui.define([
 
 				oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
 
-				oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
-				oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
-				oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+				oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem()&& this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+				oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+				oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
 
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
@@ -3109,9 +3294,9 @@ sap.ui.define([
 			}
 
 			oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
-			oSaveBasicInfo.CountryBindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
-			oSaveBasicInfo.CountryBindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
-			oSaveBasicInfo.CountryBindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+			oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem() && this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+			oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+			oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
@@ -3186,7 +3371,7 @@ sap.ui.define([
 			}
 		},
 
-		saveSpecifications: function(oTenderToSave, action){ debugger;
+		saveSpecifications: function(oTenderToSave, action){
 			let promises = [];
 			const aSpecifications = this.byId("idSpecifications").getSelectedItems().map(item => item.getText());
 
@@ -3237,6 +3422,7 @@ sap.ui.define([
 						
 					promises.push(updateSpecification);
 					break;
+				default: break;
 			}
 
 			
@@ -3417,7 +3603,7 @@ sap.ui.define([
 				that.getView().bindElement({
 					path: sTenderPath,
 					parameters: {
-						expand: "Institute"
+						expand: "Institute,Specifications"
 					},
 					model: "fastData"
 				});
@@ -7057,7 +7243,7 @@ sap.ui.define([
 		onBiddingTypeLevel1Change: async function(oEvent){
 
 			let sCountry = this._country;
-			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().getKey();
+			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().data("ID");
 
 			this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3").setVisible(false);
@@ -7069,6 +7255,8 @@ sap.ui.define([
 
 				if(aBindingTypeLevel2.length > 0){
 					this.byId("idBiddingTypeLevel2").setVisible(true);
+				}else{
+					this.byId("idBiddingTypeLevel2").setVisible(false);
 				}
 
 			}
@@ -7077,7 +7265,7 @@ sap.ui.define([
 		onBiddingTypeLevel2Change: async function(oEvent){ 
 
 			let sCountry = this._country;
-			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().getKey();
+			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().data("ID");
 
 			this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idBiddingTypeLevel3").clearSelection();
@@ -7087,6 +7275,8 @@ sap.ui.define([
 
 				if(aBindingTypeLevel3.length > 0){
 					this.byId("idBiddingTypeLevel3").setVisible(true);
+				}else{
+					this.byId("idBiddingTypeLevel3").setVisible(false);
 				}
 
 			}
