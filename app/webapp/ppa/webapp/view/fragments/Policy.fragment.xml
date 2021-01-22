@@ -73,7 +73,7 @@
 												enabled="false"
 												minDate="{dateModel>/minDate}"
 												value="{
-															path :'ppa>/brand/validFrom', 
+															path :'ppa>/aggregatedBrandPolicy/approvedBrandPolicy/validFrom', 
 															type: 'sap.ui.model.type.Date', 
 															formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}
 														}"
