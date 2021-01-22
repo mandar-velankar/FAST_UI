@@ -8,7 +8,8 @@ module.exports = {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly",
         "sap": true,
-        "jQuery": true
+        "jQuery": true,
+        "$": true
     },
     "parserOptions": {
         "ecmaVersion": 2018

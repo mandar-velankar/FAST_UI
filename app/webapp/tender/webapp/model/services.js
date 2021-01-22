@@ -1755,6 +1755,12 @@ sap.ui.define([
 
 		// load CountryBindingTypeLevel1
 		loadCountryBindingTypeLevel1: function(sCountry, sClassificationID) {
+
+			// if no country is set don't run this method
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sClassificationID){
+				return;
+			}
+
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -1816,6 +1822,12 @@ sap.ui.define([
 
 		// load CountryBindingTypeLevel2
 		loadCountryBindingTypeLevel2: function(sCountry, sBindingTypeLevel1Id) {
+
+			// if no country is set don't run this method
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel1Id){
+				return;
+			}
+
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -1875,6 +1887,12 @@ sap.ui.define([
 
 		// load CountryBindingTypeLevel3
 		loadCountryBindingTypeLevel3: function(sCountry, sBindingTypeLevel2Id) { 
+
+			// if no country is set don't run this method
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel2Id){
+				return;
+			}
+
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -1935,6 +1953,13 @@ sap.ui.define([
 
 		// load CountrySpecifications
 		loadCountrySpecifications: function(sCountry, sClassificationId) { 
+
+			// if no country is set don't run this method
+			if(sCountry.indexOf("NA") > -1){
+				return;
+			}
+
+			
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
 			var oDeferred = $.Deferred();
 
@@ -2135,14 +2160,17 @@ sap.ui.define([
 				oFastDataCalls.read(sTenderPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement"
+						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications"
 					},
 					success: function (oData, oResponse) {
 
 						//data received is set to the award model
+						/*
 						oFastAppDataModel.setData({
 							Tender: oData //oData.results (als er meerdere resultaten zijn)
 						});
+						*/
+						oFastAppDataModel.setProperty("/Tender", oData);
 
 						//Keep institute + childeren list
 						that.bindInstituteWithChildren(oData.Institute);
@@ -3922,6 +3950,29 @@ sap.ui.define([
 
 						//create award criteria
 						promises.push(that.getService('AwardCriteria').createAllAwardCriteria(aAwardCriteria));
+					}
+
+					// only when Specifications exist, they should be created
+					if (oTenderClone.Specifications && oTenderClone.Specifications.results.length > 0) {
+
+						//loop at each specification and change fields to clone data
+						const aSpecifications = oTenderClone.Specifications.results;
+
+						// create new Speficiation entities
+						const newSpecifications = aSpecifications.map(specification =>  {
+
+							const newSpecification = {
+								"TenderID": sNewTenderID,
+								"CountryCode": oTenderToSave.CountryCode,
+								"Name": specification.Name,
+							};
+
+							return newSpecification;
+
+						});
+
+						//create award criteria
+						promises.push(that.getService('Specification').createSpecifications(newSpecifications));
 					}
 
 					//when offers exist
