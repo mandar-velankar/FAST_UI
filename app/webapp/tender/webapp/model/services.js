@@ -186,29 +186,28 @@ sap.ui.define([
 		},
 
 		//Get mandatory fields
-		getMandatoryFields: function (sCountry, sView) {
-			let mandatoryFieldsDb = []; //implement logic here to retrieve the fields from the new created entity
+		getMandatoryFields: function (aMandatoryFields, sCountry, sView) {
 			var mandatoryFields = [];
 			var that = this;
 
 			//only retrieve the fields for the given country
-			mandatoryFieldsDb.forEach(function (m) {
+			aMandatoryFields.forEach(function (m) {
 				
 				//switch view names to correct subsection id (this was not possible during declaration)
-				switch(m.view) {
+				switch(m.View) {
 					case "FOR_OFFER_PRODUCT_TAB":
-						m.view = that.getOfferProductPageSectionID();
+						m.View = that.getOfferProductPageSectionID();
 					  break;
 					default:
 					  // code block
 				}
 				
 				//check if mandatory/not
-				if (m.country === sCountry && m.view === sView) {
+				if (m.CountryCode === sCountry && m.View === sView) {
 					mandatoryFields.push({
-						"field": m.field,
-						"required": m.required,
-						"model": m.model
+						"field": m.Field,
+						"required": m.Required,
+						"model": m.Model
 					});
 				}
 			});
@@ -5130,6 +5129,41 @@ sap.ui.define([
 
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sProductPackPath, {
+					success: function (oData, oResponse) {
+
+						//let the callback be triggered
+						oDeferred.resolve(oData);
+
+					},
+					error: function (oError) {
+
+						//let the callback be triggered
+						oDeferred.reject(oError);
+
+					}
+				});
+			}
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
+		loadMandatoryFields: function () {
+
+			//lets work with callbacks: 
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+
+			//path for product pack read
+			var sMandatoryFieldsPath = "/MandatoryProductFields";
+
+			if (sMandatoryFieldsPath) {
+
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sMandatoryFieldsPath, {
 					success: function (oData, oResponse) {
 
 						//let the callback be triggered

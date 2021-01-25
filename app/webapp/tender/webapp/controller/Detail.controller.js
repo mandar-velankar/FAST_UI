@@ -1973,17 +1973,22 @@ sap.ui.define([
 						Services.setPrevSelectedSellingCompanyID(sSellingCompanyID);
 
 						//make fields mandatory based on list
-						var sMandatoryFields = Services.getMandatoryFields(sCountryCode, Services.getOfferProductPageSectionID());
-						if (sMandatoryFields.length > 0) {
-							//in case mandatory fields have been specified for the given country, set these fields as mandatory. 
-							//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
-							//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
+						Services.loadMandatoryFields().then(function (aMandatoryFields) {
+							if (aMandatoryFields){
+								var sMandatoryFields = Services.getMandatoryFields(aMandatoryFields.results, sCountryCode, Services.getOfferProductPageSectionID());
+								if (sMandatoryFields.length > 0) {
+									//in case mandatory fields have been specified for the given country, set these fields as mandatory. 
+									//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
+									//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
 
-							for (var i = 0; i < sMandatoryFields.length; i++) {
-								that.getView().byId(sMandatoryFields[i].field).setProperty("required", sMandatoryFields[i].required);
+									for (var i = 0; i < sMandatoryFields.length; i++) {
+										that.getView().byId(sMandatoryFields[i].field).setProperty("required", sMandatoryFields[i].required);
+									}
+
+								}
 							}
+						});
 
-						}
 						//only in creation modus of an offer we will be able to set the distributor id
 						var oDistributor = that.getView().byId("idDistributorName");
 						if (Services.getCreationModusOffer()) {
