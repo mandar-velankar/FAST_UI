@@ -333,6 +333,7 @@ sap.ui.define([
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
 				filters: aFilter,
+				sorter: new sap.ui.model.Sorter("SORTER"),
 				template: new sap.ui.core.Item({
 					text: "{fastData>PROCUREMENT_METHOD_ID}",
 					key: "{fastData>PROCUREMENT_METHOD_ID}"
