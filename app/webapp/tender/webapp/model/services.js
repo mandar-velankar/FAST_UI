@@ -1440,6 +1440,8 @@ sap.ui.define([
 				aFilters.push(oCountryFilter);
 			}
 
+			aFilters.push(new sap.ui.model.Filter("ChannelName", sap.ui.model.FilterOperator.NE, 'OTC')); //exclude OTC
+
 			//Reading the back end data from the tender table
 			oFastDataCalls.read(sCountryChannelsPath, {
 				filters: aFilters,
