@@ -47,7 +47,7 @@
 								<core:Title/>
 								
 								<Label text="{i18n>whlseofr}" required="true"/>
-								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}">
+								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? false : true}">
 									<items>
 										<core:Item text="No" key="No"/>
 										<core:Item text="Yes" key="Yes"/>
