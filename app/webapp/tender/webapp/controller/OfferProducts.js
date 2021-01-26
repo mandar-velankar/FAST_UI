@@ -85,7 +85,7 @@ sap.ui.define([
 			}
 
 			oForm.addContent(new sap.m.Label({
-				text: "{i18n>CIFPrice}"
+				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>CIFPrice_TH} : ${i18n>CIFPrice}}"
 			}));
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idCifPrice"),
@@ -119,7 +119,7 @@ sap.ui.define([
 			);
 
 			oForm.addContent(new sap.m.Label({
-				text: "{i18n>OfferPrice}"
+				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"
 			}));
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idOfferPrice"),
@@ -179,7 +179,7 @@ sap.ui.define([
 			}));
 
 			oForm.addContent(new sap.m.Label({
-				text: "{i18n>NetOfferPrice}"
+				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>NetOfferPrice_TH} : ${i18n>NetOfferPrice}}"
 			}));
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idNetOfferPrice"),
@@ -418,7 +418,7 @@ sap.ui.define([
 			}));*/
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "Offer Price \n [EUR/ \n" + price.uom + "]",
+					text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}\n [EUR/ \n" + price.uom + "]",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -685,11 +685,15 @@ sap.ui.define([
 		},
 		
 		//local method for setting pricing chart data
-		_setPriceChart: function (that, chartId, price) {
+		_setPriceChart: function (that, chartId, price) { debugger;
+
+			const i18n = that.getView().getModel("i18n").getResourceBundle();
+			const countryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
+
 			var oViz = that.byId(chartId);
 			var dataModel = {
 				"data": [{
-					"PriceType": "CIF",
+					"PriceType": countryCode === 'TH' ? i18n.getText("CIFPrice_TH") : i18n.getText("CIFPrice"),
 					"Value": price.cifPrice,
 					"Type": "Revenue"
 				}, {
@@ -697,7 +701,7 @@ sap.ui.define([
 					"Value": -price.discount * price.cifPrice,
 					"Type": "Cost"
 				}, {
-					"PriceType": "OfferPrice",
+					"PriceType": countryCode === 'TH' ? i18n.getText("OfferPrice_TH") : i18n.getText("OfferPrice"),
 					"Value": price.offerPrice,
 					"Type": "Total"
 				}, {
@@ -705,7 +709,7 @@ sap.ui.define([
 					"Value": -price.focChart * price.offerPrice,
 					"Type": "Cost"
 				}, {
-					"PriceType": "Net Offer",
+					"PriceType": countryCode === 'TH' ? i18n.getText("NetOfferPrice_TH") : i18n.getText("NetOfferPrice"),
 					"Value": price.netOfferPrice,
 					"Type": "Total"
 				}, {
