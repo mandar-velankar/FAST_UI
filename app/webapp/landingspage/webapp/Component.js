@@ -51,6 +51,7 @@ sap.ui.define([
 		   * Each time a request is issued, reset the inactivity countdown
 		   */
 			//fast app data model
+			var that = this;
 			this.getModel("fastData").attachRequestCompleted(function (oEvent) {
 				that.resetInactivityTimeoutWarning();
 				that.resetInactivityTimeoutSessionEnd();
@@ -106,6 +107,7 @@ sap.ui.define([
 
 		/**
 		 * Return number of milliseconds left till warning
+		 * @returns {countdownWarning} the countdownWarning
 		 */
 		getInactivityTimeoutWarning: function () {
 			return this.countdownWarning;
@@ -113,6 +115,7 @@ sap.ui.define([
 
 		/**
 		* Return number of milliseconds left till automatic logout
+		@returns {countdownSessionEnd} the countdown session ends
 		*/
 		getInactivityTimeoutSessionEnd: function () {
 			return this.countdownSessionEnd;
@@ -120,6 +123,7 @@ sap.ui.define([
 
 		/**
 		 * Set number of minutes left till warning
+		 * @param {timeout_millisec} timeout_millisec timout in milisec
 		 */
 		setInactivityTimeoutWarning: function (timeout_millisec) {
 			this.countdownWarning = timeout_millisec;
@@ -128,6 +132,7 @@ sap.ui.define([
 
 		/**
 		 * Set number of minutes left till automatic logout
+		 * @param {timeout_millisec} timeout_millisec timout in milisec
 		 */
 		setInactivityTimeoutSessionEnd: function (timeout_millisec) {
 			this.countdownSessionEnd = timeout_millisec;
@@ -243,13 +248,13 @@ sap.ui.define([
 		//show message saying session has ended and user needs to login again
 		_inactivityCountdownSessionEnd: function () {
 			var that = this;
-			this.countdownSessionEnd -= 10000;
+			that .countdownSessionEnd -= 10000;
 
-			if (this.countdownSessionEnd <= 0) {
+			if (that.countdownSessionEnd <= 0) {
 
 				//stop timers & reset
-				this.stopInactivityTimerSessionEnd();
-				this.resetInactivityTimeoutSessionEnd();
+				that.stopInactivityTimerSessionEnd();
+				that.resetInactivityTimeoutSessionEnd();
 
 				//if warning message is still open, close it first
 				var oSessionWarningMessage = sap.ui.getCore().byId("idSessionWarningMessage");
