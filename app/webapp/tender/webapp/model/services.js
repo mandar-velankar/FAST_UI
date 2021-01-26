@@ -5149,28 +5149,40 @@ sap.ui.define([
 
 		},
 
-		loadMandatoryFields: function () {
+		loadMandatoryFields: function (sCountry) {
 
 			//lets work with callbacks: 
 			var oDeferred = $.Deferred();
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
-
+			var oFastAppDataModel = this.getFastAppDataModel();
+			
 			//path for product pack read
 			var sMandatoryFieldsPath = "/MandatoryProductFields";
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
 
 			if (sMandatoryFieldsPath) {
 
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sMandatoryFieldsPath, {
+					filters: aFilters,
 					success: function (oData, oResponse) {
 
 						//let the callback be triggered
+						oFastAppDataModel.setProperty("/MandatoryFields", oData.results);
 						oDeferred.resolve(oData);
 
 					},
 					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of Mandatory Fields");
 
 						//let the callback be triggered
 						oDeferred.reject(oError);
