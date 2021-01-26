@@ -1108,6 +1108,30 @@ sap.ui.define([
 							formatter: formatter.price
 						}
 					}),
+					new sap.m.ObjectNumber({
+						number: {
+							parts: [{
+								path: "UNIT_NET_PRICE",
+								model: "fastData"
+							}, {
+								path: "CURRENCY",
+								model: "fastData"
+							}],
+							formatter: formatter.price
+						}
+					}),
+					new sap.m.ObjectNumber({
+						number: {
+							parts: [{
+								path: "UNIT_NET_PRICE",
+								model: "fastData"
+							}, {
+								path: "CURRENCY",
+								model: "fastData"
+							}],
+							formatter: formatter.price
+						}
+					}),
 					new sap.m.Text({
 						text: "{fastData>UOM}"
 					}),

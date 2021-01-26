@@ -259,6 +259,12 @@
 								<Text text="{i18n>PackPrice}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetUnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetPackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>UnitPack}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
