@@ -185,36 +185,6 @@ sap.ui.define([
 			return this._sSelectedTab;
 		},
 
-		//Get mandatory fields
-		getMandatoryFields: function (aMandatoryFields, sCountry, sView) {
-			var mandatoryFields = [];
-			var that = this;
-
-			//only retrieve the fields for the given country
-			aMandatoryFields.forEach(function (m) {
-				
-				//switch view names to correct subsection id (this was not possible during declaration)
-				switch(m.View) {
-					case "FOR_OFFER_PRODUCT_TAB":
-						m.View = that.getOfferProductPageSectionID();
-					  break;
-					default:
-					  // code block
-				}
-				
-				//check if mandatory/not
-				if (m.CountryCode === sCountry && m.View === sView) {
-					mandatoryFields.push({
-						"field": m.Field,
-						"required": m.Required,
-						"model": m.Model
-					});
-				}
-			});
-
-			return mandatoryFields;
-		},
-
 		//get edit mode
 		getEditMode: function () {
 			//True = we are in edit mode
@@ -5149,28 +5119,40 @@ sap.ui.define([
 
 		},
 
-		loadMandatoryFields: function () {
+		loadMandatoryFields: function (sCountry) {
 
 			//lets work with callbacks: 
 			var oDeferred = $.Deferred();
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
-
+			var oFastAppDataModel = this.getFastAppDataModel();
+			
 			//path for product pack read
 			var sMandatoryFieldsPath = "/MandatoryProductFields";
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
 
 			if (sMandatoryFieldsPath) {
 
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sMandatoryFieldsPath, {
+					filters: aFilters,
 					success: function (oData, oResponse) {
 
 						//let the callback be triggered
+						oFastAppDataModel.setProperty("/MandatoryFields", oData.results);
 						oDeferred.resolve(oData);
 
 					},
 					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of Mandatory Fields");
 
 						//let the callback be triggered
 						oDeferred.reject(oError);
