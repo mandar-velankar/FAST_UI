@@ -6710,6 +6710,7 @@ sap.ui.define([
 										iAwardedPrice = oProduct.Price.OfferPrice;
 									}
 									var oBayerProduct = {
+										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
 										PRODUCTCODE: oProduct.ProductCode,
 										PRODUCT: oProduct.SKU.PRODUCTPACKNAME,
@@ -7020,6 +7021,7 @@ sap.ui.define([
 
 					//push data for saving
 					oBayerResultToSave = {
+						ContractNo: oResultForTree.CONTRACT_NO,
 						TenderID: sTenderID,
 						OfferID: sOfferID,
 						CountryCode: sCountryCode,
@@ -7089,9 +7091,14 @@ sap.ui.define([
 								promises.push(Services.getService('CompetitorResult').createCompetitorResult(oCompetitorResultToSave).catch(function (
 									oError) {
 									//show error message
-									Services.showErrorMessage(oError, "Create Result");
-									//promises must fail as well
-									throw new Error(oError);
+									if(oError.responseText.indexOf("Entity already exists") > -1){
+										//promises must fail as well
+										throw new Error("The newly created competitor entity already exists. The combination of OfferID, ProductCode and AwardedCompany is not unique.");
+									}else{
+										Services.showErrorMessage(oError, "Create Result");
+										//promises must fail as well
+										throw new Error(oError);
+									}
 								}));
 								oCompetitorResultToSave = {};
 								break;
