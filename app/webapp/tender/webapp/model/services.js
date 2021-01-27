@@ -185,36 +185,6 @@ sap.ui.define([
 			return this._sSelectedTab;
 		},
 
-		//Get mandatory fields
-		getMandatoryFields: function (aMandatoryFields, sCountry, sView) {
-			var mandatoryFields = [];
-			var that = this;
-
-			//only retrieve the fields for the given country
-			aMandatoryFields.forEach(function (m) {
-				
-				//switch view names to correct subsection id (this was not possible during declaration)
-				switch(m.View) {
-					case "FOR_OFFER_PRODUCT_TAB":
-						m.View = that.getOfferProductPageSectionID();
-					  break;
-					default:
-					  // code block
-				}
-				
-				//check if mandatory/not
-				if (m.CountryCode === sCountry && m.View === sView) {
-					mandatoryFields.push({
-						"field": m.Field,
-						"required": m.Required,
-						"model": m.Model
-					});
-				}
-			});
-
-			return mandatoryFields;
-		},
-
 		//get edit mode
 		getEditMode: function () {
 			//True = we are in edit mode
