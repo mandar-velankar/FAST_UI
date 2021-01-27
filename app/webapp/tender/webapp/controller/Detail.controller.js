@@ -7053,7 +7053,7 @@ sap.ui.define([
 							//show error message
 							Services.showErrorMessage(oError, "Creation of Bayer Result");
 							//promises must fail as well
-							throw new Error(oError);
+							throw oError;
 						}));
 						oBayerResultToSave = {};
 						break;
@@ -7063,7 +7063,7 @@ sap.ui.define([
 							//show error message
 							Services.showErrorMessage(oError, "Updating of Bayer Result");
 							//promises must fail as well
-							throw new Error(oError);
+							throw oError;
 						}));
 						oBayerResultToSave = {};
 						break;
@@ -7073,7 +7073,7 @@ sap.ui.define([
 							//show error message
 							Services.showErrorMessage(oError, "Updating of Bayer Result");
 							//promises must fail as well
-							throw new Error(oError);
+							throw oError;
 						}));
 						oBayerResultToSave = {};
 						break;
@@ -7091,14 +7091,9 @@ sap.ui.define([
 								promises.push(Services.getService('CompetitorResult').createCompetitorResult(oCompetitorResultToSave).catch(function (
 									oError) {
 									//show error message
-									if(oError.responseText.indexOf("Entity already exists") > -1){
-										//promises must fail as well
-										throw new Error("The newly created competitor entity already exists. The combination of OfferID, ProductCode and AwardedCompany is not unique.");
-									}else{
-										Services.showErrorMessage(oError, "Create Result");
-										//promises must fail as well
-										throw new Error(oError);
-									}
+									Services.showErrorMessage(oError, "Create Result");
+									//promises must fail as well
+									throw oError;
 								}));
 								oCompetitorResultToSave = {};
 								break;
@@ -7109,7 +7104,7 @@ sap.ui.define([
 									//show error message
 									Services.showErrorMessage(oError, "Updating of Competitor Result");
 									//promises must fail as well
-									throw new Error(oError);
+									throw oError;
 								}));
 								oCompetitorResultToSave = {};
 								break;
@@ -7120,7 +7115,7 @@ sap.ui.define([
 									//show error message
 									Services.showErrorMessage(oError, "Removing of Competitor Result");
 									//promises must fail as well
-									throw new Error(oError);
+									throw oError;
 								}));
 								oCompetitorResultToSave = {};
 								break;
@@ -7179,8 +7174,15 @@ sap.ui.define([
 
 			}).catch(function (oError) {
 
-				//error message
-				Services.showErrorMessage(oError, "Saving tender results");
+				if(oError.responseText.indexOf("Entity already exists") > -1){
+					//promises must fail as well
+					sap.m.MessageBox.error("The competitor entity already exists. The combination of OfferID, ProductCode and AwardedCompany is not unique.");
+				}else{
+					//error message
+					Services.showErrorMessage(oError, "Saving tender results");
+				}
+
+				
 			});
 
 		},
