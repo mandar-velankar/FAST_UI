@@ -1978,16 +1978,13 @@ sap.ui.define([
 
 						//make fields mandatory based on list
 						var aMandatoryFields = oFastAppDataModel.getProperty('/MandatoryFields');
-						if (aMandatoryFields){
-							var sMandatoryFields = Services.getMandatoryFields(aMandatoryFields, sCountryCode, Services.getOfferProductPageSectionID());
-							if (sMandatoryFields.length > 0) {
-								//in case mandatory fields have been specified for the given country, set these fields as mandatory. 
-								//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
-								//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
+						if (aMandatoryFields.length > 0) {
+							//in case mandatory fields have been specified for the given country, set these fields as mandatory. 
+							//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
+							//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
 
-								for (var i = 0; i < sMandatoryFields.length; i++) {
-									that.getView().byId(sMandatoryFields[i].field).setProperty("required", sMandatoryFields[i].required);
-								}
+							for (var i = 0; i < aMandatoryFields.length; i++) {
+								that.getView().byId(aMandatoryFields[i].Field).setProperty("required", aMandatoryFields[i].Required);
 							}
 						}
 
@@ -3982,10 +3979,7 @@ sap.ui.define([
 			//check for mandatory fields
 			if (aProducts) {
 				//make fields mandatory based on list
-				var aMandatoryFieldsDb = oFastAppData.getProperty('/MandatoryFields');
-				if (aMandatoryFieldsDb){
-					var aMandatoryFields = Services.getMandatoryFields(aMandatoryFieldsDb, Services.getSelectedCountry(), Services.getOfferProductPageSectionID());
-				}
+				let aMandatoryFields = oFastAppData.getProperty('/MandatoryFields');
 				var aMessages = [];
 				var iMsgCount = 0;
 				var sErroneousFields = "";
@@ -3993,14 +3987,14 @@ sap.ui.define([
 				aProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
 						for (var i = 0; i < aMandatoryFields.length; i++) {
-							if (oProduct[aMandatoryFields[i].model] === "" && aMandatoryFields[i].required === true) {
+							if (oProduct[aMandatoryFields[i].Model] === "" && aMandatoryFields[i].Required === true && aMandatoryFields[i].View === "FOR_OFFER_PRODUCT_TAB") {
 								bError = true;
 								iMsgCount = iMsgCount + 1;
 
 								if (sErroneousFields === "") {
-									sErroneousFields = that.byId(aMandatoryFields[i].field).getText();
+									sErroneousFields = that.byId(aMandatoryFields[i].Field).getText();
 								} else {
-									sErroneousFields = sErroneousFields + '\n' + that.byId(aMandatoryFields[i].field).getText();
+									sErroneousFields = sErroneousFields + '\n' + that.byId(aMandatoryFields[i].Field).getText();
 								}
 							}
 						}
