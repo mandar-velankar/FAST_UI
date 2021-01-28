@@ -78,285 +78,6 @@ sap.ui.define([
 		//Financial model (TODO merge financial.js & offerproducts.js)
 		_oFinancialModel: {},
 
-		//Mandatory fields per country
-		_aMandatoryFields: [{
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB", //this will be filled when getting the mandatory fields (otherwise when using getOfferProductTab method its empty during build)
-				"model": "SKU/PRODUCTPACKNAME",
-				"field": "idProductLabel",
-				"required": true
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "RequestedVolume",
-				"field": "idRequestedVolumeLabel",
-				"required": true
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Reference",
-				"field": "idReferenceLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "UnitPerPack",
-				"field": "idUomLabel",
-				"required": true
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Comment",
-				"field": "idCommentLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "ActiveProduct",
-				"field": "idDeclineLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "PaymentTerms",
-				"field": "idPaymentTermsLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "INCOTerms",
-				"field": "idIncoTermsLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "IntervalBetweenShipments",
-				"field": "idInShipmentsLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "NoofLots",
-				"field": "idNolotsLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "FirstShipment",
-				"field": "idFirstShipmentLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Documents",
-				"field": "idDocumentsLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SampleQuantity",
-				"field": "idQuantityLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SampleYN",
-				"field": "idSampleLabel",
-				"required": false
-			}, {
-				"country": "MX",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "AlternateOfferYN",
-				"field": "idAlternateOfferLabel",
-				"required": false
-			},
-			
-			{
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SKU/PRODUCTPACKNAME",
-				"field": "idProductLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "RequestedVolume",
-				"field": "idRequestedVolumeLabel",
-				"required": true
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Reference",
-				"field": "idReferenceLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "UnitPerPack",
-				"field": "idUomLabel",
-				"required": true
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Comment",
-				"field": "idCommentLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "ActiveProduct",
-				"field": "idDeclineLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "PaymentTerms",
-				"field": "idPaymentTermsLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "INCOTerms",
-				"field": "idIncoTermsLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "IntervalBetweenShipments",
-				"field": "idInShipmentsLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "NoofLots",
-				"field": "idNolotsLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "FirstShipment",
-				"field": "idFirstShipmentLabel",
-				"required": true
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Documents",
-				"field": "idDocumentsLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SampleQuantity",
-				"field": "idQuantityLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SampleYN",
-				"field": "idSampleLabel",
-				"required": false
-			}, {
-				"country": "TH",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "AlternateOfferYN",
-				"field": "idAlternateOfferLabel",
-				"required": false
-			},
-			
-			{
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SKU/PRODUCTPACKNAME",
-				"field": "idProductLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "RequestedVolume",
-				"field": "idRequestedVolumeLabel",
-				"required": true
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Reference",
-				"field": "idReferenceLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "UnitPerPack",
-				"field": "idUomLabel",
-				"required": true
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Comment",
-				"field": "idCommentLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "ActiveProduct",
-				"field": "idDeclineLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "PaymentTerms",
-				"field": "idPaymentTermsLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "INCOTerms",
-				"field": "idIncoTermsLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "IntervalBetweenShipments",
-				"field": "idInShipmentsLabel",
-				"required": true
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "NoofLots",
-				"field": "idNolotsLabel",
-				"required": true
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "FirstShipment",
-				"field": "idFirstShipmentLabel",
-				"required": true
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "Documents",
-				"field": "idDocumentsLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SampleQuantity",
-				"field": "idQuantityLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "SampleYN",
-				"field": "idSampleLabel",
-				"required": false
-			}, {
-				"country": "OTHERS",
-				"view": "FOR_OFFER_PRODUCT_TAB",
-				"model": "AlternateOfferYN",
-				"field": "idAlternateOfferLabel",
-				"required": false
-			},
-
-		],
-
 		//To keep track of tender master list - filters when leaving/returning to/from split screen
 		_aTenderMasterApplicationFilters: [],
 
@@ -462,40 +183,6 @@ sap.ui.define([
 		//get selected tabblad
 		getSelectedTab: function () {
 			return this._sSelectedTab;
-		},
-
-		//Get mandatory fields
-		getMandatoryFields: function (sCountry, sView) {
-			var mandatoryFields = [];
-			var that = this;
-
-			if (sCountry !== "MX" && sCountry !== "TH") {
-				sCountry = "OTHERS";
-			}
-
-			//only retrieve the fields for the given country
-			that._aMandatoryFields.forEach(function (m) {
-				
-				//switch view names to correct subsection id (this was not possible during declaration)
-				switch(m.view) {
-					case "FOR_OFFER_PRODUCT_TAB":
-						m.view = that.getOfferProductPageSectionID();
-					  break;
-					default:
-					  // code block
-				}
-				
-				//check if mandatory/not
-				if (m.country === sCountry && m.view === sView) {
-					mandatoryFields.push({
-						"field": m.field,
-						"required": m.required,
-						"model": m.model
-					});
-				}
-			});
-
-			return mandatoryFields;
 		},
 
 		//get edit mode
@@ -1721,6 +1408,8 @@ sap.ui.define([
 				var oCountryFilter = new sap.ui.model.Filter("ChannelCountry", sap.ui.model.FilterOperator.EQ, sCountry);
 				aFilters.push(oCountryFilter);
 			}
+
+			aFilters.push(new sap.ui.model.Filter("ChannelName", sap.ui.model.FilterOperator.NE, 'OTC')); //exclude OTC
 
 			//Reading the back end data from the tender table
 			oFastDataCalls.read(sCountryChannelsPath, {
@@ -5417,6 +5106,53 @@ sap.ui.define([
 
 					},
 					error: function (oError) {
+
+						//let the callback be triggered
+						oDeferred.reject(oError);
+
+					}
+				});
+			}
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
+		loadMandatoryFields: function (sCountry) {
+
+			//lets work with callbacks: 
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+			
+			//path for product pack read
+			var sMandatoryFieldsPath = "/MandatoryProductFields";
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			if (sMandatoryFieldsPath) {
+
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sMandatoryFieldsPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						//let the callback be triggered
+						oFastAppDataModel.setProperty("/MandatoryFields", oData.results);
+						oDeferred.resolve(oData);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of Mandatory Fields");
 
 						//let the callback be triggered
 						oDeferred.reject(oError);
