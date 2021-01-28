@@ -265,7 +265,7 @@
 					<Title text="{i18n>mspPricingPolicy}"/>
 					<ToolbarSpacer />
 					<Button id="idBtnEditMspPolicy" text="Edit" visible="true" 
-							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !${ppa>/productPolicy/mspEditMode}) }"
+							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom}) }"
 							press=".onEditModeMSP"
 					/>
 				</OverflowToolbar>
@@ -628,7 +628,7 @@
 					<Title text="{i18n>nspPricingPolicy}"/>
 					<ToolbarSpacer />
 					<Button id="idBtnEditNspPolicy" text="Edit" visible="true" 
-							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !${ppa>/productPolicy/nspEditMode}) }"
+							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom}) }"
 							press=".onEditModeNSP"
 					/>
 				</OverflowToolbar>
