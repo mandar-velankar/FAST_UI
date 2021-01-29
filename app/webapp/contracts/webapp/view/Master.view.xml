@@ -25,13 +25,13 @@
 					</Select>
 
 					<!-- Filter for Status -->
-					<Select id="idSlctChannel" forceSelection="true" change=".setFilter" visible="true">
+					<!--<Select id="idSlctChannel" forceSelection="true" change=".setFilter" visible="true">
 						<items>
 							<core:Item key="All" text="All"/>
 							<core:Item key="Tender" text="Tenders"/>
 							<core:Item key="Other" text="Other"/>
 						</items>		
-					</Select>
+					</Select>-->
 					<ToolbarSpacer/>
 					
 					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>

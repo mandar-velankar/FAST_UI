@@ -46,7 +46,7 @@
 									<Text text="{i18n>NetPrice}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>OfferPrice}"/>
+									<Text text="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"/>
 								</Column>
 								<Column>
 									<Text text="{i18n>COGS}"/>
@@ -158,6 +158,12 @@
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>PackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetUnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetPackPrice}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>UnitPack}"/>

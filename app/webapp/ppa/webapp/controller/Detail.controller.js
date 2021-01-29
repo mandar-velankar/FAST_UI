@@ -525,13 +525,13 @@ sap.ui.define([
 		/**
 		 * Send button handler for the approvals table
 		 * send approvals = save to database & change status
+		 * @param {Object} oEvent object
 		 */
 		onSendApprovals: function(oEvent){
 
 			var that = this;
 
 			//show loading screen
-			this.getView().setBusy(true);
 			let aProductsNotValid = this.onValidatePricesAtApproval();
 			let bApprovalsValid = this.onValidateApprovals();
 			
@@ -546,17 +546,17 @@ sap.ui.define([
 						emphasizedAction: "Continue",
 						onClose: function(sAction){
 							switch(sAction){
-								case "Continue" : that._sendApprovals();
-								case "CANCEL"   : that.getView().setBusy(false);
+								case "Continue" : that._sendApprovals(); break;
+								case "CANCEL"   : that.getView().setBusy(false); break;
+								default: break;
 							}
 						}
 					});
-				} else {
+				}else {
 						that._sendApprovals();
 				}
 			}else{
 				//show error
-				this.getView().setBusy(false);
 				sap.m.MessageBox.error("Comments can not be longer then 500 characters");					
 			}
 
@@ -568,13 +568,33 @@ sap.ui.define([
 		},
 
 		_sendApprovals: function(){
-			//save Approvals (&status)
-			this.ppaState.sendApprovals("Processing").then(() => {
-				this.getView().setBusy(false);
-			});
 
-			//disable edit mode
-			this.ppaState.setEditMode(false);
+			// check if there are any products with NSP prices higher than the MSP prices
+			const aProductPolicyWithNspPricesHighterThanMspPrices = this.getProductPolicyWithNspPricesHighterThanMspPrices();
+			if(aProductPolicyWithNspPricesHighterThanMspPrices.length > 0 ){
+					
+				let productPaackIDs = aProductPolicyWithNspPricesHighterThanMspPrices.map(product => product.productPackId);
+				let productNames = productPaackIDs.map(productPackID => this.ppaState.getProductNameById(productPackID));
+
+				sap.m.MessageBox.error(`Prices for the following products have NSP values higher than the MSP values, which is not allowed. \n\n ${productNames.join('\n')}`);
+
+			}else{
+
+				this.getView().setBusy(true);
+
+				//save Approvals (&status)
+				this.ppaState.sendApprovals("Processing").then(() => {
+					//Reload master list so status is updated
+					this.refreshMasterViewBrandListBinding();
+					this.getView().setBusy(false);
+				});
+
+				//disable edit mode
+				this.ppaState.setEditMode(false);
+
+			}
+
+			
 		},
 
 		//are the approvals valid to be send?..
@@ -608,7 +628,6 @@ sap.ui.define([
 			let aInvalidProducts = [];
 
 			//validate if all products have prices assigned
-			let aProducts = this.ppaState.getProperty('products');
 			let oDraftBrandPolicy = this.ppaState.data.aggregatedBrandPolicy.draftBrandPolicy;
 
 			//let promises = oDraftBrandPolicy.productPolicies.map(oProductPolicy => {
@@ -627,7 +646,45 @@ sap.ui.define([
 				});
 			}
 
+
 			return aInvalidProducts;
+		},
+
+		/**
+		 * Returns a list of products containing prices with NSP values greater than the MSP value
+		 * @return {Array} a list of products
+		 */
+		getProductPolicyWithNspPricesHighterThanMspPrices: function(){
+
+			const aProductPolicies = this.ppaState.data.aggregatedBrandPolicy.draftBrandPolicy.productPolicies;
+
+			if(aProductPolicies && aProductPolicies.length > 0){
+
+				return aProductPolicies.filter(policy => {
+
+					const msp = policy.getMspPrices();
+					const nsp = policy.getNspPrices();
+					let isNspHigher = false;
+
+					for (const [key, value] of Object.entries(msp)) { 
+						
+						if(+nsp[key] > +value){ 
+
+							console.log(`${key}: MSP = ${value} NSP = ${nsp[key]}`);
+
+							isNspHigher = true;
+							break;
+						}
+					}
+
+					return isNspHigher;
+
+				});
+
+			}
+
+			return [];
+
 		},
 
 		/**
@@ -649,6 +706,8 @@ sap.ui.define([
 
 			//save Approvals (&status)
 			this.ppaState.sendApprovals("Cancelling").then(() => {
+				//Reload master list so status is updated
+				this.refreshMasterViewBrandListBinding();
 				this.getView().setBusy(false);
 			});
 
@@ -784,6 +843,9 @@ sap.ui.define([
 				//Reload policy so status is shown & PolicyID will be captured
 				this.onRefreshPolicyPress();
 				
+				//Reload master list so status is updated
+				this.refreshMasterViewBrandListBinding();
+
 				//Display mode MSP
 				this.setMspEditMode(false);
 				this.byId("idBtnEditMspPolicy").setEnabled(true);
@@ -820,6 +882,9 @@ sap.ui.define([
 				//Reload policy so status is shown & PolicyID will be captured
 				this.onRefreshPolicyPress();
 
+				//Reload master list so status is updated
+				this.refreshMasterViewBrandListBinding();
+				
 				//Display mode NSP
 				this.setNspEditMode(false);
 				this.byId("idBtnEditNspPolicy").setEnabled(true);
@@ -1188,7 +1253,7 @@ sap.ui.define([
 			// //products table
 			this.closePricingPanels();
 			if(oProductsTable){
-				oProductsTable.removeSelections(true)
+				oProductsTable.removeSelections(true);
 			}
 		},
 
@@ -1276,6 +1341,10 @@ sap.ui.define([
 				this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
 					//reload products so status is up to date in product table
 					this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
+						
+						//Reload master list so status is updated
+						this.refreshMasterViewBrandListBinding();
+
 						//show success message
 						sap.ui.core.BusyIndicator.hide();
 						sap.m.MessageBox.success("Price reduction successfully saved");

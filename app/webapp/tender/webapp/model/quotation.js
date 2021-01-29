@@ -680,6 +680,17 @@ sap.ui.define([
 					//get selected offer
 					var sSelectedOfferPath = Services.getSelectedOfferPath();
 					var oOffer = Services.getDefaultModel().getProperty(sSelectedOfferPath);
+
+					// check whether Offer Validity date is after Offer date
+					if(quotationFields.OfferDate > quotationFields.OfferValidity){
+						sap.m.MessageBox.error("Offer validity date must be after the offer date");
+						//close loading dialog
+						if(that._LoadingDialogQuotation){
+							that._LoadingDialogQuotation.close();
+						}
+						oDeferred.reject();
+						return;
+					}
 					
 					//check offer has been selected
 					if(!oOffer || !quotationFields.OfferDate){

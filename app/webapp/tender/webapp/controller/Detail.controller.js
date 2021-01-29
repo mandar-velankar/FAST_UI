@@ -71,7 +71,6 @@ sap.ui.define([
 			});	
 			this.getView().setModel(this._oRaModel, "raModel");
 
-
 		},
 
 
@@ -152,6 +151,7 @@ sap.ui.define([
 			Services.setSelectedTenderID(sTenderID);
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
+			Services.loadMandatoryFields(sCountry);
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
@@ -333,6 +333,7 @@ sap.ui.define([
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
 				filters: aFilter,
+				sorter: new sap.ui.model.Sorter("SORTER"),
 				template: new sap.ui.core.Item({
 					text: "{fastData>PROCUREMENT_METHOD_ID}",
 					key: "{fastData>PROCUREMENT_METHOD_ID}"
@@ -1901,6 +1902,9 @@ sap.ui.define([
 
 					case Services.getOfferProductPageSectionID():
 						//OFFER PRODUCTS TAB
+
+						var oFastAppDataModel = Services.getFastAppDataModel();
+
 						that._showSectionFragment("OfferProductsEdit", "offerProductsId");
 						var sOfferID = Services.getSelectedOfferID();
 						//in case of reviewed offer, we want to keep the offer?
@@ -1973,17 +1977,17 @@ sap.ui.define([
 						Services.setPrevSelectedSellingCompanyID(sSellingCompanyID);
 
 						//make fields mandatory based on list
-						var sMandatoryFields = Services.getMandatoryFields(sCountryCode, Services.getOfferProductPageSectionID());
-						if (sMandatoryFields.length > 0) {
+						var aMandatoryFields = oFastAppDataModel.getProperty('/MandatoryFields');
+						if (aMandatoryFields.length > 0) {
 							//in case mandatory fields have been specified for the given country, set these fields as mandatory. 
 							//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
 							//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
 
-							for (var i = 0; i < sMandatoryFields.length; i++) {
-								that.getView().byId(sMandatoryFields[i].field).setProperty("required", sMandatoryFields[i].required);
+							for (var i = 0; i < aMandatoryFields.length; i++) {
+								that.getView().byId(aMandatoryFields[i].Field).setProperty("required", aMandatoryFields[i].Required);
 							}
-
 						}
+
 						//only in creation modus of an offer we will be able to set the distributor id
 						var oDistributor = that.getView().byId("idDistributorName");
 						if (Services.getCreationModusOffer()) {
@@ -3974,7 +3978,8 @@ sap.ui.define([
 
 			//check for mandatory fields
 			if (aProducts) {
-				var aMandatoryFields = Services.getMandatoryFields(Services.getSelectedCountry(), Services.getOfferProductPageSectionID());
+				//make fields mandatory based on list
+				let aMandatoryFields = oFastAppData.getProperty('/MandatoryFields');
 				var aMessages = [];
 				var iMsgCount = 0;
 				var sErroneousFields = "";
@@ -3982,14 +3987,14 @@ sap.ui.define([
 				aProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
 						for (var i = 0; i < aMandatoryFields.length; i++) {
-							if (oProduct[aMandatoryFields[i].model] === "" && aMandatoryFields[i].required === true) {
+							if (oProduct[aMandatoryFields[i].Model] === "" && aMandatoryFields[i].Required === true && aMandatoryFields[i].View === "FOR_OFFER_PRODUCT_TAB") {
 								bError = true;
 								iMsgCount = iMsgCount + 1;
 
 								if (sErroneousFields === "") {
-									sErroneousFields = that.byId(aMandatoryFields[i].field).getText();
+									sErroneousFields = that.byId(aMandatoryFields[i].Field).getText();
 								} else {
-									sErroneousFields = sErroneousFields + '\n' + that.byId(aMandatoryFields[i].field).getText();
+									sErroneousFields = sErroneousFields + '\n' + that.byId(aMandatoryFields[i].Field).getText();
 								}
 							}
 						}
@@ -6710,6 +6715,7 @@ sap.ui.define([
 										iAwardedPrice = oProduct.Price.OfferPrice;
 									}
 									var oBayerProduct = {
+										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
 										PRODUCTCODE: oProduct.ProductCode,
 										PRODUCT: oProduct.SKU.PRODUCTPACKNAME,
@@ -7020,6 +7026,7 @@ sap.ui.define([
 
 					//push data for saving
 					oBayerResultToSave = {
+						ContractNo: oResultForTree.CONTRACT_NO,
 						TenderID: sTenderID,
 						OfferID: sOfferID,
 						CountryCode: sCountryCode,
@@ -7051,7 +7058,7 @@ sap.ui.define([
 							//show error message
 							Services.showErrorMessage(oError, "Creation of Bayer Result");
 							//promises must fail as well
-							throw new Error(oError);
+							throw oError;
 						}));
 						oBayerResultToSave = {};
 						break;
@@ -7061,7 +7068,7 @@ sap.ui.define([
 							//show error message
 							Services.showErrorMessage(oError, "Updating of Bayer Result");
 							//promises must fail as well
-							throw new Error(oError);
+							throw oError;
 						}));
 						oBayerResultToSave = {};
 						break;
@@ -7071,7 +7078,7 @@ sap.ui.define([
 							//show error message
 							Services.showErrorMessage(oError, "Updating of Bayer Result");
 							//promises must fail as well
-							throw new Error(oError);
+							throw oError;
 						}));
 						oBayerResultToSave = {};
 						break;
@@ -7091,7 +7098,7 @@ sap.ui.define([
 									//show error message
 									Services.showErrorMessage(oError, "Create Result");
 									//promises must fail as well
-									throw new Error(oError);
+									throw oError;
 								}));
 								oCompetitorResultToSave = {};
 								break;
@@ -7102,7 +7109,7 @@ sap.ui.define([
 									//show error message
 									Services.showErrorMessage(oError, "Updating of Competitor Result");
 									//promises must fail as well
-									throw new Error(oError);
+									throw oError;
 								}));
 								oCompetitorResultToSave = {};
 								break;
@@ -7113,7 +7120,7 @@ sap.ui.define([
 									//show error message
 									Services.showErrorMessage(oError, "Removing of Competitor Result");
 									//promises must fail as well
-									throw new Error(oError);
+									throw oError;
 								}));
 								oCompetitorResultToSave = {};
 								break;
@@ -7172,8 +7179,15 @@ sap.ui.define([
 
 			}).catch(function (oError) {
 
-				//error message
-				Services.showErrorMessage(oError, "Saving tender results");
+				if(oError.responseText.indexOf("Entity already exists") > -1){
+					//promises must fail as well
+					sap.m.MessageBox.error("The competitor entity already exists. The combination of OfferID, ProductCode and AwardedCompany is not unique.");
+				}else{
+					//error message
+					Services.showErrorMessage(oError, "Saving tender results");
+				}
+
+				
 			});
 
 		},

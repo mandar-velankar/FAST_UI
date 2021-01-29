@@ -31,6 +31,10 @@
 			<form:content>
 			<core:Title/>
 
+				<!-- Contract Name -->
+				<Label text="{i18n>contractname}"/>
+				<Input id="idNewContractname" value="{ctr>/newContract/contractName}" required="false"/>
+
 				<!-- Contract Number -->
 				<Label text="{i18n>ContractNumber}"/>
 				<Input id="idNewContractNumber" value="{ctr>/newContract/contractNumber}" required="true" change="_onValidateContractNo"/>
@@ -49,6 +53,23 @@
 				<Label text="{i18n>Currency}" required="true" />
 				<Select id="idCurrencyNewContract" selectedKey="{ctr>/newContract/currency}" items="{ path: 'ctr>/currencies/', sorter: { path: 'cOUNTRY_CODE' } }">
 					<core:Item key="{ctr>cURRENCY}" text="{ctr>cURRENCY}"/>
+				</Select>
+
+				<!-- Contract channel -->
+				<Label text="{i18n>channel}" required="true"/>
+				<Select id="idChannelNewContract"
+						selectedKey="{ctr>/newContract/channelId}" 
+						items="{ 
+							path: 'ctr>/channels',
+							filters: [
+								{path: 'channelName', operator: 'NE', value1: 'Tender'}
+							]
+						}"
+						enabled="true"
+				>
+					<items>
+						<core:Item text="{ctr>channelName}" key="{ctr>iD}" />
+					</items>
 				</Select>
 
 				<!-- Institute -->
@@ -90,24 +111,18 @@
 						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 					}" 
 					enabled="true"/>
-				<core:Title/>
 
-				<!-- Contract channel -->
-				<Label text="{i18n>channel}" required="true"/>
-				<Select id="idChannelNewContract"
-						selectedKey="{ctr>/newContract/channelId}" 
-						items="{ 
-							path: 'ctr>/channels',
-							filters: [
-								{path: 'channelName', operator: 'NE', value1: 'Tender'}
-							]
-						}"
-						enabled="true"
-				>
-					<items>
-						<core:Item text="{ctr>channelName}" key="{ctr>iD}" />
-					</items>
-				</Select>
+				<!-- Contract Date -->
+				<Label text="{i18n>contractvalid}" required="true"/>
+				<DatePicker 
+					id="idContractDateValid" 
+					value="{
+						path :'ctr>/newContract/contractValid', 
+						type: 'sap.ui.model.type.Date', 
+						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+					}" 
+					enabled="true"/>
+				<core:Title/>
 				
 
 			</form:content>
