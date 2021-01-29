@@ -128,7 +128,7 @@
 					<m:Text id="idhdrInstNme" text="{ctr>/currentContract/institute/instituteName}"/>
 					<m:Text id="idhdrInstID" text="{ctr>/currentContract/institute/instituteID}" visible="false"/>
 				</m:VBox>
-				
+
 				<!-- SELECTED CONTRACT -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="{i18n>ContractNumber}"/>
