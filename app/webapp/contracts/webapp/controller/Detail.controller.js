@@ -104,8 +104,6 @@ sap.ui.define([
 
 			//make detail sections invisible (only if navigation to productId happens, this will trigger sections to be visible again)
 			var oDetail = this.getView();
-			oDetail.byId("idDelivTrackDeliveryDetailsSubsection").setVisible(false);
-			oDetail.byId("idDelivTrackLetterDetailsSubSection").setVisible(false);
 			this.byId("idProductDetailSection").setVisible(false);
 			
 			// this.getModel().metadataLoaded().then( function() {
@@ -134,7 +132,7 @@ sap.ui.define([
 				}
 
 				//this.sProductIdParameter = (this.sProductIdParameter !== undefined) ? this.sProductIdParameter : (oFirstProduct ? oFirstProduct.productPackId || oFirstProduct.productCode : null);
-				this.sProductIdParameter = this.sProductIdParameter || (oFirstProduct && oFirstProduct.productPackId || oFirstProduct.productCode ) || null;
+				this.sProductIdParameter = this.sProductIdParameter || (oFirstProduct && ( oFirstProduct.productPackId || oFirstProduct.productCode ) ) || null;
 				if(this.sProductIdParameter){
 					this._selectProductInTable(this.sSectionParameter, this.sProductIdParameter);
 				}
@@ -150,18 +148,18 @@ sap.ui.define([
 		},
 		
 		resetProductTables: function() {
-			var oDetailView = this.getView("detail");
-			var oDeliveryView = oDetailView.byId("deliveryTrackingProductsViewId"); //subview of detail view
+			//var oDetailView = this.getView("detail");
+			//var oDeliveryView = oDetailView.byId("deliveryTrackingProductsViewId"); //subview of detail view
 
 			//two possible table depending on section we are on
 			const oContractProductsTable = this.byId("ProductsTableID");
-			const oDeliveryProductsTable = oDeliveryView.byId("idDeliveryTrackViewProductTable");
+			//const oDeliveryProductsTable = oDeliveryView.byId("idDeliveryTrackViewProductTable");
 
-			var oSelectedItem = oDeliveryProductsTable.getSelectedItem();
+			/*var oSelectedItem = oDeliveryProductsTable.getSelectedItem();
 			if(oSelectedItem){
 				oSelectedItem.setSelected(false);
 				oSelectedItem.setActive(false);
-			}	
+			}	*/
 
 			oSelectedItem = oContractProductsTable.getSelectedItem();
 			if(oSelectedItem){
@@ -395,32 +393,32 @@ sap.ui.define([
 			this.oObjectPageLayout.setShowFooter(true);	
 			this.byId("idProductDetailSection").setVisible(false);
 
-			this.hideDeliveryTrackingTab();
-			this.hideContractDetailsTab();
+			//this.hideDeliveryTrackingTab();
+			//this.hideContractDetailsTab();
 
 			this.ctrState.setPrevSelectedDistributorID(this.ctrState.getCurrentContract().distributorId);
 			this.ctrState.setPrevSelectedSellingCompID(this.ctrState.getCurrentContract().sellingCompanyCode);
 			this.ctrState.setPrevSelectedProduct(this.ctrState.getCurrentContract().getSelectedProduct());
 		},
 
-		hideDeliveryTrackingTab: function(){
+		/*hideDeliveryTrackingTab: function(){
 			const selectedTab = this.byId("DetailPage").getSelectedSection().split("-").pop();
 			if(selectedTab === "contractInformationId" && !this.ctrState.data.editModeContract){
 				this.ctrState.setEditModeContract(true);
 			}else{
 				this.ctrState.setEditModeContract(false);
 			}
-		},
+		},*/
 
-		hideContractDetailsTab: function(){
+		/*hideContractDetailsTab: function(){
 			const selectedTab = this.byId("DetailPage").getSelectedSection().split("-").pop();
 			if(selectedTab === this.ctrState.getDeliverySectionId() && !this.ctrState.data.editModeDelivery){
-				this.ctrState.setEditModeDelivery(true);
+				//this.ctrState.setEditModeDelivery(true);
 			} else {
 				this.ctrState.setEditModeDelivery(false);
 			}
 			
-		},
+		},*/
 
 		onDeleteTenderPress: function(oEvent){
 
@@ -441,13 +439,13 @@ sap.ui.define([
 							var oProduct = oContract.products[product];
 							oProduct.enabled = false;
 
-							for(var delivery in oProduct.Deliveries){
+							/*for(var delivery in oProduct.Deliveries){
 								oProduct.Deliveries[delivery].enabled = false;
 							}
 
 							for(var letter in oProduct.Letters){
 								oProduct.Letters[letter].enabled = false;
-							}
+							}*/
 
 						}
 						
@@ -571,8 +569,8 @@ sap.ui.define([
 		onFooterSavePress: function(oEvent){ 
 			//get current selected product
 			var oSelectedProduct = this.ctrState.getCurrentContract().getSelectedProduct();
-			var oDeliveriesView  = this.getView("deliveryTrackingDeliveriesViewId");
-			var oLettersView     = this.getView("deliveryTrackingLettersViewId");
+			//var oDeliveriesView  = this.getView("deliveryTrackingDeliveriesViewId");
+			//var oLettersView     = this.getView("deliveryTrackingLettersViewId");
 			this.ctrState.setEditMode(false);
 
 			//What are we saving, Contract or Delivery
@@ -601,67 +599,9 @@ sap.ui.define([
 					}
 					
 				  break;
-				case this.ctrState.getDeliverySectionId():
-					//validate deliveries
-					var that = this;
-					var bError = false;
-					let oDeliveries = this.ctrState.getCurrentContract().getSelectedProduct().getDeliveries();
-					let oLetters = this.ctrState.getCurrentContract().getSelectedProduct().getLetters();
-
-					oDeliveries.forEach(async function(delivery, index) {
-						if(!that.ctrState.validateDelivery(delivery)){
-							sap.m.MessageBox.error("Please enter all the mandatory fields for the given deliveries.");
-							bError = true;
-						}
-					});
-
-					oLetters.forEach(async function(letter, index) {
-						if(!that.ctrState.validateLetter(letter)){
-							sap.m.MessageBox.error("Please enter all the mandatory fields for the given letters.");
-							bError = true;
-						}
-					});
-
-					  // save current Product with deliveries
-					if(!bError){
-						this.getView().setBusy(true);
-						this.ctrState.saveCurrentProduct().then((values) => {
-							this.getView().setBusy(false);
-							var msg = 'Product is saved.';
-							MessageToast.show(msg);
-						});
-					}
-				  break;
+				
 				default:
 				  // code block
-			}
-
-			if(!bError){
-
-				this.hideDeliveryTrackingTab();
-				this.hideContractDetailsTab();
-				oDeliveriesView.byId("idDelivTrackDeliveryDetailsSubsection").setVisible(false);
-				oDeliveriesView.byId("idDelivTrackLetterDetailsSubSection").setVisible(false);
-				this.oObjectPageLayout.setShowFooter(false);
-
-				//deselect possible deliveries in edit
-				const oDeliveriesTable = oDeliveriesView.byId("deliveryTrackingDeliveriesViewId").byId("deliveriesTableID");
-
-				if (oDeliveriesTable && this.ctrState.getDeliveryItemEdit() !== -1) {
-					this._switchTableLineDisplay(oDeliveriesTable, this.ctrState.getDeliveryItemEdit());
-					this.ctrState.setDeliveryItemEdit(-1);
-				}
-
-				//deselect possible letters in edit
-				const oLettersTable = oLettersView.byId("deliveryTrackingLettersViewId").byId("lettersTableID");
-
-				if (oLettersTable && this.ctrState.getLetterItemEdit() !== -1) {
-					this._switchTableLineDisplay(oLettersTable, this.ctrState.getLetterItemEdit());
-					this.ctrState.setLetterItemEdit(-1);
-				}
-			} else {
-				//sty in edit mode
-				this.ctrState.setEditMode(true);
 			}
 			
 		},
@@ -746,17 +686,14 @@ sap.ui.define([
 				}
 				
 				//make detail sections invisible
-				var oDetail = this.getView("idDelivTrackDeliveryDetailsSubsection");
-				oDetail.byId("idDelivTrackDeliveryDetailsSubsection").setVisible(false);
-				oDetail.byId("idDelivTrackLetterDetailsSubSection").setVisible(false);
+				
 				this.byId("idProductDetailSection").setVisible(false);
 				if(this.ctrState.getCurrentContract().getSelectedProduct()){
 					this.byId("idProductDetailSection").setVisible(true);
 				}
 
 				//go back to display mode
-				this.hideDeliveryTrackingTab();
-				this.hideContractDetailsTab();
+				//this.hideContractDetailsTab();
 				this.oObjectPageLayout.setShowFooter(false);
 				
 			})
@@ -901,8 +838,6 @@ sap.ui.define([
 			
 			//make detail sections invisible
 			var oDetail = this.getView();
-			oDetail.byId("idDelivTrackDeliveryDetailsSubsection").setVisible(false);
-			oDetail.byId("idDelivTrackLetterDetailsSubSection").setVisible(false);
 
 			oRouter.navTo("object", {
 				objectId : this.ctrState.getCurrentContract().contractNumber,
@@ -917,12 +852,10 @@ sap.ui.define([
 			
 			//that is this
 			var that = this;
-			var oDetailView = that.getView("detail");
-			var oDeliveryView = oDetailView.byId("deliveryTrackingProductsViewId"); //subview of detail view
+			//var oDetailView = that.getView("detail");
 
 			//two possible table depending on section we are on
 			const oContractProductsTable = that.byId("ProductsTableID");
-			const oDeliveryProductsTable = oDeliveryView.byId("idDeliveryTrackViewProductTable");
 
 			//check wich section is open
 			switch(sSelectedSection) {
@@ -949,31 +882,6 @@ sap.ui.define([
 						}
 
 					});					
-				  break;
-
-				case that.ctrState.getDeliverySectionId():
-
-				  	// Product should be selected in delivery table
-					var aDeliveryProducts = oDeliveryProductsTable.getItems();
-					  
-				  	//Select again the same product
-					aDeliveryProducts.forEach(function (oProductLine) {
-
-						//get product data
-						var sPath = oProductLine.getBindingContextPath();
-						var oProduct = that.getView().getModel("ctr").getProperty(sPath)
-
-						//if this is the product that needs to be selected (TODO: productcode vs productpackid?)
-						if (oProduct.productPackId === Number(sProductId) || oProduct.productCode === Number(sProductId)) {
-							//select product
-							oDeliveryProductsTable.setSelectedItem(oProductLine, true);
-							oProductLine.setSelected(true);
-							oProductLine.setActive(true);
-							oProductLine.firePress();
-							oProductLine.setActive(true);
-						}
-
-					});	
 				  break;
 
 				default:
@@ -1019,9 +927,9 @@ sap.ui.define([
 
 		setSelectedSection: function(oEvent){
 			//keep delivery tracking as selected section in state
-			if((oEvent.getSource().getSelectedSection()).includes("deliveryTrackingId")){
+			/*if((oEvent.getSource().getSelectedSection()).includes("deliveryTrackingId")){
 				this.ctrState.setSelectedSection("deliveryTrackingId");
-			}
+			}*/
 
 			//keep delivery tracking as selected section in state
 			if((oEvent.getSource().getSelectedSection()).includes("contractInformationId")){
@@ -1172,7 +1080,7 @@ sap.ui.define([
 		 * @param {*} sSubSectionViewId 
 		 * @param {*} sId 
 		 */
-		getControlFromDeliverySection: function(sSubSectionViewId,sId){
+		/*getControlFromDeliverySection: function(sSubSectionViewId,sId){
 			//that is this
 			var that = this;
 			var oDetailView = that.getView("detail");
@@ -1182,7 +1090,7 @@ sap.ui.define([
 			if(oDeliveryView){
 				return oDeliveryView.byId(sId);
 			}
-		},
+		},*/
 
 		/** Refreshing list of contracts */
 		refreshContracts: function(){
