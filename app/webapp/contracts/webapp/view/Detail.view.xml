@@ -206,7 +206,7 @@
 												<m:Label text="{i18n>channel}" required="true"/>
 												<m:Select selectedKey="{ctr>/currentContract/channel}" enabled="false">
 													<m:items>
-														<core:Item text="Tender" key="Tender"/>
+														<!-- <core:Item text="Tender" key="Tender"/>-->
 														<core:Item text="Other" key="Other"/>
 													</m:items>
 												</m:Select>
@@ -347,49 +347,6 @@
 							</m:VBox>
 						</blocks>
 					</ObjectPageSubSection>
-			</ObjectPageSection>
-
-			<!-- DELIVERY TRACKING TAB -->
-			<ObjectPageSection id="deliveryTrackingId" title="Delivery Tracking" visible="{= ${ctr>/editModeContract} ? false : true}">
-				<subSections>
-					
-					<!-- Products table -->
-					<ObjectPageSubSection id="idDelivTrackProductsSubsection" title="Tender Offer" visible="{= ${ctr>/editMode} === true ? false : true}">
-						<blocks>
-							<mvc:XMLView id="deliveryTrackingProductsViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingProducts"/>
-						</blocks>
-					</ObjectPageSubSection>
-
-					<!-- Deliveries -->
-					<ObjectPageSubSection id="idDelivTrackDeliveriesSubsection" title="Deliveries">
-						<blocks>
-							<mvc:XMLView id="deliveryTrackingDeliveriesViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingDeliveries"/>
-						</blocks>
-					</ObjectPageSubSection>
-
-					<!-- Delivery Details -->
-					<ObjectPageSubSection id="idDelivTrackDeliveryDetailsSubsection" title="Delivery Details" visible="false">
-						<blocks>
-							<mvc:XMLView id="deliveryTrackingDeliveryDetailsViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingDeliveryDetails"/>
-						</blocks>
-					</ObjectPageSubSection>
-
-					<!-- Letters -->
-					<ObjectPageSubSection id="idDelivTrackLettersSubsection" title="Letters" visible="true">
-						<blocks>
-							<mvc:XMLView id="deliveryTrackingLettersViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingLetters"/>
-						</blocks>
-					</ObjectPageSubSection>
-
-					<!-- Letters Detail -->
-					<ObjectPageSubSection id="idDelivTrackLetterDetailsSubSection" title="Letter Details" visible="false">
-						<blocks>
-							<mvc:XMLView id="deliveryTrackingLetterDetailsViewId" viewName="com.bayer.tender.contracts.view.DeliveryTrackingLetterDetails"/>
-						</blocks>
-					</ObjectPageSubSection>
-
-
-				</subSections>
 			</ObjectPageSection>
 
 		</sections>
