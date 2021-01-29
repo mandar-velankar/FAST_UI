@@ -593,6 +593,10 @@ sap.ui.define([
 							this.getView().setBusy(false);
 							var msg = 'Contract is saved.';
 							MessageToast.show(msg);
+
+							//go back to display mode
+							//this.hideContractDetailsTab();
+							this.oObjectPageLayout.setShowFooter(false);
 						});
 					}else{
 						return;
