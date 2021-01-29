@@ -1034,7 +1034,7 @@
 			
 			
 			<!-- DELIVERY TRACKING TAB -->
-			<ObjectPageSection id="deliveryTrackingId" title="{i18n>DeliveryTracking}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? false : true}">
+			<ObjectPageSection id="deliveryTrackingId" title="{i18n>DeliveryTracking}" visible="true">
 				<subSections>
 					<ObjectPageSubSection id="deliveryTrackingSubSectionId">
 						<mvc:XMLView id="deliveryTrackingViewId" viewName="FAST_NS0FAST0.view.DeliveryTracking"/>
