@@ -584,6 +584,8 @@ sap.ui.define([
 
 				//save Approvals (&status)
 				this.ppaState.sendApprovals("Processing").then(() => {
+					//Reload master list so status is updated
+					this.refreshMasterViewBrandListBinding();
 					this.getView().setBusy(false);
 				});
 
@@ -704,6 +706,8 @@ sap.ui.define([
 
 			//save Approvals (&status)
 			this.ppaState.sendApprovals("Cancelling").then(() => {
+				//Reload master list so status is updated
+				this.refreshMasterViewBrandListBinding();
 				this.getView().setBusy(false);
 			});
 
@@ -839,6 +843,9 @@ sap.ui.define([
 				//Reload policy so status is shown & PolicyID will be captured
 				this.onRefreshPolicyPress();
 				
+				//Reload master list so status is updated
+				this.refreshMasterViewBrandListBinding();
+
 				//Display mode MSP
 				this.setMspEditMode(false);
 				this.byId("idBtnEditMspPolicy").setEnabled(true);
@@ -875,6 +882,9 @@ sap.ui.define([
 				//Reload policy so status is shown & PolicyID will be captured
 				this.onRefreshPolicyPress();
 
+				//Reload master list so status is updated
+				this.refreshMasterViewBrandListBinding();
+				
 				//Display mode NSP
 				this.setNspEditMode(false);
 				this.byId("idBtnEditNspPolicy").setEnabled(true);
@@ -1243,7 +1253,7 @@ sap.ui.define([
 			// //products table
 			this.closePricingPanels();
 			if(oProductsTable){
-				oProductsTable.removeSelections(true)
+				oProductsTable.removeSelections(true);
 			}
 		},
 
@@ -1331,6 +1341,10 @@ sap.ui.define([
 				this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
 					//reload products so status is up to date in product table
 					this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(() => {
+						
+						//Reload master list so status is updated
+						this.refreshMasterViewBrandListBinding();
+
 						//show success message
 						sap.ui.core.BusyIndicator.hide();
 						sap.m.MessageBox.success("Price reduction successfully saved");
