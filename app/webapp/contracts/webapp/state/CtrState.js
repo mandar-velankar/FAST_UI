@@ -135,7 +135,7 @@ sap.ui.define([
 
 			//for contract tab: contract type = other
 			if (this.getSelectedSection() === this.getContractSectionId()){
-				if( oCurrentContract.channel === 'Other'){
+				if( oCurrentContract.channel === 'OTC'){
 					sEditEnabled = true;
 				}else{
 					sEditEnabled = false;
@@ -159,7 +159,7 @@ sap.ui.define([
 
 		setDeleteEnabled: function(sDeleteEnabled){
 			var oCurrentContract = this.getCurrentContract();
-			sDeleteEnabled = oCurrentContract.channel === 'Other';
+			sDeleteEnabled = oCurrentContract.channel === 'OTC';
 			this.setProperty("deleteEnabled", sDeleteEnabled);
 			this.updateModel();
 		},
@@ -447,7 +447,7 @@ sap.ui.define([
 				contracts = contracts.data.results;
 				return contracts.map(contract => {
 					//indication for other contract
-					contract['channel'] = 'Other';
+					contract['channel'] = 'OTC';
 					return new Contract(contract);
 				});
 			});
@@ -620,7 +620,7 @@ sap.ui.define([
 		convertDataToContract: function(data){
 			var aInstituteWithChildren = [];
 			const contract = data; //TODO: check if the contract service can have multiple records for a particular contract number. if yes, then this code must probably be changed.  
-			contract['channel'] = 'Other';
+			contract['channel'] = 'OTC';
 			var oContract = new Contract(contract);
 
 			//only parent instistute exists (this way we always have a instistute available on delivery popup, even if its hidden, parent should be selected)
@@ -697,7 +697,7 @@ sap.ui.define([
 			//different logic should be applied (managed association for other contract -> meaning product can be saved as a whole (including deliveries & letters) vs Tender contract separate tables)
 			var oCurrentContract = this.getCurrentContract();
 			var sTenderID = oCurrentContract.tenderID;
-			if(oCurrentContract.channel === 'Other'){
+			if(oCurrentContract.channel === 'OTC'){
 
 				//update the whole product with all linked deliveries & letters
 				return this.getService().updateProduct(product);

@@ -41,8 +41,8 @@ sap.ui.define([
 			});
 
 			// wire in the MessageManager for input validation for the custom types
-			const oRequestedVolume = this.byId("idRequestedVolume");
-			sap.ui.getCore().getMessageManager().registerObject(oRequestedVolume, true);
+			//const oRequestedVolume = this.byId("idRequestedVolume");
+			//sap.ui.getCore().getMessageManager().registerObject(oRequestedVolume, true);
 			const oCommissionRate = this.byId("idCommissionRate");
 			sap.ui.getCore().getMessageManager().registerObject(oCommissionRate, true);	
 
@@ -185,7 +185,7 @@ sap.ui.define([
 				this.getInstituteDistributorBrandProducts();
 
 				//hide warning message
-				if(this.ctrState.getCurrentContract().channel==="Other"){
+				if(this.ctrState.getCurrentContract().channel==="OTC"){
 					this.byId("msgWarningEdit").setVisible(false);
 				}else{
 					this.byId("msgWarningEdit").setVisible(true);

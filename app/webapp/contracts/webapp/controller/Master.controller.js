@@ -396,7 +396,8 @@ sap.ui.define([
 				!contract.instituteId ||
 				!contract.distributorId ||
 				!contract.sellingCompanyCode ||
-				!contract.contractDate  
+				!contract.contractDate ||
+				!contract.ContractValidUntil
 			){
 				return false;
 
@@ -669,7 +670,7 @@ sap.ui.define([
 			//get possible filters
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "SA";
 			//var oChannel = this.byId("idSlctChannel").getSelectedItem() ? this.byId("idSlctChannel").getSelectedItem().getKey() : "All";
-			let oChannel = 'Other';
+			let oChannel = 'OTC';
 			var sSearch = this.byId("idSearch").getProperty("value");
 
 			//Add filters if they are set (so not the default, all...)
