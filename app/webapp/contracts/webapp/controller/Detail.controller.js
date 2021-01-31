@@ -535,7 +535,7 @@ sap.ui.define([
 		 */
 		onConfirmProduct: function(oEvent){
 			this.byId("idProductDetailSection").setVisible(false);
-			this.ctrState.setLetterItemEdit(-1);
+			//this.ctrState.setLetterItemEdit(-1);
 		},
 
 		/**
@@ -724,12 +724,12 @@ sap.ui.define([
 
 			if (products.length > 0) {
 
-				const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
+				/*const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
 
 				if(bContainsDeliveriesOrLetters){
 					this._showContainsDeliveriesOrLetters();
 					oDistributorInput.setSelectedKey(oCtrState.getPrevSelectedDistributorID());
-				}else{
+				}else{*/
 					sap.m.MessageBox.warning("Are you sure you want to change the Distributor? Existing products will be removed.", {
 						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
 						styleClass: "sapUiSizeCompact",
@@ -745,7 +745,7 @@ sap.ui.define([
 							}
 						}
 					});
-				}
+				//}
 			} else {
 				oCtrState.setPrevSelectedDistributorID(oDistributorInput.getSelectedKey());
 				this.ctrState.updateDistributor(distributor);
@@ -767,12 +767,12 @@ sap.ui.define([
 
 			if (products.length > 0) {
 
-				const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
+				/*const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
 
 				if(bContainsDeliveriesOrLetters){
 					this._showContainsDeliveriesOrLetters();
 					oDistributorInput.setSelectedKey(oCtrState.getPrevSelectedDistributorID());
-				}else{
+				}else{*/
 					sap.m.MessageBox.warning("Are you sure you want to change the selling company? Existing products will be removed.", {
 						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
 						styleClass: "sapUiSizeCompact",
@@ -787,7 +787,7 @@ sap.ui.define([
 							}
 						}
 					});
-				}				
+				//}				
 			} else {
 				oCtrState.setPrevSelectedDistributorID(oDistributorInput.getSelectedKey());
 				this.ctrState.updateSellingCompany(sellingCompany);
@@ -795,16 +795,16 @@ sap.ui.define([
 			}
 		},
 
-		_showContainsDeliveriesOrLetters: function(){
+		/*_showContainsDeliveriesOrLetters: function(){
 			sap.m.MessageBox.error("This action can not be performed. Some products still contain deliveries or letters.");
-		},
+		},*/
 
 		validateProductRemoval: function(products){
 			if(!products){
 				return;
 			}
 
-			if(products instanceof Array){
+			/*if(products instanceof Array){
 				const aProductsWithDeliveriesOrLetters = products.filter(product => (product.getDeliveries().length > 0 || product.getLetters().length > 0));
 				return aProductsWithDeliveriesOrLetters.length > 0;
 			}else{
@@ -813,7 +813,7 @@ sap.ui.define([
 				}else if(products.getEnabledLetters().length > 0){
 					return products.getEnabledLetters();
 				}
-			}
+			}*/
 		},
 
 		/**
@@ -977,12 +977,12 @@ sap.ui.define([
 
 			let oProductsDetail = this.byId("idProductDetailSection");
 
-			const containsDeliveriesOrLetters = this.validateProductRemoval(selectedProduct);
+			/*const containsDeliveriesOrLetters = this.validateProductRemoval(selectedProduct);
 
 			if(containsDeliveriesOrLetters && containsDeliveriesOrLetters.length > 0){
 				sap.m.MessageBox.error("This action can not be performed. This roduct still contains deliveries or letters.");
 				return;
-			}
+			}*/
 
 			if(userAction === "create"){
 				// remove product from the state
