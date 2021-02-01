@@ -397,7 +397,7 @@ sap.ui.define([
 				!contract.distributorId ||
 				!contract.sellingCompanyCode ||
 				!contract.contractDate ||
-				!contract.ContractValidUntil
+				!contract.contractValidUntil
 			){
 				return false;
 
