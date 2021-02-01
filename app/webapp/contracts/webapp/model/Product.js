@@ -1,7 +1,7 @@
 sap.ui.define([
     "com/bayer/tender/uilib/objects/BaseObject",
-    "./Letter",
-    "./Delivery",
+    //"./Letter",
+    //"./Delivery",
     "./ProductsProduct",
 ], function (BaseObject, Letter, Delivery, ProductsProduct) {
     "use strict";
@@ -18,8 +18,8 @@ sap.ui.define([
             this.setUserAction("update"); 
 
             if (data) {
-                data.Deliveries && !data.Deliveries.__deferred && this.setDeliveries(data.Deliveries.results);
-                data.Letters && !data.Letters.__deferred && this.setLetters(data.Letters.results);
+                ///data.Deliveries && !data.Deliveries.__deferred && this.setDeliveries(data.Deliveries.results);
+                //data.Letters && !data.Letters.__deferred && this.setLetters(data.Letters.results);
                 data.Product && !data.Product.__deferred && this.setProduct(data.Product);
                 this.calculateDiscount();
             }
@@ -35,7 +35,7 @@ sap.ui.define([
             return this.userAction;
         },
        
-        setDeliveries: function (deliveries) {
+        /*setDeliveries: function (deliveries) {
             if (deliveries && deliveries.length > 0) {
                 this.deliveries = deliveries.map(delivery => new Delivery(delivery));
             }
@@ -160,7 +160,7 @@ sap.ui.define([
         removeLetter: function(oLetter){ 
             const index = this.getLetterIndex(oLetter); 
             this.getLetters().splice(index,1);
-        },
+        },*/
 
         setProduct: function (product) {
             if (product) {
@@ -197,7 +197,7 @@ sap.ui.define([
             this.calculateDiscount();
         },
 
-        setSelectedDelivery: function (delivery) {
+        /*setSelectedDelivery: function (delivery) {
             if (delivery && delivery instanceof Delivery) {
                 this.selectedDelivery = delivery;
             }else{
@@ -259,7 +259,7 @@ sap.ui.define([
 
         getSelectedLetter: function () {
             return this.selectedLetter || {};
-        },
+        },*/
         
         //<property>Changed function
         // countryCodeChanged: function (state, event) {
@@ -325,7 +325,7 @@ sap.ui.define([
             const jsonObj = this.getJSON();
 
             // Filter out deliveries that have been newly created and deleted directly by the user from the UI
-            const deliveries = this.getDeliveries()
+            /*const deliveries = this.getDeliveries()
                 .filter(delivery => {
 
                     const userAction = delivery.getUserAction();
@@ -356,7 +356,7 @@ sap.ui.define([
 
                     return false;
                 })
-                .map(letter => letter.getJSON());    
+                .map(letter => letter.getJSON()); */   
 
             //get additional assiciations
             const expandedObj = {

@@ -214,9 +214,11 @@ sap.ui.define([
             return this.getJSONObject([
                 "iD",
                 "countryCode",
+                "contractName",
                 "contractNumber",
                 "channelId",
                 "contractDate",
+                "ContractValidUntil",
                 "enabled",
                 "instituteId",
                 "distributorId",
@@ -234,9 +236,11 @@ sap.ui.define([
             const jsonObj = this.getJSONObject([
                 "iD",
                 "countryCode",
+                "contractName",
                 "contractNumber",
                 "channelId",
                 "contractDate",
+                "ContractValidUntil",
                 "enabled",
                 "instituteId",
                 "distributorId",
