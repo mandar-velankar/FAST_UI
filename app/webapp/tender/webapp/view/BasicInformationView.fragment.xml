@@ -81,6 +81,21 @@
 			items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }">
 				<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 			</Select>
+
+			<!-- Argentina only -->
+			<Label text="{i18n>High Value}" design="Bold" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR'
+				}"
+			/>
+			<CheckBox 
+				enabled="false"
+				selected="{fastData>HighValue}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR'
+				}"
+			/>
+			<!-- / Argentina only -->
 			
 			<!-- Mexico changes-->
 			<Label id="idLabelSalesType" text="{i18n>salestype}" design="Bold" required="true" visible="true"/>
