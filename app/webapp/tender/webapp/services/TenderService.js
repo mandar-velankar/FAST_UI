@@ -97,6 +97,7 @@ sap.ui.define([
 			oTenderToSave.BindingTypeLevel1 = oTenderSaveInfo.BindingTypeLevel1;
 			oTenderToSave.BindingTypeLevel2 = oTenderSaveInfo.BindingTypeLevel2;
 			oTenderToSave.BindingTypeLevel3 = oTenderSaveInfo.BindingTypeLevel3;
+			oTenderToSave.HighValue = oTenderSaveInfo.HighValue;
 			oTenderToSave.TenderName = oTenderSaveInfo.TenderName;
 			oTenderToSave.InstituteID = Number(oTenderSaveInfo.InstituteID);
 			oTenderToSave.TenderChannel = oTenderSaveInfo.TenderChannel;
@@ -141,6 +142,7 @@ sap.ui.define([
 			oNewTender.BindingTypeLevel1 = "";
 			oNewTender.BindingTypeLevel2 = "";
 			oNewTender.BindingTypeLevel3 = "";
+			oNewTender.HighValue = "";
 			oNewTender.TenderName = "";
 			oNewTender.InstituteID = "";
 			oNewTender.TenderChannel = "";

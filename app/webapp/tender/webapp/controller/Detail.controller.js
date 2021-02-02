@@ -3191,6 +3191,7 @@ sap.ui.define([
 				oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem()&& this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
 				oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
 				oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+				oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
 
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
@@ -3301,6 +3302,7 @@ sap.ui.define([
 			oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem() && this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
 			oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
 			oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+			oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();

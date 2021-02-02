@@ -106,6 +106,21 @@
 				<core:Item text="" key=""/>
 			</Select>
 			<!-- Block - Timeline -->
+
+			<!-- Argentina only -->
+			<Label text="{i18n>High Value}" design="Bold" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR'
+				}"
+			/>
+			<CheckBox 
+				id="idHighValue"
+				selected="{fastData>HighValue}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR'
+				}"
+			/>
+			<!--/ Argentina only -->
 			
 			<!-- Mexico: SalesType: -->
 			<Label id="idLabelSalesTypeEdit" text="{i18n>salestype}" design="Bold" required="true" visible="true"/>
