@@ -3193,6 +3193,12 @@ sap.ui.define([
 				oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
 				oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
 
+				// Brazil only
+				oSaveBasicInfo.IbizID = this.byId("idIbizIDEdit") && this.byId("idIbizIDEdit").getValue();
+				oSaveBasicInfo.PublicNotice = this.byId("idPublicNoticeEdit") && this.byId("idPublicNoticeEdit").getValue();
+				oSaveBasicInfo.OfferStartDate = (oTender.OfferStartDate) ? oTender.OfferStartDate : null;
+				// END Brazil only
+
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
 				oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
@@ -3303,6 +3309,12 @@ sap.ui.define([
 			oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
 			oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
 			oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
+
+			// Brazil only
+			oSaveBasicInfo.IbizID = this.byId("idIbizIDEdit") && this.byId("idIbizIDEdit").getValue();
+			oSaveBasicInfo.PublicNotice = this.byId("idPublicNoticeEdit") && this.byId("idPublicNoticeEdit").getValue();
+			oSaveBasicInfo.OfferStartDate = (oTender.OfferStartDate) ? oTender.OfferStartDate : null;
+			// END Brazil only
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
