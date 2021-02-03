@@ -167,6 +167,35 @@
 			<Input id="idProcurementReasonEdit" value="{fastData>PROCUREMENT_REASON}" enabled="false" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
 			<!-- End of Thailand Changes-->
 
+			<!-- Brazil only -->
+			<Label text="{i18n>IBIZ Id}" design="Bold" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<Input id="idIbizIDEdit" 
+				value="{fastData>IbizID}" 
+				enabled="false"
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<Label text="{i18n>Public Notice}" design="Bold" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<TextArea id="idPublicNoticeEdit" rows="8" 
+				value="{fastData>PublicNotice}"
+				showExceededText="true" 
+				maxLength="500"
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+
+			<!-- End Brazil only -->
+
 			<core:Title text="Timeline"/>
 			<Label text="{i18n>pubcndte}" design="Bold" required="true"/>
 			<!--<DatePicker id="idPublicationDate" value="{path :'fastData>PublicationDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->
@@ -187,6 +216,17 @@
 			<!--<DatePicker id="idNextPublicationDye" value="{path :'fastData>NextPublicationDye',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->
 				<!--valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
 			<DatePicker id="idNextPublicationDye" value="{path :'fastAppData>/EditTender/NextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+
+			<!-- Brazil only -->
+			<Label text="{i18n>Offer Start Date}" design="Bold"/>
+			<DatePicker id="idOfferStartDateEdit" 
+				value="{path :'fastAppData>/EditTender/OfferStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<!-- End Brazil only -->
+
 			<!--<Input value="{fastData>NextPublicationDye}"/>-->
 			<Label text="{i18n>contleng}" design="Bold"/>
 			<Input id="idContractLength" value="{fastData>ContractLength}" type="Number" />
