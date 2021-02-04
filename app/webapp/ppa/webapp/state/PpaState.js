@@ -28,7 +28,8 @@ sap.ui.define([
 				approvalRequest: {},
 				editMode: false,
 				mspPanelExpanded: false,
-				nspPanelExpanded: false
+				nspPanelExpanded: false,
+				previousEffDate: {},
 			};
 
 			this.ppaService = oService;
@@ -70,6 +71,14 @@ sap.ui.define([
 
 		setNspExpandable: function (bExpanded){
 			this.setProperty("nspPanelExpandable", bExpanded);
+		},
+
+		setPreviousEffDate: function (dEffDate){
+			this.setProperty("previousEffDate", dEffDate);
+		},
+
+		getPreviousEffDate: function (dEffDate){
+			return this.getProperty("previousEffDate");
 		},
 
 		//Get selected brand
