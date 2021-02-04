@@ -135,12 +135,17 @@
 					<m:Text  text="{ctr>/currentContract/contractNumber}"/>
 				</m:VBox>
 
+				<!-- SELECTED CONTRACT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="{i18n>contractname}"/>
+					<m:Text text="{ctr>/currentContract/contractName}"/>
+				</m:VBox>				
+				
 				<!-- SELECTED PRODUCT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="{i18n>productnme}"/>
 					<m:Text text="{= ${ctr>/currentContract/selectedProduct} ? ${ctr>/currentContract/selectedProduct/product/pRODUCTPACKNAME} : 'No product selected'}"/>
-				</m:VBox>				
-				
+				</m:VBox>	
 			</m:FlexBox>
 		</headerContent>
 
@@ -200,6 +205,17 @@
 														formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 													}" 
 													enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+
+												<!-- Contract Date -->
+												<m:Label text="{i18n>contractvalid}" required="true"/>
+												<m:DatePicker 
+													id="idContractValidDate" 
+													value="{
+														path :'ctr>/currentContract/contractValidUntil', 
+														type: 'sap.ui.model.type.Date', 
+														formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+													}" 
+													enabled="{= ${ctr>/editMode} === true ? true : false}"/>
 												<core:Title/>
 
 												<!-- Channel -->
@@ -207,7 +223,7 @@
 												<m:Select selectedKey="{ctr>/currentContract/channel}" enabled="false">
 													<m:items>
 														<!-- <core:Item text="Tender" key="Tender"/>-->
-														<core:Item text="Other" key="Other"/>
+														<core:Item text="OTC" key="OTC"/>
 													</m:items>
 												</m:Select>
 
@@ -229,33 +245,35 @@
 									delete="onDeleteProduct"
 									selectionChange="onProductItemSelect"
 									items="{
-										path: 'ctr>/currentContract/products',
-										sorter: {path: 'sorter', descending: false},
-										filters: [
-											{path: 'enabled', operator: 'EQ', value1: true}
-										]
+										path: 'ctr>/currentContract/products'
 									}">
 								<m:columns>
-									<m:Column width="16rem">
-										<m:Label text="{i18n>product}" wrapping="true"/>
+									<m:Column width="8rem">
+										<m:Label text="{i18n>productCode}" wrapping="true"/>
 									</m:Column>
-									<m:Column width="7rem">
-										<m:Label text="{i18n>reference}" wrapping="true"/>
+									<m:Column width="13rem">
+										<m:Label text="{i18n>productName}" wrapping="true"/>
 									</m:Column>
 									<m:Column width="8rem">
-										<m:Label text="{i18n>Requested}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
+										<m:Label text="{i18n>unit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
 									<m:Column width="8rem">
-										<m:Label text="{i18n>Unitpack}" wrapping="true"/>
+										<m:Label text="{i18n>smallestUnit}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="10rem">
+										<m:Label text="{i18n>mspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
 									<m:Column width="8rem">
-										<m:Label text="{i18n>OfferPrice}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
+										<m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
 									<m:Column width="8rem">
-										<m:Label text="{i18n>Discount}" wrapping="true"/>
+										<m:Label text="{i18n>focDiscount}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="10rem">
+										<m:Label text="{i18n>nspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
 									<m:Column width="8rem">
-										<m:Label text="{i18n>CommissionRate}" wrapping="true"/>
+										<m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
 								</m:columns>
 								<m:items>
@@ -265,42 +283,45 @@
 										detailPress="onProductItemSelect">
 										<m:cells>
 
+											<m:Text id="productCodeID" text="{ctr>productPackId}"/> 
 											<m:Text id="productPackNameID" text="{ctr>product/pRODUCTPACKNAME}"/> 
-											<!--<m:Text text="{ctr>reference}"/>-->
-											<m:Input value="{ctr>reference}" enabled="false"/>
-											<!--<m:Text text="{parts:[{path:'ctr>requestedVolume'}], formatter: '.formatter.requestedAmount'}"/>-->
-											<!-- <m:Input value="{parts:[{path:'ctr>requestedVolume'}], formatter: '.formatter.requestedAmount'}" enabled="{= ${ctr>/editMode} === true ? true : false}"/> -->
-											<m:Input 
-												id="idRequestedVolume"
-												value="{
-													path:'ctr>requestedVolume', 
-													type: '.customTypes.RequestedVolume'
-												}" 
-												enabled="false"/>
-											<!--<m:Text text="{ctr>uoM}"/>-->
-											<m:Select selectedKey="{ctr>uoM}" enabled="false" >
+											
+											<m:Select selectedKey="{ctr>unit}" enabled="false" >
+													<core:Item key="" text="" />
 													<core:Item key="Unit" text="Unit"/>
 													<core:Item key="Pack" text="Pack"/>
 											</m:Select>
-											<!--<m:Text text="{parts:[{path:'ctr>offerPrice'}, {path:'ctr>/currentContract/currency'}], formatter:'.formatter.price'}"/>-->
-											<m:Input 
-												value="{
-													path:'ctr>offerPrice', 
-													type: '.customTypes.OfferPrice'
-												}"
+											
+											
+											<m:Text 
+												id="idSmallestUnit"
+												text="{ctr>product/uOM}"
+												required="false"/>
+												
+											<m:Input value="{ctr>mspPerUnit}"
 												enabled="false"
-												change="onOfferPriceChange"
 												description="{ctr>/currentContract/currency}"/>
-											<m:Text id="productDiscountId" text="{parts:[{path:'ctr>discount'}], formatter: '.formatter.percentage'}"/>
-											<!--<m:Text text="{parts:[{path:'ctr>commissionRate'}], formatter: '.formatter.percentage'}"/>-->
-											<m:Input 
-												id="idCommissionRate"
-												value="{
-													path:'ctr>commissionRate',
-													type: '.customTypes.CommissionRate'
-												}"
-												description="%" 
+
+											<m:Select selectedKey="{ctr>mspApprovedByRole}" enabled="false" >
+													<core:Item key="" text="" />
+													<core:Item key="NSM/SM/FM" text="NSM/SM/FM" />
+													<core:Item key="HBU" text="HBU"/>
+													<core:Item key="CDH" text="CDH"/>
+											</m:Select>
+
+											<m:Input id="focDiscount" value="{ctr>focDiscount}" enabled="false"/>
+
+											<m:Input value="{ctr>nspPerUnit}"
+												id="idNspPerUnit"
+												description="{ctr>/currentContract/currency}"
 												enabled="false"/>
+
+											<m:Select selectedKey="{ctr>nspApprovedByRole}" enabled="false" >
+													<core:Item key="" text="" />
+													<core:Item key="NSM/SM/FM" text="NSM/SM/FM"/>
+													<core:Item key="HBU" text="HBU"/>
+													<core:Item key="CDH" text="CDH"/>
+											</m:Select>
 
 										</m:cells>
 									</m:ColumnListItem>
@@ -316,24 +337,10 @@
 								<form:SimpleForm id="idProductDetailForm" editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
 									class="editableForm" visible="true">
 									<form:content>
-										<m:Label text="{i18n>samplesyn}" />
-										<m:Select id="idProductDetailsamples" selectedKey="{ctr>/currentContract/selectedProduct/SampleYN}"
-											enabled="{= ${ctr>/editMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/GroupPurchasing} !== 0 ? true : false}">
-											<core:Item key="No" text="No"/>
-											<core:Item key="Yes" text="Yes"/>
-										</m:Select>
-										<m:Label text="{i18n>samples}" required="{= ${ctr>/editMode} &amp;&amp; ${ctr>/currentContract/selectedProduct/SampleYN} === 'Yes' ? true : false}" />
-										<m:Input value="{ctr>/currentContract/selectedProduct/samples}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
-										<m:Label text="{i18n>firstshipment}" required="false"/>
-										<m:Input value="{ctr>/currentContract/selectedProduct/firstShipment}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
-										<m:Label text="{i18n>numberoflots}" required="false"/>
-										<m:Input value="{ctr>/currentContract/selectedProduct/noofLots}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
-										<m:Label text="{i18n>intervalshipments}" required="false"/>
-										<m:Input value="{ctr>/currentContract/selectedProduct/intervalBetweenShipments}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
-										<m:Label text="{i18n>paymentterms}" required="false"/>
-										<m:Input value="{ctr>/currentContract/selectedProduct/paymentTerms}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
-										<m:Label text="{i18n>incoterms}" required="false"/>
-										<m:Input value="{ctr>/currentContract/selectedProduct/incoTerms}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>mspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
+										<m:Input value="{ctr>/currentContract/selectedProduct/mspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>nspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
+										<m:Input value="{ctr>/currentContract/selectedProduct/nspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
 										<m:Label text="" required="false"/>
 										<m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
 											<m:items>

@@ -1,9 +1,9 @@
 sap.ui.define([
     "com/bayer/tender/uilib/objects/BaseObject",
-    "./Letter",
-    "./Delivery",
+    //"./Letter",
+    //"./Delivery",
     "./ProductsProduct",
-], function (BaseObject, Letter, Delivery, ProductsProduct) {
+], function (BaseObject, ProductsProduct) {
     "use strict";
 
     var product = BaseObject.extend("com.bayer.tender.contracts.model.Product", {
@@ -18,10 +18,10 @@ sap.ui.define([
             this.setUserAction("update"); 
 
             if (data) {
-                data.Deliveries && !data.Deliveries.__deferred && this.setDeliveries(data.Deliveries.results);
-                data.Letters && !data.Letters.__deferred && this.setLetters(data.Letters.results);
+                ///data.Deliveries && !data.Deliveries.__deferred && this.setDeliveries(data.Deliveries.results);
+                //data.Letters && !data.Letters.__deferred && this.setLetters(data.Letters.results);
                 data.Product && !data.Product.__deferred && this.setProduct(data.Product);
-                this.calculateDiscount();
+               // this.calculateDiscount();
             }
 
         },
@@ -35,7 +35,7 @@ sap.ui.define([
             return this.userAction;
         },
        
-        setDeliveries: function (deliveries) {
+        /*setDeliveries: function (deliveries) {
             if (deliveries && deliveries.length > 0) {
                 this.deliveries = deliveries.map(delivery => new Delivery(delivery));
             }
@@ -160,7 +160,7 @@ sap.ui.define([
         removeLetter: function(oLetter){ 
             const index = this.getLetterIndex(oLetter); 
             this.getLetters().splice(index,1);
-        },
+        },*/
 
         setProduct: function (product) {
             if (product) {
@@ -197,7 +197,7 @@ sap.ui.define([
             this.calculateDiscount();
         },
 
-        setSelectedDelivery: function (delivery) {
+        /*setSelectedDelivery: function (delivery) {
             if (delivery && delivery instanceof Delivery) {
                 this.selectedDelivery = delivery;
             }else{
@@ -259,7 +259,7 @@ sap.ui.define([
 
         getSelectedLetter: function () {
             return this.selectedLetter || {};
-        },
+        },*/
         
         //<property>Changed function
         // countryCodeChanged: function (state, event) {
@@ -271,7 +271,16 @@ sap.ui.define([
                 "iD",
                 "productPackId", 
                 "countryCode", 
-                "enabled", 
+                "productName",
+                "unit",
+                "mspPerUnit",
+                "mspApprovedByName",
+                "mspApprovedByRole",
+                "focDiscount",
+                "nspPerUnit",
+                "nspApprovedByName",
+                "nspApprovedByRole",
+                /*"enabled", 
                 "reference", 
                 "alternateOffer",
                 "requestedVolume",
@@ -300,19 +309,19 @@ sap.ui.define([
                 "focBrandAbsPct",
                 "cogsBrand", 
                 "budgetRate", 
-                "spotRate"
+                "spotRate"*/
             ]);
 
 
             return {
                 ...json,
-                ProductPackId: +json.ProductPackId,
+                /*ProductPackId: +json.ProductPackId,
                 RequestedVolume: +json.RequestedVolume,
                 Samples: +json.Samples,
                 NoofLots: +json.NoofLots,
                 IntervalBetweenShipments: +json.IntervalBetweenShipments,
                 Sorter: +json.Sorter,
-                FocBrandProductId: +json.FocBrandProductId
+                FocBrandProductId: +json.FocBrandProductId*/
             }
         },
 
@@ -325,7 +334,7 @@ sap.ui.define([
             const jsonObj = this.getJSON();
 
             // Filter out deliveries that have been newly created and deleted directly by the user from the UI
-            const deliveries = this.getDeliveries()
+            /*const deliveries = this.getDeliveries()
                 .filter(delivery => {
 
                     const userAction = delivery.getUserAction();
@@ -356,14 +365,14 @@ sap.ui.define([
 
                     return false;
                 })
-                .map(letter => letter.getJSON());    
+                .map(letter => letter.getJSON()); */   
 
             //get additional assiciations
             const expandedObj = {
                 ...jsonObj,
                 //Associations
-                Deliveries: deliveries, //this.getDeliveries().getJSON(),
-                Letters: letters
+                //Deliveries: deliveries, //this.getDeliveries().getJSON(),
+                //Letters: letters
                 // Contract: this.getSellingCompany().getJSON(),
                 // Product: this.getInstitute().getJSON(),
             };

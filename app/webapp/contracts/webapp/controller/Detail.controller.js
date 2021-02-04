@@ -41,9 +41,9 @@ sap.ui.define([
 			});
 
 			// wire in the MessageManager for input validation for the custom types
-			const oRequestedVolume = this.byId("idRequestedVolume");
-			sap.ui.getCore().getMessageManager().registerObject(oRequestedVolume, true);
-			const oCommissionRate = this.byId("idCommissionRate");
+			//const oRequestedVolume = this.byId("idRequestedVolume");
+			//sap.ui.getCore().getMessageManager().registerObject(oRequestedVolume, true);
+			const oCommissionRate = this.byId("idNspPerUnit");
 			sap.ui.getCore().getMessageManager().registerObject(oCommissionRate, true);	
 
 			this.i18n = this.getOwnerComponent().getModel("i18n").getResourceBundle();
@@ -185,7 +185,7 @@ sap.ui.define([
 				this.getInstituteDistributorBrandProducts();
 
 				//hide warning message
-				if(this.ctrState.getCurrentContract().channel==="Other"){
+				if(this.ctrState.getCurrentContract().channel==="OTC"){
 					this.byId("msgWarningEdit").setVisible(false);
 				}else{
 					this.byId("msgWarningEdit").setVisible(true);
@@ -535,7 +535,7 @@ sap.ui.define([
 		 */
 		onConfirmProduct: function(oEvent){
 			this.byId("idProductDetailSection").setVisible(false);
-			this.ctrState.setLetterItemEdit(-1);
+			//this.ctrState.setLetterItemEdit(-1);
 		},
 
 		/**
@@ -571,7 +571,6 @@ sap.ui.define([
 			var oSelectedProduct = this.ctrState.getCurrentContract().getSelectedProduct();
 			//var oDeliveriesView  = this.getView("deliveryTrackingDeliveriesViewId");
 			//var oLettersView     = this.getView("deliveryTrackingLettersViewId");
-			this.ctrState.setEditMode(false);
 
 			//What are we saving, Contract or Delivery
 			switch(this.ctrState.getSelectedSection()) {
@@ -582,6 +581,7 @@ sap.ui.define([
 					if(bValid){
 						// save current contract
 						this.getView().setBusy(true);
+						this.ctrState.setEditMode(false);
 
 						//re-select product
 						if(oSelectedProduct){
@@ -590,6 +590,7 @@ sap.ui.define([
 						}
 
 						this.ctrState.saveCurrentContract().then((values) => {
+							this.byId("idProductDetailSection").setVisible(false);
 							this.getView().setBusy(false);
 							var msg = 'Contract is saved.';
 							MessageToast.show(msg);
@@ -624,7 +625,7 @@ sap.ui.define([
 		},
 
 		_validateProductForSaving: function(){ 
-			const products = this.ctrState.getCurrentContract().getEnabledProducts();
+			const products = this.ctrState.getCurrentContract().getProducts();
 			const productsNotValidForSaving = products.filter(product => !this._isValidForSaving(product));
 
 			if(productsNotValidForSaving.length > 0 ){
@@ -640,20 +641,15 @@ sap.ui.define([
 
 		_isValidForSaving: function(product){
 			if(product){
-				const requestedVolume = product.requestedVolume;
-				const offerPrice = product.offerPrice;
-				const samples = product.samples;
-				const sampleYN = product.SampleYN;
+				const unit = product.unit;
+				const mspPerUnit = product.mspPerUnit;
+				const nspPerUnit = product.nspPerUnit;
+				const mspApprovedByName = product.mspApprovedByName;
+				const nspApprovedByName = product.nspApprovedByName;
+				const mspApprovedByRole = product.mspApprovedByRole;
+				const nspApprovedByRole = product.nspApprovedByRole;
 
-				if(!requestedVolume){
-					return false;
-				}
-
-				if(!offerPrice){
-					return false;
-				}
-
-				if(sampleYN === "Yes" && !samples || samples < 0 ){
+				if(!unit || !mspPerUnit || !nspPerUnit || !mspApprovedByName || !nspApprovedByName || !mspApprovedByRole || !nspApprovedByRole){
 					return false;
 				}
 
@@ -684,17 +680,17 @@ sap.ui.define([
 
 				//re-select product
 				if(oSelectedProduct){
-					this.ctrState.getCurrentContract().setSelectedProduct(oPrevSelectedProduct);
-					this._selectProductInTable(this.ctrState.getSelectedSection(), oPrevSelectedProduct.productPackId);
+					this.ctrState.getCurrentContract().setSelectedProduct(oSelectedProduct);
+					this._selectProductInTable(this.ctrState.getSelectedSection(), oSelectedProduct.productPackId);
 					this.ctrState.setPrevSelectedProduct();
 				}
 				
 				//make detail sections invisible
 				
 				this.byId("idProductDetailSection").setVisible(false);
-				if(this.ctrState.getCurrentContract().getSelectedProduct()){
+				/*if(this.ctrState.getCurrentContract().getSelectedProduct()){
 					this.byId("idProductDetailSection").setVisible(true);
-				}
+				}*/
 
 				//go back to display mode
 				//this.hideContractDetailsTab();
@@ -724,12 +720,12 @@ sap.ui.define([
 
 			if (products.length > 0) {
 
-				const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
+				/*const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
 
 				if(bContainsDeliveriesOrLetters){
 					this._showContainsDeliveriesOrLetters();
 					oDistributorInput.setSelectedKey(oCtrState.getPrevSelectedDistributorID());
-				}else{
+				}else{*/
 					sap.m.MessageBox.warning("Are you sure you want to change the Distributor? Existing products will be removed.", {
 						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
 						styleClass: "sapUiSizeCompact",
@@ -745,7 +741,7 @@ sap.ui.define([
 							}
 						}
 					});
-				}
+				//}
 			} else {
 				oCtrState.setPrevSelectedDistributorID(oDistributorInput.getSelectedKey());
 				this.ctrState.updateDistributor(distributor);
@@ -767,12 +763,12 @@ sap.ui.define([
 
 			if (products.length > 0) {
 
-				const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
+				/*const bContainsDeliveriesOrLetters = this.validateProductRemoval(products);
 
 				if(bContainsDeliveriesOrLetters){
 					this._showContainsDeliveriesOrLetters();
 					oDistributorInput.setSelectedKey(oCtrState.getPrevSelectedDistributorID());
-				}else{
+				}else{*/
 					sap.m.MessageBox.warning("Are you sure you want to change the selling company? Existing products will be removed.", {
 						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
 						styleClass: "sapUiSizeCompact",
@@ -787,7 +783,7 @@ sap.ui.define([
 							}
 						}
 					});
-				}				
+				//}				
 			} else {
 				oCtrState.setPrevSelectedDistributorID(oDistributorInput.getSelectedKey());
 				this.ctrState.updateSellingCompany(sellingCompany);
@@ -795,16 +791,16 @@ sap.ui.define([
 			}
 		},
 
-		_showContainsDeliveriesOrLetters: function(){
+		/*_showContainsDeliveriesOrLetters: function(){
 			sap.m.MessageBox.error("This action can not be performed. Some products still contain deliveries or letters.");
-		},
+		},*/
 
 		validateProductRemoval: function(products){
 			if(!products){
 				return;
 			}
 
-			if(products instanceof Array){
+			/*if(products instanceof Array){
 				const aProductsWithDeliveriesOrLetters = products.filter(product => (product.getDeliveries().length > 0 || product.getLetters().length > 0));
 				return aProductsWithDeliveriesOrLetters.length > 0;
 			}else{
@@ -813,7 +809,7 @@ sap.ui.define([
 				}else if(products.getEnabledLetters().length > 0){
 					return products.getEnabledLetters();
 				}
-			}
+			}*/
 		},
 
 		/**
@@ -977,12 +973,12 @@ sap.ui.define([
 
 			let oProductsDetail = this.byId("idProductDetailSection");
 
-			const containsDeliveriesOrLetters = this.validateProductRemoval(selectedProduct);
+			/*const containsDeliveriesOrLetters = this.validateProductRemoval(selectedProduct);
 
 			if(containsDeliveriesOrLetters && containsDeliveriesOrLetters.length > 0){
 				sap.m.MessageBox.error("This action can not be performed. This roduct still contains deliveries or letters.");
 				return;
-			}
+			}*/
 
 			if(userAction === "create"){
 				// remove product from the state
