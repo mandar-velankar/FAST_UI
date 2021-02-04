@@ -451,7 +451,7 @@ sap.ui.define([
 					return new Contract(contract);
 				});
 			});
-			const tenderCtrPromise = this.getService().getTenderContracts().then(contracts => {
+			/*const tenderCtrPromise = this.getService().getTenderContracts().then(contracts => {
 				contracts = contracts.data.results;
 				return contracts.map(contract => {
 					//indication for tender contract
@@ -475,12 +475,12 @@ sap.ui.define([
 					}
 
 				});
-			});
-			return Promise.all([ctrPromise, tenderCtrPromise]).then((values) => {
-				const [contracts, tenderContracts] = values;
+			});*/
+			return Promise.all([ctrPromise]).then((values) => {
+				const [contracts] = values;
 				//filter out undefined
-				let filteredTenderContracts = tenderContracts.filter(contract => contract !== undefined);
-				this.setProperty("contracts", [...contracts, ...filteredTenderContracts]);
+				//let filteredTenderContracts = tenderContracts.filter(contract => contract !== undefined);
+				this.setProperty("contracts", [...contracts]);
 				return this.getProperty("contracts");
 			});
 
