@@ -3,7 +3,7 @@ sap.ui.define([
     //"./Letter",
     //"./Delivery",
     "./ProductsProduct",
-], function (BaseObject, Letter, Delivery, ProductsProduct) {
+], function (BaseObject, ProductsProduct) {
     "use strict";
 
     var product = BaseObject.extend("com.bayer.tender.contracts.model.Product", {
