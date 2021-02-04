@@ -1983,8 +1983,9 @@ sap.ui.define([
 							//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
 							//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
 
+							// TODO: remove this code after expression binding -> this is to set the required properties
 							for (var i = 0; i < aMandatoryFields.length; i++) {
-								that.getView().byId(aMandatoryFields[i].Field).setProperty("required", aMandatoryFields[i].Required);
+								that.getView().byId(aMandatoryFields[i].Column).setProperty("required", aMandatoryFields[i].Required);
 							}
 						}
 
@@ -4001,14 +4002,15 @@ sap.ui.define([
 				aProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
 						for (var i = 0; i < aMandatoryFields.length; i++) {
-							if (oProduct[aMandatoryFields[i].Model] === "" && aMandatoryFields[i].Required === true && aMandatoryFields[i].View === "FOR_OFFER_PRODUCT_TAB") {
+
+							if (oProduct[aMandatoryFields[i].BindingPath] === "" && aMandatoryFields[i].Required === true && aMandatoryFields[i].TableID === "editofferProductId") {
 								bError = true;
 								iMsgCount = iMsgCount + 1;
 
 								if (sErroneousFields === "") {
-									sErroneousFields = that.byId(aMandatoryFields[i].Field).getText();
+									sErroneousFields = aMandatoryFields[i].Column;
 								} else {
-									sErroneousFields = sErroneousFields + '\n' + that.byId(aMandatoryFields[i].Field).getText();
+									sErroneousFields = sErroneousFields + '\n' + aMandatoryFields[i].Column;
 								}
 							}
 						}

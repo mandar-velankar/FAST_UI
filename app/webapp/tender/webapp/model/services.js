@@ -5123,13 +5123,14 @@ sap.ui.define([
 
 			//lets work with callbacks: 
 			var oDeferred = $.Deferred();
+			var that = this;
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 			
 			//path for product pack read
-			var sMandatoryFieldsPath = "/MandatoryProductFields";
+			var sMandatoryFieldsPath = "/CountryTablesCustomization";
 			var aFilters = [];
 
 			if (sCountry) {
