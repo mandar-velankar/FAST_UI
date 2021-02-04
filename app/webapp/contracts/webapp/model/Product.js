@@ -3,7 +3,7 @@ sap.ui.define([
     //"./Letter",
     //"./Delivery",
     "./ProductsProduct",
-], function (BaseObject, Letter, Delivery, ProductsProduct) {
+], function (BaseObject, ProductsProduct) {
     "use strict";
 
     var product = BaseObject.extend("com.bayer.tender.contracts.model.Product", {
@@ -21,7 +21,7 @@ sap.ui.define([
                 ///data.Deliveries && !data.Deliveries.__deferred && this.setDeliveries(data.Deliveries.results);
                 //data.Letters && !data.Letters.__deferred && this.setLetters(data.Letters.results);
                 data.Product && !data.Product.__deferred && this.setProduct(data.Product);
-                this.calculateDiscount();
+               // this.calculateDiscount();
             }
 
         },
@@ -271,7 +271,16 @@ sap.ui.define([
                 "iD",
                 "productPackId", 
                 "countryCode", 
-                "enabled", 
+                "productName",
+                "unit",
+                "mspPerUnit",
+                "mspApprovedByName",
+                "mspApprovedByRole",
+                "focDiscount",
+                "nspPerUnit",
+                "nspApprovedByName",
+                "nspApprovedByRole",
+                /*"enabled", 
                 "reference", 
                 "alternateOffer",
                 "requestedVolume",
@@ -300,19 +309,19 @@ sap.ui.define([
                 "focBrandAbsPct",
                 "cogsBrand", 
                 "budgetRate", 
-                "spotRate"
+                "spotRate"*/
             ]);
 
 
             return {
                 ...json,
-                ProductPackId: +json.ProductPackId,
+                /*ProductPackId: +json.ProductPackId,
                 RequestedVolume: +json.RequestedVolume,
                 Samples: +json.Samples,
                 NoofLots: +json.NoofLots,
                 IntervalBetweenShipments: +json.IntervalBetweenShipments,
                 Sorter: +json.Sorter,
-                FocBrandProductId: +json.FocBrandProductId
+                FocBrandProductId: +json.FocBrandProductId*/
             }
         },
 
@@ -362,8 +371,8 @@ sap.ui.define([
             const expandedObj = {
                 ...jsonObj,
                 //Associations
-                Deliveries: deliveries, //this.getDeliveries().getJSON(),
-                Letters: letters
+                //Deliveries: deliveries, //this.getDeliveries().getJSON(),
+                //Letters: letters
                 // Contract: this.getSellingCompany().getJSON(),
                 // Product: this.getInstitute().getJSON(),
             };
