@@ -171,7 +171,8 @@ sap.ui.define([
 			var mParameters = {
 				filters: [oContractNumberFilter],
 				urlParameters: {
-					"$expand": "Products/Deliveries/Institute,Products/Letters,Products/Product,Institute,Channel,Distributor,SellingCompany"
+					//"$expand": "Products/Deliveries/Institute,Products/Letters,Products/Product,Institute,Channel,Distributor,SellingCompany"
+					"$expand": "Products/Product,Institute,Channel,Distributor,SellingCompany"
 				}
 			};
 
@@ -198,12 +199,12 @@ sap.ui.define([
 		/**
 		 * Delete a Contract delivery from the backend
 		 */
-		deleteContractDeliveryByID: function (guid) {
+		/*deleteContractDeliveryByID: function (guid) {
 			var sKey = this.model.createKey("/Deliveries", {
 				ID: guid
 			});
 			return this.odata(sKey).delete();
-		},
+		},*/
 
 		/**
 		 * Delete a TenderContract delivery from the backend
@@ -211,24 +212,24 @@ sap.ui.define([
 		 * @param {Integer} productCode 
 		 * @param {Integer} sNo 
 		 */
-		deleteTenderContractDelivery: function (offerId, productCode, sNo) {
+		/*deleteTenderContractDelivery: function (offerId, productCode, sNo) {
 			var sKey = this.model.createKey("/TenderDeliveries", {
 				OfferID: offerId,
 				ProductCode: productCode,
 				SNo: sNo
 			});
 			return this.odata(sKey).delete();
-		},
+		},*/
 
 		/**
 		 * Delete a Contract letter from the backend
 		 */
-		deleteContractLetterByID: function (guid) {
+		/*deleteContractLetterByID: function (guid) {
 			var sKey = this.model.createKey("/Letters", {
 				ID: guid
 			});
 			return this.odata(sKey).delete();
-		},
+		},*/
 
 		/**
 		 * Delete a TenderContract letter from the backend
@@ -236,14 +237,14 @@ sap.ui.define([
 		 * @param {Integer} skuCode 
 		 * @param {Integer} sNo 
 		 */
-		deleteTenderContractLetter: function (offerId, skuCode, sNo) {
+		/*deleteTenderContractLetter: function (offerId, skuCode, sNo) {
 			var sKey = this.model.createKey("/TenderDeliveries", {
 				OfferID: offerId,
 				SkuCode: skuCode,
 				SNo: sNo
 			});
 			return this.odata(sKey).delete();
-		},
+		},*/
 
 		/**
 		 * Retrieves a list of PenaltyReasons from the backend
@@ -281,7 +282,8 @@ sap.ui.define([
 
 			var mParameters = {
 				urlParameters: {
-					"$expand": "Products/Deliveries,Products/Letters,Products/Product,Products/GroupPurchasing,Institute/Children/Institute,Distributor,SellingCompany"
+					//"$expand": "Products/Deliveries,Products/Letters,Products/Product,Products/GroupPurchasing,Institute/Children/Institute,Distributor,SellingCompany"
+					"$expand": "Products/Product,Products/GroupPurchasing,Institute/Children/Institute,Distributor,SellingCompany"
 				}
 			};
 
@@ -340,7 +342,7 @@ sap.ui.define([
 		 * Updates a TenderDeliveries in the backend
 		 * @param {Deliveries} contract 
 		 */
-		updateTenderDeliveries: function(deliveries, sTenderID){ 
+		/*updateTenderDeliveries: function(deliveries, sTenderID){ 
 
 			//new promise
 			var aPromises = [];
@@ -363,13 +365,13 @@ sap.ui.define([
 				//ALL DONE
 			});
 		
-		},
+		},*/
 
 		/*
 		 * Updates a TenderDeliveries in the backend
 		 * @param {Delivery} contract 
 		 */
-		updateTenderDelivery: function(delivery, sTenderID){ 
+		/*updateTenderDelivery: function(delivery, sTenderID){ 
 
 			const data = delivery.getTenderVersionJSON(sTenderID);
 
@@ -381,7 +383,7 @@ sap.ui.define([
 				SNo: data.sNo
 			});
 			*/
-
+/*
 			const sKey = this.model.createKey("/PT_TMDLVTR", {
 				OfferID: data.OfferID, 	 
 				ProductCode: data.SKUCode,		
@@ -390,13 +392,13 @@ sap.ui.define([
 
 			return this.odata(sKey).put(data);
 
-		},
+		},*/
 
 		/*
 		 * Updates a TenderLetters in the backend
 		 * @param {Letters} contract 
 		 */
-		updateTenderLetters: function(letters, sTenderID){ 
+		/*updateTenderLetters: function(letters, sTenderID){ 
 
 			//new promise
 			var aPromises = [];
@@ -419,13 +421,13 @@ sap.ui.define([
 				//ALL DONE
 			});
 		
-		},
+		},*/
 
 		/*
 		 * Updates a TenderLetters in the backend
 		 * @param {Letters} contract 
 		 */
-		updateTenderLetter: function(letter, sTenderID){ 
+		/*updateTenderLetter: function(letter, sTenderID){ 
 
 			const data = letter.getTenderVersionJSON(sTenderID);
 
@@ -437,7 +439,7 @@ sap.ui.define([
 
 			return this.odata(sKey).put(data);
 
-		}
+		}*/
 
     });
     

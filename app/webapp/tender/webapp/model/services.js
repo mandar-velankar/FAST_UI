@@ -1135,6 +1135,7 @@ sap.ui.define([
 						UserInfo.setCWID(oData.CWID);
 
 						//keep the countries to which the user has access
+						oData.toUserCountries.results = that.sortByKeyAsc(oData.toUserCountries.results, "COUNTRY_NAME");
 						UserInfo.setUserCountries(oData.toUserCountries);
 
 						//let the callback be triggered: all data is loaded
