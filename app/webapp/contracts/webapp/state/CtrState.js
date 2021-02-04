@@ -135,7 +135,7 @@ sap.ui.define([
 
 			//for contract tab: contract type = other
 			if (this.getSelectedSection() === this.getContractSectionId()){
-				if( oCurrentContract.channel === 'Other'){
+				if( oCurrentContract.channel === 'OTC'){
 					sEditEnabled = true;
 				}else{
 					sEditEnabled = false;
@@ -159,7 +159,7 @@ sap.ui.define([
 
 		setDeleteEnabled: function(sDeleteEnabled){
 			var oCurrentContract = this.getCurrentContract();
-			sDeleteEnabled = oCurrentContract.channel === 'Other';
+			sDeleteEnabled = oCurrentContract.channel === 'OTC';
 			this.setProperty("deleteEnabled", sDeleteEnabled);
 			this.updateModel();
 		},
@@ -447,11 +447,11 @@ sap.ui.define([
 				contracts = contracts.data.results;
 				return contracts.map(contract => {
 					//indication for other contract
-					contract['channel'] = 'Other';
+					contract['channel'] = 'OTC';
 					return new Contract(contract);
 				});
 			});
-			const tenderCtrPromise = this.getService().getTenderContracts().then(contracts => {
+			/*const tenderCtrPromise = this.getService().getTenderContracts().then(contracts => {
 				contracts = contracts.data.results;
 				return contracts.map(contract => {
 					//indication for tender contract
@@ -475,12 +475,12 @@ sap.ui.define([
 					}
 
 				});
-			});
-			return Promise.all([ctrPromise, tenderCtrPromise]).then((values) => {
-				const [contracts, tenderContracts] = values;
+			});*/
+			return Promise.all([ctrPromise]).then((values) => {
+				const [contracts] = values;
 				//filter out undefined
-				let filteredTenderContracts = tenderContracts.filter(contract => contract !== undefined);
-				this.setProperty("contracts", [...contracts, ...filteredTenderContracts]);
+				//let filteredTenderContracts = tenderContracts.filter(contract => contract !== undefined);
+				this.setProperty("contracts", [...contracts]);
 				return this.getProperty("contracts");
 			});
 
@@ -620,7 +620,7 @@ sap.ui.define([
 		convertDataToContract: function(data){
 			var aInstituteWithChildren = [];
 			const contract = data; //TODO: check if the contract service can have multiple records for a particular contract number. if yes, then this code must probably be changed.  
-			contract['channel'] = 'Other';
+			contract['channel'] = 'OTC';
 			var oContract = new Contract(contract);
 
 			//only parent instistute exists (this way we always have a instistute available on delivery popup, even if its hidden, parent should be selected)
@@ -697,13 +697,13 @@ sap.ui.define([
 			//different logic should be applied (managed association for other contract -> meaning product can be saved as a whole (including deliveries & letters) vs Tender contract separate tables)
 			var oCurrentContract = this.getCurrentContract();
 			var sTenderID = oCurrentContract.tenderID;
-			if(oCurrentContract.channel === 'Other'){
+			if(oCurrentContract.channel === 'OTC'){
 
 				//update the whole product with all linked deliveries & letters
 				return this.getService().updateProduct(product);
 
 			}else{
-
+/*
 				//product not changed here (no need for the moment)
 				const letters = oCurrentContract.getSelectedProduct().getLetters();
 				const deliveries = oCurrentContract.getSelectedProduct().getDeliveries();
@@ -726,7 +726,7 @@ sap.ui.define([
 				return Promise.all([aPromises]).then((values) => {
 					//ALL DONE
 				});
-
+*/
 			}
 			
 		},
@@ -815,39 +815,39 @@ sap.ui.define([
 		 * set selected delivery info
 		 * @param {Object} delivery 
 		 */
-		setSelectedDelivery: function(delivery){
+		/*setSelectedDelivery: function(delivery){
 			this.getCurrentContract().getSelectedProduct().setSelectedDelivery(delivery);
 			this.updateModel();
-		},
+		},*/
 
 		/**
 		 * set selected letter info
 		 * @param {Object} letter 
 		 */
-		setSelectedLetter: function(letter){
+		/*setSelectedLetter: function(letter){
 			this.getCurrentContract().getSelectedProduct().setSelectedLetter(letter);
 			this.updateModel();
-		},
+		},*/
 
 		/**
 		 * sets temporary delivery info
 		 * used for creating e new delivery
 		 * @param {Object} delivery 
 		 */
-		setTemporaryDelivery: function(delivery){
+		/*setTemporaryDelivery: function(delivery){
 			this.getCurrentContract().getSelectedProduct().setTemporaryDelivery(delivery);
 			this.updateModel();
-		},
+		},*/
 
 		/**
 		 * sets temporary letter info
 		 * used for creating e new letter
 		 * @param {Object} letter 
 		 */
-		setTemporaryLetter: function(letter){
+		/*setTemporaryLetter: function(letter){
 			this.getCurrentContract().getSelectedProduct().setTemporaryLetter(letter);
 			this.updateModel();
-		},
+		},*/
 
 		/**
 		 * Clear products from currentContract
@@ -870,19 +870,19 @@ sap.ui.define([
 		 * Removes a delivery from SelectedProduct from the State.
 		 * @param {*} Delivery 
 		 */
-		removeDeliveryFromSelectedProduct: function(delivery){
+		/*removeDeliveryFromSelectedProduct: function(delivery){
 			this.getCurrentContract().getSelectedProduct().removeDelivery(delivery);
 			this.updateModel();
-		},
+		},*/
 
 		/**
 		 * Removes a letter from SelectedProduct from the State.
 		 * @param {*} Letter 
 		 */
-		removeLetterFromSelectedProduct: function(letter){
+		/*removeLetterFromSelectedProduct: function(letter){
 			this.getCurrentContract().getSelectedProduct().removeLetter(letter);
 			this.updateModel();
-		},
+		},*/
 
 
 		/**
@@ -905,9 +905,9 @@ sap.ui.define([
 		 * Deletes a delivery from the backend
 		 * @param { String } guid 
 		 */
-		deleteContractDeliveryByID: function(guid){
+		/*deleteContractDeliveryByID: function(guid){
 			return this.getService().deleteContractDeliveryByID(guid);
-		},
+		}, */
 
 		/**
 		 *  Deletes a tender contract delivery from the backend
@@ -915,17 +915,17 @@ sap.ui.define([
 		 * @param {Integer} productCode 
 		 * @param {Integer} sNo 
 		 */
-		deleteTenderContractDelivery: function(offerId, productCode, sNo){
+		/*deleteTenderContractDelivery: function(offerId, productCode, sNo){
 			return this.getService().deleteTenderContractDelivery(offerId, productCode, sNo);
-		},
+		}, */
 
 		/**
 		 * Deletes a letter from the backend
 		 * @param { String } guid 
 		 */
-		deleteContractLetterByID: function(guid){
+		/*deleteContractLetterByID: function(guid){
 			return this.getService().deleteContractLetterByID(guid);
-		},
+		}, */
 
 		/**
 		 *  Deletes a tender contract letter from the backend
@@ -933,9 +933,9 @@ sap.ui.define([
 		 * @param {Integer} skuCode 
 		 * @param {Integer} sNo 
 		 */
-		deleteTenderContractLetter: function(offerId, skuCode, sNo){
+		/*deleteTenderContractLetter: function(offerId, skuCode, sNo){
 			return this.getService().deleteTenderContractDelivery(offerId, skuCode, sNo);
-		},
+		}, */
 
 		/**
 		 * Soft deletes a product. Sets the product to disabled. 
@@ -955,7 +955,7 @@ sap.ui.define([
 		 * Soft deletes a delivery. Sets the delivery to disabled. 
 		 * @param {Delivery} delivery 
 		 */
-		softDeleteDelivery: function(delivery){
+		/*softDeleteDelivery: function(delivery){
 			delivery.enabled = false;
 
 			if(delivery.getUserAction() !== "create"){
@@ -963,13 +963,13 @@ sap.ui.define([
 			}
 			
 			this.updateModel();
-		},
+		}, */
 
 		/**
 		 * Soft deletes a letter. Sets the letter to disabled. 
 		 * @param {Letter} letter 
 		 */
-		softDeleteLetter: function(letter){
+		/*softDeleteLetter: function(letter){
 			letter.enabled = false;
 
 			if(letter.getUserAction() !== "create"){
@@ -977,7 +977,7 @@ sap.ui.define([
 			}
 			
 			this.updateModel();
-		},
+		}, */
 
 		/**
 		 * Fetches the InstituteDistributorBrandProducts from the backend and adds them to the currentContract
@@ -1028,7 +1028,7 @@ sap.ui.define([
 		},
 
 		//validations
-		validateDelivery: function(delivery){
+		/*validateDelivery: function(delivery){
 			//Check for mandatory fields
 			if (!delivery.localOrDirect ||
 				!delivery.plannedInApo ||
@@ -1066,7 +1066,7 @@ sap.ui.define([
 			} else {
 				return true;
 			}
-		},
+		},*/
 
 	});
 
