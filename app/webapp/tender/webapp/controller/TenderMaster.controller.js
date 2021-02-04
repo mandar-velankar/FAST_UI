@@ -24,41 +24,41 @@ sap.ui.define([
 			//that
 			var that = this;
 
-			//get view: TenderMaster.view.xml
-			that.oView = that.getView();
-			that._bDescendingSort = false;
-
-			//get table with tenders
-			that.oProductsTable = that.oView.byId("tendersMasterTable");
-			Services.setTendersMasterTable(that.oView.byId("tendersMasterTable"));
-
-			//attach routing
-			that.oRouter = that.getOwnerComponent().getRouter();
-			that.oRouter.getRoute("master").attachPatternMatched(that._onTenderMatched, that);
-
-			that.oProductsTable.attachBrowserEvent("tab keyup", function (oEvent) {
-				that._bKeyboard = oEvent.type == "keyup";
-			}, that);
-
-			//set default filtering
-			that.setFilter();
-
-			//set default sorting
-			that.setSortColList();
-
-			//set default we are in display modus
-			Services.setEditMode(false);
-
 			//load the external ID of the USER
 			$.when(Services.loadUserInfo()).done(function () {
 
 				//bind countries to wich the user has acces	
 				that._bindUserCountries();
 
-			});
+				//get view: TenderMaster.view.xml
+				that.oView = that.getView();
+				that._bDescendingSort = false;
 
-			that.oProductsTable.attachUpdateFinished(oEvent => {
-				this._filterProductsTable(oEvent);
+				//get table with tenders
+				that.oProductsTable = that.oView.byId("tendersMasterTable");
+				Services.setTendersMasterTable(that.oView.byId("tendersMasterTable"));
+
+				//attach routing
+				that.oRouter = that.getOwnerComponent().getRouter();
+				that.oRouter.getRoute("master").attachPatternMatched(that._onTenderMatched, that);
+
+				that.oProductsTable.attachBrowserEvent("tab keyup", function (oEvent) {
+					that._bKeyboard = oEvent.type == "keyup";
+				}, that);
+
+				//set default filtering
+				that.setFilter();			
+
+				//set default sorting
+				that.setSortColList();
+
+				//set default we are in display modus
+				Services.setEditMode(false);
+
+				that.oProductsTable.attachUpdateFinished(oEvent => {
+					that._filterProductsTable(oEvent);
+				});
+
 			});
 
 		},
@@ -456,7 +456,7 @@ sap.ui.define([
 			var oFastAppData = Services.getFastAppDataModel();
 
 			//get possible filters
-			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "SA";
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
 			var oBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			var oStatus = this.byId("idSlctStatus").getSelectedItem() ? this.byId("idSlctStatus").getSelectedItem().getText() :
 				"Awaiting Approval";
