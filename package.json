@@ -5,11 +5,11 @@
   "repository": "<Add your repository here>",
   "license": "ISC",
   "dependencies": {
-    "nbt": "^0.8.1"
+    "@ui5/cli": "2.6.4",
+    "@sap/approuter": "^9",
+    "ui5-middleware-simpleproxy": "^0.6.0"
   },
-  "devDependencies": {
-    "mbt": "^1.1.0"
-  },
+  "devDependencies": {},
   "engines": {
     "node": "^10"
   },
