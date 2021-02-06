@@ -989,9 +989,9 @@ sap.ui.define([
 			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
 			if(dEffectiveDate){
 				this.ppaState.setPreviousEffDate(dEffectiveDate);
-			} else {
+			} /*else {
 				this.byId("idEffectiveDate").setDateValue(new Date());
-			}
+			}*/
 		},
 
 
