@@ -48,7 +48,7 @@
 												placeholder="{i18n>Select_date}"
 												change="handleEffectiveDateChange"
 												enabled="false"
-												minDate="{dateModel>/minDate}"
+												minDate="{= ${ppa>/aggregatedBrandPolicy/approvedBrandPolicy/validFrom} ? ${ppa>/aggregatedBrandPolicy/approvedBrandPolicy/validFrom} : ${dateModel>/minDate} }"
 												value="{
 															path :'ppa>/aggregatedBrandPolicy/draftBrandPolicy/validFrom',
 															type: 'sap.ui.model.type.Date', 
