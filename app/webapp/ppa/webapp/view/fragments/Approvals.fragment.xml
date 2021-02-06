@@ -26,7 +26,7 @@
 										<!-- This will be handled outside this application -->
 										<Button id="idBtnSendApprovals" icon="sap-icon://employee-approvals" text="Send" type="Accept" 
 												visible="{=	${ppa>/approvalRequest/status} !== 'Awaiting Approval' }"  
-												enabled="true" press="onSendApprovals"/>
+												enabled="{= ${ppa>/aggregatedBrandPolicy/draftBrandPolicy/validFrom} ? true : false }" press="onSendApprovals"/>
 										<Button icon="sap-icon://employee-rejections" text="Cancel" type="Reject" 
 												visible="{= ${ppa>/approvalRequest/status} === 'Awaiting Approval' }" 
 												press="onCancelApprovals"/>
