@@ -1076,9 +1076,12 @@ sap.ui.define([
 
 			//EffectiveDate
 			let dPrevEffDate = this.ppaState.getPreviousEffDate();
-			if (dPrevEffDate){
+			if(!Date.parse(dPrevEffDate)){
+				this.byId("idEffectiveDate").setDateValue();
+			} else {
 				this.byId("idEffectiveDate").setDateValue(dPrevEffDate);
 			}
+
 		},
 
 		setEffectiveDateEditMode: function(bEnabled){
