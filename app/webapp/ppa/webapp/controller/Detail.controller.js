@@ -989,6 +989,8 @@ sap.ui.define([
 			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
 			if(dEffectiveDate){
 				this.ppaState.setPreviousEffDate(dEffectiveDate);
+			} else {
+				this.byId("idEffectiveDate").setDateValue(new Date());
 			}
 		},
 
@@ -1073,7 +1075,10 @@ sap.ui.define([
 			this.getView().getModel("dateModel").setProperty("/enabled", false);
 
 			//EffectiveDate
-			this.byId("idEffectiveDate").setDateValue(this.ppaState.getPreviousEffDate());
+			let dPrevEffDate = this.ppaState.getPreviousEffDate();
+			if (dPrevEffDate){
+				this.byId("idEffectiveDate").setDateValue(dPrevEffDate);
+			}
 		},
 
 		setEffectiveDateEditMode: function(bEnabled){

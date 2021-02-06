@@ -128,7 +128,7 @@ sap.ui.define([
 					// get approved brand policy
 					const newBrandPolicy = {
 						data : {
-							ValidFrom       : oNewFromDate,
+							ValidFrom       : {},
 							ValidTo         : oNewToDate,
 							CountryCode     : sCountryCode,
 							Division        : sDivision,
