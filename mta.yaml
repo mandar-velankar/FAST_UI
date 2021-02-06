@@ -15,6 +15,7 @@ modules:
     build-parameters:
       builder: custom
       commands:
+      - npm install
       - npm run build
     parameters:
       memory: 2048M

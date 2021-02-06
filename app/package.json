@@ -11,6 +11,9 @@
     "serve": "ui5 serve",
     "build": "ui5 build --clean-dest"
   },
+  "engines": {
+    "node": "^12"
+  },
   "dependencies": {
     "@ui5/cli": "2.6.4",
     "@sap/approuter": "^9",

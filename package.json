@@ -11,7 +11,7 @@
   },
   "devDependencies": {},
   "engines": {
-    "node": "^10"
+    "node": "^12"
   },
   "scripts": {
     "setup": "cd app && npm install",
