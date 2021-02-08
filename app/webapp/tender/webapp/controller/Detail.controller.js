@@ -1984,9 +1984,9 @@ sap.ui.define([
 							//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
 
 							// TODO: remove this code after expression binding -> this is to set the required properties
-							for (var i = 0; i < aMandatoryFields.length; i++) {
-								that.getView().byId(aMandatoryFields[i].Column).setProperty("required", aMandatoryFields[i].Required);
-							}
+							// for (var i = 0; i < aMandatoryFields.length; i++) {
+							// 	that.getView().byId(aMandatoryFields[i].Column).setProperty("required", aMandatoryFields[i].Required);
+							// }
 						}
 
 						//only in creation modus of an offer we will be able to set the distributor id
@@ -3999,6 +3999,7 @@ sap.ui.define([
 				var iMsgCount = 0;
 				var sErroneousFields = "";
 
+				// TODO: as discussed with Wouter: these kind of validation logic should be done in the backend and the back-end should throw an error 
 				aProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
 						for (var i = 0; i < aMandatoryFields.length; i++) {
@@ -4670,6 +4671,7 @@ sap.ui.define([
 					oAddProduct.ActiveProduct = 1;
 					oAddProduct.Comment = "";
 					oAddProduct.INCOTerms = oProduct.INCO_TERMS;
+					
 					oAddProduct.SKU = {
 						PRODUCTPACKNAME: oProduct.PRODUCT_NAME
 					};

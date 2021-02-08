@@ -5147,6 +5147,10 @@ sap.ui.define([
 
 						//let the callback be triggered
 						oFastAppDataModel.setProperty("/MandatoryFields", oData.results);
+
+						// creates a permissions object
+						that.setPermissions(oData.results);
+
 						oDeferred.resolve(oData);
 
 					},
@@ -5165,6 +5169,62 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 
+		},
+
+
+		/**
+		 * This method creates and sets a permission object in the FastAppDataModel.
+		 * This object can be then used in Views to make the controls visible/required (per Country)
+		 * @param {Array} aData - A list of permissions from CountryTablesCustomization service
+		 * @example
+		 * {
+		 *		"Permissions":{
+		 *			"editofferProductId": {
+		 * 				"type": "Table",
+		 * 				"Comment": {
+		 *					"type": "Column",
+		 *					"CountryCode": "AR",
+		 *					"BindingPath": "Comment",
+		 *					"Visible": false,
+		 *					"Required": false
+		 *				}
+		 *			}
+		 *		}
+		 *	}
+		 */
+		setPermissions: function(aData){
+
+			const oFastAppDataModel = this.getFastAppDataModel();
+
+			const permissions = {};
+			
+			aData.forEach(item => {
+
+				const tableID = item.TableID;
+				const column = item.Column;
+
+				if(!permissions[tableID]){
+
+					permissions[tableID] =  {
+						"type": "Table"
+					}
+
+				}
+				
+				
+				permissions[tableID][column] =  {
+					"type": "Column",
+					"countryCode": item.CountryCode.toLowerCase(),
+					"bindingPath": item.BindingPath.toLowerCase(),
+					"visible": item.Visible,
+					"required": item.Required
+				}
+
+				
+
+			});
+
+			oFastAppDataModel.setProperty("/permissions", permissions);
 		},
 
 		//SAVERS
