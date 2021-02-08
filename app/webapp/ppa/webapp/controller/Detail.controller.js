@@ -984,6 +984,14 @@ sap.ui.define([
 
 		onEditEffctvDate: function(oEvent){
 			this.setEffectiveDateEditMode(true);
+
+			//EffectiveDate
+			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
+			if(dEffectiveDate){
+				this.ppaState.setPreviousEffDate(dEffectiveDate);
+			} /*else {
+				this.byId("idEffectiveDate").setDateValue(new Date());
+			}*/
 		},
 
 
@@ -1065,6 +1073,15 @@ sap.ui.define([
 			this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 			this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 			this.getView().getModel("dateModel").setProperty("/enabled", false);
+
+			//EffectiveDate
+			let dPrevEffDate = this.ppaState.getPreviousEffDate();
+			if(!Date.parse(dPrevEffDate)){
+				this.byId("idEffectiveDate").setDateValue();
+			} else {
+				this.byId("idEffectiveDate").setDateValue(dPrevEffDate);
+			}
+
 		},
 
 		setEffectiveDateEditMode: function(bEnabled){
