@@ -4002,9 +4002,30 @@ sap.ui.define([
 				// TODO: as discussed with Wouter: these kind of validation logic should be done in the backend and the back-end should throw an error 
 				aProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
+
 						for (var i = 0; i < aMandatoryFields.length; i++) {
 
-							if (oProduct[aMandatoryFields[i].BindingPath] === "" && aMandatoryFields[i].Required === true && aMandatoryFields[i].TableID === "editofferProductId") {
+							let oProductField = "";
+							
+							// Binding path can be a nested path. Eg. "SKU/PRODUCTPACKNAME". Because of this this code was not working correctly.
+							// We need to split the path and use each value as object key in oProduc
+							if(aMandatoryFields[i].BindingPath.indexOf("/") > -1) {
+								const parts = aMandatoryFields[i].BindingPath.split("/");
+								
+								let bindingPath = "oProduct";
+
+								parts.forEach(part => {
+									bindingPath += `["${part}"]`;
+								});
+
+								oProductField = eval(bindingPath);
+
+								
+							}else {
+								oProductField = oProduct[aMandatoryFields[i].BindingPath];
+							}
+
+							if (!oProductField && aMandatoryFields[i].Required === true && aMandatoryFields[i].TableID === "editofferProductId") {
 								bError = true;
 								iMsgCount = iMsgCount + 1;
 

@@ -153,8 +153,8 @@
 										<Input value="{fastAppData>SKU/PRODUCTPACKNAME}" editable="false" maxLength="100"/>
 									</t:template>
 								</t:Column>
-								<t:Column width="150px" visible="{fastAppData>/permissions/editofferProductId/Sample/visible}">
-									<Label id="idSampleLabel" text="{i18n>Sample}" wrapping="true" required="{fastAppData>/permissions/editofferProductId/Sample/required}"/>
+								<t:Column width="150px" visible="{fastAppData>/permissions/editofferProductId/SampleYN/visible}">
+									<Label id="idSampleLabel" text="{i18n>Sample}" wrapping="true" required="{fastAppData>/permissions/editofferProductId/SampleYN/required}"/>
 									<t:template>
 										<Input type="Text" value="{fastAppData>SampleYN}" placeholder="{i18n>Sample}" editable="true" />
 										<Select selectedKey="{fastAppData>SampleYN}" change="onChangeSampleYN">

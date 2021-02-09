@@ -191,7 +191,7 @@
 							<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="7rem" visible="{fastAppData>/permissions/editofferProductId/Sample/visible}">
+					<t:Column width="7rem" visible="{fastAppData>/permissions/editofferProductId/SampleYN/visible}">
 						<Label text="{i18n>Sample}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SampleYN}" wrapping="true"/>
