@@ -746,7 +746,7 @@ sap.ui.define([
 		},
 
 		checkEffectiveDateChanged: function(){
-			let dEffectiveDate = new Date(this.byId("idEffectiveDate").getDateValue()).toDateString();
+			let dEffectiveDate = new Date(this.getView().getModel('ppa').getProperty("/aggregatedBrandPolicy/draftBrandPolicy/validFrom")).toDateString();
 			let LatestApprovalEffectiveDate = new Date(this.ppaState.data.brand.validFrom).toDateString();
 
 			if(dEffectiveDate && ( !LatestApprovalEffectiveDate || LatestApprovalEffectiveDate <= dEffectiveDate)) {
@@ -1002,7 +1002,8 @@ sap.ui.define([
 			this.setEffectiveDateEditMode(false);
 
 			//EffectiveDate
-			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
+			//let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
+			let dEffectiveDate = this.getView().getModel('ppa').getProperty("/aggregatedBrandPolicy/draftBrandPolicy/validFrom");
 
 			// Convert EffectiveDate to UTC time
 			const timeOffsetInMS = dEffectiveDate.getTimezoneOffset() * 60000;
