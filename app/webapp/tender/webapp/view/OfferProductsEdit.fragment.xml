@@ -98,7 +98,10 @@
 								<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/Product/visible}">
 									<Label id="idProductLabel" text="{i18n>product}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Product/required}"/>
 									<t:template>
-										<Input value="{fastAppData>SKU/Product/HLEVEL6_NAME}" editable="false" maxLength="100"/>
+										<VBox>
+											<Input value="{fastAppData>SKU/Product/HLEVEL6_NAME}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" />
+											<Input value="{fastAppData>SKU/PRODUCTPACKNAME}" editable="false" maxLength="100" visible="{= !${fastAppData>/permissions/tables/editofferProductId/Package/visible} }" />	
+										</VBox>
 									</t:template>
 								</t:Column>
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">

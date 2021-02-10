@@ -155,7 +155,10 @@
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Product/visible}">
 						<Label text="{i18n>product}" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>SKU/Product/HLEVEL6_NAME}" wrapping="true"/>
+							<VBox>
+								<Text text="{fastAppData>SKU/Product/HLEVEL6_NAME}" wrapping="true" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" />
+								<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="true" visible="{= !${fastAppData>/permissions/tables/editofferProductId/Package/visible} }" />
+							</VBox>
 						</t:template>
 					</t:Column>
 					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">
@@ -188,7 +191,7 @@
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" >
 						<Label text="{i18n>package}" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="true"/>
+							<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="true" />
 						</t:template>
 					</t:Column>
 					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/SampleYN/visible}">

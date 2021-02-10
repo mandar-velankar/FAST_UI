@@ -5099,6 +5099,9 @@ sap.ui.define([
 
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sProductPackPath, {
+					urlParameters: {
+						"$expand": "Product"
+					},
 					success: function (oData, oResponse) {
 
 						//let the callback be triggered
