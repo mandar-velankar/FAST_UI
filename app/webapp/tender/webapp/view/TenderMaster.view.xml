@@ -74,7 +74,7 @@
 							<core:Item text="{oJsonSortColList>Name}"/>
 						</Select>
 						<CheckBox id="idCheckBoxInactive" text="{i18n>seeInactive}" selected= "false" select=".setFilter"/>
-						<Button text="{i18n>Column}" icon="sap-icon://display" press="onSugestSel"/>
+						<!-- <Button text="{i18n>Column}" icon="sap-icon://display" press="onSugestSel"/> -->
 						
 						<!-- SPACE -->
 						<ToolbarSpacer/>

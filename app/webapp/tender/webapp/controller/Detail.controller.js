@@ -1642,6 +1642,7 @@ sap.ui.define([
 					that.getView().byId("idSelectIssuedBy").setEnabled(false);
 					that.getView().byId("idSelectCompanyStamp").setEnabled(false);
 					that.getView().byId("idDelayInSubmission").setVisible(true);
+					that.getView().byId("btnSaveQuotation").setVisible(true);
 					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
 					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
 						that.getView().byId("btnDownloadQuotation").setVisible(true);
@@ -2009,6 +2010,7 @@ sap.ui.define([
 						that.getView().byId("idSelectIssuedBy").setEnabled(true);
 						that.getView().byId("idSelectCompanyStamp").setEnabled(true);
 						that.getView().byId("idDelayInSubmission").setVisible(false);
+						that.getView().byId("btnSaveQuotation").setVisible(false);
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
 						that.getView().byId("btnDownloadQuotation").setVisible(false);
 						that.getView().byId("btnSubmitQuotation").setVisible(false);
