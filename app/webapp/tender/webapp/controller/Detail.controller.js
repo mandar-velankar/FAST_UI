@@ -151,7 +151,8 @@ sap.ui.define([
 			Services.setSelectedTenderID(sTenderID);
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
-			Services.loadMandatoryFields(sCountry);
+			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
+			Services.loadCountryPermissions(sCountry);
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
