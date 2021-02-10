@@ -5099,6 +5099,9 @@ sap.ui.define([
 
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sProductPackPath, {
+					urlParameters: {
+						"$expand": "Product"
+					},
 					success: function (oData, oResponse) {
 
 						//let the callback be triggered
@@ -5149,7 +5152,7 @@ sap.ui.define([
 						oFastAppDataModel.setProperty("/MandatoryFields", oData.results);
 
 						// creates a permissions object
-						that.setPermissions(oData.results);
+						that.setTablePermissions(oData.results);
 
 						oDeferred.resolve(oData);
 
@@ -5166,11 +5169,69 @@ sap.ui.define([
 				});
 			}
 
+			
+
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 
 		},
 
+		loadCountryPermissions: function(sCountry){
+
+			if(!sCountry || sCountry.indexOf("NA") > -1 ){
+				return;
+			}
+
+			const tabPermissions = this.getTabPermissions(sCountry);
+
+			return Promise.all([tabPermissions]);
+		},
+
+		getTabPermissions: function(sCountry){
+
+			if(!sCountry || sCountry.indexOf("NA") > -1 ){
+				return;
+			}
+
+			const that = this;
+			const oFastDataCalls = this.getDefaultModel();
+			
+			//path for product pack read
+			const sPath = "/CountryTabsCustomization";
+			const aFilters = [];
+
+			const oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+			aFilters.push(oCountryFilter);
+
+			const promise = new Promise((resolve, reject) => {
+
+				//Reading the back end data 
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						// creates a permissions object
+						that.setTabPermissions(oData.results);
+
+						resolve(oData.results);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of Permissions");
+
+						reject(oError);
+
+					}
+				});
+
+			});
+
+			
+			return promise;
+
+		},
 
 		/**
 		 * This method creates and sets a permission object in the FastAppDataModel.
@@ -5192,39 +5253,86 @@ sap.ui.define([
 		 *		}
 		 *	}
 		 */
-		setPermissions: function(aData){
+		setTablePermissions: function(aData){ 
+
+			if(!Array.isArray(aData) || aData.length <= 0){
+				return;
+			}
 
 			const oFastAppDataModel = this.getFastAppDataModel();
 
-			const permissions = {};
+			const tablePermissions = {};
 			
 			aData.forEach(item => {
 
 				const tableID = item.TableID;
 				const column = item.Column;
 
-				if(!permissions[tableID]){
-
-					permissions[tableID] =  {
-						"type": "Table"
-					}
-
+				if(!tablePermissions[tableID]){
+					tablePermissions[tableID] = {};
 				}
-				
-				
-				permissions[tableID][column] =  {
+
+				tablePermissions[tableID][column] =  {
 					"type": "Column",
-					"countryCode": item.CountryCode.toLowerCase(),
+					"countryCode": item.CountryCode,
 					"bindingPath": item.BindingPath.toLowerCase(),
 					"visible": item.Visible,
 					"required": item.Required
-				}
-
-				
+				}	
 
 			});
 
-			oFastAppDataModel.setProperty("/permissions", permissions);
+			const allPermissions = oFastAppDataModel.getProperty("/permissions");
+
+			if(allPermissions){
+				allPermissions["tables"] = tablePermissions;
+			}else{
+				oFastAppDataModel.setProperty("/permissions", {"tables": {...tablePermissions}});
+			}
+		},
+
+		/**
+		 * This method creates and sets a permission object in the FastAppDataModel.
+		 * This object can be then used in Views to make the controls visible/required (per Country)
+		 * @param {Array} aData - A list of permissions from CountryTabsCustomization service
+		 * @example
+		 *	{
+		 *		"Permissions": {
+		 *			"tab": {
+		 *				"editofferProductId": {
+		 *					"CountryCode": "AR",
+		 *					"Visible": false
+		 *				}
+		 *			}
+		 *		}
+		 *	}
+		 */
+		setTabPermissions: function(aData){ 
+
+			if(!Array.isArray(aData) || aData.length <= 0){
+				return;
+			}
+
+			const oFastAppDataModel = this.getFastAppDataModel();
+			
+			const tabPermissions = {};
+			
+			aData.forEach(item => {
+				tabPermissions[item.TabID] =  {
+					"countryCode": item.CountryCode,
+					"visible": item.Visible
+				}
+			});
+
+			const allPermissions = oFastAppDataModel.getProperty("/permissions");
+
+			if(allPermissions){
+				allPermissions["tabs"] = tabPermissions;
+			}else{
+				oFastAppDataModel.setProperty("/permissions", {"tabs": {...tabPermissions}});
+			}
+
+			
 		},
 
 		//SAVERS

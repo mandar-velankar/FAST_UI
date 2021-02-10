@@ -12,7 +12,7 @@
 			<Label text="{i18n>clasficn}" design="Bold" required="true"/>
 			<Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" />
 			<!-- Argentina only -->
-			<Label text="{i18n>Bidding Type Level 1}" design="Bold" required="true" 
+			<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
 					(${fastData>BindingTypeLevel1} ? true : false)
@@ -24,7 +24,7 @@
 					${fastData>BindingTypeLevel1}.length > 0
 				}"
 			/>
-			<Label text="{i18n>Bidding Type Level 2}" design="Bold" required="true" 
+			<Label text="{i18n>BiddingTypeLevel2}" design="Bold" required="true" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
 					(${fastData>BindingTypeLevel2} ? true : false)
@@ -36,7 +36,7 @@
 					(${fastData>BindingTypeLevel2} ? true : false)
 				}"
 			/>
-			<Label text="{i18n>Bidding Type Level 3}" design="Bold" required="true" 
+			<Label text="{i18n>BiddingTypeLevel3}" design="Bold" required="true" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR'  &amp;&amp;
 					(${fastData>BindingTypeLevel3} ? true : false)
@@ -83,7 +83,7 @@
 			</Select>
 
 			<!-- Argentina only -->
-			<Label text="{i18n>High Value}" design="Bold" 
+			<Label text="{i18n>HighValue}" design="Bold" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR'
 				}"
@@ -139,7 +139,7 @@
 			<!-- End of Thailand Changes-->
 
 			<!-- Brazil only -->
-			<Label text="{i18n>IBIZ Id}" design="Bold" 
+			<Label text="{i18n>IBIZId}" design="Bold" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'BR'
 				}"
@@ -151,7 +151,7 @@
 					${raModel>/visibleCountry} === 'BR'
 				}"
 			/>
-			<Label text="{i18n>Public Notice}" design="Bold" 
+			<Label text="{i18n>PublicNotice}" design="Bold" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'BR'
 				}"
@@ -183,7 +183,7 @@
 			<Input id="input9" value="{path :'fastAppData>/EditTender/NextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
 
 			<!-- Brazil only -->
-			<Label text="{i18n>Offer Start Date}" design="Bold"/>
+			<Label text="{i18n>OfferStartDate}" design="Bold"/>
 			<DatePicker id="idOfferStartDate" 
 				enabled="false"
 				value="{path :'fastData>OfferStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" 
