@@ -146,25 +146,31 @@
 					 noData="There are no products for this offer..."
 					 >
 				<t:columns>
-					<t:Column width="16rem">
-						<Label text="{i18n>product}" wrapping="true"/>
+					<t:Column width="16rem" visible="{fastAppData>/permissions/editofferProductId/Line/visible}">
+						<Label text="{i18n>line}" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="true"/>
+							<Text text="{fastAppData>Line}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="7rem">
+					<t:Column width="16rem" visible="{fastAppData>/permissions/editofferProductId/Product/visible}">
+						<Label text="{i18n>product}" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>SKU/Product/HLEVEL6_NAME}" wrapping="true"/>
+						</t:template>
+					</t:Column>
+					<t:Column width="7rem" visible="{fastAppData>/permissions/editofferProductId/Reference/visible}">
 						<Label text="{i18n>reference}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>Reference}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="8rem">
+					<t:Column width="8rem" visible="{fastAppData>/permissions/editofferProductId/AlternateOfferYN/visible}">
 						<Label text="{i18n>alternate}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>AlternateOfferYN}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="8rem">
+					<t:Column width="8rem" visible="{fastAppData>/permissions/editofferProductId/Requested/visible}">
 						<Label text="{i18n>Requested}" wrapping="true"/>
 						<t:template>
 							<HBox>
@@ -173,61 +179,67 @@
 							</HBox>
 						</t:template>
 					</t:Column>
-					<t:Column width="8rem">
+					<t:Column width="8rem" visible="{fastAppData>/permissions/editofferProductId/Unitpack/visible}">
 						<Label text="{i18n>Unitpack}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>UnitPerPack}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="7rem">
+					<t:Column width="16rem" visible="{fastAppData>/permissions/editofferProductId/Package/visible}" >
+						<Label text="{i18n>package}" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="true"/>
+						</t:template>
+					</t:Column>
+					<t:Column width="7rem" visible="{fastAppData>/permissions/editofferProductId/SampleYN/visible}">
 						<Label text="{i18n>Sample}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SampleYN}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="7rem">
+					<t:Column width="7rem" visible="{fastAppData>/permissions/editofferProductId/Quantity/visible}">
 						<Label text="{i18n>Quantity}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SampleQuantity}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="8rem">
+					<t:Column width="8rem" visible="{fastAppData>/permissions/editofferProductId/Documents/visible}">
 						<Label text="{i18n>Documents}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>DocumentsRequired}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="8rem">
+					<t:Column width="8rem" visible="{fastAppData>/permissions/editofferProductId/FirstShipment/visible}">
 						<Label text="{i18n>FirstShipment}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>FirstShipment}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="8rem">
+					<t:Column width="8rem" visible="{fastAppData>/permissions/editofferProductId/NoLots/visible}">
 						<Label text="{i18n>NoLots}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>NoofLots}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="8rem">
+					<t:Column width="8rem" visible="{fastAppData>/permissions/editofferProductId/IntervalBetweenShipments/visible}">
 						<Label text="{i18n>inshipmnths}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>IntervalBetweenShipments}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="12rem">
+					<t:Column width="12rem" visible="{fastAppData>/permissions/editofferProductId/PaymentTerms/visible}">
 						<Label text="{i18n>PaymentTerms}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>PaymentTerms}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="15rem">
+					<t:Column width="15rem" visible="{fastAppData>/permissions/editofferProductId/INCOTerms/visible}">
 						<Label text="{i18n>INCOTerms}" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>INCOTerms}" wrapping="true"/>
 						</t:template>
 					</t:Column>
-					<t:Column width="200px">
+					<t:Column width="200px" visible="{fastAppData>/permissions/editofferProductId/Decline/visible}">
 						<Label text="{i18n>Decline}" wrapping="true"/>
 						<t:template>
 							<Select selectedKey="{fastAppData>ActiveProduct}" enabled="false">
@@ -241,8 +253,8 @@
 							</Select>
 						</t:template>
 					</t:Column>
-					<t:Column width="300px">
-							<Label text="{i18n>Comment}" wrapping="true" required="true"/>
+					<t:Column width="300px" visible="{fastAppData>/permissions/editofferProductId/Comment/visible}" >
+							<Label text="{i18n>Comment}" wrapping="true" />
 							<t:template>
 								<Input type="Text" value="{fastAppData>Comment}" placeholder="{i18n>Comment}" editable="false"/>
 							</t:template>
