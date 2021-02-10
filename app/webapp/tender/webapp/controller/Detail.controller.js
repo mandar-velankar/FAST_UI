@@ -452,6 +452,7 @@ sap.ui.define([
 			that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
 			that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 
+
 		},
 
 		/**
@@ -3215,16 +3216,19 @@ sap.ui.define([
 				oSaveBasicInfo.TENDER_ORIGIN_ID = this.byId("idSelectTenderOriginEdit").getSelectedKey();
 				oSaveBasicInfo.CONTRACT_TYPE_ID = this.byId("idSelectContractTypeEdit").getSelectedKey();
 
-				if (!this.byId("idContractLength").getValue()) {
-					oSaveBasicInfo.ContractLength = 12;
-				} else {
-					oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
-				}
-				if (!this.byId("idContractExtenseion").getValue()) {
-					oSaveBasicInfo.ContractExtenseion = 0;
-				} else {
-					oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
-				}
+				oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue() || 12;
+				oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue() || 0;
+
+				// if (!this.byId("idContractLength").getValue()) {
+				// 	oSaveBasicInfo.ContractLength = 12;
+				// } else {
+				// 	oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
+				// }
+				// if (!this.byId("idContractExtenseion").getValue()) {
+				// 	oSaveBasicInfo.ContractExtenseion = 0;
+				// } else {
+				// 	oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
+				// }
 
 				//TEMP TenderId fix
 				oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
@@ -3326,16 +3330,20 @@ sap.ui.define([
 			oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
 
 			oSaveBasicInfo.TenderStatus = "Open";
-			if (!this.byId("idContractLength").getValue()) {
-				oSaveBasicInfo.ContractLength = 12;
-			} else {
-				oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
-			}
-			if (!this.byId("idContractExtenseion").getValue()) {
-				oSaveBasicInfo.ContractExtenseion = 0;
-			} else {
-				oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
-			}
+
+			oSaveBasicInfo.ContractLength = oTender.ContractLength ? oTender.ContractLength : 12;
+			oSaveBasicInfo.ContractExtenseion = oTender.ContractExtenseion ? oTender.ContractExtenseion : 0;
+
+			// if (!this.byId("idContractLength").getValue()) {
+			// 	oSaveBasicInfo.ContractLength = 12;
+			// } else {
+			// 	oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
+			// }
+			// if (!this.byId("idContractExtenseion").getValue()) {
+			// 	oSaveBasicInfo.ContractExtenseion = 0;
+			// } else {
+			// 	oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
+			// }
 
 			/* Mexico */
 			oSaveBasicInfo.SALES_TYPE_ID = this.byId("idSelectSalesTypeEdit").getSelectedKey();

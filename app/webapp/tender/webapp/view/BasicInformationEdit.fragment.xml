@@ -229,9 +229,9 @@
 
 			<!--<Input value="{fastData>NextPublicationDye}"/>-->
 			<Label text="{i18n>contleng}" design="Bold"/>
-			<Input id="idContractLength" value="{fastData>ContractLength}" type="Number" />
+			<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" />
 			<Label text="{i18n>contextnprd}" design="Bold"/>
-			<Input id="idContractExtenseion" value="{fastData>ContractExtenseion}" type="Number" />
+			<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" />
 			<!-- Status  tender -->
 			<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>
 			<Select id="idTenderStatus" selectedKey="{fastData>TenderStatus}" enabled="{= ${fastData>TenderID} !== null}" visible="false">

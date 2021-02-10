@@ -157,8 +157,8 @@ sap.ui.define([
 			oNewTender.BidDueDate = "";
 			oNewTender.AwardDate = "";
 			oNewTender.NextPublicationDye = "";
-			oNewTender.ContractLength = "";
-			oNewTender.ContractExtenseion = "";
+			oNewTender.ContractLength = 12;
+			oNewTender.ContractExtenseion = 0;
 			oNewTender.TenderStatus = "";
 			oNewTender.ManualSaveStatus = "";
 			oNewTender.FoldersCreated = "";
