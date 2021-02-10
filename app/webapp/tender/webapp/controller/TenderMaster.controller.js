@@ -364,7 +364,8 @@ sap.ui.define([
 			this.oView.setModel(oJsonSortColList, "oJsonSortColList");
 			this.oView.getModel("oJsonSortColList").setData(oColnme);
 		},
-
+		
+		/*
 		//Generate a popup with list of fields the user can show/hide in the tender table
 		onSugestSel: function () {
 
@@ -393,6 +394,7 @@ sap.ui.define([
 			this.getView().addDependent(this._oTabDialog);
 			this._oTabDialog.open();
 		},
+		*/
 		handleOkPress: function (evt) {
 			var temp = evt.getParameters().selectedItem;
 
