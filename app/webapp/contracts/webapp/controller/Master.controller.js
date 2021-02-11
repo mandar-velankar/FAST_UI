@@ -668,7 +668,7 @@ sap.ui.define([
 			//var oFastAppData = Services.getFastAppDataModel();
 
 			//get possible filters
-			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "SA";
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
 			//var oChannel = this.byId("idSlctChannel").getSelectedItem() ? this.byId("idSlctChannel").getSelectedItem().getKey() : "All";
 			let oChannel = 'OTC';
 			var sSearch = this.byId("idSearch").getProperty("value");
