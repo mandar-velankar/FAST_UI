@@ -1893,6 +1893,20 @@ sap.ui.define([
 
 						/* End of mexico */
 
+						/* apply country filter on procurement method*/
+						let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+
+						oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+						oProcurementMethod.bindItems({
+							path: "fastData>/CountryProcurementMethod",
+							filters: aFilter,
+							sorter: new sap.ui.model.Sorter("SORTER"),
+							template: new sap.ui.core.Item({
+								text: "{fastData>PROCUREMENT_METHOD_ID}",
+								key: "{fastData>PROCUREMENT_METHOD_ID}"
+							})
+						});
+
 						// Dunno why but binding is not always found
 						// var oBinding = oTenderType.getBinding("items");
 						// //set filter for country on tender type: only when binding of tendertype is found
