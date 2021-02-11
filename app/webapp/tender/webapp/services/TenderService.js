@@ -97,6 +97,10 @@ sap.ui.define([
 			oTenderToSave.BindingTypeLevel1 = oTenderSaveInfo.BindingTypeLevel1;
 			oTenderToSave.BindingTypeLevel2 = oTenderSaveInfo.BindingTypeLevel2;
 			oTenderToSave.BindingTypeLevel3 = oTenderSaveInfo.BindingTypeLevel3;
+			oTenderToSave.HighValue = oTenderSaveInfo.HighValue;
+			oTenderToSave.OfferStartDate = oTenderSaveInfo.OfferStartDate;
+			oTenderToSave.IbizID = oTenderSaveInfo.IbizID;
+			oTenderToSave.PublicNotice = oTenderSaveInfo.PublicNotice;
 			oTenderToSave.TenderName = oTenderSaveInfo.TenderName;
 			oTenderToSave.InstituteID = Number(oTenderSaveInfo.InstituteID);
 			oTenderToSave.TenderChannel = oTenderSaveInfo.TenderChannel;
@@ -141,6 +145,10 @@ sap.ui.define([
 			oNewTender.BindingTypeLevel1 = "";
 			oNewTender.BindingTypeLevel2 = "";
 			oNewTender.BindingTypeLevel3 = "";
+			oNewTender.HighValue = "";
+			oNewTender.OfferStartDate = "";
+			oNewTender.IbizID = "";
+			oNewTender.PublicNotice = "";
 			oNewTender.TenderName = "";
 			oNewTender.InstituteID = "";
 			oNewTender.TenderChannel = "";
@@ -149,8 +157,8 @@ sap.ui.define([
 			oNewTender.BidDueDate = "";
 			oNewTender.AwardDate = "";
 			oNewTender.NextPublicationDye = "";
-			oNewTender.ContractLength = "";
-			oNewTender.ContractExtenseion = "";
+			oNewTender.ContractLength = 12;
+			oNewTender.ContractExtenseion = 0;
 			oNewTender.TenderStatus = "";
 			oNewTender.ManualSaveStatus = "";
 			oNewTender.FoldersCreated = "";
