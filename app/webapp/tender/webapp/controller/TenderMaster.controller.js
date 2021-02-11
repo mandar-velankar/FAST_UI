@@ -109,14 +109,15 @@ sap.ui.define([
 		 * @return boolean
 		 */
 		_bContainsSelectedBrand: function (aBrands) {
-			var oBrand = this._sSelectedBrandId;
+			let sSelectedBrand = this._sSelectedBrandId;	
+			let bBrandFound = false;
 
 			var bContainsBrand = aBrands.find(brand => {
-				var brandID = brand.split("'")[5];
-				return brandID == oBrand;
+				bBrandFound = brand.lastIndexOf(sSelectedBrand) === -1 ? bBrandFound : true; 
+				return bBrandFound;
 			});
 
-			return !!bContainsBrand;
+			return bContainsBrand;
 		},
 
 		//bind countries to wich the user has acces
