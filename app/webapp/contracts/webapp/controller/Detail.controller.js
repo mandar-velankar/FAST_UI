@@ -456,7 +456,7 @@ sap.ui.define([
 							that.refreshContracts().then((values) => {
 								
 								//show message saying contract is deleted
-								this.getView().setBusy(false);
+								that.getView().setBusy(false);
 								var msg = 'Contract is deleted.';
 								MessageToast.show(msg);
 								

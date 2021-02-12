@@ -34,5 +34,14 @@ sap.ui.define([], function () {
 				  // code block
 			}
 		},
+
+		effectiveDate : function (dApprovedValidFrom, dDraftValidFrom){
+
+			if(dApprovedValidFrom){
+				return dApprovedValidFrom;
+			}
+			return dDraftValidFrom;
+
+		},
 	};
 });

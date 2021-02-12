@@ -452,6 +452,7 @@ sap.ui.define([
 			that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
 			that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 
+
 		},
 
 		/**
@@ -1642,6 +1643,7 @@ sap.ui.define([
 					that.getView().byId("idSelectIssuedBy").setEnabled(false);
 					that.getView().byId("idSelectCompanyStamp").setEnabled(false);
 					that.getView().byId("idDelayInSubmission").setVisible(true);
+					that.getView().byId("btnSaveQuotation").setVisible(true);
 					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
 					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
 						that.getView().byId("btnDownloadQuotation").setVisible(true);
@@ -1891,6 +1893,20 @@ sap.ui.define([
 
 						/* End of mexico */
 
+						/* apply country filter on procurement method*/
+						let oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+
+						oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
+						oProcurementMethod.bindItems({
+							path: "fastData>/CountryProcurementMethod",
+							filters: aFilter,
+							sorter: new sap.ui.model.Sorter("SORTER"),
+							template: new sap.ui.core.Item({
+								text: "{fastData>PROCUREMENT_METHOD_ID}",
+								key: "{fastData>PROCUREMENT_METHOD_ID}"
+							})
+						});
+
 						// Dunno why but binding is not always found
 						// var oBinding = oTenderType.getBinding("items");
 						// //set filter for country on tender type: only when binding of tendertype is found
@@ -2009,6 +2025,7 @@ sap.ui.define([
 						that.getView().byId("idSelectIssuedBy").setEnabled(true);
 						that.getView().byId("idSelectCompanyStamp").setEnabled(true);
 						that.getView().byId("idDelayInSubmission").setVisible(false);
+						that.getView().byId("btnSaveQuotation").setVisible(false);
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
 						that.getView().byId("btnDownloadQuotation").setVisible(false);
 						that.getView().byId("btnSubmitQuotation").setVisible(false);
@@ -3191,6 +3208,13 @@ sap.ui.define([
 				oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem()&& this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
 				oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
 				oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+				oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
+
+				// Brazil only
+				oSaveBasicInfo.IbizID = this.byId("idIbizIDEdit") && this.byId("idIbizIDEdit").getValue();
+				oSaveBasicInfo.PublicNotice = this.byId("idPublicNoticeEdit") && this.byId("idPublicNoticeEdit").getValue();
+				oSaveBasicInfo.OfferStartDate = (oTender.OfferStartDate) ? oTender.OfferStartDate : null;
+				// END Brazil only
 
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
@@ -3208,16 +3232,19 @@ sap.ui.define([
 				oSaveBasicInfo.TENDER_ORIGIN_ID = this.byId("idSelectTenderOriginEdit").getSelectedKey();
 				oSaveBasicInfo.CONTRACT_TYPE_ID = this.byId("idSelectContractTypeEdit").getSelectedKey();
 
-				if (!this.byId("idContractLength").getValue()) {
-					oSaveBasicInfo.ContractLength = 12;
-				} else {
-					oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
-				}
-				if (!this.byId("idContractExtenseion").getValue()) {
-					oSaveBasicInfo.ContractExtenseion = 0;
-				} else {
-					oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
-				}
+				oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue() || 12;
+				oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue() || 0;
+
+				// if (!this.byId("idContractLength").getValue()) {
+				// 	oSaveBasicInfo.ContractLength = 12;
+				// } else {
+				// 	oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
+				// }
+				// if (!this.byId("idContractExtenseion").getValue()) {
+				// 	oSaveBasicInfo.ContractExtenseion = 0;
+				// } else {
+				// 	oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
+				// }
 
 				//TEMP TenderId fix
 				oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
@@ -3301,6 +3328,13 @@ sap.ui.define([
 			oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem() && this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
 			oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
 			oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+			oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
+
+			// Brazil only
+			oSaveBasicInfo.IbizID = this.byId("idIbizIDEdit") && this.byId("idIbizIDEdit").getValue();
+			oSaveBasicInfo.PublicNotice = this.byId("idPublicNoticeEdit") && this.byId("idPublicNoticeEdit").getValue();
+			oSaveBasicInfo.OfferStartDate = (oTender.OfferStartDate) ? oTender.OfferStartDate : null;
+			// END Brazil only
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
 			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
@@ -3312,16 +3346,20 @@ sap.ui.define([
 			oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
 
 			oSaveBasicInfo.TenderStatus = "Open";
-			if (!this.byId("idContractLength").getValue()) {
-				oSaveBasicInfo.ContractLength = 12;
-			} else {
-				oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
-			}
-			if (!this.byId("idContractExtenseion").getValue()) {
-				oSaveBasicInfo.ContractExtenseion = 0;
-			} else {
-				oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
-			}
+
+			oSaveBasicInfo.ContractLength = oTender.ContractLength ? oTender.ContractLength : 12;
+			oSaveBasicInfo.ContractExtenseion = oTender.ContractExtenseion ? oTender.ContractExtenseion : 0;
+
+			// if (!this.byId("idContractLength").getValue()) {
+			// 	oSaveBasicInfo.ContractLength = 12;
+			// } else {
+			// 	oSaveBasicInfo.ContractLength = this.byId("idContractLength").getValue();
+			// }
+			// if (!this.byId("idContractExtenseion").getValue()) {
+			// 	oSaveBasicInfo.ContractExtenseion = 0;
+			// } else {
+			// 	oSaveBasicInfo.ContractExtenseion = this.byId("idContractExtenseion").getValue();
+			// }
 
 			/* Mexico */
 			oSaveBasicInfo.SALES_TYPE_ID = this.byId("idSelectSalesTypeEdit").getSelectedKey();

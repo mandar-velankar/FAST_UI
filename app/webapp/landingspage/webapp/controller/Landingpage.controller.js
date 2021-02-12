@@ -119,6 +119,11 @@ sap.ui.define([
 
 		onTileUserManagementPress: function (oEvent) {
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboardv1_1_20181127/OfferSubmissions?:iid=4"); //check where to store constants
-		}
+		},
+
+		//Tile Tableau Dashboard press
+		onTileTableauDashPress: function (oEvent) {
+			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboard/OfferSubmissions?:iid=2"); //check where to store constants
+		},
 	});
 });

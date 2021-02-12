@@ -34,7 +34,7 @@
 							<core:Item key="{fastData>CountryCode}" text="{fastData>CountryName}"/>
 						</Select>
 						-->
-						<Select id="idSlctCountry" forceSelection="true" selectedKey="{fastAppData>/UserCountries/results/0/COUNTRY_CODE}" items="{ path: 'fastAppData>/UserCountries/results/', sorter: { path: 'COUNTRY_NAME' } }"
+						<Select id="idSlctCountry" forceSelection="true" items="{ path: 'fastAppData>/UserCountries/results/', sorter: { path: 'COUNTRY_NAME' } }"
 							change=".setFilter">
 							<core:Item key="{fastAppData>COUNTRY_CODE}" text="{fastAppData>COUNTRY_NAME}"/>
 						</Select>
@@ -74,7 +74,7 @@
 							<core:Item text="{oJsonSortColList>Name}"/>
 						</Select>
 						<CheckBox id="idCheckBoxInactive" text="{i18n>seeInactive}" selected= "false" select=".setFilter"/>
-						<Button text="{i18n>Column}" icon="sap-icon://display" press="onSugestSel"/>
+						<!-- <Button text="{i18n>Column}" icon="sap-icon://display" press="onSugestSel"/> -->
 						
 						<!-- SPACE -->
 						<ToolbarSpacer/>

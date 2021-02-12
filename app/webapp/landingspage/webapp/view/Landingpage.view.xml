@@ -57,6 +57,7 @@
 										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
 									</TileContent>
 								</GenericTile>
+								
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
 					</Panel>
@@ -107,9 +108,24 @@
 									</TileContent>
 								</GenericTile>
 							</l:HorizontalLayout>
-						</l:VerticalLayout>						
+						</l:VerticalLayout>	
+
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="idTableauDash" allowWrapping="true">
+								<GenericTile
+									class="sapUiTinyMarginBegin
+									sapUiTinyMarginTop tileLayout"
+									header="Tableau Dashboard"
+									press="onTileTableauDashPress">
+									<TileContent footer="Go to tableau...">
+										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+									</TileContent>
+								</GenericTile>
+							</l:HorizontalLayout>
+						</l:VerticalLayout>
+											
 					</Panel>
-				
+
 				</ScrollContainer>
 				
 			</IconTabFilter>

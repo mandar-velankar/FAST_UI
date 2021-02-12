@@ -746,7 +746,7 @@ sap.ui.define([
 		},
 
 		checkEffectiveDateChanged: function(){
-			let dEffectiveDate = new Date(this.byId("idEffectiveDate").getDateValue()).toDateString();
+			let dEffectiveDate = new Date(this.getView().getModel('ppa').getProperty("/aggregatedBrandPolicy/draftBrandPolicy/validFrom")).toDateString();
 			let LatestApprovalEffectiveDate = new Date(this.ppaState.data.brand.validFrom).toDateString();
 
 			if(dEffectiveDate && ( !LatestApprovalEffectiveDate || LatestApprovalEffectiveDate <= dEffectiveDate)) {
@@ -984,6 +984,14 @@ sap.ui.define([
 
 		onEditEffctvDate: function(oEvent){
 			this.setEffectiveDateEditMode(true);
+
+			//EffectiveDate
+			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
+			if(dEffectiveDate){
+				this.ppaState.setPreviousEffDate(dEffectiveDate);
+			} /*else {
+				this.byId("idEffectiveDate").setDateValue(new Date());
+			}*/
 		},
 
 
@@ -994,11 +1002,12 @@ sap.ui.define([
 			this.setEffectiveDateEditMode(false);
 
 			//EffectiveDate
-			let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
+			//let dEffectiveDate = this.byId("idEffectiveDate").getDateValue();
+			let dEffectiveDate = this.getView().getModel('ppa').getProperty("/aggregatedBrandPolicy/draftBrandPolicy/validFrom");
 
 			// Convert EffectiveDate to UTC time
-			const timeOffsetInMS = dEffectiveDate.getTimezoneOffset() * 60000;
-			dEffectiveDate.setTime(dEffectiveDate.getTime() - timeOffsetInMS);
+			//const timeOffsetInMS = dEffectiveDate.getTimezoneOffset() * 60000;
+			//dEffectiveDate.setTime(dEffectiveDate.getTime() - timeOffsetInMS);
 
 			this.ppaState.setBrandPolicyEffectiveDate(dEffectiveDate);
 
@@ -1065,6 +1074,15 @@ sap.ui.define([
 			this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 			this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 			this.getView().getModel("dateModel").setProperty("/enabled", false);
+
+			//EffectiveDate
+			let dPrevEffDate = this.ppaState.getPreviousEffDate();
+			if(!Date.parse(dPrevEffDate)){
+				this.byId("idEffectiveDate").setDateValue();
+			} else {
+				this.byId("idEffectiveDate").setDateValue(dPrevEffDate);
+			}
+
 		},
 
 		setEffectiveDateEditMode: function(bEnabled){

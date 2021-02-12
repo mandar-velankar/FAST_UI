@@ -81,6 +81,21 @@
 			items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }">
 				<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 			</Select>
+
+			<!-- Argentina only -->
+			<Label text="{i18n>High Value}" design="Bold" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR'
+				}"
+			/>
+			<CheckBox 
+				enabled="false"
+				selected="{fastData>HighValue}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'AR'
+				}"
+			/>
+			<!-- / Argentina only -->
 			
 			<!-- Mexico changes-->
 			<Label id="idLabelSalesType" text="{i18n>salestype}" design="Bold" required="true" visible="true"/>
@@ -122,6 +137,35 @@
 			<Label id="idLabelProcurementReason" text="{i18n>procurementmethodreason}" design="Bold" required="true" visible="true"/>
 			<Input id="idProcurementReason" value="{fastData>PROCUREMENT_REASON}" enabled="false" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
 			<!-- End of Thailand Changes-->
+
+			<!-- Brazil only -->
+			<Label text="{i18n>IBIZ Id}" design="Bold" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<Input id="idIbizID"
+				value="{fastData>IbizID}" 
+				enabled="false"
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<Label text="{i18n>Public Notice}" design="Bold" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<TextArea id="idPublicNotice" rows="8" 
+				enabled="false"
+				value="{fastData>PublicNotice}"
+				showExceededText="true" 
+				maxLength="500"
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<!-- End Brazil only -->
 			
 			<!-- Block Timeline -->
 			<core:Title text="Timeline"/>
@@ -137,6 +181,18 @@
 			<Label text="{i18n>nwpubdate}" design="Bold"/>
 			<!--<Input id="input9" value="{path :'fastData>NextPublicationDye',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" enabled="false"/>-->
 			<Input id="input9" value="{path :'fastAppData>/EditTender/NextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+
+			<!-- Brazil only -->
+			<Label text="{i18n>Offer Start Date}" design="Bold"/>
+			<DatePicker id="idOfferStartDate" 
+				enabled="false"
+				value="{path :'fastData>OfferStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" 
+				visible="{= 
+					${raModel>/visibleCountry} === 'BR'
+				}"
+			/>
+			<!-- End Brazil only -->
+
 			<Label text="{i18n>contleng}" design="Bold"/>
 			<Input id="input10" value="{fastData>ContractLength}" enabled="false"/>
 			<Label text="{i18n>contextnprd}" design="Bold"/>

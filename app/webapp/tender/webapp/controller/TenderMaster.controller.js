@@ -109,14 +109,15 @@ sap.ui.define([
 		 * @return boolean
 		 */
 		_bContainsSelectedBrand: function (aBrands) {
-			var oBrand = this._sSelectedBrandId;
+			let sSelectedBrand = this._sSelectedBrandId;	
+			let bBrandFound = false;
 
 			var bContainsBrand = aBrands.find(brand => {
-				var brandID = brand.split("'")[5];
-				return brandID == oBrand;
+				bBrandFound = brand.lastIndexOf(sSelectedBrand) === -1 ? bBrandFound : true; 
+				return bBrandFound;
 			});
 
-			return !!bContainsBrand;
+			return bContainsBrand;
 		},
 
 		//bind countries to wich the user has acces
@@ -364,7 +365,8 @@ sap.ui.define([
 			this.oView.setModel(oJsonSortColList, "oJsonSortColList");
 			this.oView.getModel("oJsonSortColList").setData(oColnme);
 		},
-
+		
+		/*
 		//Generate a popup with list of fields the user can show/hide in the tender table
 		onSugestSel: function () {
 
@@ -393,6 +395,7 @@ sap.ui.define([
 			this.getView().addDependent(this._oTabDialog);
 			this._oTabDialog.open();
 		},
+		*/
 		handleOkPress: function (evt) {
 			var temp = evt.getParameters().selectedItem;
 
