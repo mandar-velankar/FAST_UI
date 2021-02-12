@@ -175,7 +175,7 @@
 		<sections>
 			
 			<!-- BASIC INFORMATION TAB -->
-			<ObjectPageSection id="basicInformationId" title="{i18n>basicInformation}">
+			<ObjectPageSection id="basicInformationId" title="{i18n>basicInformation}" visible="{fastAppData>/permissions/tabs/basicInformationId/visible}">
 				<subSections>
 					<ObjectPageSubSection id="basicInformationSubSectionId">
 						<core:Fragment fragmentName="FAST_NS0FAST0.view.BasicInformationView" type="XML" id="basicInformationFragmentId"></core:Fragment>
@@ -184,21 +184,21 @@
 			</ObjectPageSection>
 			
 			<!-- OFFER PRODUCTS TAB -->
-			<ObjectPageSection id="offerProductsId" title="{i18n>OfferProducts}" showTitle="true">
+			<ObjectPageSection id="offerProductsId" title="{i18n>OfferProducts}" showTitle="true" visible="{fastAppData>/permissions/tabs/offerProductsId/visible}">
 				<subSections>
 					<core:Fragment fragmentName="FAST_NS0FAST0.view.OfferProductsView" type="XML" id="offerProductsFragmentId"></core:Fragment>
 				</subSections>
 			</ObjectPageSection>
 			
 			<!-- FINANCIAL OFFER TAB -->
-			<ObjectPageSection id="financialOfferId" title="{i18n>FinancialOffer}" showTitle="true">
+			<ObjectPageSection id="financialOfferId" title="{i18n>FinancialOffer}" showTitle="true" visible="{fastAppData>/permissions/tabs/financialOfferId/visible}">
 				<subSections>
 					<core:Fragment fragmentName="FAST_NS0FAST0.view.FinancialOfferView" type="XML" id="financialOfferFragmentId"></core:Fragment>
 				</subSections>
 			</ObjectPageSection>
 			
 			<!-- QUOTATION TAB -->
-			<ObjectPageSection id="quotationId" title="{i18n>Quotation}">
+			<ObjectPageSection id="quotationId" title="{i18n>Quotation}" visible="{fastAppData>/permissions/tabs/quotationId/visible}">
 				
 				<!-- todo give a decent ID & use in controller-->
 				<subSections>
@@ -889,7 +889,7 @@
 			
 			
 			<!-- TENDER RESULTS TAB -->
-			<ObjectPageSection id="tenderResultsId" title="{i18n>TenderResults}">
+			<ObjectPageSection id="tenderResultsId" title="{i18n>TenderResults}" visible="{fastAppData>/permissions/tabs/tenderResultsId/visible}">
 				
 				<subSections>
 					
@@ -1077,7 +1077,7 @@
 			
 			
 			<!-- DELIVERY TRACKING TAB -->
-			<ObjectPageSection id="deliveryTrackingId" title="{i18n>DeliveryTracking}" visible="true">
+			<ObjectPageSection id="deliveryTrackingId" title="{i18n>DeliveryTracking}" visible="{fastAppData>/permissions/tabs/deliveryTrackingId/visible}">
 				<subSections>
 					<ObjectPageSubSection id="deliveryTrackingSubSectionId">
 						<mvc:XMLView id="deliveryTrackingViewId" viewName="FAST_NS0FAST0.view.DeliveryTracking"/>

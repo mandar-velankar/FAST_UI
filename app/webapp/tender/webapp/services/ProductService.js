@@ -107,6 +107,7 @@ sap.ui.define([
 			oProductToSave.DEFAULT_COMMISSION_RATE = oProductSaveInfo.DEFAULT_COMMISSION_RATE;
 			oProductToSave.SUPPLY_UPDATE = (oProductSaveInfo.SUPPLY_UPDATE) ? Number(oProductSaveInfo.SUPPLY_UPDATE) : null;
 			oProductToSave.PAYMENT_UPDATE = (oProductSaveInfo.PAYMENT_UPDATE) ? Number(oProductSaveInfo.PAYMENT_UPDATE) : null;
+			oProductToSave.Line = oProductSaveInfo.Line;
 
 			return oProductToSave;
 
