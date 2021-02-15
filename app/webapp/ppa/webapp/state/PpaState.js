@@ -597,7 +597,6 @@ sap.ui.define([
 
 			let msgSuccess = '';
 			let msgWarning = '';
-			let msgError = '';
 			let approvals = []
 
 			// Approval Status
@@ -613,7 +612,8 @@ sap.ui.define([
 					msgWarning = 'Nothing to cancel. Please select approvals to send.';
 					approvals = this.getApprovalsToBeCanceled();
 					break;
-			  }
+				default: break;
+			  } 
 
 			if(approvals.length > 0){
 
@@ -630,24 +630,49 @@ sap.ui.define([
 							return this.createApprovalRequest(approval);
 						case "update":
 							return this.updateApprovalRequest(approval);
+						default: break;
 
 					}
 					
-					this.updateOverallApprovalStatus();
-					sap.m.MessageBox.success(msgSuccess, {});
+					// this.updateOverallApprovalStatus();
+					// sap.m.MessageBox.success(msgSuccess, {});
+					return new Promise();
 				});
 
 				return Promise.all(promises).then(() => {
 					this.updateOverallApprovalStatus();
-					sap.m.MessageBox.success(msgSuccess, {});
+					// sap.m.MessageBox.success(msgSuccess, {});
+					return msgSuccess;
 				});
 
 			}else{
-				sap.m.MessageBox.warning(msgWarning, {});
-				return Promise.resolve("Warning");
+				// sap.m.MessageBox.warning(msgWarning, {});
+				// return Promise.resolve("Warning");
+				return Promise.reject(msgWarning);
 			}
 
 		},
+
+		// /**
+		//  * This method sets what action to be taken on the Approval objects in the backend. 
+		//  * "create" = Create new Object in the backend
+		//  * "update" = Update existing Object in the backend
+		//  * @param {String} sAction 
+		//  */
+		// setApprovalsAction:function(sAction){
+
+		// 	if(sAction){
+		// 		const approvals = this.data.approvalRequest.approvals;
+
+		// 		if(Array.isArray(approvals)){
+		// 			approvals.forEach(approval => {
+		// 				approval.action = sAction;
+		// 			});
+		// 		}
+				
+		// 	}
+			
+		// },
 
 		updateOverallApprovalStatus: function(){
 			this.data.approvalRequest.updateStatus();

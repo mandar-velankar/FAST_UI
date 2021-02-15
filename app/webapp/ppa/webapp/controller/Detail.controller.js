@@ -583,9 +583,18 @@ sap.ui.define([
 				this.getView().setBusy(true);
 
 				//save Approvals (&status)
-				this.ppaState.sendApprovals("Processing").then(() => {
+				this.ppaState.sendApprovals("Processing").then(msgSuccess => {
 					//Reload master list so status is updated
 					this.refreshMasterViewBrandListBinding();
+
+					// reload the Approvals to get the latest data from the backend.
+					this.refreshApprovals();
+					
+					this.getView().setBusy(false);
+
+					sap.m.MessageBox.success(msgSuccess, {});
+				}).catch(err => {
+					sap.m.MessageBox.warning(err, {});
 					this.getView().setBusy(false);
 				});
 
@@ -708,6 +717,7 @@ sap.ui.define([
 			this.ppaState.sendApprovals("Cancelling").then(() => {
 				//Reload master list so status is updated
 				this.refreshMasterViewBrandListBinding();
+
 				this.getView().setBusy(false);
 			});
 
@@ -930,7 +940,7 @@ sap.ui.define([
 			oTable.setBusy(true);
 
 			//this.getApprovals(this.currentCountryCode, this.currentBrandId, this.currentDivision);
-			this.ppaState.getApprovalRequest(this.ppaState.data.brand).then(() =>oTable.setBusy(false));
+			this.ppaState.getApprovalRequest(this.ppaState.data.brand).then(() => oTable.setBusy(false));
 
 		},
 
