@@ -31,6 +31,12 @@ sap.ui.define([
             }
         },
 
+        setBrandPolicyId: function(brandPolicyId){
+            if(brandPolicyId){
+                this.brandPolicy_ID = brandPolicyId;
+            }
+        },
+
         setDivision: function(division){
             if(division){
                 this.division = division;
@@ -138,7 +144,8 @@ sap.ui.define([
                 "approvalDate",
                 "flowId",
                 "requiredAction",
-                "countryApprover_ID"
+                "countryApprover_ID",
+                "brandPolicy_ID"
             ]);
         },
 

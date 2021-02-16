@@ -159,6 +159,32 @@ sap.ui.define([
 			return this.odata("/Approvals").get(mParameters);
 		},
 
+		/**
+		 * Retrieves a list of latest pricing approval requests from the backend
+		 */
+		getApprovalsByBrandPolicyId: function (brandPolicyId) {
+
+			var aFilters = [];
+
+			var oBrandPolicyId = new Filter({
+				path: 'BrandPolicy_ID',
+				operator: FilterOperator.EQ,
+				value1: brandPolicyId
+			});
+
+			aFilters.push(oBrandPolicyId);
+
+
+			var mParameters = {
+				filters: aFilters,
+				urlParameters: {
+					"$expand": "CountryApprover"
+				}
+			};
+
+			return this.odata("/Approvals").get(mParameters);
+		},
+
 		getCountryApprovers: function (sCountryCode, sDivision){
 
 			var sPath = '/CountryApprovers';

@@ -129,9 +129,13 @@ sap.ui.define([
 
 					await this.getChannels(this.currentCountryCode);
 
-					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(brand => {
+					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision).then(async brand => {
+						
+						await this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+
+						brand["brandPolicyId"] = this.ppaState.data.brandPolicy.iD;
+
 						this.ppaState.getApprovalRequest(brand);
-						this.getActiveBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 						this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 					});
 					
@@ -345,24 +349,24 @@ sap.ui.define([
 			});
 		},
 
-		/**sCountryCode, sProductPackId, sBrandId, sDivision
-		 * Get corresponding Products for brand
-		 * @param {*} sCountryCode 
-		 * @param {*} iBrandId 
-		 * @param {*} sProductPackId
-		 * @param {*} sDivision 
-		 */
-		getApprovals: function (sCountryCode, iBrandId, sDivision) {
-			this.getView().setBusy(true);
-			this.ppaState.getApprovals(sCountryCode, iBrandId, sDivision).then((response) => {
-				this.getView().setBusy(false);
-			}).catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			});
-		},
+		// /**sCountryCode, sProductPackId, sBrandId, sDivision
+		//  * Get corresponding Products for brand
+		//  * @param {*} sCountryCode 
+		//  * @param {*} iBrandId 
+		//  * @param {*} sProductPackId
+		//  * @param {*} sDivision 
+		//  */
+		// getApprovals: function (sCountryCode, iBrandId, sDivision) {
+		// 	this.getView().setBusy(true);
+		// 	this.ppaState.getApprovals(sCountryCode, iBrandId, sDivision).then((response) => {
+		// 		this.getView().setBusy(false);
+		// 	}).catch((error) => {
+		// 		console.error(error);
+		// 		this.getView().setBusy(false);
+		// 		this.getRouter().getTargets().display("detailObjectNotFound");
+		// 		this.getOwnerComponent().oListSelector.clearMasterListSelection();
+		// 	});
+		// },
 
 		/**sCountryCode, sDivision
 		 * Get country approvers
