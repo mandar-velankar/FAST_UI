@@ -24,6 +24,16 @@
 							<core:Item key="{ctr>countryCode}" text="{ctr>countryName}"/>
 					</Select>
 
+					<!-- Filter for Brand -->
+					<Select id="idSlctBrand" forceSelection="true" selectedKey="TH" 
+						items="{ 
+							path: 'ctr>/countryTenderBrands', 
+							sorter: { path: 'BRANDNAME' }
+						}"
+						change=".setFilter">
+							<core:Item key="{ctr>BRANDID}" text="{ctr>BRANDNAME}"/>
+					</Select>
+
 					<!-- Filter for Status -->
 					<!--<Select id="idSlctChannel" forceSelection="true" change=".setFilter" visible="true">
 						<items>
@@ -61,32 +71,41 @@
 					growingScrollToLoad="false">
 					<columns>
 						<Column width="6em" importance="None">
-							<Text text="Channel"/>
+							<Text text="{i18n>channel}"/>
 						</Column>
-						<Column	width="6em" importance="None">
+						<!-- <Column	width="6em" importance="None">
 							<Text text="Country"/>
+						</Column> -->
+						<Column width="12em" importance="High">
+							<Text text="{i18n>contract}"/>
+						</Column>
+						<Column width="12em" importance="Low" popinDisplay="Inline">
+							<Text text="{i18n>institute}"/>
+						</Column>
+						<Column width="12em" importance="Low" popinDisplay="Inline">
+							<Text text="{i18n>distributor}"/>
 						</Column>
 						<Column width="12em" importance="High">
-							<Text text="Contract"/>
+							<Text text="{i18n>value}"/>
 						</Column>
 						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Institute"/>
+							<Text text="{i18n>contractStartDate}"/>
 						</Column>
 						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Distributor"/>
+							<Text text="{i18n>contractValidUntil}"/>
 						</Column>
 						<Column width="12em" importance="High">
-							<Text text="Value"/>
+							<Text text="{i18n>modifiedBy}"/>
 						</Column>
 						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Contract Date"/>
+							<Text text="{i18n>modifiedAt}"/>
 						</Column>
 					</columns>
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange">
 							<cells>
 								<Text text="{ctr>channel}"/>
-								<Text text="{ctr>countryCode}"/>
+								<!-- <Text text="{ctr>countryCode}"/> -->
 								<ObjectIdentifier text="{ctr>contractNumber}"/>
 								<Text text="{ctr>institute/instituteName}"/>
 								<Text text="{ctr>distributor/distributorName}"/>
@@ -97,6 +116,23 @@
 								/>
 								<Text text="{
 										path: 'ctr>contractDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{
+										path: 'ctr>contractValidUntil',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{ctr>modifiedBy}"/>
+								<Text text="{
+										path: 'ctr>modifiedAt',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'

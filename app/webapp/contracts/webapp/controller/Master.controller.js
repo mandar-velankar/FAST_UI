@@ -36,6 +36,7 @@ sap.ui.define([
 			var oList = this.byId("list"),
 				oViewModel = this._createViewModel();
 				this._oList = oList;
+
 				// Put down master list's original value for busy indicator delay,
 				// so it can be restored later on. Busy handling on the master list is
 				// taken care of by the master list itself.
@@ -314,6 +315,7 @@ sap.ui.define([
 				//this.getInstitutes(this.ctrState.getNewContract().countryCode);
 				//this.getDistributors(this.ctrState.getNewContract().countryCode);
 				this.getChannels();
+				this.getCountryTenderBrands();
 				this.setFilter();
 			})
 			.catch((error) => { });
@@ -447,6 +449,28 @@ sap.ui.define([
 			this.getView().setBusy(true);
 
 			return this.ctrState.getCountries()
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				this.getView().setBusy(true);
+				this.showNoAccessMessage("User ID doesn't have access");
+				throw(error);
+			});
+		},
+
+		/**
+		 * Get list of CountryTenderBrands 
+		 * @returns {Promise} - 
+		 */
+		getCountryTenderBrands: function(){
+			this.getView().setBusy(true);
+
+			return this.ctrState.getCountryTenderBrands()
 			.then(() => {
 				this.getView().setBusy(false);
 			})
@@ -743,10 +767,14 @@ sap.ui.define([
 
 				andFilters.push(new sap.ui.model.Filter(orFilters, false));
 			}
+
 			var oFilters = new sap.ui.model.Filter(andFilters, true);
 
 			//Binding to table with the filters and the sorters
 			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
+
+			// TODO: The filtering is still not working
+			// this.getView().byId("idSlctBrand").getBinding("items").filter(new sap.ui.model.Filter("countryCode", "EQ", oCountry), FilterType.Application);
 
 		},
 
