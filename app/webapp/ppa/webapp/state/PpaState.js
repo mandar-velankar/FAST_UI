@@ -244,42 +244,42 @@ sap.ui.define([
 		//  */
 		getProductPolicy: function (sProductPolicyId) {
 
-		 	if(sProductPolicyId){
-		 		return this.getService().getProductPolicy(sProductPolicyId).then((PolicyResponse) => {
-		 			let oPolicy = new Policy(PolicyResponse.data);
+			if(sProductPolicyId){
+				return this.getService().getProductPolicy(sProductPolicyId).then((PolicyResponse) => {
+					let oPolicy = new Policy(PolicyResponse.data);
 					oPolicy.setChannels(this.data.channels);
 
 					this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oPolicy);
 					this.getSelectedProduct().draftProductPolicy = oPolicy;
 
-		 			return this.getSelectedProduct().draftProductPolicy;
-		 		});
-		 	}else{
+					return this.getSelectedProduct().draftProductPolicy;
+				});
+			}else{
 				
-		 		//for creating with empty Policy structure (to be able to create)
-		 		let oSelectedProduct = this.getSelectedProduct();
-		 		let oPolicy = {
-		 			//iD : "",
-		 			countryCode : oSelectedProduct.countryCode,
-		 			division : oSelectedProduct.division,
+				//for creating with empty Policy structure (to be able to create)
+				let oSelectedProduct = this.getSelectedProduct();
+				let oPolicy = {
+					//iD : "",
+					countryCode : oSelectedProduct.countryCode,
+					division : oSelectedProduct.division,
 					brandId : oSelectedProduct.brandId,
 					brandPolicy_ID: oSelectedProduct.draftProductPolicy.brandPolicy_ID,
-		 			productPackId : oSelectedProduct.productPackId,
-		 			currency : oSelectedProduct.currency,
-		 			mspStatus : oSelectedProduct.mspStatus,
-		 			nspStatus : oSelectedProduct.nspStatus,
-		 			channels : this.data.channels
-		 		}
+					productPackId : oSelectedProduct.productPackId,
+					currency : oSelectedProduct.currency,
+					mspStatus : oSelectedProduct.mspStatus,
+					nspStatus : oSelectedProduct.nspStatus,
+					channels : this.data.channels
+				}
 
-		 		let oNewPolicy = new Policy(oPolicy);
+				let oNewPolicy = new Policy(oPolicy);
 
 				// set the new policy
 				this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oNewPolicy);
 				oSelectedProduct.draftProductPolicy = oNewPolicy;
 
-		 		return Promise.resolve(oSelectedProduct);
+				return Promise.resolve(oSelectedProduct);
 
-		 	}
+			}
 			
 		},
 		
@@ -300,15 +300,15 @@ sap.ui.define([
 			return Promise.resolve(this.getProperty("selectedProduct"));
 		},
 
-		/**
-		 * Get the corresponding products for the selected brand
-		 * @param {*} sCountryCode 
-		 * @param {*} sBrandId 
-		 * @param {*} sProductPackId 
-		 * @param {*} sDivision 
-		 */
+	
 		getApprovals: function(sCountryCode, sBrandId, sDivision){
 			return this.getService().getApprovals(sCountryCode, sBrandId, sDivision);
+		},
+
+		getApprovalsByBrandPolicyId: function(brandPolicyId){
+
+			return this.getService().getApprovalsByBrandPolicyId(brandPolicyId);
+
 		},
 
 		// /**
@@ -360,7 +360,7 @@ sap.ui.define([
 			this.setProperty("approvalRequest", new ApprovalRequest());
 
 			const approverTypes = await this.getApproverTypes(oBrand.countryCode);
-			const submittedApprovals = await this.getApprovals(oBrand.countryCode, oBrand.brandId, oBrand.division)
+			const submittedApprovals = await this.getApprovalsByBrandPolicyId(oBrand.brandPolicyId);
 
 			const data = {
 				approverTypes: approverTypes.data.results,
@@ -457,7 +457,7 @@ sap.ui.define([
 		setAndUpdateApprovalRequestStatuses: function(status){ 
 			if(status){
 				const approvals = this.data.approvalRequest.getApprovals();
-				const approvalsPending = approvals[0].approvalStatus.toLowerCase().indexOf("not sent") === - 1;
+				const approvalsPending = approvals[0].approvalStatus.toLowerCase().indexOf("not sent") === -1;
 
 				if(approvals.length > 0 && approvalsPending){
 
@@ -471,6 +471,8 @@ sap.ui.define([
 
 				}
 			}
+
+			return;
 		},
 
 
@@ -557,12 +559,12 @@ sap.ui.define([
 		saveBrandPolicy: function(){
 
 			//Get draft & get approved
-			let oAggregatedBrandPolicy = this.data.aggregatedBrandPolicy;
+			// let oAggregatedBrandPolicy = this.data.aggregatedBrandPolicy;
 			let oDraftBrandPolicy    = this.data.aggregatedBrandPolicy.getDraftBrandPolicy();
 			let oApprovedBrandPolicy = this.data.aggregatedBrandPolicy.getApprovedBrandPolicy();
 			let promises = [];
 
-        	//1. if latest approved version exist, we should update its validTo date = (effective date - 1sec)
+			// 1. if latest approved version exist, we should update its validTo date = (effective date - 1sec)
             if(oApprovedBrandPolicy && oApprovedBrandPolicy.iD){
 				var newValidToDate = new Date(oDraftBrandPolicy.validFrom.getFullYear(), oDraftBrandPolicy.validFrom.getMonth(), oDraftBrandPolicy.validFrom.getDate() - 1, 23,59,59);
 
@@ -597,7 +599,6 @@ sap.ui.define([
 
 			let msgSuccess = '';
 			let msgWarning = '';
-			let msgError = '';
 			let approvals = []
 
 			// Approval Status
@@ -613,7 +614,8 @@ sap.ui.define([
 					msgWarning = 'Nothing to cancel. Please select approvals to send.';
 					approvals = this.getApprovalsToBeCanceled();
 					break;
-			  }
+				default: break;
+			  } 
 
 			if(approvals.length > 0){
 
@@ -630,24 +632,49 @@ sap.ui.define([
 							return this.createApprovalRequest(approval);
 						case "update":
 							return this.updateApprovalRequest(approval);
+						default: break;
 
 					}
 					
-					this.updateOverallApprovalStatus();
-					sap.m.MessageBox.success(msgSuccess, {});
+					// this.updateOverallApprovalStatus();
+					// sap.m.MessageBox.success(msgSuccess, {});
+					return new Promise();
 				});
 
 				return Promise.all(promises).then(() => {
 					this.updateOverallApprovalStatus();
-					sap.m.MessageBox.success(msgSuccess, {});
+					// sap.m.MessageBox.success(msgSuccess, {});
+					return msgSuccess;
 				});
 
 			}else{
-				sap.m.MessageBox.warning(msgWarning, {});
-				return Promise.resolve("Warning");
+				// sap.m.MessageBox.warning(msgWarning, {});
+				// return Promise.resolve("Warning");
+				return Promise.reject(msgWarning);
 			}
 
 		},
+
+		// /**
+		//  * This method sets what action to be taken on the Approval objects in the backend. 
+		//  * "create" = Create new Object in the backend
+		//  * "update" = Update existing Object in the backend
+		//  * @param {String} sAction 
+		//  */
+		// setApprovalsAction:function(sAction){
+
+		// 	if(sAction){
+		// 		const approvals = this.data.approvalRequest.approvals;
+
+		// 		if(Array.isArray(approvals)){
+		// 			approvals.forEach(approval => {
+		// 				approval.action = sAction;
+		// 			});
+		// 		}
+				
+		// 	}
+			
+		// },
 
 		updateOverallApprovalStatus: function(){
 			this.data.approvalRequest.updateStatus();
@@ -656,7 +683,8 @@ sap.ui.define([
     
 		/**
 		 * Checks if an object is empty
-		 * @param {*} obj 
+		 * @param {Object} - obj 
+		 * @return {Boolean} -
 		 */
 		isEmpty: function(obj) {
 			for(var key in obj) {
