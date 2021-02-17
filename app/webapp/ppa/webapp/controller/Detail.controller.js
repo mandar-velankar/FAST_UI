@@ -536,11 +536,23 @@ sap.ui.define([
 			var that = this;
 
 			//show loading screen
-			let aProductsNotValid = this.onValidatePricesAtApproval();
 			let bApprovalsValid = this.onValidateApprovals();
+			let aProductsNotValid = this.onValidatePricesAtApproval();
+
+			const aProductPolicyWithNspPricesHighterThanMspPrices = this.getProductPolicyWithNspPricesHighterThanMspPrices();
+			
 			
 			if(bApprovalsValid){
-				if(aProductsNotValid.length > 0 ){
+
+				// check if there are any products with NSP prices higher than the MSP prices
+				if(aProductPolicyWithNspPricesHighterThanMspPrices.length > 0 ){
+					
+					let productPackIDs = aProductPolicyWithNspPricesHighterThanMspPrices.map(product => product.productPackId);
+					let productNames = productPackIDs.map(productPackID => this.ppaState.getProductNameById(productPackID));
+	
+					sap.m.MessageBox.error(`Prices for the following products have NSP values higher than the MSP values, which is not allowed. \n\n ${productNames.join('\n')}`);
+	
+				}else if(aProductsNotValid.length > 0 ){
 
 					let productNames = aProductsNotValid.map(product => product);
 	
@@ -556,6 +568,7 @@ sap.ui.define([
 							}
 						}
 					});
+
 				}else {
 						that._sendApprovals();
 				}
@@ -573,39 +586,26 @@ sap.ui.define([
 
 		_sendApprovals: function(){
 
-			// check if there are any products with NSP prices higher than the MSP prices
-			const aProductPolicyWithNspPricesHighterThanMspPrices = this.getProductPolicyWithNspPricesHighterThanMspPrices();
-			if(aProductPolicyWithNspPricesHighterThanMspPrices.length > 0 ){
-					
-				let productPaackIDs = aProductPolicyWithNspPricesHighterThanMspPrices.map(product => product.productPackId);
-				let productNames = productPaackIDs.map(productPackID => this.ppaState.getProductNameById(productPackID));
+			this.getView().setBusy(true);
 
-				sap.m.MessageBox.error(`Prices for the following products have NSP values higher than the MSP values, which is not allowed. \n\n ${productNames.join('\n')}`);
+			//save Approvals (&status)
+			this.ppaState.sendApprovals("Processing").then(msgSuccess => {
+				//Reload master list so status is updated
+				this.refreshMasterViewBrandListBinding();
 
-			}else{
+				// reload the Approvals to get the latest data from the backend.
+				this.refreshApprovals();
+				
+				this.getView().setBusy(false);
 
-				this.getView().setBusy(true);
+				sap.m.MessageBox.success(msgSuccess, {});
+			}).catch(err => {
+				sap.m.MessageBox.warning(err, {});
+				this.getView().setBusy(false);
+			});
 
-				//save Approvals (&status)
-				this.ppaState.sendApprovals("Processing").then(msgSuccess => {
-					//Reload master list so status is updated
-					this.refreshMasterViewBrandListBinding();
-
-					// reload the Approvals to get the latest data from the backend.
-					this.refreshApprovals();
-					
-					this.getView().setBusy(false);
-
-					sap.m.MessageBox.success(msgSuccess, {});
-				}).catch(err => {
-					sap.m.MessageBox.warning(err, {});
-					this.getView().setBusy(false);
-				});
-
-				//disable edit mode
-				this.ppaState.setEditMode(false);
-
-			}
+			//disable edit mode
+			this.ppaState.setEditMode(false);
 
 			
 		},
