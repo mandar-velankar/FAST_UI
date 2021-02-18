@@ -518,7 +518,9 @@ sap.ui.define([
 					var aCells = oProduct.getCells();
 					aCells.forEach(function (oCell, index) {
 						try{
-							oCell.setProperty("enabled", oCtrState.data.editMode);
+							if(!(oCell.getId()).includes('idNspPerUnit')){
+								oCell.setProperty("enabled", oCtrState.data.editMode);
+							}
 						} catch(err) {
 
 						}
