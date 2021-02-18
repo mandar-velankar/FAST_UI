@@ -626,7 +626,7 @@ sap.ui.define([
 			if (oStatus === 'Awaiting Approval' || oStatus === 'Offer Created' || oStatus === 'Offer Approved' || oStatus === 'Offer Rejected') {
 				var sSortingPath = 'INTERNAL_BID_DUE_DATE';
 				var sDescending = false;
-			} else if (oStatus === 'Quotation Submitted' || oStatus === 'Results Recorded' || oStatus === 'Delivery Ongoing' ||
+			} else if (oStatus === 'Quotation Submitted' || oStatus === 'Results Recorded' || oStatus === 'In FOC Negotiation' || oStatus === 'Delivery Ongoing' ||
 				oStatus === 'Wholesale Offer' || oStatus === 'Offer Declined' || oStatus === 'Tender Closed' || oStatus === 'Cancelled' || oStatus ===
 				'All') {
 				sSortingPath = 'PUBLICATION_DATE';

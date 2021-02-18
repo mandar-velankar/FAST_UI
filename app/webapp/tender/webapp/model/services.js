@@ -962,6 +962,7 @@ sap.ui.define([
 						//  - 'Results Recorded'
 						//  - 'Delivery Ongoing'
 						if (oOffer.OfferStatus.STATUS === 'Quotation Submitted' ||
+							oOffer.OfferStatus.STATUS === 'In FOC Negotiation' ||
 							oOffer.OfferStatus.STATUS === 'Results Recorded' ||
 							oOffer.OfferStatus.STATUS === 'Delivery Ongoing') {
 							bVisible = true;
@@ -973,7 +974,8 @@ sap.ui.define([
 						//The offer should be shown in case the offer status is:
 						//	- 'Results Recorded'
 						//  - 'Delivery Ongoing'
-						if (oOffer.OfferStatus.STATUS === 'Results Recorded' ||
+						if (oOffer.OfferStatus.STATUS === 'In FOC Negotiation' ||
+							oOffer.OfferStatus.STATUS === 'Results Recorded' ||
 							oOffer.OfferStatus.STATUS === 'Delivery Ongoing') {
 							bVisible = true;
 						} else {

@@ -1681,6 +1681,7 @@ sap.ui.define([
 					var aStatusNoEdit = [
 						"Awaiting Approval",
 						"Quotation Submitted",
+						"In FOC Negotiation",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -2177,6 +2178,7 @@ sap.ui.define([
 							var aStatusNoDelete = [
 								"Awaiting Approval",
 								"Quotation Submitted",
+								"In FOC Negotiation",
 								"Results Recorded",
 								"Delivery Ongoing"
 							];
@@ -2955,7 +2957,7 @@ sap.ui.define([
 								bCancelEnabled = true;
 							}
 
-							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "Delivery Ongoing") {
+							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Delivery Ongoing") {
 								bSendApprovalEnabled = true;
 							}
 
@@ -3829,6 +3831,7 @@ sap.ui.define([
 					var aStatusNoDelete = [
 						"Awaiting Approval",
 						"Quotation Submitted",
+						"In FOC Negotiation",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -3899,6 +3902,7 @@ sap.ui.define([
 
 					if (
 						oData.STATUS === "Quotation Submitted" ||
+						oData.STATUS === "In FOC Negotiation" ||
 						oData.STATUS === "Results Recorded"
 					) {
 
@@ -3915,7 +3919,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted' or in 'Results Recorded'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation' or in 'Results Recorded'.", {});
 
 					}
 
@@ -3957,6 +3961,7 @@ sap.ui.define([
 
 					if (
 						oData.STATUS === "Quotation Submitted" ||
+						oData.STATUS === "In FOC Negotiation" ||
 						oData.STATUS === "Results Recorded" ||
 						oData.STATUS === "Delivery Ongoing"
 					) {
@@ -3974,7 +3979,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'Results Recorded' or 'Delivery Ongoing'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Results Recorded' or 'Delivery Ongoing'.", {});
 
 					}
 

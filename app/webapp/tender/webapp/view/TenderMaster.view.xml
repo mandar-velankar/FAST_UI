@@ -51,6 +51,7 @@
 								<core:Item text="Offer Approved"/>
 								<core:Item text="Offer Rejected"/>
 								<core:Item text="Quotation Submitted"/>
+								<core:Item text="In FOC Negotiation"/>
 								<core:Item text="Results Recorded"/>
 								<core:Item text="Delivery Ongoing"/>
 								<core:Item text="Wholesale Offer"/>
