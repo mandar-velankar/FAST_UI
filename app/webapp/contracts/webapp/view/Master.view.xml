@@ -75,6 +75,11 @@
 								<ObjectIdentifier title="Contract" titleActive="true" titlePress="onClick"/>
 							</header>
 						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline" visible="{= ${appView>/layout} === 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Contract Name" titleActive="true" titlePress="onClick"/>
+							</header>
+						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="Institute" titleActive="true" titlePress="onClick"/>
@@ -102,6 +107,7 @@
 								<Text text="{ctr>channel}"/>
 								<Text text="{ctr>countryCode}"/>
 								<ObjectIdentifier text="{ctr>contractNumber}"/>
+								<Text text="{ctr>contractName}"/>
 								<Text text="{ctr>institute/instituteName}"/>
 								<Text text="{ctr>distributor/distributorName}"/>
 								<Text text="{
