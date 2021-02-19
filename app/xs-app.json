@@ -7,21 +7,7 @@
     {
       "source": "/v4/(.*)$",
       "target": "$1",
-      "authenticationType": "basic",
-      "destination": "srv_api",
-      "csrfProtection": true
-    },
-    {
-      "source": "/PolicyPricingService/(.*)$",
-      "target": "/ppa/$1",
-      "authenticationType": "basic",
-      "destination": "srv_api",
-      "csrfProtection": true
-    },
-    {
-      "source": "/FAST/PolicyPricingService/(.*)$",
-      "target": "/FAST/ppa/$1",
-      "authenticationType": "basic",
+      "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": true
     },
@@ -29,13 +15,6 @@
       "source": "/FAST/(.*)$",
       "target": "/FAST/$1",
       "authenticationType": "xsuaa",
-      "destination": "srv_api",
-      "csrfProtection": true
-    },
-    {
-      "source": "/ODataDev/(.*)$",
-      "target": "/ODataDev/$1",
-      "authenticationType": "basic",
       "destination": "srv_api",
       "csrfProtection": true
     },
@@ -78,20 +57,6 @@
       "source": "^/pdf/(.*)$",
       "target": "$1",
       "localDir": "dist/pdf"
-    },
-    {
-      "source": "^/reporting/(.*)$",
-      "target": "/FAST/$1",
-      "authenticationType": "basic",
-      "destination": "srv_api",
-      "csrfProtection": true
-    },
-    {
-      "source": "^/(.*)$",
-      "target": "/FAST/$1",
-      "authenticationType": "basic",
-      "destination": "srv_api",
-      "csrfProtection": true
     }
   ]
 }
