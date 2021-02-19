@@ -645,13 +645,13 @@ sap.ui.define([
 			if(product){
 				const unit = product.unit;
 				const mspPerUnit = product.mspPerUnit;
-				const nspPerUnit = product.nspPerUnit;
+				//const nspPerUnit = product.nspPerUnit;
 				const mspApprovedByName = product.mspApprovedByName;
 				const nspApprovedByName = product.nspApprovedByName;
 				const mspApprovedByRole = product.mspApprovedByRole;
 				const nspApprovedByRole = product.nspApprovedByRole;
 
-				if(!unit || !mspPerUnit || !nspPerUnit || !mspApprovedByName || !nspApprovedByName || !mspApprovedByRole || !nspApprovedByRole){
+				if(!unit || !mspPerUnit || !mspApprovedByName || !nspApprovedByName || !mspApprovedByRole || !nspApprovedByRole){
 					return false;
 				}
 

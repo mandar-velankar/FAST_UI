@@ -245,7 +245,10 @@
 									delete="onDeleteProduct"
 									selectionChange="onProductItemSelect"
 									items="{
-										path: 'ctr>/currentContract/products'
+										path: 'ctr>/currentContract/products',
+										filters: [
+											{path: 'enabled', operator: 'EQ', value1: true}
+										]
 									}">
 								<m:columns>
 									<m:Column width="8rem">
