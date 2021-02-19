@@ -73,6 +73,7 @@ sap.ui.define([
                     newApproval.setBrandId(this.brand.brandId);
                     newApproval.setDivision(this.brand.division);
                     newApproval.setSending(this.getSending(approverType, newApproval.getApprovalStatus()));
+                    newApproval.setBrandPolicyId(this.brand.brandPolicyId);
                     this.approvals.push(newApproval);
                 }
 
