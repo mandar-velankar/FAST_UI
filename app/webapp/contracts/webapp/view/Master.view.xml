@@ -55,31 +55,50 @@
 					alternateRowColors="true"
 					autoPopinMode="true"
 					contextualWidth="Auto" 
-					popinLayout="GridSmall"
+					popinLayout="Block"
 					growing="true"
 					growingThreshold="15"
 					growingScrollToLoad="false">
 					<columns>
-						<Column width="6em" importance="None">
-							<Text text="Channel"/>
+						<Column width="6em" importance="None" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Channel" titleActive="true" titlePress="onClick"/>
+							</header>
 						</Column>
-						<Column	width="6em" importance="None">
-							<Text text="Country"/>
-						</Column>
-						<Column width="12em" importance="High">
-							<Text text="Contract"/>
-						</Column>
-						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Institute"/>
-						</Column>
-						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Distributor"/>
+						<Column	width="6em" importance="None" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Country" titleActive="true" titlePress="onClick"/>
+							</header>
 						</Column>
 						<Column width="12em" importance="High">
-							<Text text="Value"/>
+							<header>
+								<ObjectIdentifier title="Contract" titleActive="true" titlePress="onClick"/>
+							</header>
 						</Column>
-						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Contract Date"/>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline" visible="{= ${appView>/layout} === 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Contract Name" titleActive="true" titlePress="onClick"/>
+							</header>
+						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="Institute" titleActive="true" titlePress="onClick"/>
+							</header>
+						</Column>
+						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Distributor" titleActive="true" titlePress="onClick"/>
+							</header>
+						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="High" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="Value" titleActive="true" titlePress="onClick"/>
+							</header>
+						</Column>
+						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Contract Start Date" titleActive="true" titlePress="onClick"/>
+							</header>
 						</Column>
 					</columns>
 					<items>
@@ -88,6 +107,7 @@
 								<Text text="{ctr>channel}"/>
 								<Text text="{ctr>countryCode}"/>
 								<ObjectIdentifier text="{ctr>contractNumber}"/>
+								<Text text="{ctr>contractName}"/>
 								<Text text="{ctr>institute/instituteName}"/>
 								<Text text="{ctr>distributor/distributorName}"/>
 								<Text text="{
