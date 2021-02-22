@@ -164,7 +164,15 @@ sap.ui.define([
 
         setProduct: function (product) {
             if (product) {
+
                 this.product = new ProductsProduct(product);
+
+                // add brand info to Product
+                if(product.Product && !product.Product.__deferred){
+                    this.brandID= product.Product.HLEVEL4_CODE;
+                    this.brandName = product.Product.HLEVEL4_NAME;
+                }
+                
             }
         },
         getProduct: function () {
@@ -280,8 +288,8 @@ sap.ui.define([
                 "nspPerUnit",
                 "nspApprovedByName",
                 "nspApprovedByRole",
-                /*"enabled", 
-                "reference", 
+                "enabled", 
+               /* "reference", 
                 "alternateOffer",
                 "requestedVolume",
                 "uoM",

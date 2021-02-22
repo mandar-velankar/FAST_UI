@@ -25,7 +25,7 @@ sap.ui.define([
 				currencies: [],
 				channels: [],
 				contracts: [],
-				countryTenderBrands: [],
+				countryContractBrands: [],
 				currentContract: {
 					instituteDistributorBrandProducts: [],
 					uniqueBrands: []
@@ -1008,15 +1008,15 @@ sap.ui.define([
 		},
 
 		/**
-		 * Fetches the CountryTenderBrands from the backend and adds them to the countryTenderBrands
-		 * @param {String} - sCountryCode 
-		 * @returns {Promise} - A list of countryTenderBrands
+		 * Fetches the CountryContractBrands from the backend and adds them to the countryContractBrands
+		 * @param {String} sCountryCode - 
+		 * @returns {Promise} - A list of countryContractBrands
 		 */
-		getCountryTenderBrands: function (sCountryCode){
-			this.setProperty("countryTenderBrands", []);
-			return this.getCatService().getCountryTenderBrands(sCountryCode).then(response => {
-				this.setProperty("countryTenderBrands", response.data.results);
-				return this.getProperty("countryTenderBrands");
+		getCountryContractBrands: function (sCountryCode){
+			this.setProperty("countryContractBrands", []);
+			return this.getService().getCountryContractBrands(sCountryCode).then(response => {
+				this.setProperty("countryContractBrands", response.data.results);
+				return this.getProperty("countryContractBrands");
 			});
 		},
 

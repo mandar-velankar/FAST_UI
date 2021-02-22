@@ -25,13 +25,16 @@
 					</Select>
 
 					<!-- Filter for Brand -->
-					<Select id="idSlctBrand" forceSelection="true" selectedKey="TH" 
+					<Select 
+						id="idSlctBrand" 
+						forceSelection="true" 
 						items="{ 
-							path: 'ctr>/countryTenderBrands', 
-							sorter: { path: 'BRANDNAME' }
+							path: 'ctr>/countryContractBrands', 
+							sorter: { path: 'BrandName' }
 						}"
-						change=".setFilter">
-							<core:Item key="{ctr>BRANDID}" text="{ctr>BRANDNAME}"/>
+						change="._filterContractsTable"
+					>
+							<core:Item key="{ctr>BrandID}" text="{ctr>BrandName}"/>
 					</Select>
 
 					<!-- Filter for Status -->
