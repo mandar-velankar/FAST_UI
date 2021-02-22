@@ -145,7 +145,7 @@ sap.ui.define([
 			
 			var mParameters = {
 				urlParameters: {
-					"$expand": "Institute,Distributor,Products",
+					"$expand": "Institute,Distributor,Products/Product/Product",
 					"$orderby": "ContractDate desc",
 					"$top": 5000 //should be 50 but as long as we don't have backend filtering we should get more
 				}
@@ -440,6 +440,29 @@ sap.ui.define([
 			return this.odata(sKey).put(data);
 
 		}*/
+
+		getCountryContractBrands: function (sCountryCode) {
+			
+			var aFilters = [];
+
+			if(sCountryCode){
+
+				var oCountryCodeFilter = new Filter({
+					path: 'CountryCode',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode
+				});
+
+				aFilters.push(oCountryCodeFilter);
+			}
+
+			
+			var mParameters = {
+				filters: aFilters
+			};
+
+			return this.odata("/CountryContractBrands").get(mParameters);
+		},
 
     });
     

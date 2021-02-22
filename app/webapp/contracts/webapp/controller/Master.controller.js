@@ -36,6 +36,7 @@ sap.ui.define([
 			var oList = this.byId("list"),
 				oViewModel = this._createViewModel();
 				this._oList = oList;
+
 				// Put down master list's original value for busy indicator delay,
 				// so it can be restored later on. Busy handling on the master list is
 				// taken care of by the master list itself.
@@ -314,6 +315,7 @@ sap.ui.define([
 				//this.getInstitutes(this.ctrState.getNewContract().countryCode);
 				//this.getDistributors(this.ctrState.getNewContract().countryCode);
 				this.getChannels();
+
 				this.setFilter();
 			})
 			.catch((error) => { });
@@ -447,6 +449,29 @@ sap.ui.define([
 			this.getView().setBusy(true);
 
 			return this.ctrState.getCountries()
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				this.getView().setBusy(true);
+				this.showNoAccessMessage("User ID doesn't have access");
+				throw(error);
+			});
+		},
+
+		/**
+		 * Get list of CountryTenderBrands 
+		 * @param {String} sCountryCode -  
+		 * @returns {Promise} - 
+		 */
+		getCountryContractBrands: function(sCountryCode){
+			this.getView().setBusy(true);
+
+			return this.ctrState.getCountryContractBrands(sCountryCode)
 			.then(() => {
 				this.getView().setBusy(false);
 			})
@@ -669,6 +694,7 @@ sap.ui.define([
 
 			//get possible filters
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
+			var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			//var oChannel = this.byId("idSlctChannel").getSelectedItem() ? this.byId("idSlctChannel").getSelectedItem().getKey() : "All";
 			let oChannel = 'OTC';
 			var sSearch = this.byId("idSearch").getProperty("value");
@@ -743,12 +769,114 @@ sap.ui.define([
 
 				andFilters.push(new sap.ui.model.Filter(orFilters, false));
 			}
+
+			// andFilters.push(new sap.ui.model.Filter({
+			// 	path: "institute/instituteName",
+			// 	test: function(aProduct) {
+			// 	   debugger;
+
+			// 	   //return aProduct[0] && aProduct[0].brandID.indexOf(sSelectedBrand) > -1
+			// 	}
+			//   }));
+
 			var oFilters = new sap.ui.model.Filter(andFilters, true);
 
 			//Binding to table with the filters and the sorters
 			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
 
+			// TODO: The filtering is still not working
+			// this.getView().byId("idSlctBrand").getBinding("items").filter(new sap.ui.model.Filter("countryCode", "EQ", oCountry), FilterType.Application);
+
+			this.getCountryContractBrands(oCountry);
+
 		},
+
+		/**
+		 * OData V2 does not support operators "Any" and "All". 
+		 * Because of this we can not filter a collection of entities on the server side.
+		 * This is a client side filter.
+		 * @param {Object} oEvent - 
+		 */
+		_filterContractsTable: function (oEvent) {
+			
+
+			let sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getText() : "All_Brands";	
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
+
+			// get all table items
+			var oTable = this._oList;
+			var andFilters = [];
+
+			andFilters.push(new sap.ui.model.Filter("countryCode", "EQ", oCountry));
+			andFilters.push(new sap.ui.model.Filter("enabled", "EQ", true));
+
+			oTable.getBinding("items").filter(andFilters, FilterType.Application);
+			
+			if (sSelectedBrand === "All_Brands") {
+				return;
+			}
+
+			var aItems = oTable.getItems();
+			
+			// filter based on oBrand
+			aItems.forEach(item => {
+				
+				var oCtx = item.getBindingContext("ctr");
+				var sPath = item.getBindingContext("ctr").getPath();
+				var obj = oCtx.getObject(sPath);
+				var aProducts = obj.products;
+
+				var bContainsBrand = aProducts.find(product => product.brandName.lastIndexOf(sSelectedBrand) > -1);
+
+				if (bContainsBrand) {
+					andFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
+					
+				}
+
+			});
+
+			var oFilters = new sap.ui.model.Filter(andFilters, true);
+
+			//Binding to table with the filters and the sorters
+			oTable.getBinding("items").filter(oFilters, FilterType.Application);
+			
+		},
+
+
+		// /**
+		//  * This method checks whether Offer contains the selected brand
+		//  * @param {Array} aProducts - a list of brands
+		//  * @return {Boolean} - 
+		//  */
+		// _bContainsSelectedBrand: function (aProducts) {
+		// 	let sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";	
+		// 	let bBrandFound = false;
+
+		// 	var bContainsBrand = aProducts.find(product => {
+		// 		bBrandFound = product.brandID.lastIndexOf(sSelectedBrand) === -1 ? bBrandFound : true; 
+		// 		return bBrandFound;
+		// 	});
+
+		// 	return bContainsBrand;
+		// },
+
+		// onFilterBrand: function(oEvent){ 
+		// 	var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
+
+		// 	if(sSelectedBrand){
+		// 		let oBrandFilter = new sap.ui.model.Filter({
+		// 			path: "",
+		// 			test: function(aProduct) {
+		// 			   debugger;
+
+		// 			   //return aProduct[0] && aProduct[0].brandID.indexOf(sSelectedBrand) > -1
+		// 			}
+		// 		  });
+
+		// 		//Binding to table with the filters and the sorters
+		// 		this.getView().byId("list").getBinding("items").filter(oBrandFilter, FilterType.Application);
+		// 	}
+		// },
 
 		onOpenViewSettings: async function(oEvent){ 
 
