@@ -80,7 +80,7 @@
 						</Column>
 						<Column	width="6em" importance="None" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
 							<header>
-								<ObjectIdentifier title="Country" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>country}" titleActive="true" titlePress="onClick"/>
 							</header>
 						</Column>
 						<Column width="12em" importance="High">
@@ -90,7 +90,7 @@
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline" visible="{= ${appView>/layout} === 'TwoColumnsMidExpanded' }">
 							<header>
-								<ObjectIdentifier title="Contract Name" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>contractName}" titleActive="true" titlePress="onClick"/>
 							</header>
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
@@ -112,22 +112,22 @@
 							<header>
 								<ObjectIdentifier title="{i18n>contractStartDate}" titleActive="true" titlePress="onClick"/>
 							</header>
-            </Column>
-            <Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="{i18n>contractValidUntil}"/>
 						</Column>
-						<Column width="12em" importance="High">
-							<Text text="{i18n>modifiedBy}"/>
+						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<ObjectIdentifier title="{i18n>contractValidUntil}" titleActive="true" titlePress="onClick"/>
 						</Column>
-						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="{i18n>modifiedAt}"/>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
+							<ObjectIdentifier title="{i18n>modifiedBy}" titleActive="true" titlePress="onClick"/>
+						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
+							<ObjectIdentifier title="{i18n>modifiedAt}" titleActive="true" titlePress="onClick"/>
 						</Column>
 					</columns>
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange">
 							<cells>
 								<Text text="{ctr>channel}"/>
-								<!-- <Text text="{ctr>countryCode}"/> -->
+								<Text text="{ctr>countryCode}"/>
 								<ObjectIdentifier text="{ctr>contractNumber}"/>
 								<Text text="{ctr>contractName}"/>
 								<Text text="{ctr>institute/instituteName}"/>
