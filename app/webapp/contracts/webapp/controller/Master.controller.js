@@ -349,6 +349,11 @@ sap.ui.define([
 				this.onChangeCountry(); 
 			}
 
+			var oDistributor = sap.ui.getCore().byId("idDistributorNewContract");
+			if(oDistributor){
+
+			}
+
 			return this._oAddNewContractDialog;
 
 		},
@@ -359,6 +364,11 @@ sap.ui.define([
 		 */
 		onSaveNewContract: function(oEvent){
 			var oContract = this.ctrState.getNewContract();
+
+			oContract.currency = !oContract.currency ? sap.ui.getCore().byId("idCurrencyNewContract").getSelectedKey() : oContract.currency;
+			oContract.distributorId = !oContract.distributorId ? sap.ui.getCore().byId("idDistributorNewContract").getSelectedKey() : oContract.distributorId;
+			oContract.sellingCompanyCode = !oContract.sellingCompanyCode ? sap.ui.getCore().byId("idSellingCompanyNewContract").getSelectedKey() : oContract.sellingCompanyCode;
+
 			var sContractID = oContract.contractNumber;
 			var oRouter = this.getRouter();
 
@@ -391,6 +401,7 @@ sap.ui.define([
 		 * @param {*} contract 
 		 */
 		_validateNewContract: function(contract){
+
 			//Check for mandatory fields
 			if (!contract.contractNumber ||
 				!contract.countryCode ||
