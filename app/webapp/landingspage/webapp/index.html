@@ -9,10 +9,11 @@
 	<script>
 		(function() {
 			var proxied = window.XMLHttpRequest.prototype.open;
+			 var cacheTimestamp = '%CACHE-TIMESTAMP%';
 			window.XMLHttpRequest.prototype.open = function() {
 				var url = arguments[1];
 				if(url.indexOf("?") == -1){ url = url + "?"; }
-				arguments[1] = url + "&_TheAppVersion=" + 123;//data._TheAppVersion;
+				arguments[1] = url + "&cache-timestamp=" + cacheTimestamp;//data._TheAppVersion;
 				return proxied.apply(this, [].slice.call(arguments));
 			};
 		})();
