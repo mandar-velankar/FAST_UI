@@ -518,7 +518,9 @@ sap.ui.define([
 					var aCells = oProduct.getCells();
 					aCells.forEach(function (oCell, index) {
 						try{
-							oCell.setProperty("enabled", oCtrState.data.editMode);
+							if(!(oCell.getId()).includes('idNspPerUnit')){
+								oCell.setProperty("enabled", oCtrState.data.editMode);
+							}
 						} catch(err) {
 
 						}
@@ -643,13 +645,13 @@ sap.ui.define([
 			if(product){
 				const unit = product.unit;
 				const mspPerUnit = product.mspPerUnit;
-				const nspPerUnit = product.nspPerUnit;
+				//const nspPerUnit = product.nspPerUnit;
 				const mspApprovedByName = product.mspApprovedByName;
 				const nspApprovedByName = product.nspApprovedByName;
 				const mspApprovedByRole = product.mspApprovedByRole;
 				const nspApprovedByRole = product.nspApprovedByRole;
 
-				if(!unit || !mspPerUnit || !nspPerUnit || !mspApprovedByName || !nspApprovedByName || !mspApprovedByRole || !nspApprovedByRole){
+				if(!unit || !mspPerUnit || !mspApprovedByName || !nspApprovedByName || !mspApprovedByRole || !nspApprovedByRole){
 					return false;
 				}
 

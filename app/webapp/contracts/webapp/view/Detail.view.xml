@@ -104,7 +104,7 @@
 				
 				<!-- ACTIONS -->
 				<actions>
-					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="{= ${ctr>/deleteEnabled} }" />
+					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="{= ${ctr>/editMode} === false &amp;&amp; ${ctr>/deleteEnabled} ? true : false }" />
 					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="true"/>
 					<m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true"/>
 					<!--<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>-->
@@ -245,35 +245,38 @@
 									delete="onDeleteProduct"
 									selectionChange="onProductItemSelect"
 									items="{
-										path: 'ctr>/currentContract/products'
+										path: 'ctr>/currentContract/products',
+										filters: [
+											{path: 'enabled', operator: 'EQ', value1: true}
+										]
 									}">
 								<m:columns>
 									<m:Column width="8rem">
 										<m:Label text="{i18n>productCode}" wrapping="true"/>
 									</m:Column>
-									<m:Column width="13rem">
+									<m:Column width="10rem">
 										<m:Label text="{i18n>productName}" wrapping="true"/>
 									</m:Column>
-									<m:Column width="8rem">
+									<m:Column width="4rem">
 										<m:Label text="{i18n>unit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
-									<m:Column width="8rem">
-										<m:Label text="{i18n>smallestUnit}" wrapping="true"/>
+									<m:Column width="4rem">
+										<m:Label text="{i18n>Quantity}" wrapping="true"/>
 									</m:Column>
 									<m:Column width="10rem">
 										<m:Label text="{i18n>mspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
-									<m:Column width="8rem">
-										<m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
+									<m:Column width="4rem">
+										<m:Label text="{i18n>focIncluded}" wrapping="true"/>
 									</m:Column>
-									<m:Column width="8rem">
+									<m:Column width="4rem">
+										<m:Label text="{i18n>focPercAbs}" wrapping="true"/>
+									</m:Column>
+									<m:Column width="4rem">
 										<m:Label text="{i18n>focDiscount}" wrapping="true"/>
 									</m:Column>
 									<m:Column width="10rem">
 										<m:Label text="{i18n>nspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="8rem">
-										<m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 									</m:Column>
 								</m:columns>
 								<m:items>
@@ -292,21 +295,22 @@
 													<core:Item key="Pack" text="Pack"/>
 											</m:Select>
 											
-											
-											<m:Text 
-												id="idSmallestUnit"
-												text="{ctr>product/uOM}"
-												required="false"/>
+											<m:Input id="idQuantity" value="{ctr>product/quantity}" enabled="false"/>
 												
 											<m:Input value="{ctr>mspPerUnit}"
 												enabled="false"
 												description="{ctr>/currentContract/currency}"/>
 
-											<m:Select selectedKey="{ctr>mspApprovedByRole}" enabled="false" >
+											<m:Select selectedKey="{ctr>fOCType}" enabled="false" >
 													<core:Item key="" text="" />
-													<core:Item key="NSM/SM/FM" text="NSM/SM/FM" />
-													<core:Item key="HBU" text="HBU"/>
-													<core:Item key="CDH" text="CDH"/>
+													<core:Item key="In addition to requested volume" text="In addition to requested volume"/>
+													<core:Item key="Part of requested volume" text="Part of requested volume"/>
+											</m:Select>
+
+											<m:Select selectedKey="{ctr>fOC_ABS_PCT}" enabled="false" >
+													<core:Item key="" text="" />
+													<core:Item key="FOC 1" text="Absolute"/>
+													<core:Item key="FOC 2" text="Percentage"/>
 											</m:Select>
 
 											<m:Input id="focDiscount" value="{ctr>focDiscount}" enabled="false"/>
@@ -315,13 +319,6 @@
 												id="idNspPerUnit"
 												description="{ctr>/currentContract/currency}"
 												enabled="false"/>
-
-											<m:Select selectedKey="{ctr>nspApprovedByRole}" enabled="false" >
-													<core:Item key="" text="" />
-													<core:Item key="NSM/SM/FM" text="NSM/SM/FM"/>
-													<core:Item key="HBU" text="HBU"/>
-													<core:Item key="CDH" text="CDH"/>
-											</m:Select>
 
 										</m:cells>
 									</m:ColumnListItem>
@@ -339,8 +336,29 @@
 									<form:content>
 										<m:Label text="{i18n>mspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
 										<m:Input value="{ctr>/currentContract/selectedProduct/mspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
+										<m:Select selectedKey="{ctr>/currentContract/selectedProduct/mspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}" >
+													<core:Item key="" text="" />
+													<core:Item key="NSM/SM/FM" text="NSM/SM/FM"/>
+													<core:Item key="HBU" text="HBU"/>
+													<core:Item key="CDH" text="CDH"/>
+											</m:Select>
+
 										<m:Label text="{i18n>nspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
 										<m:Input value="{ctr>/currentContract/selectedProduct/nspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
+										<m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}" >
+													<core:Item key="" text="" />
+													<core:Item key="NSM/SM/FM" text="NSM/SM/FM"/>
+													<core:Item key="HBU" text="HBU"/>
+													<core:Item key="CDH" text="CDH"/>
+											</m:Select>
+										<m:Label text="{i18n>comment}" required="false" wrapping="true"/>
+										<m:TextArea value="{ctr>/currentContract/selectedProduct/comment}" 
+								          		  showExceededText="true" 
+										  		  maxLength="500" 
+										  		  valueLiveUpdate="false" liveChange="handleLiveChange" 
+												  enabled="{= ${ctr>/editMode} === true ? true : false}" />
 										<m:Label text="" required="false"/>
 										<m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
 											<m:items>
