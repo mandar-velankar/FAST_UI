@@ -798,7 +798,7 @@ sap.ui.define([
 			let oModel = this.getModel('ctr');
 			let sSelectedFocType = oModel.getProperty('/currentContract/selectedProduct/fOCType');
 			let sSelectedFocAbsPct = oModel.getProperty('/currentContract/selectedProduct/fOC_ABS_PCT');
-			let sQuantity =  (oEvent.getSource().sId).includes('idQuantity') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/product/quantity');
+			let sQuantity =  (oEvent.getSource().sId).includes('idQuantity') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/quantity');
 			let sMspPrice =  (oEvent.getSource().sId).includes('idMspPerUnit') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/mspPerUnit');
 			let sFocAmount = (oEvent.getSource().sId).includes('focDiscount') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/focDiscount');
 
