@@ -162,27 +162,30 @@ sap.ui.define([
 		/**
 		 * Retrieves a list of latest pricing approval requests from the backend
 		 */
-		getApprovalsByBrandPolicyId: function (brandPolicyId) {
+		getApprovalsByBrandPolicyId: function(brandPolicyId) {
 
-			var aFilters = [];
+			if(brandPolicyId){
+				var aFilters = [];
 
-			var oBrandPolicyId = new Filter({
-				path: 'BrandPolicy_ID',
-				operator: FilterOperator.EQ,
-				value1: brandPolicyId
-			});
+				var oBrandPolicyId = new Filter({
+					path: 'BrandPolicy_ID',
+					operator: FilterOperator.EQ,
+					value1: brandPolicyId
+				});
 
-			aFilters.push(oBrandPolicyId);
+				aFilters.push(oBrandPolicyId);
 
 
-			var mParameters = {
-				filters: aFilters,
-				urlParameters: {
-					"$expand": "CountryApprover"
-				}
-			};
+				var mParameters = {
+					filters: aFilters,
+					urlParameters: {
+						"$expand": "CountryApprover"
+					}
+				};
 
-			return this.odata("/Approvals").get(mParameters);
+				return this.odata("/Approvals").get(mParameters);
+			}
+			
 		},
 
 		getCountryApprovers: function (sCountryCode, sDivision){
@@ -212,6 +215,10 @@ sap.ui.define([
 		},
 
 		getApproverTypes: function (sCountryCode){
+
+			if(!sCountryCode){
+				return;
+			}
 
 			var sPath = '/ApproverTypes';
 			var aFilters = [];
@@ -262,6 +269,10 @@ sap.ui.define([
 		 * Retrieves a list of channels
 		 */
 		getChannels: function(sCountryCode){
+
+			if(!sCountryCode){
+				return;
+			}
 
 			var sPath = "/Channels";
 

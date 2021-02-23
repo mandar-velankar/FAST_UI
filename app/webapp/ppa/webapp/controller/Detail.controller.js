@@ -300,6 +300,7 @@ sap.ui.define([
 		getActiveBrandPolicy: function (sCountryCode, iBrandId, sDivision) {
 			this.getView().setBusy(true);
 			return this.ppaState.getActiveBrandPolicy(sCountryCode, iBrandId, sDivision).then((brandPolicy) => {
+				this.ppaState.addBrandPolicyIdToApprovalRequestApprovals(brandPolicy.iD);
 				this.getView().setBusy(false);
 				return brandPolicy;
 			}).catch((error) => {
@@ -1031,6 +1032,9 @@ sap.ui.define([
 				//get draft version
 				const draftPolicy  = response.find(res => res.data.Status.indexOf("Draft") > -1);
 
+				// after creating a new draft BrandPolicy update the ApprovalRequest object
+				this.ppaState.updateApprovalRequestWithDraftPolicy(draftPolicy);
+
 				//load full data again (otherwise we have to re-create the empty productPolicy here)
 				this.ppaState.getAggregatedBrandPolicy(draftPolicy.data.CountryCode, draftPolicy.data.BrandId, draftPolicy.data.Division).then((brandPolicy) => {
 					//refresh brandpolicy & brand
@@ -1038,7 +1042,7 @@ sap.ui.define([
 					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 
 					// Change the approval statuses to 'Not Sent' 
-					this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
+					//this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
 					this.refreshMasterViewBrandListBinding();
 
 					if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
