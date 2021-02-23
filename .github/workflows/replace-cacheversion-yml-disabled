@@ -25,7 +25,7 @@ jobs:
         with:
           timeZone: 1
           format: 'YYYY-MM-DD'
-      - name: Find and Replace cache buster webapp
+      - name: Find and Replace cache buster
         uses: jacobtomlinson/gha-find-replace@master
         with:
           find: "%CACHE-TIMESTAMP%"
