@@ -296,7 +296,7 @@
 											</m:Select>
 											
 											<m:Input id="idQuantity" 
-													 value="{ctr>product/quantity}" 
+													 value="{ctr>quantity}" 
 													 enabled="false" 
 													 valueLiveUpdate="false" liveChange="onCalculateNspPrice"/>
 												
