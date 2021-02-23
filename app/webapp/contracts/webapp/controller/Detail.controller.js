@@ -518,7 +518,9 @@ sap.ui.define([
 					var aCells = oProduct.getCells();
 					aCells.forEach(function (oCell, index) {
 						try{
-							oCell.setProperty("enabled", oCtrState.data.editMode);
+							if(!(oCell.getId()).includes('idNspPerUnit')){
+								oCell.setProperty("enabled", oCtrState.data.editMode);
+							}
 						} catch(err) {
 
 						}
@@ -643,13 +645,13 @@ sap.ui.define([
 			if(product){
 				const unit = product.unit;
 				const mspPerUnit = product.mspPerUnit;
-				const nspPerUnit = product.nspPerUnit;
+				//const nspPerUnit = product.nspPerUnit;
 				const mspApprovedByName = product.mspApprovedByName;
 				const nspApprovedByName = product.nspApprovedByName;
 				const mspApprovedByRole = product.mspApprovedByRole;
 				const nspApprovedByRole = product.nspApprovedByRole;
 
-				if(!unit || !mspPerUnit || !nspPerUnit || !mspApprovedByName || !nspApprovedByName || !mspApprovedByRole || !nspApprovedByRole){
+				if(!unit || !mspPerUnit || !mspApprovedByName || !nspApprovedByName || !mspApprovedByRole || !nspApprovedByRole){
 					return false;
 				}
 
@@ -788,6 +790,27 @@ sap.ui.define([
 				oCtrState.setPrevSelectedDistributorID(oDistributorInput.getSelectedKey());
 				this.ctrState.updateSellingCompany(sellingCompany);
 				this.ctrState.clearProducts();
+			}
+		},
+
+		onCalculateNspPrice: function(oEvent){
+			/* Data retrieval for calculation*/
+			let oModel = this.getModel('ctr');
+			let sSelectedFocType = oModel.getProperty('/currentContract/selectedProduct/fOCType');
+			let sSelectedFocAbsPct = oModel.getProperty('/currentContract/selectedProduct/fOC_ABS_PCT');
+			let sQuantity =  (oEvent.getSource().sId).includes('idQuantity') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/quantity');
+			let sMspPrice =  (oEvent.getSource().sId).includes('idMspPerUnit') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/mspPerUnit');
+			let sFocAmount = (oEvent.getSource().sId).includes('focDiscount') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/focDiscount');
+
+			/* Calculate intermediate values */
+			let sTotalQuantity = parseFloat(sSelectedFocType === 'ADD' ? (parseInt(sQuantity) + (sSelectedFocAbsPct === 'FOC 2' ? Math.floor((sQuantity * sFocAmount) / 100) : sFocAmount)) : sQuantity);
+			let sFocQuantity = parseFloat(sSelectedFocAbsPct === 'FOC 2' ? (Math.floor((sQuantity * sFocAmount) / 100)) : sFocAmount);
+			let sPaidQuantity = parseFloat(sSelectedFocType === 'ADD' ? sQuantity : Math.floor(sQuantity - sFocQuantity));
+			let sPaidAmount = parseFloat(sPaidQuantity * sMspPrice);
+			let sNspPrice = (sPaidAmount / sTotalQuantity).toFixed(2);
+
+			if(sNspPrice && sNspPrice !== 'NaN'){
+				oModel.setProperty('/currentContract/selectedProduct/nspPerUnit', sNspPrice);
 			}
 		},
 
