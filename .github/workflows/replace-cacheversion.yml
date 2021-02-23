@@ -26,12 +26,10 @@ jobs:
           timeZone: 1
           format: 'YYYY-MM-DD'
       - name: Find and Replace cache buster webapp
-        env:
-          TIME: "${{ steps.time.outputs.time }}"
         uses: jacobtomlinson/gha-find-replace@master
         with:
           find: "%CACHE-TIMESTAMP%"
-          replace: "$TIME"
+          replace: "${{ steps.time.outputs.time }}"
           include: "index.html"
       - name: Use Node.js
         uses: actions/setup-node@v1
