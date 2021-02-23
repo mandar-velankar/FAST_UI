@@ -360,11 +360,11 @@ sap.ui.define([
 			this.setProperty("approvalRequest", new ApprovalRequest());
 
 			const approverTypes = await this.getApproverTypes(oBrand.countryCode);
-			const submittedApprovals = await this.getApprovalsByBrandPolicyId(oBrand.brandPolicyId);
+			const submittedApprovals = await this.getApprovalsByBrandPolicyId(this.data.brandPolicy.iD);
 
 			const data = {
-				approverTypes: approverTypes.data.results,
-				submittedApprovals: submittedApprovals.data.results,
+				approverTypes: approverTypes && approverTypes.data.results || [],
+				submittedApprovals: submittedApprovals && submittedApprovals.data.results || [],
 				brand: oBrand
 			};
 
@@ -372,6 +372,12 @@ sap.ui.define([
 
 			return Promise.resolve(this.getProperty("approvalRequest"));
 
+		},
+
+		addBrandPolicyIdToApprovalRequestApprovals: function(brandPolicyID){
+			if(brandPolicyID && this.data.approvalRequest.approvals){
+				this.data.approvalRequest.approvals.forEach(approval => approval.brandPolicy_ID = brandPolicyID);
+			}	
 		},
 
 		/**
@@ -473,6 +479,23 @@ sap.ui.define([
 			}
 
 			return;
+		},
+
+		/**
+		 * After creating a new draft BrandPolicy update the ApprovalRequest object
+		 * @param {Object} draftPolicy - the newly created draft brand policy
+		 */
+		updateApprovalRequestWithDraftPolicy: function(draftPolicy){
+
+			// clear the submittedApprovals
+			this.data.approvalRequest.submittedApprovals = [];
+
+			// update approval actions and brandPolicy ID
+			this.data.approvalRequest.approvals.forEach(approval => {
+				approval.action = "create";
+				approval.brandPolicy_ID = draftPolicy.data.ID;
+			});
+
 		},
 
 
