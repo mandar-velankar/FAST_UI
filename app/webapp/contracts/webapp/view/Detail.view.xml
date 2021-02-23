@@ -295,25 +295,34 @@
 													<core:Item key="Pack" text="Pack"/>
 											</m:Select>
 											
-											<m:Input id="idQuantity" value="{ctr>product/quantity}" enabled="false"/>
+											<m:Input id="idQuantity" 
+													 value="{ctr>product/quantity}" 
+													 enabled="false" 
+													 valueLiveUpdate="false" liveChange="onCalculateNspPrice"/>
 												
-											<m:Input value="{ctr>mspPerUnit}"
+											<m:Input id="idMspPerUnit" 
+												value="{ctr>mspPerUnit}"
 												enabled="false"
-												description="{ctr>/currentContract/currency}"/>
+												description="{ctr>/currentContract/currency}"
+												valueLiveUpdate="false" liveChange="onCalculateNspPrice"/>
 
-											<m:Select selectedKey="{ctr>fOCType}" enabled="false" >
+											<m:Select selectedKey="{ctr>fOCType}" enabled="false" id="idSelectFocType" change="onCalculateNspPrice">
 													<core:Item key="" text="" />
-													<core:Item key="In addition to requested volume" text="In addition to requested volume"/>
-													<core:Item key="Part of requested volume" text="Part of requested volume"/>
+													<core:Item key="ADD" text="In addition to requested volume"/>
+													<core:Item key="INCL" text="Part of requested volume"/>
 											</m:Select>
 
-											<m:Select selectedKey="{ctr>fOC_ABS_PCT}" enabled="false" >
+											<m:Select selectedKey="{ctr>fOC_ABS_PCT}" enabled="false" id="idSelectFocAbsPct" change="onCalculateNspPrice">
 													<core:Item key="" text="" />
 													<core:Item key="FOC 1" text="Absolute"/>
 													<core:Item key="FOC 2" text="Percentage"/>
 											</m:Select>
 
-											<m:Input id="focDiscount" value="{ctr>focDiscount}" enabled="false"/>
+											<m:Input id="focDiscount" 
+											         value="{ctr>focDiscount}" 
+													 enabled="false" 
+													 valueLiveUpdate="false" liveChange="onCalculateNspPrice"
+													 description="{= ${ctr>fOC_ABS_PCT} === 'FOC 2' ? '%' : '' }"/>
 
 											<m:Input value="{ctr>nspPerUnit}"
 												id="idNspPerUnit"
