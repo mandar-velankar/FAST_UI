@@ -12,8 +12,8 @@
       "csrfProtection": true
     },
     {
-      "source": "/FAST/(.*)$",
-      "target": "/FAST/$1",
+      "source": "/v2/(.*)$",
+      "target": "/v2/$1",
       "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": true
