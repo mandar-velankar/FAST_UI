@@ -75,52 +75,52 @@
 					<columns>
 						<Column width="6em" importance="None" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
 							<header>
-								<ObjectIdentifier title="{i18n>channel}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>channel}" />
 							</header>
 						</Column>
 						<Column	width="6em" importance="None" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
 							<header>
-								<ObjectIdentifier title="{i18n>country}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>country}" />
 							</header>
 						</Column>
 						<Column width="12em" importance="High">
 							<header>
-								<ObjectIdentifier title="{i18n>contract}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>contract}" />
 							</header>
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline" visible="{= ${appView>/layout} === 'TwoColumnsMidExpanded' }">
 							<header>
-								<ObjectIdentifier title="{i18n>contractName}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>contractName}" />
 							</header>
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="{i18n>institute}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>institute}" />
 							</header>
 						</Column>
 						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
 							<header>
-								<ObjectIdentifier title="{i18n>distributor}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>distributor}" />
 							</header>
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="High" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="{i18n>value}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>value}" />
 							</header>
 						</Column>
 						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
 							<header>
-								<ObjectIdentifier title="{i18n>contractStartDate}" titleActive="true" titlePress="onClick"/>
+								<ObjectIdentifier title="{i18n>contractStartDate}" />
 							</header>
 						</Column>
 						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
-							<ObjectIdentifier title="{i18n>contractValidUntil}" titleActive="true" titlePress="onClick"/>
+							<ObjectIdentifier title="{i18n>contractValidUntil}" />
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
-							<ObjectIdentifier title="{i18n>modifiedBy}" titleActive="true" titlePress="onClick"/>
+							<ObjectIdentifier title="{i18n>modifiedBy}" />
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
-							<ObjectIdentifier title="{i18n>modifiedAt}" titleActive="true" titlePress="onClick"/>
+							<ObjectIdentifier title="{i18n>modifiedAt}" />
 						</Column>
 					</columns>
 					<items>
