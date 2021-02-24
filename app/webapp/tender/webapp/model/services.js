@@ -53,7 +53,7 @@ sap.ui.define([
 		_sSelectedProductPath: "",
 		_sSelectedTab: "",
 		_defaultModel: "",
-		//_connectionString: "/FAST/ODataDev/sxtender.xsodata/",
+		//_connectionString: "/v2/tender/",
 		_oSelectedQuotationTemplate: {},
 		_aOfferCompositeMessages: [],
 		_bOfferCreated: false,

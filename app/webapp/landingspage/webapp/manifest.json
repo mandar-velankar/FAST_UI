@@ -13,15 +13,15 @@
 		"ach": "set-ach",
 		"resources": "resources.json",
 		"dataSources": {
-			"sxtender.xsodata": {
-				"uri": "/FAST/ODataDev/sxtender.xsodata/",
+			"tender": {
+				"uri": "/v2/Tender/",
 				"type": "OData",
 				"settings": {
-					"localUri": "localService/sxtender.xsodata/metadata.xml"
+					"localUri": "localService/tender/metadata.xml"
 				}
 			},
 			"accessService": {
-				"uri": "/FAST/access/",
+				"uri": "/v2/access/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",

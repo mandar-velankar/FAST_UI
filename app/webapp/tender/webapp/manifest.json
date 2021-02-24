@@ -10,11 +10,11 @@
 		"title": "{{appTitle}}",
 		"description": "{{appDescription}}",
 		"dataSources": {
-			"sxtender.xsodata": {
-				"uri": "/FAST/ODataDev/sxtender.xsodata/",
+			"tender": {
+				"uri": "/v2/tender/",
 				"type": "OData",
 				"settings": {
-					"localUri": "localService/sxtender.xsodata/metadata.xml"
+					"localUri": "localService/tender/metadata.xml"
 				}
 			}
 		},

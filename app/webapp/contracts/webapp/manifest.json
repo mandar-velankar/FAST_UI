@@ -15,7 +15,7 @@
 		"resources": "resources.json",
 		"dataSources": {
 			"mainService": {
-				"uri": "/FAST/ctr/",
+				"uri": "/v2/ctr/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
@@ -23,10 +23,10 @@
 				}
 			},
 			"sxtender.xsodata": {
-				"uri": "/FAST/ODataDev/sxtender.xsodata/",
+				"uri": "/v2/tender/",
 				"type": "OData",
 				"settings": {
-					"localUri": "localService/sxtender.xsodata/metadata.xml"
+					"localUri": "localService/tender/metadata.xml"
 				}
 			}
 		},
