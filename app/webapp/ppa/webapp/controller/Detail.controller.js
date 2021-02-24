@@ -180,7 +180,7 @@ sap.ui.define([
 				
 			}
 
-			if(this.byId("idEffectiveDate").getDateValue()){
+			if(this.byId("idEffectiveDate").getDateValue() || this.byId("idLatestApprEffectiveDate").getDateValue()){
 
 				//const selectedProduct = oEvent.getSource().getBindingContext("ppa").getObject();
 				//const selectedProduct;
