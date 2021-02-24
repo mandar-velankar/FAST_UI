@@ -180,7 +180,7 @@ sap.ui.define([
 				
 			}
 
-			if(this.byId("idEffectiveDate").getDateValue()){
+			if(this.byId("idEffectiveDate").getDateValue() || this.byId("idLatestApprEffectiveDate").getDateValue()){
 
 				//const selectedProduct = oEvent.getSource().getBindingContext("ppa").getObject();
 				//const selectedProduct;
@@ -237,13 +237,13 @@ sap.ui.define([
 
 				if(approvedMspPolicyPrices && approvedNspPolicyPrices){
 					for(let mspPriceType in draftMspPolicyPrices ) {
-						if(draftMspPolicyPrices[mspPriceType] !== "" || approvedMspPolicyPrices[mspPriceType] !== ""){
+						if(draftMspPolicyPrices[mspPriceType] || approvedMspPolicyPrices[mspPriceType] ){
 							selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
 						}
 					}
 
 					for(let nspPriceType in draftNspPolicyPrices ) {
-						if(draftMspPolicyPrices[nspPriceType] !== "" || approvedMspPolicyPrices[nspPriceType] !== ""){
+						if(draftMspPolicyPrices[nspPriceType] || approvedMspPolicyPrices[nspPriceType] ){
 							selectedProduct.NspPricePercDiff[nspPriceType] = this.calculatePriceDifference(+draftNspPolicyPrices[nspPriceType], +approvedNspPolicyPrices[nspPriceType]) + "%";
 						}
 					}
@@ -1196,7 +1196,13 @@ sap.ui.define([
 		},
 
 		calculatePriceDifference: function(sDraftPrice, sValidatedPrice){
-			return Math.round((sDraftPrice - sValidatedPrice)/(sValidatedPrice) * 100);
+
+			if(sValidatedPrice > 0){
+				return Math.round((sDraftPrice - sValidatedPrice) / sValidatedPrice * 100);
+			}
+
+			return 0;
+			
 		},
 
 		validateChannelPrices: function(sPriceType, sChannel, sRole){
@@ -1222,6 +1228,7 @@ sap.ui.define([
 						bValid = false;
 					}
 					break;
+				default: break;
 			}
 
 			return {
