@@ -2207,7 +2207,7 @@ sap.ui.define([
 			oFastDataCalls.read(sApprovalPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "ApproverList" //added from results on
+					"$expand": "ApproverList,ApproverTypes" //added from results on
 				},
 				sorter: aSorter,
 				success: function (oData, oResponse) {
@@ -6694,7 +6694,7 @@ sap.ui.define([
 							oApprovalSaveInfo.SenderComment = oApprovalsSelectedOffer.SenderComment;
 							oApprovalSaveInfo.ApproverComment = ""; //oApprovalsSelectedOffer.ApproverComment; approvercomment is only set from backend process
 							oApprovalSaveInfo.Active = oApprovalsSelectedOffer.Active;
-							oApprovalSaveInfo.Hierarchy = oApprovalsSelectedOffer.Hierarchy;
+							oApprovalSaveInfo.Hierarchy = oApprovalsSelectedOffer.ApproverTypes.results[0].Hierarchy;
 							oApprovalSaveInfo.AP_ID = oApprovalsSelectedOffer.AP_ID;
 							oApprovalSaveInfo.RestoreKey = oApprovalsSelectedOffer.RestoreKey;
 							oApprovalSaveInfo.Statustime = sStatusTime; //"17-09-2019 18:59"
