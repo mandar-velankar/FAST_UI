@@ -6694,6 +6694,7 @@ sap.ui.define([
 							oApprovalSaveInfo.SenderComment = oApprovalsSelectedOffer.SenderComment;
 							oApprovalSaveInfo.ApproverComment = ""; //oApprovalsSelectedOffer.ApproverComment; approvercomment is only set from backend process
 							oApprovalSaveInfo.Active = oApprovalsSelectedOffer.Active;
+							oApprovalSaveInfo.Hierarchy = oApprovalsSelectedOffer.Hierarchy;
 							oApprovalSaveInfo.AP_ID = oApprovalsSelectedOffer.AP_ID;
 							oApprovalSaveInfo.RestoreKey = oApprovalsSelectedOffer.RestoreKey;
 							oApprovalSaveInfo.Statustime = sStatusTime; //"17-09-2019 18:59"

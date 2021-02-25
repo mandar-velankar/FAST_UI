@@ -40,6 +40,9 @@
 									<Column minScreenWidth="Tablet" demandPopin="true" width="10rem">
 										<Label text="{i18n>Approver}"/>
 									</Column>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="5rem">
+										<Label text="{i18n>Hierarchy}"/>
+									</Column>
 									<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
 										<Label text="{i18n>Content}"/>
 									</Column>
@@ -72,7 +75,10 @@
 											
 											<!-- Approver Type -->
 											<Label text="{fastAppData>ApproverType}"/>
-											
+
+											<!-- Hierarchy -->
+											<Input value="{fastAppData>Hierarchy}" required="true"/>
+
 											<!-- Content -->
 											<Label text="{fastAppData>ApprovalContent}"/>
 										
