@@ -796,6 +796,7 @@ sap.ui.define([
 		onCalculateNspPrice: function(oEvent){
 			/* Data retrieval for calculation*/
 			let oModel = this.getModel('ctr');
+			let sNspPrice;
 			let sSelectedFocType = oModel.getProperty('/currentContract/selectedProduct/fOCType');
 			let sSelectedFocAbsPct = oModel.getProperty('/currentContract/selectedProduct/fOC_ABS_PCT');
 			let sQuantity =  (oEvent.getSource().sId).includes('idQuantity') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/quantity');
@@ -803,15 +804,20 @@ sap.ui.define([
 			let sFocAmount = (oEvent.getSource().sId).includes('focDiscount') ? parseFloat(oEvent.getParameter("value")) : oModel.getProperty('/currentContract/selectedProduct/focDiscount');
 
 			/* Calculate intermediate values */
-			let sTotalQuantity = parseFloat(sSelectedFocType === 'ADD' ? (parseInt(sQuantity) + (sSelectedFocAbsPct === 'FOC 2' ? Math.floor((sQuantity * sFocAmount) / 100) : sFocAmount)) : sQuantity);
-			let sFocQuantity = parseFloat(sSelectedFocAbsPct === 'FOC 2' ? (Math.floor((sQuantity * sFocAmount) / 100)) : sFocAmount);
-			let sPaidQuantity = parseFloat(sSelectedFocType === 'ADD' ? sQuantity : Math.floor(sQuantity - sFocQuantity));
-			let sPaidAmount = parseFloat(sPaidQuantity * sMspPrice);
-			let sNspPrice = (sPaidAmount / sTotalQuantity).toFixed(2);
-
+			if(sFocAmount){
+				let sTotalQuantity = parseFloat(sSelectedFocType === 'ADD' ? (parseInt(sQuantity) + (sSelectedFocAbsPct === 'FOC 2' ? Math.floor((sQuantity * sFocAmount) / 100) : sFocAmount)) : sQuantity);
+				let sFocQuantity = parseFloat(sSelectedFocAbsPct === 'FOC 2' ? (Math.floor((sQuantity * sFocAmount) / 100)) : sFocAmount);
+				let sPaidQuantity = parseFloat(sSelectedFocType === 'ADD' ? sQuantity : Math.floor(sQuantity - sFocQuantity));
+				let sPaidAmount = parseFloat(sPaidQuantity * sMspPrice);
+				sNspPrice = (sPaidAmount / sTotalQuantity).toFixed(2);
+			} else {
+				sNspPrice = sMspPrice;
+			}
+			
 			if(sNspPrice && sNspPrice !== 'NaN'){
 				oModel.setProperty('/currentContract/selectedProduct/nspPerUnit', sNspPrice);
 			}
+			
 		},
 
 		/*_showContainsDeliveriesOrLetters: function(){
