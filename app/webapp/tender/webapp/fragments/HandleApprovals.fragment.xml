@@ -17,7 +17,7 @@
 							
 						<!-- Table with mandatory approvals -->
 						<Table id="idMandatoryTable" 
-							items="{path: 'fastAppData>/ApprovalsSelectedOffer', parameters: {'expand': 'ApproverList'}}" 
+							items="{path: 'fastAppData>/ApprovalsSelectedOffer', parameters: {'expand': 'ApproverList,ApproverTypes'}}" 
 							alternateRowColors="true">
 								
 								<!-- table header with title & buttons -->
@@ -39,6 +39,9 @@
 								<columns>
 									<Column minScreenWidth="Tablet" demandPopin="true" width="10rem">
 										<Label text="{i18n>Approver}"/>
+									</Column>
+									<Column minScreenWidth="Tablet" demandPopin="true" width="5rem">
+										<Label text="{i18n>Hierarchy}"/>
 									</Column>
 									<Column minScreenWidth="Tablet" demandPopin="true" width="7rem">
 										<Label text="{i18n>Content}"/>
@@ -72,7 +75,11 @@
 											
 											<!-- Approver Type -->
 											<Label text="{fastAppData>ApproverType}"/>
-											
+
+											<!-- Hierarchy -->
+											<!--<Input value="{= ${fastAppData>Hierarchy} !== null &amp;&amp; ${fastAppData>Hierarchy} !== 0 ? ${fastAppData>Hierarchy} : ${fastAppData>ApproverTypes/results/0/hierarchy} }" required="true"/>-->
+											<Input value="{fastAppData>ApproverTypes/results/0/Hierarchy}" required="true"/>
+
 											<!-- Content -->
 											<Label text="{fastAppData>ApprovalContent}"/>
 										
