@@ -590,7 +590,7 @@
 							</m:Column>
 
 							<!-- Total incl VAT -->
-							<m:Column width="12%">
+							<m:Column width="12%" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}">
 								<m:Text text="{i18n>TotalWithVAT}"/>
 							</m:Column>
 
@@ -681,7 +681,8 @@
 									<m:Text text="{parts: [
 										{path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY_VAT'}, 
 										{path: 'fastAppData>CURRENCY'}
-									], formatter:'.formatter.price'}"/>
+									], formatter:'.formatter.price'}"
+									visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? true : false}"/>
 
 									<!-- Presentation -->
 									<m:Text text="{path :'fastAppData>PRESENTATION'}" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>

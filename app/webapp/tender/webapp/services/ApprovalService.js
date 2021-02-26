@@ -40,6 +40,7 @@ sap.ui.define([
 			oApprovalToSave.SenderComment = oApprovalSaveInfo.SenderComment;
 			oApprovalToSave.ApproverComment = oApprovalSaveInfo.ApproverComment;
 			oApprovalToSave.Active = oApprovalSaveInfo.Active;
+			oApprovalToSave.Hierarchy = oApprovalSaveInfo.Hierarchy;
 			oApprovalToSave.AP_ID = oApprovalSaveInfo.AP_ID;
 			oApprovalToSave.RestoreKey = oApprovalSaveInfo.RestoreKey;
 			oApprovalToSave.Submittedby = oApprovalSaveInfo.Submittedby;
