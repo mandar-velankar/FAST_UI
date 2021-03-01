@@ -19,6 +19,13 @@
       "csrfProtection": true
     },
     {
+      "source": "/ContractService/(.*)$",
+      "target": "/ctr/$1",
+      "authenticationType": "basic",
+      "destination": "srv_api",
+      "csrfProtection": false
+    },
+    {
       "source": "/FAST/PolicyPricingService/(.*)$",
       "target": "/FAST/ppa/$1",
       "authenticationType": "basic",

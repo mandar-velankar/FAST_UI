@@ -416,6 +416,7 @@ sap.ui.define([
 						//re-submitting should be prevented when status is "Quotation Submitted" and beyond
 						var aStatusNoReSubmitting = [
 							"Quotation Submitted",
+							"In FOC Negotiation",
 							"Results Recorded",
 							"Delivery Ongoing"
 						];
@@ -709,6 +710,7 @@ sap.ui.define([
 						//re-saving should be prevented when status is "Quotation Submitted" and beyond
 						var aStatusNoReSubmitting = [
 							"Quotation Submitted",
+							"In FOC Negotiation",
 							"Results Recorded",
 							"Delivery Ongoing"
 						];

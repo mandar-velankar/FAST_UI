@@ -1,10 +1,22 @@
 ID: FASTUI
 _schema-version: '2.1'
 version: 0.4.1
+
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm install
+
 modules:
   - name: FASTUI-app
     type: html5
     path: app
+    build-parameters:
+      builder: custom
+      commands:
+      - npm install
+      - npm run build
     parameters:
       memory: 2048M
       disk-quota: 4096M

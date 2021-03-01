@@ -151,7 +151,8 @@ sap.ui.define([
 			Services.setSelectedTenderID(sTenderID);
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
-			Services.loadMandatoryFields(sCountry);
+			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
+			Services.loadCountryPermissions(sCountry);
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
@@ -1680,6 +1681,7 @@ sap.ui.define([
 					var aStatusNoEdit = [
 						"Awaiting Approval",
 						"Quotation Submitted",
+						"In FOC Negotiation",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -1999,9 +2001,10 @@ sap.ui.define([
 							//other fields for the given country can be assumed as not being mandatory - therefore, the property required should be set to "false"
 							//in case NO mandatory fields have been specified for the given country, the defaulted value on the view will be taken
 
-							for (var i = 0; i < aMandatoryFields.length; i++) {
-								that.getView().byId(aMandatoryFields[i].Field).setProperty("required", aMandatoryFields[i].Required);
-							}
+							// TODO: remove this code after expression binding -> this is to set the required properties
+							// for (var i = 0; i < aMandatoryFields.length; i++) {
+							// 	that.getView().byId(aMandatoryFields[i].Column).setProperty("required", aMandatoryFields[i].Required);
+							// }
 						}
 
 						//only in creation modus of an offer we will be able to set the distributor id
@@ -2175,6 +2178,7 @@ sap.ui.define([
 							var aStatusNoDelete = [
 								"Awaiting Approval",
 								"Quotation Submitted",
+								"In FOC Negotiation",
 								"Results Recorded",
 								"Delivery Ongoing"
 							];
@@ -2953,7 +2957,7 @@ sap.ui.define([
 								bCancelEnabled = true;
 							}
 
-							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "Delivery Ongoing") {
+							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Delivery Ongoing") {
 								bSendApprovalEnabled = true;
 							}
 
@@ -3827,6 +3831,7 @@ sap.ui.define([
 					var aStatusNoDelete = [
 						"Awaiting Approval",
 						"Quotation Submitted",
+						"In FOC Negotiation",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -3897,6 +3902,7 @@ sap.ui.define([
 
 					if (
 						oData.STATUS === "Quotation Submitted" ||
+						oData.STATUS === "In FOC Negotiation" ||
 						oData.STATUS === "Results Recorded"
 					) {
 
@@ -3913,7 +3919,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted' or in 'Results Recorded'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation' or in 'Results Recorded'.", {});
 
 					}
 
@@ -3955,6 +3961,7 @@ sap.ui.define([
 
 					if (
 						oData.STATUS === "Quotation Submitted" ||
+						oData.STATUS === "In FOC Negotiation" ||
 						oData.STATUS === "Results Recorded" ||
 						oData.STATUS === "Delivery Ongoing"
 					) {
@@ -3972,7 +3979,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'Results Recorded' or 'Delivery Ongoing'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Results Recorded' or 'Delivery Ongoing'.", {});
 
 					}
 
@@ -4022,17 +4029,40 @@ sap.ui.define([
 				var iMsgCount = 0;
 				var sErroneousFields = "";
 
+				// TODO: as discussed with Wouter: these kind of validation logic should be done in the backend and the back-end should throw an error 
 				aProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
+
 						for (var i = 0; i < aMandatoryFields.length; i++) {
-							if (oProduct[aMandatoryFields[i].Model] === "" && aMandatoryFields[i].Required === true && aMandatoryFields[i].View === "FOR_OFFER_PRODUCT_TAB") {
+
+							let oProductField = "";
+							
+							// Binding path can be a nested path. Eg. "SKU/PRODUCTPACKNAME". Because of this this code was not working correctly.
+							// We need to split the path and use each value as object key in oProduc
+							if(aMandatoryFields[i].BindingPath.indexOf("/") > -1) {
+								const parts = aMandatoryFields[i].BindingPath.split("/");
+								
+								let bindingPath = "oProduct";
+
+								parts.forEach(part => {
+									bindingPath += `["${part}"]`;
+								});
+
+								oProductField = eval(bindingPath);
+
+								
+							}else {
+								oProductField = oProduct[aMandatoryFields[i].BindingPath];
+							}
+
+							if (!oProductField && aMandatoryFields[i].Required === true && aMandatoryFields[i].TableID === "editofferProductId") {
 								bError = true;
 								iMsgCount = iMsgCount + 1;
 
 								if (sErroneousFields === "") {
-									sErroneousFields = that.byId(aMandatoryFields[i].Field).getText();
+									sErroneousFields = aMandatoryFields[i].Column;
 								} else {
-									sErroneousFields = sErroneousFields + '\n' + that.byId(aMandatoryFields[i].Field).getText();
+									sErroneousFields = sErroneousFields + '\n' + aMandatoryFields[i].Column;
 								}
 							}
 						}
@@ -4692,6 +4722,7 @@ sap.ui.define([
 					oAddProduct.ActiveProduct = 1;
 					oAddProduct.Comment = "";
 					oAddProduct.INCOTerms = oProduct.INCO_TERMS;
+					
 					oAddProduct.SKU = {
 						PRODUCTPACKNAME: oProduct.PRODUCT_NAME
 					};

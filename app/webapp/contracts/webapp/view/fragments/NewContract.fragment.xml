@@ -32,7 +32,7 @@
 			<core:Title/>
 
 				<!-- Contract Name -->
-				<Label text="{i18n>contractname}"/>
+				<Label text="{i18n>contractName}"/>
 				<Input id="idNewContractname" value="{ctr>/newContract/contractName}" required="false"/>
 
 				<!-- Contract Number -->

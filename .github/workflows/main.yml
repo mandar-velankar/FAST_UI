@@ -21,6 +21,18 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 1
+          format: 'YYYY-MM-DD'
+      - name: Find and Replace cache buster
+        uses: jacobtomlinson/gha-find-replace@master
+        with:
+          find: "%CACHE-TIMESTAMP%"
+          replace: "${{ steps.time.outputs.time }}"
+          include: "index.html"
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:

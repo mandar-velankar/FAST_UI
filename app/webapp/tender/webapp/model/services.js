@@ -962,6 +962,7 @@ sap.ui.define([
 						//  - 'Results Recorded'
 						//  - 'Delivery Ongoing'
 						if (oOffer.OfferStatus.STATUS === 'Quotation Submitted' ||
+							oOffer.OfferStatus.STATUS === 'In FOC Negotiation' ||
 							oOffer.OfferStatus.STATUS === 'Results Recorded' ||
 							oOffer.OfferStatus.STATUS === 'Delivery Ongoing') {
 							bVisible = true;
@@ -973,7 +974,8 @@ sap.ui.define([
 						//The offer should be shown in case the offer status is:
 						//	- 'Results Recorded'
 						//  - 'Delivery Ongoing'
-						if (oOffer.OfferStatus.STATUS === 'Results Recorded' ||
+						if (oOffer.OfferStatus.STATUS === 'In FOC Negotiation' ||
+							oOffer.OfferStatus.STATUS === 'Results Recorded' ||
 							oOffer.OfferStatus.STATUS === 'Delivery Ongoing') {
 							bVisible = true;
 						} else {
@@ -2205,7 +2207,7 @@ sap.ui.define([
 			oFastDataCalls.read(sApprovalPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "ApproverList" //added from results on
+					"$expand": "ApproverList,ApproverTypes" //added from results on
 				},
 				sorter: aSorter,
 				success: function (oData, oResponse) {
@@ -5100,6 +5102,9 @@ sap.ui.define([
 
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sProductPackPath, {
+					urlParameters: {
+						"$expand": "Product"
+					},
 					success: function (oData, oResponse) {
 
 						//let the callback be triggered
@@ -5124,13 +5129,14 @@ sap.ui.define([
 
 			//lets work with callbacks: 
 			var oDeferred = $.Deferred();
+			var that = this;
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 			
 			//path for product pack read
-			var sMandatoryFieldsPath = "/MandatoryProductFields";
+			var sMandatoryFieldsPath = "/CountryTablesCustomization";
 			var aFilters = [];
 
 			if (sCountry) {
@@ -5147,6 +5153,10 @@ sap.ui.define([
 
 						//let the callback be triggered
 						oFastAppDataModel.setProperty("/MandatoryFields", oData.results);
+
+						// creates a permissions object
+						that.setTablePermissions(oData.results);
+
 						oDeferred.resolve(oData);
 
 					},
@@ -5162,9 +5172,170 @@ sap.ui.define([
 				});
 			}
 
+			
+
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 
+		},
+
+		loadCountryPermissions: function(sCountry){
+
+			if(!sCountry || sCountry.indexOf("NA") > -1 ){
+				return;
+			}
+
+			const tabPermissions = this.getTabPermissions(sCountry);
+
+			return Promise.all([tabPermissions]);
+		},
+
+		getTabPermissions: function(sCountry){
+
+			if(!sCountry || sCountry.indexOf("NA") > -1 ){
+				return;
+			}
+
+			const that = this;
+			const oFastDataCalls = this.getDefaultModel();
+			
+			//path for product pack read
+			const sPath = "/CountryTabsCustomization";
+			const aFilters = [];
+
+			const oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+			aFilters.push(oCountryFilter);
+
+			const promise = new Promise((resolve, reject) => {
+
+				//Reading the back end data 
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						// creates a permissions object
+						that.setTabPermissions(oData.results);
+
+						resolve(oData.results);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of Permissions");
+
+						reject(oError);
+
+					}
+				});
+
+			});
+
+			
+			return promise;
+
+		},
+
+		/**
+		 * This method creates and sets a permission object in the FastAppDataModel.
+		 * This object can be then used in Views to make the controls visible/required (per Country)
+		 * @param {Array} aData - A list of permissions from CountryTablesCustomization service
+		 * @example
+		 * {
+		 *		"Permissions":{
+		 *			"editofferProductId": {
+		 * 				"type": "Table",
+		 * 				"Comment": {
+		 *					"type": "Column",
+		 *					"CountryCode": "AR",
+		 *					"BindingPath": "Comment",
+		 *					"Visible": false,
+		 *					"Required": false
+		 *				}
+		 *			}
+		 *		}
+		 *	}
+		 */
+		setTablePermissions: function(aData){ 
+
+			if(!Array.isArray(aData) || aData.length <= 0){
+				return;
+			}
+
+			const oFastAppDataModel = this.getFastAppDataModel();
+
+			const tablePermissions = {};
+			
+			aData.forEach(item => {
+
+				const tableID = item.TableID;
+				const column = item.Column;
+
+				if(!tablePermissions[tableID]){
+					tablePermissions[tableID] = {};
+				}
+
+				tablePermissions[tableID][column] =  {
+					"type": "Column",
+					"countryCode": item.CountryCode,
+					"bindingPath": item.BindingPath.toLowerCase(),
+					"visible": item.Visible,
+					"required": item.Required
+				}	
+
+			});
+
+			const allPermissions = oFastAppDataModel.getProperty("/permissions");
+
+			if(allPermissions){
+				allPermissions["tables"] = tablePermissions;
+			}else{
+				oFastAppDataModel.setProperty("/permissions", {"tables": {...tablePermissions}});
+			}
+		},
+
+		/**
+		 * This method creates and sets a permission object in the FastAppDataModel.
+		 * This object can be then used in Views to make the controls visible/required (per Country)
+		 * @param {Array} aData - A list of permissions from CountryTabsCustomization service
+		 * @example
+		 *	{
+		 *		"Permissions": {
+		 *			"tab": {
+		 *				"editofferProductId": {
+		 *					"CountryCode": "AR",
+		 *					"Visible": false
+		 *				}
+		 *			}
+		 *		}
+		 *	}
+		 */
+		setTabPermissions: function(aData){ 
+
+			if(!Array.isArray(aData) || aData.length <= 0){
+				return;
+			}
+
+			const oFastAppDataModel = this.getFastAppDataModel();
+			
+			const tabPermissions = {};
+			
+			aData.forEach(item => {
+				tabPermissions[item.TabID] =  {
+					"countryCode": item.CountryCode,
+					"visible": item.Visible
+				}
+			});
+
+			const allPermissions = oFastAppDataModel.getProperty("/permissions");
+
+			if(allPermissions){
+				allPermissions["tabs"] = tabPermissions;
+			}else{
+				oFastAppDataModel.setProperty("/permissions", {"tabs": {...tabPermissions}});
+			}
+
+			
 		},
 
 		//SAVERS
@@ -6523,6 +6694,7 @@ sap.ui.define([
 							oApprovalSaveInfo.SenderComment = oApprovalsSelectedOffer.SenderComment;
 							oApprovalSaveInfo.ApproverComment = ""; //oApprovalsSelectedOffer.ApproverComment; approvercomment is only set from backend process
 							oApprovalSaveInfo.Active = oApprovalsSelectedOffer.Active;
+							oApprovalSaveInfo.Hierarchy = oApprovalsSelectedOffer.ApproverTypes.results[0].Hierarchy;
 							oApprovalSaveInfo.AP_ID = oApprovalsSelectedOffer.AP_ID;
 							oApprovalSaveInfo.RestoreKey = oApprovalsSelectedOffer.RestoreKey;
 							oApprovalSaveInfo.Statustime = sStatusTime; //"17-09-2019 18:59"

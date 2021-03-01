@@ -6,11 +6,13 @@
     "eslint": "7.17.0"
   },
   "scripts": {
-    "postinstall": "npm run build",
     "start": "node node_modules/@sap/approuter/approuter.js",
     "lint": "eslint webapp",
     "serve": "ui5 serve",
     "build": "ui5 build --clean-dest"
+  },
+  "engines": {
+    "node": "^12"
   },
   "dependencies": {
     "@ui5/cli": "2.6.4",

@@ -375,7 +375,8 @@ sap.ui.define([
 				netSales: oCalculatedFields.iSpotNetSales,
 				
 				//changed
-				grossProfit: oCalculatedFields.iSpotNetSales - oCalculatedFields.iCombinedCogs
+				grossProfit: oCalculatedFields.iSpotNetSales - oCalculatedFields.iCombinedCogs,
+				rate: price.spotRate
 				/*((price.netPrice / price.spotRate) - price.cogs) * (price.quantity + ((price.focType === "FOC 2") ? ((price.focAbsPct ===
 					"PCT") ? price.foc * price.quantity : price.foc) : 0))*/
 					
@@ -397,7 +398,8 @@ sap.ui.define([
 				netSales: oCalculatedFields.iBudgetNetSales,
 				
 				//todo
-				grossProfit: oCalculatedFields.iBudgetNetSales - oCalculatedFields.iCombinedCogs
+				grossProfit: oCalculatedFields.iBudgetNetSales - oCalculatedFields.iCombinedCogs,
+				rate: price.budgetRate
 				/*((price.netPrice / price.budgetRate) - price.cogs) * (price.quantity + ((price.focType === "FOC 2") ? ((price.focAbsPct ===
 					"PCT") ? price.foc * price.quantity : price.foc) : 0))*/
 			}];
@@ -506,6 +508,15 @@ sap.ui.define([
 					textAlign: "Center"
 				})
 			}));
+			oTable.addColumn(new sap.m.Column({
+				header: new sap.m.Label({
+					text: "Rate",
+					wrapping: true,
+					vAlign: "Top",
+					design: "Bold",
+					textAlign: "Center"
+				})
+			}));
 			var oTemplate = new sap.m.ColumnListItem({
 				type: sap.m.ListType.Active,
 				cells: [
@@ -577,7 +588,13 @@ sap.ui.define([
 							path: "grossProfit",
 							formatter: formatter.amount
 						}
-					})
+					}),
+					new sap.m.ObjectNumber({
+						number: {
+							path: "rate",
+							formatter: formatter.price
+						}
+					}),
 				]
 			});
 			oTable.setModel(oModel);
