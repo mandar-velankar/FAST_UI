@@ -6,10 +6,11 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>FAST Tender Framework</title>
-	<!-- <script>
+	<script>
 		(function() {
 			var proxied = window.XMLHttpRequest.prototype.open;
-			 var cacheTimestamp = '%CACHE-TIMESTAMP%';
+			var cacheTimestamp = '%CACHE-TIMESTAMP%';
+			if(cacheTimestamp === '%CACHE-TIMESTAMP%') cacheTimestamp = new Date().getTime();
 			window.XMLHttpRequest.prototype.open = function() {
 				var url = arguments[1];
 				if(url.indexOf("?") == -1){ url = url + "?"; }
@@ -17,7 +18,7 @@
 				return proxied.apply(this, [].slice.call(arguments));
 			};
 		})();
-	</script> -->
+	</script>
 	<script id="sap-ui-bootstrap"
 			src="https://sapui5.hana.ondemand.com/1.72.11/resources/sap-ui-core.js"
 			data-sap-ui-theme="sap_belize"
