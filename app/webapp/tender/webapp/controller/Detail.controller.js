@@ -2405,9 +2405,9 @@ sap.ui.define([
 
 				//we go back to tender master screen
 				this.oRouter.navTo("master", {
-					layout: "OneColumn",
-					tender: sTenderPath,
-					country: this._country
+					//tender: sTenderPath,
+					country: this._country,
+					layout: "OneColumn"
 				});
 
 			} else {
@@ -2761,9 +2761,9 @@ sap.ui.define([
 
 			//navigate back to master screen
 			this.oRouter.navTo("master", {
-				layout: "OneColumn",
-				tender: sTenderID,
-				country: this._country
+				//tender: sTenderID,
+				country: this._country,
+				layout: "OneColumn"
 			});
 
 		},

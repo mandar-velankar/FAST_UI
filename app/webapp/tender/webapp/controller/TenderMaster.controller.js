@@ -24,6 +24,7 @@ sap.ui.define([
 			//that
 			var that = this;
 
+			
 			//load the external ID of the USER
 			$.when(Services.loadUserInfo()).done(function () {
 
@@ -34,13 +35,14 @@ sap.ui.define([
 				that.oView = that.getView();
 				that._bDescendingSort = false;
 
-				//get table with tenders
-				that.oProductsTable = that.oView.byId("tendersMasterTable");
-				Services.setTendersMasterTable(that.oView.byId("tendersMasterTable"));
-
 				//attach routing
 				that.oRouter = that.getOwnerComponent().getRouter();
 				that.oRouter.getRoute("master").attachPatternMatched(that._onTenderMatched, that);
+
+				//get table with tenders
+				that.oProductsTable = that.oView.byId("tendersMasterTable");
+				Services.setTendersMasterTable(that.oProductsTable);
+
 
 				that.oProductsTable.attachBrowserEvent("tab keyup", function (oEvent) {
 					that._bKeyboard = oEvent.type == "keyup";
@@ -159,6 +161,8 @@ sap.ui.define([
 			var oObjectPage = that.getView().byId("DetailPage");
 			*/
 
+
+
 			//reset filter to original state
 			var oTendersMasterTable = Services.getTendersMasterTable(); //this.getView().byId("tendersMasterTable");
 			var oBinding = oTendersMasterTable.getBinding("items");
@@ -166,6 +170,18 @@ sap.ui.define([
 			//if we stored the application filters, we restore them
 			if (aTenderMasterApplicationFilters.length > 0) {
 				oBinding.aApplicationFilters = aTenderMasterApplicationFilters;
+			}else{
+				
+				let aFilters = [];
+				aFilters.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, Services.getSelectedCountry()));
+				aFilters.push(new Filter("ACTIVE_OFFER", FilterOperator.EQ, 1));
+
+
+				var oApplicationFilter = new Filter(aFilters, true);
+
+				oBinding.aApplicationFilters = oApplicationFilter
+
+				// Services.setTenderMasterApplicationFilters(aApplicationFilters);
 			}
 			//remove the selected tender filter
 			var aFilter = [];
@@ -459,7 +475,8 @@ sap.ui.define([
 			var oFastAppData = Services.getFastAppDataModel();
 
 			//get possible filters
-			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
+			let sSelectedCountry = Services.getSelectedCountry() || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : sSelectedCountry;
 			var oBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			var oStatus = this.byId("idSlctStatus").getSelectedItem() ? this.byId("idSlctStatus").getSelectedItem().getText() :
 				"Awaiting Approval";

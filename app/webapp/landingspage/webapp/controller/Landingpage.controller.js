@@ -80,6 +80,7 @@ sap.ui.define([
 				// .navTo("tender");
 				.navTo("tender", {}, {tender:{
 					route: "master", parameters: {
+						country: "",
 						layout: "OneColumn"
 					}
 				}});
