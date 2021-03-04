@@ -24,7 +24,14 @@ sap.ui.define([
 			//that
 			var that = this;
 
-			
+			// instantiate loading dialog
+			if (!that._LoadingDialogMaster) {
+				that._LoadingDialogMaster = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.Loading", that);
+			}
+
+			// open loading dialog
+			that._LoadingDialogMaster.open();
+
 			//load the external ID of the USER
 			$.when(Services.loadUserInfo()).done(function () {
 
@@ -60,6 +67,11 @@ sap.ui.define([
 				that.oProductsTable.attachUpdateFinished(oEvent => {
 					that._filterProductsTable(oEvent);
 				});
+
+				// close loading dialog
+				if (that._LoadingDialogMaster) {
+					that._LoadingDialogMaster.close();
+				}
 
 			});
 
@@ -150,7 +162,7 @@ sap.ui.define([
 			//get table with tenders
 			that.oProductsTable = that.oView.byId("tendersMasterTable");
 			Services.setTendersMasterTable(that.oProductsTable);
-			
+
 			//bind countries to wich the user has acces
 			this._bindUserCountries();
 			this.setTenderOrigins();
@@ -175,7 +187,7 @@ sap.ui.define([
 			if (aTenderMasterApplicationFilters.length > 0) {
 				oBinding.aApplicationFilters = aTenderMasterApplicationFilters;
 			}else{
-				
+				/*
 				let aFilters = [];
 				aFilters.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, Services.getSelectedCountry()));
 				aFilters.push(new Filter("ACTIVE_OFFER", FilterOperator.EQ, 1));
@@ -186,6 +198,7 @@ sap.ui.define([
 				oBinding.aApplicationFilters = oApplicationFilter
 
 				// Services.setTenderMasterApplicationFilters(aApplicationFilters);
+				*/
 			}
 			//remove the selected tender filter
 			var aFilter = [];
