@@ -1,13 +1,15 @@
-<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.OfferProducts" xmlns="sap.m" xmlns:core="sap.ui.core"
-	xmlns:form="sap.ui.layout.form" xmlns:t="sap.ui.table" xmlns:u="sap.uxap" xmlns:l="sap.ui.layout" xmlns:viz.data="sap.viz.ui5.data"
-	xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.Detail" 
+    xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
 
     <!-- QUOTATION TAB -->
-    <ObjectPageSection id="quotationId" title="{i18n>Quotation}" visible="{fastAppData>/permissions/tabs/quotationId/visible}">
-        
-        <!-- todo give a decent ID & use in controller-->
-        <subSections>
-        <!-- TENDER OFFER TABLE -->
         <ObjectPageSubSection id="QuotationNoOfferSubsection" title="{i18n>Quotation}">
             <l:BlockLayout background="Light">
                 <l:BlockLayoutRow>
@@ -209,7 +211,6 @@
                     </m:VBox>
         
         <!-- Quotation products -->
-        <!--<ObjectPageSubSection id="idQuotationLineItems">-->
             <m:Table id="idQuotationTable"
                 items="{path : 'fastAppData>/OfferProductValidation/', sorter: [{path: 'SORTER', descending: false}]}"
                 inset="false" class="sapFDynamicPageAlignContent" width="auto"
@@ -430,7 +431,6 @@
                 </l:BlockLayoutRow>
             </l:BlockLayout>
         </ObjectPageSubSection>
-    </subSections>
 </ObjectPageSection>
 
 </core:FragmentDefinition>

@@ -437,6 +437,9 @@ sap.ui.define([
 			//show fragment for TAB: Financial Offer
 			that._showSectionFragment("FinancialOfferView", "financialOfferId");
 
+			//show fragment for TAB: Quotation
+			that._showSectionFragment("QuotationView", "quotationId");
+
 			//show footer with accept/reject button (this is not shown on the Tender master screen)
 			that.getView().byId("DetailPage").setShowFooter(true);
 			Services.setEditMode(true);
@@ -652,6 +655,10 @@ sap.ui.define([
 
 				//show fragment for TAB: FinancialOffer
 				that._showSectionFragment("FinancialOfferView", "financialOfferId");
+
+					
+				//show fragment for TAB: Quotation
+				that._showSectionFragment("QuotationView", "quotationId");
 
 				//show footer with accept/reject button (this is not shown on the Tender master screen)
 				that.getView().byId("DetailPage").setShowFooter(false);
@@ -1639,6 +1646,10 @@ sap.ui.define([
 
 					break;
 				case Services.getQuotationPageSectionID():
+							
+					//show fragment for TAB: Quotation
+					that._showSectionFragment("QuotationView", "quotationId");
+
 					that.getView().byId("idQofferValidity").setEnabled(false);
 					that.getView().byId("idCustomRemark").setEnabled(false);
 					that.getView().byId("idSelectIssuedBy").setEnabled(false);
@@ -2022,6 +2033,10 @@ sap.ui.define([
 						that.setFinancialOfferEditBinding();
 						break;
 					case Services.getQuotationPageSectionID():
+									
+						//show fragment for TAB: Quotation
+						that._showSectionFragment("QuotationView", "quotationId");
+
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						that.getView().byId("idQofferValidity").setEnabled(true);
 						that.getView().byId("idCustomRemark").setEnabled(true);

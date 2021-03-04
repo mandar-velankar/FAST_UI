@@ -200,9 +200,7 @@
 			<!-- QUOTATION TAB -->
 			<ObjectPageSection id="quotationId" title="{i18n>Quotation}" visible="{fastAppData>/permissions/tabs/quotationId/visible}">
 				<subSections>
-					<ObjectPageSubSection id="QuotationNoOfferSubsection" title="{i18n>Quotation}">
-						<mvc:XMLView id="quotationViewId" viewName="FAST_NS0FAST0.view.QuotationView"/>
-					</ObjectPageSubSection>
+					<core:Fragment id="quotationFragmentId" type="XML" fragmentName="FAST_NS0FAST0.view.QuotationView"/>
 				</subSections>
 			</ObjectPageSection>
 			
