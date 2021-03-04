@@ -147,6 +147,10 @@ sap.ui.define([
 				Services.getDefaultModel().refresh(true);
 			}
 
+			//get table with tenders
+			that.oProductsTable = that.oView.byId("tendersMasterTable");
+			Services.setTendersMasterTable(that.oProductsTable);
+			
 			//bind countries to wich the user has acces
 			this._bindUserCountries();
 			this.setTenderOrigins();
@@ -186,6 +190,9 @@ sap.ui.define([
 			//remove the selected tender filter
 			var aFilter = [];
 			oBinding.filter(aFilter);
+
+			//set default filtering (needed when navigating back after refresh on detail page + close split mode)
+			that.setFilter();
 
 		},
 

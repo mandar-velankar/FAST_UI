@@ -51,7 +51,7 @@ sap.ui.define([
 					
 			//TenderManagement screen
 			this.getOwnerComponent().getRouter().navTo("master", {
-				country:"",
+				country: "NA",
 				layout: "OneColumn"
 			});
 			
