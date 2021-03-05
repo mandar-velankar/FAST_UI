@@ -32,6 +32,10 @@ sap.ui.define([
 			// open loading dialog
 			that._LoadingDialogMaster.open();
 
+			//get table with tenders
+			that.oProductsTable = that.oView.byId("tendersMasterTable");
+			Services.setTendersMasterTable(that.oProductsTable);
+
 			//load the external ID of the USER
 			$.when(Services.loadUserInfo()).done(function () {
 
@@ -45,11 +49,6 @@ sap.ui.define([
 				//attach routing
 				that.oRouter = that.getOwnerComponent().getRouter();
 				that.oRouter.getRoute("master").attachPatternMatched(that._onTenderMatched, that);
-
-				//get table with tenders
-				that.oProductsTable = that.oView.byId("tendersMasterTable");
-				Services.setTendersMasterTable(that.oProductsTable);
-
 
 				that.oProductsTable.attachBrowserEvent("tab keyup", function (oEvent) {
 					that._bKeyboard = oEvent.type == "keyup";
@@ -188,16 +187,21 @@ sap.ui.define([
 				oBinding.aApplicationFilters = aTenderMasterApplicationFilters;
 			}else{
 				
-				let aFilters = [];
+				//if application filter is lost.. its probably due to a hard refresh in the browser.
+				//then we restore selections
+				/*let aFilters = [];
 				aFilters.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, Services.getSelectedCountry()));
 				aFilters.push(new Filter("ACTIVE_OFFER", FilterOperator.EQ, 1));
-
-
+				*/
+				let oCountryDropdown = that.byId("idSlctCountry");
+				oCountryDropdown.setSelectedKey(Services.getSelectedCountry()); 
+				/*
 				var oApplicationFilter = new Filter(aFilters, true);
 
 				oBinding.aApplicationFilters = oApplicationFilter
 
 				Services.setTenderMasterApplicationFilters(oApplicationFilter);
+				*/
 				
 			}
 			//remove the selected tender filter

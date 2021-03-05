@@ -2618,17 +2618,23 @@ sap.ui.define([
 			var oTendersMasterTable = that.getTendersMasterTable();
 			
 			if(oTendersMasterTable){
-				var oBinding = oTendersMasterTable.getBinding("items");
+				oTendersMasterTable.attachEventOnce("updateFinished", function(){
+
+					//Filter for selected tender
+					var oBinding = oTendersMasterTable.getBinding("items");
 			
-				//clear all existing filters
-				oBinding.aFilters = null;
-				oBinding.aApplicationFilters = null;
-	
-				//add filters (only tender should be filtered)
-				var aFilter = [];
-				aFilter.push(new Filter("TENDER_ID", "EQ", sTenderID));
-				//aFilter.push(new Filter("ACTIVE_OFFER", "EQ", 1));
-				oBinding.filter(aFilter);
+					//clear all existing filters
+					oBinding.aFilters = null;
+					oBinding.aApplicationFilters = null;
+		
+					//add filters (only tender should be filtered)
+					var aFilter = [];
+					aFilter.push(new Filter("TENDER_ID", "EQ", sTenderID));
+					//aFilter.push(new Filter("ACTIVE_OFFER", "EQ", 1));
+					oBinding.filter(aFilter);
+					
+				});
+				
 			}
 
 			
