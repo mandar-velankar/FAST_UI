@@ -14,7 +14,9 @@ sap.ui.define([
 			//Routing
 			this.oOwnerComponent = this.getOwnerComponent();
 			this.oRouter = this.getOwnerComponent().getRouter();
-			
+			setInterval(function () {
+				this.getView().getModel("access").refreshMetadata();
+			}.bind(this), 900000); //15 minutes
 			//attach method fnHandleRoutePatternMatched to the route
 			this.oRouter.attachRoutePatternMatched(this.fnHandleRoutePatternMatched, this);
 		},
