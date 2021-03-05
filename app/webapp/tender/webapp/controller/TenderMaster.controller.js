@@ -24,6 +24,18 @@ sap.ui.define([
 			//that
 			var that = this;
 
+			// instantiate loading dialog
+			if (!that._LoadingDialogMaster) {
+				that._LoadingDialogMaster = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.Loading", that);
+			}
+
+			// open loading dialog
+			that._LoadingDialogMaster.open();
+
+			//get table with tenders
+			that.oProductsTable = that.oView.byId("tendersMasterTable");
+			Services.setTendersMasterTable(that.oProductsTable);
+
 			//load the external ID of the USER
 			$.when(Services.loadUserInfo()).done(function () {
 
@@ -33,10 +45,6 @@ sap.ui.define([
 				//get view: TenderMaster.view.xml
 				that.oView = that.getView();
 				that._bDescendingSort = false;
-
-				//get table with tenders
-				that.oProductsTable = that.oView.byId("tendersMasterTable");
-				Services.setTendersMasterTable(that.oView.byId("tendersMasterTable"));
 
 				//attach routing
 				that.oRouter = that.getOwnerComponent().getRouter();
@@ -58,6 +66,11 @@ sap.ui.define([
 				that.oProductsTable.attachUpdateFinished(oEvent => {
 					that._filterProductsTable(oEvent);
 				});
+
+				// close loading dialog
+				if (that._LoadingDialogMaster) {
+					that._LoadingDialogMaster.close();
+				}
 
 			});
 
@@ -145,6 +158,10 @@ sap.ui.define([
 				Services.getDefaultModel().refresh(true);
 			}
 
+			//get table with tenders
+			that.oProductsTable = that.oView.byId("tendersMasterTable");
+			Services.setTendersMasterTable(that.oProductsTable);
+
 			//bind countries to wich the user has acces
 			this._bindUserCountries();
 			this.setTenderOrigins();
@@ -159,6 +176,8 @@ sap.ui.define([
 			var oObjectPage = that.getView().byId("DetailPage");
 			*/
 
+
+
 			//reset filter to original state
 			var oTendersMasterTable = Services.getTendersMasterTable(); //this.getView().byId("tendersMasterTable");
 			var oBinding = oTendersMasterTable.getBinding("items");
@@ -166,10 +185,31 @@ sap.ui.define([
 			//if we stored the application filters, we restore them
 			if (aTenderMasterApplicationFilters.length > 0) {
 				oBinding.aApplicationFilters = aTenderMasterApplicationFilters;
+			}else{
+				
+				//if application filter is lost.. its probably due to a hard refresh in the browser.
+				//then we restore selections
+				/*let aFilters = [];
+				aFilters.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, Services.getSelectedCountry()));
+				aFilters.push(new Filter("ACTIVE_OFFER", FilterOperator.EQ, 1));
+				*/
+				let oCountryDropdown = that.byId("idSlctCountry");
+				oCountryDropdown.setSelectedKey(Services.getSelectedCountry()); 
+				/*
+				var oApplicationFilter = new Filter(aFilters, true);
+
+				oBinding.aApplicationFilters = oApplicationFilter
+
+				Services.setTenderMasterApplicationFilters(oApplicationFilter);
+				*/
+				
 			}
 			//remove the selected tender filter
 			var aFilter = [];
 			oBinding.filter(aFilter);
+
+			//set default filtering (needed when navigating back after refresh on detail page + close split mode)
+			that.setFilter();
 
 		},
 
@@ -459,7 +499,8 @@ sap.ui.define([
 			var oFastAppData = Services.getFastAppDataModel();
 
 			//get possible filters
-			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
+			let sSelectedCountry = Services.getSelectedCountry() || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : sSelectedCountry;
 			var oBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			var oStatus = this.byId("idSlctStatus").getSelectedItem() ? this.byId("idSlctStatus").getSelectedItem().getText() :
 				"Awaiting Approval";

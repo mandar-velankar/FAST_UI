@@ -82,7 +82,7 @@ sap.ui.define([
 		_aTenderMasterApplicationFilters: [],
 
 		//TendersMaster table to access everywhere
-		_oTendersMasterTable: {},
+		_oTendersMasterTable: null,
 
 		_oLoadingTenderMasterDialog: {},
 
@@ -2616,17 +2616,29 @@ sap.ui.define([
 
 			//refresh master data
 			var oTendersMasterTable = that.getTendersMasterTable();
-			var oBinding = oTendersMasterTable.getBinding("items");
+			
+			if(oTendersMasterTable){
+				oTendersMasterTable.attachEventOnce("updateFinished", function(){
 
-			//clear all existing filters
-			oBinding.aFilters = null;
-			oBinding.aApplicationFilters = null;
+					//Filter for selected tender
+					var oBinding = oTendersMasterTable.getBinding("items");
+			
+					//clear all existing filters
+					oBinding.aFilters = null;
+					oBinding.aApplicationFilters = null;
+		
+					//add filters (only tender should be filtered)
+					var aFilter = [];
+					aFilter.push(new Filter("TENDER_ID", "EQ", sTenderID));
+					//aFilter.push(new Filter("ACTIVE_OFFER", "EQ", 1));
+					oBinding.filter(aFilter);
+					
+				});
+				
+			}
 
-			//add filters (only tender should be filtered)
-			var aFilter = [];
-			aFilter.push(new Filter("TENDER_ID", "EQ", sTenderID));
-			//aFilter.push(new Filter("ACTIVE_OFFER", "EQ", 1));
-			oBinding.filter(aFilter);
+			
+
 
 		},
 
@@ -5126,6 +5138,10 @@ sap.ui.define([
 		},
 
 		loadMandatoryFields: function (sCountry) {
+
+			if(!sCountry || sCountry === "NA"){
+				return;
+			}
 
 			//lets work with callbacks: 
 			var oDeferred = $.Deferred();
