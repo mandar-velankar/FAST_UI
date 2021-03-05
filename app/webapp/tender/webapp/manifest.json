@@ -84,7 +84,7 @@
 					"defaultBindingMode": "OneWay",
 					"defaultCountMode": "Request"
 				},
-				"dataSource": "sxtender.xsodata",
+				"dataSource": "tender",
 				"preload": true
 			}
 		},

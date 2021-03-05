@@ -22,7 +22,7 @@
 					"localUri": "localService/metadata.xml"
 				}
 			},
-			"sxtender.xsodata": {
+			"tender": {
 				"uri": "/v2/tender/",
 				"type": "OData",
 				"settings": {
@@ -113,7 +113,7 @@
 					"defaultCountMode": "Request",
 					"useBatch": false
 				},
-				"dataSource": "sxtender.xsodata",
+				"dataSource": "tender",
 				"preload": true
 			}
 		},

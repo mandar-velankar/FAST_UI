@@ -14,7 +14,7 @@
 		"resources": "resources.json",
 		"dataSources": {
 			"tender": {
-				"uri": "/v2/Tender/",
+				"uri": "/v2/tender/",
 				"type": "OData",
 				"settings": {
 					"localUri": "localService/tender/metadata.xml"
@@ -119,7 +119,7 @@
 					"defaultBindingMode": "OneWay",
 					"defaultCountMode": "Request"
 				},
-				"dataSource": "sxtender.xsodata",
+				"dataSource": "tender",
 				"preload": true
 			},
 			"access": {
