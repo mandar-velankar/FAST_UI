@@ -62,6 +62,11 @@ sap.ui.define([
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboard/OfferSubmissions?:iid=2"); //check where to store constants
 		},
 
+		//Tile Caliber Connect press
+		onTileCaliberConnectPress: function (oEvent) {
+			window.open("https://emea.tableau.intranet.cnb/#/site/BME/views/TenderSalesReport/TenderSales?:iid=1"); //check where to store constants
+		},
+
 		//tile transactional dash press
 		onTileTransDashPress: function(oEvent) {
 			//window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagementDashboardv1_1_20191024/Submissions"); //check where to store constants
