@@ -22,7 +22,7 @@ server:
     afterMiddleware: compression
     configuration:
       backend:
-      - path: /FAST
+      - path: /v2
         url: http://localhost:4004
         scp: false
         #destination: my_destination

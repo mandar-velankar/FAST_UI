@@ -16,7 +16,7 @@
         "resources": "resources.json",
         "dataSources": {
             "mainService": {
-                "uri": "/FAST/ODataDev/sxtender.xsodata/",
+                "uri": "/v2/tender/",
                 "type": "OData",
                 "settings": {
                     "annotations": [
