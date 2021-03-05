@@ -187,7 +187,7 @@ sap.ui.define([
 			if (aTenderMasterApplicationFilters.length > 0) {
 				oBinding.aApplicationFilters = aTenderMasterApplicationFilters;
 			}else{
-				/*
+				
 				let aFilters = [];
 				aFilters.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, Services.getSelectedCountry()));
 				aFilters.push(new Filter("ACTIVE_OFFER", FilterOperator.EQ, 1));
@@ -197,8 +197,8 @@ sap.ui.define([
 
 				oBinding.aApplicationFilters = oApplicationFilter
 
-				// Services.setTenderMasterApplicationFilters(aApplicationFilters);
-				*/
+				Services.setTenderMasterApplicationFilters(oApplicationFilter);
+				
 			}
 			//remove the selected tender filter
 			var aFilter = [];
