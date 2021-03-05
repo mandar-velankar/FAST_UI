@@ -655,6 +655,7 @@ sap.ui.define([
 				Services.setSelectedCountry(oCountry);
 				this.setBrandsList();
 				this.setTenderOrigins();
+				Services.loadCountryPermissions(oCountry);
 			}
 		},
 

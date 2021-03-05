@@ -305,7 +305,7 @@
                             <m:Text text="{path :'fastAppData>SORTER'}"/>
 
                             <!-- SKU Code -->
-                            <m:Text text="{parts: [{path :'fastAppData>CODE'}], formatter: '.formatter.nullToBlank'} }"/>
+                            <m:Text text="{parts: [{path :'fastAppData>CODE'}], formatter: '.formatter.nullToBlank'}"/>
                             
                             <!-- Article Name -->
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>

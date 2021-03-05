@@ -5423,7 +5423,8 @@ sap.ui.define([
 			aData.forEach(item => {
 				fragmentPermissions[item.FragmentID] =  {
 					"countryCode": item.CountryCode,
-					"visible": item.Visible
+					"visible": item.Visible,
+					"fragment": item.FragmentName
 				}
 			});
 
