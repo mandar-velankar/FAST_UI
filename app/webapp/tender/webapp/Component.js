@@ -67,9 +67,9 @@ sap.ui.define([
 			oModel = new JSONModel();
 			this.setModel(oModel);
 
-			// var xsoModel = new sap.ui.model.odata.ODataModel("sxtender.xsodata");
+			// var xsoModel = new sap.ui.model.odata.ODataModel("tender");
 			// this.setModel(xsoModel);
-			//var oModel = new sap.ui.model.odata.ODataModel("sxtender.xsodata/sxtender.xsodata", true)
+			//var oModel = new sap.ui.model.odata.ODataModel("tender/tender", true)
 			// oModel = new ODataModel();
 			// this.setModel(oModel);
 

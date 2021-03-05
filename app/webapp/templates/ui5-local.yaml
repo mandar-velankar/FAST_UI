@@ -22,7 +22,7 @@ server:
       afterMiddleware: compression
       configuration:
         backend:
-          - path: /FAST/ODataDev
+          - path: /v2/tender
             url: http://localhost:4004
     - name: fiori-tools-appreload
       afterMiddleware: compression
