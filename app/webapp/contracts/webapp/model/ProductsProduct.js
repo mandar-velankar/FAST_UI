@@ -13,7 +13,6 @@ sap.ui.define([
         },
        
         
-        
         //<property>Changed function
         // countryCodeChanged: function (state, event) {
         //     //do something when countryCode changes in the view/ui

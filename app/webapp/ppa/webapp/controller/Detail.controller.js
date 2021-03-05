@@ -180,7 +180,7 @@ sap.ui.define([
 				
 			}
 
-			if(this.byId("idEffectiveDate").getDateValue()){
+			if(this.byId("idEffectiveDate").getDateValue() || this.byId("idLatestApprEffectiveDate").getDateValue()){
 
 				//const selectedProduct = oEvent.getSource().getBindingContext("ppa").getObject();
 				//const selectedProduct;
@@ -237,13 +237,13 @@ sap.ui.define([
 
 				if(approvedMspPolicyPrices && approvedNspPolicyPrices){
 					for(let mspPriceType in draftMspPolicyPrices ) {
-						if(draftMspPolicyPrices[mspPriceType] !== "" || approvedMspPolicyPrices[mspPriceType] !== ""){
+						if(draftMspPolicyPrices[mspPriceType] || approvedMspPolicyPrices[mspPriceType] ){
 							selectedProduct.MspPricePercDiff[mspPriceType] = this.calculatePriceDifference(+draftMspPolicyPrices[mspPriceType], +approvedMspPolicyPrices[mspPriceType]) + "%";
 						}
 					}
 
 					for(let nspPriceType in draftNspPolicyPrices ) {
-						if(draftMspPolicyPrices[nspPriceType] !== "" || approvedMspPolicyPrices[nspPriceType] !== ""){
+						if(draftMspPolicyPrices[nspPriceType] || approvedMspPolicyPrices[nspPriceType] ){
 							selectedProduct.NspPricePercDiff[nspPriceType] = this.calculatePriceDifference(+draftNspPolicyPrices[nspPriceType], +approvedNspPolicyPrices[nspPriceType]) + "%";
 						}
 					}
@@ -300,6 +300,7 @@ sap.ui.define([
 		getActiveBrandPolicy: function (sCountryCode, iBrandId, sDivision) {
 			this.getView().setBusy(true);
 			return this.ppaState.getActiveBrandPolicy(sCountryCode, iBrandId, sDivision).then((brandPolicy) => {
+				this.ppaState.addBrandPolicyIdToApprovalRequestApprovals(brandPolicy.iD);
 				this.getView().setBusy(false);
 				return brandPolicy;
 			}).catch((error) => {
@@ -1031,6 +1032,9 @@ sap.ui.define([
 				//get draft version
 				const draftPolicy  = response.find(res => res.data.Status.indexOf("Draft") > -1);
 
+				// after creating a new draft BrandPolicy update the ApprovalRequest object
+				this.ppaState.updateApprovalRequestWithDraftPolicy(draftPolicy);
+
 				//load full data again (otherwise we have to re-create the empty productPolicy here)
 				this.ppaState.getAggregatedBrandPolicy(draftPolicy.data.CountryCode, draftPolicy.data.BrandId, draftPolicy.data.Division).then((brandPolicy) => {
 					//refresh brandpolicy & brand
@@ -1038,7 +1042,7 @@ sap.ui.define([
 					this.getBrand(this.currentCountryCode, this.currentBrandId, this.currentDivision);
 
 					// Change the approval statuses to 'Not Sent' 
-					this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
+					//this.ppaState.setAndUpdateApprovalRequestStatuses("Not Sent");
 					this.refreshMasterViewBrandListBinding();
 
 					if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
@@ -1192,7 +1196,13 @@ sap.ui.define([
 		},
 
 		calculatePriceDifference: function(sDraftPrice, sValidatedPrice){
-			return Math.round((sDraftPrice - sValidatedPrice)/(sValidatedPrice) * 100);
+
+			if(sValidatedPrice > 0){
+				return Math.round((sDraftPrice - sValidatedPrice) / sValidatedPrice * 100);
+			}
+
+			return 0;
+			
 		},
 
 		validateChannelPrices: function(sPriceType, sChannel, sRole){
@@ -1218,6 +1228,7 @@ sap.ui.define([
 						bValid = false;
 					}
 					break;
+				default: break;
 			}
 
 			return {

@@ -79,6 +79,30 @@ sap.ui.define([
 			return this.odata(sKey).get();
 		},
 
+		getCountryTenderBrands: function (sCountryCode) {
+			
+			var aFilters = [];
+
+			if(sCountryCode){
+
+				var oCountryCodeFilter = new Filter({
+					path: 'COUNTRYCODE',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode
+				});
+
+				aFilters.push(oCountryCodeFilter);
+			}
+
+			
+			var mParameters = {
+				filters: aFilters
+			};
+
+			return this.odata("/CountryTenderBrands").get(mParameters);
+		},
+
+
 
     });
     

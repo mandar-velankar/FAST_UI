@@ -24,6 +24,19 @@
 							<core:Item key="{ctr>countryCode}" text="{ctr>countryName}"/>
 					</Select>
 
+					<!-- Filter for Brand -->
+					<Select 
+						id="idSlctBrand" 
+						forceSelection="true" 
+						items="{ 
+							path: 'ctr>/countryContractBrands', 
+							sorter: { path: 'BrandName' }
+						}"
+						change="._filterContractsTable"
+					>
+							<core:Item key="{ctr>BrandID}" text="{ctr>BrandName}"/>
+					</Select>
+
 					<!-- Filter for Status -->
 					<!--<Select id="idSlctChannel" forceSelection="true" change=".setFilter" visible="true">
 						<items>
@@ -55,31 +68,59 @@
 					alternateRowColors="true"
 					autoPopinMode="true"
 					contextualWidth="Auto" 
-					popinLayout="GridSmall"
+					popinLayout="Block"
 					growing="true"
 					growingThreshold="15"
 					growingScrollToLoad="false">
 					<columns>
-						<Column width="6em" importance="None">
-							<Text text="Channel"/>
+						<Column width="6em" importance="None" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="{i18n>channel}" />
+							</header>
 						</Column>
-						<Column	width="6em" importance="None">
-							<Text text="Country"/>
-						</Column>
-						<Column width="12em" importance="High">
-							<Text text="Contract"/>
-						</Column>
-						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Institute"/>
-						</Column>
-						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Distributor"/>
+						<Column	width="6em" importance="None" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="{i18n>country}" />
+							</header>
 						</Column>
 						<Column width="12em" importance="High">
-							<Text text="Value"/>
+							<header>
+								<ObjectIdentifier title="{i18n>contract}" />
+							</header>
 						</Column>
-						<Column width="12em" importance="Low" popinDisplay="Inline">
-							<Text text="Contract Date"/>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline" visible="{= ${appView>/layout} === 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="{i18n>contractName}" />
+							</header>
+						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>institute}" />
+							</header>
+						</Column>
+						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="{i18n>distributor}" />
+							</header>
+						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="High" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>value}" />
+							</header>
+						</Column>
+						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="{i18n>contractStartDate}" />
+							</header>
+						</Column>
+						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<ObjectIdentifier title="{i18n>contractValidUntil}" />
+						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
+							<ObjectIdentifier title="{i18n>modifiedBy}" />
+						</Column>
+						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
+							<ObjectIdentifier title="{i18n>modifiedAt}" />
 						</Column>
 					</columns>
 					<items>
@@ -88,6 +129,7 @@
 								<Text text="{ctr>channel}"/>
 								<Text text="{ctr>countryCode}"/>
 								<ObjectIdentifier text="{ctr>contractNumber}"/>
+								<Text text="{ctr>contractName}"/>
 								<Text text="{ctr>institute/instituteName}"/>
 								<Text text="{ctr>distributor/distributorName}"/>
 								<Text text="{
@@ -97,6 +139,23 @@
 								/>
 								<Text text="{
 										path: 'ctr>contractDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{
+										path: 'ctr>contractValidUntil',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{ctr>modifiedBy}"/>
+								<Text text="{
+										path: 'ctr>modifiedAt',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
