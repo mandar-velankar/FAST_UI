@@ -1669,12 +1669,30 @@ sap.ui.define([
 					//show fragment for TAB: Quotation
 					that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
-					that.getView().byId("idQofferValidity").setEnabled(false);
-					that.getView().byId("idCustomRemark").setEnabled(false);
-					that.getView().byId("idSelectIssuedBy").setEnabled(false);
-					that.getView().byId("idSelectCompanyStamp").setEnabled(false);
-					that.getView().byId("idDelayInSubmission").setVisible(true);
-					that.getView().byId("btnSaveQuotation").setVisible(true);
+					let oQofferValidity = that.byId("idQofferValidity");
+					if(oQofferValidity){
+						oQofferValidity.setEnabled(false);
+					}
+					let oCustomRemark = that.byId("idCustomRemark");
+					if(oCustomRemark){
+						oCustomRemark.setEnabled(false);
+					}
+					let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+					if (oSelectIssuedBy){
+						oSelectIssuedBy.setEnabled(false);
+					}
+					let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+					if(oSelectCompanyStamp){
+						oSelectCompanyStamp.setEnabled(false);
+					}
+					let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
+					if(oDelayInSubmission){
+						oDelayInSubmission.setVisible(true);
+					}
+					let oBtnSaveQuotation = that.getView().byId("btnSaveQuotation");
+					if(oBtnSaveQuotation){
+						oBtnSaveQuotation.setVisible(true);
+					}
 					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
 					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
 						that.getView().byId("btnDownloadQuotation").setVisible(true);
@@ -2054,13 +2072,25 @@ sap.ui.define([
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
-						that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
-						that.getView().byId("idQofferValidity").setEnabled(true);
-						that.getView().byId("idCustomRemark").setEnabled(true);
-						that.getView().byId("idSelectIssuedBy").setEnabled(true);
-						that.getView().byId("idSelectCompanyStamp").setEnabled(true);
+						let oQofferValidity = that.byId("idQofferValidity");
+						if(oQofferValidity){
+							oQofferValidity.setEnabled(true);
+						}
+						let oCustomRemark = that.byId("idCustomRemark");
+						if(oCustomRemark){
+							oCustomRemark.setEnabled(true);
+						}
+						let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+						if (oSelectIssuedBy){
+							oSelectIssuedBy.setEnabled(true);
+						}
+						let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+						if(oSelectCompanyStamp){
+							oSelectCompanyStamp.setEnabled(true);
+						}
 						that.getView().byId("idDelayInSubmission").setVisible(false);
 						that.getView().byId("btnSaveQuotation").setVisible(false);
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
@@ -6518,12 +6548,16 @@ sap.ui.define([
 						Quotation.setDelayInSubmission('No');
 					}
 
+					let oCustomRemark = that.byId("idCustomRemark");
+					let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+					let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
-						CustomRemark: that.byId("idCustomRemark").getValue(),
-						IssuedBy: that.byId("idSelectIssuedBy").getSelectedKey(),
-						CompanyStamp: that.byId("idSelectCompanyStamp").getSelectedKey()
+						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
+						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
+						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
 					};
 
 					//do the save of the quotation with UPDATED to 1
@@ -6587,12 +6621,16 @@ sap.ui.define([
 						Quotation.setDelayInSubmission('No');
 					}
 
+					let oCustomRemark = that.byId("idCustomRemark");
+					let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+					let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
-						CustomRemark: that.byId("idCustomRemark").getValue(),
-						IssuedBy: that.byId("idSelectIssuedBy").getSelectedKey(),
-						CompanyStamp: that.byId("idSelectCompanyStamp").getSelectedKey()
+						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
+						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
+						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
 					};
 
 					//do the save of the quotation
@@ -6607,12 +6645,16 @@ sap.ui.define([
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
+			let oCustomRemark = that.byId("idCustomRemark");
+			let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+			let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
 			var quotationFields = {
 				OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 				OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
-				CustomRemark: this.byId("idCustomRemark").getValue(),
-				IssuedBy: this.byId("idSelectIssuedBy").getSelectedKey(),
-				CompanyStamp: this.byId("idSelectCompanyStamp").getSelectedKey()
+				CustomRemark: oCustomRemark ? this.byId("idCustomRemark").getValue() : '',
+				IssuedBy: oSelectIssuedBy ? this.byId("idSelectIssuedBy").getSelectedKey() : '',
+				CompanyStamp: oSelectCompanyStamp ? this.byId("idSelectCompanyStamp").getSelectedKey() : '',
 			};
 
 			//keep selected offer

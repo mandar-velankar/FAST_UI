@@ -55,7 +55,7 @@ sap.ui.define([
 			if (!netPrice){
 				return "";
 			}else{
-				return calculateProfit(netPrice, cogs, volume, currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1) + " " + currency;
+				return calculateProfit(netPrice, cogs, Math.ceil(volume), currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1) + " " + currency;
 			}
 			
 		},
@@ -367,13 +367,14 @@ sap.ui.define([
 			if (!offerPrice){
 				return "";
 			}
+
 			var oNumberFormat = NumberFormat.getFloatInstance({
 				maxFractionDigits: 2,
 				groupingEnabled: true,
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
-			var oValue = oNumberFormat.format(parseFloat(offerPrice) * parseFloat(volume));
+			var oValue = oNumberFormat.format(parseFloat(offerPrice) * parseFloat(Math.ceil(volume)));
 			return oValue + " "+ currency;
 		},
 		
@@ -390,9 +391,9 @@ sap.ui.define([
 			});
 			volume = (focType === "FOC 1") ? parseFloat(volume) :
 			(
-				(focAbsPct === "PCT") ? parseFloat(volume) * (1 + parseFloat(foc)) : parseFloat(volume) + parseFloat(foc)
+				(focAbsPct === "PCT") ? parseFloat(Math.ceil(volume)) * (1 + parseFloat(foc)) : parseFloat(Math.ceil(volume)) + parseFloat(foc)
 			);
-			var oValue = oNumberFormat.format(parseFloat(netPrice) * parseFloat(volume));
+			var oValue = oNumberFormat.format(parseFloat(netPrice) * parseFloat(Math.ceil(volume)));
 			return oValue + " "+ currency;
 		},
 		
