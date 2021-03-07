@@ -19,9 +19,9 @@ sap.ui.define([
 			});
 			var mainProductQuantity = (focType == "FOC 1") ? parseFloat(volume) :
 			(
-				(focAbsPct == "PCT") ? parseFloat(volume) * (1 + parseFloat(foc)) : parseFloat(volume) + parseFloat(foc)
+				(focAbsPct == "PCT") ? Math.ceil(parseFloat(volume)) * (1 + parseFloat(foc)) : Math.ceil(parseFloat(volume)) + parseFloat(foc)
 			);
-			var addFocProductQuantity = (focAbsPct_bund1 === "PCT") ? parseFloat(foc_bund1) * parseFloat(volume) : parseFloat(foc_bund1);
+			var addFocProductQuantity = (focAbsPct_bund1 === "PCT") ? parseFloat(foc_bund1) * Math.ceil(parseFloat(volume)) : parseFloat(foc_bund1);
 			
 			mainProductQuantity = Math.round(mainProductQuantity);
 			addFocProductQuantity = Math.round(addFocProductQuantity);
@@ -55,7 +55,7 @@ sap.ui.define([
 			if (!netPrice){
 				return "";
 			}else{
-				return calculateProfit(netPrice, cogs, Math.ceil(volume), currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1) + " " + currency;
+				return calculateProfit(netPrice, cogs, volume, currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1) + " " + currency;
 			}
 			
 		},
@@ -374,7 +374,7 @@ sap.ui.define([
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
-			var oValue = oNumberFormat.format(parseFloat(offerPrice) * parseFloat(Math.ceil(volume)));
+			var oValue = oNumberFormat.format(parseFloat(offerPrice) * Math.ceil(parseFloat(volume)));
 			return oValue + " "+ currency;
 		},
 		
@@ -391,9 +391,9 @@ sap.ui.define([
 			});
 			volume = (focType === "FOC 1") ? parseFloat(volume) :
 			(
-				(focAbsPct === "PCT") ? parseFloat(Math.ceil(volume)) * (1 + parseFloat(foc)) : parseFloat(Math.ceil(volume)) + parseFloat(foc)
+				(focAbsPct === "PCT") ? Math.ceil(parseFloat(volume)) * (1 + parseFloat(foc)) : Math.ceil(parseFloat(volume)) + parseFloat(foc)
 			);
-			var oValue = oNumberFormat.format(parseFloat(netPrice) * parseFloat(Math.ceil(volume)));
+			var oValue = oNumberFormat.format(parseFloat(netPrice) * Math.ceil(parseFloat(volume)));
 			return oValue + " "+ currency;
 		},
 		
