@@ -115,7 +115,7 @@
 					"target": "launch"
 				},
 				{
-					"pattern": ":layout:",
+					"pattern": ":country:/:layout:",
 					"name": "master",
 					"target": [
 						"master",
