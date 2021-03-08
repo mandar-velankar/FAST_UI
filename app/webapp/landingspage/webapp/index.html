@@ -10,7 +10,8 @@
 	<script>
 		(function() {
 			var proxied = window.XMLHttpRequest.prototype.open;
-			 var cacheTimestamp = '%CACHE-TIMESTAMP%';
+			var cacheTimestamp = '%CACHE-TIMESTAMP%';
+			if(cacheTimestamp === '%CACHE-TIMESTAMP%') cacheTimestamp = new Date().getTime();
 			window.XMLHttpRequest.prototype.open = function() {
 				var url = arguments[1];
 				if(url.indexOf("?") == -1){ url = url + "?"; }

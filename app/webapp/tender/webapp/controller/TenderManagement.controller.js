@@ -50,7 +50,6 @@ sap.ui.define([
 */
 			
 			
-			
 			//if tender is selected, filter only offers visible for selected tender
 			if(sTenderID && sLayout !== "OneColumn"){
 				

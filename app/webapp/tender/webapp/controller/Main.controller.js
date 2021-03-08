@@ -51,6 +51,7 @@ sap.ui.define([
 					
 			//TenderManagement screen
 			this.getOwnerComponent().getRouter().navTo("master", {
+				country: "NA",
 				layout: "OneColumn"
 			});
 			
@@ -59,6 +60,11 @@ sap.ui.define([
 		//Tile tender manager press
 		onTileTenderManagerDashPress: function(oEvent) {
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboard/OfferSubmissions?:iid=2"); //check where to store constants
+		},
+
+		//Tile Caliber Connect press
+		onTileCaliberConnectPress: function (oEvent) {
+			window.open("https://emea.tableau.intranet.cnb/#/site/BME/views/TenderSalesReport/TenderSales?:iid=1"); //check where to store constants
 		},
 
 		//tile transactional dash press

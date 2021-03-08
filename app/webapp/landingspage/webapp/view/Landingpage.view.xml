@@ -110,6 +110,21 @@
 							</l:HorizontalLayout>
 						</l:VerticalLayout>	
 
+						<!-- Caliber Connect -->
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="idCaliberConnect" allowWrapping="true">
+								<GenericTile 
+									class="sapUiTinyMarginBegin 
+									sapUiTinyMarginTop tileLayout" 
+									header="Caliber Connect" 
+									press="onTileCaliberConnectPress">
+									<TileContent footer="Go to tableau...">
+										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+									</TileContent>
+								</GenericTile>
+							</l:HorizontalLayout>
+						</l:VerticalLayout>	
+
 						<l:VerticalLayout>
 							<l:HorizontalLayout id="idTableauDash" allowWrapping="true">
 								<GenericTile
