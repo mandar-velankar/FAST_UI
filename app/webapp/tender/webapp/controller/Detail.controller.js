@@ -152,7 +152,7 @@ sap.ui.define([
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
 			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
-			Services.loadCountryPermissions(sCountry);
+			//Services.loadCountryPermissions(sCountry);
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
@@ -437,6 +437,9 @@ sap.ui.define([
 			//show fragment for TAB: Financial Offer
 			that._showSectionFragment("FinancialOfferView", "financialOfferId");
 
+			//show fragment for TAB: Quotation
+			that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+
 			//show footer with accept/reject button (this is not shown on the Tender master screen)
 			that.getView().byId("DetailPage").setShowFooter(true);
 			Services.setEditMode(true);
@@ -652,6 +655,10 @@ sap.ui.define([
 
 				//show fragment for TAB: FinancialOffer
 				that._showSectionFragment("FinancialOfferView", "financialOfferId");
+
+					
+				//show fragment for TAB: Quotation
+				that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 				//show footer with accept/reject button (this is not shown on the Tender master screen)
 				that.getView().byId("DetailPage").setShowFooter(false);
@@ -1219,12 +1226,30 @@ sap.ui.define([
 			case Services.getQuotationPageSectionID():
 
 				//
-				that.byId("IdQuotationInfo").setVisible(false);
-				that.byId("IdQuotationInfo2").setVisible(false);
-				that.byId("idQofferValidity").setEnabled(false);
-				that.byId("idCustomRemark").setEnabled(false);
-				that.byId("idSelectIssuedBy").setEnabled(false);
-				that.byId("idSelectCompanyStamp").setEnabled(false);
+				let oQuotationInfo = that.byId("IdQuotationInfo");
+				if(oQuotationInfo){
+					oQuotationInfo.setVisible(false);
+				}
+				let oQuotationInfo2 = that.byId("IdQuotationInfo2");
+				if(oQuotationInfo2){
+					oQuotationInfo2.setVisible(false);
+				}
+				let oQofferValidity = that.byId("idQofferValidity");
+				if(oQofferValidity){
+					oQofferValidity.setEnabled(false);
+				}
+				let oCustomRemark = that.byId("idCustomRemark");
+				if(oCustomRemark){
+					oCustomRemark.setEnabled(false);
+				}
+				let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+				if (oSelectIssuedBy){
+					oSelectIssuedBy.setEnabled(false);
+				}
+				let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+				if(oSelectCompanyStamp){
+					oSelectCompanyStamp.setEnabled(false);
+				}
 
 				//reselect same offer if it exists, otherwise clear offer selected
 				//that._selectOfferInOfferTable("quotationOffersTableViewID","quotationOffersTableOfferID");
@@ -1546,6 +1571,7 @@ sap.ui.define([
 			var bScreenNotAllowingEdit = false;
 			var bEditAllowed = true; //default we allow editing
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			var oFastAppDataModel = Services.getFastAppDataModel();
 
 			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
 			if (bCurrentShowFooterState === true) {
@@ -1639,12 +1665,34 @@ sap.ui.define([
 
 					break;
 				case Services.getQuotationPageSectionID():
-					that.getView().byId("idQofferValidity").setEnabled(false);
-					that.getView().byId("idCustomRemark").setEnabled(false);
-					that.getView().byId("idSelectIssuedBy").setEnabled(false);
-					that.getView().byId("idSelectCompanyStamp").setEnabled(false);
-					that.getView().byId("idDelayInSubmission").setVisible(true);
-					that.getView().byId("btnSaveQuotation").setVisible(true);
+							
+					//show fragment for TAB: Quotation
+					that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+
+					let oQofferValidity = that.byId("idQofferValidity");
+					if(oQofferValidity){
+						oQofferValidity.setEnabled(false);
+					}
+					let oCustomRemark = that.byId("idCustomRemark");
+					if(oCustomRemark){
+						oCustomRemark.setEnabled(false);
+					}
+					let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+					if (oSelectIssuedBy){
+						oSelectIssuedBy.setEnabled(false);
+					}
+					let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+					if(oSelectCompanyStamp){
+						oSelectCompanyStamp.setEnabled(false);
+					}
+					let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
+					if(oDelayInSubmission){
+						oDelayInSubmission.setVisible(true);
+					}
+					let oBtnSaveQuotation = that.getView().byId("btnSaveQuotation");
+					if(oBtnSaveQuotation){
+						oBtnSaveQuotation.setVisible(true);
+					}
 					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
 					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
 						that.getView().byId("btnDownloadQuotation").setVisible(true);
@@ -2022,11 +2070,27 @@ sap.ui.define([
 						that.setFinancialOfferEditBinding();
 						break;
 					case Services.getQuotationPageSectionID():
+									
+						//show fragment for TAB: Quotation
+						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+
 						//that.getView().byId("idQofferDate").setEnabled(true);
-						that.getView().byId("idQofferValidity").setEnabled(true);
-						that.getView().byId("idCustomRemark").setEnabled(true);
-						that.getView().byId("idSelectIssuedBy").setEnabled(true);
-						that.getView().byId("idSelectCompanyStamp").setEnabled(true);
+						let oQofferValidity = that.byId("idQofferValidity");
+						if(oQofferValidity){
+							oQofferValidity.setEnabled(true);
+						}
+						let oCustomRemark = that.byId("idCustomRemark");
+						if(oCustomRemark){
+							oCustomRemark.setEnabled(true);
+						}
+						let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+						if (oSelectIssuedBy){
+							oSelectIssuedBy.setEnabled(true);
+						}
+						let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+						if(oSelectCompanyStamp){
+							oSelectCompanyStamp.setEnabled(true);
+						}
 						that.getView().byId("idDelayInSubmission").setVisible(false);
 						that.getView().byId("btnSaveQuotation").setVisible(false);
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
@@ -6484,12 +6548,16 @@ sap.ui.define([
 						Quotation.setDelayInSubmission('No');
 					}
 
+					let oCustomRemark = that.byId("idCustomRemark");
+					let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+					let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
-						CustomRemark: that.byId("idCustomRemark").getValue(),
-						IssuedBy: that.byId("idSelectIssuedBy").getSelectedKey(),
-						CompanyStamp: that.byId("idSelectCompanyStamp").getSelectedKey()
+						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
+						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
+						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
 					};
 
 					//do the save of the quotation with UPDATED to 1
@@ -6553,12 +6621,16 @@ sap.ui.define([
 						Quotation.setDelayInSubmission('No');
 					}
 
+					let oCustomRemark = that.byId("idCustomRemark");
+					let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+					let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
-						CustomRemark: that.byId("idCustomRemark").getValue(),
-						IssuedBy: that.byId("idSelectIssuedBy").getSelectedKey(),
-						CompanyStamp: that.byId("idSelectCompanyStamp").getSelectedKey()
+						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
+						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
+						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
 					};
 
 					//do the save of the quotation
@@ -6573,12 +6645,16 @@ sap.ui.define([
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
+			let oCustomRemark = that.byId("idCustomRemark");
+			let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+			let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
 			var quotationFields = {
 				OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 				OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
-				CustomRemark: this.byId("idCustomRemark").getValue(),
-				IssuedBy: this.byId("idSelectIssuedBy").getSelectedKey(),
-				CompanyStamp: this.byId("idSelectCompanyStamp").getSelectedKey()
+				CustomRemark: oCustomRemark ? this.byId("idCustomRemark").getValue() : '',
+				IssuedBy: oSelectIssuedBy ? this.byId("idSelectIssuedBy").getSelectedKey() : '',
+				CompanyStamp: oSelectCompanyStamp ? this.byId("idSelectCompanyStamp").getSelectedKey() : '',
 			};
 
 			//keep selected offer

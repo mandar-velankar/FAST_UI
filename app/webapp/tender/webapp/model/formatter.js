@@ -19,9 +19,9 @@ sap.ui.define([
 			});
 			var mainProductQuantity = (focType == "FOC 1") ? parseFloat(volume) :
 			(
-				(focAbsPct == "PCT") ? parseFloat(volume) * (1 + parseFloat(foc)) : parseFloat(volume) + parseFloat(foc)
+				(focAbsPct == "PCT") ? Math.ceil(parseFloat(volume)) * (1 + parseFloat(foc)) : Math.ceil(parseFloat(volume)) + parseFloat(foc)
 			);
-			var addFocProductQuantity = (focAbsPct_bund1 === "PCT") ? parseFloat(foc_bund1) * parseFloat(volume) : parseFloat(foc_bund1);
+			var addFocProductQuantity = (focAbsPct_bund1 === "PCT") ? parseFloat(foc_bund1) * Math.ceil(parseFloat(volume)) : parseFloat(foc_bund1);
 			
 			mainProductQuantity = Math.round(mainProductQuantity);
 			addFocProductQuantity = Math.round(addFocProductQuantity);
@@ -367,13 +367,14 @@ sap.ui.define([
 			if (!offerPrice){
 				return "";
 			}
+
 			var oNumberFormat = NumberFormat.getFloatInstance({
 				maxFractionDigits: 2,
 				groupingEnabled: true,
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
-			var oValue = oNumberFormat.format(parseFloat(offerPrice) * parseFloat(volume));
+			var oValue = oNumberFormat.format(parseFloat(offerPrice) * Math.ceil(parseFloat(volume)));
 			return oValue + " "+ currency;
 		},
 		
@@ -390,9 +391,9 @@ sap.ui.define([
 			});
 			volume = (focType === "FOC 1") ? parseFloat(volume) :
 			(
-				(focAbsPct === "PCT") ? parseFloat(volume) * (1 + parseFloat(foc)) : parseFloat(volume) + parseFloat(foc)
+				(focAbsPct === "PCT") ? Math.ceil(parseFloat(volume)) * (1 + parseFloat(foc)) : Math.ceil(parseFloat(volume)) + parseFloat(foc)
 			);
-			var oValue = oNumberFormat.format(parseFloat(netPrice) * parseFloat(volume));
+			var oValue = oNumberFormat.format(parseFloat(netPrice) * Math.ceil(parseFloat(volume)));
 			return oValue + " "+ currency;
 		},
 		
