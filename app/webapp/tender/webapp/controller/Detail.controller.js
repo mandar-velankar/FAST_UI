@@ -2823,6 +2823,8 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			oFastAppDataModel.setProperty("/Tender", null);
 
+			this.clearQuotationElements();
+
 			//navigate back to master screen
 			this.oRouter.navTo("master", {
 				//tender: sTenderID,
@@ -2830,6 +2832,13 @@ sap.ui.define([
 				layout: "OneColumn"
 			});
 
+		},
+
+		clearQuotationElements: function(){
+			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
+			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
+			this.byId('QuotationNoOfferSubsection').destroy();
+			this.byId('QuotationOfferSubsection').destroy();
 		},
 
 		//DELIVERY TRACKING TAB & FINANCIAL OFFER TAB
