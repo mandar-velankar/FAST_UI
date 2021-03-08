@@ -389,7 +389,7 @@ sap.ui.define([
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
-			volume = (focType === "FOC 1") ? parseFloat(volume) :
+			volume = (focType === "FOC 1") ? Math.ceil(parseFloat(volume)) :
 			(
 				(focAbsPct === "PCT") ? Math.ceil(parseFloat(volume)) * (1 + parseFloat(foc)) : Math.ceil(parseFloat(volume)) + parseFloat(foc)
 			);
