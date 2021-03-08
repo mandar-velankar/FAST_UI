@@ -23,10 +23,10 @@ sap.ui.define([
 
 	return UIComponent.extend("com.bayer.tender.landingspage.Component", {
 		/* 17 minutes warning & 22 minutes message saying timeout is reached; SESSION_TIMEOUT is now 24min (default Hana timeout is 15 minutes) 5400000, //*/
-		countdownWarning: 1020000,			//1020000=17min //840000=14min	//1800000=30min		(600000,	//10 minute ) // cureent active = 14 minutes
-		resetCountdownWarning: 1020000,	//1020000=17min //840000=14min 		//1800000=30min		(600000,	//10 minute ) // cureent active = 14 minutes
-		countdownSessionEnd: 1140000,		//1140000=19min		//2400000=40min		(840000,	//14 minutes) // cureent active = 19 minutes
-		resetCountdownSessionEnd: 1140000,	//1140000=19min	//2400000=40min		(840000,	//14 minutes) // cureent active = 19 minutes
+		countdownWarning: 2400000,			//1020000=17min //840000=14min	//1800000=30min	//2400000=40min	(600000,	//10 minute ) // cureent active = 14 minutes
+		resetCountdownWarning: 2400000,	//1020000=17min //840000=14min 		//1800000=30min	//2400000=40min	(600000,	//10 minute ) // cureent active = 14 minutes
+		countdownSessionEnd: 3600000,		//1140000=19min	//2400000=40min	//3600000=60min	(840000,	//14 minutes) // cureent active = 19 minutes
+		resetCountdownSessionEnd: 3600000,	//1140000=19min	//2400000=40min	//3600000=60min	(840000,	//14 minutes) // cureent active = 19 minutes
 		logoutUrl: window.location.host + window.location.pathname + window.location.hash, // URL to logout page.
 		metadata: {
 			manifest: "json"
