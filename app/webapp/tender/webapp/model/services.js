@@ -82,7 +82,7 @@ sap.ui.define([
 		_aTenderMasterApplicationFilters: [],
 
 		//TendersMaster table to access everywhere
-		_oTendersMasterTable: {},
+		_oTendersMasterTable: null,
 
 		_oLoadingTenderMasterDialog: {},
 
@@ -2616,17 +2616,29 @@ sap.ui.define([
 
 			//refresh master data
 			var oTendersMasterTable = that.getTendersMasterTable();
-			var oBinding = oTendersMasterTable.getBinding("items");
+			
+			if(oTendersMasterTable){
+				oTendersMasterTable.attachEventOnce("updateFinished", function(){
 
-			//clear all existing filters
-			oBinding.aFilters = null;
-			oBinding.aApplicationFilters = null;
+					//Filter for selected tender
+					var oBinding = oTendersMasterTable.getBinding("items");
+			
+					//clear all existing filters
+					oBinding.aFilters = null;
+					oBinding.aApplicationFilters = null;
+		
+					//add filters (only tender should be filtered)
+					var aFilter = [];
+					aFilter.push(new Filter("TENDER_ID", "EQ", sTenderID));
+					//aFilter.push(new Filter("ACTIVE_OFFER", "EQ", 1));
+					oBinding.filter(aFilter);
+					
+				});
+				
+			}
 
-			//add filters (only tender should be filtered)
-			var aFilter = [];
-			aFilter.push(new Filter("TENDER_ID", "EQ", sTenderID));
-			//aFilter.push(new Filter("ACTIVE_OFFER", "EQ", 1));
-			oBinding.filter(aFilter);
+			
+
 
 		},
 
@@ -5127,6 +5139,10 @@ sap.ui.define([
 
 		loadMandatoryFields: function (sCountry) {
 
+			if(!sCountry || sCountry === "NA"){
+				return;
+			}
+
 			//lets work with callbacks: 
 			var oDeferred = $.Deferred();
 			var that = this;
@@ -5179,18 +5195,25 @@ sap.ui.define([
 
 		},
 
+		/**
+		* Load all country specific Permissions
+		*/
 		loadCountryPermissions: function(sCountry){
 
 			if(!sCountry || sCountry.indexOf("NA") > -1 ){
 				return;
 			}
 
-			const tabPermissions = this.getTabPermissions(sCountry);
+			const tabPermissions = this.loadTabPermissions(sCountry);
+			const fragmentPermissions = this.loadFragmentPermissions(sCountry);
 
-			return Promise.all([tabPermissions]);
+			return Promise.all([tabPermissions, fragmentPermissions]);
 		},
 
-		getTabPermissions: function(sCountry){
+		/**
+		*Load tab permissions
+		*/
+		loadTabPermissions: function(sCountry){
 
 			if(!sCountry || sCountry.indexOf("NA") > -1 ){
 				return;
@@ -5215,6 +5238,55 @@ sap.ui.define([
 
 						// creates a permissions object
 						that.setTabPermissions(oData.results);
+
+						resolve(oData.results);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of Permissions");
+
+						reject(oError);
+
+					}
+				});
+
+			});
+
+			
+			return promise;
+
+		},
+
+		/**
+		*Load fragement permissions
+		*/
+		loadFragmentPermissions: function(sCountry){
+
+			if(!sCountry || sCountry.indexOf("NA") > -1 ){
+				return;
+			}
+
+			const that = this;
+			const oFastDataCalls = this.getDefaultModel();
+			
+			//path for product pack read
+			const sPath = "/CountryFragmentsCustomization";
+			const aFilters = [];
+
+			const oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+			aFilters.push(oCountryFilter);
+
+			const promise = new Promise((resolve, reject) => {
+
+				//Reading the back end data 
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						// creates a permissions object
+						that.setFragmentPermissions(oData.results);
 
 						resolve(oData.results);
 
@@ -5335,6 +5407,50 @@ sap.ui.define([
 				oFastAppDataModel.setProperty("/permissions", {"tabs": {...tabPermissions}});
 			}
 
+			
+		},
+
+		/**
+		 * This method creates and sets a permission object in the FastAppDataModel.
+		 * This object can be then used in Views to make the controls visible/required (per Country)
+		 * @param {Array} aData - A list of permissions from CountryFragementsCustomization service
+		 * @example
+		 *	{
+		 *		"Permissions": {
+		 *			"tab": {
+		 *				"editofferProductId": {
+		 *					"CountryCode": "AR",
+		 *					"Visible": false
+		 *				}
+		 *			}
+		 *		}
+		 *	}
+		 */
+		setFragmentPermissions: function(aData){ 
+
+			if(!Array.isArray(aData) || aData.length <= 0){
+				return;
+			}
+
+			const oFastAppDataModel = this.getFastAppDataModel();
+			
+			const fragmentPermissions = {};
+			
+			aData.forEach(item => {
+				fragmentPermissions[item.FragmentID] =  {
+					"countryCode": item.CountryCode,
+					"visible": item.Visible,
+					"fragment": item.FragmentName
+				}
+			});
+
+			const allPermissions = oFastAppDataModel.getProperty("/permissions");
+
+			if(allPermissions){
+				allPermissions["fragments"] = fragmentPermissions;
+			}else{
+				oFastAppDataModel.setProperty("/permissions", {"fragments": {...fragmentPermissions}});
+			}
 			
 		},
 
