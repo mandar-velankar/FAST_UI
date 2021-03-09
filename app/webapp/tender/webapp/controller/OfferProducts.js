@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/m/MessageToast",
 	"FAST_NS0FAST0/model/formatter",
-	"FAST_NS0FAST0/model/services"
-], function (Controller, MessageToast, formatter, Services) {
+	"FAST_NS0FAST0/model/services",
+	"sap/ui/core/format/NumberFormat",
+], function (Controller, MessageToast, formatter, Services, NumberFormat) {
 	
 		var _FOCProdBund1UpdateFinished = function(that, formId, forEdit, fieldId){
 			
@@ -346,6 +347,13 @@ sap.ui.define([
 			oCalculatedFields.iSpotCogsRel = oCalculatedFields.iCombinedCogs / oCalculatedFields.iSpotNetSales;
 			oCalculatedFields.iBudgetCogsRel = oCalculatedFields.iCombinedCogs / oCalculatedFields.iBudgetNetSales;	
 			
+			// price.customRate is set in the _calcCustomRate() only
+			if(price.customRate && price.customRate > 0){
+				oCalculatedFields.iCustomNetSales = (price.netPrice / price.customRate) * (price.quantity + ((price.focType === "FOC 2") ? ((price.focAbsPct === "PCT") ?
+					price.focQuantityRounded : price.foc) : 0));
+				oCalculatedFields.iCustomCogsRel = oCalculatedFields.iCombinedCogs / oCalculatedFields.iCustomNetSales;	
+			}
+			
 			return oCalculatedFields;
 		},
 		
@@ -353,8 +361,21 @@ sap.ui.define([
 		_setProfitTableH: function (that, tableId, price) {
 			var oTable = that.byId(tableId);
 			oTable.destroyColumns();
+
 			
-			//get calculated fields for profit table
+			const oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+
+			// 1. format the budgetRate and spotRate before doing calcuations
+			price.budgetRate = oNumberFormat.format(parseFloat(price.budgetRate));
+			price.spotRate = oNumberFormat.format(parseFloat(price.spotRate));
+
+			
+			// 2. get calculated fields for profit table
 			var oCalculatedFields = this._getCalculatedFieldsForProfitTables(price);
 			
 			var tableData = [{
@@ -402,6 +423,26 @@ sap.ui.define([
 				rate: price.budgetRate
 				/*((price.netPrice / price.budgetRate) - price.cogs) * (price.quantity + ((price.focType === "FOC 2") ? ((price.focAbsPct ===
 					"PCT") ? price.foc * price.quantity : price.foc) : 0))*/
+			}, {
+				rowHeader: "Custom",
+				offerPriceLocal: price.offerPrice,
+				offerPriceEUR: price.offerPrice / price.spotRate,
+				netPriceEUR: price.netPrice / price.spotRate,
+				cogsAbs: price.cogs,
+				
+				//changed
+				cogsRel: oCalculatedFields.iSpotCogsRel, //price.cogs / (price.netPrice / price.spotRate),
+				grossMargin: 1 - oCalculatedFields.iSpotCogsRel, //(price.cogs / (price.netPrice / price.spotRate)),
+				
+				quantity: price.mainProductQuantity, //price.quantity,
+				foc: (price.focAbsPct === "PCT") ? price.focQuantityRounded : price.foc,
+				paidQuantity: price.quantity - ((price.focType === "FOC 1") ? ((price.focAbsPct === "PCT") ? price.focQuantityRounded : price.foc) :
+					0),
+				netSales: oCalculatedFields.iSpotNetSales,
+				
+				//changed
+				grossProfit: oCalculatedFields.iSpotNetSales - oCalculatedFields.iCombinedCogs,
+				rate: price.spotRate	
 			}];
 			var oModel = new sap.ui.model.json.JSONModel(tableData);
 			oTable.addColumn(new sap.m.Column({
@@ -589,16 +630,53 @@ sap.ui.define([
 							formatter: formatter.amount
 						}
 					}),
-					new sap.m.ObjectNumber({
-						number: {
-							path: "rate",
-							formatter: formatter.price
-						}
+					new sap.m.VBox({
+						items: [
+							new sap.m.ObjectNumber({
+								visible: "{= ${rowHeader} !== 'Custom' ? true : false }",
+								number: {
+									path: "rate",
+									formatter: formatter.price
+								}
+							}),
+							new sap.m.Input({
+								visible: "{= ${rowHeader} === 'Custom' ? true : false }",
+								type: sap.m.InputType.Number,
+								value: {
+									path: "rate",
+									formatter: formatter.price
+								},
+								liveChange: this._calcCustomRate.bind(this, price)
+							})
+						],
 					}),
 				]
 			});
 			oTable.setModel(oModel);
 			oTable.bindAggregation("items", "/", oTemplate);
+		},
+
+		_calcCustomRate: function(price, oEvent){
+
+			const oModel = oEvent.getSource().getModel();
+			const oCustomRateRow = oModel.getData().find(row => row.rowHeader === "Custom");
+			const newRate = +oEvent.getParameter("value");
+
+			// 1. add new rate to the price object
+			price['customRate'] = newRate;
+
+			// 2. calculate fields
+			const oCalculatedFields = this._getCalculatedFieldsForProfitTables(price);
+
+			oCustomRateRow.offerPriceEUR =  price.offerPrice / newRate;
+			oCustomRateRow.netPriceEUR =  price.netPrice / newRate;
+			oCustomRateRow.rate = newRate;
+			oCustomRateRow.cogsRel = oCalculatedFields.iCustomCogsRel;
+			oCustomRateRow.grossMargin = 1 - oCalculatedFields.iCustomCogsRel;
+			oCustomRateRow.netSales = oCalculatedFields.iCustomNetSales;
+			oCustomRateRow.grossProfit = oCalculatedFields.iCustomNetSales - oCalculatedFields.iCombinedCogs,
+
+			oModel.refresh();
 		},
 		
 		//local method for setting profit table data
