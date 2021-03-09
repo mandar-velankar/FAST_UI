@@ -780,7 +780,7 @@ sap.ui.define([
 		},
 		
 		//local method for setting pricing chart data
-		_setPriceChart: function (that, chartId, price) { debugger;
+		_setPriceChart: function (that, chartId, price) {
 
 			const i18n = that.getView().getModel("i18n").getResourceBundle();
 			const countryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
