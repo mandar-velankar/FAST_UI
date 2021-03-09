@@ -14,7 +14,7 @@
 		"resources": "resources.json",
 		"dataSources": {
 			"mainService": {
-				"uri": "/FAST/ppa/",
+				"uri": "/v2/ppa/",
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
