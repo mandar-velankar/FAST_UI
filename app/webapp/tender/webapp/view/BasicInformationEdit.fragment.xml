@@ -110,14 +110,14 @@
 			<!-- Argentina only -->
 			<Label text="{i18n>HighValue}" design="Bold" 
 				visible="{= 
-					${raModel>/visibleCountry} === 'AR'
+					${raModel>/visibleCountry} === 'AR' 
 				}"
 			/>
 			<CheckBox 
 				id="idHighValue"
 				selected="{fastData>HighValue}" 
 				visible="{= 
-					${raModel>/visibleCountry} === 'AR'
+					${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct'
 				}"
 			/>
 			<!--/ Argentina only -->

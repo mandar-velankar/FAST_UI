@@ -2837,8 +2837,14 @@ sap.ui.define([
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
 			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
-			this.byId('QuotationNoOfferSubsection').destroy();
-			this.byId('QuotationOfferSubsection').destroy();
+			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
+			if(oQuotationNoOfferSubsection){
+				this.byId('QuotationNoOfferSubsection').destroy();
+			}
+			let oQuotationOfferSubsection = this.byId('QuotationOfferSubsection');
+			if(oQuotationOfferSubsection){
+				this.byId('QuotationOfferSubsection').destroy();
+			}
 		},
 
 		//DELIVERY TRACKING TAB & FINANCIAL OFFER TAB
@@ -6423,12 +6429,13 @@ sap.ui.define([
 				model: "fastData"
 			});
 			oForm = that.byId("IdQuotationInfo2");
-			oForm.setVisible(true);
-			oForm.bindElement({
-				path: sSelectedOfferPath,
-				model: "fastData"
-			});
-
+			if(oForm){
+				oForm.setVisible(true);
+				oForm.bindElement({
+					path: sSelectedOfferPath,
+					model: "fastData"
+				});
+			}
 			//bind offer of default model to data to switch
 			var oSwitch = that.byId("idDelayInSubmission");
 			oSwitch.bindElement({

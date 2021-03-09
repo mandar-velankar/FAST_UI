@@ -1,0 +1,337 @@
+<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.Detail" 
+    xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+    <!-- QUOTATION TAB -->
+        <ObjectPageSubSection id="QuotationNoOfferSubsection" title="{i18n>Quotation}">
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow>
+                    <l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                        <m:VBox>
+                            <m:FormattedText htmlText="Offer not available for quotation..."/>
+                        </m:VBox>
+                    </l:BlockLayoutCell>
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+        
+        <ObjectPageSubSection id="QuotationOfferSubsection" title="{i18n>Quotation}">
+            <actions>
+                <!-- DelayInSubmission -->	
+                <m:Switch 
+                    id="idDelayInSubmission" 
+                    customTextOn="Yes" 
+                    customTextOff="No" 
+                    state="{= ${fastData>Quotation/DelayInSubmission} === 'Yes' ? true : false}" 
+                    enabled="{= ${fastAppData>/SelectedOfferID} !== '' &amp;&amp; ${fastData>OfferStatus/STATUS} === 'Quotation Submitted' ? true : false}"
+                    change="onSwitchDelayInSubmission" />
+                
+                <!-- Download Quotation -->	
+                <m:Button
+                    id="btnSaveQuotation"
+                    text="{i18n>SaveQuotation}"
+                    icon="sap-icon://save"
+                    press=".onSaveDefaultQuotation"
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>
+                                            
+                <m:Button
+                    id="btnDownloadQuotation"
+                    text="{i18n>DownloadQuotation}"
+                    icon="sap-icon://download"
+                    press=".onDownloadQuotation"
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
+
+                <!-- Submit Quotation -->	
+                <m:Button
+                    id="btnSubmitQuotation"
+                    text="{i18n>SubmitQuotation}"
+                    icon="sap-icon://sys-enter"
+                    press=".onSubmitQuotation"
+                    enabled="false"/>
+            </actions>
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow>
+                    <l:BlockLayoutCell><!--</l:BlockLayoutCell> backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">-->
+                        <m:VBox>                            
+                            <m:Label/>
+                            
+                    <form:SimpleForm id="IdQuotationInfo" editable="false" maxContainerCols="3" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+                        emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm" visible="true">
+                        <form:content>
+                            
+                            <m:VBox fitContainer="true" alignItems="Stretch">
+                                <m:items>
+                                    <m:HBox>
+                                        <m:items>
+                                            <m:VBox width="100%" alignItems="End">
+                                                <m:HBox>
+                                                    <m:items>
+                                                        <!--<m:VBox alignItems="End">-->
+                                                            <f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="M" displayShape="Square" class="sapUiTinyMarginEnd"/>
+                                                        <!--</m:VBox>-->
+                                                        <!--<m:VBox alignItems="End">-->
+                                                        <!--</m:VBox>-->
+                                                    </m:items>
+                                                </m:HBox>
+                                            </m:VBox>
+                                        </m:items>
+                                    </m:HBox>
+                                    <m:Toolbar width="100%" height="1px"/>
+                                    <!-- 4th row -->
+                                    <m:HBox class="sapUiSmallMarginBottom">
+                                        <m:items>
+                                            <m:VBox width="100%">
+                                                <m:items>
+                                                    <m:HBox>
+                                                        <m:items>
+                                                            <!-- N° Invoice -->
+                                                            <m:VBox width="20%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>classificationType}" design="Bold"/>
+                                                                    <m:Text text="{fastAppData>/OfferValidation/OFFERID}"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="2%">
+                                                            </m:VBox>
+                                                            <!-- Tender refrence -->
+                                                            <m:VBox width="28%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>BiddingTypeLevel1}" design="Bold"/>
+                                                                    <m:Text text="{fastAppData>/Tender/BindingTypeLevel1}"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="2%">
+                                                            </m:VBox>
+                                                            <m:VBox width="28%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>BiddingTypeLevel2}" design="Bold"/>
+                                                                    <m:Text text="{fastAppData>/Tender/BindingTypeLevel2}"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="2%">
+                                                            </m:VBox>
+                                                            <m:VBox width="28%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>BiddingTypeLevel3}" design="Bold"/>
+                                                                    <m:Text text="{fastAppData>/Tender/BindingTypeLevel3}"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="2%">
+                                                            </m:VBox>
+                                                            <!-- Offer Date -->
+                                                            <m:VBox width="13%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>OfferDate}" design="Bold"/>
+                                                                    <!--<m:DatePicker id="idQofferDate" value="{path :'fastAppData>/OfferValidation/OFFERDATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
+                                                                    <m:DatePicker id="idQofferDate" value="{path :'fastAppData>/OfferValidation/OFFERDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="2%">
+                                                            </m:VBox>
+                                                            <!-- Offer Validity -->
+                                                            <m:VBox width="13%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>OfferValidity}" design="Bold"/>
+                                                                    <!--<m:DatePicker id="idQofferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
+                                                                    <m:DatePicker id="idQofferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="2%">
+                                                            </m:VBox>
+                                                            
+                                                        </m:items>
+                                                    </m:HBox>
+                                                    <m:Toolbar width="100%" height="1px"/>
+                                                    <m:HBox>
+                                                        <m:items>
+                                                            <!-- Shipment Terms-->
+                                                            <m:VBox width="50rem">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>Specifications}" design="Bold"/>
+                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/SHIPMENTTERMS}" class="sapMText"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            
+                                                            <!-- Payment Terms -->
+                                                            <m:VBox width="50rem">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>InstituteDistributor}" design="Bold"/>
+                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/PAYMENTTERMS}" class="sapMText"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            
+                                                            <!-- Delivery Terms -->
+                                                            <m:VBox width="50rem">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>HighLowValue}" design="Bold"/>
+                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/DELIVERYTERMS}" class="sapMText"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                        </m:items>
+                                                    </m:HBox>
+                                                </m:items>
+                                            </m:VBox>
+                                           
+                                        </m:items>
+                                    </m:HBox>
+                                </m:items>
+                            </m:VBox>
+                            
+                        </form:content>
+                    </form:SimpleForm>
+                    </m:VBox>
+        
+        <!-- Quotation products -->
+            <m:Table id="idQuotationTable"
+                items="{path : 'fastAppData>/ProductsForOffer/results', sorter: [{path: 'SORTER', descending: false}]}"
+                inset="false" class="sapFDynamicPageAlignContent" width="auto"
+                alternateRowColors="true" fixedLayout="true">
+                <m:columns>
+                    <!-- Line -->
+                    <m:Column width="6%">
+                        <m:Text text="{i18n>line}"/>
+                    </m:Column>
+
+                    <!-- Product -->
+                    <m:Column width="13%">
+                        <m:Text text="{i18n>product}"/>
+                    </m:Column>
+
+                    <!-- Alternate Offer -->
+                    <m:Column width="13%">
+                        <m:Text text="{i18n>alternate}"/>
+                    </m:Column>
+
+                    <!-- Requested Volume -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>Requested}"/>
+                    </m:Column>
+
+                    <!-- Unit Price -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>UnitPrice}"/>
+                    </m:Column>
+
+                    <!-- UoM -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>UnitPack}"/>
+                    </m:Column>
+
+                    <!-- Package -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>package}"/>
+                    </m:Column>
+
+                    <!-- Sample -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>Sample}"/>
+                    </m:Column>
+                    
+                    <!-- Samples Quantity -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>Quantity}"/>
+                    </m:Column>
+
+                    <!-- Documents -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>Documents}"/>
+                    </m:Column>
+
+                    <!-- FirstShipment -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>FirstShipment}"/>
+                    </m:Column>
+
+                    <!-- NoLots -->
+                    <m:Column width="9%">
+                        <m:Text text="{i18n>NoLots}"/>
+                    </m:Column>
+
+                    <!-- Interval between shipments -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>inshipmnths}"/>
+                    </m:Column>
+
+                    <!-- PaymentTerms -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>PaymentTerms}"/>
+                    </m:Column>
+
+                    <!-- Comments -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>Comment}"/>
+                    </m:Column>
+                </m:columns>
+                <m:items>
+                    <m:ColumnListItem>
+                        <m:cells>
+                            <!-- Line -->
+                            <m:Text text="{path :'fastAppData>Line'}"/>
+                            
+                            <!-- Product -->
+                            <m:Text text="{path :'fastAppData>SKU/PRODUCTPACKNAME'}"/>
+                            
+                            <!-- Alternate Offer -->
+                            <m:Text text="{path: 'fastAppData>AlternateOfferYN'}"/>
+                            
+                            <!-- Requested Volume -->
+                            <m:Text text="{path :'fastAppData>RequestedVolume'}"/>
+                            
+                            <!-- Unit Price -->
+                            <m:Text text="{path :'fastAppData>/OfferProductValidation/results/0/REQ_PRICE_UNIT_OFFER_CURRENCY'}"/>
+                            <!--<m:ObjectStatus
+                                text="{parts: [
+                                    {path: 'fastAppData>/OfferProductValidation/REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>/OfferProductValidation/CURRENCY'}
+                                ], formatter:'.formatter.priceTwoOrFour'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />-->
+
+                            <!-- UoM -->
+                            <m:Text text="{path :'fastAppData>UnitPerPack'}"/>
+
+                            <!-- Package -->
+                            <m:Text text="{path :'fastAppData>Package'}"/>
+                            
+                            <!-- Samples -->
+                            <m:Text text="{path :'fastAppData>SampleYN'}"/>
+
+                            <!-- Samples Quantity -->
+                            <m:Text text="{path :'fastAppData>SampleQuantity'}"/>
+
+                            <!-- Documents -->
+                            <m:Text text="{path :'fastAppData>DocumentsRequired'}"/>
+
+                            <!-- FirstShipment -->
+                            <m:Text text="{path: 'fastAppData>FirstShipment'}"/>
+
+                            <!-- NoLots -->
+                            <m:Text text="{path: 'fastAppData>NoofLots'}"/>
+
+                            <!-- Interval between shipments -->
+                            <m:Text text="{path: 'fastAppData>IntervalBetweenShipments'}"/>
+
+                            <!-- PaymentTerms -->
+                            <m:Text text="{path: 'fastAppData>PaymentTerms'}"/>
+
+                            <!-- Comments -->
+                            <m:Text text="{path: 'fastAppData>Comment'}"/>
+                        </m:cells>
+                    </m:ColumnListItem>
+                </m:items>
+            </m:Table>
+                    
+                    
+                    
+                    </l:BlockLayoutCell >
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+</core:FragmentDefinition>
