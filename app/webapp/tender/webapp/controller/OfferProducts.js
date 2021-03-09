@@ -420,7 +420,7 @@ sap.ui.define([
 			}));*/
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}\n [EUR/ \n" + price.uom + "]",
+					text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}\n [" + this.sReportingCurreny + "/\n" + price.uom + "]",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -429,7 +429,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "Net Price \n [EUR/ \n" + price.uom + "]",
+					text: "Net Price \n [" + this.sReportingCurreny + "/ \n" + price.uom + "]",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -438,7 +438,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "COGS \n\n [EUR/ \n" + price.uom + "] \n",
+					text: "COGS \n\n [" + this.sReportingCurreny + "/ \n" + price.uom + "] \n",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -492,7 +492,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "Net Sales \n [EUR] \n\n",
+					text: "Net Sales \n [" + this.sReportingCurreny + "] \n\n",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -501,7 +501,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "Gross Profit \n [EUR] \n\n",
+					text: "Gross Profit \n [" + this.sReportingCurreny + "] \n\n",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -788,7 +788,7 @@ sap.ui.define([
 		},
 		
 		//local method for inital setting the pricing data
-		_setPricingData: function (that, formId, chartId, tableId, modelPath, forEdit, forScenario) {
+		_setPricingData: async function (that, formId, chartId, tableId, modelPath, forEdit, forScenario) {
 			
 			var thiss = this; //that is already used!! complicated! TODO improve could that be left out? other way to get the view
 			
@@ -822,12 +822,17 @@ sap.ui.define([
 			if (offerValues.Cogs !== null) {
 				cogsValues = that.getView().getModel("fastData").getObject("/" + offerValues.Cogs.__ref);
 			}
+
+			const sSelectedCountryCode = Services.getCountryCodeofSelectedTender();
+			const { data: {results: [oCountryInformation]} } = await Services.getService('Tender').getCountryInfo(sSelectedCountryCode);
+
+			this.sReportingCurreny = oCountryInformation.ReportingCurreny;
 			
 			//load Budget rate again from database
 			var sCountry = "";
 			var sX_TYPE = "Budget";
 			var sCurrencyFrom = offerCurrency;
-			var sCurrencyTo = "EUR";
+			var sCurrencyTo = this.sReportingCurreny;
 			var budgetRate = null;
 			$.when(thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
 				if(oData !== false){
@@ -839,7 +844,7 @@ sap.ui.define([
 			var sCountry = "";
 			var sX_TYPE = "Monthly Average";
 			var sCurrencyFrom = offerCurrency;
-			var sCurrencyTo = "EUR";
+			var sCurrencyTo = this.sReportingCurreny;
 			var spotRate = null;
 			$.when(thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
 				if(oData !== false){
