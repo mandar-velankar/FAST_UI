@@ -709,16 +709,18 @@ sap.ui.define([
 			const selectedKeys = tenderSpecifications && tenderSpecifications.data.results.map(item => item.Name);
 			const oSpecificationsComboBox = this.byId("idSpecifications");
 			const oSpecificationsDisplayComboBox = this.byId("idSpecificationsDisplay");
+			const oSpecificationsDisplayComboBoxQuot = this.byId("idSpecificationsDisplayQuotation");
 
 			// if there are no Specifications then they should not be displayed.
 			if(!selectedKeys || selectedKeys.length <= 0){
 				oSpecificationsComboBox && oSpecificationsComboBox.setVisible(false);
 				oSpecificationsDisplayComboBox && oSpecificationsDisplayComboBox.setVisible(false);
+				oSpecificationsDisplayComboBoxQuot && oSpecificationsDisplayComboBoxQuot.setVisible(false);
 			}
 
 			oSpecificationsComboBox && oSpecificationsComboBox.setSelectedKeys(selectedKeys);
 			oSpecificationsDisplayComboBox && oSpecificationsDisplayComboBox.setSelectedKeys(selectedKeys);
-
+			oSpecificationsDisplayComboBoxQuot && oSpecificationsDisplayComboBoxQuot.setSelectedKeys(selectedKeys);
 		},
 
 		/**
@@ -832,7 +834,7 @@ sap.ui.define([
 			//Page fragment as it exists in this controller
 			var oPageFragment = this._pageFragments[sFragmentName];
 
-			if (oPageFragment) {
+			if (oPageFragment) { 
 				return oPageFragment;
 			}
 
@@ -857,6 +859,13 @@ sap.ui.define([
 			});
 			//oPage.addBlock(this._getPageFragment(sFragmentName));
 
+		},
+
+		_isQuotationFragment: function(value){
+			if(value.includes('Quotation')){
+				return true;
+			} 
+			return false;
 		},
 
 		//show the corresponding Fragment 
@@ -2823,7 +2832,7 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			oFastAppDataModel.setProperty("/Tender", null);
 
-			this.clearQuotationElements();
+			//this.clearQuotationElements();
 
 			//navigate back to master screen
 			this.oRouter.navTo("master", {
@@ -6423,11 +6432,13 @@ sap.ui.define([
 			//set to fastappdata model for easy access on the view
 			oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
 			var oForm = that.byId("IdQuotationInfo");
-			oForm.setVisible(true);
-			oForm.bindElement({
-				path: sSelectedOfferPath,
-				model: "fastData"
-			});
+			if(oForm){
+				oForm.setVisible(true);
+				oForm.bindElement({
+					path: sSelectedOfferPath,
+					model: "fastData"
+				});
+			}
 			oForm = that.byId("IdQuotationInfo2");
 			if(oForm){
 				oForm.setVisible(true);

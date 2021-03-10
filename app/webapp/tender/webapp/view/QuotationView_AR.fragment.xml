@@ -95,7 +95,7 @@
                                                             <m:VBox width="20%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>classificationType}" design="Bold"/>
-                                                                    <m:Text text="{fastAppData>/OfferValidation/OFFERID}"/>
+                                                                    <m:Text text="{fastAppData>/Tender/Classification}"/>
                                                                 </m:items>
                                                             </m:VBox>
                                                             <m:VBox width="2%">
@@ -151,11 +151,21 @@
                                                     <m:Toolbar width="100%" height="1px"/>
                                                     <m:HBox>
                                                         <m:items>
-                                                            <!-- Shipment Terms-->
+                                                            <!-- Specifications-->
                                                             <m:VBox width="50rem">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>Specifications}" design="Bold"/>
-                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/SHIPMENTTERMS}" class="sapMText"/>
+                                                                    <!-- <m:Text text="{fastAppData>/Tender/Specifications/results/0/Name}"/>-->
+                                                                     <m:MultiComboBox
+                                                                        id="idSpecificationsDisplayQuotation"
+                                                                        width="90%"
+                                                                        enabled="false"
+                                                                        items="{
+                                                                            path: 'fastAppData>/Tender/Specifications/results',
+                                                                            sorter: { path: 'Name' }
+                                                                        }">
+                                                                        <core:Item text="{fastAppData>Name}" key="{fastAppData>Name}"/>
+                                                                    </m:MultiComboBox>
                                                                 </m:items>
                                                             </m:VBox>
                                                             
@@ -163,7 +173,7 @@
                                                             <m:VBox width="50rem">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>InstituteDistributor}" design="Bold"/>
-                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/PAYMENTTERMS}" class="sapMText"/>
+                                                                    <m:FormattedText htmlText="{= ${fastAppData>/Tender/Institute/InstituteName} + ' / ' + ${fastAppData>/SelectedOffer/Distributor/DistributorName}}" class="sapMText"/>
                                                                 </m:items>
                                                             </m:VBox>
                                                             
@@ -171,7 +181,7 @@
                                                             <m:VBox width="50rem">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>HighLowValue}" design="Bold"/>
-                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/DELIVERYTERMS}" class="sapMText"/>
+                                                                    <m:FormattedText htmlText="{= ${fastAppData>/Tender/HighValue} ? 'High Value' : 'Low Value' }" class="sapMText"/>
                                                                 </m:items>
                                                             </m:VBox>
                                                         </m:items>
@@ -285,20 +295,19 @@
                             <m:Text text="{path :'fastAppData>RequestedVolume'}"/>
                             
                             <!-- Unit Price -->
-                            <m:Text text="{path :'fastAppData>/OfferProductValidation/results/0/REQ_PRICE_UNIT_OFFER_CURRENCY'}"/>
-                            <!--<m:ObjectStatus
+                            <m:ObjectStatus
                                 text="{parts: [
-                                    {path: 'fastAppData>/OfferProductValidation/REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
-                                    {path: 'fastAppData>/OfferProductValidation/CURRENCY'}
+                                    {path: 'fastAppData>/OfferProductValidation/0/REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>/OfferProductValidation/0/CURRENCY'}
                                 ], formatter:'.formatter.priceTwoOrFour'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />-->
+                            />
 
                             <!-- UoM -->
                             <m:Text text="{path :'fastAppData>UnitPerPack'}"/>
 
                             <!-- Package -->
-                            <m:Text text="{path :'fastAppData>Package'}"/>
+                            <m:Text text="{path :'fastAppData>SKU/Product/HLEVEL6_NAME'}"/>
                             
                             <!-- Samples -->
                             <m:Text text="{path :'fastAppData>SampleYN'}"/>
