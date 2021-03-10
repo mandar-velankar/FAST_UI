@@ -53,7 +53,8 @@
 					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
 					(${fastAppData>/CountryBindingTypeLevel3} ? true : false)
 				}" 
-				items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}">
+				items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}"
+				change="onBiddingTypeLevel3Change">
 				<items>
 					<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
 				</items>
@@ -83,7 +84,7 @@
 				value="{fastData>Institute/InstituteName}" enabled="false"/>
 
 			<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-			<Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="false">
+			<Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="false" change="onTenderChannelChange">
 				<items>
 					<core:Item text="Distributor" key="Distributor"/>
 					<core:Item text="Direct" key="Direct"/>
@@ -108,16 +109,16 @@
 			<!-- Block - Timeline -->
 
 			<!-- Argentina only -->
-			<Label text="{i18n>HighValue}" design="Bold" 
+			<Label id="idHighValueLabel" text="{i18n>HighValue}" design="Bold" 
 				visible="{= 
-					${raModel>/visibleCountry} === 'AR' 
+					${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
 				}"
 			/>
 			<CheckBox 
 				id="idHighValue"
 				selected="{fastData>HighValue}" 
 				visible="{= 
-					${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct'
+					${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
 				}"
 			/>
 			<!--/ Argentina only -->
