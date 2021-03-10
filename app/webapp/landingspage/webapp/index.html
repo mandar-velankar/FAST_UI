@@ -5,22 +5,24 @@
 	<link href="./images/Company-Logo-White.svg" rel="shortcut icon" type="image/x-icon" />
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="cache-control" content="no-cache" />
 	<title>FAST Tender Framework</title>
-	<!--
+	
 	<script>
-		(function() {
-			var proxied = window.XMLHttpRequest.prototype.open;
-			var cacheTimestamp = '%CACHE-TIMESTAMP%';
-			if(cacheTimestamp === '%CACHE-TIMESTAMP%') cacheTimestamp = new Date().getTime();
-			window.XMLHttpRequest.prototype.open = function() {
-				var url = arguments[1];
-				if(url.indexOf("?") == -1){ url = url + "?"; }
-				arguments[1] = url + "&cache-timestamp=" + cacheTimestamp;//data._TheAppVersion;
-				return proxied.apply(this, [].slice.call(arguments));
-			};
-		})();
+		// (function() {
+		// 	var proxied = window.XMLHttpRequest.prototype.open;
+		// 	var cacheTimestamp = '%CACHE-TIMESTAMP%';
+		// 	if(cacheTimestamp === '%CACHE-TIMESTAMP%') cacheTimestamp = new Date().getTime();
+		// 	window.XMLHttpRequest.prototype.open = function() {
+		// 		var url = arguments[1];
+		// 		if(url.indexOf("?") == -1){ url = url + "?"; }
+		// 		// if(url.indexOf("/resources/") === -1  && url.indexOf("/v4") === -1 && url.indexOf("/v2") === -1 ){
+		// 			arguments[1] = url + "&cache-timestamp=" + cacheTimestamp;//data._TheAppVersion;
+		// 		// }
+		// 		return proxied.apply(this, [].slice.call(arguments));
+		// 	};
+		// })();
 	</script>
-	-->
 	<script id="sap-ui-bootstrap"
 			src="https://sapui5.hana.ondemand.com/1.72.11/resources/sap-ui-core.js"
 			data-sap-ui-theme="sap_belize"
