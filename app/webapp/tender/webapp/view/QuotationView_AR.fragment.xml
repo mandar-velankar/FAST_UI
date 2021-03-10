@@ -55,6 +55,13 @@
                     icon="sap-icon://sys-enter"
                     press=".onSubmitQuotation"
                     enabled="false"/>
+                
+                <m:Button
+                    id="btnEmailQuotation"
+                    text="{i18n>emailQuotation}"
+                    icon="sap-icon://email"
+                    press=".onEmailQuotation"
+                    enabled="true"/>
             </actions>
             <l:BlockLayout background="Light">
                 <l:BlockLayoutRow>

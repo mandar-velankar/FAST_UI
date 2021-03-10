@@ -19,10 +19,11 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/m/Token",
 	"sap/m/Tokenizer",
-	"FAST_NS0FAST0/libs/ranking/Ranking"
+	"FAST_NS0FAST0/libs/ranking/Ranking",
+	"sap/m/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking, mobileLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -6668,6 +6669,16 @@ sap.ui.define([
 				}
 			});
 		},
+
+		onEmailQuotation: function (oEvent) {
+			var oViewModel = this.getModel("detailView");
+			var URLHelper = mobileLibrary.URLHelper;
+			
+			URLHelper.triggerEmail(null,
+								   oViewModel.getProperty("/shareSendEmailSubject"),
+								   oViewModel.getProperty("/shareSendEmailMessage"));
+		},
+
 		_onSaveQuotation: function (oEvent) {
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
