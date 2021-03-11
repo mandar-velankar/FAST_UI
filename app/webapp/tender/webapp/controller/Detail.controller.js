@@ -7458,6 +7458,34 @@ sap.ui.define([
 
 		},
 
+		onBiddingTypeLevel3Change: function(oEvent){ 
+			this.toggleHighValueCheckboxVisibility();
+		},
+
+		onTenderChannelChange:function(oEvent){ 
+			this.toggleHighValueCheckboxVisibility();
+		},
+
+		/**
+		 * Toggles the HighValue checkbox visibility on the BasicInformation page for Argentina
+		 */
+		toggleHighValueCheckboxVisibility: function() {
+
+			const sBiddingTypeLevel3SelectedItem = this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+			const sTenderChannelSelectedItem = this.byId("idTenderChannel").getSelectedItem().getText();
+			const oHighValueCheckBox = this.byId("idHighValue");
+			const oHighValueLabel = this.byId("idHighValueLabel");
+			
+			if(sBiddingTypeLevel3SelectedItem === "Nacional" && sTenderChannelSelectedItem === "Direct"){
+				oHighValueCheckBox.setVisible(true);
+				oHighValueLabel.setVisible(true);
+			}else{
+				oHighValueCheckBox.setVisible(false);
+				oHighValueLabel.setVisible(false);
+			}
+		},
+
+
 
 	});
 });
