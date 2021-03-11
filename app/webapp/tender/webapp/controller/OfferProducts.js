@@ -120,7 +120,7 @@ sap.ui.define([
 			);
 
 			oForm.addContent(new sap.m.Label({
-				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"
+				text: "{= ${fastAppData>/Tender/CountryCode} === 'AR' ? ${i18n>OfferPrice_AR} : ${i18n>OfferPrice}}"
 			}));
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idOfferPrice"),
@@ -249,61 +249,66 @@ sap.ui.define([
 					aFilters.push(new sap.ui.model.Filter("COUNTRY_OF_ORIGIN", sap.ui.model.FilterOperator.EQ, oCommercialAgreement.COUNTRY_OF_ORIGIN));
 				});						
 			}	
-					
-			oForm.addContent(new sap.m.Label({
-				text: "{i18n>FOCAdditionalProd}"
-			}));
 			
-			oForm.addContent(new sap.m.ComboBox({
-				id: that.getView().createId(formId + "_idFOCProdBund1"), 
-	    		items: {
-	    			path: "fastData>/InstituteDistributorBrandProduct",
-	    			/*
-	    			parameters: {
-	    				expand : "Cogs,SKU"
-	    			},
-	    			*/
-	    			filters: aFilters,
-			    	template: new sap.ui.core.ListItem({
-			    		key: '{fastData>PRODUCT_ID}',
-			    		text: '{fastData>PRODUCT_NAME}'
-					}),
-	    			templateShareable: true
-	    		},
-	    		change: that.onEditFinancialOffer.bind(that),
-	    		selectedKey: price.focProduct_bund1,
-	    		maxWidth: "80%",
-			}));
+			//FOC additional product is not shown in argentinia
+			if(sCountryCode!=="AR"){
+
+				oForm.addContent(new sap.m.Label({
+					text: "{i18n>FOCAdditionalProd}"
+				}));
+				
+				oForm.addContent(new sap.m.ComboBox({
+					id: that.getView().createId(formId + "_idFOCProdBund1"), 
+					items: {
+						path: "fastData>/InstituteDistributorBrandProduct",
+						/*
+						parameters: {
+							expand : "Cogs,SKU"
+						},
+						*/
+						filters: aFilters,
+						template: new sap.ui.core.ListItem({
+							key: '{fastData>PRODUCT_ID}',
+							text: '{fastData>PRODUCT_NAME}'
+						}),
+						templateShareable: true
+					},
+					change: that.onEditFinancialOffer.bind(that),
+					selectedKey: price.focProduct_bund1,
+					maxWidth: "80%",
+				}));
+				
+				//Absolute or Percentage is defaulted by first saved price, if price is not yet saved... but can still be changed
+				if(oOffer && oOffer.DEFAULT_FOC_ABS_PCT && !price.offerPrice){
+					var sFocAbsPCT_Bund1 = oOffer.DEFAULT_FOC_ABS_PCT;
+				}else{
+					var sFocAbsPCT_Bund1 = price.focAbsPct_bund1;
+				}
+				//absolute or precentage additional foc product
+				oForm.addContent(new sap.m.Select({
+					id: that.getView().createId(formId + "_idFocAbsPct1"),
+					items: [{
+						key: "ABS",
+						text: "Absolute"
+					}, {
+						key: "PCT",
+						text: "Percentage"
+					}],
+					selectedKey: sFocAbsPCT_Bund1,
+					maxWidth: "80%",
+					change: that.onEditFinancialOffer.bind(that),
+					enabled: forEdit 
+				}));
+				//Value additional foc product
+				oForm.addContent(new sap.m.Input({
+					id: that.getView().createId(formId + "_idFoc1"),
+					value: (price.focAbsPct_bund1 === "PCT") ? formatter.percentageNoUnit(price.foc_bund1) : price.foc_bund1,
+					enabled: forEdit,
+					description: (price.focAbsPct_bund1 === "PCT") ? "%" : price.uom,
+					submit: that.onEditFinancialOffer.bind(that)
+				}));
 			
-			//Absolute or Percentage is defaulted by first saved price, if price is not yet saved... but can still be changed
-			if(oOffer && oOffer.DEFAULT_FOC_ABS_PCT && !price.offerPrice){
-				var sFocAbsPCT_Bund1 = oOffer.DEFAULT_FOC_ABS_PCT;
-			}else{
-				var sFocAbsPCT_Bund1 = price.focAbsPct_bund1;
 			}
-			//absolute or precentage additional foc product
-			oForm.addContent(new sap.m.Select({
-				id: that.getView().createId(formId + "_idFocAbsPct1"),
-				items: [{
-					key: "ABS",
-					text: "Absolute"
-				}, {
-					key: "PCT",
-					text: "Percentage"
-				}],
-				selectedKey: sFocAbsPCT_Bund1,
-				maxWidth: "80%",
-				change: that.onEditFinancialOffer.bind(that),
-				enabled: forEdit 
-			}));
-			//Value additional foc product
-			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idFoc1"),
-				value: (price.focAbsPct_bund1 === "PCT") ? formatter.percentageNoUnit(price.foc_bund1) : price.foc_bund1,
-				enabled: forEdit,
-				description: (price.focAbsPct_bund1 === "PCT") ? "%" : price.uom,
-				submit: that.onEditFinancialOffer.bind(that)
-			}));
 			
 			/* tried to solve this using attribute onAfterRender. However, at this moment this doesn't seem to be working.
 			   According to ticket https://trello.com/c/yUkwKbwZ, these fields should be disabled in case no Brand Products exist.
@@ -788,7 +793,7 @@ sap.ui.define([
 			var oViz = that.byId(chartId);
 			var dataModel = {
 				"data": [{
-					"PriceType": countryCode === 'TH' ? i18n.getText("CIFPrice_TH") : i18n.getText("CIFPrice"),
+					"PriceType": countryCode === 'AR' ? i18n.getText("CIFPrice_AR") : i18n.getText("CIFPrice"),
 					"Value": price.cifPrice,
 					"Type": "Revenue"
 				}, {
@@ -796,7 +801,7 @@ sap.ui.define([
 					"Value": -price.discount * price.cifPrice,
 					"Type": "Cost"
 				}, {
-					"PriceType": countryCode === 'TH' ? i18n.getText("OfferPrice_TH") : i18n.getText("OfferPrice"),
+					"PriceType": countryCode === 'AR' ? i18n.getText("OfferPrice_AR") : i18n.getText("OfferPrice"),
 					"Value": price.offerPrice,
 					"Type": "Total"
 				}, {
