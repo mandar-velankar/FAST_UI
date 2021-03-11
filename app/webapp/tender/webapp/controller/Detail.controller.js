@@ -2833,7 +2833,7 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			oFastAppDataModel.setProperty("/Tender", null);
 
-			//this.clearQuotationElements();
+			this.clearQuotationElements();
 
 			//navigate back to master screen
 			this.oRouter.navTo("master", {
@@ -2847,6 +2847,10 @@ sap.ui.define([
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
 			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
+			if(this._pageFragments && this._pageFragments.QuotationView_AR){
+				this._pageFragments.QuotationView_AR = null;
+			}
+
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
 			if(oQuotationNoOfferSubsection){
 				this.byId('QuotationNoOfferSubsection').destroy();
@@ -6671,12 +6675,10 @@ sap.ui.define([
 		},
 
 		onEmailQuotation: function (oEvent) {
-			var oViewModel = this.getModel("detailView");
+			//var oViewModel = this.getModel("detailView");
 			var URLHelper = mobileLibrary.URLHelper;
 			
-			URLHelper.triggerEmail(null,
-								   oViewModel.getProperty("/shareSendEmailSubject"),
-								   oViewModel.getProperty("/shareSendEmailMessage"));
+			URLHelper.triggerEmail("joris.vd.bogaert@gmail.com", "hoera");
 		},
 
 		_onSaveQuotation: function (oEvent) {
