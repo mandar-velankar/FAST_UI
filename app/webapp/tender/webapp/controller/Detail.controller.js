@@ -2837,8 +2837,18 @@ sap.ui.define([
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
 			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
-			this.byId('QuotationNoOfferSubsection').destroy();
-			this.byId('QuotationOfferSubsection').destroy();
+			if(this._pageFragments && this._pageFragments.QuotationView_AR){
+				this._pageFragments.QuotationView_AR = null;
+			}
+
+			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
+			if(oQuotationNoOfferSubsection){
+				this.byId('QuotationNoOfferSubsection').destroy();
+			}
+			let oQuotationOfferSubsection = this.byId('QuotationOfferSubsection');
+			if(oQuotationOfferSubsection){
+				this.byId('QuotationOfferSubsection').destroy();
+			}
 		},
 
 		//DELIVERY TRACKING TAB & FINANCIAL OFFER TAB
