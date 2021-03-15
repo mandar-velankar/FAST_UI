@@ -709,16 +709,18 @@ sap.ui.define([
 			const selectedKeys = tenderSpecifications && tenderSpecifications.data.results.map(item => item.Name);
 			const oSpecificationsComboBox = this.byId("idSpecifications");
 			const oSpecificationsDisplayComboBox = this.byId("idSpecificationsDisplay");
+			const oSpecificationsDisplayComboBoxQuot = this.byId("idSpecificationsDisplayQuotation");
 
 			// if there are no Specifications then they should not be displayed.
 			if(!selectedKeys || selectedKeys.length <= 0){
 				oSpecificationsComboBox && oSpecificationsComboBox.setVisible(false);
 				oSpecificationsDisplayComboBox && oSpecificationsDisplayComboBox.setVisible(false);
+				oSpecificationsDisplayComboBoxQuot && oSpecificationsDisplayComboBoxQuot.setVisible(false);
 			}
 
 			oSpecificationsComboBox && oSpecificationsComboBox.setSelectedKeys(selectedKeys);
 			oSpecificationsDisplayComboBox && oSpecificationsDisplayComboBox.setSelectedKeys(selectedKeys);
-
+			oSpecificationsDisplayComboBoxQuot && oSpecificationsDisplayComboBoxQuot.setSelectedKeys(selectedKeys);
 		},
 
 		/**
@@ -832,7 +834,7 @@ sap.ui.define([
 			//Page fragment as it exists in this controller
 			var oPageFragment = this._pageFragments[sFragmentName];
 
-			if (oPageFragment) {
+			if (oPageFragment) { 
 				return oPageFragment;
 			}
 
@@ -857,6 +859,13 @@ sap.ui.define([
 			});
 			//oPage.addBlock(this._getPageFragment(sFragmentName));
 
+		},
+
+		_isQuotationFragment: function(value){
+			if(value.includes('Quotation')){
+				return true;
+			} 
+			return false;
 		},
 
 		//show the corresponding Fragment 
@@ -2837,6 +2846,10 @@ sap.ui.define([
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
 			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
+			if(this._pageFragments && this._pageFragments.QuotationView_AR){
+				this._pageFragments.QuotationView_AR = null;
+			}
+
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
 			if(oQuotationNoOfferSubsection){
 				this.byId('QuotationNoOfferSubsection').destroy();
@@ -6423,11 +6436,13 @@ sap.ui.define([
 			//set to fastappdata model for easy access on the view
 			oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
 			var oForm = that.byId("IdQuotationInfo");
-			oForm.setVisible(true);
-			oForm.bindElement({
-				path: sSelectedOfferPath,
-				model: "fastData"
-			});
+			if(oForm){
+				oForm.setVisible(true);
+				oForm.bindElement({
+					path: sSelectedOfferPath,
+					model: "fastData"
+				});
+			}
 			oForm = that.byId("IdQuotationInfo2");
 			if(oForm){
 				oForm.setVisible(true);
@@ -6657,6 +6672,231 @@ sap.ui.define([
 				}
 			});
 		},
+
+		onEmailQuotation: function (oEvent) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
+			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/SelectedOffer/OfferID');
+			/*var sBody = '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">'
+				+ '<head>'
+				+ '<title>'
+				  
+				+ '</title>'
+				+ '<!--[if !mso]><!-- -->'
+				+ '<meta http-equiv="X-UA-Compatible" content="IE=edge">'
+				+ '<!--<![endif]-->'
+				+ '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
+				+ '<meta name="viewport" content="width=device-width, initial-scale=1">'
+				+ '<style type="text/css">'
+				+ '#outlook a { padding:0; }'
+				+ '.ReadMsgBody { width:100%; }'
+				+ '.ExternalClass { width:100%; }'
+				+ '.ExternalClass * { line-height:100%; }'
+				+ 'body { margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; }'
+				+ 'table, td { border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt; }'
+				+ 'img { border:0;height:auto;line-height:100%; outline:none;text-decoration:none;-ms-interpolation-mode:bicubic; }'
+				+ 'p { display:block;margin:13px 0; }'
+				+ '</style>'
+				+ '<!--[if !mso]><!-->'
+				+ '<style type="text/css">'
+				+ '@media only screen and (max-width:480px) {'
+				+ '@-ms-viewport { width:320px; }'
+				+ '@viewport { width:320px; }'
+				+ '}'
+				+ '</style>'
+				+ '<link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet" type="text/css">'
+				+ '<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">'
+				+ '<link href="https://fonts.googleapis.com/css?family=Cabin:400,700" rel="stylesheet" type="text/css">'
+				+ '<style type="text/css">'
+				+ '@import url(https://fonts.googleapis.com/css?family=Roboto:400,700);'
+				+ '@import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);'
+				+ '@import url(https://fonts.googleapis.com/css?family=Cabin:400,700);'
+				+ '</style>'
+		
+			
+				
+				+ '<style type="text/css">'
+				+ '@media only screen and (min-width:480px) {'
+				+ '.mj-column-per-100 { width:100% !important; max-width: 100%; }'
+				+ ' }'
+				+ '</style>'
+			
+		  
+				+ '<style type="text/css">'
+				
+				
+				+ '</style>'
+				+ '<style type="text/css">.hide_on_mobile { display: none !important;} '
+				+ '@media only screen and (min-width: 480px) { .hide_on_mobile { display: block !important;} }'
+				+ '.hide_section_on_mobile { display: none !important;} '
+				+ '@media only screen and (min-width: 480px) { .hide_section_on_mobile { display: table !important;} }'
+				+ '.hide_on_desktop { display: block !important;}' 
+				+ '@media only screen and (min-width: 480px) { .hide_on_desktop { display: none !important;} }'
+				+ '.hide_section_on_desktop { display: table !important;}'
+				+ '@media only screen and (min-width: 480px) { .hide_section_on_desktop { display: none !important;} }'
+				+ '[owa] .mj-column-per-100 {'
+				+ 'width: 100%!important;'
+				+ '}'
+				+ '[owa] .mj-column-per-50 {'
+				+ 'width: 50%!important;'
+				+ '}'
+				+ '[owa] .mj-column-per-33 {'
+				+ 'width: 33.333333333333336%!important;'
+				+ '}'
+				+ 'p {'
+				+ 'margin: 0px;'
+				+ '}'
+				+ '@media only print and (min-width:480px) {'
+				+ '.mj-column-per-100 { width:100%!important; }'
+				+ '.mj-column-per-40 { width:40%!important; }'
+				+ '.mj-column-per-60 { width:60%!important; }'
+				+ '.mj-column-per-50 { width: 50%!important; }'
+				+ 'mj-column-per-33 { width: 33.333333333333336%!important; }'
+				+ '}</style>'
+				
+				+ '</head>'
+				+ '<body style="background-color:#FFFFFF;">'
+				+ '<div style="background-color:#FFFFFF;"> '     
+				+ '<div style="Margin:0px auto;max-width:600px;">'
+						
+				+ '<table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">'
+				+ '<tbody>'
+				+ '<tr>'
+				+ '<td style="direction:ltr;font-size:0px;padding:9px 0px 9px 0px;text-align:center;vertical-align:top;">'        
+				+ '<div class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">'
+								
+				+ '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">'
+										
+				+ '<tr>'
+				+ '<td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">'
+												
+				+ '<div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:left;color:#000000;">'
+				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">A continuacion detallo la cotizaction para los productos Bayer afectados a la cotizacion de ferencia.</span></p>'
+				+ '<ul>'
+				+ '<li><span style="font-size: 12px;"><span style="font-family: Roboto, Tahoma, sans-serif;"><strong>Betaferon - PSL -8% + Impuestos </strong></span><span style="font-family: Roboto, Tahoma, sans-serif;">sobrre Lista <strong>1151.</strong></span></span></li>'
+				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Stivarga    - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
+				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Nesavar    - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
+				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Eylia           - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
+				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Ventavis    - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
+				+ '</ul>'
+				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Mantenlimiento de condiction - <strong>31/10/2020</strong></span></p>'
+				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Condicion de pago                     - <strong>Condicion habitual.</strong></span></p>'
+				+ '</div>'
+				+ '</td>'
+				+ '</tr>'
+				+ '</table>'
+							
+				+ '</div>'
+								
+				+ '<div class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">'
+								
+				+ '<table border="1" cellpadding="0" cellspacing="0" role="presentation" style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:left;color:#000000;" width="100%">'
+				+ '<tr>'
+				+ '<th colspan="5" align="left" style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;color:#000000;">Bayer S.A.</th>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<th colspan="5" align="center" style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;color:#000000;">Division Pharmaceuticals</th>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<th colspan="3">Lista de Precios N° 1151'
+				+ '<br />'
+				+ '<br />'
+				+ 'Incremento de Precios'
+				+ '</th>'
+				+ '<td colspan="2" align="right">Vigencia desde: 1 de Marzo de 2020'
+				+ '<br />'
+				+ 'Esta lista anula las anteriores'
+				+ '<br />'
+				+ 'Hoja N° 1'
+				+ '</td>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<th>Certif.</th>'
+				+ '<th>Producto</th>'
+				+ '<th>Descripcion</th>'
+				+ '<th>Pcio. Salida Laboratorio sin I.V.A</th>'
+				+ '<th>Pcio. Sugerido al Publico con I.V.A</th>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<td>45.442</td>'
+				+ '<td>BETAFERON</td>'
+				+ '<td>15 env. indiv.c/vial+jga.prell.c/disc</td>'
+				+ '<td>114.346,67</td>'
+				+ '<td>200.621,23</td>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<td>57.215</td>'
+				+ '<td>STIVARGA</td>'
+				+ '<td>40 mg 3 x 28 tabletas</td>'
+				+ '<td>289.902,54</td>'
+				+ '<td>508.634,01</td>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<td>53.101</td>'
+				+ '<td>NEXAVAR</td>'
+				+ '<td>ENY. 112 COMP. X 200MG.</td>'
+				+ '<td>245.574,41</td>'
+				+ '<td>430.860,30</td>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<td>57.114</td>'
+				+ '<td>EYLIA</td>'
+				+ '<td>Vial Aflibercept 40mg x ml</td>'
+				+ '<td>52.664,19</td>'
+				+ '<td>92.399,31</td>'
+				+ '</tr>'
+				+ '<tr>'
+				+ '<td>51.645</td>'
+				+ '<td>VENTAVIS</td>'
+				+ '<td>42 AMP. X 1 ML. (10 MCG,ML)</td>'
+				+ '<td>93.226,73</td>'
+				+ '<td>163.566,30</td>'
+				+ '</tr>'
+				+ '</table>'
+							
+				+ '</div>'
+								
+				+ '<div class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">'
+				+ '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">'
+										
+				+ '<tr>'
+				+ '<td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">'
+												
+				+ '<div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:left;color:#000000;">'
+				+ '<ul>'
+				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Imprescindible adjuntar el pliego/documento de condiciones de la licitacion/compra de referencia para podder dar cumplimiento al descuento cotizado.</span></li>'
+				+ '</ul>'
+				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Cualquier duda o consulta no dejes de contactarme<br /><br /></p>'
+				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Gracias!</span></p>'
+				+ '</div>'
+				+ '</td>'
+				+ '</tr>'
+				+ '</table>'
+				+ '</div>'
+				+ '</td>'
+				+ '</tr>'
+				+ '</tbody>'
+				+ '</table>'
+				+ '</div>'
+				+ '</div>'
+				+ '</body>'
+				+ '</html>'*/
+
+				var sBody = '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">'
+				+ '<head>'
+				+ '<title>'
+				  
+				+ '</title>'
+				+ '</head>'
+				+ '<body>'
+				+ 'test test test'
+				+ '</body>'
+				+ '</html>'
+
+
+			sap.m.URLHelper.triggerEmail(sRecipient, sSubject, sBody);
+		},
+
 		_onSaveQuotation: function (oEvent) {
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
