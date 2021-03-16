@@ -4138,7 +4138,14 @@ sap.ui.define([
 								oProductField = oProduct[aMandatoryFields[i].BindingPath];
 							}
 
+							// "0" values should be allowed and thus the error fields check should be skipped
+							if(typeof oProductField === "number" && oProductField >= 0  && aMandatoryFields[i].Required === true){
+								oProductField = true;
+							}
+
+							// error fields
 							if (!oProductField && aMandatoryFields[i].Required === true && aMandatoryFields[i].TableID === "editofferProductId") {
+
 								bError = true;
 								iMsgCount = iMsgCount + 1;
 
