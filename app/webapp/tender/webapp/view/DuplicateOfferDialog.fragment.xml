@@ -1,10 +1,38 @@
 <core:FragmentDefinition
 	xmlns="sap.m"
-	xmlns:core="sap.ui.core">
+	xmlns:core="sap.ui.core"
+	xmlns:form="sap.ui.layout.form">
 
 	<Dialog
 		id="idDuplicateOfferDialog"
-		title="Duplicate Offer">
+		title="Duplicate Offer"
+		contentWidth="600px"
+		contentHeight="200px">
+		<content>
+			<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+				adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+				singleContainerFullSize="false" backgroundDesign="Solid">
+				<form:content>
+					<Label text="{i18n>distbtr}" design="Bold" />
+					<MultiComboBox id="idDistributorsMultiComboBox" 
+						selectionChange="handleSelectionChange"
+						selectionFinish="handleSelectionFinish"
+						selectedKeys="{= String(${fastAppData>/SelectedOffer/Distributor/DistributorID}) }"
+						items="{ 
+							path: 'fastAppData>/InstituteDistributors', 
+							sorter: { path: 'DISTRIBUTOR_NAME' } 
+						}">
+						<core:Item text="{fastAppData>DISTRIBUTOR_NAME}" key="{fastAppData>DISTRIBUTOR_ID}"/>
+					</MultiComboBox>
+				</form:content>
+			</form:SimpleForm>
+		</content>
+		<beginButton>
+			<Button text="Duplicate" press=".onDuplicateOfferDialogDuplicate" />
+		</beginButton>
+		<endButton>
+			<Button text="Close" press=".onDuplicateOfferDialogClose" />
+		</endButton>
 	</Dialog>
 	
 </core:FragmentDefinition>

@@ -4093,12 +4093,17 @@ sap.ui.define([
 
 			const oView = this.getView();
 
+			// add distributors to the FastAppDataModel
+			const distributors = await this.getDistributors();
+			Services.getFastAppDataModel().setProperty("/InstituteDistributors", distributors);
+
 			// create DuplicateOffer dialog lazily
 			if (!this.pDuplicateOfferDialog) {
 
 				this.pDuplicateOfferDialog = Fragment.load({
 					id: oView.getId(),
-					name: "FAST_NS0FAST0.view.DuplicateOfferDialog"
+					name: "FAST_NS0FAST0.view.DuplicateOfferDialog",
+					controller: this
 				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
 					oView.addDependent(oDialog);
@@ -4123,6 +4128,39 @@ sap.ui.define([
 				sap.m.MessageBox.warning("Duplication only allowed for Offer with status 'Quotation Submitted', 'Offer Created' or 'Offer Approved'.", {});
 			}
 
+		},
+
+		/**
+		 * Fetches a list of Distributors from the backend
+		 * @returns {Array} - A list of Distributors
+		 */
+		getDistributors: async function() { 
+
+			const sCountryCode = Services.getCountryCodeofSelectedTender();
+			const sInstituteId = Services.getInstituteIDofSelectedTender();
+			const sChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			const sSellingCompanyID = Services.getLoadedOffer(Services.getSelectedOfferID()).SellingCompany;
+
+			const { results: distributors } = await Services.readInstituteDistributor(sCountryCode, sInstituteId, sChannel, sSellingCompanyID);
+
+			return distributors;
+		},
+
+		/**
+		 * Event handlers for the DuplicateOfferDialog
+		 */
+		onDuplicateOfferDialogDuplicate: function(){
+			// todo:
+		},
+
+		onDuplicateOfferDialogClose: function(){
+			if(this.pDuplicateOfferDialog){
+
+				this.pDuplicateOfferDialog.then(function(oDialog) {
+					oDialog.close();
+				});
+
+			}
 		},
 
 
@@ -5355,7 +5393,7 @@ sap.ui.define([
 			} else {
 				Services.setSelectedSellingCompanyID(this.getView().byId("idSellingCompany").getSelectedKey());
 				Services.setPrevSelectedSellingCompanyID(Services.getSelectedSellingCompanyID());
-			};
+			}
 
 			//refresh binding & filter for distributor
 			//TODO: refactoring
