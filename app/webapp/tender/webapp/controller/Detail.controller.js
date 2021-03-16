@@ -4085,6 +4085,47 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * Event handler for "Duplicate Offer" button click on the "Offer Products" tab
+		 * @param {*} oEvent - 
+		 */
+		onDuplicateOffer: async function (oEvent) {
+
+			const oView = this.getView();
+
+			// create DuplicateOffer dialog lazily
+			if (!this.pDuplicateOfferDialog) {
+
+				this.pDuplicateOfferDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.DuplicateOfferDialog"
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+
+			}
+
+			const { STATUS: offerStatus } = await Services.checkOfferStatus();
+
+			// duplication only allowed for the following statuses
+			if (offerStatus === "Offer Created" ||
+				offerStatus === "Offer Approved" ||
+				offerStatus === "Quotation Submitted") {
+
+				this.pDuplicateOfferDialog.then(function(oDialog) {
+					oDialog.open();
+				});
+
+
+			} else {
+				sap.m.MessageBox.warning("Duplication only allowed for Offer with status 'Quotation Submitted', 'Offer Created' or 'Offer Approved'.", {});
+			}
+
+		},
+
+
 		//Saving on Offer product tab
 		_onSaveOfferProduct: function (oEvent) {
 
