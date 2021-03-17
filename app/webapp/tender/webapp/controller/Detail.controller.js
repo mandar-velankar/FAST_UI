@@ -5904,6 +5904,8 @@ sap.ui.define([
 							icon: sap.m.MessageBox.Icon.ERROR,
 							onClose: function () {}
 						});
+
+						that.getView().setBusy(false);
 						return;
 					}
 
