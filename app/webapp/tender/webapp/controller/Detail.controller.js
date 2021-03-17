@@ -4085,6 +4085,158 @@ sap.ui.define([
 
 		},
 
+		/**
+		 * Event handler for "Duplicate Offer" button click on the "Offer Products" tab
+		 * @param {*} oEvent - 
+		 */
+		onDuplicateOffer: async function (oEvent) {
+
+			const oView = this.getView();
+
+			// add distributors to the FastAppDataModel
+			const distributors = await this.getDistributors();
+			Services.getFastAppDataModel().setProperty("/InstituteDistributors", distributors);
+
+			// add all Tender Offers to the FastAppDataModel
+			const allTenderOffers = await this.getTenderOffers();
+			Services.getFastAppDataModel().setProperty("/TenderOffers", allTenderOffers);
+
+			// set the selected keys on the DistributorsMultiComboBox
+			const selectedKeys = allTenderOffers.map(offer => String(offer.DistributorID));
+			Services.getFastAppDataModel().setProperty("/TenderOfferDistributorIDs", selectedKeys);
+
+			// create DuplicateOffer dialog lazily
+			if (!this.pDuplicateOfferDialog) {
+
+				this.pDuplicateOfferDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.DuplicateOfferDialog",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+
+			}
+
+			const { STATUS: offerStatus } = await Services.checkOfferStatus();
+
+			// duplication only allowed for the following statuses
+			if (offerStatus === "Offer Created" ||
+				offerStatus === "Offer Approved" ||
+				offerStatus === "Quotation Submitted") {
+
+				this.pDuplicateOfferDialog.then(function(oDialog) {
+					oDialog.open();
+				});
+
+
+			} else {
+				sap.m.MessageBox.warning("Duplication only allowed for Offer with status 'Quotation Submitted', 'Offer Created' or 'Offer Approved'.", {});
+			}
+
+		},
+
+		/**
+		 * Fetches a list of Distributors from the backend
+		 * @returns {Array} - A list of Distributors
+		 */
+		getDistributors: async function() { 
+
+			const sCountryCode = Services.getCountryCodeofSelectedTender();
+			const sInstituteId = Services.getInstituteIDofSelectedTender();
+			const sChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			const sSellingCompanyID = Services.getLoadedOffer(Services.getSelectedOfferID()).SellingCompany;
+
+			const { results: distributors } = await Services.readInstituteDistributor(sCountryCode, sInstituteId, sChannel, sSellingCompanyID);
+
+			return distributors;
+		},
+
+
+		/**
+		 * Fetches a list of Tender Offers from the backend
+		 * @returns {Array} - A list of Offers
+		 */
+		 getTenderOffers: async function() { 
+
+			const { data: {results: offers} } = await Services.getOffers(Services.getSelectedTenderID(), Services.getSelectedCountry());
+
+			return offers;
+		},
+
+		/**
+		 * Event handlers for the DuplicateOfferDialog
+		 * @param {Object} oEvent -
+		 */
+		onDuplicateOfferDialogDuplicateOffer: function(oEvent){ 
+
+			const oDistributorsMultiComboBox = this.byId("idDistributorsMultiComboBox");
+			const aSelectedDistributors = oDistributorsMultiComboBox.getSelectedItems().map(distributor => {
+				return {
+					"DISTRIBUTOR_ID" : +distributor.mProperties.key,
+					"DISTRIBUTOR_NAME" : distributor.mProperties.text
+				};
+			});
+			const oCurrentOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			const oCurrentDistributor = oCurrentOffer.Distributor;
+
+			const aTenderOffers = Services.getFastAppDataModel().getProperty("/TenderOffers");
+
+			// list of distributors for which the offer is to be duplicated
+			const aDistributorsToBeDuplicated = [];
+
+			aSelectedDistributors.forEach(distributor => {
+				const bDistributorExists = aTenderOffers.find(offer => offer.DistributorID === distributor.DISTRIBUTOR_ID);
+				if(!bDistributorExists){
+					aDistributorsToBeDuplicated.push(distributor);
+				}
+			});
+			
+			aDistributorsToBeDuplicated.forEach(oDistributor => this._cloneOffer.call(this, oCurrentOffer, oDistributor));
+
+		},
+
+		_cloneOffer: async function(offer, distributor){ debugger;
+
+			const nextOfferID = Number(Services.getFastAppDataModel().getProperty("/TenderOffers").map(offer => offer.OfferID).sort().pop().split("-").pop()) + 1;
+
+			const oNewOffer = {
+				...offer,
+				"ContinuationOfferNo" : 0,
+				"RevisedOfferNo": 0,
+				"OfferID": Services.getSelectedTenderID() + "-" + nextOfferID,
+				"ActiveOffer": 1,
+				//"CreationDate": moment().utc().toDate(),
+				//"SubmissionDate": null,           
+				//"SubmittedOn": moment().utc().toDate(),           
+				//"SubmittedBy": UserInfo.getCWID(),           
+				"Active": 1,
+				"DistributorID": distributor.DISTRIBUTOR_ID,
+				"OfferRevisionSplitNo": 0,
+				"APPROVALS_SENT": 0,
+			}
+			
+			try {
+				await Services.saveOffer(oNewOffer);
+			}catch(oError){
+				Services.showErrorMessage(oError, "Creation of offer");
+			}
+
+		},
+
+		onDuplicateOfferDialogClose: function(){
+			if(this.pDuplicateOfferDialog){
+
+				this.pDuplicateOfferDialog.then(function(oDialog) {
+					oDialog.close();
+				});
+
+			}
+		},
+
+
 		//Saving on Offer product tab
 		_onSaveOfferProduct: function (oEvent) {
 
@@ -5314,7 +5466,7 @@ sap.ui.define([
 			} else {
 				Services.setSelectedSellingCompanyID(this.getView().byId("idSellingCompany").getSelectedKey());
 				Services.setPrevSelectedSellingCompanyID(Services.getSelectedSellingCompanyID());
-			};
+			}
 
 			//refresh binding & filter for distributor
 			//TODO: refactoring
