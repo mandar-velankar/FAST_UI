@@ -15,9 +15,7 @@
 				<form:content>
 					<Label text="{i18n>distbtr}" design="Bold" />
 					<MultiComboBox id="idDistributorsMultiComboBox" 
-						selectionChange="handleSelectionChange"
-						selectionFinish="handleSelectionFinish"
-						selectedKeys="{= String(${fastAppData>/SelectedOffer/Distributor/DistributorID}) }"
+						selectedKeys="{fastAppData>/TenderOfferDistributorIDs}"
 						items="{ 
 							path: 'fastAppData>/InstituteDistributors', 
 							sorter: { path: 'DISTRIBUTOR_NAME' } 
@@ -28,7 +26,7 @@
 			</form:SimpleForm>
 		</content>
 		<beginButton>
-			<Button text="Duplicate" press=".onDuplicateOfferDialogDuplicate" />
+			<Button text="Duplicate" press=".onDuplicateOfferDialogDuplicateOffer" />
 		</beginButton>
 		<endButton>
 			<Button text="Close" press=".onDuplicateOfferDialogClose" />

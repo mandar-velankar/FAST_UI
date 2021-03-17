@@ -5558,6 +5558,17 @@ sap.ui.define([
 
 		},
 
+		saveOffer: function (offer) {
+
+			const oOfferToSave = this.getService('Offer').getConvertOfferToSave(offer);
+
+			return this.getService('Offer').createOffer(oOfferToSave);
+		},
+
+		getOffers: function (sTenderID, sCountryCode) {
+			return this.getService('Offer').getOffers(sTenderID, sCountryCode);
+		},
+
 		//soft delete Offer (=set inactive column to 0)
 		saveSoftDeleteOffer: function () {
 
