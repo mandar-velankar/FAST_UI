@@ -2846,8 +2846,18 @@ sap.ui.define([
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
 			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
-			if(this._pageFragments && this._pageFragments.QuotationView_AR){
-				this._pageFragments.QuotationView_AR = null;
+			if(this._pageFragments && (this._pageFragments.QuotationView_AR || this._pageFragments.QuotationView || this._pageFragments.QuotationView_TH) ){
+				if(this._pageFragments.QuotationView_AR){
+					this._pageFragments.QuotationView_AR = null;
+				}
+
+				if(this._pageFragments.QuotationView){
+					this._pageFragments.QuotationView = null;
+				}
+
+				if(this._pageFragments.QuotationView_TH){
+					this._pageFragments.QuotationView_TH = null;
+				}
 			}
 
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
@@ -4299,7 +4309,14 @@ sap.ui.define([
 								oProductField = oProduct[aMandatoryFields[i].BindingPath];
 							}
 
+							// "0" values should be allowed and thus the error fields check should be skipped
+							if(typeof oProductField === "number" && oProductField >= 0  && aMandatoryFields[i].Required === true){
+								oProductField = true;
+							}
+
+							// error fields
 							if (!oProductField && aMandatoryFields[i].Required === true && aMandatoryFields[i].TableID === "editofferProductId") {
+
 								bError = true;
 								iMsgCount = iMsgCount + 1;
 
@@ -6058,6 +6075,8 @@ sap.ui.define([
 							icon: sap.m.MessageBox.Icon.ERROR,
 							onClose: function () {}
 						});
+
+						that.getView().setBusy(false);
 						return;
 					}
 

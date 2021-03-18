@@ -122,12 +122,12 @@ sap.ui.define([
             // this.startInactivityTimerWarning();
             // this.startInactivityTimerSessionEnd();
                 
-            var that = this;
+            // var that = this;
             
             // /**
             // * Each time a request is issued, reset the inactivity countdown
             // */
-    		// //fast app data model
+			// //fast app data model
             // oDefaultModel.attachRequestCompleted(function (oEvent) {
             //         that.resetInactivityTimeoutWarning();
             //         that.resetInactivityTimeoutSessionEnd();
@@ -357,24 +357,24 @@ sap.ui.define([
         //     	var that = this;
         //         this.countdownWarning -= 10000;
         //         if (this.countdownWarning <= 0) {
-                	
+                
 		// 			//stop warning
 		// 		    //that.resetInactivityTimeoutWarning();
 		// 		    that.stopInactivityTimerWarning();
-				        						
+				        
 		// 			//if warning is already shown, we close it first
         //             var oSessionWarningMessage = sap.ui.getCore().byId("idSessionWarningMessage");
 		//         	if(oSessionWarningMessage){
 		//         		oSessionWarningMessage.close();	
 		//         		oSessionWarningMessage.destroy();
 		//         	}
-		        	
+		        
 		//         	//check if session end message is found
 		//         	var oSessionSessionEndMessage = sap.ui.getCore().byId("idSessionEndMessage");
-		        	
+		        
 		//         	//only if session end message is not shown, we show a warning
 		//         	if(!oSessionSessionEndMessage){
-		        		
+		        
 		//         		//session end
 		// 	        	sap.m.MessageBox.warning("Session is ending in 5min.. Click extend to keep working in the application", 
 		// 	            			{
@@ -382,23 +382,23 @@ sap.ui.define([
 		// 								title: "Information",
 		// 								actions: ["Extend Session"],
 		// 	        					onClose: function(sAction) {
-			        						
+			    
 		// 	        						if(sAction === "Extend Session" ){
-			        							
+			        
 		// 		        						//trigger back-end
 		// 		        						Services.loadUserInfo();
-				        						
+				    
 		// 		        						//start warning again
 		// 		        						that.startInactivityTimerWarning();
-				        						
+				    
 		// 		        						//reset session end
 		// 		        						//that.stopInactivityTimerWarning(); //we do not want to stop showing warning messages
 		// 		        						that.resetInactivityTimeoutWarning();
 		// 		        						//that.stopInactivityTimerSessionEnd(); //we do not want to stop timeout triggering
 		// 		        						that.resetInactivityTimeoutSessionEnd();
-				        						
+								
 		// 	        						}
-			        						
+							
 		// 	        					}
 		// 	            			}
 		// 	            );
@@ -413,7 +413,7 @@ sap.ui.define([
         //         this.countdownSessionEnd -= 10000;
                 
         //         if (this.countdownSessionEnd <= 0) {
-                	
+            
         //         	//stop timers & reset
         //             this.stopInactivityTimerSessionEnd();
         //             this.resetInactivityTimeoutSessionEnd();
@@ -424,7 +424,7 @@ sap.ui.define([
 		//         		oSessionWarningMessage.close();	
 		//         		oSessionWarningMessage.destroy();
 		//         	}
-		        	
+		    
 		//         	//show session end message
 		//         	sap.m.MessageBox.warning("Session has ended.. Please logon again.", 
 		//             			{
