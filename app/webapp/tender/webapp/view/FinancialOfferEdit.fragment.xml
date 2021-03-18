@@ -9,14 +9,6 @@
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
 					<VBox>
-						<!--
-						<Toolbar>
-							<Title level="H3" text=""/>
-							<ToolbarSpacer/>
-							<Button text="Scenario Planner" icon="sap-icon://customize" press=".onToggleScenarioPlanner"/>
-						</Toolbar>
-						<Label/>
-						-->
 						<form:SimpleForm id="idEditCurrencyForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
 							emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true" title="">
 							<Label text="{i18n>Currency}"/>
@@ -82,11 +74,6 @@
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
 			</l:BlockLayoutRow>
-			<!--<l:BlockLayoutRow>-->
-			<!--	<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">-->
-					
-			<!--	</l:BlockLayoutCell>-->
-			<!--</l:BlockLayoutRow>-->
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
 	<u:ObjectPageSubSection id="idScenarioPlanner" title="Scenario Planner" visible="false">
