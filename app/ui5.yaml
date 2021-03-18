@@ -1,4 +1,4 @@
-specVersion: '2.2'
+specVersion: '2.3'
 metadata:
   name: com.bayer.app
 type: application
@@ -11,9 +11,14 @@ server:
       baseUri: "http://localhost:4004/v2"
       removeETag: true
 builder:
+  cachebuster:
+    signatureType: time
   resources:
     excludes:
       - "/templates/**"
+  customTasks:
+    - name: enableCacheBuster
+      afterTask: generateCachebusterInfo
   bundles:
     - bundleDefinition:
         name: "com/bayer/tender/Component-preload.js"
@@ -184,3 +189,11 @@ builder:
       bundleOptions:
         optimize: true
         usePredefineCalls: true
+---
+specVersion: "2.3"
+kind: extension
+type: task
+metadata:
+  name: enableCacheBuster
+task:
+  path: lib/tasks/cachebuster.js
