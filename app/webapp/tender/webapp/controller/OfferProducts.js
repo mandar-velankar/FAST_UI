@@ -39,13 +39,25 @@ sap.ui.define([
 			//get selected offer
 			var sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID);
-			
+			let oResourceBundle = that.getView().getModel("i18n").getResourceBundle();
+
+			var sProductCode = Services.getSelectedProductID();
+			var oProduct = Services.getLoadedProductsForOffer(sOfferID, sProductCode);
+			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			var sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
+			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+
 			//get form
 			var oForm = that.byId(formId);
 			oForm.destroyContent();
 			
-			//Put fields for each scenario
+			//Put fields for each scenario as header
 			if (forScenario) {
+
+				//Scenario Name
 				oForm.addContent(new sap.m.Label({
 					text: "{i18n>ScenarioName}"
 				}));
@@ -55,7 +67,8 @@ sap.ui.define([
 					//maxWidth: "50%",
 					enabled: forEdit
 				}));
-
+				
+				//Scenario Description
 				oForm.addContent(new sap.m.Label({
 					text: "{i18n>ScenarioDescription}"
 				}));
@@ -65,7 +78,10 @@ sap.ui.define([
 					//maxWidth: "50%",
 					enabled: forEdit
 				}));
+
 			} else {
+
+				//whole sale offer
 				oForm.addContent(new sap.m.Label({
 					text: "{i18n>whlseofr}",
 					visible: false
@@ -83,11 +99,14 @@ sap.ui.define([
 					enabled: forEdit,
 					visible: false
 				}));
+
 			}
 
-			oForm.addContent(new sap.m.Label({
-				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>CIFPrice_TH} : ${i18n>CIFPrice}}"
-			}));
+			//CIF price
+			oCifLabel = new sap.m.Label();
+			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' ? ('CIFPrice_' + sCountryCode) : 'CIFPrice'); //Diferent labels for Thailand & Argentinia
+			oCifLabel.setText(oResourceBundle.getText(i18nKey));
+			oForm.addContent(oCifLabel);
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idCifPrice"),
 				value: forEdit ? formatter.priceTwoOrFour(price.newCifPrice, undefined, price.uom) : formatter.priceTwoOrFour(price.cifPrice, undefined, price.uom),
@@ -95,6 +114,7 @@ sap.ui.define([
 				enabled: false
 			}));
 			
+			//New CIF price
 			oForm.addContent(new sap.m.Label({
 				text: "{i18n>NewCIF}",
 				visible: !forEdit && (formatter.priceTwoOrFour(price.newCifPrice, undefined, price.uom) !== formatter.priceTwoOrFour(price.cifPrice, undefined, price.uom))
@@ -107,6 +127,7 @@ sap.ui.define([
 				enabled: false
 			}));
 
+			//Discount
 			oForm.addContent(new sap.m.Label({
 				text: "{i18n>Discount}"
 			}));
@@ -118,23 +139,54 @@ sap.ui.define([
 					enabled: false
 				})
 			);
-
-			oForm.addContent(new sap.m.Label({
-				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"
-			}));
+			
+			//OfferPrice / Standard price
+			let oOfferPriceLabel = new sap.m.Label();
+			i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' ? ('OfferPrice_' + sCountryCode) : 'OfferPrice'); //Diferent labels for Thailand & Argentinia
+			oOfferPriceLabel.setText(oResourceBundle.getText(i18nKey));
+			oForm.addContent(oOfferPriceLabel);
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idOfferPrice"),
 				value: formatter.priceTwoOrFour(price.offerPrice, undefined, price.uom),
 				description: price.offerCurrency,
-				enabled: forEdit,
+				enabled: sCountryCode === 'AR' ? false : forEdit,
 				submit: that.onEditFinancialOffer.bind(that)
 			}));
+
+			//Standard Discount
+			if(sCountryCode === 'BR'){
+				oForm.addContent(new sap.m.Label({
+						text: "{i18n>StandardDiscount}"
+				}));
+				oForm.addContent(
+					new sap.m.Input({
+						id: that.getView().createId(formId + "_idStandardDiscount"),
+						value: formatter.percentageNoUnit(price.standardDiscount),
+						description: "%",
+						enabled: false
+					})
+				);
+			}
+
+			//Additional Discount
+			if(sCountryCode === 'AR'){
+				oForm.addContent(new sap.m.Label({
+					text: "{i18n>AdditionalDiscount}"
+				}));
+				oForm.addContent(
+					new sap.m.Input({
+						id: that.getView().createId(formId + "_idAdditionalDiscount"),
+						value: formatter.percentageNoUnit(price.additionalDiscount),
+						description: "%",
+						enabled: forEdit
+					})
+				);
+			}
 			
 			//FOC
 			oForm.addContent(new sap.m.Label({
 				text: "{i18n>FOC}"
 			}));
-			
 			//Absolute or Percentage is defaulted by first saved price, if price is not yet saved... but can still be changed
 			if(oOffer && oOffer.DEFAULT_FOC_ABS_PCT && !price.offerPrice){
 				var sFocAbsPCT = oOffer.DEFAULT_FOC_ABS_PCT;
@@ -155,22 +207,7 @@ sap.ui.define([
 				change: that.onEditFinancialOffer.bind(that),
 				enabled: forEdit
 			}));
-			/*
-			oForm.addContent(new sap.m.Select({
-				id: that.getView().createId(formId + "_idFocType"),
-				items: [{
-					key: "FOC 1",
-					text: "Part of requested volume"
-				}, {
-					key: "FOC 2",
-					text: "In addition to requested volume"
-				}],
-				selectedKey: price.focType,
-				maxWidth: "80%",
-				change: that.onEditFinancialOffer.bind(that),
-				enabled: forEdit
-			}));
-			*/
+			//Percentage/Absolute amount FOC
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idFoc"),
 				value: (price.focAbsPct === "PCT") ? formatter.percentageNoUnit(price.foc) : price.foc,
@@ -179,6 +216,7 @@ sap.ui.define([
 				submit: that.onEditFinancialOffer.bind(that)
 			}));
 
+			//Net Price
 			oForm.addContent(new sap.m.Label({
 				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>NetOfferPrice_TH} : ${i18n>NetOfferPrice}}"
 			}));
@@ -189,6 +227,7 @@ sap.ui.define([
 				enabled: false
 			}));
 
+			//Deductions
 			oForm.addContent(new sap.m.Label({
 				text: "{i18n>Deductions}"
 			}));
@@ -200,6 +239,7 @@ sap.ui.define([
 				submit: that.onEditFinancialOffer.bind(that)
 			}));
 
+			//Net price
 			oForm.addContent(new sap.m.Label({
 				text: "{i18n>NetPrice}"
 			}));
@@ -212,15 +252,6 @@ sap.ui.define([
 			oForm.setVisible(true);
 			
 			//FOC for additional product
-			var sOfferID = Services.getSelectedOfferID();
-			var sProductCode = Services.getSelectedProductID();
-			var oProduct = Services.getLoadedProductsForOffer(sOfferID, sProductCode);
-			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
-			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
-			var sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
-			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
-			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
-			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			if(!sLegalEntity){
 				//var oSelectedOfferPath = Services.getDefaultModel().getProperty(Services.getSelectedOfferPath());
 				//sLegalEntity = oSelectedOfferPath.SellingCompany;
@@ -249,38 +280,42 @@ sap.ui.define([
 					aFilters.push(new sap.ui.model.Filter("COUNTRY_OF_ORIGIN", sap.ui.model.FilterOperator.EQ, oCommercialAgreement.COUNTRY_OF_ORIGIN));
 				});						
 			}	
-					
-			oForm.addContent(new sap.m.Label({
-				text: "{i18n>FOCAdditionalProd}"
-			}));
 			
+			//FOC additional product is not shown in argentinia
+			oForm.addContent(new sap.m.Label({
+				text: "{i18n>FOCAdditionalProd}",
+				visible: sCountryCode === "AR" ? false : true
+			}));
+				
 			oForm.addContent(new sap.m.ComboBox({
 				id: that.getView().createId(formId + "_idFOCProdBund1"), 
-	    		items: {
-	    			path: "fastData>/InstituteDistributorBrandProduct",
-	    			/*
-	    			parameters: {
-	    				expand : "Cogs,SKU"
-	    			},
-	    			*/
-	    			filters: aFilters,
-			    	template: new sap.ui.core.ListItem({
-			    		key: '{fastData>PRODUCT_ID}',
-			    		text: '{fastData>PRODUCT_NAME}'
-					}),
-	    			templateShareable: true
-	    		},
-	    		change: that.onEditFinancialOffer.bind(that),
-	    		selectedKey: price.focProduct_bund1,
-	    		maxWidth: "80%",
+				visible: sCountryCode === "AR" ? false : true,
+				items: {
+						path: "fastData>/InstituteDistributorBrandProduct",
+						/*
+						parameters: {
+							expand : "Cogs,SKU"
+						},
+						*/
+						filters: aFilters,
+						template: new sap.ui.core.ListItem({
+							key: '{fastData>PRODUCT_ID}',
+							text: '{fastData>PRODUCT_NAME}'
+						}),
+						templateShareable: true
+				},
+				change: that.onEditFinancialOffer.bind(that),
+				selectedKey: price.focProduct_bund1,
+				maxWidth: "80%",
 			}));
-			
+				
 			//Absolute or Percentage is defaulted by first saved price, if price is not yet saved... but can still be changed
 			if(oOffer && oOffer.DEFAULT_FOC_ABS_PCT && !price.offerPrice){
 				var sFocAbsPCT_Bund1 = oOffer.DEFAULT_FOC_ABS_PCT;
 			}else{
 				var sFocAbsPCT_Bund1 = price.focAbsPct_bund1;
 			}
+
 			//absolute or precentage additional foc product
 			oForm.addContent(new sap.m.Select({
 				id: that.getView().createId(formId + "_idFocAbsPct1"),
@@ -294,11 +329,14 @@ sap.ui.define([
 				selectedKey: sFocAbsPCT_Bund1,
 				maxWidth: "80%",
 				change: that.onEditFinancialOffer.bind(that),
-				enabled: forEdit 
+				enabled: forEdit,
+				visible: sCountryCode === "AR" ? false : true 
 			}));
+
 			//Value additional foc product
 			oForm.addContent(new sap.m.Input({
 				id: that.getView().createId(formId + "_idFoc1"),
+				visible: sCountryCode === "AR" ? false : true,
 				value: (price.focAbsPct_bund1 === "PCT") ? formatter.percentageNoUnit(price.foc_bund1) : price.foc_bund1,
 				enabled: forEdit,
 				description: (price.focAbsPct_bund1 === "PCT") ? "%" : price.uom,
@@ -360,6 +398,9 @@ sap.ui.define([
 		//local method for setting profit table data
 		_setProfitTableH: function (that, tableId, price) {
 			var oTable = that.byId(tableId);
+			let sCountryCode = Services.getSelectedCountry();
+			let oResourceBundle = that.getView().getModel("i18n").getResourceBundle();
+
 			oTable.destroyColumns();
 
 			
@@ -459,14 +500,19 @@ sap.ui.define([
 					textAlign: "Center"
 				})
 			}));*/
+
+			//OfferPrice
+			let oOfferPriceLabel = new sap.m.Label({
+				wrapping: true,
+				vAlign: "Top",
+				design: "Bold",
+				textAlign: "Center"
+			});
+			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' ? ('OfferPrice_' + sCountryCode) : 'OfferPrice'); //Diferent labels for Thailand & Argentinia
+			oOfferPriceLabel.setText(oResourceBundle.getText(i18nKey));
+
 			oTable.addColumn(new sap.m.Column({
-				header: new sap.m.Label({
-					text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}\n [" + this.sReportingCurreny + "/\n" + price.uom + "]",
-					wrapping: true,
-					vAlign: "Top",
-					design: "Bold",
-					textAlign: "Center"
-				})
+				header: oOfferPriceLabel
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
@@ -783,12 +829,12 @@ sap.ui.define([
 		_setPriceChart: function (that, chartId, price) {
 
 			const i18n = that.getView().getModel("i18n").getResourceBundle();
-			const countryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
+			const sCountryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
 
 			var oViz = that.byId(chartId);
 			var dataModel = {
 				"data": [{
-					"PriceType": countryCode === 'TH' ? i18n.getText("CIFPrice_TH") : i18n.getText("CIFPrice"),
+					"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia
 					"Value": price.cifPrice,
 					"Type": "Revenue"
 				}, {
@@ -796,7 +842,7 @@ sap.ui.define([
 					"Value": -price.discount * price.cifPrice,
 					"Type": "Cost"
 				}, {
-					"PriceType": countryCode === 'TH' ? i18n.getText("OfferPrice_TH") : i18n.getText("OfferPrice"),
+					"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('OfferPrice_' + sCountryCode) :  i18n.getText('OfferPrice'), //Diferent labels for Thailand & Argentinia
 					"Value": price.offerPrice,
 					"Type": "Total"
 				}, {
@@ -804,7 +850,7 @@ sap.ui.define([
 					"Value": -price.focChart * price.offerPrice,
 					"Type": "Cost"
 				}, {
-					"PriceType": countryCode === 'TH' ? i18n.getText("NetOfferPrice_TH") : i18n.getText("NetOfferPrice"),
+					"PriceType": sCountryCode === 'TH' ? i18n.getText("NetOfferPrice_TH") : i18n.getText("NetOfferPrice"),
 					"Value": price.netOfferPrice,
 					"Type": "Total"
 				}, {
@@ -986,6 +1032,8 @@ sap.ui.define([
 							newCifPrice: (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice,//if offer in units, divide by pack factor, otherwise pack value if good
 							discount: "",//0,
 							offerPrice: sPreApprovedPrice, //"",
+							standardDiscount: "",
+							additionalDiscount: "",
 							focAbsPct: "PCT",
 							focType: "FOC 1",
 							foc: "",//0,
@@ -1022,6 +1070,8 @@ sap.ui.define([
 										? ((price.cifPrice !== 0) ? (price.cifPrice - scenarioPrice.offerPrice) / price.cifPrice : 0)
 										: ((price.newCifPrice !== 0) ? (price.newCifPrice - scenarioPrice.offerPrice) / price.newCifPrice : 0);
 									priceValues.OfferPrice = parseFloat(scenarioPrice.offerPrice);
+									priceValues.standardDiscount = parseFloat(scenarioPrice.standardDiscount);
+									priceValues.additionalDiscount = parseFloat(scenarioPrice.additionalDiscount);
 									priceValues.FOC_ABS_PCT = scenarioPrice.focAbsPct;
 									priceValues.FOCType = scenarioPrice.focType;
 									priceValues.FOC = parseFloat(scenarioPrice.foc);
@@ -1033,6 +1083,8 @@ sap.ui.define([
 			
 							price.discount = !forEdit ? parseFloat(priceValues.Discount) : ((price.newCifPrice !== 0) ? (price.newCifPrice -  parseFloat(priceValues.OfferPrice)) / price.newCifPrice : 0);
 							price.offerPrice = parseFloat(priceValues.OfferPrice);
+							price.standardDiscount = parseFloat(priceValues.standardDiscount);
+							price.additionalDiscount = parseFloat(priceValues.additionalDiscount);
 							price.focAbsPct = priceValues.FOC_ABS_PCT;
 							price.focType = priceValues.FOCType;
 							price.foc = parseFloat(priceValues.FOC);
@@ -1784,6 +1836,8 @@ sap.ui.define([
 					var deductions = that.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(that.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
 		
 					var offerPrice = that.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+					var standardDiscount = 0; //TODO FOR BRAZILIE
+					var additionalDiscount = that.byId("idEditPriceOffer_idAdditionalDiscount") && that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(that.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
 					var focAbsPct = that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
 					//var focType = that.byId("idEditPriceOffer_idFocType").getSelectedKey();
 					var focType = that.byId("idEditFOCType").getSelectedKey();
@@ -1835,6 +1889,8 @@ sap.ui.define([
 						newCifPrice: cifPrice,
 						discount: (cifPrice !== 0) ? (cifPrice - offerPrice) / cifPrice : 0,
 						offerPrice: offerPrice,
+						standardDiscount: standardDiscount,
+						additionalDiscount: additionalDiscount,
 						focAbsPct: focAbsPct,
 						focType: focType,
 						foc: foc,
@@ -1884,13 +1940,11 @@ sap.ui.define([
 			price.description = that.byId("idEditPriceOfferScenario" + idScenario + "_idDescription").getValue();
 
 			//main foc product from selected scenario
-			var offerPrice = that.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" 
-			? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) 
-			: 0;
+			var offerPrice = that.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			var standardDiscount = 0; //TODO FOR BRAZILIE
+			var additionalDiscount = that.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
 			var focAbsPct = that.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
-			var foc = that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" 
-			? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue())
-			: 0;
+			var foc = that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;
 			if (focAbsPct === "PCT"){
 				foc = foc / 100;
 			}
@@ -1943,7 +1997,9 @@ sap.ui.define([
 			price.netOfferPrice = netOfferPrice;
 			price.netPrice = netPrice;
 			price.discount = (price.cifPrice !== 0) ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
-			
+			price.standardDiscount = standardDiscount;
+			price.additionalDiscount = additionalDiscount;
+
 			price.mainProductQuantity = iMainProductQuantity;
 			price.addFocProductQuantity = iAddFocProductQuantity;
 			price.focQuantityRounded = iFocQuantityRounded;

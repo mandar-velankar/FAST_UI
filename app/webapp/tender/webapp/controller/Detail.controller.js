@@ -6079,6 +6079,7 @@ sap.ui.define([
 						FOCType: that.byId("idEditFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
 						Discount: that.byId("idEditPriceOffer_idDiscount").getValue() / 100,
 						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", "")),
+						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
 						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
 						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replace(",", "")),
 						WholesalePrice: that.byId("idEditPriceOffer_idWhlseofr").getSelectedKey(),

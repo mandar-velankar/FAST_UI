@@ -27,67 +27,6 @@
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
 					<VBox>
 						
-						<!--
-						<Panel id="panelFinancialOfferTableID" expandable="true" width="auto" class="sapUiResponsiveMargin" expanded="false" expand="onExpandOfferTable" expandAnimation="false">
-							
-							<headerToolbar>
-								<OverflowToolbar height="3rem">
-									<Title level="H3" text="Offers"/>
-									<ToolbarSpacer/>
-									<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
-								</OverflowToolbar>
-							</headerToolbar>
-
-							<content>
-								
-								<Table id="financialOffersTableViewID"
-									items="{ 
-										path: 'fastData>Offer',
-										sorter: [
-											{path: 'TenderOfferNo', descending: true},
-											{path: 'RevisedOfferNo', descending: true}
-										], 
-										filters: [
-											{ path : 'Active', operator : 'EQ', value1 : '1'}, 
-											{ path : 'ActiveOffer', operator : 'EQ', value1 : '1'}, 
-											{ path : 'WholesaleOffer', operator : 'EQ', value1 : 'No'} 
-										], 
-										parameters: {'expand': 'Distributor,OfferStatus'} 
-									}"
-									inset="false" 
-									class="sapFDynamicPageAlignContent" 
-									width="auto"
-									updateFinished="onFinancialOffersTableFinished">
-									<columns>
-										<Column id="financialOffersTableOfferID" width="14rem">
-											<Text text="{i18n>OfferID}"/>
-										</Column>
-										<Column>
-											<Text text="{i18n>Distributor}"/>
-										</Column>
-										<Column width="6rem">
-											<Text text="{i18n>OfferDate}"/>
-										</Column>
-										<Column width="10rem">
-											<Text text="{i18n>OfferStatus}"/>
-										</Column>
-									</columns>
-									<items>
-										<ColumnListItem type="Navigation" press=".onFinancialOfferItemPress">
-											<cells>
-												<ObjectIdentifier title="{fastData>OfferID}"/>
-												<Text text="{fastData>Distributor/DistributorName}"/>
-												<Text text="{path :'fastData>OfferStatus/Date',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>
-												<Text text="{fastData>OfferStatus/STATUS}"/>
-											</cells>
-										</ColumnListItem>
-									</items>
-								</Table>
-								
-							</content>
-						</Panel>
-						-->
-						
 						<!-- Form with selected offer data -->
 						<form:SimpleForm id="idCurrencyForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
 							emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true" title="">
