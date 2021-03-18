@@ -154,34 +154,34 @@ sap.ui.define([
 			}));
 
 			//Standard Discount
-			if(sCountryCode === 'BR'){
-				oForm.addContent(new sap.m.Label({
-						text: "{i18n>StandardDiscount}"
-				}));
-				oForm.addContent(
+			oForm.addContent(new sap.m.Label({
+						text: "{i18n>StandardDiscount}",
+						visible: sCountryCode === "BR" ? true : false
+			}));
+			oForm.addContent(
 					new sap.m.Input({
 						id: that.getView().createId(formId + "_idStandardDiscount"),
 						value: formatter.percentageNoUnit(price.standardDiscount),
 						description: "%",
+						visible: sCountryCode === "BR" ? true : false,
 						enabled: false
 					})
-				);
-			}
+			);
 
 			//Additional Discount
-			if(sCountryCode === 'AR'){
-				oForm.addContent(new sap.m.Label({
-					text: "{i18n>AdditionalDiscount}"
-				}));
-				oForm.addContent(
+			oForm.addContent(new sap.m.Label({
+					text: "{i18n>AdditionalDiscount}",
+					visible: sCountryCode === "AR" || sCountryCode === "BR" ? true : false
+			}));
+			oForm.addContent(
 					new sap.m.Input({
 						id: that.getView().createId(formId + "_idAdditionalDiscount"),
 						value: formatter.percentageNoUnit(price.additionalDiscount),
 						description: "%",
+						visible: sCountryCode === "AR" || sCountryCode === "BR" ? true : false,
 						enabled: forEdit
 					})
-				);
-			}
+			);
 			
 			//FOC
 			oForm.addContent(new sap.m.Label({
