@@ -28,4 +28,16 @@ const tasks = require("@ui5/builder").tasks;
     return await Promise.all(clonedResources.map((resource) => {
         return workspace.write(resource);
     }));
+
+    
+			// const cachebusterInfoResource = resourceFactory.createResource({
+			// 	path: `/resources/${namespace}/sap-ui-cachebuster-info.json`,
+			// 	string: JSON.stringify(cachebusterInfo, null, 2)
+			// });
+            // return Promise.all(resources.map((resource) => {
+            //     return resource.clone().then((newResource) => {
+            //         newResource.setPath(newResource.getPath().replace(pattern, replacement));
+            //         return newResource;
+            //     });
+            // }));
 };
