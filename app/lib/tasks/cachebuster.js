@@ -14,30 +14,45 @@ const tasks = require("@ui5/builder").tasks;
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
- module.exports = async function({workspace, dependencies, taskUtil, options}) {
-     console.log(" add cachebuster token");
-    const cachebusterInfoResource = await tasks.generateCachebusterInfo({workspace, dependencies, options:{namespace:options.projectNamespace,signatureType:"time"}});
+module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
+    console.log(" add cachebuster token");
+    const cachebusterInfoResource = await tasks.generateCachebusterInfo({ workspace, dependencies, options: { namespace: options.projectNamespace, signatureType: "time" } });
     const cachebusterInfoResources = await workspace.byGlob("**/sap-ui-cachebuster-info.json");
-    if(cachebusterInfoResources.length > 0){
+    if (cachebusterInfoResources.length > 0) {
         console.log("found cachebusterinfo")
-        let cachebusterInfo = JSON.parse( await cachebusterInfoResources[0].getString() );
-        console.log(cachebusterInfo);
-    }
-    const jsResources = await workspace.byGlob("**/*.js");
-    const clonedResources = await processors.resourceCopier({resources:jsResources,options:{pattern:"landing",replacement:"hello"}});
-    return await Promise.all(clonedResources.map((resource) => {
-        return workspace.write(resource);
-    }));
+        let cachebusterInfo = JSON.parse(await cachebusterInfoResources[0].getString());
+        // console.log(cachebusterInfo);
+        for (var resourcePath in cachebusterInfo) {
+            let resource = await workspace.byPath("/resources/"+options.projectNamespace+"/"+resourcePath);
+            let newResource = undefined;
+            if (resource) {
+                console.log("found file:"+resourcePath);
+                newResource = await resource.clone();
+            }
+            if (newResource) {
+                let pathSplit = newResource.getPath().split("/");
+                pathSplit[pathSplit.length - 1] = "~" + cachebusterInfo[resourcePath] + "~/" + pathSplit[pathSplit.length - 1];
 
-    
-			// const cachebusterInfoResource = resourceFactory.createResource({
-			// 	path: `/resources/${namespace}/sap-ui-cachebuster-info.json`,
-			// 	string: JSON.stringify(cachebusterInfo, null, 2)
-			// });
-            // return Promise.all(resources.map((resource) => {
-            //     return resource.clone().then((newResource) => {
-            //         newResource.setPath(newResource.getPath().replace(pattern, replacement));
-            //         return newResource;
-            //     });
-            // }));
+                newResource.setPath(pathSplit.join("/"));
+                await workspace.write(newResource);
+            }
+        }
+    }
+    // const jsResources = await workspace.byGlob("**/*.js");
+    // const clonedResources = await processors.resourceCopier({ resources: jsResources, options: { pattern: "landing", replacement: "hello" } });
+    // return await Promise.all(clonedResources.map((resource) => {
+    //     return workspace.write(resource);
+    // }));
+
+
+    // const cachebusterInfoResource = resourceFactory.createResource({
+    // 	path: `/resources/${namespace}/sap-ui-cachebuster-info.json`,
+    // 	string: JSON.stringify(cachebusterInfo, null, 2)
+    // });
+    // return Promise.all(resources.map((resource) => {
+    //     return resource.clone().then((newResource) => {
+    //         newResource.setPath(newResource.getPath().replace(pattern, replacement));
+    //         return newResource;
+    //     });
+    // }));
 };
