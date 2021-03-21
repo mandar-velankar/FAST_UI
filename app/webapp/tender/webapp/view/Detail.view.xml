@@ -281,9 +281,12 @@
 										</t:Column>
 										<t:Column width="16rem">
 											<m:Label text="Product"/>
-											<t:template>
-												<m:Input id="resultsForTreeProduct" value="{fastAppData>PRODUCT}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"/>
+											<t:template >
+												<m:Input id="resultsForTreeProductBayer" 
+														 value="{fastAppData>PRODUCT}" 
+														 enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"/>
 											</t:template>
+											
 										</t:Column>
 										<t:Column width="13rem">
 											<m:Label text="Awarded Company"/>

@@ -2188,6 +2188,7 @@ sap.ui.define([
 			});
 
 			Services.loadCountryChannels(sCountryCode);
+			Services.loadCountryCompetitors(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
 			// set the selected keys on the dropdowns
