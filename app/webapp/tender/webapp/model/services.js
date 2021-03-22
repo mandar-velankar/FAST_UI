@@ -1742,8 +1742,18 @@ sap.ui.define([
 				filters: aFilters,
 				success: function (oData, oResponse) { 
 
-					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
 					var aCountryCompetitors = oData.results;
+
+					var oEmptyCompetitor = {
+						CompetitorName: "",
+						CompetitorProduct: "",
+						CountryCode: "",
+						ID:""
+					};
+
+					//data received is set
+					aCountryCompetitors.push(oEmptyCompetitor);
+					aCountryCompetitors = that.sortByKeyAsc(aCountryCompetitors, "CompetitorName");
 
 					//data received is set
 					oFastAppDataModel.setProperty("/CountryCompetitors", aCountryCompetitors);

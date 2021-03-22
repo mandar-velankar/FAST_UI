@@ -281,15 +281,21 @@
 										</t:Column>
 										<t:Column width="16rem">
 											<m:Label text="Product"/>
-											<t:template >
-												<m:Select id="resultsForTreeProduct" 
+											<t:template>
+												<!--<m:Select 
 														  selectedKey="{fastAppData>PRODUCT}" 
 														  enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
-														  items="{path: 'fastAppData>/CountryCompetitors'}">
+														  items="{path: 'fastAppData>/CountryCompetitors/'}"
+														  visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}">
 	                                                <m:items>
 	                                                    <core:Item text="{fastAppData>CompetitorProduct}" key="{fastAppData>CompetitorProduct}"/>
 	                                                </m:items>
-	                                            </m:Select>
+	                                            </m:Select>-->
+
+												<m:Input 
+														 value="{fastAppData>PRODUCT}" 
+														 enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+														 visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
 											</t:template>
 											
 										</t:Column>
