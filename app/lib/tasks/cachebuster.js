@@ -30,10 +30,9 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
                 newResource = await resource.clone();
             }
             if (newResource) {
-                let pathSplit = newResource.getPath().split("/");
-                pathSplit[pathSplit.length - 1] = "~" + cachebusterInfo[resourcePath] + "~/" + pathSplit[pathSplit.length - 1];
-
-                newResource.setPath(pathSplit.join("/"));
+                // let pathSplit = newResource.getPath().split("/");
+                //pathSplit[pathSplit.length - 1] = "~" + cachebusterInfo[resourcePath] + "~/" + pathSplit[pathSplit.length - 1];
+                newResource.setPath("/resources/"+options.projectNamespace+ "/~" + cachebusterInfo[resourcePath] + "~/"+resourcePath);
                 await workspace.write(newResource);
             }
         }

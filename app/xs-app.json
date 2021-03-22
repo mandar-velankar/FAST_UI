@@ -19,9 +19,9 @@
       "csrfProtection": true
     },
     {
-      "source": "^/app/(.*)$",
+      "source": "^(.*)$",
       "target": "$1",
-      "localDir": "dist/landingspage/webapp"
+      "localDir": "dist"
     },
     {
       "source": "^/appdebug/(.*)$",
