@@ -19,44 +19,19 @@
       "csrfProtection": true
     },
     {
-      "source": "^(.*)$",
+      "source": "^/app/(.*)$",
       "target": "$1",
       "localDir": "dist"
     },
     {
       "source": "^/appdebug/(.*)$",
       "target": "$1",
-      "localDir": "webapp/landingspage/webapp"
+      "localDir": "webapp"
     },
     {
-      "source": "^/epa/(.*)$",
+      "source": "^(.*)$",
       "target": "$1",
-      "localDir": "dist/epa/webapp"
-    },
-    {
-      "source": "^/contracts/(.*)$",
-      "target": "$1",
-      "localDir": "dist/contracts/webapp"
-    },
-    {
-      "source": "^/tender/(.*)$",
-      "target": "$1",
-      "localDir": "dist/tender/webapp"
-    },
-    {
-      "source": "^/ppa/(.*)$",
-      "target": "$1",
-      "localDir": "dist/ppa/webapp"
-    },
-    {
-      "source": "^/uilib/(.*)$",
-      "target": "$1",
-      "localDir": "dist/uilib/src/com/bayer/tender/uilib"
-    },
-    {
-      "source": "^/pdf/(.*)$",
-      "target": "$1",
-      "localDir": "dist/pdf"
+      "localDir": "dist"
     }
   ]
 }
