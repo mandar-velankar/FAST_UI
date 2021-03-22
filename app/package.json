@@ -15,8 +15,9 @@
     "node": "^12"
   },
   "dependencies": {
-    "@ui5/cli": "2.6.4",
     "@sap/approuter": "^9",
+    "@ui5/cli": "2.6.4",
+    "sap-cf-mailer": "0.0.3",
     "ui5-middleware-simpleproxy": "^0.6.0"
   },
   "ui5": {
