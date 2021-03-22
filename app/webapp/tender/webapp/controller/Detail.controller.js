@@ -4167,13 +4167,26 @@ sap.ui.define([
 
 		/**
 		 * Fetches a list of Tender Offers from the backend
+		 * @param {String} sExpand - a list of comma separated fields to be expanded
 		 * @returns {Array} - A list of Offers
 		 */
-		 getTenderOffers: async function() { 
+		 getTenderOffers: async function(sExpand) { 
 
-			const { data: {results: offers} } = await Services.getOffers(Services.getSelectedTenderID(), Services.getSelectedCountry());
+			const { data: {results: offers} } = await Services.getOffers(Services.getSelectedTenderID(), Services.getSelectedCountry(), sExpand);
 
 			return offers;
+		},
+
+		/**
+		 * Fetches a list of Tender products from the backend
+		 * @param {String} sTenderID - 
+		 * @returns {Array} - A list of Tender products
+		 */
+		 getTenderProducts: async function(sTenderID) { 
+
+			const { data: {results: products} } = await Services.getTenderProducts(sTenderID);
+
+			return products;
 		},
 
 		/**
@@ -4243,6 +4256,85 @@ sap.ui.define([
 					oDialog.close();
 				});
 
+			}
+		},
+
+
+		/**
+		 * Event handler for "Tender Overview" button click on the "Financial Offer" tab
+		 * @param {*} oEvent - 
+		 */
+		onTenderOverviewPress: async function(oEvent){
+
+			// get data
+			const expandFields = "Product/Price,Distributor";
+			const allTenderOffers = await this.getTenderOffers(expandFields);
+			const allTenderProducts = await this.getTenderProducts(Services.getSelectedTenderID());
+			const uniqueTenderProductCodes = Array.from(new Set(allTenderProducts.map(product => product.ProductCode)));
+
+			// create rows
+			const productNetPrices = uniqueTenderProductCodes.map(productCode => {
+
+				const row = [];
+
+				allTenderOffers.forEach(offer => {
+					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
+					let netPrice = "NA";
+					
+					if(product && product.Price){
+						netPrice = product.Price.NetPrice;
+					}
+	
+					row.push(netPrice);
+				});
+
+				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);
+
+				return {
+					product: oProduct,
+					netPrices: row
+				};
+					
+			});
+			
+
+			// adds an empty object at the beginning of the array before adding it to the model
+			// first column must be empty
+			allTenderOffers.unshift({}); 
+
+			// set model
+			const oTenderOverview = {
+				columns : allTenderOffers,
+				rows    : productNetPrices
+			};
+
+			Services.getFastAppDataModel().setProperty("/TenderOverview", oTenderOverview);
+
+			const oView = this.getView();
+
+			// create TenderOverview dialog lazily
+			if (!this.pTenderOverviewDialog) {
+
+				this.pTenderOverviewDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.TenderOverviewDialog",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+
+			}
+
+
+			this.pTenderOverviewDialog.then(oDialog => oDialog.open());
+
+		},
+
+		onTenderOverviewDialogClose: function(){
+			if(this.pTenderOverviewDialog){
+				this.pTenderOverviewDialog.then( oDialog => oDialog.close());
 			}
 		},
 
