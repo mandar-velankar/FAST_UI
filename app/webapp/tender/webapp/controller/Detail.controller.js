@@ -19,8 +19,7 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/m/Token",
 	"sap/m/Tokenizer",
-	"FAST_NS0FAST0/libs/ranking/Ranking",
-	"sap-cf-mailer"
+	"FAST_NS0FAST0/libs/ranking/Ranking"
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
 	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking) {
