@@ -294,8 +294,7 @@
 
 												<m:Input 
 														 value="{fastAppData>PRODUCT}" 
-														 enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
-														 visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
+														 enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}" />
 											</t:template>
 											
 										</t:Column>

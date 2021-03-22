@@ -1753,7 +1753,7 @@ sap.ui.define([
 
 					//data received is set
 					aCountryCompetitors.push(oEmptyCompetitor);
-					aCountryCompetitors = that.sortByKeyAsc(aCountryCompetitors, "CompetitorName");
+					aCountryCompetitors = that.sortByKeyAsc(aCountryCompetitors, "ID");
 
 					//data received is set
 					oFastAppDataModel.setProperty("/CountryCompetitors", aCountryCompetitors);
