@@ -4103,17 +4103,19 @@ sap.ui.define([
 
 			const oView = this.getView();
 
-			// add distributors to the FastAppDataModel
-			const distributors = await this.getDistributors();
-			Services.getFastAppDataModel().setProperty("/InstituteDistributors", distributors);
-
 			// add all Tender Offers to the FastAppDataModel
 			const allTenderOffers = await this.getTenderOffers();
-			Services.getFastAppDataModel().setProperty("/TenderOffers", allTenderOffers);
+			//Services.getFastAppDataModel().setProperty("/TenderOffers", allTenderOffers);
 
 			// set the selected keys on the DistributorsMultiComboBox
-			const selectedKeys = allTenderOffers.map(offer => String(offer.DistributorID));
+			const allActiveOffers = allTenderOffers.filter(offer => offer.Active === 1);
+			const selectedKeys = allActiveOffers.map(offer => String(offer.DistributorID));
 			Services.getFastAppDataModel().setProperty("/TenderOfferDistributorIDs", selectedKeys);
+
+			// add distributors to the FastAppDataModel
+			const distributors = await this.getDistributors();
+			//distributors.filter() TODO filter so that distributors where offer already exists is filtered out
+			Services.getFastAppDataModel().setProperty("/InstituteDistributors", distributors);
 
 			// create DuplicateOffer dialog lazily
 			if (!this.pDuplicateOfferDialog) {
@@ -4182,6 +4184,10 @@ sap.ui.define([
 		 */
 		onDuplicateOfferDialogDuplicateOffer: function(oEvent){ 
 
+			//Methods should be available
+			let oOfferFragment = new OfferProducts();
+			Services.setFinancialModel(oOfferFragment);
+
 			const oDistributorsMultiComboBox = this.byId("idDistributorsMultiComboBox");
 			const aSelectedDistributors = oDistributorsMultiComboBox.getSelectedItems().map(distributor => {
 				return {
@@ -4190,15 +4196,13 @@ sap.ui.define([
 				};
 			});
 			const oCurrentOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
-			const oCurrentDistributor = oCurrentOffer.Distributor;
-
-			const aTenderOffers = Services.getFastAppDataModel().getProperty("/TenderOffers");
+			const aTenderOffers = Services.getLoadedTender() && Services.getLoadedTender().Offer && Services.getLoadedTender().Offer.results; //Services.getFastAppDataModel().getProperty("/TenderOffers");
 
 			// list of distributors for which the offer is to be duplicated
 			const aDistributorsToBeDuplicated = [];
 
 			aSelectedDistributors.forEach(distributor => {
-				const bDistributorExists = aTenderOffers.find(offer => offer.DistributorID === distributor.DISTRIBUTOR_ID);
+				const bDistributorExists = aTenderOffers.find(offer => offer.DistributorID === distributor.DISTRIBUTOR_ID && offer.Active === 1);
 				if(!bDistributorExists){
 					aDistributorsToBeDuplicated.push(distributor);
 				}
@@ -4206,14 +4210,46 @@ sap.ui.define([
 			
 			aDistributorsToBeDuplicated.forEach(oDistributor => this._cloneOffer.call(this, oCurrentOffer, oDistributor));
 
+			//refresh screens/data - give success message & close
+			let that = this;
+			let sTenderID = Services.getSelectedTenderID();
+			let sOfferID = Services.getSelectedOfferID();
+			let bLoadedCheck = false;
+
+			//close button on dialog
+			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+				//refresh tenders master table (left pane)
+				Services.refreshTendersMasterTable(sTenderID);
+
+				//Set selected offer in left pane
+				that._selectOfferInLeftPane(sOfferID);
+
+				// close loading that blocks everything
+				BusyIndicator.hide();
+
+				//close dialog
+				that.onDuplicateOfferDialogClose();
+
+			});	
+
 		},
 
-		_cloneOffer: async function(offer, distributor){ debugger;
+		/**
+		 * Cloning of the offer for a new distributor
+		 * @param {*} offer -
+		 * @param {*} distributor -
+		 */
+		_cloneOffer: async function(offer, distributor){
 
-			const nextOfferID = Number(Services.getFastAppDataModel().getProperty("/TenderOffers").map(offer => offer.OfferID).sort().pop().split("-").pop()) + 1;
+			let that = this;
+			//const nextOfferID = Number(Services.getFastAppDataModel().getProperty("/TenderOffers").map(offer => offer.OfferID).sort().pop().split("-").pop()) + 1;
+			//const nextOfferID = Number(Services.getLoadedTender().Offer.results.map(offer => offer.OfferID).sort().pop().split("-").pop()) + 1;
+			const nextOfferID = Services.getNextOfferID();
 
 			const oNewOffer = {
 				...offer,
+				"TenderOfferNo" : nextOfferID, //this is needed to always receive the latest next offer ID... if we don't provide this attribute, getNextOfferID will not return a correct value
 				"ContinuationOfferNo" : 0,
 				"RevisedOfferNo": 0,
 				"OfferID": Services.getSelectedTenderID() + "-" + nextOfferID,
@@ -4227,12 +4263,212 @@ sap.ui.define([
 				"OfferRevisionSplitNo": 0,
 				"APPROVALS_SENT": 0,
 			}
+
+			//keep this new Offer info for saving, products,prices,status,...
+			Services.setOfferSaveInfo(oNewOffer);
 			
 			try {
-				await Services.saveOffer(oNewOffer);
+
+				//save new offer
+				await Services.saveOffer(oNewOffer).then(function (oResult) {
+					
+					//if offer is created successfully we can create the offer status, products.. for the saved offer
+					
+					//save offer status
+					let sOfferStatus = "Offer Created";
+					Services.saveOfferStatus(sOfferStatus);
+					
+					//only active offers need to be copied
+					let aProductsToBeDuplicated = oNewOffer.Product && oNewOffer.Product.results && oNewOffer.Product.results.filter(oProduct => oProduct.Active === 1);
+
+					//create new products & corresponding prices
+					aProductsToBeDuplicated.forEach(oProduct => that._cloneProduct.call(that, oNewOffer, oProduct));
+					
+				}).catch(function (oError) {
+
+					//show error message
+					Services.showErrorMessage(oError, "Create offer");
+
+				});
+
 			}catch(oError){
-				Services.showErrorMessage(oError, "Creation of offer");
+
+				//something went wrong with the creation of the offer with corresponding products, prices...
+				Services.showErrorMessage(oError, "Cloning of offer,products,prices..");
+
 			}
+
+		},
+
+		/**
+		 * Cloning of the Product for a new offer
+		 * @param {Object} offer -
+		 * @param {Object} product - 
+		 */
+		_cloneProduct: async function(offer, product){
+
+			let that = this;
+
+			const oNewProduct = {
+				...product,
+				"OfferID": offer.OfferID,
+				"DistributorID" : offer.DistributorID,
+				"SUPPLY_UPDATE": 0,
+				"PAYMENT_UPDATE": 0
+			}
+
+			//get values to check product validity
+			let sProductCode = oNewProduct.ProductCode;
+			let sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			let sDistributorID = oNewProduct.DistributorID; //DISTRIBUTOR_ID
+			let sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			let sSellingCompany = offer.SellingCompany;
+			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+
+			//check if product is still valid
+			Services.checkProductValidForOffer(sProductCode, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, aCommercialAgreement).then(function (bValid) {
+
+				//if product is still valid, we can create it
+				if (bValid) {
+					//Create Product
+
+					//if product is still valid for new distributor
+					let oProductToSave = Services.getService('Product').getConvertProductToSave(oNewProduct);
+
+					Services.getService('Product').createProduct(oProductToSave).then(function (oResult) {
+						
+						//if price exists, we should copy the price
+						if(oNewProduct && oNewProduct.Price){
+							//Copy price for product
+							let oNewPrice = oNewProduct.Price;
+							that._clonePrice(offer,oNewProduct,oNewPrice);
+						}
+						
+
+					}).catch(function (oError) {
+			
+						//show error message
+						Services.showErrorMessage(oError, "Saving of new product");
+						
+						//whole promises batch may fail when a product fails
+						throw new Error(oError);
+						
+					});
+
+				}else{
+					/*
+					//keep invalid product to show in popup
+					var oInvalidProduct = {
+						ProductID: sProductCode,
+						ProductName: oProduct.SKU.PRODUCTPACKNAME
+					};
+					aInvalidProducts.push(oInvalidProduct);
+
+					var sMessage =
+											"The following products are no longer valid, and are missing in this reviewed or continued offer. \n \n Products: ";
+										aInvalidProducts.forEach(function (oInvalidProduct, iIndexInvalidProduct) {
+											sMessage = sMessage + "\n" + oInvalidProduct.ProductName;
+										});
+					*/
+				}
+			
+			});
+
+		},
+
+		/**
+		 * Cloning of the price
+		 * @param {*} offer 
+		 * @param {*} product 
+		 * @param {*} price 
+		 */
+		 _clonePrice: async function(offer, product, price){
+			
+			//let that = this;
+			let OfferProducts = Services.getFinancialModel();
+
+			const oNewprice = {
+				...price,
+				"OfferID": offer.OfferID,
+				//"DistributorID" : offer.DistributorID
+			}
+
+			//for the reviewed offer, the products of the original offer can have price data as well
+			if (oNewprice) {
+
+				//we are waiting for the loading of the price
+				const sRegisteredPrice = await OfferProducts.loadCountryRegisteredPrice(Services.getSelectedCountry(), product.UnitPerPack,product.ProductCode, offer.Currency);
+				
+				const oUpToDatePrices = await OfferProducts.loadAllUpToDatePrices(product.Offer, product, sRegisteredPrice.REGISTERED_PRICE);
+				
+				//in this case we should save price data as well
+				var oProductPrice = Services.getService('Price').getConvertPriceToSave(price);
+
+				//if sRegPrice = false, meaning calculation is no longer found & price is not copied
+				if (oUpToDatePrices.RegPrice !== false) {
+
+					//convert Registration Price
+					let iConvertedRegPrice = OfferProducts.convRegisteredPrice(product, sRegisteredPrice);
+
+					//make same rounding
+					let iConvertedOfferPrice = 0;
+					if (product.UnitPerPack) {
+							var sUnitPerPackOffer = product.UnitPerPack;
+							iConvertedOfferPrice = formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
+					} else {
+							iConvertedOfferPrice = oProductPrice.OfferPrice;
+					}
+
+					//make same rounding
+					if (sRegisteredPrice) {
+						var sUOMregPrice = sRegisteredPrice.UOM;
+						iConvertedRegPrice = formatter.priceTwoOrFour(iConvertedRegPrice, undefined, sUOMregPrice);
+					} 
+
+					//Check offer not larger then reg price
+					if (OfferProducts.checkOfferPriceLowerRegisterPrice(iConvertedOfferPrice, iConvertedRegPrice)) {
+
+							//change values with up to date values
+							oProductPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
+							oProductPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
+							oProductPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
+							oProductPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+
+							//add creation of price to batch operation
+							Services.getService('Price').createPrice(oProductPrice).catch(function (oError) {
+
+								//show error message
+								Services.showErrorMessage(oError, "Saving of new price");
+
+							});
+							//aChangeOperations.push(oModel.createBatchOperation(sPathPrice, "POST", oProductPrice, null));
+
+						} else {
+							
+							//sap.m.MessageBox.warning("Offerprice should be lower then registered price. Price not copied.", {});
+							Services.getOfferCompositeMessages().push({
+								type: 'Warning',
+								title: 'Not all prices were copied',
+								description: 'Not all prices were copied because some are incompatible with current registered prices.',
+								subtitle: 'Not all prices were copied',
+								counter: 1
+							});
+						}
+
+				} else {
+
+						Services.getOfferCompositeMessages().push({
+							type: 'Warning',
+							title: "Price of product was not valid, so it wasn't copied.",
+							description: "Price of product was not valid, so it wasn't copied.",
+							subtitle: "Price of product was not valid, so it wasn't copied.",
+							counter: 1
+						});
+
+				}
+
+			}			
 
 		},
 
