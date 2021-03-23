@@ -36,7 +36,14 @@ sap.ui.define([
 			
 		},
 
-		getOffers:function(sTenderID, sCountryCode){
+		/**
+		 * Fetches offers from the backend
+		 * @param {String} sTenderID - 
+		 * @param {String} sCountryCode -  
+		 * @param {String} sExpand - a list of comma separated fields to be expanded
+		 * @returns {Array} - a list of offers
+		 */
+		getOffers:function(sTenderID, sCountryCode, sExpand){
 			
 			var sPath = "/PT_TMOFRS";
 
@@ -55,6 +62,12 @@ sap.ui.define([
 			var mParameters = {
 				filters: [oTenderIdFilter, oCountryCodeFilter]
 			};
+
+			if(sExpand){
+				mParameters['urlParameters'] = {
+					$expand: sExpand
+				}
+			}
 
 			return this.odata(sPath).get(mParameters);
 		},

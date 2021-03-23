@@ -5565,8 +5565,12 @@ sap.ui.define([
 			return this.getService('Offer').createOffer(oOfferToSave);
 		},
 
-		getOffers: function (sTenderID, sCountryCode) {
-			return this.getService('Offer').getOffers(sTenderID, sCountryCode);
+		getOffers: function (sTenderID, sCountryCode, sExpand) {
+			return this.getService('Offer').getOffers(sTenderID, sCountryCode, sExpand);
+		},
+
+		getTenderProducts: function (sTenderID) {
+			return this.getService('Product').getTenderProducts(sTenderID);
 		},
 
 		//soft delete Offer (=set inactive column to 0)
