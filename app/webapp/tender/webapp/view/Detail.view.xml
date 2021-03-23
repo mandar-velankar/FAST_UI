@@ -282,6 +282,7 @@
 										<t:Column width="16rem">
 											<m:Label text="Product"/>
 											<t:template>
+												<!-- HBOX -->
 												<!--<m:Select 
 														  selectedKey="{fastAppData>PRODUCT}" 
 														  enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"

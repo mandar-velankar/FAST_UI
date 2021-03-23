@@ -7025,6 +7025,44 @@ sap.ui.define([
 
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
+		},
+
+		// HELPERS
+		sendMail: function(sRecipient, sSubject, sTemplate){
+			
+			//Load product data
+			var sActionPath = "/sendMail";
+			var oFastDataCalls = this.getDefaultModel();
+
+			var oDeferred = $.Deferred();
+			var that = this;
+
+			var data = {};
+			data.recipient = sRecipient;
+			data.subject = sSubject;
+			data.template = sTemplate;
+
+			//get fast data calls
+			var oFastDataCalls = that.getDefaultModel();
+
+			oFastDataCalls.create(sActionPath, {
+				sRecipient: sRecipient,
+				sSubject: sSubject,
+				sTemplate: sTemplate,
+				
+				success: function (oData, oResponse) {
+					//let the callback be triggered
+					oDeferred.resolve(oData);
+				},
+				error: function fnError(oError) {
+					//resolve, beceause we check on false to continue in correct way, if no results found
+					oDeferred.resolve(false);
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
 		}
 
 	});
