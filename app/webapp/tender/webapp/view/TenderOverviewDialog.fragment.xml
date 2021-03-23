@@ -22,15 +22,9 @@
 				<items>
 					<ColumnListItem cells="{fastAppData>netPrices}">
 						<cells>
-							<ObjectIdentifier
-								title="{fastAppData>product/SKU/PRODUCTPACKID}"
-								text="{fastAppData>product/SKU/PRODUCTPACKNAME}"/>
-							<ObjectIdentifier
-								text="{fastAppData>}"/>
-							<!-- <ObjectIdentifier
-								text="{fastAppData>netPrices/1}"/>
-							<ObjectIdentifier
-								text="{fastAppData>netPrices/2}"/> -->
+							<ObjectStatus
+								text="{fastAppData>value}"
+								state="{= ${fastAppData>bNetPriceDiffer} === true ? 'Error' : 'None'  }" />
 						</cells>
 					</ColumnListItem>
 				</items>

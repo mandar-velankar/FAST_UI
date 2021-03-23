@@ -4266,49 +4266,9 @@ sap.ui.define([
 		 */
 		onTenderOverviewPress: async function(oEvent){
 
-			// get data
-			const expandFields = "Product/Price,Distributor";
-			const allTenderOffers = await this.getTenderOffers(expandFields);
-			const allTenderProducts = await this.getTenderProducts(Services.getSelectedTenderID());
-			const uniqueTenderProductCodes = Array.from(new Set(allTenderProducts.map(product => product.ProductCode)));
-
-			// create rows
-			const productNetPrices = uniqueTenderProductCodes.map(productCode => {
-
-				const row = [];
-
-				allTenderOffers.forEach(offer => {
-					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
-					let netPrice = "NA";
-					
-					if(product && product.Price){
-						netPrice = product.Price.NetPrice;
-					}
-	
-					row.push(netPrice);
-				});
-
-				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);
-
-				return {
-					product: oProduct,
-					netPrices: row
-				};
-					
-			});
 			
-
-			// adds an empty object at the beginning of the array before adding it to the model
-			// first column must be empty
-			allTenderOffers.unshift({}); 
-
-			// set model
-			const oTenderOverview = {
-				columns : allTenderOffers,
-				rows    : productNetPrices
-			};
-
-			Services.getFastAppDataModel().setProperty("/TenderOverview", oTenderOverview);
+			const oTenderOverviewObject = await this._createTenderOverviewModelStructure();
+			Services.getFastAppDataModel().setProperty("/TenderOverview", oTenderOverviewObject);
 
 			const oView = this.getView();
 
@@ -4330,6 +4290,68 @@ sap.ui.define([
 
 			this.pTenderOverviewDialog.then(oDialog => oDialog.open());
 
+		},
+
+		_createTenderOverviewModelStructure: async function(){
+
+			// get data
+			const expandFields = "Product/Price,Distributor";
+			const allTenderOffers = await this.getTenderOffers(expandFields);
+			const allTenderProducts = await this.getTenderProducts(Services.getSelectedTenderID());
+			const uniqueTenderProductCodes = Array.from(new Set(allTenderProducts.map(product => product.ProductCode)));
+
+			// create rows
+			const productNetPrices = uniqueTenderProductCodes.map(productCode => {
+
+				let bNetPriceDiffer = false;
+				let prevNetPrice = null;
+
+				const row = allTenderOffers.map(offer => {
+					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
+					let netPrice = "NA";
+					
+					if(product && product.Price){
+						netPrice = product.Price.NetPrice;
+
+						// check if net prices differ
+						if(prevNetPrice && prevNetPrice !== +netPrice){
+							prevNetPrice = +netPrice;
+							bNetPriceDiffer = true;
+						}else{
+							prevNetPrice = +netPrice;
+						}
+					}
+	
+					return {
+						bNetPriceDiffer,
+						value: netPrice
+					};
+				});
+
+				// add product name at the beginning of the row
+				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);
+				row.unshift({
+					value: oProduct.SKU.PRODUCTPACKNAME
+				});
+
+				return {
+					product: productCode,
+					netPrices: row
+				};
+					
+			});
+			
+
+			// adds an empty object at the beginning of the array before adding it to the model
+			// first column must be empty
+			allTenderOffers.unshift({}); 
+
+			const oTenderOverview = {
+				columns : allTenderOffers,
+				rows    : productNetPrices
+			};
+
+			return oTenderOverview;
 		},
 
 		onTenderOverviewDialogClose: function(){
