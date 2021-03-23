@@ -4539,30 +4539,28 @@ sap.ui.define([
 			// create rows
 			const productNetPrices = uniqueTenderProductCodes.map(productCode => {
 
-				let bNetPriceDiffer = false;
-				let prevNetPrice = null;
-
 				const row = allTenderOffers.map(offer => {
 					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
 					let netPrice = "NA";
 					
 					if(product && product.Price){
 						netPrice = product.Price.NetPrice;
-
-						// check if net prices differ
-						if(prevNetPrice && prevNetPrice !== +netPrice){
-							prevNetPrice = +netPrice;
-							bNetPriceDiffer = true;
-						}else{
-							prevNetPrice = +netPrice;
-						}
 					}
 	
 					return {
-						bNetPriceDiffer,
 						value: netPrice
 					};
 				});
+
+				// check if net prices are different and add that info to the array
+				const bNetPricesAreEqual = row.every( item => item.value === row[0].value );
+				row.forEach((item, index, arr) => {
+					arr[index] = {
+						bNetPriceDiffer: !bNetPricesAreEqual,
+						value: item.value
+					}
+				});
+
 
 				// add product name at the beginning of the row
 				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);

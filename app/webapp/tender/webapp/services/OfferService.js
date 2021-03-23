@@ -41,7 +41,7 @@ sap.ui.define([
 		 * @param {String} sTenderID - 
 		 * @param {String} sCountryCode -  
 		 * @param {String} sExpand - a list of comma separated fields to be expanded
-		 * @returns {Array} - a list of offers
+		 * @returns {Array} - a list of active offers
 		 */
 		getOffers:function(sTenderID, sCountryCode, sExpand){
 			
@@ -59,8 +59,14 @@ sap.ui.define([
 				value1: sCountryCode
 			});
 
+			var oActiveFilter = new Filter({
+				path: 'Active',
+				operator: FilterOperator.EQ,
+				value1: 1
+			});
+
 			var mParameters = {
-				filters: [oTenderIdFilter, oCountryCodeFilter]
+				filters: [oTenderIdFilter, oCountryCodeFilter, oActiveFilter]
 			};
 
 			if(sExpand){
