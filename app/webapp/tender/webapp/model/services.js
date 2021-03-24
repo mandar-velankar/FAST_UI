@@ -7037,19 +7037,15 @@ sap.ui.define([
 			var oDeferred = $.Deferred();
 			var that = this;
 
-			var data = {};
-			data.recipient = sRecipient;
-			data.subject = sSubject;
-			data.template = sTemplate;
+			var oData = {};
+			oData.recipient = sRecipient;
+			oData.subject = sSubject;
+			oData.template = sTemplate;
 
 			//get fast data calls
 			var oFastDataCalls = that.getDefaultModel();
 
-			oFastDataCalls.create(sActionPath, {
-				sRecipient: sRecipient,
-				sSubject: sSubject,
-				sTemplate: sTemplate,
-				
+			oFastDataCalls.create(sActionPath, oData, {			
 				success: function (oData, oResponse) {
 					//let the callback be triggered
 					oDeferred.resolve(oData);
