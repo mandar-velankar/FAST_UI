@@ -61,7 +61,7 @@
                     text="{i18n>emailQuotation}"
                     icon="sap-icon://email"
                     press=".onEmailQuotation"
-                    enabled="true"/>
+                    enabled="false"/>
             </actions>
             <l:BlockLayout background="Light">
                 <l:BlockLayoutRow>
