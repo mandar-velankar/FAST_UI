@@ -195,6 +195,27 @@ sap.ui.define([
 			return this.odata(sPath).get(mParameters);
 		},
 
+		/**
+		 * Get the next offer number for the tender
+		 * @param {*} sTenderID 
+		 * @returns 
+		 */
+		getNextTenderOfferNo: function(sTenderID){
+			var sPath = "/TenderOffers";
+
+			var oFilter = new Filter({
+				path: 'TENDERID',
+				operator: FilterOperator.EQ,
+				value1: sTenderID
+			});
+
+			var mParameters = {
+				filters: [oFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);			
+		}
+
 	});
 	
 	return TenderService;

@@ -4175,22 +4175,35 @@ sap.ui.define([
 
 		},
 
-		//What is the next available
-		getNextOfferID: function (oModel) {
+		//What is the next available (get it from the tender thats already loaded in the model)
+		//TODO check whereused & check if method can safely be refactored as an async method --> if yes we can use await getNextOfferID instead
+		getLoadedNextOfferID: function () {
 
 			//Next offer ID is default 1
 			var sNextOfferID = 1;
-
+		
 			//Get Data model
 			var oFastAppDataModel = this.getFastAppDataModel();
-
-			//Get the next available offerID
+		
 			if (oFastAppDataModel.getProperty("/Tender/NextOfferId/NEXTOFFERID")) {
-
+		
+				//Get the next available offerID
+		
 				//get the next available offer id
 				sNextOfferID = oFastAppDataModel.getProperty("/Tender/NextOfferId/NEXTOFFERID");
 
 			}
+		
+			return sNextOfferID;
+		
+		},
+
+		//What is the next available OfferID (Reload from database)
+		getNextOfferID: async function (sTenderID) {
+
+			//read service again to get nextOfferID
+			const oResult = await this.getService('Tender').getNextTenderOfferNo(sTenderID);
+			const sNextOfferID = oResult && oResult.data && oResult.data.results && oResult.data.results[0].NEXTOFFERID || 1;
 
 			return sNextOfferID;
 
@@ -4491,7 +4504,7 @@ sap.ui.define([
 			//what is the ID for the new offer
 			//offerID is a temporary ID beceause at this point we do not know yet the selling companny.
 			//the method prepSaveProductOffer which is executed behind the save button will overwrite this ID
-			var sOfferID = this.getNextOfferID(); //Should be: Tenderoff + "-" + sNextOfferID;
+			var sOfferID = this.getLoadedNextOfferID(); //Should be: Tenderoff + "-" + sNextOfferID;
 
 			var that = this;
 
@@ -4751,7 +4764,7 @@ sap.ui.define([
 			//index of offerID found in the offer
 			var sOfferID = this.getSelectedOfferID();
 			if(!sOfferID){
-				sOfferID = this.getNextOfferID();
+				sOfferID = this.getLoadedNextOfferID(false);
 			}
 			var iIndex = aOffers.findIndex(x => x.OfferID === sOfferID);
 					

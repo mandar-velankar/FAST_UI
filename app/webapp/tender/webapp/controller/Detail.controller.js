@@ -4105,7 +4105,6 @@ sap.ui.define([
 
 			// add all Tender Offers to the FastAppDataModel
 			const allTenderOffers = await this.getTenderOffers();
-			//Services.getFastAppDataModel().setProperty("/TenderOffers", allTenderOffers);
 
 			// set the selected keys on the DistributorsMultiComboBox
 			const allActiveOffers = allTenderOffers.filter(offer => offer.Active === 1);
@@ -4195,7 +4194,11 @@ sap.ui.define([
 		 * Event handlers for the DuplicateOfferDialog
 		 * @param {Object} oEvent -
 		 */
-		onDuplicateOfferDialogDuplicateOffer: function(oEvent){ 
+		onDuplicateOfferDialogDuplicateOffer: async function(oEvent){ 
+
+			//that is this
+			let that = this;
+			BusyIndicator.show();
 
 			//Methods should be available
 			let oOfferFragment = new OfferProducts();
@@ -4209,7 +4212,7 @@ sap.ui.define([
 				};
 			});
 			const oCurrentOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
-			const aTenderOffers = Services.getLoadedTender() && Services.getLoadedTender().Offer && Services.getLoadedTender().Offer.results; //Services.getFastAppDataModel().getProperty("/TenderOffers");
+			const aTenderOffers = Services.getLoadedTender() && Services.getLoadedTender().Offer && Services.getLoadedTender().Offer.results;
 
 			// list of distributors for which the offer is to be duplicated
 			const aDistributorsToBeDuplicated = [];
@@ -4221,10 +4224,14 @@ sap.ui.define([
 				}
 			});
 			
-			aDistributorsToBeDuplicated.forEach(oDistributor => this._cloneOffer.call(this, oCurrentOffer, oDistributor));
+			//aDistributorsToBeDuplicated.forEach(oDistributor => this._cloneOffer.call(this, oCurrentOffer, oDistributor));
+			//since we have to wait for each offer to be finished before creating the next offer, we use a for loop with an await statement
+			for (const oDistributor of aDistributorsToBeDuplicated) {
+				await that._cloneOffer.call(this, oCurrentOffer, oDistributor);
+			}
 
 			//refresh screens/data - give success message & close
-			let that = this;
+			
 			let sTenderID = Services.getSelectedTenderID();
 			let sOfferID = Services.getSelectedOfferID();
 			let bLoadedCheck = false;
@@ -4256,13 +4263,11 @@ sap.ui.define([
 		_cloneOffer: async function(offer, distributor){
 
 			let that = this;
-			//const nextOfferID = Number(Services.getFastAppDataModel().getProperty("/TenderOffers").map(offer => offer.OfferID).sort().pop().split("-").pop()) + 1;
-			//const nextOfferID = Number(Services.getLoadedTender().Offer.results.map(offer => offer.OfferID).sort().pop().split("-").pop()) + 1;
-			const nextOfferID = Services.getNextOfferID();
+			const nextOfferID = await Services.getNextOfferID(offer.TenderID);
 
 			const oNewOffer = {
 				...offer,
-				"TenderOfferNo" : nextOfferID, //this is needed to always receive the latest next offer ID... if we don't provide this attribute, getNextOfferID will not return a correct value
+				"TenderOfferNo" : nextOfferID, //nextOfferID is stored to always receive the latest next offer ID... if we don't provide this attribute, getNextOfferID will not return a correct value for the following offer ID
 				"ContinuationOfferNo" : 0,
 				"RevisedOfferNo": 0,
 				"OfferID": Services.getSelectedTenderID() + "-" + nextOfferID,
@@ -4294,9 +4299,11 @@ sap.ui.define([
 					//only active offers need to be copied
 					let aProductsToBeDuplicated = oNewOffer.Product && oNewOffer.Product.results && oNewOffer.Product.results.filter(oProduct => oProduct.Active === 1);
 
-					//create new products & corresponding prices
-					aProductsToBeDuplicated.forEach(oProduct => that._cloneProduct.call(that, oNewOffer, oProduct));
-					
+					//create new products & corresponding prices (we want to wait for each product to finish, but still perform each product in paralell)
+					return Promise.all(aProductsToBeDuplicated.map(async (oProduct)=> {
+						await that._cloneProduct.call(that, oNewOffer, oProduct);
+					}));
+
 				}).catch(function (oError) {
 
 					//show error message
@@ -4340,36 +4347,48 @@ sap.ui.define([
 			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
 
 			//check if product is still valid
-			Services.checkProductValidForOffer(sProductCode, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, aCommercialAgreement).then(function (bValid) {
+			let bValid = await Services.checkProductValidForOffer(sProductCode, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, aCommercialAgreement);
 
-				//if product is still valid, we can create it
-				if (bValid) {
+			//if product is still valid, we can create it
+			if (bValid) {
+
 					//Create Product
-
 					//if product is still valid for new distributor
 					let oProductToSave = Services.getService('Product').getConvertProductToSave(oNewProduct);
 
-					Services.getService('Product').createProduct(oProductToSave).then(function (oResult) {
-						
-						//if price exists, we should copy the price
-						if(oNewProduct && oNewProduct.Price){
-							//Copy price for product
-							let oNewPrice = oNewProduct.Price;
-							that._clonePrice(offer,oNewProduct,oNewPrice);
+					try {
+
+						const oResult = await Services.getService('Product').createProduct(oProductToSave);
+
+						if(oResult){
+
+							//if price exists, we should copy the price
+							if(oNewProduct && oNewProduct.Price){
+								//Copy price for product
+								let oNewPrice = oNewProduct.Price;
+								await that._clonePrice(offer,oNewProduct,oNewPrice);
+							}
+
+							//create group purchasing
+							let aGroupPurchasingToBeDuplicated = oNewProduct.GroupPurchasing && oNewProduct.GroupPurchasing.results || [];
+							aGroupPurchasingToBeDuplicated.forEach(oGroupPurchasing => that._cloneGroupPurchasing.call(that, offer, oNewProduct, oGroupPurchasing));
+
 						}
+
+
 						
 
-					}).catch(function (oError) {
-			
+					}catch(oError){
+
 						//show error message
 						Services.showErrorMessage(oError, "Saving of new product");
-						
+
 						//whole promises batch may fail when a product fails
 						throw new Error(oError);
-						
-					});
 
-				}else{
+					}
+
+			}else{
 					/*
 					//keep invalid product to show in popup
 					var oInvalidProduct = {
@@ -4384,39 +4403,40 @@ sap.ui.define([
 											sMessage = sMessage + "\n" + oInvalidProduct.ProductName;
 										});
 					*/
-				}
-			
-			});
+			}
 
 		},
 
 		/**
 		 * Cloning of the price
-		 * @param {*} offer 
-		 * @param {*} product 
-		 * @param {*} price 
+		 * @param {object} offer 
+		 * @param {object} product 
+		 * @param {object} price 
 		 */
 		 _clonePrice: async function(offer, product, price){
 			
 			//let that = this;
 			let OfferProducts = Services.getFinancialModel();
 
-			const oNewprice = {
+			let oNewPrice = {
 				...price,
 				"OfferID": offer.OfferID,
 				//"DistributorID" : offer.DistributorID
 			}
 
 			//for the reviewed offer, the products of the original offer can have price data as well
-			if (oNewprice) {
+			if (oNewPrice) {
 
+				//re-calculate Netprice based upon new distributor specific commission rate
+				oNewPrice.NetPrice = oNewPrice.NetofferPrice * (1 - oNewPrice.Deductions);
+				
 				//we are waiting for the loading of the price
 				const sRegisteredPrice = await OfferProducts.loadCountryRegisteredPrice(Services.getSelectedCountry(), product.UnitPerPack,product.ProductCode, offer.Currency);
 				
 				const oUpToDatePrices = await OfferProducts.loadAllUpToDatePrices(product.Offer, product, sRegisteredPrice.REGISTERED_PRICE);
 				
 				//in this case we should save price data as well
-				var oProductPrice = Services.getService('Price').getConvertPriceToSave(price);
+				var oProductPrice = Services.getService('Price').getConvertPriceToSave(oNewPrice);
 
 				//if sRegPrice = false, meaning calculation is no longer found & price is not copied
 				if (oUpToDatePrices.RegPrice !== false) {
@@ -4442,20 +4462,34 @@ sap.ui.define([
 					//Check offer not larger then reg price
 					if (OfferProducts.checkOfferPriceLowerRegisterPrice(iConvertedOfferPrice, iConvertedRegPrice)) {
 
-							//change values with up to date values
-							oProductPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
-							oProductPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
-							oProductPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
-							oProductPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+							//Case when RegisteredPrice would have changed since OfferX was created is very complex. Thats why we inform user to manualy adapt price
+							if(Number(oProductPrice.RegPrice) !== oUpToDatePrices.RegPrice){
 
-							//add creation of price to batch operation
-							Services.getService('Price').createPrice(oProductPrice).catch(function (oError) {
+								Services.getOfferCompositeMessages().push({
+									type: 'Warning',
+									title: 'Not all prices were copied',
+									description: 'Products were updated since original offer was made. Please update Offer before making the copy with the prices. Please delete this one first.',
+									subtitle: 'Not all prices were copied',
+									counter: 1
+								});
 
-								//show error message
-								Services.showErrorMessage(oError, "Saving of new price");
+							}else{
 
-							});
-							//aChangeOperations.push(oModel.createBatchOperation(sPathPrice, "POST", oProductPrice, null));
+								//change values with up to date values
+								oProductPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
+								oProductPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
+								oProductPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
+								oProductPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+
+								//add creation of price to batch operation
+								await Services.getService('Price').createPrice(oProductPrice).catch(function (oError) {
+
+									//show error message
+									Services.showErrorMessage(oError, "Saving of new price");
+
+								});
+
+							}
 
 						} else {
 							
@@ -4482,6 +4516,36 @@ sap.ui.define([
 				}
 
 			}			
+
+		},
+
+		/**
+		 * Cloning of the group Purchasing
+		 * @param {object} offer 
+		 * @param {object} product 
+		 * @param {object} groupPurchasing
+		 */
+		_cloneGroupPurchasing: async function(offer, product, groupPurchasing){
+
+			//Save the group purchasing for each product
+			if (groupPurchasing) {
+
+				const oGroupPurchasing = {
+					...groupPurchasing,
+					"OfferID": offer.OfferID
+				}
+
+				//convert group purchasing
+				let oGroupPurchasingToSave = Services.getService('GroupPurchasing').getConvertGroupPurchasingToSave(oGroupPurchasing);
+
+				//create group purchasing
+				await Services.getService('GroupPurchasing').createGroupPurchasing(oGroupPurchasingToSave).catch(function (oError) {
+					//show error message
+					Services.showErrorMessage(oError, "Creation of group purchasing");
+					throw new Error(oError);
+				});
+
+			}
 
 		},
 
@@ -4539,30 +4603,28 @@ sap.ui.define([
 			// create rows
 			const productNetPrices = uniqueTenderProductCodes.map(productCode => {
 
-				let bNetPriceDiffer = false;
-				let prevNetPrice = null;
-
 				const row = allTenderOffers.map(offer => {
 					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
 					let netPrice = "NA";
 					
 					if(product && product.Price){
 						netPrice = product.Price.NetPrice;
-
-						// check if net prices differ
-						if(prevNetPrice && prevNetPrice !== +netPrice){
-							prevNetPrice = +netPrice;
-							bNetPriceDiffer = true;
-						}else{
-							prevNetPrice = +netPrice;
-						}
 					}
 	
 					return {
-						bNetPriceDiffer,
 						value: netPrice
 					};
 				});
+
+				// check if net prices are different and add that info to the array
+				const bNetPricesAreEqual = row.every( item => item.value === row[0].value );
+				row.forEach((item, index, arr) => {
+					arr[index] = {
+						bNetPriceDiffer: !bNetPricesAreEqual,
+						value: item.value
+					}
+				});
+
 
 				// add product name at the beginning of the row
 				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);
@@ -5076,7 +5138,7 @@ sap.ui.define([
 				var ContinuedOfferNo = Services.getSelectedContinuedOfferNo();
 			} else {
 				//When the offer is not yet available/existing in the database: get next offer ID
-				var sNextOfferID = Services.getNextOfferID();
+				var sNextOfferID = Services.getLoadedNextOfferID();
 
 				//Get new offerID
 				var Tenderoff = Services.getSelectedTenderID();
@@ -5254,7 +5316,7 @@ sap.ui.define([
 				var sOfferID = Services.getSelectedOfferID();
 			} else {
 				//When the offer is not yet available/existing in the database: create the offer ID
-				var sNextOfferID = Services.getNextOfferID();
+				var sNextOfferID = Services.getLoadedNextOfferID();
 				//TenderID
 				var sTenderID = that.getView().byId("tenderId").getText();
 				//Selling company
@@ -6358,7 +6420,14 @@ sap.ui.define([
 			//	+ or the registeredRate to convert registered price (if it exists) to offer currency
 
 			//if all promises received = meaning all data is loaded from back-end
-			Promise.all(promises).then((result) => {
+			Promise.all(promises).then(async (result) => {
+
+				// validate distributor offer product net prices
+				const bNetPricesAreValid = await that._validateDistributorProductNetPrices();
+				if(!bNetPricesAreValid){
+					that.getView().setBusy(false);
+					return;
+				}
 
 				//if all saving promises are done
 				let promises_saving = [];
@@ -6414,6 +6483,8 @@ sap.ui.define([
 						that.getView().setBusy(false);
 						return;
 					}
+
+					
 
 					//Offer price as set on screen
 					var offerPrice = parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", ""));
@@ -6568,6 +6639,68 @@ sap.ui.define([
 			//wait saving method to wait for results...
 			return oDeferred_all.promise();
 
+		},
+
+
+		/**
+		 * There is legal obligation in Argentina that all distributors should be granted the same net price.
+		 * This method checks the offer product net prices for all distributors.
+		 * @returns {Boolean} - Returns true if all net prices are equal else returns false
+		 */
+		_validateDistributorProductNetPrices: async function(){ 
+
+			const expandFields = "Product/Price";
+			const allTenderOffers = await this.getTenderOffers(expandFields);
+			const selectedOfferID = Services.getSelectedOfferID();
+			const selectedProductID = Services.getSelectedProductID();
+			const selectedProductName = Services.getSelectedProductName();
+			const selectedProductNewNetPrice = +this.byId("idEditPriceOffer_idNetPrice").getValue();
+			const otherDistributorProduct = allTenderOffers
+				.filter(offer => offer.OfferID !== selectedOfferID)
+				.map(offer => offer.Product.results.find(prod => (prod && prod.Price && prod.ProductCode === selectedProductID)))
+				.filter(Product => Product !== undefined); //no products or prices underneath the offer
+			const otherDistributorProductNetPrices = otherDistributorProduct
+				.map(prod => {
+					return {
+							offerID : prod.OfferID,
+							netPrice : +prod.Price.NetPrice
+					};
+				});
+			
+			const lowestNetPrice = Math.min.apply(null, otherDistributorProductNetPrices.map(item => item.netPrice));
+			const bNetPriceIsHigherThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice > item.netPrice );
+			const sNetPriceIsHigherThanAppliedForOtherDistributor = otherDistributorProductNetPrices
+				.filter(item => selectedProductNewNetPrice > item.netPrice )
+				.map(item => item.offerID + ' with a net price (' + item.netPrice + ')').toString();
+			const bNetPriceIsLowerThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice < item.netPrice );
+			const sNetPriceIsLowerThanAppliedForOtherDistributor = otherDistributorProductNetPrices
+				.filter(item => selectedProductNewNetPrice < item.netPrice )
+				.map(item => item.offerID + ' with a net price (' + item.netPrice + ')').toString();
+			
+			let msg = "";
+
+			if(bNetPriceIsHigherThanAppliedForOtherDistributor){
+				msg = `You have selected different net prices applicable ${sNetPriceIsHigherThanAppliedForOtherDistributor}. The lowest price used is ${lowestNetPrice}. Please check for product ${selectedProductName}. Additional discount should be calculated and applied to have same as lowest net price for other distributors`;
+			}
+
+			if(bNetPriceIsLowerThanAppliedForOtherDistributor){
+				msg = `Warning "You have selected a higher net prices in offer ${sNetPriceIsLowerThanAppliedForOtherDistributor} for product ${selectedProductName}.`;
+			}
+
+			if(bNetPriceIsHigherThanAppliedForOtherDistributor || bNetPriceIsLowerThanAppliedForOtherDistributor){
+				return new Promise(function(resolve, reject){
+					sap.m.MessageBox.warning(msg, {
+						actions: ["Save", sap.m.MessageBox.Action.CANCEL],
+						emphasizedAction: "Save",
+						onClose: function (sAction) {
+							if (sAction === "CANCEL") resolve(false);
+							if (sAction === "Save") resolve(true);
+						}
+					});
+				});
+			}
+			
+			return true;
 		},
 
 		//saving of scenario's
