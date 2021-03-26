@@ -1705,6 +1705,88 @@ sap.ui.define([
 			return oDeferred.promise();
 		},
 
+		// load CountrySpecifications
+		loadCountryCompetitors: function(sCountry, sProductCode) { 
+
+			// if no country is set don't run this method
+			if(sCountry.indexOf("NA") > -1){
+				return;
+			}
+
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sPath = "/MasterCompetitors";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			if (sProductCode) {
+				let oFilter = new sap.ui.model.Filter("ProductCode", sap.ui.model.FilterOperator.EQ, sProductCode);
+				aFilters.push(oFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) { 
+
+					var aCountryCompetitors = oData.results;
+
+					//if(aCountryCompetitors.length === 0){
+						var oOtherCompetitor = {
+							CompetitorCompany: "Other",
+							CompetitorProduct: "Other",
+							CountryCode: sCountry,
+							ID:"1",
+						}
+						aCountryCompetitors.push(oOtherCompetitor);
+					//}
+
+					var oEmptyCompetitor = {
+						CompetitorCompany: "",
+						CompetitorProduct: "",
+						CountryCode: "",
+						ID:""
+					};
+
+					//data received is set
+					aCountryCompetitors.push(oEmptyCompetitor);
+					aCountryCompetitors = that.sortByKeyAsc(aCountryCompetitors, "ID");
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryCompetitors", aCountryCompetitors);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryCompetitors);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country competitors");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+		},
+
 		//load new tender ID from DB
 		loadNewTenderID: function () {
 
@@ -6970,6 +7052,40 @@ sap.ui.define([
 
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
+		},
+
+		// HELPERS
+		sendMail: function(sRecipient, sSubject, sTemplate){
+			
+			//Load product data
+			var sActionPath = "/sendMail";
+			var oFastDataCalls = this.getDefaultModel();
+
+			var oDeferred = $.Deferred();
+			var that = this;
+
+			var oData = {};
+			oData.recipient = sRecipient;
+			oData.subject = sSubject;
+			oData.template = sTemplate;
+
+			//get fast data calls
+			var oFastDataCalls = that.getDefaultModel();
+
+			oFastDataCalls.create(sActionPath, oData, {			
+				success: function (oData, oResponse) {
+					//let the callback be triggered
+					oDeferred.resolve(oData);
+				},
+				error: function fnError(oError) {
+					//resolve, beceause we check on false to continue in correct way, if no results found
+					oDeferred.resolve(false);
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
 		}
 
 	});
