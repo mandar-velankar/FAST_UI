@@ -1031,7 +1031,10 @@ sap.ui.define([
 						//for argentinia & brazilië the offerPrice is not the preApprovedPrice
 						if(sCountryCode==="AR" || sCountryCode==="BR"){	
 							//offer price is in this case the standard price based upon CIF price & reductions
-							sPreApprovedPrice = cifPrice - (cifPrice * 0,99); //TODO get discount
+							sPreApprovedPrice = cifPrice - (cifPrice * 0,10); //TODO get discount
+							sDiscount = 0.10;//TODO get discount
+						}else{
+							sDiscount = "";
 						}
 
 						var price = {
@@ -1039,7 +1042,7 @@ sap.ui.define([
 							description: "",
 							cifPrice: cifPrice,
 							newCifPrice: cifPrice,
-							discount: "",//0,
+							discount: sDiscount, //"",//0,
 							offerPrice: sPreApprovedPrice, //"",
 							standardDiscount: "",
 							additionalDiscount: "",
