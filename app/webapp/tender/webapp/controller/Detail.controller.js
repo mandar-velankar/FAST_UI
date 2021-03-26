@@ -4603,30 +4603,28 @@ sap.ui.define([
 			// create rows
 			const productNetPrices = uniqueTenderProductCodes.map(productCode => {
 
-				let bNetPriceDiffer = false;
-				let prevNetPrice = null;
-
 				const row = allTenderOffers.map(offer => {
 					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
 					let netPrice = "NA";
 					
 					if(product && product.Price){
 						netPrice = product.Price.NetPrice;
-
-						// check if net prices differ
-						if(prevNetPrice && prevNetPrice !== +netPrice){
-							prevNetPrice = +netPrice;
-							bNetPriceDiffer = true;
-						}else{
-							prevNetPrice = +netPrice;
-						}
 					}
 	
 					return {
-						bNetPriceDiffer,
 						value: netPrice
 					};
 				});
+
+				// check if net prices are different and add that info to the array
+				const bNetPricesAreEqual = row.every( item => item.value === row[0].value );
+				row.forEach((item, index, arr) => {
+					arr[index] = {
+						bNetPriceDiffer: !bNetPricesAreEqual,
+						value: item.value
+					}
+				});
+
 
 				// add product name at the beginning of the row
 				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);
@@ -6422,7 +6420,14 @@ sap.ui.define([
 			//	+ or the registeredRate to convert registered price (if it exists) to offer currency
 
 			//if all promises received = meaning all data is loaded from back-end
-			Promise.all(promises).then((result) => {
+			Promise.all(promises).then(async (result) => {
+
+				// validate distributor offer product net prices
+				const bNetPricesAreValid = await that._validateDistributorProductNetPrices();
+				if(!bNetPricesAreValid){
+					that.getView().setBusy(false);
+					return;
+				}
 
 				//if all saving promises are done
 				let promises_saving = [];
@@ -6478,6 +6483,8 @@ sap.ui.define([
 						that.getView().setBusy(false);
 						return;
 					}
+
+					
 
 					//Offer price as set on screen
 					var offerPrice = parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", ""));
@@ -6632,6 +6639,61 @@ sap.ui.define([
 			//wait saving method to wait for results...
 			return oDeferred_all.promise();
 
+		},
+
+
+		/**
+		 * There is legal obligation in Argentina that all distributors should be granted the same net price.
+		 * This method checks the offer product net prices for all distributors.
+		 * @returns {Boolean} - Returns true if all net prices are equal else returns false
+		 */
+		_validateDistributorProductNetPrices: async function(){ 
+
+			const expandFields = "Product/Price";
+			const allTenderOffers = await this.getTenderOffers(expandFields);
+			const selectedOfferID = Services.getSelectedOfferID();
+			const selectedProductID = Services.getSelectedProductID();
+			const selectedProductName = Services.getSelectedProductName();
+			const selectedProductNewNetPrice = +this.byId("idEditPriceOffer_idNetPrice").getValue();
+
+			const otherDistributorProductNetPrices = allTenderOffers
+				.filter(offer => offer.OfferID !== selectedOfferID)
+				.map(offer => offer.Product.results.find(prod => prod.ProductCode === selectedProductID))
+				.map(prod => {
+					return {
+						offerID : prod.OfferID,
+						netPrice: +prod.Price.NetPrice
+					};
+				});
+			
+			const lowestNetPrice = Math.min.apply(null, otherDistributorProductNetPrices.map(item => item.netPrice));
+			const bNetPriceIsHigherThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice > item.netPrice );
+			const bNetPriceIsLowerThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice < item.netPrice );
+			let msg = "";
+
+			if(bNetPriceIsHigherThanAppliedForOtherDistributor){
+				msg = `You have selected different net prices for different distributor offers. The lowest price used in offer xxx is ${lowestNetPrice}.`;
+			}
+
+			if(bNetPriceIsLowerThanAppliedForOtherDistributor){
+				msg = `Warning "You have selected a higher net prices in offer xxx. The price used in that offer is xxx.`;
+			}
+
+			if(bNetPriceIsHigherThanAppliedForOtherDistributor || bNetPriceIsLowerThanAppliedForOtherDistributor){
+				return new Promise(function(resolve, reject){
+					sap.m.MessageBox.warning(msg, {
+						actions: ["Save", sap.m.MessageBox.Action.CANCEL],
+						emphasizedAction: "Save",
+						onClose: function (sAction) {
+							if (sAction === "CANCEL") resolve(false);
+							if (sAction === "Save") resolve(true);
+						}
+					});
+				});
+			}
+
+			
+			return true;
 		},
 
 		//saving of scenario's
