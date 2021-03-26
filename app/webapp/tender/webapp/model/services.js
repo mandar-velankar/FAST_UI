@@ -1705,6 +1705,88 @@ sap.ui.define([
 			return oDeferred.promise();
 		},
 
+		// load CountrySpecifications
+		loadCountryCompetitors: function(sCountry, sProductCode) { 
+
+			// if no country is set don't run this method
+			if(sCountry.indexOf("NA") > -1){
+				return;
+			}
+
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sPath = "/MasterCompetitors";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			if (sProductCode) {
+				let oFilter = new sap.ui.model.Filter("ProductCode", sap.ui.model.FilterOperator.EQ, sProductCode);
+				aFilters.push(oFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) { 
+
+					var aCountryCompetitors = oData.results;
+
+					//if(aCountryCompetitors.length === 0){
+						var oOtherCompetitor = {
+							CompetitorCompany: "Other",
+							CompetitorProduct: "Other",
+							CountryCode: sCountry,
+							ID:"1",
+						}
+						aCountryCompetitors.push(oOtherCompetitor);
+					//}
+
+					var oEmptyCompetitor = {
+						CompetitorCompany: "",
+						CompetitorProduct: "",
+						CountryCode: "",
+						ID:""
+					};
+
+					//data received is set
+					aCountryCompetitors.push(oEmptyCompetitor);
+					aCountryCompetitors = that.sortByKeyAsc(aCountryCompetitors, "ID");
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryCompetitors", aCountryCompetitors);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryCompetitors);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country competitors");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+		},
+
 		//load new tender ID from DB
 		loadNewTenderID: function () {
 
@@ -4175,22 +4257,35 @@ sap.ui.define([
 
 		},
 
-		//What is the next available
-		getNextOfferID: function (oModel) {
+		//What is the next available (get it from the tender thats already loaded in the model)
+		//TODO check whereused & check if method can safely be refactored as an async method --> if yes we can use await getNextOfferID instead
+		getLoadedNextOfferID: function () {
 
 			//Next offer ID is default 1
 			var sNextOfferID = 1;
-
+		
 			//Get Data model
 			var oFastAppDataModel = this.getFastAppDataModel();
-
-			//Get the next available offerID
+		
 			if (oFastAppDataModel.getProperty("/Tender/NextOfferId/NEXTOFFERID")) {
-
+		
+				//Get the next available offerID
+		
 				//get the next available offer id
 				sNextOfferID = oFastAppDataModel.getProperty("/Tender/NextOfferId/NEXTOFFERID");
 
 			}
+		
+			return sNextOfferID;
+		
+		},
+
+		//What is the next available OfferID (Reload from database)
+		getNextOfferID: async function (sTenderID) {
+
+			//read service again to get nextOfferID
+			const oResult = await this.getService('Tender').getNextTenderOfferNo(sTenderID);
+			const sNextOfferID = oResult && oResult.data && oResult.data.results && oResult.data.results[0].NEXTOFFERID || 1;
 
 			return sNextOfferID;
 
@@ -4491,7 +4586,7 @@ sap.ui.define([
 			//what is the ID for the new offer
 			//offerID is a temporary ID beceause at this point we do not know yet the selling companny.
 			//the method prepSaveProductOffer which is executed behind the save button will overwrite this ID
-			var sOfferID = this.getNextOfferID(); //Should be: Tenderoff + "-" + sNextOfferID;
+			var sOfferID = this.getLoadedNextOfferID(); //Should be: Tenderoff + "-" + sNextOfferID;
 
 			var that = this;
 
@@ -4751,7 +4846,7 @@ sap.ui.define([
 			//index of offerID found in the offer
 			var sOfferID = this.getSelectedOfferID();
 			if(!sOfferID){
-				sOfferID = this.getNextOfferID();
+				sOfferID = this.getLoadedNextOfferID(false);
 			}
 			var iIndex = aOffers.findIndex(x => x.OfferID === sOfferID);
 					
@@ -5565,8 +5660,12 @@ sap.ui.define([
 			return this.getService('Offer').createOffer(oOfferToSave);
 		},
 
-		getOffers: function (sTenderID, sCountryCode) {
-			return this.getService('Offer').getOffers(sTenderID, sCountryCode);
+		getOffers: function (sTenderID, sCountryCode, sExpand) {
+			return this.getService('Offer').getOffers(sTenderID, sCountryCode, sExpand);
+		},
+
+		getTenderProducts: function (sTenderID) {
+			return this.getService('Product').getTenderProducts(sTenderID);
 		},
 
 		//soft delete Offer (=set inactive column to 0)
@@ -6953,6 +7052,40 @@ sap.ui.define([
 
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
+		},
+
+		// HELPERS
+		sendMail: function(sRecipient, sSubject, sTemplate){
+			
+			//Load product data
+			var sActionPath = "/sendMail";
+			var oFastDataCalls = this.getDefaultModel();
+
+			var oDeferred = $.Deferred();
+			var that = this;
+
+			var oData = {};
+			oData.recipient = sRecipient;
+			oData.subject = sSubject;
+			oData.template = sTemplate;
+
+			//get fast data calls
+			var oFastDataCalls = that.getDefaultModel();
+
+			oFastDataCalls.create(sActionPath, oData, {			
+				success: function (oData, oResponse) {
+					//let the callback be triggered
+					oDeferred.resolve(oData);
+				},
+				error: function fnError(oError) {
+					//resolve, beceause we check on false to continue in correct way, if no results found
+					oDeferred.resolve(false);
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
 		}
 
 	});

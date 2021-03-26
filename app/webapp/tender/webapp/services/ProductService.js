@@ -2,13 +2,43 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/BaseService",
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-	"FAST_NS0FAST0/model/userinfo"
-], function (BaseService, Services, MomentJS, UserInfo) {
+	"FAST_NS0FAST0/model/userinfo",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseService, Services, MomentJS, UserInfo, Filter, FilterOperator) {
 	"use strict";
 
 	var ProductService = BaseService.extend("FAST_NS0FAST0.services.ProductService", {
 		constructor: function (model) {
 			BaseService.call(this, model);
+		},
+
+
+		/**
+		 * Fetches tender products from the backend
+		 * @param {String} sTenderID - 
+		 * @returns {Array} - a list of products for a given tender
+		 */
+		 getTenderProducts:function(sTenderID){
+			
+			var sPath = "/PT_TMOFPR";
+
+			var oTenderIdFilter = new Filter({
+				path: 'TenderID',
+				operator: FilterOperator.EQ,
+				value1: sTenderID
+			});
+
+
+			var mParameters = {
+				filters: [oTenderIdFilter],
+				urlParameters: {
+					$expand: "SKU"
+				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
 		},
 		
 		//create new product

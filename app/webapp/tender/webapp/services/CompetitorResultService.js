@@ -67,8 +67,8 @@ sap.ui.define([
 					OFFERID: oCompetitorResultTree.OFFERID,
 					PRODUCTCODE: oCompetitorResultTree.PRODUCTCODE,
 					OUTCOME: oCompetitorResultTree.OUTCOME,
-					AWARDEDCOMPANY: oCompetitorResultTree.AWARDEDCOMPANY,
-					AWARDEDPRODUCT: oCompetitorResultTree.PRODUCT, //beceause bayer product & awarded product both use product on view
+					AWARDEDCOMPANY: oCompetitorResultTree.AWARDEDCOMPANY !== 'Other' ? oCompetitorResultTree.AWARDEDCOMPANY : oCompetitorResultTree.OTHERCOMPANY,
+					AWARDEDPRODUCT: oCompetitorResultTree.PRODUCT !== 'Other' ? oCompetitorResultTree.PRODUCT : oCompetitorResultTree.OTHERPRODUCT, //beceause bayer product & awarded product both use product on view
 					AWARDEDPRICE: (oCompetitorResultTree.AWARDEDPRICE === null) ? null : oCompetitorResultTree.AWARDEDPRICE.toString(),
 					CURRENCY: oCompetitorResultTree.CURRENCY,
 					AWARDEDQTY:(oCompetitorResultTree.AWARDEDQTY !== "") ? Number(oCompetitorResultTree.AWARDEDQTY) : 0,

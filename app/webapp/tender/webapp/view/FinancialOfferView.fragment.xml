@@ -20,6 +20,7 @@
 	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
+			<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onTenderOverviewPress" visible="{= ${raModel>/visibleCountry} === 'AR' }" />	
 			
 		</u:actions>
 		<l:BlockLayout background="Light">

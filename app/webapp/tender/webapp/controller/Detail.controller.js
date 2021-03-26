@@ -2188,6 +2188,7 @@ sap.ui.define([
 			});
 
 			Services.loadCountryChannels(sCountryCode);
+			Services.loadCountryCompetitors(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
 			// set the selected keys on the dropdowns
@@ -4103,17 +4104,18 @@ sap.ui.define([
 
 			const oView = this.getView();
 
-			// add distributors to the FastAppDataModel
-			const distributors = await this.getDistributors();
-			Services.getFastAppDataModel().setProperty("/InstituteDistributors", distributors);
-
 			// add all Tender Offers to the FastAppDataModel
 			const allTenderOffers = await this.getTenderOffers();
-			Services.getFastAppDataModel().setProperty("/TenderOffers", allTenderOffers);
 
 			// set the selected keys on the DistributorsMultiComboBox
-			const selectedKeys = allTenderOffers.map(offer => String(offer.DistributorID));
+			const allActiveOffers = allTenderOffers.filter(offer => offer.Active === 1);
+			const selectedKeys = allActiveOffers.map(offer => String(offer.DistributorID));
 			Services.getFastAppDataModel().setProperty("/TenderOfferDistributorIDs", selectedKeys);
+
+			// add distributors to the FastAppDataModel
+			const distributors = await this.getDistributors();
+			//distributors.filter() TODO filter so that distributors where offer already exists is filtered out
+			Services.getFastAppDataModel().setProperty("/InstituteDistributors", distributors);
 
 			// create DuplicateOffer dialog lazily
 			if (!this.pDuplicateOfferDialog) {
@@ -4167,20 +4169,41 @@ sap.ui.define([
 
 		/**
 		 * Fetches a list of Tender Offers from the backend
+		 * @param {String} sExpand - a list of comma separated fields to be expanded
 		 * @returns {Array} - A list of Offers
 		 */
-		 getTenderOffers: async function() { 
+		 getTenderOffers: async function(sExpand) { 
 
-			const { data: {results: offers} } = await Services.getOffers(Services.getSelectedTenderID(), Services.getSelectedCountry());
+			const { data: {results: offers} } = await Services.getOffers(Services.getSelectedTenderID(), Services.getSelectedCountry(), sExpand);
 
 			return offers;
+		},
+
+		/**
+		 * Fetches a list of Tender products from the backend
+		 * @param {String} sTenderID - 
+		 * @returns {Array} - A list of Tender products
+		 */
+		 getTenderProducts: async function(sTenderID) { 
+
+			const { data: {results: products} } = await Services.getTenderProducts(sTenderID);
+
+			return products;
 		},
 
 		/**
 		 * Event handlers for the DuplicateOfferDialog
 		 * @param {Object} oEvent -
 		 */
-		onDuplicateOfferDialogDuplicateOffer: function(oEvent){ 
+		onDuplicateOfferDialogDuplicateOffer: async function(oEvent){ 
+
+			//that is this
+			let that = this;
+			BusyIndicator.show();
+
+			//Methods should be available
+			let oOfferFragment = new OfferProducts();
+			Services.setFinancialModel(oOfferFragment);
 
 			const oDistributorsMultiComboBox = this.byId("idDistributorsMultiComboBox");
 			const aSelectedDistributors = oDistributorsMultiComboBox.getSelectedItems().map(distributor => {
@@ -4190,30 +4213,62 @@ sap.ui.define([
 				};
 			});
 			const oCurrentOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
-			const oCurrentDistributor = oCurrentOffer.Distributor;
-
-			const aTenderOffers = Services.getFastAppDataModel().getProperty("/TenderOffers");
+			const aTenderOffers = Services.getLoadedTender() && Services.getLoadedTender().Offer && Services.getLoadedTender().Offer.results;
 
 			// list of distributors for which the offer is to be duplicated
 			const aDistributorsToBeDuplicated = [];
 
 			aSelectedDistributors.forEach(distributor => {
-				const bDistributorExists = aTenderOffers.find(offer => offer.DistributorID === distributor.DISTRIBUTOR_ID);
+				const bDistributorExists = aTenderOffers.find(offer => offer.DistributorID === distributor.DISTRIBUTOR_ID && offer.Active === 1);
 				if(!bDistributorExists){
 					aDistributorsToBeDuplicated.push(distributor);
 				}
 			});
 			
-			aDistributorsToBeDuplicated.forEach(oDistributor => this._cloneOffer.call(this, oCurrentOffer, oDistributor));
+			//aDistributorsToBeDuplicated.forEach(oDistributor => this._cloneOffer.call(this, oCurrentOffer, oDistributor));
+			//since we have to wait for each offer to be finished before creating the next offer, we use a for loop with an await statement
+			for (const oDistributor of aDistributorsToBeDuplicated) {
+				await that._cloneOffer.call(this, oCurrentOffer, oDistributor);
+			}
+
+			//refresh screens/data - give success message & close
+			
+			let sTenderID = Services.getSelectedTenderID();
+			let sOfferID = Services.getSelectedOfferID();
+			let bLoadedCheck = false;
+
+			//close button on dialog
+			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+				//refresh tenders master table (left pane)
+				Services.refreshTendersMasterTable(sTenderID);
+
+				//Set selected offer in left pane
+				that._selectOfferInLeftPane(sOfferID);
+
+				// close loading that blocks everything
+				BusyIndicator.hide();
+
+				//close dialog
+				that.onDuplicateOfferDialogClose();
+
+			});	
 
 		},
 
-		_cloneOffer: async function(offer, distributor){ debugger;
+		/**
+		 * Cloning of the offer for a new distributor
+		 * @param {*} offer -
+		 * @param {*} distributor -
+		 */
+		_cloneOffer: async function(offer, distributor){
 
-			const nextOfferID = Number(Services.getFastAppDataModel().getProperty("/TenderOffers").map(offer => offer.OfferID).sort().pop().split("-").pop()) + 1;
+			let that = this;
+			const nextOfferID = await Services.getNextOfferID(offer.TenderID);
 
 			const oNewOffer = {
 				...offer,
+				"TenderOfferNo" : nextOfferID, //nextOfferID is stored to always receive the latest next offer ID... if we don't provide this attribute, getNextOfferID will not return a correct value for the following offer ID
 				"ContinuationOfferNo" : 0,
 				"RevisedOfferNo": 0,
 				"OfferID": Services.getSelectedTenderID() + "-" + nextOfferID,
@@ -4227,11 +4282,270 @@ sap.ui.define([
 				"OfferRevisionSplitNo": 0,
 				"APPROVALS_SENT": 0,
 			}
+
+			//keep this new Offer info for saving, products,prices,status,...
+			Services.setOfferSaveInfo(oNewOffer);
 			
 			try {
-				await Services.saveOffer(oNewOffer);
+
+				//save new offer
+				await Services.saveOffer(oNewOffer).then(function (oResult) {
+					
+					//if offer is created successfully we can create the offer status, products.. for the saved offer
+					
+					//save offer status
+					let sOfferStatus = "Offer Created";
+					Services.saveOfferStatus(sOfferStatus);
+					
+					//only active offers need to be copied
+					let aProductsToBeDuplicated = oNewOffer.Product && oNewOffer.Product.results && oNewOffer.Product.results.filter(oProduct => oProduct.Active === 1);
+
+					//create new products & corresponding prices (we want to wait for each product to finish, but still perform each product in paralell)
+					return Promise.all(aProductsToBeDuplicated.map(async (oProduct)=> {
+						await that._cloneProduct.call(that, oNewOffer, oProduct);
+					}));
+
+				}).catch(function (oError) {
+
+					//show error message
+					Services.showErrorMessage(oError, "Create offer");
+
+				});
+
 			}catch(oError){
-				Services.showErrorMessage(oError, "Creation of offer");
+
+				//something went wrong with the creation of the offer with corresponding products, prices...
+				Services.showErrorMessage(oError, "Cloning of offer,products,prices..");
+
+			}
+
+		},
+
+		/**
+		 * Cloning of the Product for a new offer
+		 * @param {Object} offer -
+		 * @param {Object} product - 
+		 */
+		_cloneProduct: async function(offer, product){
+
+			let that = this;
+
+			const oNewProduct = {
+				...product,
+				"OfferID": offer.OfferID,
+				"DistributorID" : offer.DistributorID,
+				"SUPPLY_UPDATE": 0,
+				"PAYMENT_UPDATE": 0
+			}
+
+			//get values to check product validity
+			let sProductCode = oNewProduct.ProductCode;
+			let sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			let sDistributorID = oNewProduct.DistributorID; //DISTRIBUTOR_ID
+			let sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			let sSellingCompany = offer.SellingCompany;
+			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+
+			//check if product is still valid
+			let bValid = await Services.checkProductValidForOffer(sProductCode, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, aCommercialAgreement);
+
+			//if product is still valid, we can create it
+			if (bValid) {
+
+					//Create Product
+					//if product is still valid for new distributor
+					let oProductToSave = Services.getService('Product').getConvertProductToSave(oNewProduct);
+
+					try {
+
+						const oResult = await Services.getService('Product').createProduct(oProductToSave);
+
+						if(oResult){
+
+							//if price exists, we should copy the price
+							if(oNewProduct && oNewProduct.Price){
+								//Copy price for product
+								let oNewPrice = oNewProduct.Price;
+								await that._clonePrice(offer,oNewProduct,oNewPrice);
+							}
+
+							//create group purchasing
+							let aGroupPurchasingToBeDuplicated = oNewProduct.GroupPurchasing && oNewProduct.GroupPurchasing.results || [];
+							aGroupPurchasingToBeDuplicated.forEach(oGroupPurchasing => that._cloneGroupPurchasing.call(that, offer, oNewProduct, oGroupPurchasing));
+
+						}
+
+
+						
+
+					}catch(oError){
+
+						//show error message
+						Services.showErrorMessage(oError, "Saving of new product");
+
+						//whole promises batch may fail when a product fails
+						throw new Error(oError);
+
+					}
+
+			}else{
+					/*
+					//keep invalid product to show in popup
+					var oInvalidProduct = {
+						ProductID: sProductCode,
+						ProductName: oProduct.SKU.PRODUCTPACKNAME
+					};
+					aInvalidProducts.push(oInvalidProduct);
+
+					var sMessage =
+											"The following products are no longer valid, and are missing in this reviewed or continued offer. \n \n Products: ";
+										aInvalidProducts.forEach(function (oInvalidProduct, iIndexInvalidProduct) {
+											sMessage = sMessage + "\n" + oInvalidProduct.ProductName;
+										});
+					*/
+			}
+
+		},
+
+		/**
+		 * Cloning of the price
+		 * @param {object} offer 
+		 * @param {object} product 
+		 * @param {object} price 
+		 */
+		 _clonePrice: async function(offer, product, price){
+			
+			//let that = this;
+			let OfferProducts = Services.getFinancialModel();
+
+			let oNewPrice = {
+				...price,
+				"OfferID": offer.OfferID,
+				//"DistributorID" : offer.DistributorID
+			}
+
+			//for the reviewed offer, the products of the original offer can have price data as well
+			if (oNewPrice) {
+
+				//re-calculate Netprice based upon new distributor specific commission rate
+				oNewPrice.NetPrice = oNewPrice.NetofferPrice * (1 - oNewPrice.Deductions);
+				
+				//we are waiting for the loading of the price
+				const sRegisteredPrice = await OfferProducts.loadCountryRegisteredPrice(Services.getSelectedCountry(), product.UnitPerPack,product.ProductCode, offer.Currency);
+				
+				const oUpToDatePrices = await OfferProducts.loadAllUpToDatePrices(product.Offer, product, sRegisteredPrice.REGISTERED_PRICE);
+				
+				//in this case we should save price data as well
+				var oProductPrice = Services.getService('Price').getConvertPriceToSave(oNewPrice);
+
+				//if sRegPrice = false, meaning calculation is no longer found & price is not copied
+				if (oUpToDatePrices.RegPrice !== false) {
+
+					//convert Registration Price
+					let iConvertedRegPrice = OfferProducts.convRegisteredPrice(product, sRegisteredPrice);
+
+					//make same rounding
+					let iConvertedOfferPrice = 0;
+					if (product.UnitPerPack) {
+							var sUnitPerPackOffer = product.UnitPerPack;
+							iConvertedOfferPrice = formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
+					} else {
+							iConvertedOfferPrice = oProductPrice.OfferPrice;
+					}
+
+					//make same rounding
+					if (sRegisteredPrice) {
+						var sUOMregPrice = sRegisteredPrice.UOM;
+						iConvertedRegPrice = formatter.priceTwoOrFour(iConvertedRegPrice, undefined, sUOMregPrice);
+					} 
+
+					//Check offer not larger then reg price
+					if (OfferProducts.checkOfferPriceLowerRegisterPrice(iConvertedOfferPrice, iConvertedRegPrice)) {
+
+							//Case when RegisteredPrice would have changed since OfferX was created is very complex. Thats why we inform user to manualy adapt price
+							if(Number(oProductPrice.RegPrice) !== oUpToDatePrices.RegPrice){
+
+								Services.getOfferCompositeMessages().push({
+									type: 'Warning',
+									title: 'Not all prices were copied',
+									description: 'Products were updated since original offer was made. Please update Offer before making the copy with the prices. Please delete this one first.',
+									subtitle: 'Not all prices were copied',
+									counter: 1
+								});
+
+							}else{
+
+								//change values with up to date values
+								oProductPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
+								oProductPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
+								oProductPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
+								oProductPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+
+								//add creation of price to batch operation
+								await Services.getService('Price').createPrice(oProductPrice).catch(function (oError) {
+
+									//show error message
+									Services.showErrorMessage(oError, "Saving of new price");
+
+								});
+
+							}
+
+						} else {
+							
+							//sap.m.MessageBox.warning("Offerprice should be lower then registered price. Price not copied.", {});
+							Services.getOfferCompositeMessages().push({
+								type: 'Warning',
+								title: 'Not all prices were copied',
+								description: 'Not all prices were copied because some are incompatible with current registered prices.',
+								subtitle: 'Not all prices were copied',
+								counter: 1
+							});
+						}
+
+				} else {
+
+						Services.getOfferCompositeMessages().push({
+							type: 'Warning',
+							title: "Price of product was not valid, so it wasn't copied.",
+							description: "Price of product was not valid, so it wasn't copied.",
+							subtitle: "Price of product was not valid, so it wasn't copied.",
+							counter: 1
+						});
+
+				}
+
+			}			
+
+		},
+
+		/**
+		 * Cloning of the group Purchasing
+		 * @param {object} offer 
+		 * @param {object} product 
+		 * @param {object} groupPurchasing
+		 */
+		_cloneGroupPurchasing: async function(offer, product, groupPurchasing){
+
+			//Save the group purchasing for each product
+			if (groupPurchasing) {
+
+				const oGroupPurchasing = {
+					...groupPurchasing,
+					"OfferID": offer.OfferID
+				}
+
+				//convert group purchasing
+				let oGroupPurchasingToSave = Services.getService('GroupPurchasing').getConvertGroupPurchasingToSave(oGroupPurchasing);
+
+				//create group purchasing
+				await Services.getService('GroupPurchasing').createGroupPurchasing(oGroupPurchasingToSave).catch(function (oError) {
+					//show error message
+					Services.showErrorMessage(oError, "Creation of group purchasing");
+					throw new Error(oError);
+				});
+
 			}
 
 		},
@@ -4243,6 +4557,105 @@ sap.ui.define([
 					oDialog.close();
 				});
 
+			}
+		},
+
+
+		/**
+		 * Event handler for "Tender Overview" button click on the "Financial Offer" tab
+		 * @param {*} oEvent - 
+		 */
+		onTenderOverviewPress: async function(oEvent){
+
+			
+			const oTenderOverviewObject = await this._createTenderOverviewModelStructure();
+			Services.getFastAppDataModel().setProperty("/TenderOverview", oTenderOverviewObject);
+
+			const oView = this.getView();
+
+			// create TenderOverview dialog lazily
+			if (!this.pTenderOverviewDialog) {
+
+				this.pTenderOverviewDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.TenderOverviewDialog",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+
+			}
+
+
+			this.pTenderOverviewDialog.then(oDialog => oDialog.open());
+
+		},
+
+		_createTenderOverviewModelStructure: async function(){
+
+			// get data
+			const expandFields = "Product/Price,Distributor";
+			const allTenderOffers = await this.getTenderOffers(expandFields);
+			const allTenderProducts = await this.getTenderProducts(Services.getSelectedTenderID());
+			const uniqueTenderProductCodes = Array.from(new Set(allTenderProducts.map(product => product.ProductCode)));
+
+			// create rows
+			const productNetPrices = uniqueTenderProductCodes.map(productCode => {
+
+				const row = allTenderOffers.map(offer => {
+					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
+					let netPrice = "NA";
+					
+					if(product && product.Price){
+						netPrice = product.Price.NetPrice;
+					}
+	
+					return {
+						value: netPrice
+					};
+				});
+
+				// check if net prices are different and add that info to the array
+				const bNetPricesAreEqual = row.every( item => item.value === row[0].value );
+				row.forEach((item, index, arr) => {
+					arr[index] = {
+						bNetPriceDiffer: !bNetPricesAreEqual,
+						value: item.value
+					}
+				});
+
+
+				// add product name at the beginning of the row
+				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);
+				row.unshift({
+					value: oProduct.SKU.PRODUCTPACKNAME
+				});
+
+				return {
+					product: productCode,
+					netPrices: row
+				};
+					
+			});
+			
+
+			// adds an empty object at the beginning of the array before adding it to the model
+			// first column must be empty
+			allTenderOffers.unshift({}); 
+
+			const oTenderOverview = {
+				columns : allTenderOffers,
+				rows    : productNetPrices
+			};
+
+			return oTenderOverview;
+		},
+
+		onTenderOverviewDialogClose: function(){
+			if(this.pTenderOverviewDialog){
+				this.pTenderOverviewDialog.then( oDialog => oDialog.close());
 			}
 		},
 
@@ -4726,7 +5139,7 @@ sap.ui.define([
 				var ContinuedOfferNo = Services.getSelectedContinuedOfferNo();
 			} else {
 				//When the offer is not yet available/existing in the database: get next offer ID
-				var sNextOfferID = Services.getNextOfferID();
+				var sNextOfferID = Services.getLoadedNextOfferID();
 
 				//Get new offerID
 				var Tenderoff = Services.getSelectedTenderID();
@@ -4904,7 +5317,7 @@ sap.ui.define([
 				var sOfferID = Services.getSelectedOfferID();
 			} else {
 				//When the offer is not yet available/existing in the database: create the offer ID
-				var sNextOfferID = Services.getNextOfferID();
+				var sNextOfferID = Services.getLoadedNextOfferID();
 				//TenderID
 				var sTenderID = that.getView().byId("tenderId").getText();
 				//Selling company
@@ -6008,7 +6421,14 @@ sap.ui.define([
 			//	+ or the registeredRate to convert registered price (if it exists) to offer currency
 
 			//if all promises received = meaning all data is loaded from back-end
-			Promise.all(promises).then((result) => {
+			Promise.all(promises).then(async (result) => {
+
+				// validate distributor offer product net prices
+				const bNetPricesAreValid = await that._validateDistributorProductNetPrices();
+				if(!bNetPricesAreValid){
+					that.getView().setBusy(false);
+					return;
+				}
 
 				//if all saving promises are done
 				let promises_saving = [];
@@ -6061,8 +6481,11 @@ sap.ui.define([
 							icon: sap.m.MessageBox.Icon.ERROR,
 							onClose: function () {}
 						});
+						that.getView().setBusy(false);
 						return;
 					}
+
+					
 
 					//Offer price as set on screen
 					var offerPrice = parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", ""));
@@ -6217,6 +6640,68 @@ sap.ui.define([
 			//wait saving method to wait for results...
 			return oDeferred_all.promise();
 
+		},
+
+
+		/**
+		 * There is legal obligation in Argentina that all distributors should be granted the same net price.
+		 * This method checks the offer product net prices for all distributors.
+		 * @returns {Boolean} - Returns true if all net prices are equal else returns false
+		 */
+		_validateDistributorProductNetPrices: async function(){ 
+
+			const expandFields = "Product/Price";
+			const allTenderOffers = await this.getTenderOffers(expandFields);
+			const selectedOfferID = Services.getSelectedOfferID();
+			const selectedProductID = Services.getSelectedProductID();
+			const selectedProductName = Services.getSelectedProductName();
+			const selectedProductNewNetPrice = +this.byId("idEditPriceOffer_idNetPrice").getValue();
+			const otherDistributorProduct = allTenderOffers
+				.filter(offer => offer.OfferID !== selectedOfferID)
+				.map(offer => offer.Product.results.find(prod => (prod && prod.Price && prod.ProductCode === selectedProductID)))
+				.filter(Product => Product !== undefined); //no products or prices underneath the offer
+			const otherDistributorProductNetPrices = otherDistributorProduct
+				.map(prod => {
+					return {
+							offerID : prod.OfferID,
+							netPrice : +prod.Price.NetPrice
+					};
+				});
+			
+			const lowestNetPrice = Math.min.apply(null, otherDistributorProductNetPrices.map(item => item.netPrice));
+			const bNetPriceIsHigherThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice > item.netPrice );
+			const sNetPriceIsHigherThanAppliedForOtherDistributor = otherDistributorProductNetPrices
+				.filter(item => selectedProductNewNetPrice > item.netPrice )
+				.map(item => item.offerID + ' with a net price (' + item.netPrice + ')').toString();
+			const bNetPriceIsLowerThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice < item.netPrice );
+			const sNetPriceIsLowerThanAppliedForOtherDistributor = otherDistributorProductNetPrices
+				.filter(item => selectedProductNewNetPrice < item.netPrice )
+				.map(item => item.offerID + ' with a net price (' + item.netPrice + ')').toString();
+			
+			let msg = "";
+
+			if(bNetPriceIsHigherThanAppliedForOtherDistributor){
+				msg = `You have selected different net prices applicable ${sNetPriceIsHigherThanAppliedForOtherDistributor}. The lowest price used is ${lowestNetPrice}. Please check for product ${selectedProductName}. Additional discount should be calculated and applied to have same as lowest net price for other distributors`;
+			}
+
+			if(bNetPriceIsLowerThanAppliedForOtherDistributor){
+				msg = `Warning "You have selected a higher net prices in offer ${sNetPriceIsLowerThanAppliedForOtherDistributor} for product ${selectedProductName}.`;
+			}
+
+			if(bNetPriceIsHigherThanAppliedForOtherDistributor || bNetPriceIsLowerThanAppliedForOtherDistributor){
+				return new Promise(function(resolve, reject){
+					sap.m.MessageBox.warning(msg, {
+						actions: ["Save", sap.m.MessageBox.Action.CANCEL],
+						emphasizedAction: "Save",
+						onClose: function (sAction) {
+							if (sAction === "CANCEL") resolve(false);
+							if (sAction === "Save") resolve(true);
+						}
+					});
+				});
+			}
+			
+			return true;
 		},
 
 		//saving of scenario's
@@ -6850,224 +7335,9 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/SelectedOffer/OfferID');
-			/*var sBody = '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">'
-				+ '<head>'
-				+ '<title>'
-				  
-				+ '</title>'
-				+ '<!--[if !mso]><!-- -->'
-				+ '<meta http-equiv="X-UA-Compatible" content="IE=edge">'
-				+ '<!--<![endif]-->'
-				+ '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">'
-				+ '<meta name="viewport" content="width=device-width, initial-scale=1">'
-				+ '<style type="text/css">'
-				+ '#outlook a { padding:0; }'
-				+ '.ReadMsgBody { width:100%; }'
-				+ '.ExternalClass { width:100%; }'
-				+ '.ExternalClass * { line-height:100%; }'
-				+ 'body { margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%; }'
-				+ 'table, td { border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt; }'
-				+ 'img { border:0;height:auto;line-height:100%; outline:none;text-decoration:none;-ms-interpolation-mode:bicubic; }'
-				+ 'p { display:block;margin:13px 0; }'
-				+ '</style>'
-				+ '<!--[if !mso]><!-->'
-				+ '<style type="text/css">'
-				+ '@media only screen and (max-width:480px) {'
-				+ '@-ms-viewport { width:320px; }'
-				+ '@viewport { width:320px; }'
-				+ '}'
-				+ '</style>'
-				+ '<link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet" type="text/css">'
-				+ '<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">'
-				+ '<link href="https://fonts.googleapis.com/css?family=Cabin:400,700" rel="stylesheet" type="text/css">'
-				+ '<style type="text/css">'
-				+ '@import url(https://fonts.googleapis.com/css?family=Roboto:400,700);'
-				+ '@import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);'
-				+ '@import url(https://fonts.googleapis.com/css?family=Cabin:400,700);'
-				+ '</style>'
-		
-			
-				
-				+ '<style type="text/css">'
-				+ '@media only screen and (min-width:480px) {'
-				+ '.mj-column-per-100 { width:100% !important; max-width: 100%; }'
-				+ ' }'
-				+ '</style>'
-			
-		  
-				+ '<style type="text/css">'
-				
-				
-				+ '</style>'
-				+ '<style type="text/css">.hide_on_mobile { display: none !important;} '
-				+ '@media only screen and (min-width: 480px) { .hide_on_mobile { display: block !important;} }'
-				+ '.hide_section_on_mobile { display: none !important;} '
-				+ '@media only screen and (min-width: 480px) { .hide_section_on_mobile { display: table !important;} }'
-				+ '.hide_on_desktop { display: block !important;}' 
-				+ '@media only screen and (min-width: 480px) { .hide_on_desktop { display: none !important;} }'
-				+ '.hide_section_on_desktop { display: table !important;}'
-				+ '@media only screen and (min-width: 480px) { .hide_section_on_desktop { display: none !important;} }'
-				+ '[owa] .mj-column-per-100 {'
-				+ 'width: 100%!important;'
-				+ '}'
-				+ '[owa] .mj-column-per-50 {'
-				+ 'width: 50%!important;'
-				+ '}'
-				+ '[owa] .mj-column-per-33 {'
-				+ 'width: 33.333333333333336%!important;'
-				+ '}'
-				+ 'p {'
-				+ 'margin: 0px;'
-				+ '}'
-				+ '@media only print and (min-width:480px) {'
-				+ '.mj-column-per-100 { width:100%!important; }'
-				+ '.mj-column-per-40 { width:40%!important; }'
-				+ '.mj-column-per-60 { width:60%!important; }'
-				+ '.mj-column-per-50 { width: 50%!important; }'
-				+ 'mj-column-per-33 { width: 33.333333333333336%!important; }'
-				+ '}</style>'
-				
-				+ '</head>'
-				+ '<body style="background-color:#FFFFFF;">'
-				+ '<div style="background-color:#FFFFFF;"> '     
-				+ '<div style="Margin:0px auto;max-width:600px;">'
-						
-				+ '<table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">'
-				+ '<tbody>'
-				+ '<tr>'
-				+ '<td style="direction:ltr;font-size:0px;padding:9px 0px 9px 0px;text-align:center;vertical-align:top;">'        
-				+ '<div class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">'
-								
-				+ '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">'
-										
-				+ '<tr>'
-				+ '<td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">'
-												
-				+ '<div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:left;color:#000000;">'
-				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">A continuacion detallo la cotizaction para los productos Bayer afectados a la cotizacion de ferencia.</span></p>'
-				+ '<ul>'
-				+ '<li><span style="font-size: 12px;"><span style="font-family: Roboto, Tahoma, sans-serif;"><strong>Betaferon - PSL -8% + Impuestos </strong></span><span style="font-family: Roboto, Tahoma, sans-serif;">sobrre Lista <strong>1151.</strong></span></span></li>'
-				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Stivarga    - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
-				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Nesavar    - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
-				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Eylia           - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
-				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;"><strong>Ventavis    - PSL -8% + Impuestos </strong>sobrre Lista<strong> 1151.</strong></span></li>'
-				+ '</ul>'
-				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Mantenlimiento de condiction - <strong>31/10/2020</strong></span></p>'
-				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Condicion de pago                     - <strong>Condicion habitual.</strong></span></p>'
-				+ '</div>'
-				+ '</td>'
-				+ '</tr>'
-				+ '</table>'
-							
-				+ '</div>'
-								
-				+ '<div class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">'
-								
-				+ '<table border="1" cellpadding="0" cellspacing="0" role="presentation" style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:left;color:#000000;" width="100%">'
-				+ '<tr>'
-				+ '<th colspan="5" align="left" style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;color:#000000;">Bayer S.A.</th>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<th colspan="5" align="center" style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;color:#000000;">Division Pharmaceuticals</th>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<th colspan="3">Lista de Precios N° 1151'
-				+ '<br />'
-				+ '<br />'
-				+ 'Incremento de Precios'
-				+ '</th>'
-				+ '<td colspan="2" align="right">Vigencia desde: 1 de Marzo de 2020'
-				+ '<br />'
-				+ 'Esta lista anula las anteriores'
-				+ '<br />'
-				+ 'Hoja N° 1'
-				+ '</td>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<th>Certif.</th>'
-				+ '<th>Producto</th>'
-				+ '<th>Descripcion</th>'
-				+ '<th>Pcio. Salida Laboratorio sin I.V.A</th>'
-				+ '<th>Pcio. Sugerido al Publico con I.V.A</th>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<td>45.442</td>'
-				+ '<td>BETAFERON</td>'
-				+ '<td>15 env. indiv.c/vial+jga.prell.c/disc</td>'
-				+ '<td>114.346,67</td>'
-				+ '<td>200.621,23</td>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<td>57.215</td>'
-				+ '<td>STIVARGA</td>'
-				+ '<td>40 mg 3 x 28 tabletas</td>'
-				+ '<td>289.902,54</td>'
-				+ '<td>508.634,01</td>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<td>53.101</td>'
-				+ '<td>NEXAVAR</td>'
-				+ '<td>ENY. 112 COMP. X 200MG.</td>'
-				+ '<td>245.574,41</td>'
-				+ '<td>430.860,30</td>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<td>57.114</td>'
-				+ '<td>EYLIA</td>'
-				+ '<td>Vial Aflibercept 40mg x ml</td>'
-				+ '<td>52.664,19</td>'
-				+ '<td>92.399,31</td>'
-				+ '</tr>'
-				+ '<tr>'
-				+ '<td>51.645</td>'
-				+ '<td>VENTAVIS</td>'
-				+ '<td>42 AMP. X 1 ML. (10 MCG,ML)</td>'
-				+ '<td>93.226,73</td>'
-				+ '<td>163.566,30</td>'
-				+ '</tr>'
-				+ '</table>'
-							
-				+ '</div>'
-								
-				+ '<div class="mj-column-per-100 outlook-group-fix" style="font-size:13px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">'
-				+ '<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">'
-										
-				+ '<tr>'
-				+ '<td align="left" style="font-size:0px;padding:15px 15px 15px 15px;word-break:break-word;">'
-												
-				+ '<div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:left;color:#000000;">'
-				+ '<ul>'
-				+ '<li><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Imprescindible adjuntar el pliego/documento de condiciones de la licitacion/compra de referencia para podder dar cumplimiento al descuento cotizado.</span></li>'
-				+ '</ul>'
-				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Cualquier duda o consulta no dejes de contactarme<br /><br /></p>'
-				+ '<p><span style="font-family: Roboto, Tahoma, sans-serif; font-size: 12px;">Gracias!</span></p>'
-				+ '</div>'
-				+ '</td>'
-				+ '</tr>'
-				+ '</table>'
-				+ '</div>'
-				+ '</td>'
-				+ '</tr>'
-				+ '</tbody>'
-				+ '</table>'
-				+ '</div>'
-				+ '</div>'
-				+ '</body>'
-				+ '</html>'*/
 
-				var sBody = '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">'
-				+ '<head>'
-				+ '<title>'
-				  
-				+ '</title>'
-				+ '</head>'
-				+ '<body>'
-				+ 'test test test'
-				+ '</body>'
-				+ '</html>'
+			Services.sendMail(sRecipient, sSubject);
 
-
-			sap.m.URLHelper.triggerEmail(sRecipient, sSubject, sBody);
 		},
 
 		_onSaveQuotation: function (oEvent) {
@@ -7210,6 +7480,7 @@ sap.ui.define([
 					//empty array 
 					var aResultsForProducts = [];
 					var aResultsForTree = [];
+					
 
 					aProducts.results.forEach(function (oProduct, iIndex) {
 
@@ -7236,6 +7507,8 @@ sap.ui.define([
 										//for each competitor in product result
 										oResult.CompetitorResult.results.forEach(function (oCompetitorResult) {
 
+											let oFastAppDataModel = Services.getFastAppDataModel();
+											let aCountryCompetitors = oFastAppDataModel.getProperty('/CountryCompetitors');
 											//default reason if empty & edit mode
 											/*if( (oCompetitorResult.OUTCOME === 'Won' || oCompetitorResult.OUTCOME === 'Lost') && (oCompetitorResult.REASON === '' || oCompetitorResult.REASON === 'Not Specified') ){
 												oCompetitorResult.REASON = 'Not Specified';
@@ -7254,7 +7527,11 @@ sap.ui.define([
 												REASON: oCompetitorResult.REASON,
 												COMMENT: oCompetitorResult.COMMENT,
 												AWARDEDCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
+												AWARDEDCOMPANYCOMP: aCountryCompetitors.find(company => company.CompetitorCompany === oCompetitorResult.AWARDEDCOMPANY) ? oCompetitorResult.AWARDEDCOMPANY : 'Other',
+												OTHERCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
 												AWARDEDPRODUCT: oCompetitorResult.AWARDEDPRODUCT,
+												PRODUCTCOMP: aCountryCompetitors.find(product => product.CompetitorProduct === oCompetitorResult.AWARDEDPRODUCT) ? oCompetitorResult.AWARDEDPRODUCT : 'Other',
+												OTHERPRODUCT: oCompetitorResult.AWARDEDPRODUCT,
 												AWARDEDPRICE: oCompetitorResult.AWARDEDPRICE,
 												FOC: oProduct.Price.FOC,
 												FOCTYPE: oProduct.Price.FOCType,
@@ -7372,6 +7649,8 @@ sap.ui.define([
 			var oOutcomeTreeTable = this.byId("idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+			let sCountry = oFastAppDataModel.getProperty('/Tender/CountryCode');
+			let sProductCode = oFastAppDataModel.getProperty(oRowContext.sPath + '/PRODUCTCODE');
 
 			//check if a product is selected
 			if (oRowContext === null) {
@@ -7379,32 +7658,65 @@ sap.ui.define([
 				return;
 			}
 
-			//get path of selected product (This can be a Bayer product or an Awarded product)
-			var sPathSelectedRow = oRowContext.getPath();
+			$.when(Services.loadCountryCompetitors(sCountry, sProductCode)).done(function () {
 
-			//check if selected product is an awarded product (the path includes OutcomeLevel/xx)
-			if(sPathSelectedRow.includes("/OutcomeLevel")){ 
-				//get path of parent (BayerProduct)
-				sPathSelectedRow = sPathSelectedRow.substring(0,sPathSelectedRow.indexOf("/OutcomeLevel"));
-			}
+				//get path of selected product (This can be a Bayer product or an Awarded product)
+				var sPathSelectedRow = oRowContext.getPath();
 
-			//get main path for the rewarded 
-			var sPathSelectedRowSubLevel = sPathSelectedRow + "/OutcomeLevel";
-			var aCompetitorsForSelectedRow = oFastAppDataModel.getProperty(sPathSelectedRowSubLevel);
-			if (!aCompetitorsForSelectedRow) {
-				aCompetitorsForSelectedRow = [];
-			}
+				//check if selected product is an awarded product (the path includes OutcomeLevel/xx)
+				if(sPathSelectedRow.includes("/OutcomeLevel")){ 
+					//get path of parent (BayerProduct)
+					sPathSelectedRow = sPathSelectedRow.substring(0,sPathSelectedRow.indexOf("/OutcomeLevel"));
+				}
 
-			//Add new awarded product
-			var oBayerProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
-			var oNewRewardedProduct = Services.getService('Product').getEmptyProductResult();
+				//get main path for the rewarded 
+				var sPathSelectedRowSubLevel = sPathSelectedRow + "/OutcomeLevel";
+				var aCompetitorsForSelectedRow = oFastAppDataModel.getProperty(sPathSelectedRowSubLevel);
+				if (!aCompetitorsForSelectedRow) {
+					aCompetitorsForSelectedRow = [];
+				}
+
+				//Add new awarded product
+				var oBayerProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
+				var oNewRewardedProduct = Services.getService('Product').getEmptyProductResult();
+				
+				//fill necesary data
+				oNewRewardedProduct.OFFERID = oBayerProduct.OFFERID;
+				oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
+				aCompetitorsForSelectedRow.push(oNewRewardedProduct);
+				oFastAppDataModel.setProperty(sPathSelectedRowSubLevel, aCompetitorsForSelectedRow);
+			});
+		},
+
+		onChangeAwardedProductCompetitor: function(oEvent){
+			//get model & selected row
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeDrop = oEvent.getSource();
+			var sBindingPath = oOutcomeDrop.getBindingContext("fastAppData").getPath();
+			let oOutcomeLevel = oFastAppDataModel.getProperty(sBindingPath);
+			let sBindingPathSet = sBindingPath + '/PRODUCT';
 			
-			//fill necesary data
-			oNewRewardedProduct.OFFERID = oBayerProduct.OFFERID;
-			oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
-			aCompetitorsForSelectedRow.push(oNewRewardedProduct);
-			oFastAppDataModel.setProperty(sPathSelectedRowSubLevel, aCompetitorsForSelectedRow);
+			//check if a product is selected
+			if (oOutcomeLevel === null) {
+				return;
+			}
 
+			oFastAppDataModel.setProperty(sBindingPathSet, oOutcomeLevel.PRODUCTCOMP);
+		},
+
+		onChangeAwardedCompanyCompetitor: function(oEvent){
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeDrop = oEvent.getSource();
+			var sBindingPath = oOutcomeDrop.getBindingContext("fastAppData").getPath();
+			let oOutcomeLevel = oFastAppDataModel.getProperty(sBindingPath);
+			let sBindingPathSet = sBindingPath + '/AWARDEDCOMPANY';
+			
+			//check if a product is selected
+			if (oOutcomeLevel === null) {
+				return;
+			}
+
+			oFastAppDataModel.setProperty(sBindingPathSet, oOutcomeLevel.AWARDEDCOMPANYCOMP);
 		},
 
 		//remove awarded company results

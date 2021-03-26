@@ -279,18 +279,66 @@
 												<m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer'}"/>
 											</t:template>
 										</t:Column>
-										<t:Column width="16rem">
-											<m:Label text="Product"/>
-											<t:template>
-												<m:Input id="resultsForTreeProduct" value="{fastAppData>PRODUCT}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"/>
-											</t:template>
-										</t:Column>
+
 										<t:Column width="13rem">
 											<m:Label text="Awarded Company"/>
 											<t:template>
-												<m:Input id="resulsForTreeAwardedCompany" value="{fastAppData>AWARDEDCOMPANY}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' &amp;&amp; ${fastAppData>_sOperation} === 'POST' ? true : false}"/>
+												<m:VBox>
+													<m:Input value="{fastAppData>AWARDEDCOMPANY}" 
+															 enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+															 visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
+
+													<m:Select selectedKey="{fastAppData>AWARDEDCOMPANYCOMP}" 
+															  enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+															  items="{
+																  path: 'fastAppData>/CountryCompetitors/'
+															  }"
+															  visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
+															  change="onChangeAwardedCompanyCompetitor">
+														<m:items>
+															<core:Item text="{fastAppData>CompetitorCompany}" key="{fastAppData>CompetitorCompany}"/>
+														</m:items>
+													</m:Select>
+
+													<m:Input 
+																value="{fastAppData>OTHERCOMPANY}" 
+																enabled="{= ${fastAppData>/EditMode} === true &amp;&amp;  ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false }"
+																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true &amp;&amp; ${fastAppData>AWARDEDCOMPANYCOMP} === 'Other' }"/>
+												</m:VBox>
 											</t:template>
 										</t:Column>
+
+										<t:Column width="16rem">
+											<m:Label text="Product"/>
+											<t:template>
+												<m:VBox>
+													<m:items>
+														<m:Input 
+																value="{fastAppData>PRODUCT}" 
+																enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
+
+														 <m:Select 
+																selectedKey="{fastAppData>PRODUCTCOMP}" 
+																enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+																items="{ path: 'fastAppData>/CountryCompetitors/'}"
+																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
+																change="onChangeAwardedProductCompetitor">
+															<m:items>
+																<core:Item text="{fastAppData>CompetitorProduct}" key="{fastAppData>CompetitorProduct}"/>
+															</m:items>
+														</m:Select>
+
+														<m:Input 
+																value="{fastAppData>OTHERPRODUCT}" 
+																enabled="{= ${fastAppData>/EditMode} === true &amp;&amp;  ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false }"
+																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true &amp;&amp; ${fastAppData>PRODUCTCOMP} === 'Other' }"/>
+													</m:items>
+												</m:VBox>
+											</t:template>
+
+										</t:Column>
+										
 										<t:Column width="9rem">
 											<m:Label text="Awarded Price"/>
 											<t:template>

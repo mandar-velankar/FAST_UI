@@ -1024,13 +1024,25 @@ sap.ui.define([
 								(offerValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1
 							);
 						}
+
+						//Calculate the CIF price
+						let cifPrice = (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
 						
+						//for argentinia & brazilië the offerPrice is not the preApprovedPrice
+						if(sCountryCode==="AR" || sCountryCode==="BR"){	
+							//offer price is in this case the standard price based upon CIF price & reductions
+							sPreApprovedPrice = cifPrice - (cifPrice * 0,10); //TODO get discount
+							sDiscount = 0.10;//TODO get discount
+						}else{
+							sDiscount = "";
+						}
+
 						var price = {
 							name: "Not Set",
 							description: "",
-							cifPrice: (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice,//if offer in units, divide by pack factor, otherwise pack value if good
-							newCifPrice: (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice,//if offer in units, divide by pack factor, otherwise pack value if good
-							discount: "",//0,
+							cifPrice: cifPrice,
+							newCifPrice: cifPrice,
+							discount: sDiscount, //"",//0,
 							offerPrice: sPreApprovedPrice, //"",
 							standardDiscount: "",
 							additionalDiscount: "",
