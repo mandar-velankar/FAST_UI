@@ -1744,8 +1744,18 @@ sap.ui.define([
 
 					var aCountryCompetitors = oData.results;
 
+					//if(aCountryCompetitors.length === 0){
+						var oOtherCompetitor = {
+							CompetitorCompany: "Other",
+							CompetitorProduct: "Other",
+							CountryCode: sCountry,
+							ID:"1",
+						}
+						aCountryCompetitors.push(oOtherCompetitor);
+					//}
+
 					var oEmptyCompetitor = {
-						CompetitorName: "",
+						CompetitorCompany: "",
 						CompetitorProduct: "",
 						CountryCode: "",
 						ID:""

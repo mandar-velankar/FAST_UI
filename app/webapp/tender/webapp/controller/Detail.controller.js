@@ -6997,6 +6997,7 @@ sap.ui.define([
 					//empty array 
 					var aResultsForProducts = [];
 					var aResultsForTree = [];
+					
 
 					aProducts.results.forEach(function (oProduct, iIndex) {
 
@@ -7023,6 +7024,8 @@ sap.ui.define([
 										//for each competitor in product result
 										oResult.CompetitorResult.results.forEach(function (oCompetitorResult) {
 
+											let oFastAppDataModel = Services.getFastAppDataModel();
+											let aCountryCompetitors = oFastAppDataModel.getProperty('/CountryCompetitors');
 											//default reason if empty & edit mode
 											/*if( (oCompetitorResult.OUTCOME === 'Won' || oCompetitorResult.OUTCOME === 'Lost') && (oCompetitorResult.REASON === '' || oCompetitorResult.REASON === 'Not Specified') ){
 												oCompetitorResult.REASON = 'Not Specified';
@@ -7041,7 +7044,11 @@ sap.ui.define([
 												REASON: oCompetitorResult.REASON,
 												COMMENT: oCompetitorResult.COMMENT,
 												AWARDEDCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
+												AWARDEDCOMPANYCOMP: aCountryCompetitors.find(company => company.CompetitorCompany === oCompetitorResult.AWARDEDCOMPANY) ? oCompetitorResult.AWARDEDCOMPANY : 'Other',
+												OTHERCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
 												AWARDEDPRODUCT: oCompetitorResult.AWARDEDPRODUCT,
+												PRODUCTCOMP: aCountryCompetitors.find(product => product.CompetitorProduct === oCompetitorResult.AWARDEDPRODUCT) ? oCompetitorResult.AWARDEDPRODUCT : 'Other',
+												OTHERPRODUCT: oCompetitorResult.AWARDEDPRODUCT,
 												AWARDEDPRICE: oCompetitorResult.AWARDEDPRICE,
 												FOC: oProduct.Price.FOC,
 												FOCTYPE: oProduct.Price.FOCType,
@@ -7159,6 +7166,8 @@ sap.ui.define([
 			var oOutcomeTreeTable = this.byId("idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+			let sCountry = oFastAppDataModel.getProperty('/Tender/CountryCode');
+			let sProductCode = oFastAppDataModel.getProperty(oRowContext.sPath + '/PRODUCTCODE');
 
 			//check if a product is selected
 			if (oRowContext === null) {
@@ -7166,32 +7175,65 @@ sap.ui.define([
 				return;
 			}
 
-			//get path of selected product (This can be a Bayer product or an Awarded product)
-			var sPathSelectedRow = oRowContext.getPath();
+			$.when(Services.loadCountryCompetitors(sCountry, sProductCode)).done(function () {
 
-			//check if selected product is an awarded product (the path includes OutcomeLevel/xx)
-			if(sPathSelectedRow.includes("/OutcomeLevel")){ 
-				//get path of parent (BayerProduct)
-				sPathSelectedRow = sPathSelectedRow.substring(0,sPathSelectedRow.indexOf("/OutcomeLevel"));
-			}
+				//get path of selected product (This can be a Bayer product or an Awarded product)
+				var sPathSelectedRow = oRowContext.getPath();
 
-			//get main path for the rewarded 
-			var sPathSelectedRowSubLevel = sPathSelectedRow + "/OutcomeLevel";
-			var aCompetitorsForSelectedRow = oFastAppDataModel.getProperty(sPathSelectedRowSubLevel);
-			if (!aCompetitorsForSelectedRow) {
-				aCompetitorsForSelectedRow = [];
-			}
+				//check if selected product is an awarded product (the path includes OutcomeLevel/xx)
+				if(sPathSelectedRow.includes("/OutcomeLevel")){ 
+					//get path of parent (BayerProduct)
+					sPathSelectedRow = sPathSelectedRow.substring(0,sPathSelectedRow.indexOf("/OutcomeLevel"));
+				}
 
-			//Add new awarded product
-			var oBayerProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
-			var oNewRewardedProduct = Services.getService('Product').getEmptyProductResult();
+				//get main path for the rewarded 
+				var sPathSelectedRowSubLevel = sPathSelectedRow + "/OutcomeLevel";
+				var aCompetitorsForSelectedRow = oFastAppDataModel.getProperty(sPathSelectedRowSubLevel);
+				if (!aCompetitorsForSelectedRow) {
+					aCompetitorsForSelectedRow = [];
+				}
+
+				//Add new awarded product
+				var oBayerProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
+				var oNewRewardedProduct = Services.getService('Product').getEmptyProductResult();
+				
+				//fill necesary data
+				oNewRewardedProduct.OFFERID = oBayerProduct.OFFERID;
+				oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
+				aCompetitorsForSelectedRow.push(oNewRewardedProduct);
+				oFastAppDataModel.setProperty(sPathSelectedRowSubLevel, aCompetitorsForSelectedRow);
+			});
+		},
+
+		onChangeAwardedProductCompetitor: function(oEvent){
+			//get model & selected row
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeDrop = oEvent.getSource();
+			var sBindingPath = oOutcomeDrop.getBindingContext("fastAppData").getPath();
+			let oOutcomeLevel = oFastAppDataModel.getProperty(sBindingPath);
+			let sBindingPathSet = sBindingPath + '/PRODUCT';
 			
-			//fill necesary data
-			oNewRewardedProduct.OFFERID = oBayerProduct.OFFERID;
-			oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
-			aCompetitorsForSelectedRow.push(oNewRewardedProduct);
-			oFastAppDataModel.setProperty(sPathSelectedRowSubLevel, aCompetitorsForSelectedRow);
+			//check if a product is selected
+			if (oOutcomeLevel === null) {
+				return;
+			}
 
+			oFastAppDataModel.setProperty(sBindingPathSet, oOutcomeLevel.PRODUCTCOMP);
+		},
+
+		onChangeAwardedCompanyCompetitor: function(oEvent){
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeDrop = oEvent.getSource();
+			var sBindingPath = oOutcomeDrop.getBindingContext("fastAppData").getPath();
+			let oOutcomeLevel = oFastAppDataModel.getProperty(sBindingPath);
+			let sBindingPathSet = sBindingPath + '/AWARDEDCOMPANY';
+			
+			//check if a product is selected
+			if (oOutcomeLevel === null) {
+				return;
+			}
+
+			oFastAppDataModel.setProperty(sBindingPathSet, oOutcomeLevel.AWARDEDCOMPANYCOMP);
 		},
 
 		//remove awarded company results
