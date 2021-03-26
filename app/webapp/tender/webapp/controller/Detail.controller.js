@@ -6655,28 +6655,36 @@ sap.ui.define([
 			const selectedProductID = Services.getSelectedProductID();
 			const selectedProductName = Services.getSelectedProductName();
 			const selectedProductNewNetPrice = +this.byId("idEditPriceOffer_idNetPrice").getValue();
-
-			const otherDistributorProductNetPrices = allTenderOffers
+			const otherDistributorProduct = allTenderOffers
 				.filter(offer => offer.OfferID !== selectedOfferID)
-				.map(offer => offer.Product.results.find(prod => prod.ProductCode === selectedProductID))
+				.map(offer => offer.Product.results.find(prod => (prod && prod.Price && prod.ProductCode === selectedProductID)))
+				.filter(Product => Product !== undefined); //no products or prices underneath the offer
+			const otherDistributorProductNetPrices = otherDistributorProduct
 				.map(prod => {
 					return {
-						offerID : prod.OfferID,
-						netPrice: +prod.Price.NetPrice
+							offerID : prod.OfferID,
+							netPrice : +prod.Price.NetPrice
 					};
 				});
 			
 			const lowestNetPrice = Math.min.apply(null, otherDistributorProductNetPrices.map(item => item.netPrice));
 			const bNetPriceIsHigherThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice > item.netPrice );
+			const sNetPriceIsHigherThanAppliedForOtherDistributor = otherDistributorProductNetPrices
+				.filter(item => selectedProductNewNetPrice > item.netPrice )
+				.map(item => item.offerID + ' with a net price (' + item.netPrice + ')').toString();
 			const bNetPriceIsLowerThanAppliedForOtherDistributor = otherDistributorProductNetPrices.some(item => selectedProductNewNetPrice < item.netPrice );
+			const sNetPriceIsLowerThanAppliedForOtherDistributor = otherDistributorProductNetPrices
+				.filter(item => selectedProductNewNetPrice < item.netPrice )
+				.map(item => item.offerID + ' with a net price (' + item.netPrice + ')').toString();
+			
 			let msg = "";
 
 			if(bNetPriceIsHigherThanAppliedForOtherDistributor){
-				msg = `You have selected different net prices for different distributor offers. The lowest price used in offer xxx is ${lowestNetPrice}.`;
+				msg = `You have selected different net prices applicable ${sNetPriceIsHigherThanAppliedForOtherDistributor}. The lowest price used is ${lowestNetPrice}. Please check for product ${selectedProductName}. Additional discount should be calculated and applied to have same as lowest net price for other distributors`;
 			}
 
 			if(bNetPriceIsLowerThanAppliedForOtherDistributor){
-				msg = `Warning "You have selected a higher net prices in offer xxx. The price used in that offer is xxx.`;
+				msg = `Warning "You have selected a higher net prices in offer ${sNetPriceIsLowerThanAppliedForOtherDistributor} for product ${selectedProductName}.`;
 			}
 
 			if(bNetPriceIsHigherThanAppliedForOtherDistributor || bNetPriceIsLowerThanAppliedForOtherDistributor){
@@ -6691,7 +6699,6 @@ sap.ui.define([
 					});
 				});
 			}
-
 			
 			return true;
 		},
