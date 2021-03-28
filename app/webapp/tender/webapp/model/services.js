@@ -1744,15 +1744,14 @@ sap.ui.define([
 
 					var aCountryCompetitors = oData.results;
 
-					//if(aCountryCompetitors.length === 0){
-						var oOtherCompetitor = {
-							CompetitorCompany: "Other",
-							CompetitorProduct: "Other",
-							CountryCode: sCountry,
-							ID:"1",
-						}
-						aCountryCompetitors.push(oOtherCompetitor);
-					//}
+					var oOtherCompetitor = {
+						CompetitorCompany: "Other",
+						CompetitorProduct: "Other",
+						CountryCode: sCountry,
+						ID:"1",
+					}
+					aCountryCompetitors.push(oOtherCompetitor);
+
 
 					var oEmptyCompetitor = {
 						CompetitorCompany: "",
@@ -1763,10 +1762,12 @@ sap.ui.define([
 
 					//data received is set
 					aCountryCompetitors.push(oEmptyCompetitor);
-					aCountryCompetitors = that.sortByKeyAsc(aCountryCompetitors, "ID");
+					aCountryCompetitors = that.sortByKeyAsc(aCountryCompetitors, "CompetitorCompany");
 
 					//data received is set
 					oFastAppDataModel.setProperty("/CountryCompetitors", aCountryCompetitors);
+					oFastAppDataModel.setProperty("/CountryCompetitorProducts", aCountryCompetitors);
+					oFastAppDataModel.setProperty("/CountryCompetitorCompanies", [...new Map(aCountryCompetitors.map(item => [item['CompetitorCompany'], item])).values()]);
 
 					//let the callback be triggered
 					oDeferred.resolve(aCountryCompetitors);

@@ -7026,6 +7026,7 @@ sap.ui.define([
 
 											let oFastAppDataModel = Services.getFastAppDataModel();
 											let aCountryCompetitors = oFastAppDataModel.getProperty('/CountryCompetitors');
+											let aCountryCompetitorProducts = oFastAppDataModel.getProperty('/CountryCompetitorProducts')
 											//default reason if empty & edit mode
 											/*if( (oCompetitorResult.OUTCOME === 'Won' || oCompetitorResult.OUTCOME === 'Lost') && (oCompetitorResult.REASON === '' || oCompetitorResult.REASON === 'Not Specified') ){
 												oCompetitorResult.REASON = 'Not Specified';
@@ -7056,6 +7057,7 @@ sap.ui.define([
 												UNITPERPACK: oProduct.UnitPerPack,
 												CURRENCY: oCompetitorResult.CURRENCY,
 												LISTOUTCOMEREASONS: oCompetitorResult.ListOutcomeReasons,
+												CountryCompetitorProducts: aCountryCompetitorProducts,
 												_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
 											}
 											aCompetitorResult.push(oCompetitorResultForView);
@@ -7202,19 +7204,23 @@ sap.ui.define([
 				oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
 				aCompetitorsForSelectedRow.push(oNewRewardedProduct);
 				oFastAppDataModel.setProperty(sPathSelectedRowSubLevel, aCompetitorsForSelectedRow);
+
+				//clear competitorProducts, as such that initially, an awarded company should be selected
+				//TODO JVDB: clear dropdown, not model
+				//oFastAppDataModel.setProperty('/CountryCompetitorProducts', []);
 			});
 		},
 
 		onChangeAwardedProductCompetitor: function(oEvent){
 			//get model & selected row
-			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oOutcomeDrop = oEvent.getSource();
-			var sBindingPath = oOutcomeDrop.getBindingContext("fastAppData").getPath();
-			let oOutcomeLevel = oFastAppDataModel.getProperty(sBindingPath);
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let oProductDrop = oEvent.getSource();
+			let sBindingPath = oProductDrop.getBindingContext("fastAppData").getPath();
+			let oProductLevel = oFastAppDataModel.getProperty(sBindingPath);
 			let sBindingPathSet = sBindingPath + '/PRODUCT';
 			
 			//check if a product is selected
-			if (oOutcomeLevel === null) {
+			if (oProductLevel === null) {
 				return;
 			}
 
@@ -7234,6 +7240,24 @@ sap.ui.define([
 			}
 
 			oFastAppDataModel.setProperty(sBindingPathSet, oOutcomeLevel.AWARDEDCOMPANYCOMP);
+
+			//filter competitor product dropdown by selected competitor company
+			let aCompetitorProducts = oFastAppDataModel.getProperty('/CountryCompetitors');
+			if(aCompetitorProducts.length > 0){
+				aCompetitorProducts = aCompetitorProducts.filter(product => product.CompetitorCompany === oOutcomeLevel.AWARDEDCOMPANYCOMP || product.CompetitorProduct === '');
+				if(oOutcomeLevel.AWARDEDCOMPANYCOMP !== 'Other'){
+
+					//Push an "other" option to the product list
+					var oOtherProduct = {
+						CompetitorCompany: oOutcomeLevel.AWARDEDCOMPANYCOMP,
+						CompetitorProduct: "Other",
+						CountryCode: oOutcomeLevel.CountryCode,
+						ID:"1",
+					}
+					aCompetitorProducts.push(oOtherProduct);
+				}
+				oFastAppDataModel.setProperty(sBindingPath + '/CountryCompetitorProducts', aCompetitorProducts);
+			}
 		},
 
 		//remove awarded company results

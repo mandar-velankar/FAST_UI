@@ -291,7 +291,7 @@
 													<m:Select selectedKey="{fastAppData>AWARDEDCOMPANYCOMP}" 
 															  enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
 															  items="{
-																  path: 'fastAppData>/CountryCompetitors/'
+																  path: 'fastAppData>/CountryCompetitorCompanies/'
 															  }"
 															  visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
 															  change="onChangeAwardedCompanyCompetitor">
@@ -319,9 +319,10 @@
 																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
 
 														 <m:Select 
+														 		id="idSelectCompetitorProduct"
 																selectedKey="{fastAppData>PRODUCTCOMP}" 
 																enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
-																items="{ path: 'fastAppData>/CountryCompetitors/'}"
+																items="{ path: 'fastAppData>CountryCompetitorProducts/'}"
 																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
 																change="onChangeAwardedProductCompetitor">
 															<m:items>
