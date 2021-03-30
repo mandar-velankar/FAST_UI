@@ -4567,7 +4567,8 @@ sap.ui.define([
 		 */
 		onTenderOverviewPress: async function(oEvent){
 
-			
+			BusyIndicator.show(0);
+
 			const oTenderOverviewObject = await this._createTenderOverviewModelStructure();
 			Services.getFastAppDataModel().setProperty("/TenderOverview", oTenderOverviewObject);
 
@@ -4589,7 +4590,7 @@ sap.ui.define([
 			}
 
 
-			this.pTenderOverviewDialog.then(oDialog => oDialog.open());
+			this.pTenderOverviewDialog.then(oDialog => oDialog.open() && BusyIndicator.hide());
 
 		},
 
