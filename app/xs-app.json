@@ -24,6 +24,26 @@
       "localDir": "dist"
     },
     {
+      "source": "^/tender/(.*)$",
+      "target": "$1",
+      "localDir": "dist/tender/webapp"
+    },
+    {
+      "source": "^/epa/(.*)$",
+      "target": "$1",
+      "localDir": "dist/epa/webapp"
+    },
+    {
+      "source": "^/ppa/(.*)$",
+      "target": "$1",
+      "localDir": "dist"
+    },
+    {
+      "source": "^/contracts/(.*)$",
+      "target": "$1",
+      "localDir": "dist/contracts/webapp"
+    },
+    {
       "source": "^/appdebug/(.*)$",
       "target": "$1",
       "localDir": "webapp"

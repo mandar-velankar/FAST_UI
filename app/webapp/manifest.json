@@ -88,6 +88,10 @@
 			}
 		},
 		"resourceRoots":{
+			"com.bayer.tender.ppa": "./ppa/webapp",
+			"com.bayer.tender.epa": "./epa/webapp",
+			"com.bayer.tender.contracts": "./contracts/webapp",
+			"FAST_NS0FAST0": "./tender/webapp"
 		},
 		"dependencies": {
 			"minUI5Version": "1.71.0",
