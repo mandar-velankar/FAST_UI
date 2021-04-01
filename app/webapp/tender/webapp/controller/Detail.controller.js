@@ -7668,14 +7668,16 @@ sap.ui.define([
 			var oOutcomeTreeTable = this.byId("idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
-			let sCountry = oFastAppDataModel.getProperty('/Tender/CountryCode');
-			let sProductCode = oFastAppDataModel.getProperty(oRowContext.sPath + '/PRODUCTCODE');
+			
 
 			//check if a product is selected
 			if (oRowContext === null) {
 				sap.m.MessageToast.show("Please first select the line where you want to add a product...");
 				return;
 			}
+
+			let sCountry = oFastAppDataModel.getProperty('/Tender/CountryCode');
+			let sProductCode = oFastAppDataModel.getProperty(oRowContext.sPath + '/PRODUCTCODE');
 
 			$.when(Services.loadCountryCompetitors(sCountry, sProductCode)).done(function () {
 
@@ -7724,7 +7726,7 @@ sap.ui.define([
 				return;
 			}
 
-			oFastAppDataModel.setProperty(sBindingPathSet, oOutcomeLevel.PRODUCTCOMP);
+			oFastAppDataModel.setProperty(sBindingPathSet, oProductLevel.PRODUCTCOMP);
 		},
 
 		onChangeAwardedCompanyCompetitor: function(oEvent){
