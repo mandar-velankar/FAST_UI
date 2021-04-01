@@ -4252,6 +4252,12 @@ sap.ui.define([
 				//close dialog
 				that.onDuplicateOfferDialogClose();
 
+				// show messages
+				if (Services.getOfferCompositeMessages().length > 0) {
+					Services.showMessageCompositeView("Offer duplicated", Services.getOfferCompositeMessages(), 'Success');
+					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+				}
+
 			});	
 
 		},
@@ -4289,7 +4295,8 @@ sap.ui.define([
 			try {
 
 				//save new offer
-				await Services.saveOffer(oNewOffer).then(function (oResult) {
+				await Services.saveOffer(oNewOffer)
+				.then(function (oResult) {
 					
 					//if offer is created successfully we can create the offer status, products.. for the saved offer
 					
@@ -4305,7 +4312,16 @@ sap.ui.define([
 						await that._cloneProduct.call(that, oNewOffer, oProduct);
 					}));
 
-				}).catch(function (oError) {
+				})
+				.then(() => {
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Offer duplicated successfully',
+						description: 'Offer duplicated successfully',
+						subtitle: 'Offer: ' + nextOfferID
+					});
+				})
+				.catch(function (oError) {
 
 					//show error message
 					Services.showErrorMessage(oError, "Create offer");
