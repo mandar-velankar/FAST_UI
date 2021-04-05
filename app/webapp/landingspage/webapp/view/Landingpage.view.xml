@@ -125,16 +125,17 @@
 							</l:HorizontalLayout>
 						</l:VerticalLayout>	
 
+						<!-- Analytics Dashboard-->
 						<l:VerticalLayout>
-							<l:HorizontalLayout id="idTableauDash" allowWrapping="true">
+							<l:HorizontalLayout id="idAnalyticsDash" allowWrapping="true">
 								<GenericTile
-									class="sapUiTinyMarginBegin
-									sapUiTinyMarginTop tileLayout"
-									header="Tableau Dashboard"
-									press="onTileTableauDashPress">
-									<TileContent footer="Go to tableau...">
-										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
-									</TileContent>
+								class="sapUiTinyMarginBegin
+								sapUiTinyMarginTop tileLayout"
+								header="Analytics Dashboard"
+								press="onTileAnalyticsDashPress">
+								<TileContent footer="Go to tableau...">
+									<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+								</TileContent>
 								</GenericTile>
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
