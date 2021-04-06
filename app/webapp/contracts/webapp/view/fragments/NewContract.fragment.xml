@@ -74,12 +74,19 @@
 
 				<!-- Institute -->
 				<Label text="{i18n>Institute}" required="true"/>
-				<Select id="idInstituteNewContract" 
+				<!-- <Select id="idInstituteNewContract" 
 						selectedKey="{ctr>/newContract/instituteId}"
 						items="{ path: 'ctr>/institutes', sorter: { path: 'instituteName' } }"
 						enabled="true">
 					<core:Item text="{ctr>instituteName}" key="{ctr>instituteID}"/>
-				</Select>
+				</Select> -->
+				<MultiComboBox id="idInstituteNewContract" 
+					selectionChange="handleSelectionChange"
+					selectionFinish="handleSelectionFinish"
+					items="{ path: 'ctr>/institutes', sorter: { path: 'instituteName' } }"
+				>
+					<core:Item text="{ctr>instituteName}" key="{ctr>instituteID}"/>
+				</MultiComboBox>
 
 				<!-- Distributor -->
 				<Label text="{i18n>didtrbtrnme}" required="true"/>

@@ -136,11 +136,14 @@ sap.ui.define([
 
 			//for contract tab: contract type = other
 			if (this.getSelectedSection() === this.getContractSectionId()){
-				if( oCurrentContract.channel === 'OTC'){
-					sEditEnabled = true;
-				}else{
-					sEditEnabled = false;
-				}
+
+				sEditEnabled = true;
+				
+				// if( oCurrentContract.channel === 'OTC'){
+				// 	sEditEnabled = true;
+				// }else{
+				// 	sEditEnabled = false;
+				// }
 			}
 
 			//for deliveryTracking tab: product needs to be selected & contract type = other
@@ -293,17 +296,18 @@ sap.ui.define([
 				const [institutes] = values;
 
 				//add empty line
-				var oEmptyInstitute = {
-					instituteID: '',
-					instituteName: ''
-				};
-				institutes.push(oEmptyInstitute);
+				// var oEmptyInstitute = {
+				// 	instituteID: '',
+				// 	instituteName: ''
+				// };
+				// institutes.push(oEmptyInstitute);
 
 				this.setProperty("institutes", [...institutes]);
 				return this.getProperty("institutes");
 			});			
 
 		},
+
 
 		/**
 		 * get list of institutes with the childeren institutes
@@ -491,54 +495,66 @@ sap.ui.define([
 			this.setProperty("currentContract", new Contract());
 			const loadedContract = this.getContractByNumber(sContractNumber);
 
-			//Is contract loaded? (we still get the details?)
-			if(loadedContract && !bHardRefresh){
-				const channel = loadedContract.channel;
+			return this.getService().getContractByNumber(sContractNumber).then(contract => {
+
+				//Convert data to Contract
+				//var oContract = this.convertDataToContract(contract.data.results[0]);
+				var oContract = new Contract(contract.data.results[0]);
+				this.setProperty("currentContract", oContract); 
+
+				return oContract;
+			});
+
+			// //Is contract loaded? (we still get the details?)
+			// if(loadedContract && !bHardRefresh){
+			// 	const channel = loadedContract.channel;
 		
-				if(channel === "Tender"){
-					return this.getService().getTenderContractByNumber(sContractNumber).then(contract => {
+			// 	if(channel === "Tender"){
+			// 		return this.getService().getTenderContractByNumber(sContractNumber).then(contract => {
 
-						//Convert data to Tender contract
-						var oContract = this.convertDataToTenderContract(contract.data);
-						this.setProperty("currentContract", oContract);
+			// 			//Convert data to Tender contract
+			// 			var oContract = this.convertDataToTenderContract(contract.data);
+			// 			this.setProperty("currentContract", oContract);
 
-						return oContract;
+			// 			return oContract;
 
-					});
-				}else{
-					return this.getService().getContractByNumber(sContractNumber).then(contract => {
+			// 		});
+			// 	}else{
+			// 		return this.getService().getContractByNumber(sContractNumber).then(contract => {
 
-						//Convert data to Contract
-						var oContract = this.convertDataToContract(contract.data.results[0]);
-						this.setProperty("currentContract", oContract); 
+			// 			//Convert data to Contract
+			// 			var oContract = this.convertDataToContract(contract.data.results[0]);
+			// 			this.setProperty("currentContract", oContract); 
 
-						return oContract;
-					});
-				}
-			}else{
-				//TODO should this be handled by back-end?
-				//we don't know if the contract number is from a Tender or Other (not yet loaded)
-				return this.getService().getTenderContractByNumber(sContractNumber).then(contract => {
+			// 			return oContract;
+			// 		});
+			// 	}
+			// }
+			
+			// else{
+			// 	//TODO should this be handled by back-end?
+			// 	//we don't know if the contract number is from a Tender or Other (not yet loaded)
+			// 	return this.getService().getTenderContractByNumber(sContractNumber).then(contract => {
 
-						//Convert data to Tender contract
-						var oContract = this.convertDataToTenderContract(contract.data);
-						this.setProperty("currentContract", oContract);
+			// 			//Convert data to Tender contract
+			// 			var oContract = this.convertDataToTenderContract(contract.data);
+			// 			this.setProperty("currentContract", oContract);
 
-						return oContract;
+			// 			return oContract;
 
-				}).catch((error) => {
-					return this.getService().getContractByNumber(sContractNumber).then(contract => {
+			// 	}).catch((error) => {
+			// 		return this.getService().getContractByNumber(sContractNumber).then(contract => {
 
-						//Convert data to Contract
-						var oContract = this.convertDataToContract(contract.data.results[0]);
-						this.setProperty("currentContract", oContract); 
+			// 			//Convert data to Contract
+			// 			var oContract = this.convertDataToContract(contract.data.results[0]);
+			// 			this.setProperty("currentContract", oContract); 
 
-						return oContract;
+			// 			return oContract;
 
-					});	
-				});	
+			// 		});	
+			// 	});	
 		
-			}
+			// }
 
 
 		},
@@ -617,26 +633,26 @@ sap.ui.define([
 
 		},
 
-		//convert data comming from back-end into Contract object
-		convertDataToContract: function(data){
-			var aInstituteWithChildren = [];
-			const contract = data; //TODO: check if the contract service can have multiple records for a particular contract number. if yes, then this code must probably be changed.  
-			contract['channel'] = 'OTC';
-			var oContract = new Contract(contract);
+		// //convert data comming from back-end into Contract object
+		// convertDataToContract: function(data){
+		// 	var aInstituteWithChildren = [];
+		// 	const contract = data; //TODO: check if the contract service can have multiple records for a particular contract number. if yes, then this code must probably be changed.  
+		// 	contract['channel'] = 'OTC';
+		// 	var oContract = new Contract(contract);
 
-			//only parent instistute exists (this way we always have a instistute available on delivery popup, even if its hidden, parent should be selected)
-			var oPartentInistitute = {
-				instituteID: oContract.institute.instituteID,
-				instituteName: oContract.institute.instituteName,
-				isParent: true
-			}
-			aInstituteWithChildren.push(oPartentInistitute);
+		// 	//only parent instistute exists (this way we always have a instistute available on delivery popup, even if its hidden, parent should be selected)
+		// 	var oPartentInistitute = {
+		// 		instituteID: oContract.institute.instituteID,
+		// 		instituteName: oContract.institute.instituteName,
+		// 		isParent: true
+		// 	}
+		// 	aInstituteWithChildren.push(oPartentInistitute);
 			
-			this.setInstitutesChildren(aInstituteWithChildren);
+		// 	this.setInstitutesChildren(aInstituteWithChildren);
 
-			return oContract;
+		// 	return oContract;
 
-		},
+		// },
 
 		getPenaltyReasons: function () {
 			this.setProperty("penaltyReasons", "");
@@ -755,10 +771,10 @@ sap.ui.define([
                 "ID" : this.create_UUID(),
                 "CountryCode": "", 
                 "ContractNumber": "", 
-                "ChannelId": "f790b7fe-9e1b-4a61-ba38-72fd2cb6f054", //other
+                "ChannelId": "f790b7fe-9e1b-4a61-ba38-72fd2cb6f054", // other contracts (OTC)
                 "ContractDate": "", 
                 "Enabled": true,
-                "InstituteId": "",
+                "Institutes": [],
                 "DistributorId": "",
                 "SellingCompanyCode": "",
                 "Currency": "",
@@ -986,11 +1002,11 @@ sap.ui.define([
 		getInstituteDistributorBrandProducts: function (){
 
 			const sCountryCode = this.getCurrentContract().countryCode; 
-			const iInstitudeId = this.getCurrentContract().instituteId;
+			const aInstitutes = this.getCurrentContract().institutes;
 			const iDistributorId = this.getCurrentContract().distributorId;
 			const sSellingCompanyCode = this.getCurrentContract().sellingCompanyCode;
 
-			return this.getCatService().getInstituteDistributorBrandProducts(sCountryCode, iInstitudeId, iDistributorId, sSellingCompanyCode).then((response) => {
+			return this.getCatService().getInstituteDistributorBrandProducts(sCountryCode, aInstitutes, iDistributorId, sSellingCompanyCode).then((response) => {
 
 				this.getCurrentContract()["instituteDistributorBrandProducts"] = response.data.results
 				this.getCurrentContract()["uniqueBrands"] = Array.from(new Set(response.data.results.map(x => x.BRAND_ID)))

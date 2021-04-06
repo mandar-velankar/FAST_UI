@@ -182,14 +182,16 @@ sap.ui.define([
 				this.getCountryCurrencies(this.ctrState.getCurrentContract().countryCode);
 				this.getSellingCompanies(this.ctrState.getCurrentContract().countryCode);
 				this.getChannels();
-				this.getInstituteDistributorBrandProducts();
+				
+				// TODO: use this when clicking on add products
+				//this.getInstituteDistributorBrandProducts();
 
 				//hide warning message
-				if(this.ctrState.getCurrentContract().channel==="OTC"){
-					this.byId("msgWarningEdit").setVisible(false);
-				}else{
-					this.byId("msgWarningEdit").setVisible(true);
-				}
+				// if(this.ctrState.getCurrentContract().channel==="OTC"){
+				// 	this.byId("msgWarningEdit").setVisible(false);
+				// }else{
+				// 	this.byId("msgWarningEdit").setVisible(true);
+				// }
 				
 
 				//all loaded correctly, set busy indicator false
@@ -968,11 +970,15 @@ sap.ui.define([
 
 		onCreateProduct: function(oEvent){
 
+			// get the brand products
+			this.ctrState.getInstituteDistributorBrandProducts();
+			
 			const oProductsTable = this.byId("ProductsTableID");
 			//oProductsTable.removeSelections();
 
 			if (oProductsTable.getItems() && this.ctrState.data.editMode){
-				var iIndex = parseInt(oEvent.getParameter("id").substring(oEvent.getParameter("id").lastIndexOf('-') + 1));
+
+				// var iIndex = parseInt(oEvent.getParameter("id").substring(oEvent.getParameter("id").lastIndexOf('-') + 1)); // iIndex was not being used. For this reason in comment now.
 
 				if (this.ctrState.getProductItemEdit() !== -1) {
 					//another line is currently in edit mode. Set this back to display first.
@@ -983,7 +989,7 @@ sap.ui.define([
 							try{
 								oCell.setProperty("enabled", false);
 							} catch (err){
-
+								console.error(err);
 							}
 						});
 

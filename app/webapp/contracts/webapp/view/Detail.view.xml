@@ -124,8 +124,8 @@
 				
 				<!-- INSTITUTE INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<m:Label text="{i18n>Institute}"/>
-					<m:Text id="idhdrInstNme" text="{ctr>/currentContract/institute/instituteName}"/>
+					<m:Label text="{i18n>institutes}"/>
+					<m:Text id="idhdrInstNme" text="{ctr>/currentContract/instituteNames}"/>
 					<m:Text id="idhdrInstID" text="{ctr>/currentContract/institute/instituteID}" visible="false"/>
 				</m:VBox>
 
@@ -137,7 +137,7 @@
 
 				<!-- SELECTED CONTRACT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<m:Label text="{i18n>contractname}"/>
+					<m:Label text="{i18n>contractName}"/>
 					<m:Text text="{ctr>/currentContract/contractName}"/>
 				</m:VBox>				
 				
@@ -158,7 +158,7 @@
 								<l:BlockLayoutCell>
 
 									<!-- WARNINGSTRIP EDIT MODE "{= ${ctr>/currentContract/channel} === 'Other' ? false : true}"-->
-									<m:MessageStrip
+									<!-- <m:MessageStrip
 										id="msgWarningEdit"
 										text="You can't edit this contract information. Only contracts created within the contracting app can be changed."
 										type="Warning"
@@ -166,7 +166,7 @@
 										showCloseButton="true"
 										visible= "false"
 										class="sapUiMediumMarginBottom">
-									</m:MessageStrip>
+									</m:MessageStrip> -->
 
 									<!-- FORM WITH OFFER DATA -->
 									<form:SimpleForm id="offerDetailForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout"  labelSpanL="12" labelSpanM="12"
