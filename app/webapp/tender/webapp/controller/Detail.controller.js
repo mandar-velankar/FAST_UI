@@ -7348,12 +7348,58 @@ sap.ui.define([
 			});
 		},
 
-		onEmailQuotation: function (oEvent) {
+		onEmailQuotation: function (oEvent) {			
+			this._getEmailQuotationDialog().open();
+		},
+
+		
+		/**
+		 * New email dialog
+		 */
+		 _getEmailQuotationDialog : function () {
+			
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/SelectedOffer/OfferID');
 
-			Services.sendMail(sRecipient, sSubject);
+			//create new dialog if not yet existing
+			if (!this._EmailQuotationDialog) {
+
+					//get dialog
+					this._EmailQuotationDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.QuotationMail", this);
+				  	this.getView().addDependent(this._EmailQuotationDialog);
+					
+			}
+
+			//get screen elements
+			let oRecipients = sap.ui.getCore().byId("idTo");
+			let oSubject = sap.ui.getCore().byId("idSubject");
+			let oSender = sap.ui.getCore().byId("idFrom");
+			let sSender = "joris.bogaert@pythia-consulting.com"
+
+			oSubject.setValue(sSubject);
+
+			oRecipients.setTokens([
+				new Token({text: sRecipient, key: sRecipient}),
+			]);
+
+			oSender.setTokens([
+				new Token({text: sSender, key: sSender}),
+			]);
+
+			// add validator
+			let fnValidator = function(args){
+				let text = args.text;
+
+				return new Token({key: text, text: text});
+			};
+
+			oRecipients.addValidator(fnValidator);
+			oSender.addValidator(fnValidator);
+
+			
+
+			return this._EmailQuotationDialog;
 
 		},
 
