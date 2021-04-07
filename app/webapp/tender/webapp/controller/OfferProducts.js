@@ -937,7 +937,7 @@ sap.ui.define([
 			let sSellingCompany = oOffer.SellingCompany || Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany") || Services.getSelectedSellingCompanyID() || null; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			let sBrandID = oProduct && oProduct.SKU && oProduct.SKU.Product && oProduct.SKU.Product.HLEVEL4_CODE;
 			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
-			let iStandardDiscount = await thiss.getStandardDiscount(sDistributorID,sBrandID);
+			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' ? await thiss.getStandardDiscount(sDistributorID,sBrandID) : "";
 
 			//catch all data calls promise in  array, continue only if all are done
 			let promises = [];
@@ -1046,7 +1046,7 @@ sap.ui.define([
 							newCifPrice: cifPrice,
 							discount: sDiscount, //"",//0,
 							offerPrice: sPreApprovedPrice, //"",
-							standardDiscount: "",
+							standardDiscount: iStandardDiscount,
 							additionalDiscount: "",
 							focAbsPct: "PCT",
 							focType: "FOC 1",
@@ -1157,8 +1157,8 @@ sap.ui.define([
 
 			}
 		
-		//hide waiting screen
-		that.getView().setBusy(false); 
+			//hide waiting screen
+			that.getView().setBusy(false); 
 		
 		},
 		
