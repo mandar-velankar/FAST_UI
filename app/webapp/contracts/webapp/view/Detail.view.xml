@@ -344,7 +344,15 @@
 									class="editableForm" visible="true">
 									<form:content>
 										<m:Label text="{i18n>mspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
-										<m:Input value="{ctr>/currentContract/selectedProduct/mspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Input 
+											value="{ctr>/currentContract/selectedProduct/mspApprovedByName}" 
+											enabled="{= ${ctr>/editMode} === true ? true : false}"
+											showSuggestion="true"
+											suggestionItems="{/mspApprovers}">
+											<m:suggestionItems>
+												<core:ListItem text="{Name}"/>
+											</m:suggestionItems>
+										</m:Input>
 										<m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 										<m:Select selectedKey="{ctr>/currentContract/selectedProduct/mspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}" >
 													<core:Item key="" text="" />
@@ -354,7 +362,15 @@
 											</m:Select>
 
 										<m:Label text="{i18n>nspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
-										<m:Input value="{ctr>/currentContract/selectedProduct/nspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+										<m:Input 
+											value="{ctr>/currentContract/selectedProduct/nspApprovedByName}" 
+											enabled="{= ${ctr>/editMode} === true ? true : false}"
+											showSuggestion="true"
+											suggestionItems="{/mspApprovers}">
+											<m:suggestionItems>
+												<core:ListItem text="{Name}"/>
+											</m:suggestionItems>
+										</m:Input>
 										<m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
 										<m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}" >
 													<core:Item key="" text="" />
