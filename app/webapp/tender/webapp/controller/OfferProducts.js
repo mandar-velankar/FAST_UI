@@ -1,4 +1,3 @@
-//var that = this;
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/m/MessageToast",
@@ -6,12 +5,12 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/services",
 	"sap/ui/core/format/NumberFormat",
 ], function (Controller, MessageToast, formatter, Services, NumberFormat) {
-	
-		var _FOCProdBund1UpdateFinished = function(that, formId, forEdit, fieldId){
+		"use strict";
+		var _FOCProdBund1UpdateFinished = function(oDetailController, formId, forEdit, fieldId){
 			
-			var oFOCProducts = that.getView().byId("idPriceOffer_idFOCProdBund1");
+			var oFOCProducts = oDetailController.getView().byId("idPriceOffer_idFOCProdBund1");
 			if (oFOCProducts){
-				var oFOCProducts_fld = that.getView().byId(formId + fieldId);
+				var oFOCProducts_fld = oDetailController.getView().byId(formId + fieldId);
 				
 				if(!forEdit || (forEdit && oFOCProducts && oFOCProducts.getItems().length === 0)){
 					oFOCProducts_fld.setEnabled(false);
@@ -34,12 +33,12 @@ sap.ui.define([
 		//TODO double check that all variables are changed correctly, be aware of naming look-a-likes OfferProducts <> oOfferProducts
 		
 		//local method for setting data for price form
-		_setPriceForm: function (that, formId, price, forEdit, forScenario) {
+		_setPriceForm: function (oDetailController, formId, price, forEdit, forScenario) {
 			
 			//get selected offer
 			var sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID);
-			let oResourceBundle = that.getView().getModel("i18n").getResourceBundle();
+			let oResourceBundle = oDetailController.getView().getModel("i18n").getResourceBundle();
 
 			var sProductCode = Services.getSelectedProductID();
 			var oProduct = Services.getLoadedProductsForOffer(sOfferID, sProductCode);
@@ -51,7 +50,7 @@ sap.ui.define([
 			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 
 			//get form
-			var oForm = that.byId(formId);
+			var oForm = oDetailController.byId(formId);
 			oForm.destroyContent();
 			
 			//Put fields for each scenario as header
@@ -62,7 +61,7 @@ sap.ui.define([
 					text: "{i18n>ScenarioName}"
 				}));
 				oForm.addContent(new sap.m.Input({
-					id: that.getView().createId(formId + "_idName"),
+					id: oDetailController.getView().createId(formId + "_idName"),
 					value: price.name,
 					//maxWidth: "50%",
 					enabled: forEdit
@@ -73,7 +72,7 @@ sap.ui.define([
 					text: "{i18n>ScenarioDescription}"
 				}));
 				oForm.addContent(new sap.m.Input({
-					id: that.getView().createId(formId + "_idDescription"),
+					id: oDetailController.getView().createId(formId + "_idDescription"),
 					value: price.description,
 					//maxWidth: "50%",
 					enabled: forEdit
@@ -87,7 +86,7 @@ sap.ui.define([
 					visible: false
 				}));
 				oForm.addContent(new sap.m.Select({
-					id: that.getView().createId(formId + "_idWhlseofr"),
+					id: oDetailController.getView().createId(formId + "_idWhlseofr"),
 					items: [{
 						key: "Yes",
 						text: "Yes"
@@ -103,12 +102,12 @@ sap.ui.define([
 			}
 
 			//CIF price
-			oCifLabel = new sap.m.Label();
+			let oCifLabel = new sap.m.Label();
 			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' ? ('CIFPrice_' + sCountryCode) : 'CIFPrice'); //Diferent labels for Thailand & Argentinia
 			oCifLabel.setText(oResourceBundle.getText(i18nKey));
 			oForm.addContent(oCifLabel);
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idCifPrice"),
+				id: oDetailController.getView().createId(formId + "_idCifPrice"),
 				value: forEdit ? formatter.priceTwoOrFour(price.newCifPrice, undefined, price.uom) : formatter.priceTwoOrFour(price.cifPrice, undefined, price.uom),
 				description: price.offerCurrency,
 				enabled: false
@@ -120,7 +119,7 @@ sap.ui.define([
 				visible: !forEdit && (formatter.priceTwoOrFour(price.newCifPrice, undefined, price.uom) !== formatter.priceTwoOrFour(price.cifPrice, undefined, price.uom))
 			}));
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idNewCifPrice"),
+				id: oDetailController.getView().createId(formId + "_idNewCifPrice"),
 				value: formatter.priceTwoOrFour(price.newCifPrice, undefined, price.uom),
 				description: price.offerCurrency,
 				visible: !forEdit && (formatter.priceTwoOrFour(price.newCifPrice, undefined, price.uom) !== formatter.priceTwoOrFour(price.cifPrice, undefined, price.uom)),
@@ -133,7 +132,7 @@ sap.ui.define([
 			}));
 			oForm.addContent(
 				new sap.m.Input({
-					id: that.getView().createId(formId + "_idDiscount"),
+					id: oDetailController.getView().createId(formId + "_idDiscount"),
 					value: formatter.percentageNoUnit(price.discount),
 					description: "%",
 					enabled: false
@@ -146,11 +145,11 @@ sap.ui.define([
 			oOfferPriceLabel.setText(oResourceBundle.getText(i18nKey));
 			oForm.addContent(oOfferPriceLabel);
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idOfferPrice"),
+				id: oDetailController.getView().createId(formId + "_idOfferPrice"),
 				value: formatter.priceTwoOrFour(price.offerPrice, undefined, price.uom),
 				description: price.offerCurrency,
 				enabled: sCountryCode === 'AR' ? false : forEdit,
-				submit: that.onEditFinancialOffer.bind(that)
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
 			}));
 
 			//Standard Discount
@@ -160,7 +159,7 @@ sap.ui.define([
 			}));
 			oForm.addContent(
 					new sap.m.Input({
-						id: that.getView().createId(formId + "_idStandardDiscount"),
+						id: oDetailController.getView().createId(formId + "_idStandardDiscount"),
 						value: formatter.percentageNoUnit(price.standardDiscount),
 						description: "%",
 						visible: sCountryCode === "BR" ? true : false,
@@ -175,7 +174,7 @@ sap.ui.define([
 			}));
 			oForm.addContent(
 					new sap.m.Input({
-						id: that.getView().createId(formId + "_idAdditionalDiscount"),
+						id: oDetailController.getView().createId(formId + "_idAdditionalDiscount"),
 						value: formatter.percentageNoUnit(price.additionalDiscount),
 						description: "%",
 						visible: sCountryCode === "AR" || sCountryCode === "BR" ? true : false,
@@ -188,13 +187,14 @@ sap.ui.define([
 				text: "{i18n>FOC}"
 			}));
 			//Absolute or Percentage is defaulted by first saved price, if price is not yet saved... but can still be changed
+			let sFocAbsPCT = null;
 			if(oOffer && oOffer.DEFAULT_FOC_ABS_PCT && !price.offerPrice){
-				var sFocAbsPCT = oOffer.DEFAULT_FOC_ABS_PCT;
+				sFocAbsPCT = oOffer.DEFAULT_FOC_ABS_PCT;
 			}else{
-				var sFocAbsPCT = price.focAbsPct;
+				sFocAbsPCT = price.focAbsPct;
 			}
 			oForm.addContent(new sap.m.Select({
-				id: that.getView().createId(formId + "_idFocAbsPct"),
+				id: oDetailController.getView().createId(formId + "_idFocAbsPct"),
 				items: [{
 					key: "ABS",
 					text: "Absolute"
@@ -204,16 +204,16 @@ sap.ui.define([
 				}],
 				selectedKey: sFocAbsPCT,
 				maxWidth: "80%",
-				change: that.onEditFinancialOffer.bind(that),
+				change: oDetailController.onEditFinancialOffer.bind(oDetailController),
 				enabled: forEdit
 			}));
 			//Percentage/Absolute amount FOC
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idFoc"),
+				id: oDetailController.getView().createId(formId + "_idFoc"),
 				value: (price.focAbsPct === "PCT") ? formatter.percentageNoUnit(price.foc) : price.foc,
 				enabled: forEdit,
 				description: (price.focAbsPct === "PCT") ? "%" : price.uom,
-				submit: that.onEditFinancialOffer.bind(that)
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
 			}));
 
 			//Net Price
@@ -221,7 +221,7 @@ sap.ui.define([
 				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>NetOfferPrice_TH} : ${i18n>NetOfferPrice}}"
 			}));
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idNetOfferPrice"),
+				id: oDetailController.getView().createId(formId + "_idNetOfferPrice"),
 				value: formatter.priceTwoOrFour(price.netOfferPrice, undefined, price.uom),
 				description: price.offerCurrency,
 				enabled: false
@@ -232,11 +232,11 @@ sap.ui.define([
 				text: "{i18n>Deductions}"
 			}));
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idDeduction"),
+				id: oDetailController.getView().createId(formId + "_idDeduction"),
 				value: formatter.percentageNoUnit(price.deductions),
 				description: "%",
 				enabled: (forEdit && !forScenario),
-				submit: that.onEditFinancialOffer.bind(that)
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
 			}));
 
 			//Net price
@@ -244,7 +244,7 @@ sap.ui.define([
 				text: "{i18n>NetPrice}"
 			}));
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idNetPrice"),
+				id: oDetailController.getView().createId(formId + "_idNetPrice"),
 				value: formatter.priceTwoOrFour(price.netPrice, undefined, price.uom),
 				description: price.offerCurrency,
 				enabled: false
@@ -288,7 +288,7 @@ sap.ui.define([
 			}));
 				
 			oForm.addContent(new sap.m.ComboBox({
-				id: that.getView().createId(formId + "_idFOCProdBund1"), 
+				id: oDetailController.getView().createId(formId + "_idFOCProdBund1"), 
 				visible: sCountryCode === "AR" ? false : true,
 				items: {
 						path: "fastData>/InstituteDistributorBrandProduct",
@@ -304,7 +304,7 @@ sap.ui.define([
 						}),
 						templateShareable: true
 				},
-				change: that.onEditFinancialOffer.bind(that),
+				change: oDetailController.onEditFinancialOffer.bind(oDetailController),
 				selectedKey: price.focProduct_bund1,
 				maxWidth: "80%",
 			}));
@@ -318,7 +318,7 @@ sap.ui.define([
 
 			//absolute or precentage additional foc product
 			oForm.addContent(new sap.m.Select({
-				id: that.getView().createId(formId + "_idFocAbsPct1"),
+				id: oDetailController.getView().createId(formId + "_idFocAbsPct1"),
 				items: [{
 					key: "ABS",
 					text: "Absolute"
@@ -328,29 +328,29 @@ sap.ui.define([
 				}],
 				selectedKey: sFocAbsPCT_Bund1,
 				maxWidth: "80%",
-				change: that.onEditFinancialOffer.bind(that),
+				change: oDetailController.onEditFinancialOffer.bind(oDetailController),
 				enabled: forEdit,
 				visible: sCountryCode === "AR" ? false : true 
 			}));
 
 			//Value additional foc product
 			oForm.addContent(new sap.m.Input({
-				id: that.getView().createId(formId + "_idFoc1"),
+				id: oDetailController.getView().createId(formId + "_idFoc1"),
 				visible: sCountryCode === "AR" ? false : true,
 				value: (price.focAbsPct_bund1 === "PCT") ? formatter.percentageNoUnit(price.foc_bund1) : price.foc_bund1,
 				enabled: forEdit,
 				description: (price.focAbsPct_bund1 === "PCT") ? "%" : price.uom,
-				submit: that.onEditFinancialOffer.bind(that)
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
 			}));
 			
 			/* tried to solve this using attribute onAfterRender. However, at this moment this doesn't seem to be working.
 			   According to ticket https://trello.com/c/yUkwKbwZ, these fields should be disabled in case no Brand Products exist.
 			   This method will be called 4 times, each time with a different form ID, as this logic is being executed on both the financial offer page as the scenario planner. Therefor, this has been built dynamically. 
-			   In the called method, one field has been defined hardcoded (that.getView().byId("idPriceOffer_idFOCProdBund1");). This is the field on which we check if the Brand products are available or not.*/
+			   In the called method, one field has been defined hardcoded (oDetailController.getView().byId("idPriceOffer_idFOCProdBund1");). This is the field on which we check if the Brand products are available or not.*/
 			   
-			_FOCProdBund1UpdateFinished(that, formId, forEdit, "_idFOCProdBund1");
-			_FOCProdBund1UpdateFinished(that, formId, forEdit, "_idFocAbsPct1");
-			_FOCProdBund1UpdateFinished(that, formId, forEdit, "_idFoc1");
+			_FOCProdBund1UpdateFinished(oDetailController, formId, forEdit, "_idFOCProdBund1");
+			_FOCProdBund1UpdateFinished(oDetailController, formId, forEdit, "_idFocAbsPct1");
+			_FOCProdBund1UpdateFinished(oDetailController, formId, forEdit, "_idFoc1");
 		},
 	
 		//get calculated fields for profit table H & V
@@ -396,10 +396,10 @@ sap.ui.define([
 		},
 		
 		//local method for setting profit table data
-		_setProfitTableH: function (that, tableId, price) {
-			var oTable = that.byId(tableId);
+		_setProfitTableH: function (oDetailController, tableId, price) {
+			var oTable = oDetailController.byId(tableId);
 			let sCountryCode = Services.getSelectedCountry();
-			let oResourceBundle = that.getView().getModel("i18n").getResourceBundle();
+			let oResourceBundle = oDetailController.getView().getModel("i18n").getResourceBundle();
 
 			oTable.destroyColumns();
 
@@ -726,8 +726,8 @@ sap.ui.define([
 		},
 		
 		//local method for setting profit table data
-		_setProfitTableV: function (that, tableId, price) {
-			var oTable = that.byId(tableId);
+		_setProfitTableV: function (oDetailController, tableId, price) {
+			var oTable = oDetailController.byId(tableId);
 			oTable.destroyColumns();
 			
 			//get calculated fields for profit table
@@ -826,12 +826,12 @@ sap.ui.define([
 		},
 		
 		//local method for setting pricing chart data
-		_setPriceChart: function (that, chartId, price) {
+		_setPriceChart: function (oDetailController, chartId, price) {
 
-			const i18n = that.getView().getModel("i18n").getResourceBundle();
+			const i18n = oDetailController.getView().getModel("i18n").getResourceBundle();
 			const sCountryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
 
-			var oViz = that.byId(chartId);
+			var oViz = oDetailController.byId(chartId);
 			var dataModel = {
 				"data": [{
 					"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia
@@ -912,12 +912,12 @@ sap.ui.define([
 		},
 		
 		//local method for inital setting the pricing data
-		_setPricingData: async function (that, formId, chartId, tableId, modelPath, forEdit, forScenario) {
+		_setPricingData: async function (oDetailController, formId, chartId, tableId, modelPath, forEdit, forScenario) {
 			
-			var thiss = this; //that is already used!! complicated! TODO improve could that be left out? other way to get the view
+			var that = this; //that is already used!! complicated! TODO improve could that be left out? other way to get the view
 			
 			//wait screen
-			that.getView().setBusy(true); 
+			oDetailController.getView().setBusy(true); 
 
 			//additional product get info
 			let sOfferID = Services.getSelectedOfferID();
@@ -926,8 +926,8 @@ sap.ui.define([
 			let oOffer = Services.getLoadedOffer(sOfferID);
 
 			//direct binding (old way)
-			var productValues = that.getView().getModel("fastData").getObject(modelPath);
-			var skuValues = that.getView().getModel("fastData").getObject("/" + productValues.SKU.__ref);
+			var productValues = oDetailController.getView().getModel("fastData").getObject(modelPath);
+			var skuValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.SKU.__ref);
 
 			//get additional values
 			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
@@ -937,13 +937,10 @@ sap.ui.define([
 			let sSellingCompany = oOffer.SellingCompany || Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany") || Services.getSelectedSellingCompanyID() || null; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			let sBrandID = oProduct && oProduct.SKU && oProduct.SKU.Product && oProduct.SKU.Product.HLEVEL4_CODE;
 			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
-			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' ? await thiss.getStandardDiscount(sDistributorID,sBrandID) : "";
-
-			//catch all data calls promise in  array, continue only if all are done
-			let promises = [];
+			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' ? await that.getStandardDiscount(sDistributorID,sBrandID) : "";
 
 			//selected offer currency on screen
-			var offerCurrency = that.byId("idCurrency").getSelectedKey();
+			var offerCurrency = oDetailController.byId("idCurrency").getSelectedKey();
 
 			//Object for storing registeredPrice
 			var regPriceValues = {
@@ -954,7 +951,7 @@ sap.ui.define([
 
 			//if registerd price is not null
 			if (productValues.RegisteredPrice !== null) {
-				let sRegisteredPrice = await thiss.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency);
+				let sRegisteredPrice = await that.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency);
 				if(sRegisteredPrice){
 						regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
 						regPriceValues.UOM = sRegisteredPrice.UOM;
@@ -967,7 +964,7 @@ sap.ui.define([
 				COGS: 0
 			};
 			if (productValues.Cogs !== null) {
-				cogsValues = that.getView().getModel("fastData").getObject("/" + productValues.Cogs.__ref);
+				cogsValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Cogs.__ref);
 			}
 
 			//get country information to read reportingCurrency
@@ -980,7 +977,7 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = this.sReportingCurrency;
 			var budgetRate = null;
-			let oBudgetExchangeRates = await thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
+			let oBudgetExchangeRates = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
 			if(oBudgetExchangeRates !== false){
 					budgetRate = oBudgetExchangeRates.X_RATE;
 			}
@@ -991,14 +988,14 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = this.sReportingCurrency;
 			var spotRate = null;
-			let oMonthlyAvgExchangeRates = await thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
+			let oMonthlyAvgExchangeRates = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
 			if(oMonthlyAvgExchangeRates !== false){
 					spotRate = oMonthlyAvgExchangeRates.X_RATE;
 			}
 			
 			//check if preapproved price can be found for the selected institute,productpack,currency combination 
 			var sPreApprovedPrice = "";
-			let oPreApprovedPrice = await thiss.loadPreApprovedPrices(Services.getInstituteIDofSelectedTender(), skuValues.PRODUCTPACKID, sCurrencyFrom);
+			let oPreApprovedPrice = await that.loadPreApprovedPrices(Services.getInstituteIDofSelectedTender(), skuValues.PRODUCTPACKID, sCurrencyFrom);
 			if(productValues.UnitPerPack === "Unit"){
 				sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PriceUnit;
 			}else{
@@ -1009,7 +1006,7 @@ sap.ui.define([
 					
 					//get additional FOC product if its filled
 					if (productValues.Price !== undefined && productValues.Price !== null) {
-						var priceValuesTemp = that.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
+						var priceValuesTemp = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
 						var sAddBrandProductCode = Number(priceValuesTemp.FOCProduct_Bundled_1);
 					}
 						
@@ -1031,12 +1028,11 @@ sap.ui.define([
 					let cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
 						
 					//for argentinia & brazilië the offerPrice is not the preApprovedPrice
+					let sDiscount = "";
 					if(sCountryCode==="AR" || sCountryCode==="BR"){	
 							//offer price is in this case the standard price based upon CIF price & reductions
 							sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); //TODO get discount
 							sDiscount = iStandardDiscount;
-					}else{
-							sDiscount = "";
 					}
 
 					var price = {
@@ -1071,12 +1067,12 @@ sap.ui.define([
 					};
 			
 					if (productValues.Price !== undefined && productValues.Price !== null) {
-							var priceValues = that.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
+							var priceValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
 							regPrice = priceValues.RegPrice * uFactor;//offer-saved registered price per pack (assumption that UoM for price will always be same in database for same country/product/currency)
 							price.cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;//if offer in units, divide by pack factor, otherwise pack value if good
 							var scenarioPrice;
 							if (forScenario !== 0) {
-								scenarioPrice = thiss._getScenarioPrice(that, productValues, forScenario);
+								scenarioPrice = that._getScenarioPrice(oDetailController, productValues, forScenario);
 								if (scenarioPrice) {
 									price.name = scenarioPrice.name;
 									price.description = scenarioPrice.description;
@@ -1140,39 +1136,39 @@ sap.ui.define([
 					}
 			
 					if (chartId !== null) {
-							thiss._setPriceChart(that, chartId, price);
+							that._setPriceChart(oDetailController, chartId, price);
 					}
 					if (formId !== null) {
-							thiss._setPriceForm(that, formId, price, forEdit, (forScenario !== 0));
+							that._setPriceForm(oDetailController, formId, price, forEdit, (forScenario !== 0));
 					}
 					if (tableId !== null) {
 							if (chartId !== null) {
-								thiss._setProfitTableH(that, tableId, price);
+								that._setProfitTableH(oDetailController, tableId, price);
 							} else {
-								thiss._setProfitTableV(that, tableId, price);
+								that._setProfitTableV(oDetailController, tableId, price);
 							}
 					}
 			
-					that._productCode = skuValues.PRODUCTPACKID;
+					oDetailController._productCode = skuValues.PRODUCTPACKID;
 
 			}
 		
 			//hide waiting screen
-			that.getView().setBusy(false); 
+			oDetailController.getView().setBusy(false); 
 		
 		},
 		
 		//local method for setting scenarioPrice
-		_getScenarioPrice: function (that, offerValues, iScenario) {
+		_getScenarioPrice: function (oDetailController, offerValues, iScenario) {
 			var scenarioPrice;
 			
 			if (offerValues.Scenario) {
 				var iScenariosLength = (offerValues.Scenario.__list) ? offerValues.Scenario.__list.length : iScenario; //TODO once we are fully working on fastcap, only iScenario should be kept
 				if (iScenariosLength >= iScenario) {
 					if(offerValues.Scenario.__list){//TODO once fully on fastcap, we should only keep else part of this coding..
-						var oScenario = that.getView().getModel("fastData").getObject("/" + offerValues.Scenario.__list[iScenario - 1]);	
+						var oScenario = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.Scenario.__list[iScenario - 1]);	
 					}else{
-						var oScenario = that.getView().getModel("fastData").getObject("/" + offerValues.Scenario.__ref);
+						var oScenario = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.Scenario.__ref);
 					}
 					
 					scenarioPrice = {
@@ -1192,20 +1188,20 @@ sap.ui.define([
 		},
 		
 		//local method for setting history
-		_setTenderHistory: function (that, productPath) {
-			var oObjectPage = that.getView().byId("DetailPage");
+		_setTenderHistory: function (oDetailController, productPath) {
+			var oObjectPage = oDetailController.getView().byId("DetailPage");
 			var forEdit = oObjectPage.getShowFooter();
 			
-			var oTable = forEdit ? that.byId("editTenderHistoryId") : that.byId("tenderHistoryId");
-			var oCurrentInstitute = forEdit ? that.byId("editCurrentInstituteCheckId") : that.byId("currentInstituteCheckId");
+			var oTable = forEdit ? oDetailController.byId("editTenderHistoryId") : oDetailController.byId("tenderHistoryId");
+			var oCurrentInstitute = forEdit ? oDetailController.byId("editCurrentInstituteCheckId") : oDetailController.byId("currentInstituteCheckId");
 			//JHHERE think current/parent institu
-			var oParentInstitute = forEdit ? that.byId("editParentInstituteCheckId") : that.byId("parentInstituteCheckId");
-			var oCurrentCountry = forEdit ? that.byId("editCurrentCountryCheckId") : that.byId("currentCountryCheckId");
-			var oWon = forEdit ? that.byId("editWonCheckId") : that.byId("wonCheckId");
-			var oLost = forEdit ? that.byId("editLossCheckId") : that.byId("lossCheckId");
+			var oParentInstitute = forEdit ? oDetailController.byId("editParentInstituteCheckId") : oDetailController.byId("parentInstituteCheckId");
+			var oCurrentCountry = forEdit ? oDetailController.byId("editCurrentCountryCheckId") : oDetailController.byId("currentCountryCheckId");
+			var oWon = forEdit ? oDetailController.byId("editWonCheckId") : oDetailController.byId("wonCheckId");
+			var oLost = forEdit ? oDetailController.byId("editLossCheckId") : oDetailController.byId("lossCheckId");
 
-			var tenderValues = that.getView().getModel("fastData").getObject(Services.getSelectedTenderPath());
-			var productValues = that.getView().getModel("fastData").getObject(productPath);
+			var tenderValues = oDetailController.getView().getModel("fastData").getObject(Services.getSelectedTenderPath());
+			var productValues = oDetailController.getView().getModel("fastData").getObject(productPath);
 			var oFilters =[];
 			oFilters.push(new sap.ui.model.Filter("PRODUCT_ID", "EQ", productValues.ProductCode));
 			if (oCurrentInstitute.getSelected()) {
@@ -1387,7 +1383,7 @@ sap.ui.define([
 			sX_TYPE = "Monthly Average";
 			sCurrencyFrom = oOffer.Currency;
 			sCurrencyTo = "EUR";
-			iSpotRate = null;
+			let iSpotRate = null;
 			promises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(function(oData){
 				if(oData !== false){
 					iSpotRate = oData.X_RATE;
@@ -1418,7 +1414,6 @@ sap.ui.define([
 			
 			//that is this
 			var oDeferred = $.Deferred();
-			var that = this;
 			var sGroupId = "OfferProducts-loadExchangeRates-" + sX_TYPE;
 			
 			//get fast data calls
@@ -1455,7 +1450,6 @@ sap.ui.define([
 		//load Exchange Rates again from database
 		loadCountryRegisteredPrice: function (sCountry, sUOM, sProduct, sCurrency){
 			
-			var that = this;
 			//get fast data calls
 			var oFastDataCalls = Services.getDefaultModel();
 			
@@ -1487,7 +1481,6 @@ sap.ui.define([
 		//load default price
 		loadPreApprovedPrices: function (sInstituteID, sProductPackID, sCurrency){
 			
-			var that = this;
 			//get fast data calls
 			var oFastDataCalls = Services.getDefaultModel();
 			
@@ -1521,8 +1514,7 @@ sap.ui.define([
 			var oDeferred = $.Deferred();
 			var that = this;
 			
-			//default model (read again from database)
-			var oDefaultModel = Services.getDefaultModel();
+			//get country
 			var sCountry = Services.getSelectedCountry();
 			
 			//catch all data calls promise in  array, continue only if all are done
@@ -1600,16 +1592,16 @@ sap.ui.define([
 					switch(sUnitPerPackOffer) {
 					  case "Unit":
 						    if(sUOMregPrice === "Pack"){
-						    	var uFactor = 1 / iPackFactor;
+								var uFactor = 1 / iPackFactor;
 						    }else{
-						    	var uFactor = 1;
+								var uFactor = 1;
 						    }
 						    break;
 					  case "Pack":
 						    if(sUOMregPrice === "Unit"){
-						    	var uFactor = iPackFactor;	
+								var uFactor = iPackFactor;	
 						    }else{
-						    	var uFactor = 1;
+								var uFactor = 1;
 						    }
 						    break;
 					  default:
@@ -1638,10 +1630,10 @@ sap.ui.define([
 		},
 		
 		//when saving financial offer or when changing currency or other fields...
-		updateFinancialOffer: function (oEvent, that) {
+		updateFinancialOffer: function (oEvent, oDetailController) {
 			
 			
-			//when product is selected we check if we have a additional FOC brand product that is granted to the customer
+			//when product is selected we check if we have a additional FOC brand product oDetailController is granted to the customer
 			/*$.when(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sAddBrandProductCode)).done(function(oData){
 				//check if product exist in list
 				if(oData && oData.results && oData.results.length > 0){
@@ -1650,15 +1642,15 @@ sap.ui.define([
 			});
 			*/
 			
-			var thiss = this;
+			var that = this;
 
 			//wait for update
 			var oDeferred = $.Deferred();
 			
-			var offerValues = that.getView().getModel("fastData").getObject(that.pPath);
-			var productValues = that.getView().getModel("fastData").getObject("/" + offerValues.SKU.__ref);
+			var offerValues = oDetailController.getView().getModel("fastData").getObject(oDetailController.pPath);
+			var productValues = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.SKU.__ref);
 
-			var offerCurrency = that.byId("idEditCurrency").getSelectedKey();
+			var offerCurrency = oDetailController.byId("idEditCurrency").getSelectedKey();
 
 			let promises = [];
 
@@ -1669,8 +1661,8 @@ sap.ui.define([
 			};
 			
 			if (offerValues.RegisteredPrice !== null) {
-				//regPriceValues = that.getView().getModel("fastData").getObject("/" + offerValues.RegisteredPrice.__ref);
-				promises.push(thiss.loadCountryRegisteredPrice(Services.getSelectedCountry(), offerValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency).then(function (sRegisteredPrice) {
+				//regPriceValues = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.RegisteredPrice.__ref);
+				promises.push(that.loadCountryRegisteredPrice(Services.getSelectedCountry(), offerValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency).then(function (sRegisteredPrice) {
 					if(sRegisteredPrice){
 						regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
 						regPriceValues.UOM = sRegisteredPrice.UOM;
@@ -1686,7 +1678,7 @@ sap.ui.define([
 			};
 			
 			if (offerValues.Cogs !== null) {
-				cogsValues = that.getView().getModel("fastData").getObject("/" + offerValues.Cogs.__ref);
+				cogsValues = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.Cogs.__ref);
 			}
 			
 			//load Budget rate again from database
@@ -1695,7 +1687,7 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = "EUR";
 			var budgetRate = null;
-			promises.push($.when(thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
+			promises.push($.when(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
 				if(oData !== false){
 					budgetRate = oData.X_RATE;
 				}
@@ -1707,20 +1699,20 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = "EUR";
 			var spotRate = null;
-			promises.push($.when(thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
+			promises.push($.when(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
 				if(oData !== false){
 					spotRate = oData.X_RATE;
 				}
 			}));
 
-			/*var registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + that._country +
+			/*var registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + oDetailController._country +
 				"',CURRENCY_FROM='" + regPriceValues.CURRENCY + "',CURRENCY_TO='" + offerCurrency + "',X_TYPE='Registered Price')";
-			var testRate = that.getView().getModel("fastData").getObject(registeredRatePath);
+			var testRate = oDetailController.getView().getModel("fastData").getObject(registeredRatePath);
 			var registeredRate = 1;
 			if (testRate === undefined) {
-				registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + that._country +
+				registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + oDetailController._country +
 					"',CURRENCY_FROM='" + offerCurrency + "',CURRENCY_TO='" + regPriceValues.CURRENCY + "',X_TYPE='Registered Price')";
-				registeredRate = that.getView().getModel("fastData").getObject(registeredRatePath).X_RATE;
+				registeredRate = oDetailController.getView().getModel("fastData").getObject(registeredRatePath).X_RATE;
 			} else {
 				registeredRate = 1 / testRate.X_RATE;
 			}*/
@@ -1740,7 +1732,7 @@ sap.ui.define([
 				var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
 				
 				//get additional FOC product if its filled
-				var oAddBrandProduct = that.getView().byId("idEditPriceOffer_idFOCProdBund1");
+				var oAddBrandProduct = oDetailController.getView().byId("idEditPriceOffer_idFOCProdBund1");
 				var sAddBrandProductCode = 0;
 				if(oAddBrandProduct){
 					sAddBrandProductCode = Number(oAddBrandProduct.getSelectedKey()); 
@@ -1754,21 +1746,21 @@ sap.ui.define([
 					//var regPrice = regPriceValues.REGISTERED_PRICE * uFactor * registeredRate;
 					var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
 					var cifPrice = (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice;
-					var deductions = that.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(that.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
+					var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
 		
-					var offerPrice = that.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+					var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
 					var standardDiscount = 0; //TODO FOR BRAZILIE
-					var additionalDiscount = that.byId("idEditPriceOffer_idAdditionalDiscount") && that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(that.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
-					var focAbsPct = that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
-					//var focType = that.byId("idEditPriceOffer_idFocType").getSelectedKey();
-					var focType = that.byId("idEditFOCType").getSelectedKey();
-					var foc = that.byId("idEditPriceOffer_idFoc").getValue() != ""
-					? (focAbsPct === "PCT") ? parseFloat(that.byId("idEditPriceOffer_idFoc").getValue()) / 100 : parseFloat(that.byId("idEditPriceOffer_idFoc").getValue())
+					var additionalDiscount = oDetailController.byId("idEditPriceOffer_idAdditionalDiscount") && oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
+					var focAbsPct = oDetailController.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+					//var focType = oDetailController.byId("idEditPriceOffer_idFocType").getSelectedKey();
+					var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
+					var foc = oDetailController.byId("idEditPriceOffer_idFoc").getValue() != ""
+					? (focAbsPct === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue())
 					: 0;
-					var focAbsPct_bund1 = that.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey();
-					var focProduct_bund1 = Number(that.byId("idEditPriceOffer_idFOCProdBund1").getSelectedKey());
-					var foc_bund1 = that.byId("idEditPriceOffer_idFoc1").getValue() != ""
-					? (focAbsPct_bund1 === "PCT") ? parseFloat(that.byId("idEditPriceOffer_idFoc1").getValue()) / 100 : parseFloat(that.byId("idEditPriceOffer_idFoc1").getValue())
+					var focAbsPct_bund1 = oDetailController.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey();
+					var focProduct_bund1 = Number(oDetailController.byId("idEditPriceOffer_idFOCProdBund1").getSelectedKey());
+					var foc_bund1 = oDetailController.byId("idEditPriceOffer_idFoc1").getValue() != ""
+					? (focAbsPct_bund1 === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue())
 					: 0;
 		
 					//when an additional FOC product is selected and results are found, calculate some fields
@@ -1834,13 +1826,13 @@ sap.ui.define([
 						focQuantityRounded: iFocQuantityRounded
 					};
 		
-					thiss._setPriceChart(that, "idEditListToNetChart", price);
-					thiss._setPriceForm(that, "idEditPriceOffer", price, true, false);
-					thiss._setProfitTableH(that, "idEditProfitabilityTable", price);
+					that._setPriceChart(oDetailController, "idEditListToNetChart", price);
+					that._setPriceForm(oDetailController, "idEditPriceOffer", price, true, false);
+					that._setProfitTableH(oDetailController, "idEditProfitabilityTable", price);
 		
-					thiss._updateScenario(that, price, offerValues, 1);
-					thiss._updateScenario(that, price, offerValues, 2);
-					thiss._updateScenario(that, price, offerValues, 3);
+					that._updateScenario(oDetailController, price, offerValues, 1);
+					that._updateScenario(oDetailController, price, offerValues, 2);
+					that._updateScenario(oDetailController, price, offerValues, 3);
 
 					oDeferred.resolve("all updated on the screen");
 
@@ -1856,22 +1848,22 @@ sap.ui.define([
 		},
 		
 		//local method for updating the scenario
-		_updateScenario: function (that, price, offerValues, idScenario) {
-			price.name = that.byId("idEditPriceOfferScenario" + idScenario + "_idName").getValue();
-			price.description = that.byId("idEditPriceOfferScenario" + idScenario + "_idDescription").getValue();
+		_updateScenario: function (oDetailController, price, offerValues, idScenario) {
+			price.name = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idName").getValue();
+			price.description = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idDescription").getValue();
 
 			//main foc product from selected scenario
-			var offerPrice = that.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			var offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
 			var standardDiscount = 0; //TODO FOR BRAZILIE
-			var additionalDiscount = that.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
-			var focAbsPct = that.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
-			var foc = that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;
+			var additionalDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
+			var focAbsPct = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
+			var foc = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;
 			if (focAbsPct === "PCT"){
 				foc = foc / 100;
 			}
 
-			//var focType = that.byId("idEditPriceOfferScenario" + idScenario + "_idFocType").getSelectedKey();
-			var focType = that.byId("idEditFOCType").getSelectedKey();
+			//var focType = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocType").getSelectedKey();
+			var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
 			
 			//mainProductQuantity
 			var iFocQuantity = foc * offerValues.RequestedVolume;
@@ -1889,10 +1881,10 @@ sap.ui.define([
 					     ));
 			
 			//get additional foc product from selected scenario
-			var focAbsPct_bund1 = that.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct1").getSelectedKey();
-			var focProduct_bund1 = Number(that.byId("idEditPriceOfferScenario" + idScenario + "_idFOCProdBund1").getSelectedKey());
-			var foc_bund1 = that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc1").getValue() != ""
-			? (focAbsPct_bund1 === "PCT") ? parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc1").getValue()) / 100 : parseFloat(that.byId("idEditPriceOfferScenario" + idScenario + "_idFoc1").getValue())
+			var focAbsPct_bund1 = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct1").getSelectedKey();
+			var focProduct_bund1 = Number(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFOCProdBund1").getSelectedKey());
+			var foc_bund1 = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc1").getValue() != ""
+			? (focAbsPct_bund1 === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc1").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc1").getValue())
 			: 0;
 
 			//additional FOC product Quantity
@@ -1925,15 +1917,15 @@ sap.ui.define([
 			price.addFocProductQuantity = iAddFocProductQuantity;
 			price.focQuantityRounded = iFocQuantityRounded;
 					
-			this._setPriceForm(that, "idEditPriceOfferScenario" + idScenario, price, true, true);
-			this._setProfitTableV(that, "idEditProfitabilityScenario" + idScenario, price);
+			this._setPriceForm(oDetailController, "idEditPriceOfferScenario" + idScenario, price, true, true);
+			this._setProfitTableV(oDetailController, "idEditProfitabilityScenario" + idScenario, price);
 		},
 		
 		//product is selected (start from detail)
-		onProductSelected: function (that, sProductPath) {
+		onProductSelected: function (oDetailController, sProductPath) {
 			
 			/*
-			//when product is selected we check if we have a additional FOC brand product that is granted to the customer
+			//when product is selected we check if we have a additional FOC brand product oDetailController is granted to the customer
 			$.when(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sAddBrandProductCode)).done(function(oData){
 				//check if product exist in list
 				if(oData && oData.results && oData.results.length > 0){
@@ -1943,33 +1935,33 @@ sap.ui.define([
 			*/
 			
 			//var productPath = oEvent.getSource().getBindingContext("fastData").getPath(); //oEvent is no longer a paramter of onProductSelected
-			var oObjectPage = that.getView().byId("DetailPage");
+			var oObjectPage = oDetailController.getView().byId("DetailPage");
 			var forEdit = oObjectPage.getShowFooter();
 			if (forEdit) {
-				this._setPricingData(that, "idEditPriceOffer", "idEditListToNetChart", "idEditProfitabilityTable", sProductPath, forEdit, 0);
-				this._setPricingData(that, "idEditPriceOfferScenario1", null, "idEditProfitabilityScenario1", sProductPath, forEdit, 1);
-				this._setPricingData(that, "idEditPriceOfferScenario2", null, "idEditProfitabilityScenario2", sProductPath, forEdit, 2);
-				this._setPricingData(that, "idEditPriceOfferScenario3", null, "idEditProfitabilityScenario3", sProductPath, forEdit, 3);
+				this._setPricingData(oDetailController, "idEditPriceOffer", "idEditListToNetChart", "idEditProfitabilityTable", sProductPath, forEdit, 0);
+				this._setPricingData(oDetailController, "idEditPriceOfferScenario1", null, "idEditProfitabilityScenario1", sProductPath, forEdit, 1);
+				this._setPricingData(oDetailController, "idEditPriceOfferScenario2", null, "idEditProfitabilityScenario2", sProductPath, forEdit, 2);
+				this._setPricingData(oDetailController, "idEditPriceOfferScenario3", null, "idEditProfitabilityScenario3", sProductPath, forEdit, 3);
 
-				this._setTenderHistory(that, sProductPath);
+				this._setTenderHistory(oDetailController, sProductPath);
 			} else {
-				this._setPricingData(that, "idPriceOffer", "idListToNetChart", "idProfitabilityTable", sProductPath, forEdit, 0);
-				//this._setPricingData(that, "idPriceOfferScenario1", null, "idProfitabilityScenario1", sProductPath, forEdit);
-				//this._setPricingData(that, "idPriceOfferScenario2", null, "idProfitabilityScenario2", sProductPath, forEdit);
-				//this._setPricingData(that, "idPriceOfferScenario3", null, "idProfitabilityScenario3", sProductPath, forEdit);
+				this._setPricingData(oDetailController, "idPriceOffer", "idListToNetChart", "idProfitabilityTable", sProductPath, forEdit, 0);
+				//this._setPricingData(oDetailController, "idPriceOfferScenario1", null, "idProfitabilityScenario1", sProductPath, forEdit);
+				//this._setPricingData(oDetailController, "idPriceOfferScenario2", null, "idProfitabilityScenario2", sProductPath, forEdit);
+				//this._setPricingData(oDetailController, "idPriceOfferScenario3", null, "idProfitabilityScenario3", sProductPath, forEdit);
 
-				this._setTenderHistory(that, sProductPath);
+				this._setTenderHistory(oDetailController, sProductPath);
 			}
 			
 		},
 		
 		//Filter for history table (first detail onHistoryFilterCheck)
-		onHistoryFilterCheck: function (that) {
-			this._setTenderHistory(that, that.pPath);
+		onHistoryFilterCheck: function (oDetailController) {
+			this._setTenderHistory(oDetailController, oDetailController.pPath);
 		},
 		
 		//method for displaying binding financial offer page (only used on clicking on a offer in the financial tab (financialofferview fragment)
-		setFinancialOfferDisplayBinding: function (that) {
+		setFinancialOfferDisplayBinding: function (oDetailController) {
 		
 			//oEvent.getSource().getBindingContext("fastData").getPath();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
@@ -1977,11 +1969,11 @@ sap.ui.define([
 			var sOfferPath = Services.getSelectedOfferPath();
 			
 			//Currency (TODO check services loadCurrency)
-			var oCurrency = that.byId("idCurrency");
+			var oCurrency = oDetailController.byId("idCurrency");
 			oCurrency.bindItems({
 				path: "fastData>/CountryCurrency",
 				sorter: new sap.ui.model.Sorter("SORTER"),
-				filters: [new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, that._country)],
+				filters: [new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, oDetailController._country)],
 				template: new sap.ui.core.Item({
 					text: "{fastData>CURRENCY}",
 					key: "{fastData>CURRENCY}"
@@ -1992,7 +1984,7 @@ sap.ui.define([
 			//Financial offer table for products build the template
 			var oFinancialOfferTemplate = new sap.m.ColumnListItem({
 				type: "Navigation",
-				press: that.onFinancialOfferProductItemPress.bind(that),
+				press: oDetailController.onFinancialOfferProductItemPress.bind(oDetailController),
 				cells: [
 					//Product
 					new sap.m.Text({
@@ -2139,7 +2131,7 @@ sap.ui.define([
 			//Financial offer table for products set binding by using template
 			var sProductPath = sOfferPath + "/Product";
 			var oSorter = new sap.ui.model.Sorter('SORTER');
-			var oTable = that.byId("idFinancialOfferViewProduct");
+			var oTable = oDetailController.byId("idFinancialOfferViewProduct");
 			oTable.bindItems({
 				path: sProductPath,
 				model: "fastData",
