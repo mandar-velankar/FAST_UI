@@ -916,40 +916,62 @@ sap.ui.define([
 			
 			var thiss = this; //that is already used!! complicated! TODO improve could that be left out? other way to get the view
 			
-			var offerValues = that.getView().getModel("fastData").getObject(modelPath);
-			var productValues = that.getView().getModel("fastData").getObject("/" + offerValues.SKU.__ref);
+			//wait screen
+			that.getView().setBusy(true); 
 
-			var offerCurrency = that.byId("idCurrency").getSelectedKey();
+			//additional product get info
+			let sOfferID = Services.getSelectedOfferID();
+			let sProductCode = Services.getSelectedProductID();
+			let oProduct = Services.getLoadedProductsForOffer(sOfferID, sProductCode);
+			let oOffer = Services.getLoadedOffer(sOfferID);
+
+			//direct binding (old way)
+			var productValues = that.getView().getModel("fastData").getObject(modelPath);
+			var skuValues = that.getView().getModel("fastData").getObject("/" + productValues.SKU.__ref);
+
+			//get additional values
+			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			let sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			let sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
+			let sTenderChannel = Services.getLoadedTender().TenderChannel; //Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			let sSellingCompany = oOffer.SellingCompany || Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany") || Services.getSelectedSellingCompanyID() || null; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+			let sBrandID = oProduct && oProduct.SKU && oProduct.SKU.Product && oProduct.SKU.Product.HLEVEL4_CODE;
+			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			let iStandardDiscount = await thiss.getStandardDiscount(sDistributorID,sBrandID);
 
 			//catch all data calls promise in  array, continue only if all are done
 			let promises = [];
-			
+
+			//selected offer currency on screen
+			var offerCurrency = that.byId("idCurrency").getSelectedKey();
+
+			//Object for storing registeredPrice
 			var regPriceValues = {
-				CURRENCY: offerCurrency,
-				UOM: offerValues.UnitPerPack,
+				CURRENCY: offerCurrency, //selected currency on screen
+				UOM: productValues.UnitPerPack,
 				REGISTERED_PRICE: 0
 			};
-			if (offerValues.RegisteredPrice !== null) {
-				promises.push(thiss.loadCountryRegisteredPrice(Services.getSelectedCountry(), offerValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency).then(function (sRegisteredPrice) {
-					if(sRegisteredPrice){
+
+			//if registerd price is not null
+			if (productValues.RegisteredPrice !== null) {
+				let sRegisteredPrice = await thiss.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency);
+				if(sRegisteredPrice){
 						regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
 						regPriceValues.UOM = sRegisteredPrice.UOM;
-					} else {
+				} else {
 						regPriceValues.REGISTERED_PRICE = 0;
-					}
-				}));
+				}
 			}
 
 			var cogsValues = {
 				COGS: 0
 			};
-			if (offerValues.Cogs !== null) {
-				cogsValues = that.getView().getModel("fastData").getObject("/" + offerValues.Cogs.__ref);
+			if (productValues.Cogs !== null) {
+				cogsValues = that.getView().getModel("fastData").getObject("/" + productValues.Cogs.__ref);
 			}
 
-			const sSelectedCountryCode = Services.getCountryCodeofSelectedTender();
-			const { data: {results: [oCountryInformation]} } = await Services.getService('Tender').getCountryInfo(sSelectedCountryCode);
-
+			//get country information to read reportingCurrency
+			const { data: {results: [oCountryInformation]} } = await Services.getService('Tender').getCountryInfo(sCountryCode);
 			this.sReportingCurreny = oCountryInformation.ReportingCurreny;
 			
 			//load Budget rate again from database
@@ -958,11 +980,10 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = this.sReportingCurreny;
 			var budgetRate = null;
-			$.when(thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
-				if(oData !== false){
-					budgetRate = oData.X_RATE;
-				}
-			});
+			let oBudgetExchangeRates = await thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
+			if(oBudgetExchangeRates !== false){
+					budgetRate = oBudgetExchangeRates.X_RATE;
+			}
 			
 			//load Spot rate again from database
 			var sCountry = "";
@@ -970,74 +991,55 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = this.sReportingCurreny;
 			var spotRate = null;
-			$.when(thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
-				if(oData !== false){
-					spotRate = oData.X_RATE;
-				}
-			});
+			let oMonthlyAvgExchangeRates = await thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
+			if(oMonthlyAvgExchangeRates !== false){
+					spotRate = oMonthlyAvgExchangeRates.X_RATE;
+			}
 			
 			//check if preapproved price can be found for the selected institute,productpack,currency combination 
 			var sPreApprovedPrice = "";
-			promises.push(thiss.loadPreApprovedPrices(Services.getInstituteIDofSelectedTender(), productValues.PRODUCTPACKID, sCurrencyFrom).then(function (oPreApprovedPrice) {
-				if(offerValues.UnitPerPack === "Unit"){
-					sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PriceUnit;
-				}else{
-					sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PricePack;
-				}
-			}));
-
-			Promise.all(promises).then((result) => {
-
-				//additional product get info
-				var sOfferID = Services.getSelectedOfferID();
-				var sProductCode = Services.getSelectedProductID();
-				var oProduct = Services.getLoadedProductsForOffer(sOfferID, sProductCode);
+			let oPreApprovedPrice = await thiss.loadPreApprovedPrices(Services.getInstituteIDofSelectedTender(), skuValues.PRODUCTPACKID, sCurrencyFrom);
+			if(productValues.UnitPerPack === "Unit"){
+				sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PriceUnit;
+			}else{
+				sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PricePack;
+			}		
 				
-				if(oProduct && oProduct.SKU && oProduct.SKU.Product){
-					
-					var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
-					var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
-					var sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
-					var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
-					var sSellingCompany = offerValues.SellingCompany; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
-					var sBrandID = oProduct.SKU.Product.HLEVEL4_CODE;
-					var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			if(oProduct && oProduct.SKU && oProduct.SKU.Product){
 					
 					//get additional FOC product if its filled
-					if (offerValues.Price !== undefined && offerValues.Price !== null) {
-						var priceValuesTemp = that.getView().getModel("fastData").getObject("/" + offerValues.Price.__ref);
+					if (productValues.Price !== undefined && productValues.Price !== null) {
+						var priceValuesTemp = that.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
 						var sAddBrandProductCode = Number(priceValuesTemp.FOCProduct_Bundled_1);
 					}
-					
-					$.when(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sProductCode, aCommercialAgreement)).done(function(oAddFocProduct){
 						
+					var uFactor = (regPriceValues.UOM === "Unit") ? skuValues.PACKFACTOR : 1;//this will convert registered price per pack if stored per unit in database
+					var uCogsFactor = (productValues.UnitPerPack === "Unit") ? 1 / skuValues.PACKFACTOR : 1;
+					var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;//this is registered price per pack (always per pack)
 						
-						var uFactor = (regPriceValues.UOM === "Unit") ? productValues.PACKFACTOR : 1;//this will convert registered price per pack if stored per unit in database
-						var uCogsFactor = (offerValues.UnitPerPack === "Unit") ? 1 / productValues.PACKFACTOR : 1;
-						var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;//this is registered price per pack (always per pack)
-						
-						//when an additional FOC product is selected and results are found, calculate some fields
-						var sCogsAddFOCProduct = 0;
-						if(oAddFocProduct){
+					//when an additional FOC product is selected and results are found, calculate some fields
+					var sCogsAddFOCProduct = 0;
+					let oAddFocProduct = await Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sProductCode, aCommercialAgreement);
+					if(oAddFocProduct){
 							sCogsAddFOCProduct = oAddFocProduct.COGS * 
 							(
-								(offerValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1
+								(productValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1
 							);
-						}
+					}
 
-						//Calculate the CIF price
-						let cifPrice = (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
+					//Calculate the CIF price
+					let cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
 						
-						//for argentinia & brazilië the offerPrice is not the preApprovedPrice
-						if(sCountryCode==="AR" || sCountryCode==="BR"){	
+					//for argentinia & brazilië the offerPrice is not the preApprovedPrice
+					if(sCountryCode==="AR" || sCountryCode==="BR"){	
 							//offer price is in this case the standard price based upon CIF price & reductions
-							sPreApprovedPrice = cifPrice - (cifPrice * 0,10); //TODO get discount
-							sDiscount = 0.10;//TODO get discount
-						}else{
+							sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); //TODO get discount
+							sDiscount = iStandardDiscount;
+					}else{
 							sDiscount = "";
-						}
+					}
 
-						var price = {
+					var price = {
 							name: "Not Set",
 							description: "",
 							cifPrice: cifPrice,
@@ -1054,27 +1056,27 @@ sap.ui.define([
 							foc_bund1: "",//0,
 							focChart: 0,
 							netOfferPrice: "",
-							deductions: offerValues.DEFAULT_COMMISSION_RATE === null ? "" : offerValues.DEFAULT_COMMISSION_RATE,// 0,
+							deductions: productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE,// 0,
 							netPrice: "",
 							offerCurrency: offerCurrency,
 							spotRate: spotRate,
 							budgetRate: budgetRate,
-							uom: offerValues.UnitPerPack,
+							uom: productValues.UnitPerPack,
 							cogs: cogsValues.COGS * uCogsFactor,
 							cogsAddFOCProduct: sCogsAddFOCProduct, //bund1
-							quantity: offerValues.RequestedVolume,
+							quantity: productValues.RequestedVolume,
 							mainProductQuantity: 0,
 							addFocProductQuantity: 0,
 							focQuantityRounded: 0
-						};
+					};
 			
-						if (offerValues.Price !== undefined && offerValues.Price !== null) {
-							var priceValues = that.getView().getModel("fastData").getObject("/" + offerValues.Price.__ref);
+					if (productValues.Price !== undefined && productValues.Price !== null) {
+							var priceValues = that.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
 							regPrice = priceValues.RegPrice * uFactor;//offer-saved registered price per pack (assumption that UoM for price will always be same in database for same country/product/currency)
-							price.cifPrice = (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice;//if offer in units, divide by pack factor, otherwise pack value if good
+							price.cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;//if offer in units, divide by pack factor, otherwise pack value if good
 							var scenarioPrice;
 							if (forScenario !== 0) {
-								scenarioPrice = thiss._getScenarioPrice(that, offerValues, forScenario);
+								scenarioPrice = thiss._getScenarioPrice(that, productValues, forScenario);
 								if (scenarioPrice) {
 									price.name = scenarioPrice.name;
 									price.description = scenarioPrice.description;
@@ -1107,7 +1109,7 @@ sap.ui.define([
 							var iFocQuantity = price.foc * price.quantity;
 							var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0);  we want to use ceiling rounding
 							price.focQuantityRounded = iFocQuantityRounded;
-							price.mainProductQuantity = (offerValues.RequestedVolume 
+							price.mainProductQuantity = (productValues.RequestedVolume 
 							     + (
 							     (price.focType === "FOC 1") 
 							     ? 0 //FOC is part of requested volume
@@ -1122,45 +1124,41 @@ sap.ui.define([
 							var iFocQuantityAddProduct = price.foc_bund1 * price.quantity;
 							var iFocQuantityAddProductRounded = Math.ceil(iFocQuantityAddProduct); //formatter.roundXDecimals(iFocQuantityAddProduct, 0);
 							price.addFocProductQuantity = (price.focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : price.foc_bund1;//JH: corrected was using single "=" in check!!!!
-							
+									
 							price.focChart = (price.focAbsPct === "PCT") ? ((price.focType === "FOC 1") ? price.foc : 1 - 1 / (1 + price.foc)) : ((price.focType ===
-								"FOC 1") ? 1 - (offerValues.RequestedVolume - price.foc) / offerValues.RequestedVolume : 1 - offerValues.RequestedVolume / (
-								offerValues.RequestedVolume + price.foc));
+										"FOC 1") ? 1 - (productValues.RequestedVolume - price.foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (
+										productValues.RequestedVolume + price.foc));
 							price.deductions = priceValues.Deductions;
 							if (!scenarioPrice) {
-								price.netOfferPrice = parseFloat(priceValues.NetofferPrice);
-								price.netPrice = parseFloat(priceValues.NetPrice);
+										price.netOfferPrice = parseFloat(priceValues.NetofferPrice);
+										price.netPrice = parseFloat(priceValues.NetPrice);
 							} else {
-								price.netOfferPrice = price.offerPrice * (1 - price.focChart);
-								price.netPrice = price.netOfferPrice * (1 - price.deductions);
+										price.netOfferPrice = price.offerPrice * (1 - price.focChart);
+										price.netPrice = price.netOfferPrice * (1 - price.deductions);
 							}
 							
-						}
+					}
 			
-						if (chartId !== null) {
+					if (chartId !== null) {
 							thiss._setPriceChart(that, chartId, price);
-						}
-						if (formId !== null) {
+					}
+					if (formId !== null) {
 							thiss._setPriceForm(that, formId, price, forEdit, (forScenario !== 0));
-						}
-						if (tableId !== null) {
+					}
+					if (tableId !== null) {
 							if (chartId !== null) {
 								thiss._setProfitTableH(that, tableId, price);
 							} else {
 								thiss._setProfitTableV(that, tableId, price);
 							}
-						}
+					}
 			
-						that._productCode = productValues.PRODUCTPACKID;
-						
-					});
-				}
-                    
-            }).catch(function(error){
-				//added to trace in case of error
-				console.error(error);
-            });
-            
+					that._productCode = skuValues.PRODUCTPACKID;
+
+			}
+		
+		//hide waiting screen
+		that.getView().setBusy(false); 
 		
 		},
 		
@@ -1320,6 +1318,23 @@ sap.ui.define([
 			});
 		},
 		
+		/**
+		 * Get standard discount
+		 * @param {string} sDistributorID distributor
+		 * @param {string} sBrandID brand
+		 */
+		getStandardDiscount: async function(sDistributorID, sBrandID){
+
+			if(!sDistributorID || !sBrandID){
+				return null;
+			}else{
+				let oAggregatedDistributorBrandPolicy = await Services.getService('DistributorBrandPolicy').getAggregatedDistributorBrandPolicy(sDistributorID, sBrandID);
+				return Number(oAggregatedDistributorBrandPolicy.data.results[0].StandardDiscount) || null;
+			}
+			
+			
+		},
+
 		//load all latest spotrate, budgetrate, regprice, cogs
 		loadAllUpToDatePrices: function (oOffer, oProduct, oRegisterdPrice){
 			
@@ -1533,118 +1548,12 @@ sap.ui.define([
 					regPriceValues.REGISTERED_PRICE = 0;
 				}
 			}));
-				
-			//Get registered price from master data through navigation property, if exists
-			//removed this to completely skip using navigation property as it can have multiple values, leading to error with code below
-			// if (oRegisterdPrice === null) {
-			// 	/*regPriceValues = oRegisterdPrice;
-			// 	regPriceValues.REGISTERED_PRICE = parseFloat(regPriceValues.REGISTERED_PRICE);*/
-				
-			// 	promises.push(that.loadCountryRegisteredPrice(Services.getSelectedCountry(), offerUnit, Services.getSelectedProductID(), sOfferCurrency).then(function (sRegisteredPrice) {
-			// 		if(sRegisteredPrice){
-			// 			regPriceValues.REGISTERED_PRICE = parseFloat(sRegisteredPrice.REGISTERED_PRICE);
-			// 			regPriceValues.UOM = sRegisteredPrice.UOM;
-			// 		} else {
-			// 			regPriceValues.REGISTERED_PRICE = 0;
-			// 		}
-			// 	}));
-			// } else {
-			// 	regPriceValues.REGISTERED_PRICE = parseFloat(oRegisterdPrice.REGISTERED_PRICE);
-			// }
 			
 			//Dedicated registered price exchange rate
-			/*var registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + sCountry +
-				"',CURRENCY_FROM='" + regPriceValues.CURRENCY + "',CURRENCY_TO='" + sOfferCurrency + "',X_TYPE='Registered Price')";*/
-			//var testRate = oDefaultModel.getObject(registeredRatePath);
-			//from registered price currency to currency selected in screen (offer)
 			Promise.all(promises).then((result) => {
 				var sRegPrice = regPriceValues.REGISTERED_PRICE;
 				oDeferred.resolve(sRegPrice);	
 			});
-			
-			// Promise.all(promises).then((result) => {
-			// 	$.when(that.loadExchangeRates(sCountry, regPriceValues.CURRENCY, sOfferCurrency, 'Registered Price')).done(function(testRate){
-					
-			// 		var registeredRate = 1;
-					
-			// 		if (testRate === false || testRate === undefined) {//Checking if exchange rate exists for registered price conversion Registered Currency => Offer Currency
-						
-			// 			/*
-			// 			registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + sCountry +
-			// 				"',CURRENCY_FROM='" + sOfferCurrency + "',CURRENCY_TO='" + regPriceValues.CURRENCY + "',X_TYPE='Registered Price')";
-			// 			*/
-			// 			//testRate = oDefaultModel.getObject(registeredRatePath);
-			// 			//from currency selected in screen (offer) to registered price currency
-			// 			$.when(that.loadExchangeRates(sCountry, sOfferCurrency, regPriceValues.CURRENCY, 'Registered Price')).done(function(testRate){
-						
-			// 				//Checking if exchange rate exists for registered price conversion Offer Currency => Registered Currency
-			// 				if (testRate === false ||testRate === undefined){
-			// 					if (regPriceValues.REGISTERED_PRICE !== 0){
-			// 						sap.m.MessageBox.show("No exchange rate found for product. Could not save.", {
-			// 							title: "Error",
-			// 							icon: sap.m.MessageBox.Icon.ERROR,
-			// 							onClose: function () {}
-			// 						});
-	
-			// 						//let the callback be triggered
-			// 						oDeferred.resolve(false); //in this case we should not continue with saving
-			// 					}
-			// 				}
-			// 				else {//Rate exists Offer => Registered
-			// 					registeredRate = parseFloat(testRate.X_RATE);
-			// 					//If exchange rate value is 0, it means Registered Price is not MEANT to be converted in that currency
-			// 					if (parseFloat(testRate.X_RATE) === 0 && regPriceValues.REGISTERED_PRICE !== 0){
-			// 						// sap.m.MessageBox.show("Price is not registered in offer currency.", {
-			// 						// 	title: "Warning",
-			// 						// 	icon: sap.m.MessageBox.Icon.WARNING,
-			// 						// 	onClose: function () {}
-			// 						// });
-			// 						regPriceValues.REGISTERED_PRICE = 0;
-			// 						registeredRate = 1;
-			// 						//return;
-			// 					}
-			// 				}
-							
-			// 				//Rates: eventually, we get
-			// 				//	+ either registeredRate=0 (=> we don't have a registered price i that currency)
-			// 				//	+ or the registeredRate to convert registered price (if it exists) to offer currency
-							
-			// 				var sRegPrice = regPriceValues.REGISTERED_PRICE * registeredRate;
-							
-			// 				//let the callback be triggered
-			// 				oDeferred.resolve(sRegPrice);	
-							
-			// 			});
-						
-			// 		}
-			// 		else {//Rate exists Registered => Offer
-			// 			if (parseFloat(testRate.X_RATE) === 0 && regPriceValues.REGISTERED_PRICE !== 0){
-			// 				//If exchange rate value is 0, it means Registered Price is not MEANT to be converted in that currency
-			// 				// sap.m.MessageBox.show("Price is not registered in offer currency.", {
-			// 				// 	title: "Warning",
-			// 				// 	icon: sap.m.MessageBox.Icon.WARNING,
-			// 				// 	onClose: function () {}
-			// 				// });
-			// 				regPriceValues.REGISTERED_PRICE = 0;
-			// 				registeredRate = 1;
-			// 				//return;
-			// 			}
-			// 			if (parseFloat(testRate.X_RATE) !== 0){
-			// 				registeredRate = 1 / parseFloat(testRate.X_RATE);
-			// 			}
-						
-			// 			//Rates: eventually, we get
-			// 			//	+ either registeredRate=0 (=> we don't have a registered price i that currency)
-			// 			//	+ or the registeredRate to convert registered price (if it exists) to offer currency
-						
-			// 			var sRegPrice = regPriceValues.REGISTERED_PRICE * registeredRate;
-		
-			// 			//let the callback be triggered
-			// 			oDeferred.resolve(sRegPrice);
-			// 		}
-					
-			// 	});
-			// });
 			
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();

@@ -34,6 +34,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/LetterService",
 	"FAST_NS0FAST0/services/GroupPurchasingService",
 	"FAST_NS0FAST0/services/PriceService",
+	"FAST_NS0FAST0/services/DistributorBrandPolicyService",
 	"FAST_NS0FAST0/services/ProductService",
 	"FAST_NS0FAST0/services/ResultService",
 	"FAST_NS0FAST0/services/ScenarioService",
@@ -42,7 +43,7 @@ sap.ui.define([
 	"sap/ui/Device"
 ], function (UIComponent, JSONModel, fioriLibrary, FlexibleColumnLayoutSemanticHelper, Button, Dialog, Label, MessageToast, Text,
 	TextArea, ODataModel, Services, OfferService, TenderService, ApprovalService, AwardCriteriaService, CompetitorResultService, 
-	DeliveryService, LetterService, GroupPurchasingService, PriceService, ProductService, ResultService, ScenarioService, QuotationService, SpecificationService, Device) {
+	DeliveryService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ProductService, ResultService, ScenarioService, QuotationService, SpecificationService, Device) {
 	"use strict";
 
 	return UIComponent.extend("FAST_NS0FAST0.Component", {
@@ -93,6 +94,7 @@ sap.ui.define([
 			this.LetterService = new LetterService(oDefaultModel);
 			this.GroupPurchasingService = new GroupPurchasingService(oDefaultModel);
 			this.PriceService = new PriceService(oDefaultModel);
+			this.DistributorBrandPolicyService = new DistributorBrandPolicyService(oDefaultModel);
 			this.ProductService = new ProductService(oDefaultModel);
 			this.ResultService = new ResultService(oDefaultModel);
 			this.ScenarioService = new ScenarioService(oDefaultModel);
@@ -109,6 +111,7 @@ sap.ui.define([
 				LetterService:this.LetterService,
 				GroupPurchasingService:this.GroupPurchasingService,
 				PriceService:this.PriceService,
+				DistributorBrandPolicyService: this.DistributorBrandPolicyService,
 				ProductService:this.ProductService,
 				ResultService:this.ResultService,
 				ScenarioService:this.ScenarioService,
