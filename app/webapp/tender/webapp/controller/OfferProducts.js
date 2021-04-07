@@ -516,7 +516,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "Net Price \n [" + this.sReportingCurreny + "/ \n" + price.uom + "]",
+					text: "Net Price \n [" + this.sReportingCurrency + "/ \n" + price.uom + "]",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -525,7 +525,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "COGS \n\n [" + this.sReportingCurreny + "/ \n" + price.uom + "] \n",
+					text: "COGS \n\n [" + this.sReportingCurrency + "/ \n" + price.uom + "] \n",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -579,7 +579,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "Net Sales \n [" + this.sReportingCurreny + "] \n\n",
+					text: "Net Sales \n [" + this.sReportingCurrency + "] \n\n",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -588,7 +588,7 @@ sap.ui.define([
 			}));
 			oTable.addColumn(new sap.m.Column({
 				header: new sap.m.Label({
-					text: "Gross Profit \n [" + this.sReportingCurreny + "] \n\n",
+					text: "Gross Profit \n [" + this.sReportingCurrency + "] \n\n",
 					wrapping: true,
 					vAlign: "Top",
 					design: "Bold",
@@ -972,13 +972,13 @@ sap.ui.define([
 
 			//get country information to read reportingCurrency
 			const { data: {results: [oCountryInformation]} } = await Services.getService('Tender').getCountryInfo(sCountryCode);
-			this.sReportingCurreny = oCountryInformation.ReportingCurreny;
+			this.sReportingCurrency = oCountryInformation.ReportingCurrency;
 			
 			//load Budget rate again from database
 			var sCountry = "";
 			var sX_TYPE = "Budget";
 			var sCurrencyFrom = offerCurrency;
-			var sCurrencyTo = this.sReportingCurreny;
+			var sCurrencyTo = this.sReportingCurrency;
 			var budgetRate = null;
 			let oBudgetExchangeRates = await thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
 			if(oBudgetExchangeRates !== false){
@@ -989,7 +989,7 @@ sap.ui.define([
 			var sCountry = "";
 			var sX_TYPE = "Monthly Average";
 			var sCurrencyFrom = offerCurrency;
-			var sCurrencyTo = this.sReportingCurreny;
+			var sCurrencyTo = this.sReportingCurrency;
 			var spotRate = null;
 			let oMonthlyAvgExchangeRates = await thiss.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
 			if(oMonthlyAvgExchangeRates !== false){
