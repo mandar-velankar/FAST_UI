@@ -1230,13 +1230,16 @@ sap.ui.define([
 		//Filter brand products to find only the products of the selected brand
 		filterBrandProducts: function(aBrands){
 			const aBrandProducts = this.ctrState.getCurrentContract().instituteDistributorBrandProducts;
-			const aFilteredBrandProducts = aBrandProducts.filter(
-				(elem) => aBrands.find(({
+			const aFilteredBrandProducts = aBrandProducts.filter((elem) => aBrands.find(({
 					BRAND_ID
 				}) => elem.BRAND_ID === BRAND_ID)
 			);
 
-			return aFilteredBrandProducts;
+			const uniqueProducts = [];
+
+			aFilteredBrandProducts.forEach(x => uniqueProducts.filter(a => a.PRODUCT_ID === x.PRODUCT_ID).length > 0 ? null : uniqueProducts.push(x));
+
+			return uniqueProducts;
 		},
 
 		//When the user is adding or removing a token
