@@ -178,6 +178,7 @@ sap.ui.define([
 						value: formatter.percentageNoUnit(price.additionalDiscount),
 						description: "%",
 						visible: sCountryCode === "AR" || sCountryCode === "BR" ? true : false,
+						change: oDetailController.onEditFinancialOffer.bind(oDetailController),
 						enabled: forEdit
 					})
 			);
@@ -1315,7 +1316,7 @@ sap.ui.define([
 		},
 		
 		/**
-		 * Get standard discount
+		 * Get standard discount that is valid for a certain Brand or Distributor
 		 * @param {string} sDistributorID distributor
 		 * @param {string} sBrandID brand
 		 */
@@ -1634,6 +1635,9 @@ sap.ui.define([
 			
 			var that = this;
 
+			//wait screen
+			oDetailController.getView().setBusy(true); 
+
 			//wait for update
 			var oDeferred = $.Deferred();
 			var productValues = oDetailController.getView().getModel("fastData").getObject(oDetailController.pPath);
@@ -1744,7 +1748,13 @@ sap.ui.define([
 				productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 				foc));
 			var netOfferPrice = offerPrice * (1 - focChart);
-			var netPrice = (1 - deductions) * netOfferPrice;
+
+			let netPrice = "";
+			if(sCountryCode==="AR"||sCountryCode==="BR"){
+				netPrice = (1 - (deductions + additionalDiscount)) * netOfferPrice;
+			}else{
+				netPrice = (1 - deductions) * netOfferPrice;
+			}		
 	
 			//mainProductQuantity
 			var iFocQuantity = foc * productValues.RequestedVolume;
@@ -1804,6 +1814,8 @@ sap.ui.define([
 
 			oDeferred.resolve("all updated on the screen");
 
+			//close wait screen
+			oDetailController.getView().setBusy(false); 
 
 			//wait for result
 			return oDeferred.promise();
