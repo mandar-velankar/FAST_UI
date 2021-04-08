@@ -916,7 +916,8 @@ sap.ui.define([
 		_setPricingData: async function (oDetailController, formId, chartId, tableId, modelPath, forEdit, forScenario) {
 			
 			var that = this; //that is already used!! complicated! TODO improve could that be left out? other way to get the view
-			
+			let aPromises = [];
+
 			//wait screen
 			oDetailController.getView().setBusy(true); 
 
@@ -952,13 +953,15 @@ sap.ui.define([
 
 			//if registerd price is not null
 			if (productValues.RegisteredPrice !== null) {
-				let sRegisteredPrice = await that.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency);
-				if(sRegisteredPrice){
+				aPromises.push(that.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency).then(sRegisteredPrice => {
+					if(sRegisteredPrice){
 						regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
 						regPriceValues.UOM = sRegisteredPrice.UOM;
-				} else {
+					} else {
 						regPriceValues.REGISTERED_PRICE = 0;
-				}
+					}
+					return sRegisteredPrice;
+				}));
 			}
 
 			var cogsValues = {
@@ -978,10 +981,12 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = this.sReportingCurrency;
 			var budgetRate = null;
-			let oBudgetExchangeRates = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
-			if(oBudgetExchangeRates !== false){
+			aPromises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(oBudgetExchangeRates => {
+				if(oBudgetExchangeRates !== false){
 					budgetRate = oBudgetExchangeRates.X_RATE;
-			}
+				}
+				return oBudgetExchangeRates;
+			}));
 			
 			//load Spot rate again from database
 			var sCountry = "";
@@ -989,173 +994,190 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = this.sReportingCurrency;
 			var spotRate = null;
-			let oMonthlyAvgExchangeRates = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
-			if(oMonthlyAvgExchangeRates !== false){
+			aPromises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(oMonthlyAvgExchangeRates => {
+				if(oMonthlyAvgExchangeRates !== false){
 					spotRate = oMonthlyAvgExchangeRates.X_RATE;
-			}
+				}
+				return oMonthlyAvgExchangeRates;
+			}));
 			
 			//check if preapproved price can be found for the selected institute,productpack,currency combination 
 			var sPreApprovedPrice = "";
-			let oPreApprovedPrice = await that.loadPreApprovedPrices(Services.getInstituteIDofSelectedTender(), skuValues.PRODUCTPACKID, sCurrencyFrom);
-			if(productValues.UnitPerPack === "Unit"){
-				sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PriceUnit;
-			}else{
-				sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PricePack;
-			}		
-				
+			aPromises.push(that.loadPreApprovedPrices(Services.getInstituteIDofSelectedTender(), skuValues.PRODUCTPACKID, sCurrencyFrom).then(oPreApprovedPrice => {
+				if(productValues.UnitPerPack === "Unit"){
+					sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PriceUnit;
+				}else{
+					sPreApprovedPrice = oPreApprovedPrice === false ? "" : oPreApprovedPrice.PricePack;
+				}
+				return oPreApprovedPrice;
+			}));		
+
+			//if product exists
 			if(oProduct && oProduct.SKU && oProduct.SKU.Product){
-					
-					//get additional FOC product if its filled
-					if (productValues.Price !== undefined && productValues.Price !== null) {
-						var priceValuesTemp = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
-						var sAddBrandProductCode = Number(priceValuesTemp.FOCProduct_Bundled_1);
-					}
-						
-					var uFactor = (regPriceValues.UOM === "Unit") ? skuValues.PACKFACTOR : 1;//this will convert registered price per pack if stored per unit in database
-					var uCogsFactor = (productValues.UnitPerPack === "Unit") ? 1 / skuValues.PACKFACTOR : 1;
-					var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;//this is registered price per pack (always per pack)
-						
-					//when an additional FOC product is selected and results are found, calculate some fields
-					var sCogsAddFOCProduct = 0;
-					let oAddFocProduct = await Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sProductCode, aCommercialAgreement);
+
+				//get additional FOC product if its filled
+				var sAddBrandProductCode = 0;
+				if (productValues.Price !== undefined && productValues.Price !== null) {
+					var priceValuesTemp = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
+					sAddBrandProductCode = Number(priceValuesTemp.FOCProduct_Bundled_1);
+				}
+
+				//when an additional FOC product is selected and results are found, calculate some fields
+				var sCogsAddFOCProduct = 0;
+				aPromises.push(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sAddBrandProductCode, aCommercialAgreement).then(oAddFocProduct => {
 					if(oAddFocProduct){
-							sCogsAddFOCProduct = oAddFocProduct.COGS * 
-							(
+						sCogsAddFOCProduct = oAddFocProduct.COGS * 
+						(
 								(productValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1
-							);
+						);
 					}
-
-					//Calculate the CIF price
-					let cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
-						
-					//for argentinia & brazilië the offerPrice is not the preApprovedPrice
-					let sDiscount = "";
-					if(sCountryCode==="AR" || sCountryCode==="BR"){	
-							//offer price is in this case the standard price based upon CIF price & reductions
-							sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); //TODO get discount
-							sDiscount = iStandardDiscount;
-					}
-
-					var price = {
-							name: "Not Set",
-							description: "",
-							cifPrice: cifPrice,
-							newCifPrice: cifPrice,
-							discount: sDiscount, //"",//0,
-							offerPrice: sPreApprovedPrice, //"",
-							standardDiscount: iStandardDiscount,
-							additionalDiscount: "",
-							focAbsPct: "PCT",
-							focType: "FOC 1",
-							foc: "",//0,
-							focProduct_bund1: "",
-							focAbsPct_bund1: "PCT",
-							foc_bund1: "",//0,
-							focChart: 0,
-							netOfferPrice: "",
-							deductions: productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE,// 0,
-							netPrice: "",
-							offerCurrency: offerCurrency,
-							spotRate: spotRate,
-							budgetRate: budgetRate,
-							uom: productValues.UnitPerPack,
-							cogs: cogsValues.COGS * uCogsFactor,
-							cogsAddFOCProduct: sCogsAddFOCProduct, //bund1
-							quantity: productValues.RequestedVolume,
-							mainProductQuantity: 0,
-							addFocProductQuantity: 0,
-							focQuantityRounded: 0
-					};
-			
-					if (productValues.Price !== undefined && productValues.Price !== null) {
-							var priceValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
-							regPrice = priceValues.RegPrice * uFactor;//offer-saved registered price per pack (assumption that UoM for price will always be same in database for same country/product/currency)
-							price.cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;//if offer in units, divide by pack factor, otherwise pack value if good
-							var scenarioPrice;
-							if (forScenario !== 0) {
-								scenarioPrice = that._getScenarioPrice(oDetailController, productValues, forScenario);
-								if (scenarioPrice) {
-									price.name = scenarioPrice.name;
-									price.description = scenarioPrice.description;
-									priceValues.Discount = !forEdit 
-										? ((price.cifPrice !== 0) ? (price.cifPrice - scenarioPrice.offerPrice) / price.cifPrice : 0)
-										: ((price.newCifPrice !== 0) ? (price.newCifPrice - scenarioPrice.offerPrice) / price.newCifPrice : 0);
-									priceValues.OfferPrice = parseFloat(scenarioPrice.offerPrice);
-									priceValues.standardDiscount = parseFloat(scenarioPrice.standardDiscount);
-									priceValues.additionalDiscount = parseFloat(scenarioPrice.additionalDiscount);
-									priceValues.FOC_ABS_PCT = scenarioPrice.focAbsPct;
-									priceValues.FOCType = scenarioPrice.focType;
-									priceValues.FOC = parseFloat(scenarioPrice.foc);
-									priceValues.focProduct_bund1 = scenarioPrice.FOCProduct_Bundled_1;
-									priceValues.focAbsPct_bund1 = scenarioPrice.FOC_ABS_PCT_Bundled_1;
-									priceValues.foc_bund1 = parseFloat(scenarioPrice.FOC_Bundled_1);
-								}
-							}
-			
-							price.discount = !forEdit ? parseFloat(priceValues.Discount) : ((price.newCifPrice !== 0) ? (price.newCifPrice -  parseFloat(priceValues.OfferPrice)) / price.newCifPrice : 0);
-							price.offerPrice = parseFloat(priceValues.OfferPrice);
-							price.standardDiscount = parseFloat(priceValues.standardDiscount);
-							price.additionalDiscount = parseFloat(priceValues.additionalDiscount);
-							price.focAbsPct = priceValues.FOC_ABS_PCT;
-							price.focType = priceValues.FOCType;
-							price.foc = parseFloat(priceValues.FOC);
-							price.focProduct_bund1 = priceValues.FOCProduct_Bundled_1;
-							price.focAbsPct_bund1 = priceValues.FOC_ABS_PCT_Bundled_1;
-							price.foc_bund1 = parseFloat(priceValues.FOC_Bundled_1);
-							//mainProductQuantity
-							var iFocQuantity = price.foc * price.quantity;
-							var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0);  we want to use ceiling rounding
-							price.focQuantityRounded = iFocQuantityRounded;
-							price.mainProductQuantity = (productValues.RequestedVolume 
-							     + (
-							     (price.focType === "FOC 1") 
-							     ? 0 //FOC is part of requested volume
-							     : //FOC is on top of requested quantity
-							    	(
-							     		(price.focAbsPct === "PCT") //JH: corrected was using field from additional product
-							     		? iFocQuantityRounded
-							     		: price.foc
-							     	)
-							     ));
-							//additional FOC product Quantity
-							var iFocQuantityAddProduct = price.foc_bund1 * price.quantity;
-							var iFocQuantityAddProductRounded = Math.ceil(iFocQuantityAddProduct); //formatter.roundXDecimals(iFocQuantityAddProduct, 0);
-							price.addFocProductQuantity = (price.focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : price.foc_bund1;//JH: corrected was using single "=" in check!!!!
-									
-							price.focChart = (price.focAbsPct === "PCT") ? ((price.focType === "FOC 1") ? price.foc : 1 - 1 / (1 + price.foc)) : ((price.focType ===
-										"FOC 1") ? 1 - (productValues.RequestedVolume - price.foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (
-										productValues.RequestedVolume + price.foc));
-							price.deductions = priceValues.Deductions;
-							if (!scenarioPrice) {
-										price.netOfferPrice = parseFloat(priceValues.NetofferPrice);
-										price.netPrice = parseFloat(priceValues.NetPrice);
-							} else {
-										price.netOfferPrice = price.offerPrice * (1 - price.focChart);
-										price.netPrice = price.netOfferPrice * (1 - price.deductions);
-							}
-							
-					}
-			
-					if (chartId !== null) {
-							that._setPriceChart(oDetailController, chartId, price);
-					}
-					if (formId !== null) {
-							that._setPriceForm(oDetailController, formId, price, forEdit, (forScenario !== 0));
-					}
-					if (tableId !== null) {
-							if (chartId !== null) {
-								that._setProfitTableH(oDetailController, tableId, price);
-							} else {
-								that._setProfitTableV(oDetailController, tableId, price);
-							}
-					}
-			
-					oDetailController._productCode = skuValues.PRODUCTPACKID;
+					return oAddFocProduct;
+				}));
 
 			}
-		
-			//hide waiting screen
-			oDetailController.getView().setBusy(false); 
+
+			//if all data is loaded, continue with calculations
+			Promise.all(aPromises).then((values) =>{
+
+				if(oProduct && oProduct.SKU && oProduct.SKU.Product){
+							
+						var uFactor = (regPriceValues.UOM === "Unit") ? skuValues.PACKFACTOR : 1;//this will convert registered price per pack if stored per unit in database
+						var uCogsFactor = (productValues.UnitPerPack === "Unit") ? 1 / skuValues.PACKFACTOR : 1;
+						var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;//this is registered price per pack (always per pack)
+
+						//Calculate the CIF price
+						let cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
+							
+						//for argentinia & brazilië the offerPrice is not the preApprovedPrice
+						let sDiscount = "";
+						if(sCountryCode==="AR" || sCountryCode==="BR"){	
+								//offer price is in this case the standard price based upon CIF price & reductions
+								sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); //TODO get discount
+								sDiscount = iStandardDiscount;
+						}
+
+						var price = {
+								name: "Not Set",
+								description: "",
+								cifPrice: cifPrice,
+								newCifPrice: cifPrice,
+								discount: sDiscount, //"",//0,
+								offerPrice: sPreApprovedPrice, //"",
+								standardDiscount: iStandardDiscount,
+								additionalDiscount: "",
+								focAbsPct: "PCT",
+								focType: "FOC 1",
+								foc: "",//0,
+								focProduct_bund1: "",
+								focAbsPct_bund1: "PCT",
+								foc_bund1: "",//0,
+								focChart: 0,
+								netOfferPrice: "",
+								deductions: productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE,// 0,
+								netPrice: "",
+								offerCurrency: offerCurrency,
+								spotRate: spotRate,
+								budgetRate: budgetRate,
+								uom: productValues.UnitPerPack,
+								cogs: cogsValues.COGS * uCogsFactor,
+								cogsAddFOCProduct: sCogsAddFOCProduct, //bund1
+								quantity: productValues.RequestedVolume,
+								mainProductQuantity: 0,
+								addFocProductQuantity: 0,
+								focQuantityRounded: 0
+						};
+				
+						if (productValues.Price !== undefined && productValues.Price !== null) {
+								var priceValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Price.__ref);
+								regPrice = priceValues.RegPrice * uFactor;//offer-saved registered price per pack (assumption that UoM for price will always be same in database for same country/product/currency)
+								price.cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;//if offer in units, divide by pack factor, otherwise pack value if good
+								var scenarioPrice;
+								if (forScenario !== 0) {
+									scenarioPrice = that._getScenarioPrice(oDetailController, productValues, forScenario);
+									if (scenarioPrice) {
+										price.name = scenarioPrice.name;
+										price.description = scenarioPrice.description;
+										priceValues.Discount = !forEdit 
+											? ((price.cifPrice !== 0) ? (price.cifPrice - scenarioPrice.offerPrice) / price.cifPrice : 0)
+											: ((price.newCifPrice !== 0) ? (price.newCifPrice - scenarioPrice.offerPrice) / price.newCifPrice : 0);
+										priceValues.OfferPrice = parseFloat(scenarioPrice.offerPrice);
+										priceValues.standardDiscount = parseFloat(scenarioPrice.standardDiscount);
+										priceValues.additionalDiscount = parseFloat(scenarioPrice.additionalDiscount);
+										priceValues.FOC_ABS_PCT = scenarioPrice.focAbsPct;
+										priceValues.FOCType = scenarioPrice.focType;
+										priceValues.FOC = parseFloat(scenarioPrice.foc);
+										priceValues.focProduct_bund1 = scenarioPrice.FOCProduct_Bundled_1;
+										priceValues.focAbsPct_bund1 = scenarioPrice.FOC_ABS_PCT_Bundled_1;
+										priceValues.foc_bund1 = parseFloat(scenarioPrice.FOC_Bundled_1);
+									}
+								}
+				
+								price.discount = !forEdit ? parseFloat(priceValues.Discount) : ((price.newCifPrice !== 0) ? (price.newCifPrice -  parseFloat(priceValues.OfferPrice)) / price.newCifPrice : 0);
+								price.offerPrice = parseFloat(priceValues.OfferPrice);
+								price.standardDiscount = parseFloat(priceValues.StandardDiscount);
+								price.additionalDiscount = parseFloat(priceValues.AdditionalDiscount);
+								price.focAbsPct = priceValues.FOC_ABS_PCT;
+								price.focType = priceValues.FOCType;
+								price.foc = parseFloat(priceValues.FOC);
+								price.focProduct_bund1 = priceValues.FOCProduct_Bundled_1;
+								price.focAbsPct_bund1 = priceValues.FOC_ABS_PCT_Bundled_1;
+								price.foc_bund1 = parseFloat(priceValues.FOC_Bundled_1);
+								//mainProductQuantity
+								var iFocQuantity = price.foc * price.quantity;
+								var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0);  we want to use ceiling rounding
+								price.focQuantityRounded = iFocQuantityRounded;
+								price.mainProductQuantity = (productValues.RequestedVolume 
+									+ (
+									(price.focType === "FOC 1") 
+									? 0 //FOC is part of requested volume
+									: //FOC is on top of requested quantity
+										(
+											(price.focAbsPct === "PCT") //JH: corrected was using field from additional product
+											? iFocQuantityRounded
+											: price.foc
+										)
+									));
+								//additional FOC product Quantity
+								var iFocQuantityAddProduct = price.foc_bund1 * price.quantity;
+								var iFocQuantityAddProductRounded = Math.ceil(iFocQuantityAddProduct); //formatter.roundXDecimals(iFocQuantityAddProduct, 0);
+								price.addFocProductQuantity = (price.focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : price.foc_bund1;//JH: corrected was using single "=" in check!!!!
+										
+								price.focChart = (price.focAbsPct === "PCT") ? ((price.focType === "FOC 1") ? price.foc : 1 - 1 / (1 + price.foc)) : ((price.focType ===
+											"FOC 1") ? 1 - (productValues.RequestedVolume - price.foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (
+											productValues.RequestedVolume + price.foc));
+								price.deductions = priceValues.Deductions;
+								if (!scenarioPrice) {
+											price.netOfferPrice = parseFloat(priceValues.NetofferPrice);
+											price.netPrice = parseFloat(priceValues.NetPrice);
+								} else {
+											price.netOfferPrice = price.offerPrice * (1 - price.focChart);
+											price.netPrice = price.netOfferPrice * (1 - price.deductions);
+								}
+								
+						}
+				
+						if (chartId !== null) {
+								that._setPriceChart(oDetailController, chartId, price);
+						}
+						if (formId !== null) {
+								that._setPriceForm(oDetailController, formId, price, forEdit, (forScenario !== 0));
+						}
+						if (tableId !== null) {
+								if (chartId !== null) {
+									that._setProfitTableH(oDetailController, tableId, price);
+								} else {
+									that._setProfitTableV(oDetailController, tableId, price);
+								}
+						}
+				
+						oDetailController._productCode = skuValues.PRODUCTPACKID;
+
+				}
+
+				//hide waiting screen
+				oDetailController.getView().setBusy(false); 
+
+			});
 		
 		},
 		
@@ -1634,6 +1656,7 @@ sap.ui.define([
 		updateFinancialOffer: async function (oEvent, oDetailController) {
 			
 			var that = this;
+			let aPromises = [];
 
 			//wait screen
 			oDetailController.getView().setBusy(true); 
@@ -1651,13 +1674,15 @@ sap.ui.define([
 			};
 			
 			if (productValues.RegisteredPrice !== null) {
-				let sRegisteredPrice = await that.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency);
-				if(sRegisteredPrice){
-					regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
-					regPriceValues.UOM = sRegisteredPrice.UOM;
-				} else {
-					regPriceValues.REGISTERED_PRICE = 0;
-				}
+				aPromises.push(that.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency).then(sRegisteredPrice => {
+					if(sRegisteredPrice){
+						regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
+						regPriceValues.UOM = sRegisteredPrice.UOM;
+					} else {
+						regPriceValues.REGISTERED_PRICE = 0;
+					}
+					return sRegisteredPrice;
+				}));
 			}
 			
 			//TODO take cogsValues from navigation prop (this is used directly)
@@ -1675,10 +1700,12 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = "EUR";
 			var budgetRate = null;
-			let oBudgetExchangeRate = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
-			if(oBudgetExchangeRate !== false){
-				budgetRate = oBudgetExchangeRate.X_RATE;
-			}
+			aPromises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(oBudgetExchangeRate=>{
+				if(oBudgetExchangeRate !== false){
+					budgetRate = oBudgetExchangeRate.X_RATE;
+				}
+				return oBudgetExchangeRate;
+			}));
 			
 			//load Spot rate again from database
 			var sCountry = "";
@@ -1686,10 +1713,12 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = "EUR";
 			var spotRate = null;
-			let oMonthlyAvgExchangeRates = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
-			if(oMonthlyAvgExchangeRates !== false){
-				spotRate = oMonthlyAvgExchangeRates.X_RATE;
-			}
+			aPromises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(oMonthlyAvgExchangeRates=>{
+				if(oMonthlyAvgExchangeRates !== false){
+					spotRate = oMonthlyAvgExchangeRates.X_RATE;
+				}
+				return oMonthlyAvgExchangeRates;
+			}));
 
 			//additional product get info
 			var sOfferID = Services.getSelectedOfferID();
@@ -1709,113 +1738,124 @@ sap.ui.define([
 			if(oAddBrandProduct){
 					sAddBrandProductCode = Number(oAddBrandProduct.getSelectedKey()); 
 			}
-				
-			let oAddFocProduct = await Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sAddBrandProductCode, aCommercialAgreement);
-					
-					
-			var uFactor = (regPriceValues.UOM === "Unit") ? skuValues.PACKFACTOR : 1;
-			var uCogsFactor = (productValues.UnitPerPack === "Unit") ? 1 / skuValues.PACKFACTOR : 1;
-			//var regPrice = regPriceValues.REGISTERED_PRICE * uFactor * registeredRate;
-			var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
-			var cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;
-			var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
-		
-			var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
-			var standardDiscount = 0; //TODO FOR BRAZILIE
-			var additionalDiscount = oDetailController.byId("idEditPriceOffer_idAdditionalDiscount") && oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
-			var focAbsPct = oDetailController.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
-			//var focType = oDetailController.byId("idEditPriceOffer_idFocType").getSelectedKey();
-			var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
-			var foc = oDetailController.byId("idEditPriceOffer_idFoc").getValue() != ""
-			? (focAbsPct === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue())
-			: 0;
-			var focAbsPct_bund1 = oDetailController.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey();
-			var focProduct_bund1 = Number(oDetailController.byId("idEditPriceOffer_idFOCProdBund1").getSelectedKey());
-			var foc_bund1 = oDetailController.byId("idEditPriceOffer_idFoc1").getValue() != ""
-			? (focAbsPct_bund1 === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue())
-			: 0;
-		
-			//when an additional FOC product is selected and results are found, calculate some fields
-			var sCogsAddFOCProduct = 0;
-			if(oAddFocProduct){
-				sCogsAddFOCProduct = oAddFocProduct.COGS * 
-				(
-					(productValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1 //JH: same correction for factor
-				);
-			}
 			
-			var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
-				productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
-				foc));
-			var netOfferPrice = offerPrice * (1 - focChart);
+			//get FOC additional brand product data
+			let oAddFocProduct = {};
+			aPromises.push(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sAddBrandProductCode, aCommercialAgreement).then(oResult =>{
+				oAddFocProduct = oResult;
+				return oResult;
+			}));
 
-			let netPrice = "";
-			if(sCountryCode==="AR"||sCountryCode==="BR"){
-				netPrice = (1 - (deductions + additionalDiscount)) * netOfferPrice;
-			}else{
-				netPrice = (1 - deductions) * netOfferPrice;
-			}		
-	
-			//mainProductQuantity
-			var iFocQuantity = foc * productValues.RequestedVolume;
-			var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0); we want to use ceiling rounding
-			var iMainProductQuantity = (productValues.RequestedVolume 
-				     + (
-				     (focType === "FOC 1") 
-				     ? 0 //FOC is part of requested volume
-				     : //FOC is on top of requested quantity
-				    	(
-				     		(focAbsPct === "PCT") //JH: same correction to use main product fielf
-				     		? iFocQuantityRounded
-				     		: foc
-				     	)
-				     ));
-			//additional FOC product Quantity
-			var iFocQuantityAddProduct = foc_bund1 * productValues.RequestedVolume;
-			var iFocQuantityAddProductRounded = formatter.roundXDecimals(iFocQuantityAddProduct, 0);
-			var iAddFocProductQuantity = (focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : foc_bund1;
+			//if all data is loaded, continue with calculations
+			Promise.all(aPromises).then((values) =>{		
+						
+				var uFactor = (regPriceValues.UOM === "Unit") ? skuValues.PACKFACTOR : 1;
+				var uCogsFactor = (productValues.UnitPerPack === "Unit") ? 1 / skuValues.PACKFACTOR : 1;
+				//var regPrice = regPriceValues.REGISTERED_PRICE * uFactor * registeredRate;
+				var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
+				var cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;
+				var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
+			
+				var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+				var standardDiscount = oDetailController.byId("idEditPriceOffer_idStandardDiscount") && oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue()) / 100 : 0;
+				var additionalDiscount = oDetailController.byId("idEditPriceOffer_idAdditionalDiscount") && oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
+				var focAbsPct = oDetailController.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+				//var focType = oDetailController.byId("idEditPriceOffer_idFocType").getSelectedKey();
+				var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
+				var foc = oDetailController.byId("idEditPriceOffer_idFoc").getValue() != ""
+				? (focAbsPct === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue())
+				: 0;
+				var focAbsPct_bund1 = oDetailController.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey();
+				var focProduct_bund1 = Number(oDetailController.byId("idEditPriceOffer_idFOCProdBund1").getSelectedKey());
+				var foc_bund1 = oDetailController.byId("idEditPriceOffer_idFoc1").getValue() != ""
+				? (focAbsPct_bund1 === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue())
+				: 0;
+			
+				//when an additional FOC product is selected and results are found, calculate some fields
+				var sCogsAddFOCProduct = 0;
+				if(oAddFocProduct){
+					sCogsAddFOCProduct = oAddFocProduct.COGS * 
+					(
+						(productValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1 //JH: same correction for factor
+					);
+				}
 				
-			var price = {
-				cifPrice: cifPrice,
-				newCifPrice: cifPrice,
-				discount: (cifPrice !== 0) ? (cifPrice - offerPrice) / cifPrice : 0,
-				offerPrice: offerPrice,
-				standardDiscount: standardDiscount,
-				additionalDiscount: additionalDiscount,
-				focAbsPct: focAbsPct,
-				focType: focType,
-				foc: foc,
-				focChart: focChart,
-				netOfferPrice: netOfferPrice,
-				deductions: deductions,
-				netPrice: netPrice,
-				offerCurrency: offerCurrency,
-				spotRate: spotRate,
-				budgetRate: budgetRate,
-				uom: productValues.UnitPerPack,
-				cogs: cogsValues.COGS * uCogsFactor,
-				cogsAddFOCProduct: sCogsAddFOCProduct, //bund1
-				quantity: productValues.RequestedVolume,
-				focAbsPct_bund1: focAbsPct_bund1,
-				focProduct_bund1: focProduct_bund1,
-				foc_bund1: foc_bund1,
-				mainProductQuantity: iMainProductQuantity,
-				addFocProductQuantity: iAddFocProductQuantity,
-				focQuantityRounded: iFocQuantityRounded
-			};
-		
-			that._setPriceChart(oDetailController, "idEditListToNetChart", price);
-			that._setPriceForm(oDetailController, "idEditPriceOffer", price, true, false);
-			that._setProfitTableH(oDetailController, "idEditProfitabilityTable", price);
-		
-			that._updateScenario(oDetailController, price, productValues, 1);
-			that._updateScenario(oDetailController, price, productValues, 2);
-			that._updateScenario(oDetailController, price, productValues, 3);
+				var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
+					productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
+					foc));
+				var netOfferPrice = offerPrice * (1 - focChart);
 
-			oDeferred.resolve("all updated on the screen");
+				let netPrice, discount = "";
+				if(sCountryCode==="AR"||sCountryCode==="BR"){
+					netPrice = (1 - (deductions + additionalDiscount)) * netOfferPrice;
+					discount = standardDiscount;
+				}else{
+					netPrice = (1 - deductions) * netOfferPrice;
+					discount = (cifPrice !== 0) ? (cifPrice - offerPrice) / cifPrice : 0;
+				}		
+		
+				//mainProductQuantity
+				var iFocQuantity = foc * productValues.RequestedVolume;
+				var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0); we want to use ceiling rounding
+				var iMainProductQuantity = (productValues.RequestedVolume 
+						+ (
+						(focType === "FOC 1") 
+						? 0 //FOC is part of requested volume
+						: //FOC is on top of requested quantity
+							(
+								(focAbsPct === "PCT") //JH: same correction to use main product fielf
+								? iFocQuantityRounded
+								: foc
+							)
+						));
+				//additional FOC product Quantity
+				var iFocQuantityAddProduct = foc_bund1 * productValues.RequestedVolume;
+				var iFocQuantityAddProductRounded = formatter.roundXDecimals(iFocQuantityAddProduct, 0);
+				var iAddFocProductQuantity = (focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : foc_bund1;
+					
+				var price = {
+					cifPrice: cifPrice,
+					newCifPrice: cifPrice,
+					discount: discount,
+					offerPrice: offerPrice,
+					standardDiscount: standardDiscount,
+					additionalDiscount: additionalDiscount,
+					focAbsPct: focAbsPct,
+					focType: focType,
+					foc: foc,
+					focChart: focChart,
+					netOfferPrice: netOfferPrice,
+					deductions: deductions,
+					netPrice: netPrice,
+					offerCurrency: offerCurrency,
+					spotRate: spotRate,
+					budgetRate: budgetRate,
+					uom: productValues.UnitPerPack,
+					cogs: cogsValues.COGS * uCogsFactor,
+					cogsAddFOCProduct: sCogsAddFOCProduct, //bund1
+					quantity: productValues.RequestedVolume,
+					focAbsPct_bund1: focAbsPct_bund1,
+					focProduct_bund1: focProduct_bund1,
+					foc_bund1: foc_bund1,
+					mainProductQuantity: iMainProductQuantity,
+					addFocProductQuantity: iAddFocProductQuantity,
+					focQuantityRounded: iFocQuantityRounded
+				};
+			
+				that._setPriceChart(oDetailController, "idEditListToNetChart", price);
+				that._setPriceForm(oDetailController, "idEditPriceOffer", price, true, false);
+				that._setProfitTableH(oDetailController, "idEditProfitabilityTable", price);
+			
+				that._updateScenario(oDetailController, price, productValues, 1);
+				that._updateScenario(oDetailController, price, productValues, 2);
+				that._updateScenario(oDetailController, price, productValues, 3);
 
-			//close wait screen
-			oDetailController.getView().setBusy(false); 
+				oDeferred.resolve("all updated on the screen");
+
+				//close wait screen
+				oDetailController.getView().setBusy(false); 
+
+			});
 
 			//wait for result
 			return oDeferred.promise();

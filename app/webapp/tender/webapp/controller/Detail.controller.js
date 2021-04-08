@@ -2612,7 +2612,7 @@ sap.ui.define([
 			case Services.getFinancialOfferPageSectionID():
 
 				//show loading screen
-				that.getView().setBusyIndicatorDelay(1); //busy indicator shown immediately
+				//that.getView().setBusyIndicatorDelay(1); //busy indicator shown immediately
 				that.getView().setBusy(true);
 
 				//FINANCIAL OFFER TAB
@@ -6292,7 +6292,7 @@ sap.ui.define([
 
 		//Save in footer is clicked & financial offer tab is openened
 		_onSaveFinancialOffer: function (oEvent) {
-
+			this.getView().setBusy(true);
 			//TODO use these when we have converted the edit view binding to the fastAppDataModel
 			var sPathSelectedOffer = Services.getSelectedOfferPath();
 			var sPathSelectedProduct = Services.getSelectedProductPath();
@@ -6528,7 +6528,7 @@ sap.ui.define([
 						FOCType: that.byId("idEditFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
 						Discount: that.byId("idEditPriceOffer_idDiscount").getValue() / 100,
 						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", "")),
-						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue(),
+						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue() / 100,
 						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
 						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
 						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replace(",", "")),
@@ -6626,7 +6626,7 @@ sap.ui.define([
 										//Error during save
 										Services.showErrorMessage(oError, "Background saving for approvals sent field");
 									});
-
+									this.getView().setBusy(false);
 								});
 							});
 
@@ -6634,7 +6634,7 @@ sap.ui.define([
 
 							//error message
 							Services.showErrorMessage(oError, "Saving financial offer");
-
+							this.getView().setBusy(false);
 							oDeferred_all.reject();
 
 						});
