@@ -14,9 +14,12 @@ sap.ui.define([
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
 
+            this.instituteNames = "";
+            this.institutes = [];
+
             if (data) {
                 data.Distributor && this.setDistributor(data.Distributor);
-                data.Institute && this.setInstitute(data.Institute);
+                data.Institutes && this.setInstitutes(data.Institutes.results);
                 data.Products && !data.Products.__deferred && this.setProducts(data.Products.results);
                 data.SellingCompany && !data.SellingCompany.__deferred && this.setSellingCompany(data.SellingCompany);
             }
@@ -44,13 +47,26 @@ sap.ui.define([
             }
         },
 
-        setInstitute: function (institute) {
-            if (institute) {
-                this.institute = new Institute(institute);
+        setInstitutes: function (institutes) {
+            if (institutes) {
+                
+                this.institutes = institutes.map(institute => new Institute(institute.Institute));
+
+                let names = [];
+                this.institutes.forEach(institute => {
+                    if(institute.instituteName)
+                        names.push(institute.instituteName);
+                });
+
+                this.instituteNames = names.join();
             }
         },
-        getInstitute: function () {
-            return this.institute || {};
+        getInstitutes: function () {
+            return this.institutes;
+        },
+
+        addInstitute: function(institute) {
+            this.institutes.push(new Institute(institute));
         },
 
         setProducts: function (products) {
@@ -220,7 +236,6 @@ sap.ui.define([
                 "contractDate",
                 "contractValidUntil",
                 "enabled",
-                "instituteId",
                 "distributorId",
                 "sellingCompanyCode",
                 "currency",
@@ -242,7 +257,6 @@ sap.ui.define([
                 "contractDate",
                 "contractValidUntil",
                 "enabled",
-                "instituteId",
                 "distributorId",
                 "sellingCompanyCode",
                 "currency",
@@ -266,10 +280,13 @@ sap.ui.define([
                 })
                 .map(product => product.getJSONExpanded());
 
+
+            const institutes  = this.getInstitutes().map(institute => institute.getJSON());
+
             const expandedObj = {
                 ...jsonObj,
                 DistributorId: +jsonObj.DistributorId,
-                InstituteId: +jsonObj.InstituteId,
+                Institutes: institutes,
                 Products: products,
                 // SellingCompany: this.getSellingCompany().getJSON(),
                 // Institute: this.getInstitute().getJSON(),

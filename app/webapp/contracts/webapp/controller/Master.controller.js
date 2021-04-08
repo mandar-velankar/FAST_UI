@@ -330,15 +330,16 @@ sap.ui.define([
 		
 		/**
 		 * New contracting dialog
+		 * @returns {dialog} - oDialog
 		 */
 		_getCreateContractDialog : function () {
-			
+
 			//create new dialog if not yet existing
 			if (!this._oAddNewContractDialog) {
 
 					//get dialog
-					this._oAddNewContractDialog = sap.ui.xmlfragment("com.bayer.tender.contracts.view.fragments.NewContract", this);
-				  	this.getView().addDependent(this._oAddNewContractDialog);
+					this._oAddNewContractDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.contracts.view.fragments.NewContract", this);
+					this.getView().addDependent(this._oAddNewContractDialog);
 					
 			}
 
@@ -349,28 +350,35 @@ sap.ui.define([
 				this.onChangeCountry(); 
 			}
 
-			var oDistributor = sap.ui.getCore().byId("idDistributorNewContract");
-			if(oDistributor){
+			// var oDistributor = sap.ui.getCore().byId("idDistributorNewContract");
+			// if(oDistributor){
 
-			}
+			// }
 
 			return this._oAddNewContractDialog;
+
+
 
 		},
 
 		/**
 		 * Save new contract
-		 * @param {} oEvent 
+		 * @param {event} oEvent - 
 		 */
 		onSaveNewContract: function(oEvent){
+
+			const selectedInstituteItems = this.byId("idInstituteNewContract").getSelectedItems();
+
 			var oContract = this.ctrState.getNewContract();
 
-			oContract.currency = !oContract.currency ? sap.ui.getCore().byId("idCurrencyNewContract").getSelectedKey() : oContract.currency;
-			oContract.distributorId = !oContract.distributorId ? sap.ui.getCore().byId("idDistributorNewContract").getSelectedKey() : oContract.distributorId;
-			oContract.sellingCompanyCode = !oContract.sellingCompanyCode ? sap.ui.getCore().byId("idSellingCompanyNewContract").getSelectedKey() : oContract.sellingCompanyCode;
+			this.addInstitutesToContract(selectedInstituteItems,oContract);
+
+			oContract.currency = oContract.currency || this.byId("idCurrencyNewContract").getSelectedKey();
+			oContract.distributorId = oContract.distributorId || this.byId("idDistributorNewContract").getSelectedKey() ;
+			oContract.sellingCompanyCode = oContract.sellingCompanyCode || this.byId("idSellingCompanyNewContract").getSelectedKey();	
 
 			var sContractID = oContract.contractNumber;
-			var oRouter = this.getRouter();
+			//var oRouter = this.getRouter();
 
 			const bValid = this._validateNewContract(oContract);
 			if(bValid){
@@ -397,6 +405,26 @@ sap.ui.define([
 		},
 
 		/**
+		 * Adds a given list of Institute IDs to the Contract object
+		 * @param {array<string>} aInstituteIDs A list of Institute ID's 
+		 * @param {object} oContract A contract object
+		 */
+		addInstitutesToContract: function(aSelectedInstituteItems, oContract){
+
+			aSelectedInstituteItems.forEach(item => {
+
+				const institute = {
+					instituteID: item.getProperty("key"),
+					instituteName: item.getProperty("text"),
+					countryCode: oContract.countryCode
+				};
+
+				oContract.addInstitute(institute);
+				
+			});
+		},
+
+		/**
 		 * Check fields for contract
 		 * @param {*} contract 
 		 */
@@ -406,7 +434,7 @@ sap.ui.define([
 			if (!contract.contractNumber ||
 				!contract.countryCode ||
 				!contract.currency ||
-				!contract.instituteId ||
+				!contract.institutes.length > 0 ||
 				!contract.distributorId ||
 				!contract.sellingCompanyCode ||
 				!contract.contractDate ||
@@ -428,29 +456,33 @@ sap.ui.define([
 		},
 
 		onChangeCountry: function(oEvent){
+
 			//Different distributors for different countries
 			this.getDistributors(this.ctrState.getNewContract().countryCode);
 			this.getSellingCompanies(this.ctrState.getNewContract().countryCode);
 			this.getCountryCurrencies(this.ctrState.getNewContract().countryCode);
-			this.getInstitutes(this.ctrState.getNewContract().countryCode);
+
+			this.byId("idInstituteNewContract").setBusy(true, 0);
+			this.getInstitutes(this.ctrState.getNewContract().countryCode).then(() => {
+				this.byId("idInstituteNewContract").setBusy(false);
+			});
 			this.getChannels();
 		},
 
 		/**
 		 * Get list of institutes 
 		 */
-		getInstitutes: function(sCountryCode){
-			this.getView().setBusy(true);
-			this.ctrState.getInstitutes(sCountryCode)
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
+		getInstitutes: async function(sCountryCode){
+			try{
+
+				await this.ctrState.getInstitutes(sCountryCode);
+
+			} catch(error){
 				console.error(error);
 				this.getView().setBusy(false);
 				this.getRouter().getTargets().display("detailObjectNotFound");
 				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			});
+			}
 		},
 
 		/**
