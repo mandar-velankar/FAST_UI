@@ -1159,16 +1159,16 @@ sap.ui.define([
 		},
 		
 		//local method for setting scenarioPrice
-		_getScenarioPrice: function (oDetailController, offerValues, iScenario) {
+		_getScenarioPrice: function (oDetailController, productValues, iScenario) {
 			var scenarioPrice;
 			
-			if (offerValues.Scenario) {
-				var iScenariosLength = (offerValues.Scenario.__list) ? offerValues.Scenario.__list.length : iScenario; //TODO once we are fully working on fastcap, only iScenario should be kept
+			if (productValues.Scenario) {
+				var iScenariosLength = (productValues.Scenario.__list) ? productValues.Scenario.__list.length : iScenario; //TODO once we are fully working on fastcap, only iScenario should be kept
 				if (iScenariosLength >= iScenario) {
-					if(offerValues.Scenario.__list){//TODO once fully on fastcap, we should only keep else part of this coding..
-						var oScenario = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.Scenario.__list[iScenario - 1]);	
+					if(productValues.Scenario.__list){//TODO once fully on fastcap, we should only keep else part of this coding..
+						var oScenario = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Scenario.__list[iScenario - 1]);	
 					}else{
-						var oScenario = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.Scenario.__ref);
+						var oScenario = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Scenario.__ref);
 					}
 					
 					scenarioPrice = {
@@ -1630,46 +1630,30 @@ sap.ui.define([
 		},
 		
 		//when saving financial offer or when changing currency or other fields...
-		updateFinancialOffer: function (oEvent, oDetailController) {
-			
-			
-			//when product is selected we check if we have a additional FOC brand product oDetailController is granted to the customer
-			/*$.when(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sAddBrandProductCode)).done(function(oData){
-				//check if product exist in list
-				if(oData && oData.results && oData.results.length > 0){
-					Services.	
-				}
-			});
-			*/
+		updateFinancialOffer: async function (oEvent, oDetailController) {
 			
 			var that = this;
 
 			//wait for update
 			var oDeferred = $.Deferred();
-			
-			var offerValues = oDetailController.getView().getModel("fastData").getObject(oDetailController.pPath);
-			var productValues = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.SKU.__ref);
-
+			var productValues = oDetailController.getView().getModel("fastData").getObject(oDetailController.pPath);
+			var skuValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.SKU.__ref);
 			var offerCurrency = oDetailController.byId("idEditCurrency").getSelectedKey();
-
-			let promises = [];
 
 			var regPriceValues = {
 				CURRENCY: offerCurrency,
-				UOM: offerValues.UnitPerPack,
+				UOM: productValues.UnitPerPack,
 				REGISTERED_PRICE: 0
 			};
 			
-			if (offerValues.RegisteredPrice !== null) {
-				//regPriceValues = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.RegisteredPrice.__ref);
-				promises.push(that.loadCountryRegisteredPrice(Services.getSelectedCountry(), offerValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency).then(function (sRegisteredPrice) {
-					if(sRegisteredPrice){
-						regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
-						regPriceValues.UOM = sRegisteredPrice.UOM;
-					} else {
-						regPriceValues.REGISTERED_PRICE = 0;
-					}
-				}));
+			if (productValues.RegisteredPrice !== null) {
+				let sRegisteredPrice = await that.loadCountryRegisteredPrice(Services.getSelectedCountry(), productValues.UnitPerPack, Services.getSelectedProductID(), offerCurrency);
+				if(sRegisteredPrice){
+					regPriceValues.REGISTERED_PRICE = sRegisteredPrice.REGISTERED_PRICE;
+					regPriceValues.UOM = sRegisteredPrice.UOM;
+				} else {
+					regPriceValues.REGISTERED_PRICE = 0;
+				}
 			}
 			
 			//TODO take cogsValues from navigation prop (this is used directly)
@@ -1677,8 +1661,8 @@ sap.ui.define([
 				COGS: 0
 			};
 			
-			if (offerValues.Cogs !== null) {
-				cogsValues = oDetailController.getView().getModel("fastData").getObject("/" + offerValues.Cogs.__ref);
+			if (productValues.Cogs !== null) {
+				cogsValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Cogs.__ref);
 			}
 			
 			//load Budget rate again from database
@@ -1687,11 +1671,10 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = "EUR";
 			var budgetRate = null;
-			promises.push($.when(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
-				if(oData !== false){
-					budgetRate = oData.X_RATE;
-				}
-			}));
+			let oBudgetExchangeRate = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
+			if(oBudgetExchangeRate !== false){
+				budgetRate = oBudgetExchangeRate.X_RATE;
+			}
 			
 			//load Spot rate again from database
 			var sCountry = "";
@@ -1699,156 +1682,135 @@ sap.ui.define([
 			var sCurrencyFrom = offerCurrency;
 			var sCurrencyTo = "EUR";
 			var spotRate = null;
-			promises.push($.when(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE)).done(function(oData){
-				if(oData !== false){
-					spotRate = oData.X_RATE;
-				}
-			}));
-
-			/*var registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + oDetailController._country +
-				"',CURRENCY_FROM='" + regPriceValues.CURRENCY + "',CURRENCY_TO='" + offerCurrency + "',X_TYPE='Registered Price')";
-			var testRate = oDetailController.getView().getModel("fastData").getObject(registeredRatePath);
-			var registeredRate = 1;
-			if (testRate === undefined) {
-				registeredRatePath = "/ExchangeRates(COUNTRY_CODE='" + oDetailController._country +
-					"',CURRENCY_FROM='" + offerCurrency + "',CURRENCY_TO='" + regPriceValues.CURRENCY + "',X_TYPE='Registered Price')";
-				registeredRate = oDetailController.getView().getModel("fastData").getObject(registeredRatePath).X_RATE;
-			} else {
-				registeredRate = 1 / testRate.X_RATE;
-			}*/
-
+			let oMonthlyAvgExchangeRates = await that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE);
+			if(oMonthlyAvgExchangeRates !== false){
+				spotRate = oMonthlyAvgExchangeRates.X_RATE;
+			}
 
 			//additional product get info
-			Promise.all(promises).then((result) => {
-				var sOfferID = Services.getSelectedOfferID();
-				var sProductCode = Services.getSelectedProductID();
-				var oProduct = Services.getLoadedProductsForOffer(sOfferID, sProductCode);
-				var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
-				var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
-				var sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
-				var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
-				var sSellingCompany = offerValues.SellingCompany; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
-				var sBrandID = oProduct.SKU.Product.HLEVEL4_CODE;
-				var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sOfferID = Services.getSelectedOfferID();
+			var sProductCode = Services.getSelectedProductID();
+			var oProduct = Services.getLoadedProductsForOffer(sOfferID, sProductCode);
+			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			var sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
+			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			var sSellingCompany = productValues.SellingCompany; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+			var sBrandID = oProduct.SKU.Product.HLEVEL4_CODE;
+			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
 				
-				//get additional FOC product if its filled
-				var oAddBrandProduct = oDetailController.getView().byId("idEditPriceOffer_idFOCProdBund1");
-				var sAddBrandProductCode = 0;
-				if(oAddBrandProduct){
+			//get additional FOC product if its filled
+			var oAddBrandProduct = oDetailController.getView().byId("idEditPriceOffer_idFOCProdBund1");
+			var sAddBrandProductCode = 0;
+			if(oAddBrandProduct){
 					sAddBrandProductCode = Number(oAddBrandProduct.getSelectedKey()); 
-				}
+			}
 				
-				$.when(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sAddBrandProductCode, aCommercialAgreement)).done(function(oAddFocProduct){
+			let oAddFocProduct = await Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sAddBrandProductCode, aCommercialAgreement);
 					
 					
-					var uFactor = (regPriceValues.UOM === "Unit") ? productValues.PACKFACTOR : 1;
-					var uCogsFactor = (offerValues.UnitPerPack === "Unit") ? 1 / productValues.PACKFACTOR : 1;
-					//var regPrice = regPriceValues.REGISTERED_PRICE * uFactor * registeredRate;
-					var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
-					var cifPrice = (offerValues.UnitPerPack === "Unit") ? regPrice / productValues.PACKFACTOR : regPrice;
-					var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
+			var uFactor = (regPriceValues.UOM === "Unit") ? skuValues.PACKFACTOR : 1;
+			var uCogsFactor = (productValues.UnitPerPack === "Unit") ? 1 / skuValues.PACKFACTOR : 1;
+			//var regPrice = regPriceValues.REGISTERED_PRICE * uFactor * registeredRate;
+			var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
+			var cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;
+			var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
 		
-					var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
-					var standardDiscount = 0; //TODO FOR BRAZILIE
-					var additionalDiscount = oDetailController.byId("idEditPriceOffer_idAdditionalDiscount") && oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
-					var focAbsPct = oDetailController.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
-					//var focType = oDetailController.byId("idEditPriceOffer_idFocType").getSelectedKey();
-					var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
-					var foc = oDetailController.byId("idEditPriceOffer_idFoc").getValue() != ""
-					? (focAbsPct === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue())
-					: 0;
-					var focAbsPct_bund1 = oDetailController.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey();
-					var focProduct_bund1 = Number(oDetailController.byId("idEditPriceOffer_idFOCProdBund1").getSelectedKey());
-					var foc_bund1 = oDetailController.byId("idEditPriceOffer_idFoc1").getValue() != ""
-					? (focAbsPct_bund1 === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue())
-					: 0;
+			var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+			var standardDiscount = 0; //TODO FOR BRAZILIE
+			var additionalDiscount = oDetailController.byId("idEditPriceOffer_idAdditionalDiscount") && oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
+			var focAbsPct = oDetailController.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+			//var focType = oDetailController.byId("idEditPriceOffer_idFocType").getSelectedKey();
+			var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
+			var foc = oDetailController.byId("idEditPriceOffer_idFoc").getValue() != ""
+			? (focAbsPct === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc").getValue())
+			: 0;
+			var focAbsPct_bund1 = oDetailController.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey();
+			var focProduct_bund1 = Number(oDetailController.byId("idEditPriceOffer_idFOCProdBund1").getSelectedKey());
+			var foc_bund1 = oDetailController.byId("idEditPriceOffer_idFoc1").getValue() != ""
+			? (focAbsPct_bund1 === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue()) / 100 : parseFloat(oDetailController.byId("idEditPriceOffer_idFoc1").getValue())
+			: 0;
 		
-					//when an additional FOC product is selected and results are found, calculate some fields
-					var sCogsAddFOCProduct = 0;
-					if(oAddFocProduct){
-						sCogsAddFOCProduct = oAddFocProduct.COGS * 
-						(
-							(offerValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1 //JH: same correction for factor
-						);
-					}
-					
-					var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
-						offerValues.RequestedVolume - foc) / offerValues.RequestedVolume : 1 - offerValues.RequestedVolume / (offerValues.RequestedVolume +
-						foc));
-					var netOfferPrice = offerPrice * (1 - focChart);
-					var netPrice = (1 - deductions) * netOfferPrice;
-	
-					//mainProductQuantity
-					var iFocQuantity = foc * offerValues.RequestedVolume;
-					var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0); we want to use ceiling rounding
-					var iMainProductQuantity = (offerValues.RequestedVolume 
-						     + (
-						     (focType === "FOC 1") 
-						     ? 0 //FOC is part of requested volume
-						     : //FOC is on top of requested quantity
-						    	(
-						     		(focAbsPct === "PCT") //JH: same correction to use main product fielf
-						     		? iFocQuantityRounded
-						     		: foc
-						     	)
-						     ));
-					//additional FOC product Quantity
-					var iFocQuantityAddProduct = foc_bund1 * offerValues.RequestedVolume;
-					var iFocQuantityAddProductRounded = formatter.roundXDecimals(iFocQuantityAddProduct, 0);
-					var iAddFocProductQuantity = (focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : foc_bund1;
-						
-					var price = {
-						cifPrice: cifPrice,
-						newCifPrice: cifPrice,
-						discount: (cifPrice !== 0) ? (cifPrice - offerPrice) / cifPrice : 0,
-						offerPrice: offerPrice,
-						standardDiscount: standardDiscount,
-						additionalDiscount: additionalDiscount,
-						focAbsPct: focAbsPct,
-						focType: focType,
-						foc: foc,
-						focChart: focChart,
-						netOfferPrice: netOfferPrice,
-						deductions: deductions,
-						netPrice: netPrice,
-						offerCurrency: offerCurrency,
-						spotRate: spotRate,
-						budgetRate: budgetRate,
-						uom: offerValues.UnitPerPack,
-						cogs: cogsValues.COGS * uCogsFactor,
-						cogsAddFOCProduct: sCogsAddFOCProduct, //bund1
-						quantity: offerValues.RequestedVolume,
-						focAbsPct_bund1: focAbsPct_bund1,
-						focProduct_bund1: focProduct_bund1,
-						foc_bund1: foc_bund1,
-						mainProductQuantity: iMainProductQuantity,
-						addFocProductQuantity: iAddFocProductQuantity,
-						focQuantityRounded: iFocQuantityRounded
-					};
-		
-					that._setPriceChart(oDetailController, "idEditListToNetChart", price);
-					that._setPriceForm(oDetailController, "idEditPriceOffer", price, true, false);
-					that._setProfitTableH(oDetailController, "idEditProfitabilityTable", price);
-		
-					that._updateScenario(oDetailController, price, offerValues, 1);
-					that._updateScenario(oDetailController, price, offerValues, 2);
-					that._updateScenario(oDetailController, price, offerValues, 3);
-
-					oDeferred.resolve("all updated on the screen");
-
-				});
+			//when an additional FOC product is selected and results are found, calculate some fields
+			var sCogsAddFOCProduct = 0;
+			if(oAddFocProduct){
+				sCogsAddFOCProduct = oAddFocProduct.COGS * 
+				(
+					(productValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1 //JH: same correction for factor
+				);
+			}
 			
-			}).catch(function(error){
-				//failed
-				oDeferred.reject();
-			});
+			var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
+				productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
+				foc));
+			var netOfferPrice = offerPrice * (1 - focChart);
+			var netPrice = (1 - deductions) * netOfferPrice;
+	
+			//mainProductQuantity
+			var iFocQuantity = foc * productValues.RequestedVolume;
+			var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0); we want to use ceiling rounding
+			var iMainProductQuantity = (productValues.RequestedVolume 
+				     + (
+				     (focType === "FOC 1") 
+				     ? 0 //FOC is part of requested volume
+				     : //FOC is on top of requested quantity
+				    	(
+				     		(focAbsPct === "PCT") //JH: same correction to use main product fielf
+				     		? iFocQuantityRounded
+				     		: foc
+				     	)
+				     ));
+			//additional FOC product Quantity
+			var iFocQuantityAddProduct = foc_bund1 * productValues.RequestedVolume;
+			var iFocQuantityAddProductRounded = formatter.roundXDecimals(iFocQuantityAddProduct, 0);
+			var iAddFocProductQuantity = (focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : foc_bund1;
+				
+			var price = {
+				cifPrice: cifPrice,
+				newCifPrice: cifPrice,
+				discount: (cifPrice !== 0) ? (cifPrice - offerPrice) / cifPrice : 0,
+				offerPrice: offerPrice,
+				standardDiscount: standardDiscount,
+				additionalDiscount: additionalDiscount,
+				focAbsPct: focAbsPct,
+				focType: focType,
+				foc: foc,
+				focChart: focChart,
+				netOfferPrice: netOfferPrice,
+				deductions: deductions,
+				netPrice: netPrice,
+				offerCurrency: offerCurrency,
+				spotRate: spotRate,
+				budgetRate: budgetRate,
+				uom: productValues.UnitPerPack,
+				cogs: cogsValues.COGS * uCogsFactor,
+				cogsAddFOCProduct: sCogsAddFOCProduct, //bund1
+				quantity: productValues.RequestedVolume,
+				focAbsPct_bund1: focAbsPct_bund1,
+				focProduct_bund1: focProduct_bund1,
+				foc_bund1: foc_bund1,
+				mainProductQuantity: iMainProductQuantity,
+				addFocProductQuantity: iAddFocProductQuantity,
+				focQuantityRounded: iFocQuantityRounded
+			};
+		
+			that._setPriceChart(oDetailController, "idEditListToNetChart", price);
+			that._setPriceForm(oDetailController, "idEditPriceOffer", price, true, false);
+			that._setProfitTableH(oDetailController, "idEditProfitabilityTable", price);
+		
+			that._updateScenario(oDetailController, price, productValues, 1);
+			that._updateScenario(oDetailController, price, productValues, 2);
+			that._updateScenario(oDetailController, price, productValues, 3);
+
+			oDeferred.resolve("all updated on the screen");
+
 
 			//wait for result
 			return oDeferred.promise();
 		},
 		
 		//local method for updating the scenario
-		_updateScenario: function (oDetailController, price, offerValues, idScenario) {
+		_updateScenario: function (oDetailController, price, productValues, idScenario) {
 			price.name = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idName").getValue();
 			price.description = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idDescription").getValue();
 
@@ -1866,9 +1828,9 @@ sap.ui.define([
 			var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
 			
 			//mainProductQuantity
-			var iFocQuantity = foc * offerValues.RequestedVolume;
+			var iFocQuantity = foc * productValues.RequestedVolume;
 			var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0); we want to use ceiling rounding
-			var iMainProductQuantity = (offerValues.RequestedVolume 
+			var iMainProductQuantity = (productValues.RequestedVolume 
 					     + (
 					     (focType === "FOC 1") 
 					     ? 0 //FOC is part of requested volume
@@ -1888,13 +1850,13 @@ sap.ui.define([
 			: 0;
 
 			//additional FOC product Quantity
-			var iFocQuantityAddProduct = foc_bund1 * offerValues.RequestedVolume;
+			var iFocQuantityAddProduct = foc_bund1 * productValues.RequestedVolume;
 			var iFocQuantityAddProductRounded = Math.ceil(iFocQuantityAddProduct); //formatter.roundXDecimals(iFocQuantityAddProduct, 0);
 			var iAddFocProductQuantity = (focAbsPct_bund1 === "PCT") ? iFocQuantityAddProductRounded : foc_bund1;
 			
 			
 			var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
-				offerValues.RequestedVolume - foc) / offerValues.RequestedVolume : 1 - offerValues.RequestedVolume / (offerValues.RequestedVolume +
+				productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 				foc));
 			var netOfferPrice = offerPrice * (1 - focChart);
 			var netPrice = (1 - price.deductions) * netOfferPrice;
