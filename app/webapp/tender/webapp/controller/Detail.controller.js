@@ -7338,12 +7338,68 @@ sap.ui.define([
 			});
 		},
 
-		onEmailQuotation: function (oEvent) {
+		onEmailQuotation: function (oEvent) {			
+			this._getEmailQuotationDialog().open();
+		},
+
+		
+		/**
+		 * New email dialog
+		 */
+		 _getEmailQuotationDialog : function () {
+			
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/SelectedOffer/OfferID');
 
-			Services.sendMail(sRecipient, sSubject);
+			if (this._EmailQuotationDialog) {
+				this._EmailQuotationDialog.destroy();
+			}
+
+			//create new dialog if not yet existing
+			//if (!this._EmailQuotationDialog) {
+
+					//get dialog
+					this._EmailQuotationDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.QuotationMail", this);
+				  	this.getView().addDependent(this._EmailQuotationDialog);
+					
+			//}
+
+			Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES").then(template => {
+
+				//get screen elements
+				let oRecipients = sap.ui.getCore().byId("idTo");
+				let oSubject = sap.ui.getCore().byId("idSubject");
+				let oSender = sap.ui.getCore().byId("idFrom");
+				let sSender = UserInfo.getUserEmail();
+				let oEditor = sap.ui.getCore().byId("idEditor");
+				
+				oEditor.setValue(template.value);
+				oSubject.setValue(sSubject);
+
+				oRecipients.setTokens([
+					new Token({text: sRecipient, key: sRecipient}),
+				]);
+
+				oSender.setTokens([
+					new Token({text: sSender, key: sSender}),
+				]);
+
+				// add validator
+				let fnValidator = function(args){
+					let text = args.text;
+
+					return new Token({key: text, text: text});
+				};
+
+				oRecipients.addValidator(fnValidator);
+				oSender.addValidator(fnValidator);
+			}).catch(error => {
+				console.log("Error retrieving mail template");
+			});
+			
+
+			return this._EmailQuotationDialog;
 
 		},
 
@@ -7377,6 +7433,49 @@ sap.ui.define([
 
 			this.onEditToggleButtonPress();
 
+		},
+
+		onSendQuotationMail: function (oEvent){
+
+			let sRecipients = "";
+			let sSubject = sap.ui.getCore().byId('idSubject').getValue();
+			let sMailBody = sap.ui.getCore().byId('idEditor').getValue();
+			let aRecipients = sap.ui.getCore().byId('idTo').getTokens();
+			let sSenders = sap.ui.getCore().byId('idFrom').getTokens();
+			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
+
+			let oMail = {
+				"Sender":sSenders[0].getProperty('text'),
+				"Recipients":sRecipients,
+				"Subject":sSubject,
+				"MailBody":sMailBody,
+				"Sent":false,
+			}
+
+			Services.sendMail(oMail)
+				.then(() => {
+					this._EmailQuotationDialog.destroy();
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Mail sent successfully',
+						description: 'Mail sent successfully'
+					});
+					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+				})
+				.catch(function (oError) {
+					//show error message
+					Services.showErrorMessage(oError, "Sending mail");
+				});
+		},
+
+		onCancelQuotationMail: function (oEvent){
+			this._EmailQuotationDialog.destroy();
+		},
+
+		onMCEEditorLoaded: function(oEvent){
+			//get the editor
+			let oMCEEditor = sap.ui.getCore().byId('idEditor');
+			oMCEEditor.addButtonGroup("styleselect").addButtonGroup("table");
 		},
 
 		//TENDER RESULTS TAB

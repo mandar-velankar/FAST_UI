@@ -1104,6 +1104,26 @@ sap.ui.define([
 
 		},
 
+		getMailTemplate: function(sCountryCode, sLanguage) {
+			var oFastDataCalls = this.getDefaultModel(); 
+			return oFastDataCalls.metadataLoaded().then(function(oData){
+				return new Promise((resolve, reject) => {
+					oFastDataCalls.callFunction("/getMailTemplate", {
+						urlParameters: {
+							"countryCode": sCountryCode,
+							"language": sLanguage
+						},
+						success: function (data) {
+								resolve(data);
+						},
+						error: function (oError) {
+								reject(oError);
+						}
+					});					
+				});					
+			});
+		},
+
 		//load User information from back-end and keep information in userinfo
 		loadUserInfo: function () {
 
@@ -1116,6 +1136,7 @@ sap.ui.define([
 			//get user name of logedin user
 			this.getCurrentUser().then(user => {
 				UserInfo.setUserName(user.name);
+				UserInfo.setUserEmail(user.email);
 			}).catch(fail=>{
 				console.log("Not running on CF using CAP")
 			}).then(()=>{
@@ -5661,6 +5682,10 @@ sap.ui.define([
 			return this.getService('Offer').createOffer(oOfferToSave);
 		},
 
+		sendMail: function (mail) {
+			return this.getService('Mail').sendMail(mail);
+		},
+
 		getOffers: function (sTenderID, sCountryCode, sExpand) {
 			return this.getService('Offer').getOffers(sTenderID, sCountryCode, sExpand);
 		},
@@ -7058,7 +7083,7 @@ sap.ui.define([
 		},
 
 		// HELPERS
-		sendMail: function(sRecipient, sSubject, sTemplate){
+		/*sendMail: function(sRecipient, sSubject, sTemplate){
 			
 			//Load product data
 			var sActionPath = "/sendMail";
@@ -7089,7 +7114,7 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 
-		}
+		}*/
 
 	});
 
