@@ -6393,8 +6393,10 @@ sap.ui.define([
 
 		},
 
-		//SAVERS
-		//------
+		//FINANCIAL OFFER
+		//-------------------
+		//CHECK OfferProducts.js (TODO put into correct state-service layer separation)
+
 
 		//DELIVERY MANAGEMENT
 		//-------------------

@@ -73,13 +73,6 @@ sap.ui.define([
 
 		},
 
-
-		delete: function (oEvent) {
-			if (1 === 1) {
-				console.log("test");
-			}
-		},
-
 		_FOCProdBund1UpdateFinished: function () {
 			return false;
 		},
@@ -123,7 +116,7 @@ sap.ui.define([
 			var sLayout = oEvent.getParameter("arguments").layout;
 			var bSamePage = oEvent.getParameter("arguments").samePage || false; //on enter or exit fullscreen, we stay on same page so nothing need to happen
 			var oObjectPage = that.getView().byId("DetailPage");
-			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			//var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 
 			that._country = sCountry;
 
@@ -288,13 +281,13 @@ sap.ui.define([
 		
 
 		//on new tender matched
-		_NewTenderMatched: function (that) {
+		_NewTenderMatched: function (oDetailController) {
 
 			//fastappdata model
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
 			//get the tender id from the screen beceause it might not be created yet
-			var sTenderID = that.getView().byId("tenderId").getProperty("text");
+			var sTenderID = oDetailController.getView().byId("tenderId").getProperty("text");
 			Services.setSelectedTenderID(sTenderID);
 
 			//CurrentTender on FASTAPPDATA model for easy access, so we can move step by step to FastAppData model binding on basic information tab TODO currently we only use the dates in this way, we should use all fields in this way
@@ -302,14 +295,14 @@ sap.ui.define([
 			oFastAppDataModel.setProperty("/EditTender/", oTenderNew);
 
 			//new tender --> = show edit mode with corresponding fragment
-			that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
+			oDetailController._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
 
 			//if new Tender is created, the following fields are editable
-			that.getView().byId("idClassification").setEnabled(true);
-			that.getView().byId("idInstituteType").setEnabled(true);
-			that.getView().byId("idInstituteName").setEnabled(true);
-			that.getView().byId("idTenderChannel").setEnabled(true);
-			that.getView().byId("idGroupPurchasingEdit").setEnabled(true);
+			oDetailController.getView().byId("idClassification").setEnabled(true);
+			oDetailController.getView().byId("idInstituteType").setEnabled(true);
+			oDetailController.getView().byId("idInstituteName").setEnabled(true);
+			oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			oDetailController.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
 			// hide country specific fields
 			this._initializeCountrySpecificFields();
@@ -324,13 +317,13 @@ sap.ui.define([
 			var aFilter = [];
 			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
-			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
+			let oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 
 			// apply country filter 
 			this.setCountrySpecificDropDowns(aFilter);
 
-			oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
-			oProducrementReason = that.getView().byId("idProcurementReasonEdit");
+			oProcurementMethod = oDetailController.getView().byId("idSelectProcurementMethodEdit");
+			oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
 				filters: aFilter,
@@ -389,17 +382,17 @@ sap.ui.define([
 
 			//this way we can use a seperate layer, adding deleting... and afterords saving
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			that.getView().setModel(oFastAppDataModel, "fastAppData");
+			oDetailController.getView().setModel(oFastAppDataModel, "fastAppData");
 
 			//set new tender ID 
 			$.when(Services.loadNewTenderID()).done(function (sNewTenderID) {
 				//keep idNewTenderID (TODO: should we not use setSelectedTenderID for this? delete field)
-				that.getView().byId("idNewTenderID").setValue(sNewTenderID);
+				oDetailController.getView().byId("idNewTenderID").setValue(sNewTenderID);
 			});
 
 			//Does the table with award criteria exist on the page? 
 			//idAwrdEdit = the award criteria table found in BasicInformationEdit fragment
-			if (that.byId("idAwrdEdit")) {
+			if (oDetailController.byId("idAwrdEdit")) {
 
 				//Bind model for the award criteria
 				var sPath = "/PT_TMAWRDCR"; //award criteria table
@@ -409,7 +402,7 @@ sap.ui.define([
 				var aFilters = [];
 				aFilters.push(new sap.ui.model.Filter("TENDERID", sap.ui.model.FilterOperator.EQ, sTenderID));
 				aFilters.push(new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1));
-				var oModel = that.getOwnerComponent().getModel("fastData");
+				var oModel = oDetailController.getOwnerComponent().getModel("fastData");
 
 				//Reading the back end data from the award critiria TODO this should be in the service file
 				oModel.read(sPath, {
@@ -419,9 +412,9 @@ sap.ui.define([
 						AwardModel.setData({
 							Data: oData.results
 						});
-						that.getView().setModel(AwardModel, "tabModel");
-						// that.byId("awardCriteriaId").setModel(AwardModel, "tabModel");
-						that.byId("idAwrdEdit").setModel(AwardModel, "tabModel"); //TODO tabModel = awardCriteria model? Use better name?
+						oDetailController.getView().setModel(AwardModel, "tabModel");
+						// oDetailController.byId("awardCriteriaId").setModel(AwardModel, "tabModel");
+						oDetailController.byId("idAwrdEdit").setModel(AwardModel, "tabModel"); //TODO tabModel = awardCriteria model? Use better name?
 					},
 					error: function (oError) {
 						Services.showErrorMessage(oError, "Loading award criteria");
@@ -432,29 +425,29 @@ sap.ui.define([
 
 			//TODO is there no better way for not overloading the detail screen- same approach for all tabs
 			//show fragment for TAB: Offer products
-			that._showSectionFragment("OfferProductsView", "offerProductsId");
+			oDetailController._showSectionFragment("OfferProductsView", "offerProductsId");
 
 			//show fragment for TAB: Financial Offer
-			that._showSectionFragment("FinancialOfferView", "financialOfferId");
+			oDetailController._showSectionFragment("FinancialOfferView", "financialOfferId");
 
 			//show fragment for TAB: Quotation
-			that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+			oDetailController._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 			//show footer with accept/reject button (this is not shown on the Tender master screen)
-			that.getView().byId("DetailPage").setShowFooter(true);
+			oDetailController.getView().byId("DetailPage").setShowFooter(true);
 			Services.setEditMode(true);
 
 			//disable buttons when creating new tender
-			//that.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
-			that.getView().byId("editButtonId").setEnabled(false);
-			that.getView().byId("cloneButtonId").setEnabled(false);
-			that.getView().byId("deleteTenderButtonId").setEnabled(false);
+			//oDetailController.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
+			oDetailController.getView().byId("editButtonId").setEnabled(false);
+			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
+			oDetailController.getView().byId("deleteTenderButtonId").setEnabled(false);
 
-			// that.getView().byId("DetailPage").setShowAnchorBar(false);
+			// oDetailController.getView().byId("DetailPage").setShowAnchorBar(false);
 
 			//Default basic information tab is shown + subsection
-			that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
-			that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
+			oDetailController.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
+			oDetailController.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 
 
 		},
@@ -553,7 +546,7 @@ sap.ui.define([
 		},
 
 		//existing tender matched
-		_ExistingTenderMatched: function (that, sTab) {
+		_ExistingTenderMatched: function (oDetailController, sTab) {
 
 			//get selected Tender Path
 			var sTenderID = Services.getSelectedTenderID();
@@ -568,7 +561,7 @@ sap.ui.define([
 
 				//this way we can use a seperate layer, adding deleting... and afterords saving
 				var oFastAppDataModel = Services.getFastAppDataModel();
-				that.getView().setModel(oFastAppDataModel, "fastAppData");
+				oDetailController.getView().setModel(oFastAppDataModel, "fastAppData");
 
 				//get loaded tender & bind it for easy access
 				var oTender = Services.getLoadedTender();
@@ -576,40 +569,40 @@ sap.ui.define([
 
 				//should tendertype be visible on the basic info screen?
 				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
-					that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+					oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
 				});
 
 				/* Mexico */
 				//should tenderorigin be visible on the basic info screen?
 				$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
-					that.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
+					oDetailController.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
 				});
 
 				//should salestype be visible on the basic info screen?
 				$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
-					that.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
+					oDetailController.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
 				});
 
 				//should salestype be visible on the basic info screen?
 				$.when(Services.checkShowContractType()).done(function (bShowContractType) {
-					that.getView().byId("idSelectContractType").setVisible(bShowContractType);
+					oDetailController.getView().byId("idSelectContractType").setVisible(bShowContractType);
 				});
 				/* End of MExico */
 
 				/* Thailand */
 				$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
-					that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
+					oDetailController.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
 				});
 				/* End of Thailand */
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
-					that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
+					oDetailController.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 				});
 
 
 				// this sets the Specifications dropdown
-				that.setTenderSpecificationsSelectedKeys(sTenderID);
+				oDetailController.setTenderSpecificationsSelectedKeys(sTenderID);
 
 				//vanaf hier 
 
@@ -617,10 +610,10 @@ sap.ui.define([
 				Services.setEditMode(false);
 
 				//existing tender --> = show display mode for BasicInformation view
-				that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
+				oDetailController._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
 
 				//if awardCriteria exists on the basic information tab
-				if (that.byId("awardCriteriaId")) {
+				if (oDetailController.byId("awardCriteriaId")) {
 
 					//Bind model for the award criteria
 					var sPath = "/PT_TMAWRDCR"; //table with award criteria
@@ -630,7 +623,7 @@ sap.ui.define([
 					var aFilters = [];
 					aFilters.push(new sap.ui.model.Filter("TENDERID", sap.ui.model.FilterOperator.EQ, sTenderID));
 					aFilters.push(new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1));
-					var oDefaultModel = that.getOwnerComponent().getModel("fastData");
+					var oDefaultModel = oDetailController.getOwnerComponent().getModel("fastData");
 
 					//Reading the back end data from the award critiria TODO this should be in the service file
 					oDefaultModel.read(sPath, {
@@ -639,8 +632,8 @@ sap.ui.define([
 							oAwardModel.setData({
 								Data: oData.results
 							});
-							that.getView().setModel(oAwardModel, "tabModel");
-							that.byId("awardCriteriaId").setModel(oAwardModel, "tabModel");
+							oDetailController.getView().setModel(oAwardModel, "tabModel");
+							oDetailController.byId("awardCriteriaId").setModel(oAwardModel, "tabModel");
 						},
 						error: function (oError) {
 							Services.showErrorMessage(oError, "Loading award criteria");
@@ -651,38 +644,38 @@ sap.ui.define([
 
 				//TODO is there no better way for not overloading the detail screen- same approach for all tabs
 				//show fragment for TAB: Offer products				
-				that._showSectionFragment("OfferProductsView", "offerProductsId");
+				oDetailController._showSectionFragment("OfferProductsView", "offerProductsId");
 
 				//show fragment for TAB: FinancialOffer
-				that._showSectionFragment("FinancialOfferView", "financialOfferId");
+				oDetailController._showSectionFragment("FinancialOfferView", "financialOfferId");
 
 					
 				//show fragment for TAB: Quotation
-				that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+				oDetailController._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 				//show footer with accept/reject button (this is not shown on the Tender master screen)
-				that.getView().byId("DetailPage").setShowFooter(false);
+				oDetailController.getView().byId("DetailPage").setShowFooter(false);
 				Services.setEditMode(false);
 
 				//make buttons visible when selected existing tender
-				that.getView().byId("editButtonId").setVisible(true);
+				oDetailController.getView().byId("editButtonId").setVisible(true);
 				/*if( Services.getLoadedOffer(Services.getSelectedOfferID()) && (Services.getLoadedOffer(Services.getSelectedOfferID()).Active !== 1 || Services.getLoadedOffer(Services.getSelectedOfferID()).ActiveOffer !== 1)){*/
 				if (oOffer && (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1)) {
-					that.getView().byId("editButtonId").setEnabled(false);
+					oDetailController.getView().byId("editButtonId").setEnabled(false);
 				} else {
-					that.getView().byId("editButtonId").setEnabled(true);
+					oDetailController.getView().byId("editButtonId").setEnabled(true);
 				}
-				that.getView().byId("cloneButtonId").setVisible(true);
-				that.getView().byId("cloneButtonId").setEnabled(true);
-				that.getView().byId("deleteTenderButtonId").setEnabled(true);
+				oDetailController.getView().byId("cloneButtonId").setVisible(true);
+				oDetailController.getView().byId("cloneButtonId").setEnabled(true);
+				oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
 
 				if (!sTab || sTab === Services.getBasicInformationPageSectionID()) {
 					//Default basic information tab is shown
-					that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
-					that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
+					oDetailController.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
+					oDetailController.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 				} else {
 					//Show selected section
-					that.byId("DetailPage").setSelectedSection(sTab);
+					oDetailController.byId("DetailPage").setSelectedSection(sTab);
 
 				}
 
@@ -691,7 +684,7 @@ sap.ui.define([
 
 				//init selected section (tab) + select selected offer again (for if we navigate directly to a specific tab)
 				//check on binding finished
-				that._initSection(sTab);
+				oDetailController._initSection(sTab);
 
 			});
 
@@ -951,7 +944,7 @@ sap.ui.define([
 
 				//open basic info tab of tender
 				var sBasicInfoTabID = Services.getBasicInformationPageSectionID();
-				var oBasicInfoTab = this.getView().byId(sBasicInfoTabID);
+				//var oBasicInfoTab = this.getView().byId(sBasicInfoTabID);
 				var oDetailObjectPage = this.getView().byId("DetailPage");
 				oDetailObjectPage.setSelectedSection(sBasicInfoTabID);
 
@@ -1008,7 +1001,7 @@ sap.ui.define([
 
 			//check which tab is open
 			var oDetailPage = that.getView().byId("DetailPage"),
-				bCurrentShowFooterState = oDetailPage.getShowFooter(),
+				//bCurrentShowFooterState = oDetailPage.getShowFooter(),
 				sSelectedSection = oDetailPage.getSelectedSection();
 
 			//Get offer table
@@ -1659,10 +1652,7 @@ sap.ui.define([
 					that._showSectionFragment("FinancialOfferView", "financialOfferId");
 
 					//check for approval enabled 
-					var sSelectedOfferPath = Services.getSelectedOfferPath();
 					var sSelectedOfferID = Services.getSelectedOfferID();
-
-					var oDefaultModel = Services.getDefaultModel();
 					var oOffer = Services.getLoadedOffer(sSelectedOfferID);
 
 					var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
