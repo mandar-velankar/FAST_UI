@@ -4425,25 +4425,22 @@ sap.ui.define([
 			//let that = this;
 			let OfferProducts = Services.getFinancialModel();
 
-			let oNewPrice = {
-				...price,
-				"OfferID": offer.OfferID,
-				//"DistributorID" : offer.DistributorID
-			}
-
 			//for the reviewed offer, the products of the original offer can have price data as well
-			if (oNewPrice) {
+			if (price) {
+
+				//New Price
+				let oNewPrice = {
+					...price,
+					"OfferID": offer.OfferID,
+					//"DistributorID" : offer.DistributorID
+				}
 
 				//re-calculate Netprice based upon new distributor specific commission rate
 				oNewPrice.NetPrice = oNewPrice.NetofferPrice * (1 - oNewPrice.Deductions);
 				
 				//we are waiting for the loading of the price
-				const sRegisteredPrice = await OfferProducts.loadCountryRegisteredPrice(Services.getSelectedCountry(), product.UnitPerPack,product.ProductCode, offer.Currency);
-				
+				const sRegisteredPrice = await OfferProducts.loadCountryRegisteredPrice(Services.getSelectedCountry(), product.UnitPerPack,product.ProductCode, offer.Currency);			
 				const oUpToDatePrices = await OfferProducts.loadAllUpToDatePrices(product.Offer, product, sRegisteredPrice.REGISTERED_PRICE);
-				
-				//in this case we should save price data as well
-				var oProductPrice = Services.getService('Price').getConvertPriceToSave(oNewPrice);
 
 				//if sRegPrice = false, meaning calculation is no longer found & price is not copied
 				if (oUpToDatePrices.RegPrice !== false) {
@@ -4455,9 +4452,9 @@ sap.ui.define([
 					let iConvertedOfferPrice = 0;
 					if (product.UnitPerPack) {
 							var sUnitPerPackOffer = product.UnitPerPack;
-							iConvertedOfferPrice = formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
+							iConvertedOfferPrice = formatter.priceTwoOrFour(oNewPrice.OfferPrice, undefined, sUnitPerPackOffer);
 					} else {
-							iConvertedOfferPrice = oProductPrice.OfferPrice;
+							iConvertedOfferPrice = oNewPrice.OfferPrice;
 					}
 
 					//make same rounding
@@ -4470,7 +4467,7 @@ sap.ui.define([
 					if (OfferProducts.checkOfferPriceLowerRegisterPrice(iConvertedOfferPrice, iConvertedRegPrice)) {
 
 							//Case when RegisteredPrice would have changed since OfferX was created is very complex. Thats why we inform user to manualy adapt price
-							if(Number(oProductPrice.RegPrice) !== oUpToDatePrices.RegPrice){
+							if(Number(oNewPrice.RegPrice) !== oUpToDatePrices.RegPrice){
 
 								Services.getOfferCompositeMessages().push({
 									type: 'Warning',
@@ -4483,16 +4480,31 @@ sap.ui.define([
 							}else{
 
 								//change values with up to date values
-								oProductPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
-								oProductPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
-								oProductPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
-								oProductPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+								oNewPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
+								oNewPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
+								oNewPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
+								oNewPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+								
+								//specific recalculation for new distributor Argentinia with standard discount..
+								if(offer.CountryCode === "AR"){
+									oNewPrice = await this._calculatePricesNewDistributor(offer,product,oNewPrice);
+								}
+
+								//in this case we should save price data as well
+								var oProductPrice = Services.getService('Price').getConvertPriceToSave(oNewPrice);
 
 								//add creation of price to batch operation
 								await Services.getService('Price').createPrice(oProductPrice).catch(function (oError) {
 
 									//show error message
-									Services.showErrorMessage(oError, "Saving of new price");
+									//Services.showErrorMessage(oError, "Saving of new price");
+									Services.getOfferCompositeMessages().push({
+										type: 'Error',
+										title: 'Saving of new price',
+										description: 'Price is not saved to the database.',
+										subtitle: 'Technical error during save',
+										counter: 1
+									});
 
 								});
 
@@ -4523,6 +4535,65 @@ sap.ui.define([
 				}
 
 			}			
+
+		},
+
+		/**
+		 * For the price we clone, we have to do some re-calculation for the new distributor
+		 * This is only needed for Argentinia at this point. Beceause argentinia has 
+		 * @param {object} offer 
+		 * @param {object} product 
+		 * @param {object} oNewPrice
+		 */
+		_calculatePricesNewDistributor: async function(offer, product, oNewPrice){
+
+			//Get Financial offer offerProducts: to call methods from it
+			let OfferProducts = Services.getFinancialModel();
+
+			//Get brandID
+			let sBrandID = null;
+			if (product && product.SKU && product.SKU.Product){
+				sBrandID = product.SKU.Product.HLEVEL4_CODE;
+			}
+
+			//Get standard discount
+			const iStandardDiscount = await OfferProducts.getStandardDiscount(offer.DistributorID,sBrandID);
+
+			//re-calculate additional discount based upon new standard discount from new distributor/brand
+			let iCalcAdditionalDiscount = (Number(oNewPrice.Discount) + Number(oNewPrice.AdditionalDiscount)) - iStandardDiscount;
+			let iAdditionalDiscount = iCalcAdditionalDiscount > 0 ? iCalcAdditionalDiscount : 0;
+			oNewPrice.AdditionalDiscount = iAdditionalDiscount;
+
+			//show warning that re-calculated additional discount is negative (=0)
+			if(iCalcAdditionalDiscount<0){
+				Services.getOfferCompositeMessages().push({
+					type: 'Warning',
+					title: 'Standard discount',
+					description: 'Standard discount applied caused a change in the Net.offerPrice.',
+					subtitle: 'Saved with additional discount 0%',
+					counter: 1
+				});
+			}
+
+			//apply standard discount
+			oNewPrice.Discount = oNewPrice.StandardDiscount = iStandardDiscount; //standard discount is kept & applied as discount
+			oNewPrice.OfferPrice = oNewPrice.RegPrice * (1 - iStandardDiscount);
+
+			//netOfferPrice: re-calculate 
+			let focType = oNewPrice.FOCType
+			let focAbsPct = oNewPrice.FOC_ABS_PCT;
+			let foc = oNewPrice.FOC;
+			let productValues = product;
+
+			let focChartPercentage = ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc));
+			let focChartAbsolute = ((focType === "FOC 1") ? 1 - (productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume + foc));
+			let focChart = (focAbsPct === "PCT") ? focChartPercentage : focChartAbsolute;
+			oNewPrice.NetOfferPrice = oNewPrice.RegPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - focChart)
+
+			//netPrice: re-calculate 
+			oNewPrice.netPrice = oNewPrice.NetOfferPrice * (1 - oNewPrice.Deductions);
+
+			return oNewPrice;
 
 		},
 
@@ -6626,7 +6697,6 @@ sap.ui.define([
 										//Error during save
 										Services.showErrorMessage(oError, "Background saving for approvals sent field");
 									});
-									this.getView().setBusy(false);
 								});
 							});
 
