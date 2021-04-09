@@ -21,20 +21,14 @@ sap.ui.define([
      
         getJSON: function () {
             const json = this.getJSONObject([
-                "activeRecord", 
                 "countryCode",
-                "customerID",
-                "iNSTITUTE_HIERARCHY_ID",
                 "instituteID",
-                "instituteName",
-                "instituteType"
+                "instituteName"
             ]);
 
             return {
                 ...json,
-                InstituteID: +InstituteID,
-                CustomerID: +CustomerID,
-                INSTITUTE_HIERARCHY_ID: +INSTITUTE_HIERARCHY_ID
+                InstituteID: +json.InstituteID,
             }
         },
 

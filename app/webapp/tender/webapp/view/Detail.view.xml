@@ -279,7 +279,7 @@
 												<m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer'}"/>
 											</t:template>
 										</t:Column>
-
+                    
 										<t:Column width="13rem">
 											<m:Label text="Awarded Company"/>
 											<t:template>
@@ -339,7 +339,7 @@
 											</t:template>
 
 										</t:Column>
-										
+                    
 										<t:Column width="9rem">
 											<m:Label text="Awarded Price"/>
 											<t:template>

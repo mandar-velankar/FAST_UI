@@ -95,7 +95,7 @@
 						</Column>
 						<Column width="12em" minScreenWidth="920px" importance="Low" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="{i18n>institute}" />
+								<ObjectIdentifier title="{i18n>institutes}" />
 							</header>
 						</Column>
 						<Column width="12em" importance="Low" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
@@ -130,7 +130,7 @@
 								<Text text="{ctr>countryCode}"/>
 								<ObjectIdentifier text="{ctr>contractNumber}"/>
 								<Text text="{ctr>contractName}"/>
-								<Text text="{ctr>institute/instituteName}"/>
+								<Text text="{ctr>instituteNames}"/>
 								<Text text="{ctr>distributor/distributorName}"/>
 								<Text text="{
 										path:'ctr>offerValue', 

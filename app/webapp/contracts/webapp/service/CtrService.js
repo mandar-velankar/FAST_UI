@@ -145,7 +145,7 @@ sap.ui.define([
 			
 			var mParameters = {
 				urlParameters: {
-					"$expand": "Institute,Distributor,Products/Product/Product",
+					"$expand": "Institutes/Institute,Distributor,Products/Product/Product",
 					"$orderby": "ContractDate desc",
 					"$top": 5000 //should be 50 but as long as we don't have backend filtering we should get more
 				}
@@ -172,7 +172,7 @@ sap.ui.define([
 				filters: [oContractNumberFilter],
 				urlParameters: {
 					//"$expand": "Products/Deliveries/Institute,Products/Letters,Products/Product,Institute,Channel,Distributor,SellingCompany"
-					"$expand": "Products/Product,Institute,Channel,Distributor,SellingCompany"
+					"$expand": "Products/Product,Institutes/Institute,Channel,Distributor,SellingCompany"
 				}
 			};
 
@@ -290,17 +290,57 @@ sap.ui.define([
 			return this.odata(sKey).get(mParameters);
 		},
 
+		/**
+		 * Get MSP Approvers per country code
+		 */
+		getMspApprovers: function (sCountryCode) {
+
+			let sPath = "/MspApprovers";
+
+			var oCountryFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			var mParameters = {
+				filters: [oCountryFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		/**
+		 * Get NSP Approvers per country code
+		 */
+		getNspApprovers: function (sCountryCode) {
+
+			let sPath = "/NspApprovers";
+
+			var oCountryFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			var mParameters = {
+				filters: [oCountryFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
 
 		/**
 		 * Creates a new contract
 		 */
 		createContract: function (oContract) {
 
-			const data = oContract.getJSON();
+			const data = oContract.getJSONExpanded();
 
 			//conversion
-			data.InstituteId = Number(data.InstituteId);
-			data.DistributorId = Number(data.DistributorId);
+			// data.InstituteId = Number(data.InstituteId);
+			// data.DistributorId = Number(data.DistributorId);
+			delete data['Products'];
 			
 			return this.odata("/Contracts").post(data);
 
