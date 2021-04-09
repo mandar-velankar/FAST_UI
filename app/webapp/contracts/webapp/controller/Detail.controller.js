@@ -181,15 +181,19 @@ sap.ui.define([
 				this.getDistributors(this.ctrState.getCurrentContract().countryCode);
 				this.getCountryCurrencies(this.ctrState.getCurrentContract().countryCode);
 				this.getSellingCompanies(this.ctrState.getCurrentContract().countryCode);
+				this.getMspApprovers(this.ctrState.getCurrentContract().countryCode);
+				this.getNspApprovers(this.ctrState.getCurrentContract().countryCode);
 				this.getChannels();
-				this.getInstituteDistributorBrandProducts();
+				
+				// TODO: use this when clicking on add products
+				//this.getInstituteDistributorBrandProducts();
 
 				//hide warning message
-				if(this.ctrState.getCurrentContract().channel==="OTC"){
-					this.byId("msgWarningEdit").setVisible(false);
-				}else{
-					this.byId("msgWarningEdit").setVisible(true);
-				}
+				// if(this.ctrState.getCurrentContract().channel==="OTC"){
+				// 	this.byId("msgWarningEdit").setVisible(false);
+				// }else{
+				// 	this.byId("msgWarningEdit").setVisible(true);
+				// }
 				
 
 				//all loaded correctly, set busy indicator false
@@ -224,6 +228,34 @@ sap.ui.define([
 		getCountryCurrencies: function(sCountryCode){
 			this.getView().setBusy(true);
 			this.ctrState.getCountryCurrencies(sCountryCode)
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			});
+		},
+
+		getMspApprovers: function(sCountryCode){
+			this.getView().setBusy(true);
+			this.ctrState.getMspApprovers(sCountryCode)
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			});
+		},
+
+		getNspApprovers: function(sCountryCode){
+			this.getView().setBusy(true);
+			this.ctrState.getNspApprovers(sCountryCode)
 			.then(() => {
 				this.getView().setBusy(false);
 			})
@@ -968,11 +1000,15 @@ sap.ui.define([
 
 		onCreateProduct: function(oEvent){
 
+			// get the brand products
+			this.ctrState.getInstituteDistributorBrandProducts();
+			
 			const oProductsTable = this.byId("ProductsTableID");
 			//oProductsTable.removeSelections();
 
 			if (oProductsTable.getItems() && this.ctrState.data.editMode){
-				var iIndex = parseInt(oEvent.getParameter("id").substring(oEvent.getParameter("id").lastIndexOf('-') + 1));
+
+				// var iIndex = parseInt(oEvent.getParameter("id").substring(oEvent.getParameter("id").lastIndexOf('-') + 1)); // iIndex was not being used. For this reason in comment now.
 
 				if (this.ctrState.getProductItemEdit() !== -1) {
 					//another line is currently in edit mode. Set this back to display first.
@@ -983,7 +1019,7 @@ sap.ui.define([
 							try{
 								oCell.setProperty("enabled", false);
 							} catch (err){
-
+								console.error(err);
 							}
 						});
 
@@ -1224,13 +1260,16 @@ sap.ui.define([
 		//Filter brand products to find only the products of the selected brand
 		filterBrandProducts: function(aBrands){
 			const aBrandProducts = this.ctrState.getCurrentContract().instituteDistributorBrandProducts;
-			const aFilteredBrandProducts = aBrandProducts.filter(
-				(elem) => aBrands.find(({
+			const aFilteredBrandProducts = aBrandProducts.filter((elem) => aBrands.find(({
 					BRAND_ID
 				}) => elem.BRAND_ID === BRAND_ID)
 			);
 
-			return aFilteredBrandProducts;
+			const uniqueProducts = [];
+
+			aFilteredBrandProducts.forEach(x => uniqueProducts.filter(a => a.PRODUCT_ID === x.PRODUCT_ID).length > 0 ? null : uniqueProducts.push(x));
+
+			return uniqueProducts;
 		},
 
 		//When the user is adding or removing a token

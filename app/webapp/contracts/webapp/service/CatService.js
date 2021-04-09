@@ -23,11 +23,8 @@ sap.ui.define([
 			});
 		},
 
-		/**
-		 * Retrieves a TenderContracts by ContractNumber from the backend
-		 * INSTITUTE_ID eq 100163 and DISTRIBUTOR_ID eq 3147458 and CHANNEL eq 'Distributor' and LEGAL_ENTITY_CODE eq 'BLC'
-		 */
-		getInstituteDistributorBrandProducts: function (sCountryCode, iInstitudeId, iDistributorId, sSellingCompanyCode) {
+
+		getInstituteDistributorBrandProducts: function (sCountryCode, aInstitutes, iDistributorId, sSellingCompanyCode) {
 
 			var oCountryCodeFilter = new Filter({
 				path: 'COUNTRY_CODE',
@@ -35,11 +32,21 @@ sap.ui.define([
 				value1: sCountryCode
 			});
 
-			var oInstitudeFilter = new Filter({
-				path: 'INSTITUTE_ID',
-				operator: FilterOperator.EQ,
-				value1: iInstitudeId
+			var aInstituteFilters = aInstitutes.map(inst => {
+
+				return new Filter({
+					path: 'INSTITUTE_ID',
+					operator: FilterOperator.EQ,
+					value1: inst.instituteID
+				});
+
+			}); 
+
+			var oInstituteFilter = new Filter({
+				filters: aInstituteFilters,
+				and: false
 			});
+
 
 			var oDistributorFilter = new Filter({
 				path: 'DISTRIBUTOR_ID',
@@ -61,7 +68,7 @@ sap.ui.define([
 			
 
 			var mParameters = {
-				filters: [oCountryCodeFilter, oInstitudeFilter, oDistributorFilter, oChannelFilter, oSellingCompanyCodeFilter]
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter, oSellingCompanyCodeFilter]
 			};
 
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
