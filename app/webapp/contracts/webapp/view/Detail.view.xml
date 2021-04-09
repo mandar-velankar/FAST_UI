@@ -348,9 +348,9 @@
 											value="{ctr>/currentContract/selectedProduct/mspApprovedByName}" 
 											enabled="{= ${ctr>/editMode} === true ? true : false}"
 											showSuggestion="true"
-											suggestionItems="{/mspApprovers}">
+											suggestionItems="{ctr>/mspApprovers}">
 											<m:suggestionItems>
-												<core:ListItem text="{Name}"/>
+												<core:ListItem text="{ctr>mspApprovedByName}"/>
 											</m:suggestionItems>
 										</m:Input>
 										<m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
@@ -362,13 +362,16 @@
 											</m:Select>
 
 										<m:Label text="{i18n>nspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
+										<!-- <m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}" items="{ path: 'ctr>/nspApprovers' }" >
+													<core:Item key="{ctr>nspApprovedByName}" text="{ctr>nspApprovedByName}"/>
+										</m:Select>-->
 										<m:Input 
 											value="{ctr>/currentContract/selectedProduct/nspApprovedByName}" 
 											enabled="{= ${ctr>/editMode} === true ? true : false}"
 											showSuggestion="true"
-											suggestionItems="{/mspApprovers}">
+											suggestionItems="{ctr>/nspApprovers}">
 											<m:suggestionItems>
-												<core:ListItem text="{Name}"/>
+												<core:ListItem text="{ctr>nspApprovedByName}"/>
 											</m:suggestionItems>
 										</m:Input>
 										<m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
