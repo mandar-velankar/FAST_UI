@@ -290,6 +290,45 @@ sap.ui.define([
 			return this.odata(sKey).get(mParameters);
 		},
 
+		/**
+		 * Get MSP Approvers per country code
+		 */
+		getMspApprovers: function (sCountryCode) {
+
+			let sPath = "/MspApprovers";
+
+			var oCountryFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			var mParameters = {
+				filters: [oCountryFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		/**
+		 * Get NSP Approvers per country code
+		 */
+		getNspApprovers: function (sCountryCode) {
+
+			let sPath = "/NspApprovers";
+
+			var oCountryFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			var mParameters = {
+				filters: [oCountryFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
 
 		/**
 		 * Creates a new contract

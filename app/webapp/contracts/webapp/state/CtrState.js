@@ -8,8 +8,10 @@ sap.ui.define([
 	"../model/Channel",
 	"../model/Country",
 	"../model/Currency",
-	"../model/Institute"
-], function (BaseState, MessageToast, Group, Contract, Distributor, SellingCompany, Channel, Country, Currency, Institute) {
+	"../model/Institute",
+	"../model/MspApprover",
+	"../model/NspApprover"
+], function (BaseState, MessageToast, Group, Contract, Distributor, SellingCompany, Channel, Country, Currency, Institute, MspApprover, NspApprover) {
 	"use strict";
 	var ctrState = BaseState.extend("com.bayer.tender.contracts.state.CtrState", {
 
@@ -390,6 +392,40 @@ sap.ui.define([
 				const [distributors] = values;
 				this.setProperty("distributors", [...distributors]);
 				return this.getProperty("distributors");
+			});
+		},
+
+		getMspApprovers: function (sCountryCode){
+			var that = this;
+			that.setProperty("mspApprovers", []);
+			const ctrPromise = that.getService().getMspApprovers(sCountryCode).then(mspApprovers => {
+				mspApprovers = mspApprovers.data.results;
+				return mspApprovers.map(approver => {
+					return new MspApprover(approver);
+				});
+			});
+			return Promise.all([ctrPromise]).then((values) => {
+				const [mspApprovers] = values;
+				that.setProperty("mspApprovers", [...mspApprovers]);
+				that.updateModel();
+				return that.getProperty("mspApprovers");
+			});
+		},
+
+		getNspApprovers: function (sCountryCode){
+			var that = this;
+			that.setProperty("nspApprovers", []);
+			const ctrPromise = that.getService().getNspApprovers(sCountryCode).then(nspApprovers => {
+				nspApprovers = nspApprovers.data.results;
+				return nspApprovers.map(approver => {
+					return new NspApprover(approver);
+				});
+			});
+			return Promise.all([ctrPromise]).then((values) => {
+				const [nspApprovers] = values;
+				that.setProperty("nspApprovers", [...nspApprovers]);
+				that.updateModel();
+				return that.getProperty("nspApprovers");
 			});
 		},
 
