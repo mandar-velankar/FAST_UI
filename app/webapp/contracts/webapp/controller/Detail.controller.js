@@ -181,6 +181,8 @@ sap.ui.define([
 				this.getDistributors(this.ctrState.getCurrentContract().countryCode);
 				this.getCountryCurrencies(this.ctrState.getCurrentContract().countryCode);
 				this.getSellingCompanies(this.ctrState.getCurrentContract().countryCode);
+				this.getMspApprovers(this.ctrState.getCurrentContract().countryCode);
+				this.getNspApprovers(this.ctrState.getCurrentContract().countryCode);
 				this.getChannels();
 				this.getInstituteDistributorBrandProducts();
 
@@ -224,6 +226,34 @@ sap.ui.define([
 		getCountryCurrencies: function(sCountryCode){
 			this.getView().setBusy(true);
 			this.ctrState.getCountryCurrencies(sCountryCode)
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			});
+		},
+
+		getMspApprovers: function(sCountryCode){
+			this.getView().setBusy(true);
+			this.ctrState.getMspApprovers(sCountryCode)
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			});
+		},
+
+		getNspApprovers: function(sCountryCode){
+			this.getView().setBusy(true);
+			this.ctrState.getNspApprovers(sCountryCode)
 			.then(() => {
 				this.getView().setBusy(false);
 			})
