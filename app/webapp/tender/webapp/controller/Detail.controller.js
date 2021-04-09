@@ -4567,10 +4567,10 @@ sap.ui.define([
 			//show warning that re-calculated additional discount is negative (=0)
 			if(iCalcAdditionalDiscount<0){
 				Services.getOfferCompositeMessages().push({
-					type: 'Warning',
-					title: 'Standard discount',
-					description: 'Standard discount applied caused a change in the Net.offerPrice.',
-					subtitle: 'Saved with additional discount 0%',
+					type: 'Warning', 
+					title: 'Incompatible net price',
+					description: 'Incompatible distributor discount',
+					subtitle: 'Distributor (' + offer.DistributorID + ') has too high standard discount to align net price on product (' + product.ProductCode + ').',
 					counter: 1
 				});
 			}
