@@ -9,7 +9,9 @@
     "@ui5/cli": "2.6.4",
     "ui5-middleware-simpleproxy": "^0.6.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mbt": "~1.0.17"
+  },
   "engines": {
     "node": "^12"
   },

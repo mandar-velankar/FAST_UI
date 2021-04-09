@@ -2,8 +2,10 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/BaseService",
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-	"FAST_NS0FAST0/model/userinfo"
-], function (BaseService, Services, MomentJS, UserInfo) {
+	"FAST_NS0FAST0/model/userinfo",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseService, Services, MomentJS, UserInfo, Filter, FilterOperator) {
 	"use strict";
 
 	var OfferService = BaseService.extend("FAST_NS0FAST0.services.OfferService", {
@@ -33,6 +35,49 @@ sap.ui.define([
 			return this.odata(sPath).get(mParameters);
 			
 		},
+
+		/**
+		 * Fetches offers from the backend
+		 * @param {String} sTenderID - 
+		 * @param {String} sCountryCode -  
+		 * @param {String} sExpand - a list of comma separated fields to be expanded
+		 * @returns {Array} - a list of active offers
+		 */
+		getOffers:function(sTenderID, sCountryCode, sExpand){
+			
+			var sPath = "/PT_TMOFRS";
+
+			var oTenderIdFilter = new Filter({
+				path: 'TenderID',
+				operator: FilterOperator.EQ,
+				value1: sTenderID
+			});
+
+			var oCountryCodeFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			var oActiveFilter = new Filter({
+				path: 'Active',
+				operator: FilterOperator.EQ,
+				value1: 1
+			});
+
+			var mParameters = {
+				filters: [oTenderIdFilter, oCountryCodeFilter, oActiveFilter]
+			};
+
+			if(sExpand){
+				mParameters['urlParameters'] = {
+					$expand: sExpand
+				}
+			}
+
+			return this.odata(sPath).get(mParameters);
+		},
+
 		createOffer:function(oOfferToSave){
 			
 			//path of offer that is selected

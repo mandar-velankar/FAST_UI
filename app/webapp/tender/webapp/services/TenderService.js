@@ -3,7 +3,9 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/model/userinfo",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-], function (BaseService, Services, UserInfo, MomentJS) {
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseService, Services, UserInfo, MomentJS, Filter, FilterOperator) {
 	"use strict";
 
 	var TenderService = BaseService.extend("FAST_NS0FAST0.services.TenderService", {
@@ -170,6 +172,50 @@ sap.ui.define([
 			return oNewTender;
 
 		},
+
+		/**
+		 * Fetches country information from the backend
+		 * @param {String} sCountryCode 
+		 * @returns {Object} Country
+		 */
+		getCountryInfo: function(sCountryCode){ 
+			
+			var sPath = "/PT_TMCTRY";
+
+			var oTenderFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			var mParameters = {
+				filters: [oTenderFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		/**
+		 * Get the next offer number for the tender
+		 * @param {*} sTenderID 
+		 * @returns 
+		 */
+		getNextTenderOfferNo: function(sTenderID){
+			var sPath = "/TenderOffers";
+
+			var oFilter = new Filter({
+				path: 'TENDERID',
+				operator: FilterOperator.EQ,
+				value1: sTenderID
+			});
+
+			var mParameters = {
+				filters: [oFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);			
+		}
+
 	});
 	
 	return TenderService;
