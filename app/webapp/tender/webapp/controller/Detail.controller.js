@@ -73,13 +73,6 @@ sap.ui.define([
 
 		},
 
-
-		delete: function (oEvent) {
-			if (1 === 1) {
-				console.log("test");
-			}
-		},
-
 		_FOCProdBund1UpdateFinished: function () {
 			return false;
 		},
@@ -123,7 +116,7 @@ sap.ui.define([
 			var sLayout = oEvent.getParameter("arguments").layout;
 			var bSamePage = oEvent.getParameter("arguments").samePage || false; //on enter or exit fullscreen, we stay on same page so nothing need to happen
 			var oObjectPage = that.getView().byId("DetailPage");
-			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			//var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 
 			that._country = sCountry;
 
@@ -288,13 +281,13 @@ sap.ui.define([
 		
 
 		//on new tender matched
-		_NewTenderMatched: function (that) {
+		_NewTenderMatched: function (oDetailController) {
 
 			//fastappdata model
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
 			//get the tender id from the screen beceause it might not be created yet
-			var sTenderID = that.getView().byId("tenderId").getProperty("text");
+			var sTenderID = oDetailController.getView().byId("tenderId").getProperty("text");
 			Services.setSelectedTenderID(sTenderID);
 
 			//CurrentTender on FASTAPPDATA model for easy access, so we can move step by step to FastAppData model binding on basic information tab TODO currently we only use the dates in this way, we should use all fields in this way
@@ -302,14 +295,14 @@ sap.ui.define([
 			oFastAppDataModel.setProperty("/EditTender/", oTenderNew);
 
 			//new tender --> = show edit mode with corresponding fragment
-			that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
+			oDetailController._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
 
 			//if new Tender is created, the following fields are editable
-			that.getView().byId("idClassification").setEnabled(true);
-			that.getView().byId("idInstituteType").setEnabled(true);
-			that.getView().byId("idInstituteName").setEnabled(true);
-			that.getView().byId("idTenderChannel").setEnabled(true);
-			that.getView().byId("idGroupPurchasingEdit").setEnabled(true);
+			oDetailController.getView().byId("idClassification").setEnabled(true);
+			oDetailController.getView().byId("idInstituteType").setEnabled(true);
+			oDetailController.getView().byId("idInstituteName").setEnabled(true);
+			oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			oDetailController.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
 			// hide country specific fields
 			this._initializeCountrySpecificFields();
@@ -324,13 +317,13 @@ sap.ui.define([
 			var aFilter = [];
 			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
-			let oProducrementReason = that.getView().byId("idProcurementReasonEdit");
+			let oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 
 			// apply country filter 
 			this.setCountrySpecificDropDowns(aFilter);
 
-			oProcurementMethod = that.getView().byId("idSelectProcurementMethodEdit");
-			oProducrementReason = that.getView().byId("idProcurementReasonEdit");
+			oProcurementMethod = oDetailController.getView().byId("idSelectProcurementMethodEdit");
+			oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
 				filters: aFilter,
@@ -389,17 +382,17 @@ sap.ui.define([
 
 			//this way we can use a seperate layer, adding deleting... and afterords saving
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			that.getView().setModel(oFastAppDataModel, "fastAppData");
+			oDetailController.getView().setModel(oFastAppDataModel, "fastAppData");
 
 			//set new tender ID 
 			$.when(Services.loadNewTenderID()).done(function (sNewTenderID) {
 				//keep idNewTenderID (TODO: should we not use setSelectedTenderID for this? delete field)
-				that.getView().byId("idNewTenderID").setValue(sNewTenderID);
+				oDetailController.getView().byId("idNewTenderID").setValue(sNewTenderID);
 			});
 
 			//Does the table with award criteria exist on the page? 
 			//idAwrdEdit = the award criteria table found in BasicInformationEdit fragment
-			if (that.byId("idAwrdEdit")) {
+			if (oDetailController.byId("idAwrdEdit")) {
 
 				//Bind model for the award criteria
 				var sPath = "/PT_TMAWRDCR"; //award criteria table
@@ -409,7 +402,7 @@ sap.ui.define([
 				var aFilters = [];
 				aFilters.push(new sap.ui.model.Filter("TENDERID", sap.ui.model.FilterOperator.EQ, sTenderID));
 				aFilters.push(new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1));
-				var oModel = that.getOwnerComponent().getModel("fastData");
+				var oModel = oDetailController.getOwnerComponent().getModel("fastData");
 
 				//Reading the back end data from the award critiria TODO this should be in the service file
 				oModel.read(sPath, {
@@ -419,9 +412,9 @@ sap.ui.define([
 						AwardModel.setData({
 							Data: oData.results
 						});
-						that.getView().setModel(AwardModel, "tabModel");
-						// that.byId("awardCriteriaId").setModel(AwardModel, "tabModel");
-						that.byId("idAwrdEdit").setModel(AwardModel, "tabModel"); //TODO tabModel = awardCriteria model? Use better name?
+						oDetailController.getView().setModel(AwardModel, "tabModel");
+						// oDetailController.byId("awardCriteriaId").setModel(AwardModel, "tabModel");
+						oDetailController.byId("idAwrdEdit").setModel(AwardModel, "tabModel"); //TODO tabModel = awardCriteria model? Use better name?
 					},
 					error: function (oError) {
 						Services.showErrorMessage(oError, "Loading award criteria");
@@ -432,29 +425,29 @@ sap.ui.define([
 
 			//TODO is there no better way for not overloading the detail screen- same approach for all tabs
 			//show fragment for TAB: Offer products
-			that._showSectionFragment("OfferProductsView", "offerProductsId");
+			oDetailController._showSectionFragment("OfferProductsView", "offerProductsId");
 
 			//show fragment for TAB: Financial Offer
-			that._showSectionFragment("FinancialOfferView", "financialOfferId");
+			oDetailController._showSectionFragment("FinancialOfferView", "financialOfferId");
 
 			//show fragment for TAB: Quotation
-			that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+			oDetailController._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 			//show footer with accept/reject button (this is not shown on the Tender master screen)
-			that.getView().byId("DetailPage").setShowFooter(true);
+			oDetailController.getView().byId("DetailPage").setShowFooter(true);
 			Services.setEditMode(true);
 
 			//disable buttons when creating new tender
-			//that.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
-			that.getView().byId("editButtonId").setEnabled(false);
-			that.getView().byId("cloneButtonId").setEnabled(false);
-			that.getView().byId("deleteTenderButtonId").setEnabled(false);
+			//oDetailController.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
+			oDetailController.getView().byId("editButtonId").setEnabled(false);
+			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
+			oDetailController.getView().byId("deleteTenderButtonId").setEnabled(false);
 
-			// that.getView().byId("DetailPage").setShowAnchorBar(false);
+			// oDetailController.getView().byId("DetailPage").setShowAnchorBar(false);
 
 			//Default basic information tab is shown + subsection
-			that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
-			that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
+			oDetailController.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
+			oDetailController.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 
 
 		},
@@ -553,7 +546,7 @@ sap.ui.define([
 		},
 
 		//existing tender matched
-		_ExistingTenderMatched: function (that, sTab) {
+		_ExistingTenderMatched: function (oDetailController, sTab) {
 
 			//get selected Tender Path
 			var sTenderID = Services.getSelectedTenderID();
@@ -568,7 +561,7 @@ sap.ui.define([
 
 				//this way we can use a seperate layer, adding deleting... and afterords saving
 				var oFastAppDataModel = Services.getFastAppDataModel();
-				that.getView().setModel(oFastAppDataModel, "fastAppData");
+				oDetailController.getView().setModel(oFastAppDataModel, "fastAppData");
 
 				//get loaded tender & bind it for easy access
 				var oTender = Services.getLoadedTender();
@@ -576,40 +569,40 @@ sap.ui.define([
 
 				//should tendertype be visible on the basic info screen?
 				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
-					that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+					oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
 				});
 
 				/* Mexico */
 				//should tenderorigin be visible on the basic info screen?
 				$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
-					that.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
+					oDetailController.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
 				});
 
 				//should salestype be visible on the basic info screen?
 				$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
-					that.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
+					oDetailController.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
 				});
 
 				//should salestype be visible on the basic info screen?
 				$.when(Services.checkShowContractType()).done(function (bShowContractType) {
-					that.getView().byId("idSelectContractType").setVisible(bShowContractType);
+					oDetailController.getView().byId("idSelectContractType").setVisible(bShowContractType);
 				});
 				/* End of MExico */
 
 				/* Thailand */
 				$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
-					that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
+					oDetailController.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
 				});
 				/* End of Thailand */
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
-					that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
+					oDetailController.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 				});
 
 
 				// this sets the Specifications dropdown
-				that.setTenderSpecificationsSelectedKeys(sTenderID);
+				oDetailController.setTenderSpecificationsSelectedKeys(sTenderID);
 
 				//vanaf hier 
 
@@ -617,10 +610,10 @@ sap.ui.define([
 				Services.setEditMode(false);
 
 				//existing tender --> = show display mode for BasicInformation view
-				that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
+				oDetailController._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
 
 				//if awardCriteria exists on the basic information tab
-				if (that.byId("awardCriteriaId")) {
+				if (oDetailController.byId("awardCriteriaId")) {
 
 					//Bind model for the award criteria
 					var sPath = "/PT_TMAWRDCR"; //table with award criteria
@@ -630,7 +623,7 @@ sap.ui.define([
 					var aFilters = [];
 					aFilters.push(new sap.ui.model.Filter("TENDERID", sap.ui.model.FilterOperator.EQ, sTenderID));
 					aFilters.push(new sap.ui.model.Filter("Active", sap.ui.model.FilterOperator.EQ, 1));
-					var oDefaultModel = that.getOwnerComponent().getModel("fastData");
+					var oDefaultModel = oDetailController.getOwnerComponent().getModel("fastData");
 
 					//Reading the back end data from the award critiria TODO this should be in the service file
 					oDefaultModel.read(sPath, {
@@ -639,8 +632,8 @@ sap.ui.define([
 							oAwardModel.setData({
 								Data: oData.results
 							});
-							that.getView().setModel(oAwardModel, "tabModel");
-							that.byId("awardCriteriaId").setModel(oAwardModel, "tabModel");
+							oDetailController.getView().setModel(oAwardModel, "tabModel");
+							oDetailController.byId("awardCriteriaId").setModel(oAwardModel, "tabModel");
 						},
 						error: function (oError) {
 							Services.showErrorMessage(oError, "Loading award criteria");
@@ -651,38 +644,38 @@ sap.ui.define([
 
 				//TODO is there no better way for not overloading the detail screen- same approach for all tabs
 				//show fragment for TAB: Offer products				
-				that._showSectionFragment("OfferProductsView", "offerProductsId");
+				oDetailController._showSectionFragment("OfferProductsView", "offerProductsId");
 
 				//show fragment for TAB: FinancialOffer
-				that._showSectionFragment("FinancialOfferView", "financialOfferId");
+				oDetailController._showSectionFragment("FinancialOfferView", "financialOfferId");
 
 					
 				//show fragment for TAB: Quotation
-				that._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+				oDetailController._showSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 				//show footer with accept/reject button (this is not shown on the Tender master screen)
-				that.getView().byId("DetailPage").setShowFooter(false);
+				oDetailController.getView().byId("DetailPage").setShowFooter(false);
 				Services.setEditMode(false);
 
 				//make buttons visible when selected existing tender
-				that.getView().byId("editButtonId").setVisible(true);
+				oDetailController.getView().byId("editButtonId").setVisible(true);
 				/*if( Services.getLoadedOffer(Services.getSelectedOfferID()) && (Services.getLoadedOffer(Services.getSelectedOfferID()).Active !== 1 || Services.getLoadedOffer(Services.getSelectedOfferID()).ActiveOffer !== 1)){*/
 				if (oOffer && (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1)) {
-					that.getView().byId("editButtonId").setEnabled(false);
+					oDetailController.getView().byId("editButtonId").setEnabled(false);
 				} else {
-					that.getView().byId("editButtonId").setEnabled(true);
+					oDetailController.getView().byId("editButtonId").setEnabled(true);
 				}
-				that.getView().byId("cloneButtonId").setVisible(true);
-				that.getView().byId("cloneButtonId").setEnabled(true);
-				that.getView().byId("deleteTenderButtonId").setEnabled(true);
+				oDetailController.getView().byId("cloneButtonId").setVisible(true);
+				oDetailController.getView().byId("cloneButtonId").setEnabled(true);
+				oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
 
 				if (!sTab || sTab === Services.getBasicInformationPageSectionID()) {
 					//Default basic information tab is shown
-					that.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
-					that.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
+					oDetailController.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
+					oDetailController.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 				} else {
 					//Show selected section
-					that.byId("DetailPage").setSelectedSection(sTab);
+					oDetailController.byId("DetailPage").setSelectedSection(sTab);
 
 				}
 
@@ -691,7 +684,7 @@ sap.ui.define([
 
 				//init selected section (tab) + select selected offer again (for if we navigate directly to a specific tab)
 				//check on binding finished
-				that._initSection(sTab);
+				oDetailController._initSection(sTab);
 
 			});
 
@@ -951,7 +944,7 @@ sap.ui.define([
 
 				//open basic info tab of tender
 				var sBasicInfoTabID = Services.getBasicInformationPageSectionID();
-				var oBasicInfoTab = this.getView().byId(sBasicInfoTabID);
+				//var oBasicInfoTab = this.getView().byId(sBasicInfoTabID);
 				var oDetailObjectPage = this.getView().byId("DetailPage");
 				oDetailObjectPage.setSelectedSection(sBasicInfoTabID);
 
@@ -1008,7 +1001,7 @@ sap.ui.define([
 
 			//check which tab is open
 			var oDetailPage = that.getView().byId("DetailPage"),
-				bCurrentShowFooterState = oDetailPage.getShowFooter(),
+				//bCurrentShowFooterState = oDetailPage.getShowFooter(),
 				sSelectedSection = oDetailPage.getSelectedSection();
 
 			//Get offer table
@@ -1659,10 +1652,7 @@ sap.ui.define([
 					that._showSectionFragment("FinancialOfferView", "financialOfferId");
 
 					//check for approval enabled 
-					var sSelectedOfferPath = Services.getSelectedOfferPath();
 					var sSelectedOfferID = Services.getSelectedOfferID();
-
-					var oDefaultModel = Services.getDefaultModel();
 					var oOffer = Services.getLoadedOffer(sSelectedOfferID);
 
 					var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
@@ -2622,7 +2612,7 @@ sap.ui.define([
 			case Services.getFinancialOfferPageSectionID():
 
 				//show loading screen
-				that.getView().setBusyIndicatorDelay(1); //busy indicator shown immediately
+				//that.getView().setBusyIndicatorDelay(1); //busy indicator shown immediately
 				that.getView().setBusy(true);
 
 				//FINANCIAL OFFER TAB
@@ -4252,6 +4242,12 @@ sap.ui.define([
 				//close dialog
 				that.onDuplicateOfferDialogClose();
 
+				// show messages
+				if (Services.getOfferCompositeMessages().length > 0) {
+					Services.showMessageCompositeView("Offer duplicated", Services.getOfferCompositeMessages(), 'Success');
+					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+				}
+
 			});	
 
 		},
@@ -4289,7 +4285,8 @@ sap.ui.define([
 			try {
 
 				//save new offer
-				await Services.saveOffer(oNewOffer).then(function (oResult) {
+				await Services.saveOffer(oNewOffer)
+				.then(function (oResult) {
 					
 					//if offer is created successfully we can create the offer status, products.. for the saved offer
 					
@@ -4305,7 +4302,16 @@ sap.ui.define([
 						await that._cloneProduct.call(that, oNewOffer, oProduct);
 					}));
 
-				}).catch(function (oError) {
+				})
+				.then(() => {
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Offer duplicated successfully',
+						description: 'Offer duplicated successfully',
+						subtitle: 'Offer: ' + nextOfferID
+					});
+				})
+				.catch(function (oError) {
 
 					//show error message
 					Services.showErrorMessage(oError, "Create offer");
@@ -4419,25 +4425,22 @@ sap.ui.define([
 			//let that = this;
 			let OfferProducts = Services.getFinancialModel();
 
-			let oNewPrice = {
-				...price,
-				"OfferID": offer.OfferID,
-				//"DistributorID" : offer.DistributorID
-			}
-
 			//for the reviewed offer, the products of the original offer can have price data as well
-			if (oNewPrice) {
+			if (price) {
+
+				//New Price
+				let oNewPrice = {
+					...price,
+					"OfferID": offer.OfferID,
+					//"DistributorID" : offer.DistributorID
+				}
 
 				//re-calculate Netprice based upon new distributor specific commission rate
 				oNewPrice.NetPrice = oNewPrice.NetofferPrice * (1 - oNewPrice.Deductions);
 				
 				//we are waiting for the loading of the price
-				const sRegisteredPrice = await OfferProducts.loadCountryRegisteredPrice(Services.getSelectedCountry(), product.UnitPerPack,product.ProductCode, offer.Currency);
-				
+				const sRegisteredPrice = await OfferProducts.loadCountryRegisteredPrice(Services.getSelectedCountry(), product.UnitPerPack,product.ProductCode, offer.Currency);			
 				const oUpToDatePrices = await OfferProducts.loadAllUpToDatePrices(product.Offer, product, sRegisteredPrice.REGISTERED_PRICE);
-				
-				//in this case we should save price data as well
-				var oProductPrice = Services.getService('Price').getConvertPriceToSave(oNewPrice);
 
 				//if sRegPrice = false, meaning calculation is no longer found & price is not copied
 				if (oUpToDatePrices.RegPrice !== false) {
@@ -4449,9 +4452,9 @@ sap.ui.define([
 					let iConvertedOfferPrice = 0;
 					if (product.UnitPerPack) {
 							var sUnitPerPackOffer = product.UnitPerPack;
-							iConvertedOfferPrice = formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
+							iConvertedOfferPrice = formatter.priceTwoOrFour(oNewPrice.OfferPrice, undefined, sUnitPerPackOffer);
 					} else {
-							iConvertedOfferPrice = oProductPrice.OfferPrice;
+							iConvertedOfferPrice = oNewPrice.OfferPrice;
 					}
 
 					//make same rounding
@@ -4464,7 +4467,7 @@ sap.ui.define([
 					if (OfferProducts.checkOfferPriceLowerRegisterPrice(iConvertedOfferPrice, iConvertedRegPrice)) {
 
 							//Case when RegisteredPrice would have changed since OfferX was created is very complex. Thats why we inform user to manualy adapt price
-							if(Number(oProductPrice.RegPrice) !== oUpToDatePrices.RegPrice){
+							if(Number(oNewPrice.RegPrice) !== oUpToDatePrices.RegPrice){
 
 								Services.getOfferCompositeMessages().push({
 									type: 'Warning',
@@ -4477,16 +4480,31 @@ sap.ui.define([
 							}else{
 
 								//change values with up to date values
-								oProductPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
-								oProductPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
-								oProductPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
-								oProductPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+								oNewPrice.RegPrice = (oUpToDatePrices.RegPrice === null) ? null : oUpToDatePrices.RegPrice.toString();
+								oNewPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
+								oNewPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
+								oNewPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+								
+								//specific recalculation for new distributor Argentinia with standard discount..
+								if(offer.CountryCode === "AR"){
+									oNewPrice = await this._calculatePricesNewDistributor(offer,product,oNewPrice);
+								}
+
+								//in this case we should save price data as well
+								var oProductPrice = Services.getService('Price').getConvertPriceToSave(oNewPrice);
 
 								//add creation of price to batch operation
 								await Services.getService('Price').createPrice(oProductPrice).catch(function (oError) {
 
 									//show error message
-									Services.showErrorMessage(oError, "Saving of new price");
+									//Services.showErrorMessage(oError, "Saving of new price");
+									Services.getOfferCompositeMessages().push({
+										type: 'Error',
+										title: 'Saving of new price',
+										description: 'Price is not saved to the database.',
+										subtitle: 'Technical error during save',
+										counter: 1
+									});
 
 								});
 
@@ -4517,6 +4535,65 @@ sap.ui.define([
 				}
 
 			}			
+
+		},
+
+		/**
+		 * For the price we clone, we have to do some re-calculation for the new distributor
+		 * This is only needed for Argentinia at this point. Beceause argentinia has 
+		 * @param {object} offer 
+		 * @param {object} product 
+		 * @param {object} oNewPrice
+		 */
+		_calculatePricesNewDistributor: async function(offer, product, oNewPrice){
+
+			//Get Financial offer offerProducts: to call methods from it
+			let OfferProducts = Services.getFinancialModel();
+
+			//Get brandID
+			let sBrandID = null;
+			if (product && product.SKU && product.SKU.Product){
+				sBrandID = product.SKU.Product.HLEVEL4_CODE;
+			}
+
+			//Get standard discount
+			const iStandardDiscount = await OfferProducts.getStandardDiscount(offer.DistributorID,sBrandID);
+
+			//re-calculate additional discount based upon new standard discount from new distributor/brand
+			let iCalcAdditionalDiscount = (Number(oNewPrice.Discount) + Number(oNewPrice.AdditionalDiscount)) - iStandardDiscount;
+			let iAdditionalDiscount = iCalcAdditionalDiscount > 0 ? iCalcAdditionalDiscount : 0;
+			oNewPrice.AdditionalDiscount = iAdditionalDiscount;
+
+			//show warning that re-calculated additional discount is negative (=0)
+			if(iCalcAdditionalDiscount<0){
+				Services.getOfferCompositeMessages().push({
+					type: 'Warning', 
+					title: 'Incompatible net price',
+					description: 'Incompatible distributor discount',
+					subtitle: 'Distributor (' + offer.DistributorID + ') has too high standard discount to align net price on product (' + product.ProductCode + ').',
+					counter: 1
+				});
+			}
+
+			//apply standard discount
+			oNewPrice.Discount = oNewPrice.StandardDiscount = iStandardDiscount; //standard discount is kept & applied as discount
+			oNewPrice.OfferPrice = oNewPrice.RegPrice * (1 - iStandardDiscount);
+
+			//netOfferPrice: re-calculate 
+			let focType = oNewPrice.FOCType
+			let focAbsPct = oNewPrice.FOC_ABS_PCT;
+			let foc = oNewPrice.FOC;
+			let productValues = product;
+
+			let focChartPercentage = ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc));
+			let focChartAbsolute = ((focType === "FOC 1") ? 1 - (productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume + foc));
+			let focChart = (focAbsPct === "PCT") ? focChartPercentage : focChartAbsolute;
+			oNewPrice.NetOfferPrice = oNewPrice.RegPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - focChart)
+
+			//netPrice: re-calculate 
+			oNewPrice.netPrice = oNewPrice.NetOfferPrice * (1 - oNewPrice.Deductions);
+
+			return oNewPrice;
 
 		},
 
@@ -4567,7 +4644,8 @@ sap.ui.define([
 		 */
 		onTenderOverviewPress: async function(oEvent){
 
-			
+			BusyIndicator.show(0);
+
 			const oTenderOverviewObject = await this._createTenderOverviewModelStructure();
 			Services.getFastAppDataModel().setProperty("/TenderOverview", oTenderOverviewObject);
 
@@ -4589,7 +4667,7 @@ sap.ui.define([
 			}
 
 
-			this.pTenderOverviewDialog.then(oDialog => oDialog.open());
+			this.pTenderOverviewDialog.then(oDialog => oDialog.open() && BusyIndicator.hide());
 
 		},
 
@@ -6285,7 +6363,7 @@ sap.ui.define([
 
 		//Save in footer is clicked & financial offer tab is openened
 		_onSaveFinancialOffer: function (oEvent) {
-
+			this.getView().setBusy(true);
 			//TODO use these when we have converted the edit view binding to the fastAppDataModel
 			var sPathSelectedOffer = Services.getSelectedOfferPath();
 			var sPathSelectedProduct = Services.getSelectedProductPath();
@@ -6521,7 +6599,7 @@ sap.ui.define([
 						FOCType: that.byId("idEditFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
 						Discount: that.byId("idEditPriceOffer_idDiscount").getValue() / 100,
 						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", "")),
-						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue(),
+						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue() / 100,
 						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
 						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
 						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replace(",", "")),
@@ -6619,7 +6697,6 @@ sap.ui.define([
 										//Error during save
 										Services.showErrorMessage(oError, "Background saving for approvals sent field");
 									});
-
 								});
 							});
 
@@ -6627,7 +6704,7 @@ sap.ui.define([
 
 							//error message
 							Services.showErrorMessage(oError, "Saving financial offer");
-
+							this.getView().setBusy(false);
 							oDeferred_all.reject();
 
 						});
@@ -7331,12 +7408,68 @@ sap.ui.define([
 			});
 		},
 
-		onEmailQuotation: function (oEvent) {
+		onEmailQuotation: function (oEvent) {			
+			this._getEmailQuotationDialog().open();
+		},
+
+		
+		/**
+		 * New email dialog
+		 */
+		 _getEmailQuotationDialog : function () {
+			
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/SelectedOffer/OfferID');
 
-			Services.sendMail(sRecipient, sSubject);
+			if (this._EmailQuotationDialog) {
+				this._EmailQuotationDialog.destroy();
+			}
+
+			//create new dialog if not yet existing
+			//if (!this._EmailQuotationDialog) {
+
+					//get dialog
+					this._EmailQuotationDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.QuotationMail", this);
+				  	this.getView().addDependent(this._EmailQuotationDialog);
+					
+			//}
+
+			Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES").then(template => {
+
+				//get screen elements
+				let oRecipients = sap.ui.getCore().byId("idTo");
+				let oSubject = sap.ui.getCore().byId("idSubject");
+				let oSender = sap.ui.getCore().byId("idFrom");
+				let sSender = UserInfo.getUserEmail();
+				let oEditor = sap.ui.getCore().byId("idEditor");
+				
+				oEditor.setValue(template.value);
+				oSubject.setValue(sSubject);
+
+				oRecipients.setTokens([
+					new Token({text: sRecipient, key: sRecipient}),
+				]);
+
+				oSender.setTokens([
+					new Token({text: sSender, key: sSender}),
+				]);
+
+				// add validator
+				let fnValidator = function(args){
+					let text = args.text;
+
+					return new Token({key: text, text: text});
+				};
+
+				oRecipients.addValidator(fnValidator);
+				oSender.addValidator(fnValidator);
+			}).catch(error => {
+				console.log("Error retrieving mail template");
+			});
+			
+
+			return this._EmailQuotationDialog;
 
 		},
 
@@ -7370,6 +7503,49 @@ sap.ui.define([
 
 			this.onEditToggleButtonPress();
 
+		},
+
+		onSendQuotationMail: function (oEvent){
+
+			let sRecipients = "";
+			let sSubject = sap.ui.getCore().byId('idSubject').getValue();
+			let sMailBody = sap.ui.getCore().byId('idEditor').getValue();
+			let aRecipients = sap.ui.getCore().byId('idTo').getTokens();
+			let sSenders = sap.ui.getCore().byId('idFrom').getTokens();
+			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
+
+			let oMail = {
+				"Sender":sSenders[0].getProperty('text'),
+				"Recipients":sRecipients,
+				"Subject":sSubject,
+				"MailBody":sMailBody,
+				"Sent":false,
+			}
+
+			Services.sendMail(oMail)
+				.then(() => {
+					this._EmailQuotationDialog.destroy();
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Mail sent successfully',
+						description: 'Mail sent successfully'
+					});
+					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+				})
+				.catch(function (oError) {
+					//show error message
+					Services.showErrorMessage(oError, "Sending mail");
+				});
+		},
+
+		onCancelQuotationMail: function (oEvent){
+			this._EmailQuotationDialog.destroy();
+		},
+
+		onMCEEditorLoaded: function(oEvent){
+			//get the editor
+			let oMCEEditor = sap.ui.getCore().byId('idEditor');
+			oMCEEditor.addButtonGroup("styleselect").addButtonGroup("table");
 		},
 
 		//TENDER RESULTS TAB
@@ -7651,14 +7827,16 @@ sap.ui.define([
 			var oOutcomeTreeTable = this.byId("idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
-			let sCountry = oFastAppDataModel.getProperty('/Tender/CountryCode');
-			let sProductCode = oFastAppDataModel.getProperty(oRowContext.sPath + '/PRODUCTCODE');
+			
 
 			//check if a product is selected
 			if (oRowContext === null) {
 				sap.m.MessageToast.show("Please first select the line where you want to add a product...");
 				return;
 			}
+
+			let sCountry = oFastAppDataModel.getProperty('/Tender/CountryCode');
+			let sProductCode = oFastAppDataModel.getProperty(oRowContext.sPath + '/PRODUCTCODE');
 
 			$.when(Services.loadCountryCompetitors(sCountry, sProductCode)).done(function () {
 
@@ -7707,7 +7885,7 @@ sap.ui.define([
 				return;
 			}
 
-			oFastAppDataModel.setProperty(sBindingPathSet, oOutcomeLevel.PRODUCTCOMP);
+			oFastAppDataModel.setProperty(sBindingPathSet, oProductLevel.PRODUCTCOMP);
 		},
 
 		onChangeAwardedCompanyCompetitor: function(oEvent){

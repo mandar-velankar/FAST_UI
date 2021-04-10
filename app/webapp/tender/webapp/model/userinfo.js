@@ -35,6 +35,10 @@ sap.ui.define([
 				getUserName: function (){
 					return this._oUserModel.getProperty("/name") || this.userName;
 				},
+
+				getUserEmail: function(){
+					return this._oUserModel.getProperty("/email") || this.email;
+				},
 				
 				//get tool ID of user
 				getToolID: function (){
@@ -55,6 +59,10 @@ sap.ui.define([
 		//-------
 				setUserName: function(userName){
 					this.userName = userName;	
+				},
+
+				setUserEmail: function(email){
+					this.email = email;
 				},
 				
 				//toolID of user
