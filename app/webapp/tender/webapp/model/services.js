@@ -1136,7 +1136,6 @@ sap.ui.define([
 			//get user name of logedin user
 			this.getCurrentUser().then(user => {
 				UserInfo.setUserName(user.name);
-				UserInfo.setUserEmail(user.email);
 			}).catch(fail=>{
 				console.log("Not running on CF using CAP")
 			}).then(()=>{
@@ -1156,6 +1155,9 @@ sap.ui.define([
 
 						//keep the external Active directory id
 						UserInfo.setCWID(oData.CWID);
+
+						//set the user email
+						UserInfo.setUserEmail(oData.UserEmail);
 
 						//keep the countries to which the user has access
 						oData.toUserCountries.results = that.sortByKeyAsc(oData.toUserCountries.results, "COUNTRY_NAME");
