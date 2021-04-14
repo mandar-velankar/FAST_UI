@@ -7408,7 +7408,8 @@ sap.ui.define([
 			});
 		},
 
-		onEmailQuotation: function (oEvent) {			
+		onEmailQuotation: function (oEvent) {	
+			BusyIndicator.show(0);		
 			this._getEmailQuotationDialog().open();
 		},
 
@@ -7464,6 +7465,8 @@ sap.ui.define([
 
 				oRecipients.addValidator(fnValidator);
 				oSender.addValidator(fnValidator);
+
+				BusyIndicator.hide();
 			}).catch(error => {
 				console.log("Error retrieving mail template");
 			});
