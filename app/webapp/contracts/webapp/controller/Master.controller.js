@@ -86,9 +86,9 @@ sap.ui.define([
 			this.setModel(this.ctrState.getModel(), "ctr");
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
+			this.getRouter().getRoute("object").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 
-			
 			this.setFilter();
 		},
 
