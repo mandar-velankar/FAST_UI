@@ -7421,7 +7421,7 @@ sap.ui.define([
 			
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
-			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/SelectedOffer/OfferID');
+			var sSubject = 'Quotation for offer ' + Services.getSelectedOfferID();
 
 			if (this._EmailQuotationDialog) {
 				this._EmailQuotationDialog.destroy();
@@ -7436,7 +7436,7 @@ sap.ui.define([
 					
 			//}
 
-			Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES").then(template => {
+			Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES", Services.getSelectedOfferID()).then(template => {
 
 				//get screen elements
 				let oRecipients = sap.ui.getCore().byId("idTo");

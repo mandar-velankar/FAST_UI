@@ -12,7 +12,8 @@ sap.ui.define([
 			//--------------
 			
 			_sToolID: "",
-			_sCWID: "", 	//external active directory user ID
+			_sCWID: "", 	//external active directory user ID,
+			_email: "",
 			_aUserCountries: [],
 		
 		//CONSTRUCTOR
@@ -37,7 +38,7 @@ sap.ui.define([
 				},
 
 				getUserEmail: function(){
-					return this._oUserModel.getProperty("/email") || this.email;
+					return this._email;
 				},
 				
 				//get tool ID of user
@@ -62,7 +63,7 @@ sap.ui.define([
 				},
 
 				setUserEmail: function(email){
-					this.email = email;
+					this._email = email;
 				},
 				
 				//toolID of user
