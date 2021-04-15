@@ -4588,7 +4588,7 @@ sap.ui.define([
 			let focChartPercentage = ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc));
 			let focChartAbsolute = ((focType === "FOC 1") ? 1 - (productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume + foc));
 			let focChart = (focAbsPct === "PCT") ? focChartPercentage : focChartAbsolute;
-			oNewPrice.NetOfferPrice = oNewPrice.RegPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - focChart)
+			oNewPrice.NetOfferPrice = oNewPrice.RegPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - focChart);
 
 			//netPrice: re-calculate 
 			oNewPrice.netPrice = oNewPrice.NetOfferPrice * (1 - oNewPrice.Deductions);
