@@ -4588,7 +4588,7 @@ sap.ui.define([
 			let focChartPercentage = ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc));
 			let focChartAbsolute = ((focType === "FOC 1") ? 1 - (productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume + foc));
 			let focChart = (focAbsPct === "PCT") ? focChartPercentage : focChartAbsolute;
-			oNewPrice.NetOfferPrice = oNewPrice.RegPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - focChart)
+			oNewPrice.NetOfferPrice = oNewPrice.RegPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - focChart);
 
 			//netPrice: re-calculate 
 			oNewPrice.netPrice = oNewPrice.NetOfferPrice * (1 - oNewPrice.Deductions);
@@ -7408,7 +7408,8 @@ sap.ui.define([
 			});
 		},
 
-		onEmailQuotation: function (oEvent) {			
+		onEmailQuotation: function (oEvent) {	
+			BusyIndicator.show(0);		
 			this._getEmailQuotationDialog().open();
 		},
 
@@ -7420,7 +7421,7 @@ sap.ui.define([
 			
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
-			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/SelectedOffer/OfferID');
+			var sSubject = 'Quotation for offer ' + Services.getSelectedOfferID();
 
 			if (this._EmailQuotationDialog) {
 				this._EmailQuotationDialog.destroy();
@@ -7435,7 +7436,7 @@ sap.ui.define([
 					
 			//}
 
-			Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES").then(template => {
+			Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES", Services.getSelectedOfferID()).then(template => {
 
 				//get screen elements
 				let oRecipients = sap.ui.getCore().byId("idTo");
@@ -7464,6 +7465,8 @@ sap.ui.define([
 
 				oRecipients.addValidator(fnValidator);
 				oSender.addValidator(fnValidator);
+
+				BusyIndicator.hide();
 			}).catch(error => {
 				console.log("Error retrieving mail template");
 			});

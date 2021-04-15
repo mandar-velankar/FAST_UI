@@ -940,6 +940,7 @@ sap.ui.define([
 			let sBrandID = oProduct && oProduct.SKU && oProduct.SKU.Product && oProduct.SKU.Product.HLEVEL4_CODE;
 			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
 			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' ? await that.getStandardDiscount(sDistributorID,sBrandID) : "";
+			let iAdditionalDiscount = (oProduct && oProduct.Price && oProduct.Price.AdditionalDiscount) || 0;
 
 			//selected offer currency on screen
 			var offerCurrency = oDetailController.byId("idCurrency").getSelectedKey();
@@ -1064,7 +1065,7 @@ sap.ui.define([
 								discount: sDiscount, //"",//0,
 								offerPrice: sPreApprovedPrice, //"",
 								standardDiscount: iStandardDiscount,
-								additionalDiscount: "",
+								additionalDiscount: iAdditionalDiscount,
 								focAbsPct: "PCT",
 								focType: "FOC 1",
 								foc: "",//0,
@@ -1147,11 +1148,14 @@ sap.ui.define([
 											productValues.RequestedVolume + price.foc));
 								price.deductions = priceValues.Deductions;
 								if (!scenarioPrice) {
-											price.netOfferPrice = parseFloat(priceValues.NetofferPrice);
-											price.netPrice = parseFloat(priceValues.NetPrice);
+										price.netOfferPrice = parseFloat(priceValues.NetofferPrice);
+										price.netPrice = parseFloat(priceValues.NetPrice);
+								} else if(sCountryCode==="AR"||sCountryCode==="BR") {
+										price.netOfferPrice = price.cifPrice * (1 - (price.standardDiscount + price.additionalDiscount)) * (1 - price.focChart);
+										price.netPrice = (1 - price.deductions) * price.netOfferPrice;
 								} else {
-											price.netOfferPrice = price.offerPrice * (1 - price.focChart);
-											price.netPrice = price.netOfferPrice * (1 - price.deductions);
+										price.netOfferPrice = price.offerPrice * (1 - price.focChart);
+										price.netPrice = price.netOfferPrice * (1 - price.deductions);			
 								}
 								
 						}
@@ -1783,11 +1787,11 @@ sap.ui.define([
 				var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
 					productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 					foc));
-				var netOfferPrice = offerPrice * (1 - focChart);
+				var netOfferPrice = cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart);
 
 				let netPrice, discount = "";
 				if(sCountryCode==="AR"||sCountryCode==="BR"){
-					netPrice = (1 - (deductions + additionalDiscount)) * netOfferPrice;
+					netPrice = (1 - deductions) * netOfferPrice;
 					discount = standardDiscount;
 				}else{
 					netPrice = (1 - deductions) * netOfferPrice;
@@ -1868,7 +1872,7 @@ sap.ui.define([
 
 			//main foc product from selected scenario
 			var offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
-			var standardDiscount = 0; //TODO FOR BRAZILIE
+			var standardDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue()) / 100 : 0;							 
 			var additionalDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
 			var focAbsPct = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
 			var foc = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;
@@ -1910,7 +1914,7 @@ sap.ui.define([
 			var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
 				productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 				foc));
-			var netOfferPrice = offerPrice * (1 - focChart);
+			var netOfferPrice = price.cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart);
 			var netPrice = (1 - price.deductions) * netOfferPrice;
 
 
