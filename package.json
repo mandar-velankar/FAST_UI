@@ -20,6 +20,6 @@
     "build:xs-security": "cds compile srv/ --to xsuaa  > xs-security.json",
     "build:xsa": "mbt build -p=xsa --mtar=FASTCAP-Frontend.mtar",
     "build:cf": "mbt build -p=cf --mtar=FASTCAP-Frontend-CF.mtar",
-    "deploy:cf": "cf deploy mta_archives/FASTUI_0.4.1.mtar -e cf.mtaext"
+    "deploy:cf": "cf deploy mta_archives/FASTCAP-Frontend-CF.mtar -e cf.mtaext"
   }
 }
