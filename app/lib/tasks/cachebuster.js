@@ -15,23 +15,21 @@ const tasks = require("@ui5/builder").tasks;
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
-    console.log(" add cachebuster token");
+    options.configuration && options.configuration.debug && console.log("Generate cachebuster info");
     const cachebusterInfoResource = await tasks.generateCachebusterInfo({ workspace, dependencies, options: { namespace: options.projectNamespace, signatureType: "time" } });
     const cachebusterInfoResources = await workspace.byGlob("**/sap-ui-cachebuster-info.json");
     if (cachebusterInfoResources.length > 0) {
-        console.log("found cachebusterinfo")
+        options.configuration && options.configuration.debug && console.log("Cachebuster info generated");
         let cachebusterInfo = JSON.parse(await cachebusterInfoResources[0].getString());
         // console.log(cachebusterInfo);
         for (var resourcePath in cachebusterInfo) {
             let resource = await workspace.byPath("/resources/"+options.projectNamespace+"/"+resourcePath);
             let newResource = undefined;
             if (resource) {
-                console.log("found file:"+resourcePath);
+                options.configuration && options.configuration.debug && console.log("Clone file for cache:"+resourcePath);
                 newResource = await resource.clone();
             }
             if (newResource) {
-                // let pathSplit = newResource.getPath().split("/");
-                //pathSplit[pathSplit.length - 1] = "~" + cachebusterInfo[resourcePath] + "~/" + pathSplit[pathSplit.length - 1];
                 newResource.setPath("/resources/"+options.projectNamespace+ "/~" + cachebusterInfo[resourcePath] + "~/"+resourcePath);
                 await workspace.write(newResource);
             }

@@ -12,13 +12,15 @@
           "runtimeExecutable": "npm",
           "runtimeArgs": [
           "run",
-          "build"
+          "build",
+          "--preserve-symlinks"
           ],
           "console": "integratedTerminal",
           "port": 9229,
           "skipFiles": [
           "<node_internals>/**"
-          ]
+          ],
+          "trace": true
           },
         {
             "type": "pwa-node",

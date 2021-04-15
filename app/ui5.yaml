@@ -17,8 +17,8 @@ builder:
     excludes:
       - "/templates/**"
   customTasks:
-    - name: enableCacheBuster
-      afterTask: generateCachebusterInfo
+    - name: ui5-task-cachebuster-indexing
+      afterTask: generateVersionInfo
   bundles:
     - bundleDefinition:
         name: "com/bayer/tender/landingspage/Component-preload.js"
@@ -189,11 +189,3 @@ builder:
       bundleOptions:
         optimize: true
         usePredefineCalls: true
----
-specVersion: "2.3"
-kind: extension
-type: task
-metadata:
-  name: enableCacheBuster
-task:
-  path: lib/tasks/cachebuster.js
