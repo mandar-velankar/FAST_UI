@@ -1104,14 +1104,15 @@ sap.ui.define([
 
 		},
 
-		getMailTemplate: function(sCountryCode, sLanguage) {
+		getMailTemplate: function(sCountryCode, sLanguage, sOfferId) {
 			var oFastDataCalls = this.getDefaultModel(); 
 			return oFastDataCalls.metadataLoaded().then(function(oData){
 				return new Promise((resolve, reject) => {
 					oFastDataCalls.callFunction("/getMailTemplate", {
 						urlParameters: {
 							"countryCode": sCountryCode,
-							"language": sLanguage
+							"language": sLanguage,
+							"offerId": sOfferId,
 						},
 						success: function (data) {
 								resolve(data);
