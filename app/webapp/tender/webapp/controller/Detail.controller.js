@@ -106,7 +106,7 @@ sap.ui.define([
 			*/
 
 			// hide country specific fields
-			this._initializeCountrySpecificFields();
+			//this._initializeCountrySpecificFields();
 
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
@@ -305,7 +305,7 @@ sap.ui.define([
 			oDetailController.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
 			// hide country specific fields
-			this._initializeCountrySpecificFields();
+			//this._initializeCountrySpecificFields();
 
 			var oSalesType = this.getView().byId("idSelectSalesTypeEdit");
 			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit");
