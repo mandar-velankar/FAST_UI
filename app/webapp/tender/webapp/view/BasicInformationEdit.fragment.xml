@@ -25,7 +25,7 @@
 				selectedKey="{fastData>BindingTypeLevel1}"  
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-					(${fastAppData>/CountryBindingTypeLevel1} ? true : false)
+					${fastAppData>/CountryBindingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
 				}" 
 				items="{ path: 'fastAppData>/CountryBindingTypeLevel1'}" 
 				change="onBiddingTypeLevel1Change">
@@ -38,7 +38,7 @@
 				selectedKey="{fastData>BiddingTypeLevel2}" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-					(${fastAppData>/CountryBindingTypeLevel2} &amp;&amp; ${fastAppData>/CountryBindingTypeLevel2}.length > 0 ? true : false)
+					${fastAppData>/CountryBindingTypeLevel2} &amp;&amp; ${fastData>BindingTypeLevel1} &amp;&amp; ${fastAppData>CountryBindingTypeLevel2}.length > 0? true : false
 				}" 
 				items="{ path: 'fastAppData>/CountryBindingTypeLevel2'}" 
 				change="onBiddingTypeLevel2Change">
@@ -51,7 +51,7 @@
 				selectedKey="{fastData>BiddingTypeLevel3}" 
 				visible="{= 
 					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-					(${fastAppData>/CountryBindingTypeLevel3} ? true : false)
+					${fastAppData>/CountryBindingTypeLevel3} &amp;&amp; ${fastData>BindingTypeLevel1} ? true : false
 				}" 
 				items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}"
 				change="onBiddingTypeLevel3Change">
