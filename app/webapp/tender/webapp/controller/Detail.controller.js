@@ -305,7 +305,7 @@ sap.ui.define([
 			oDetailController.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
 			// hide country specific fields
-			//this._initializeCountrySpecificFields();
+			this._initializeCountrySpecificFields();
 
 			var oSalesType = this.getView().byId("idSelectSalesTypeEdit");
 			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit");
@@ -2824,6 +2824,8 @@ sap.ui.define([
 			oFastAppDataModel.setProperty("/Tender", null);
 
 			this.clearQuotationElements();
+			
+			// hide country specific fields
 
 			//navigate back to master screen
 			this.oRouter.navTo("master", {
@@ -8393,7 +8395,9 @@ sap.ui.define([
 		},
 
 		onTenderChannelChange:function(oEvent){ 
-			this.toggleHighValueCheckboxVisibility();
+			if(Services.getCountryCodeofSelectedTender() === 'AR'){
+				this.toggleHighValueCheckboxVisibility();
+			}
 		},
 
 		/**
