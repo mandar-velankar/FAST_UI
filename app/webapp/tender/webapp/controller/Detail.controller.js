@@ -106,7 +106,7 @@ sap.ui.define([
 			*/
 
 			// hide country specific fields
-			this._initializeCountrySpecificFields();
+			//this._initializeCountrySpecificFields();
 
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
@@ -2824,6 +2824,8 @@ sap.ui.define([
 			oFastAppDataModel.setProperty("/Tender", null);
 
 			this.clearQuotationElements();
+			
+			// hide country specific fields
 
 			//navigate back to master screen
 			this.oRouter.navTo("master", {
@@ -8393,7 +8395,9 @@ sap.ui.define([
 		},
 
 		onTenderChannelChange:function(oEvent){ 
-			this.toggleHighValueCheckboxVisibility();
+			if(Services.getCountryCodeofSelectedTender() === 'AR'){
+				this.toggleHighValueCheckboxVisibility();
+			}
 		},
 
 		/**
