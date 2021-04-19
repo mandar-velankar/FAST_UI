@@ -4689,7 +4689,8 @@ sap.ui.define([
 					let netPrice = "NA";
 					
 					if(product && product.Price){
-						netPrice = product.Price.NetPrice;
+						//netPrice = product.Price.NetPrice;
+						netPrice = formatter.priceTwoOrFour(product.Price.NetPrice, undefined, product.Price.UnitPerPack);
 					}
 	
 					return {
