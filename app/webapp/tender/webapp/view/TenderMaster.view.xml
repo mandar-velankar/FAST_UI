@@ -44,22 +44,10 @@
 						</Select>
 						
 						<!-- Filter for Status -->
-						<Select id="idSlctStatus" forceSelection="true" change=".setFilter" visible="true">
-							<items>
-								<core:Item text="Awaiting Approval"/>
-								<core:Item text="Offer Created"/>
-								<core:Item text="Offer Approved"/>
-								<core:Item text="Offer Rejected"/>
-								<core:Item text="Quotation Submitted"/>
-								<core:Item text="In FOC Negotiation"/>
-								<core:Item text="Results Recorded"/>
-								<core:Item text="Delivery Ongoing"/>
-								<core:Item text="Wholesale Offer"/>
-								<core:Item text="Offer Declined"/>
-								<core:Item text="Tender Closed"/>
-								<core:Item text="Cancelled"/>
-								<core:Item text="All"/>
-							</items>
+						<Select id="idSlctStatus" forceSelection="true" change=".setFilter" visible="true" >
+							<!--<items>
+								<core:Item key="{fastAppData>Status}" text="{fastAppData>Status}"/>
+							</items>-->
 						</Select>
 						
 						<!-- Filter for tender origin --><!-- https://trello.com/c/zvdSpAJ7-->

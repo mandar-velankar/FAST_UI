@@ -110,7 +110,7 @@ sap.ui.define([
 
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
-			var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
+			var sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
 			var sOfferID = oEvent.getParameter("arguments").offer;
 			var sTab = oEvent.getParameter("arguments").tab || Services.getBasicInformationPageSectionID();
 			var sLayout = oEvent.getParameter("arguments").layout;
