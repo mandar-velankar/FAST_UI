@@ -869,7 +869,7 @@ sap.ui.define([
 				var obj = oCtx.getObject(sPath);
 				var aProducts = obj.products;
 
-				var bContainsBrand = aProducts.find(product => product.brandName.lastIndexOf(sSelectedBrand) > -1);
+				var bContainsBrand = aProducts.find(product => product.brandName && product.brandName.lastIndexOf(sSelectedBrand) > -1);
 
 				if (bContainsBrand) {
 					andFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
