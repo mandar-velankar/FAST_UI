@@ -91,13 +91,13 @@
 							</t:toolbar>
 							<t:columns>
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Line/visible}">
-									<Label text="{i18n>line}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Line/required}"/>
+									<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Line/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Line/required}"/>
 									<t:template>
 										<Input value="{fastAppData>Line}" maxLength="100"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/Product/visible}">
-									<Label id="idProductLabel" text="{i18n>product}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Product/required}"/>
+									<Label id="idProductLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Product/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Product/required}"/>
 									<t:template>
 										<VBox>
 											<Input value="{fastAppData>SKU/Product/HLEVEL6_NAME}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" />
@@ -106,7 +106,7 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">
-									<Label id="idReferenceLabel" text="{i18n>reference}" wrapping="true" 
+									<Label id="idReferenceLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Reference/description} + '}' }" wrapping="true" 
 										required="{fastAppData>/permissions/tables/editofferProductId/Reference/required}"
 									/>
 									<t:template>
@@ -114,7 +114,7 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/visible}">
-									<Label id="idAlternateOfferLabel" text="{i18n>alternate}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/required}"/>
+									<Label id="idAlternateOfferLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/required}"/>
 									<t:template>
 										<Select selectedKey="{fastAppData>AlternateOfferYN}">
 											<items>
@@ -129,7 +129,7 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/Requested/visible}">
-									<Label id="idRequestedVolumeLabel" text="{i18n>Requested}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Requested/required}"/>
+									<Label id="idRequestedVolumeLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Requested/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Requested/required}"/>
 									<t:template>
 										<HBox>
 											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}"/>
@@ -138,7 +138,7 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/Unitpack/visible}">
-									<Label id="idUomLabel" text="{i18n>Unitpack}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Unitpack/required}"/>
+									<Label id="idUomLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Unitpack/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Unitpack/required}"/>
 									<t:template>
 										<Select selectedKey="{fastAppData>UnitPerPack}">
 											<items>
@@ -152,13 +152,13 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}">
-									<Label text="{i18n>package}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Package/required}"/>
+									<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Package/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Package/required}"/>
 									<t:template>
 										<Input value="{fastAppData>SKU/PRODUCTPACKNAME}" editable="false" maxLength="100"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/SampleYN/visible}">
-									<Label id="idSampleLabel" text="{i18n>Sample}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/SampleYN/required}"/>
+									<Label id="idSampleLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/SampleYN/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/SampleYN/required}"/>
 									<t:template>
 										<Input type="Text" value="{fastAppData>SampleYN}" placeholder="{i18n>Sample}" editable="true" />
 										<Select selectedKey="{fastAppData>SampleYN}" change="onChangeSampleYN">
@@ -173,13 +173,13 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/Quantity/visible}">
-									<Label id="idQuantityLabel" text="{i18n>Quantity}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Quantity/required}"/>
+									<Label id="idQuantityLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Quantity/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Quantity/required}"/>
 									<t:template>
 										<Input type="Number" value="{fastAppData>SampleQuantity}" placeholder="{i18n>Quantity}" editable="{= ${fastAppData>SampleYN} === 'Yes' }"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/Documents/visible}">
-									<Label id="idDocumentsLabel" text="{i18n>Documents}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Documents/required}"/>
+									<Label id="idDocumentsLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Documents/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Documents/required}"/>
 									<t:template>
 										<Select selectedKey="{fastAppData>DocumentsRequired}">
 											<items>
@@ -193,37 +193,37 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/FirstShipment/visible}">
-									<Label id="idFirstShipmentLabel" text="{i18n>FirstShipment}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/FirstShipment/required}"/>
+									<Label id="idFirstShipmentLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/FirstShipment/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/FirstShipment/required}"/>
 									<t:template>
 										<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/NoLots/visible}">
-									<Label id="idNolotsLabel" text="{i18n>NoLots}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/NoLots/required}"/>
+									<Label id="idNolotsLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/NoLots/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/NoLots/required}"/>
 									<t:template>
 										<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/visible}">
-									<Label id="idInShipmentsLabel" text="{i18n>inshipmnths}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/required}"/>
+									<Label id="idInShipmentsLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/required}"/>
 									<t:template>
 										<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/PaymentTerms/visible}">
-									<Label id="idPaymentTermsLabel" text="{i18n>PaymentTerms}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/PaymentTerms/required}"/>
+									<Label id="idPaymentTermsLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/PaymentTerms/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/PaymentTerms/required}"/>
 									<t:template>
 										<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/INCOTerms/visible}">
-									<Label id="idIncoTermsLabel" text="{i18n>INCOTerms}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/INCOTerms/required}"/>
+									<Label id="idIncoTermsLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/INCOTerms/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/INCOTerms/required}"/>
 									<t:template>
 										<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Decline/visible}">
-									<Label id="idDeclineLabel" text="{i18n>Decline}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Decline/required}"/>
+									<Label id="idDeclineLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Decline/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Decline/required}"/>
 									<t:template>
 										<Select  selectedKey="{fastAppData>ActiveProduct}" change="onChangeDecline">
 											<items>
@@ -237,7 +237,7 @@
 									</t:template>
 								</t:Column>
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Comment/visible}">
-									<Label id="idCommentLabel" text="{i18n>Comment}" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Comment/required}"/>
+									<Label id="idCommentLabel" text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Comment/description} + '}' }" wrapping="true" required="{fastAppData>/permissions/tables/editofferProductId/Comment/required}"/>
 									<t:template>
 										<Input type="Text" value="{fastAppData>Comment}" placeholder="{i18n>Comment}" editable="{= ${fastAppData>ActiveProduct} === 2 || ${fastAppData>ActiveProduct} === '2'}"/>
 									</t:template>

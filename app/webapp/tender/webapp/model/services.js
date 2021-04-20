@@ -5536,7 +5536,8 @@ sap.ui.define([
 					"countryCode": item.CountryCode,
 					"bindingPath": item.BindingPath.toLowerCase(),
 					"visible": item.Visible,
-					"required": item.Required
+					"required": item.Required,
+					"description": item.Description
 				}	
 
 			});
