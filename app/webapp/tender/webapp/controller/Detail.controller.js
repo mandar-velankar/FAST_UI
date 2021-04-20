@@ -2474,6 +2474,8 @@ sap.ui.define([
 					layout: "OneColumn"
 				});
 
+				this.clearQuotationElements();
+
 			} else {
 
 				//we stay on the screen and reload the data 
