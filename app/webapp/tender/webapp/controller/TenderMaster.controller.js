@@ -224,7 +224,7 @@ sap.ui.define([
 			this.oSelCol = oEvent.getSource().getTitle();
 			var oButton = oEvent.getSource();
 			if (!this._oPopover) {
-				this._oPopover = sap.ui.xmlfragment("FAST_NS0FAST0.view.TableFilter", this);
+				this._oPopover = sap.ui.xmlfragment("FAST_NS0FAST0.view.fragments.TableFilter", this);
 				this.getView().addDependent(this._oPopover);
 			}
 			var eDock = sap.ui.core.Popup.Dock;
