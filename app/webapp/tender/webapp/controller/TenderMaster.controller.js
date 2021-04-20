@@ -106,11 +106,13 @@ sap.ui.define([
 				var oCtx = item.getBindingContext("fastData");
 				var obj = oCtx.getObject(sPath);
 				var aBrands = obj.BRAND.__list;
+				Services.getTenderProducts(obj.TENDER_ID).then((async aProducts => {;
 
-				if (this._bContainsSelectedBrand(aBrands)) {
-					// add the item back to the table
-					this.oProductsTable.addItem(item);
-				}
+					if (aProducts.data.results.length > 0 && this._bContainsSelectedBrand(aBrands)) {
+						// add the item back to the table
+						this.oProductsTable.addItem(item);
+					}
+				}));
 			});
 			
 			oTable.setBusy(false);
@@ -165,6 +167,7 @@ sap.ui.define([
 			//bind countries to wich the user has acces
 			this._bindUserCountries();
 			this.setTenderOrigins();
+			this.setCountryStatusses();
 
 			//get the tenderID/country from the navigation parameters
 			/*
@@ -221,7 +224,7 @@ sap.ui.define([
 			this.oSelCol = oEvent.getSource().getTitle();
 			var oButton = oEvent.getSource();
 			if (!this._oPopover) {
-				this._oPopover = sap.ui.xmlfragment("FAST_NS0FAST0.view.TableFilter", this);
+				this._oPopover = sap.ui.xmlfragment("FAST_NS0FAST0.view.fragments.TableFilter", this);
 				this.getView().addDependent(this._oPopover);
 			}
 			var eDock = sap.ui.core.Popup.Dock;
@@ -471,6 +474,26 @@ sap.ui.define([
 			});
 		},
 
+		setCountryStatusses: function(){
+			var sCountry = Services.getSelectedCountry();
+			var oList = this.byId("idSlctStatus");
+			var oSorter = new sap.ui.model.Sorter('Sorter');
+			var oListTemplate = new sap.ui.core.Item({
+				key: "{fastAppData>Status}",
+				text: "{fastAppData>Status}"
+			});
+			$.when(Services.loadCountryStatusses(sCountry)).done(function (oCountryData){
+				oList.bindItems({
+					path: "fastAppData>/CountryStatusses",
+					sorter: oSorter,
+					/*filters: [
+						new sap.ui.model.Filter("CountryCode", "EQ", this._country)
+					],*/
+					template: oListTemplate
+				});
+			});
+		},
+
 		//setting the tender origins
 		setTenderOrigins: function () {
 
@@ -501,6 +524,9 @@ sap.ui.define([
 			//get possible filters
 			let sSelectedCountry = Services.getSelectedCountry() || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : sSelectedCountry;
+			Services.setSelectedCountry(oCountry);
+			//this.oRouter.getHashChanger().setHash(oCountry + Services.getLayoutType() || "/OneColumn")
+
 			var oBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			var oStatus = this.byId("idSlctStatus").getSelectedItem() ? this.byId("idSlctStatus").getSelectedItem().getText() :
 				"Awaiting Approval";
@@ -696,6 +722,7 @@ sap.ui.define([
 				Services.setSelectedCountry(oCountry);
 				this.setBrandsList();
 				this.setTenderOrigins();
+				this.setCountryStatusses(oCountry);
 				Services.loadCountryPermissions(oCountry);
 			}
 		},

@@ -110,7 +110,7 @@ sap.ui.define([
 
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
-			var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
+			var sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
 			var sOfferID = oEvent.getParameter("arguments").offer;
 			var sTab = oEvent.getParameter("arguments").tab || Services.getBasicInformationPageSectionID();
 			var sLayout = oEvent.getParameter("arguments").layout;
@@ -832,7 +832,7 @@ sap.ui.define([
 			}
 
 			//if not yet exists... get fragment from project folder
-			oPageFragment = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view." + sFragmentName, this);
+			oPageFragment = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments." + sFragmentName, this);
 
 			//keep fragment in controller
 			this._pageFragments[sFragmentName] = oPageFragment;
@@ -4114,7 +4114,7 @@ sap.ui.define([
 
 				this.pDuplicateOfferDialog = Fragment.load({
 					id: oView.getId(),
-					name: "FAST_NS0FAST0.view.DuplicateOfferDialog",
+					name: "FAST_NS0FAST0.view.fragments.DuplicateOfferDialog",
 					controller: this
 				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
@@ -4658,7 +4658,7 @@ sap.ui.define([
 
 				this.pTenderOverviewDialog = Fragment.load({
 					id: oView.getId(),
-					name: "FAST_NS0FAST0.view.TenderOverviewDialog",
+					name: "FAST_NS0FAST0.view.fragments.TenderOverviewDialog",
 					controller: this
 				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
