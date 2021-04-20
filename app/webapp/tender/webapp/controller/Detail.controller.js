@@ -8396,7 +8396,7 @@ sap.ui.define([
 		},
 
 		onTenderChannelChange:function(oEvent){ 
-			if(Services.getCountryCodeofSelectedTender() === 'AR'){
+			if(Services.getSelectedCountry() === 'AR'){
 				this.toggleHighValueCheckboxVisibility();
 			}
 		},
