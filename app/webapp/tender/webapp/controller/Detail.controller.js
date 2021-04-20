@@ -2069,6 +2069,12 @@ sap.ui.define([
 						} else {
 							oDistributor.setEnabled(false);
 						}
+
+						//distributor selector should not be shown if there's no given distributor for the selected country
+						if(that.byId('idDistributorName').getSelectedItem().getProperty('text') === 'No Distributor'){
+							that.byId('idDistributorName').setVisible(false);
+						}
+
 						break;
 
 					case Services.getFinancialOfferPageSectionID():

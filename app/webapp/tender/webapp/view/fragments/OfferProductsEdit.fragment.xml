@@ -23,7 +23,8 @@
 									enabled="false"
 									selectedKey="{fastAppData>/EditOffer/DistributorID}"
 									items="{ path: 'fastData>/InstituteDistributor', sorter: { path: 'DISTRIBUTOR_NAME' } }"
-									change="onChangeDistributor">
+									change="onChangeDistributor"
+									visible="true">
 									<core:Item text="{fastData>DISTRIBUTOR_NAME}" key="{fastData>DISTRIBUTOR_ID}"/>
 								</Select>
 
@@ -47,7 +48,7 @@
 								<core:Title/>
 								
 								<Label text="{i18n>whlseofr}" required="true"/>
-								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' ? false : true}">
+								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true}">
 									<items>
 										<core:Item text="No" key="No"/>
 										<core:Item text="Yes" key="Yes"/>

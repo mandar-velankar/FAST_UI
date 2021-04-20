@@ -98,7 +98,7 @@
 								<form:content>
 									<core:Title/>
 									<Label text="{i18n>didtrbtrnme}" required="true"/>
-									<Text id="idDist" text="{fastAppData>Distributor/DistributorName}"/>
+									<Text id="idDist" text="{fastAppData>Distributor/DistributorName}" visible="{= ${fastAppData>Distributor/DistributorName} === 'No Distributor' ? false : true}"/>
 									<Label text="{i18n>selncmpny}"  required="true"/>
 									<Text text="{fastAppData>SellingCompanyDetails/LegalEntityName}"/>
 									<core:Title/>
@@ -112,7 +112,7 @@
 									
 									<core:Title/>
 									<Label text="{i18n>whlseofr}" required="true"/>
-									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' ? false : true}">
+									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true}">
 										<items>
 											<core:Item text="No" key="No"/>
 											<core:Item text="Yes" key="Yes"/>
