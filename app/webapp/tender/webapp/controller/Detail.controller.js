@@ -5066,6 +5066,8 @@ sap.ui.define([
 		//when deleting a product
 		onDeleteProductForOffer: function () {
 
+			let oFastAppData = Services.getFastAppDataModel();
+
 			//Deleting products
 			var oTableProducts = this.byId("editofferProductId");
 			var aProductTableRows = oTableProducts.getRows();
@@ -5074,6 +5076,9 @@ sap.ui.define([
 			var aProductsToRemove = [];
 			var oProductToRemove = {};
 			var aExistingProducts = Services.getProductsSaveInfo();
+			if(aExistingProducts.length === 0){
+				var aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+			}
 
 			//already deleted products are not visible in table, so indexselectedrows should ignore these products
 			//but they still need to be available for saving
