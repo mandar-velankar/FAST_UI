@@ -4915,7 +4915,11 @@ sap.ui.define([
 		//--------
 		removeProductsSaveInfo: function (aProductsToRemove) {
 
+			var oFastAppDataModel = this.getFastAppDataModel();
 			var aProducts = this.getProductsSaveInfo();
+			if(aProducts.length === 0){
+				aProducts =	oFastAppDataModel.getProperty("/EditOffer/Product/results")
+			}
 			var aChangedProducts = [];
 			var iIndex;
 			var oProduct = {};
@@ -4951,7 +4955,7 @@ sap.ui.define([
 
 			});
 
-			if (aChangedProducts) {
+			if (aChangedProducts.length > 0) {
 
 				this.setProductsSaveInfo(aChangedProducts);
 				//path is updated with the products
