@@ -3383,6 +3383,14 @@ sap.ui.define([
 							that._LoadingDialog.close();
 						}
 
+						// for Chile the TenderType is only shown when InstituteType == 'Cenabast'
+						// because of this requirement we default the bShowTenderType to false
+						// at later point in time the dropdown will set this to true
+						const country = that.getSelectedCountry();
+						if(country === 'CL'){
+							bShowTenderType = false;
+						}
+
 						//let the callback be triggered
 						oDeferred.resolve(bShowTenderType);
 

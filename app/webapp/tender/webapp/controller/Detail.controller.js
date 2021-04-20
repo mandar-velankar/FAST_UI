@@ -569,7 +569,11 @@ sap.ui.define([
 
 				//should tendertype be visible on the basic info screen?
 				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
-					oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+					if(Services.getSelectedCountry() === 'CL'){
+						oDetailController.getView().byId("idSelectTenderType").setVisible(true);
+					}else{
+						oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+					}
 				});
 
 				/* Mexico */
@@ -1605,7 +1609,11 @@ sap.ui.define([
 					//should tendertype be visible on the basic info screen?
 					$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
-						that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+						if(Services.getSelectedCountry() === 'CL'){
+							that.getView().byId("idSelectTenderType").setVisible(true);
+						}else{
+							that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+						}
 					});
 
 					/* Mexico */
@@ -3268,6 +3276,13 @@ sap.ui.define([
 		//Reset institute name
 		resetInstituteName: function (oEvent) {
 			this.byId("idInstituteName").setValue("...Select Institute");
+
+			const selectedItem = oEvent.getParameter("selectedItem").getText();
+			if(selectedItem === 'Cenabast'){
+				this.byId("idSelectTenderTypeEdit").setVisible(true);
+			}else{
+				this.byId("idSelectTenderTypeEdit").setVisible(false);
+			}
 		},
 
 		//save basic information (tender info)
