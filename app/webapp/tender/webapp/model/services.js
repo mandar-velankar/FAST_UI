@@ -29,6 +29,9 @@ sap.ui.define([
 
 			//one model for the seperation layer
 			this._oFastAppDataModel = new JSONModel();
+
+			this._oFastAppDataModel.setProperty("/CountrySpecificTenderInformation", {});
+
 			this._oAllServices = {};
 
 		},
@@ -2011,7 +2014,7 @@ sap.ui.define([
 				oFastDataCalls.read(sTenderPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications"
+						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation"
 					},
 					success: function (oData, oResponse) {
 
@@ -2023,6 +2026,11 @@ sap.ui.define([
 						*/
 						oFastAppDataModel.setProperty("/Tender", oData);
 
+						// set the CountrySpecificInformation 
+						if(oData.CountrySpecificInformation){
+							oFastAppDataModel.setProperty("/CountrySpecificTenderInformation", oData.CountrySpecificInformation);
+						}
+						
 						//Keep institute + childeren list
 						that.bindInstituteWithChildren(oData.Institute);
 

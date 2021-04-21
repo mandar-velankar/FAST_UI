@@ -250,13 +250,13 @@
 				<Label />
 				<Button xmlns="sap.m" icon="sap-icon://document" text="{i18n>btnDocuments}" type="Emphasized" width="9em" press="onDocumentsPress"/>
 				<Label text="{i18n>Institute}" design="Bold"/>
-				<Input value="{fastData>dummy}" enabled="false"/>
+				<Input value="{fastData>CountrySpecificInformation/Institute}" enabled="false"/>
 				<Label text="{i18n>tenderref}" design="Bold"/>
-				<Input value="{fastData>dummy}" enabled="false"/>
+				<Input value="{fastData>CountrySpecificInformation/TenderReference}" enabled="false"/>
 				<Label text="{i18n>pubcndte}" design="Bold" required="true"/>
-				<DatePicker id="idPublicationDate2" enabled="false" value="{path :'fastAppData>/EditTender/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+				<DatePicker enabled="false" value="{path :'fastData>CountrySpecificInformation/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 				<Label text="{i18n>ClosingDate}" design="Bold" required="true"/>
-				<DatePicker  enabled="false" value="{path :'fastAppData>/EditTender/BidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+				<DatePicker  enabled="false" value="{path :'fastData>CountrySpecificInformation/ClosingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
 			</form:content>
 		</form:SimpleForm>
 	</VBox>

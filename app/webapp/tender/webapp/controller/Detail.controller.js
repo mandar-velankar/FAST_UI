@@ -3377,7 +3377,6 @@ sap.ui.define([
 				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
 
-
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
 
@@ -3389,11 +3388,28 @@ sap.ui.define([
 					//convert Tender data for saving
 					var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
 
-					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(function (oResult) {
+					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(async function (oResult) {
 
 						//after saving we reload tender info even if it is already loaded
 						var sTenderID = Services.getSelectedTenderID();
 						var bLoadedCheck = false;
+						let selectedCountry = Services.getSelectedCountry();
+
+						/* Chile */
+						if(selectedCountry === 'CL'){
+							try{
+								const bCountrySpecificInformationExists = Services.getDefaultModel().getProperty("/PT_TMTEND('CL-21-1001')/CountrySpecificInformation");
+
+								if(bCountrySpecificInformationExists){
+									await that.updateCountrySpecificInformation();
+								}else{
+									await that.createCountrySpecificInformation(sTenderID, selectedCountry);
+								}
+
+							} catch(err){
+								console.error(err);
+							}
+						}
 
 						//load tender data again so refresh is done
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3496,13 +3512,14 @@ sap.ui.define([
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
 			oSaveBasicInfo.TenderNo = Services.getNewTenderNo(); //oSaveBasicInfo.TenderID.split("-")[2];
 
+
 			//check info to save
 			if (Services.checkBasicInfo(oSaveBasicInfo)) {
 
 				//convert Tender data for saving
 				var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
 
-				that.createBasicTenderInfo(oTenderToSave).then(function (oSaveResults) {
+				that.createBasicTenderInfo(oTenderToSave).then(async function (oSaveResults) {
 
 					//if save is executed succesfully
 					// if (oSaveResults) {
@@ -3512,6 +3529,16 @@ sap.ui.define([
 						//after saving we reload tender info even if it is already loaded
 						var sTenderID = Services.getSelectedTenderID();
 						var bLoadedCheck = false;
+						let selectedCountry = Services.getSelectedCountry();
+
+						/* Chile */
+						if(selectedCountry === 'CL'){
+							try{
+								await that.createCountrySpecificInformation(sTenderID, selectedCountry);
+							} catch(err){
+								console.error(err);
+							}
+						}
 
 						//load tender data so its in the FastAppData model in the same way as for an existing tender
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3533,6 +3560,21 @@ sap.ui.define([
 				});
 
 			}
+		},
+
+		createCountrySpecificInformation: async function(sTenderID, sCountryCode){
+			const oTenderInformation = Services.getFastAppDataModel().getProperty("/CountrySpecificTenderInformation");
+			const data = {
+				TenderID: sTenderID,
+				CountryCode: sCountryCode,
+				...oTenderInformation,
+			};
+			return Services.getService('Tender').createCountrySpecificInformation(data);
+		},
+
+		updateCountrySpecificInformation: async function(){
+			const oTenderInformation = Services.getFastAppDataModel().getProperty("/CountrySpecificTenderInformation");
+			return Services.getService('Tender').updateCountrySpecificInformation(oTenderInformation);
 		},
 
 		saveSpecifications: function(oTenderToSave, action){
