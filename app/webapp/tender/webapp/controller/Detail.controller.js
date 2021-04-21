@@ -157,6 +157,8 @@ sap.ui.define([
 						expand: "Institute,Origin"
 					}
 				});
+			}else{
+				oFastAppDataModel.setProperty("/CountrySpecificTenderInformation", {});
 			}
 
 			//handle full screen buttons depending on layout 

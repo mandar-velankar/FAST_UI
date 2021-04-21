@@ -29,9 +29,6 @@ sap.ui.define([
 
 			//one model for the seperation layer
 			this._oFastAppDataModel = new JSONModel();
-
-			this._oFastAppDataModel.setProperty("/CountrySpecificTenderInformation", {});
-
 			this._oAllServices = {};
 
 		},
