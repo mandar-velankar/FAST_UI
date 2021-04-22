@@ -8360,6 +8360,7 @@ sap.ui.define([
 
 			let sCountry = this._country;
 			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().data("ID");
+			let that = this;
 
 			this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3").setVisible(false);
@@ -8367,13 +8368,18 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
 			if(sBindingTypeLevel1Id){
-				const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
+				that.getView().setBusy(true);
+				//const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
 
-				if(aBindingTypeLevel2.length > 0){
-					this.byId("idBiddingTypeLevel2").setVisible(true);
-				}else{
-					this.byId("idBiddingTypeLevel2").setVisible(false);
-				}
+				$.when(Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id)).done(function (oData){
+					if(oData.length > 0){
+						that.byId("idBiddingTypeLevel2").setVisible(true);
+						that.getView().setBusy(false);
+					}else{
+						that.byId("idBiddingTypeLevel2").setVisible(false);
+						that.getView().setBusy(false);
+					}
+				});
 
 			}
 		},
@@ -8382,19 +8388,24 @@ sap.ui.define([
 
 			let sCountry = this._country;
 			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().data("ID");
+			let that = this;
+
 
 			this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
 			if(sBindingTypeLevel2Id){
-				const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
-
-				if(aBindingTypeLevel3.length > 0){
-					this.byId("idBiddingTypeLevel3").setVisible(true);
-				}else{
-					this.byId("idBiddingTypeLevel3").setVisible(false);
-				}
-
+				this.getView().setBusy(true);
+				//const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
+				$.when(Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id)).done(function (oData){
+					if(oData.length > 0){
+						that.byId("idBiddingTypeLevel3").setVisible(true);
+						that.getView().setBusy(false);
+					}else{
+						that.byId("idBiddingTypeLevel3").setVisible(false);
+						that.getView().setBusy(false);
+					}
+				});
 			}
 
 		},
