@@ -344,6 +344,19 @@ sap.ui.define([
 				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
 			}));
 			
+			//Business Case Price
+			oForm.addContent(new sap.m.Label({
+				text: "{i18n>BusinessCasePrice}",
+				visible: sCountryCode === "AR" ? true : false
+			}));
+			oForm.addContent(new sap.m.Input({
+				id: oDetailController.getView().createId(formId + "_idBusinessCasePrice"),
+				visible: sCountryCode === "AR" ? true : false,
+				value: formatter.priceTwoOrFour(price.BusinessCasePrice, undefined, price.uom),
+				description: price.offerCurrency,
+				enabled: false
+			}));
+
 			/* tried to solve this using attribute onAfterRender. However, at this moment this doesn't seem to be working.
 			   According to ticket https://trello.com/c/yUkwKbwZ, these fields should be disabled in case no Brand Products exist.
 			   This method will be called 4 times, each time with a different form ID, as this logic is being executed on both the financial offer page as the scenario planner. Therefor, this has been built dynamically. 
