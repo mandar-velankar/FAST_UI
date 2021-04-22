@@ -82,6 +82,7 @@ sap.ui.define([
 			oPriceToSave.StandardDiscount = (oPriceSaveInfo.StandardDiscount === null) ? null : oPriceSaveInfo.StandardDiscount.toString();
 			oPriceToSave.AdditionalDiscount = (oPriceSaveInfo.AdditionalDiscount === null) ? null : oPriceSaveInfo.AdditionalDiscount.toString();
 			oPriceToSave.NetofferPrice = (oPriceSaveInfo.NetofferPrice === null) ? null : oPriceSaveInfo.NetofferPrice.toString();
+			oPriceToSave.BusinessCasePrice = (oPriceSaveInfo.BusinessCasePrice === null) ? null : oPriceSaveInfo.BusinessCasePrice.toString();
 			oPriceToSave.WholesalePrice = oPriceSaveInfo.WholesalePrice;
 			oPriceToSave.COGS = (oPriceSaveInfo.COGS === null) ? null : oPriceSaveInfo.COGS.toString();
 			oPriceToSave.SpotRate = (oPriceSaveInfo.SpotRate === null) ? null : oPriceSaveInfo.SpotRate.toString();
