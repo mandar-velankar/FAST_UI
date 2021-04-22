@@ -352,7 +352,7 @@ sap.ui.define([
 			oForm.addContent(new sap.m.Input({
 				id: oDetailController.getView().createId(formId + "_idBusinessCasePrice"),
 				visible: sCountryCode === "AR" ? true : false,
-				value: formatter.priceTwoOrFour(price.BusinessCasePrice, undefined, price.uom),
+				value: formatter.priceTwoOrFour(price.businessCasePrice, undefined, price.uom),
 				description: price.offerCurrency,
 				enabled: forEdit
 			}));
@@ -1140,6 +1140,7 @@ sap.ui.define([
 								focAbsPct_bund1: "PCT",
 								foc_bund1: "",//0,
 								focChart: 0,
+								businessCasePrice : "",
 								netOfferPrice: "",
 								deductions: productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE,// 0,
 								netPrice: "",
@@ -1194,6 +1195,7 @@ sap.ui.define([
 								var iFocQuantity = price.foc * price.quantity;
 								var iFocQuantityRounded = Math.ceil(iFocQuantity); //formatter.roundXDecimals(iFocQuantity, 0);  we want to use ceiling rounding
 								price.focQuantityRounded = iFocQuantityRounded;
+								price.businessCasePrice = parseFloat(priceValues.BusinessCasePrice);
 								price.mainProductQuantity = (productValues.RequestedVolume 
 									+ (
 									(price.focType === "FOC 1") 
