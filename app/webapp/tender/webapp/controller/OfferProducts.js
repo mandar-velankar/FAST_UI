@@ -1830,6 +1830,7 @@ sap.ui.define([
 				var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
 				var standardDiscount = oDetailController.byId("idEditPriceOffer_idStandardDiscount") && oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue()) / 100 : 0;
 				var additionalDiscount = oDetailController.byId("idEditPriceOffer_idAdditionalDiscount") && oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
+				var businessCasePrice = oDetailController.byId("idEditPriceOffer_idBusinessCasePrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idBusinessCasePrice").getValue().replace(",","")) : 0;
 				var focAbsPct = oDetailController.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
 				//var focType = oDetailController.byId("idEditPriceOffer_idFocType").getSelectedKey();
 				var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
@@ -1895,6 +1896,7 @@ sap.ui.define([
 					focType: focType,
 					foc: foc,
 					focChart: focChart,
+					businessCasePrice: businessCasePrice,
 					netOfferPrice: netOfferPrice,
 					deductions: deductions,
 					netPrice: netPrice,
