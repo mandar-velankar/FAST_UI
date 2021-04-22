@@ -354,7 +354,7 @@ sap.ui.define([
 				visible: sCountryCode === "AR" ? true : false,
 				value: formatter.priceTwoOrFour(price.BusinessCasePrice, undefined, price.uom),
 				description: price.offerCurrency,
-				enabled: false
+				enabled: forEdit
 			}));
 
 			/* tried to solve this using attribute onAfterRender. However, at this moment this doesn't seem to be working.
