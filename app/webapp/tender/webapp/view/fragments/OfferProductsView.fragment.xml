@@ -148,13 +148,17 @@
 					 >
 				<t:columns>
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Line/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Line/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Line/description',
+									   formatter: '.formatter.offerProductsColumnName' }"
+							   wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>Line}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Product/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Product/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Product/description',
+									   formatter: '.formatter.offerProductsColumnName' }" 
+							   wrapping="true"/>
 						<t:template>
 							<VBox>
 								<Text text="{fastAppData>SKU/Product/HLEVEL6_NAME}" wrapping="true" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" />
@@ -163,19 +167,23 @@
 						</t:template>
 					</t:Column>
 					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Reference/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Reference/description',
+									   formatter: '.formatter.offerProductsColumnName' }"
+							   wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>Reference}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>AlternateOfferYN}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/Requested/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Requested/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Requested/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<HBox>
 								<Input type="Number" value="{fastAppData>RequestedVolume}" editable="false" enabled="false"/>
@@ -184,67 +192,78 @@
 						</t:template>
 					</t:Column>
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/Unitpack/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Unitpack/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Unitpack/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>UnitPerPack}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" >
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Package/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Package/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="true" />
 						</t:template>
 					</t:Column>
-					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/SampleYN/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/SampleYN/description} + '}' }" wrapping="true"/>
+					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/Sample/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Sample/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SampleYN}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/Quantity/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Quantity/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Quantity/description',
+											       formatter: '.formatter.offerProductsColumnName' }"  wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SampleQuantity}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/Documents/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Documents/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Documents/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>DocumentsRequired}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/FirstShipment/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/FirstShipment/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/FirstShipment/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>FirstShipment}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/NoLots/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/NoLots/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/NoLots/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>NoofLots}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>IntervalBetweenShipments}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="12rem" visible="{fastAppData>/permissions/tables/editofferProductId/PaymentTerms/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/PaymentTerms/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PaymentTerms/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>PaymentTerms}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="15rem" visible="{fastAppData>/permissions/tables/editofferProductId/INCOTerms/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/INCOTerms/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/INCOTerms/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>INCOTerms}" wrapping="true"/>
 						</t:template>
 					</t:Column>
 					<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Decline/visible}">
-						<Label text="{= '{i18n>' + ${fastAppData>/permissions/tables/editofferProductId/Decline/description} + '}' }" wrapping="true"/>
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Decline/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Select selectedKey="{fastAppData>ActiveProduct}" enabled="false">
 									<items>
@@ -258,10 +277,38 @@
 						</t:template>
 					</t:Column>
 					<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Comment/visible}" >
-							<Label text="{i18n>Comment}" wrapping="true" />
+							<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Comment/description',
+										   formatter: '.formatter.offerProductsColumnName' }" wrapping="true" />
 							<t:template>
 								<Input type="Text" value="{fastAppData>Comment}" placeholder="{i18n>Comment}" editable="false"/>
 							</t:template>
+					</t:Column>
+
+					<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/MinInvoiceAmount/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MinInvoiceAmount/description',
+									   formatter: '.formatter.offerProductsColumnName' }"	   
+								wrapping="true"/>
+						<t:template>
+							<Input type="Text" value="{fastAppData>PricingPolicyCluster}" placeholder="{i18n>pricingPolicyCluster}" editable="false"/>
+						</t:template>
+					</t:Column>
+
+					<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/Brand/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Brand/description',
+									   formatter: '.formatter.offerProductsColumnName' }" 
+							   wrapping="true"/>
+						<t:template>
+							<Input value="{fastAppData>SKU/Product/HLEVEL4_NAME}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" />
+						</t:template>
+					</t:Column>
+
+					<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/PricingPolicyCluster/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PricingPolicyCluster/description',
+									   formatter: '.formatter.offerProductsColumnName' }"	   
+							   wrapping="true"/>
+						<t:template>
+							<Input type="Text" value="{fastAppData>PricingPolicyCluster}" placeholder="{i18n>pricingPolicyCluster}" editable="false"/>
+						</t:template>
 					</t:Column>
 				</t:columns>
 			</t:Table>

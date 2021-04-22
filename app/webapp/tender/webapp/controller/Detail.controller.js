@@ -2073,7 +2073,7 @@ sap.ui.define([
 						}
 
 						//distributor selector should not be shown if there's no given distributor for the selected country
-						if(that.byId('idDistributorName').getSelectedItem().getProperty('text') === 'No Distributor'){
+						if(that.byId('idDistributorName') && that.byId('idDistributorName').getSelectedItem() && that.byId('idDistributorName').getSelectedItem().getProperty('text') === 'No Distributor'){
 							that.byId('idDistributorName').setVisible(false);
 						}
 
