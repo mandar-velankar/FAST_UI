@@ -829,42 +829,8 @@ sap.ui.define([
 		//local method for setting pricing chart data
 		_setPriceChart: function (oDetailController, chartId, price) {
 
-			const i18n = oDetailController.getView().getModel("i18n").getResourceBundle();
-			const sCountryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
-
 			var oViz = oDetailController.byId(chartId);
-			var dataModel = {
-				"data": [{
-					"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia
-					"Value": price.cifPrice,
-					"Type": "Revenue"
-				}, {
-					"PriceType": "Discounts",
-					"Value": -price.discount * price.cifPrice,
-					"Type": "Cost"
-				}, {
-					"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('OfferPrice_' + sCountryCode) :  i18n.getText('OfferPrice'), //Diferent labels for Thailand & Argentinia
-					"Value": price.offerPrice,
-					"Type": "Total"
-				}, {
-					"PriceType": "FOC",
-					"Value": -price.focChart * price.offerPrice,
-					"Type": "Cost"
-				}, {
-					"PriceType": sCountryCode === 'TH' ? i18n.getText("NetOfferPrice_TH") : i18n.getText("NetOfferPrice"),
-					"Value": price.netOfferPrice,
-					"Type": "Total"
-				}, {
-					"PriceType": "Deductions",
-					"Value": -price.deductions * price.netOfferPrice,
-					"Type": "Cost"
-				}, {
-					"PriceType": "Net Price",
-					"Value": price.netPrice,
-					"Type": "Total"
-				}]
-			};
-			var dataJsonModel = new sap.ui.model.json.JSONModel(dataModel);
+			let oChartDataModel = this._getChartDataModel(oDetailController,price);
 
 			var oDataSet = new sap.viz.ui5.data.FlattenedDataset({
 				dimensions: [{
@@ -894,7 +860,7 @@ sap.ui.define([
 			// };
 			// oViz.setVizScales(scales, vizScalesOption);
 			oViz.setDataset(oDataSet);
-			oViz.setModel(dataJsonModel, "waterfallChartData");
+			oViz.setModel(oChartDataModel, "waterfallChartData");
 			oViz.addFeed(new sap.viz.ui5.controls.common.feeds.FeedItem({
 				"uid": "valueAxis",
 				"type": "Measure",
@@ -910,6 +876,94 @@ sap.ui.define([
 				"type": "Dimension",
 				"values": ["Type"]
 			}));
+		},
+
+		/**
+		 * Get the data model for the Chart to show
+		 * @param {object} oDetailController view controller
+		 * @param {object} oPrice price
+		 * @returns {object} returning the oChartDataModel
+		 */
+		_getChartDataModel: function(oDetailController,oPrice){
+
+			const i18n = oDetailController.getView().getModel("i18n").getResourceBundle();
+			const sCountryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
+
+			//Cif price
+			var oCIFPriceData = {
+				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia
+				"Value": oPrice.cifPrice,
+				"Type": "Revenue"
+			};
+			
+			//Discounts
+			var oDiscountsData = {
+				"PriceType": "Discounts",
+				"Value": -oPrice.discount * oPrice.cifPrice,
+				"Type": "Cost"
+			};
+			
+			//OfferPrice
+			var oOfferPriceData = {
+				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('OfferPrice_' + sCountryCode) :  i18n.getText('OfferPrice'), //Diferent labels for Thailand & Argentinia
+				"Value": oPrice.offerPrice,
+				"Type": "Total"
+			};
+			
+			//Additional Discount
+			var oAdditionalDiscountData = {
+				"PriceType": "Additional Discount",
+				"Value": -oPrice.standardDiscount * oPrice.cifPrice,
+				"Type": "Cost"
+			};
+			
+			//FOC
+			var oFOCData = {
+				"PriceType": "FOC",
+				"Value": -oPrice.focChart * oPrice.offerPrice,
+				"Type": "Cost"
+			};
+			
+			//NetOfferPrice
+			var oNetOfferPriceData = {
+				"PriceType": sCountryCode === 'TH' ? i18n.getText("NetOfferPrice_TH") : i18n.getText("NetOfferPrice"),
+				"Value": oPrice.netOfferPrice,
+				"Type": "Total"
+			};
+				
+			//Deductions
+			var oDeductionsData = {
+				"PriceType": "Deductions",
+				"Value": -oPrice.deductions * oPrice.netOfferPrice,
+				"Type": "Cost"
+			};
+			
+			//Net Price
+			var oNetPriceData = {
+				"PriceType": "Net Price",
+				"Value": oPrice.netPrice,
+				"Type": "Total"
+			};
+
+			let aChartData = [];
+
+			if(sCountryCode==='AR'){
+				//difference is that we have oAdditionalDiscountData
+				aChartData.push(oCIFPriceData,oDiscountsData,oOfferPriceData,oAdditionalDiscountData,oFOCData,oNetOfferPriceData,oDeductionsData,oNetPriceData);
+			}else{
+				aChartData.push(oCIFPriceData,oDiscountsData,oOfferPriceData,oFOCData,oNetOfferPriceData,oDeductionsData,oNetPriceData);
+			}
+			
+			var oChartData = {
+				"data": aChartData
+			};
+
+			//make a json model from the chart data (chart needs a json model)
+			var oChartDataJSONModel = new sap.ui.model.json.JSONModel(oChartData);
+			
+			//returning chart
+			return oChartDataJSONModel;
+
 		},
 		
 		//local method for inital setting the pricing data
