@@ -335,7 +335,7 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/PricingPolicyCluster/required}"/>
 									<t:template>
-										<Select  selectedKey="{fastAppData>PricingPolicyCluster}" change="onChangeDecline">
+										<Select  selectedKey="{fastAppData>PricingPolicyCluster}">
 											<items>
 												<core:Item text="Without Comodatos" key="Without Comodatos"/>
 												<core:Item text="With Comodatos (Stellant DX y Spectris Solaris)" key="With Comodatos (Stellant DX y Spectris Solaris)"/>
