@@ -110,7 +110,7 @@ sap.ui.define([
 
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
-			var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
+			var sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
 			var sOfferID = oEvent.getParameter("arguments").offer;
 			var sTab = oEvent.getParameter("arguments").tab || Services.getBasicInformationPageSectionID();
 			var sLayout = oEvent.getParameter("arguments").layout;
@@ -832,7 +832,7 @@ sap.ui.define([
 			}
 
 			//if not yet exists... get fragment from project folder
-			oPageFragment = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view." + sFragmentName, this);
+			oPageFragment = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments." + sFragmentName, this);
 
 			//keep fragment in controller
 			this._pageFragments[sFragmentName] = oPageFragment;
@@ -2474,6 +2474,8 @@ sap.ui.define([
 					layout: "OneColumn"
 				});
 
+				this.clearQuotationElements();
+
 			} else {
 
 				//we stay on the screen and reload the data 
@@ -4114,7 +4116,7 @@ sap.ui.define([
 
 				this.pDuplicateOfferDialog = Fragment.load({
 					id: oView.getId(),
-					name: "FAST_NS0FAST0.view.DuplicateOfferDialog",
+					name: "FAST_NS0FAST0.view.fragments.DuplicateOfferDialog",
 					controller: this
 				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
@@ -4658,7 +4660,7 @@ sap.ui.define([
 
 				this.pTenderOverviewDialog = Fragment.load({
 					id: oView.getId(),
-					name: "FAST_NS0FAST0.view.TenderOverviewDialog",
+					name: "FAST_NS0FAST0.view.fragments.TenderOverviewDialog",
 					controller: this
 				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
@@ -4689,7 +4691,8 @@ sap.ui.define([
 					let netPrice = "NA";
 					
 					if(product && product.Price){
-						netPrice = product.Price.NetPrice;
+						//netPrice = product.Price.NetPrice;
+						netPrice = formatter.priceTwoOrFour(product.Price.NetPrice, undefined, product.Price.UnitPerPack);
 					}
 	
 					return {
@@ -5063,6 +5066,8 @@ sap.ui.define([
 		//when deleting a product
 		onDeleteProductForOffer: function () {
 
+			let oFastAppData = Services.getFastAppDataModel();
+
 			//Deleting products
 			var oTableProducts = this.byId("editofferProductId");
 			var aProductTableRows = oTableProducts.getRows();
@@ -5071,6 +5076,9 @@ sap.ui.define([
 			var aProductsToRemove = [];
 			var oProductToRemove = {};
 			var aExistingProducts = Services.getProductsSaveInfo();
+			if(aExistingProducts.length === 0){
+				var aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+			}
 
 			//already deleted products are not visible in table, so indexselectedrows should ignore these products
 			//but they still need to be available for saving
@@ -6605,6 +6613,7 @@ sap.ui.define([
 						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
 						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
 						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replace(",", "")),
+						BusinessCasePrice: parseFloat(that.byId("idEditPriceOffer_idBusinessCasePrice").getValue().replace(",", "")),
 						WholesalePrice: that.byId("idEditPriceOffer_idWhlseofr").getSelectedKey(),
 						COGS: cogsValues.COGS,
 						SpotRate: iSpotRate,
@@ -8351,6 +8360,7 @@ sap.ui.define([
 
 			let sCountry = this._country;
 			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().data("ID");
+			let that = this;
 
 			this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3").setVisible(false);
@@ -8358,13 +8368,18 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
 			if(sBindingTypeLevel1Id){
-				const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
+				that.getView().setBusy(true);
+				//const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
 
-				if(aBindingTypeLevel2.length > 0){
-					this.byId("idBiddingTypeLevel2").setVisible(true);
-				}else{
-					this.byId("idBiddingTypeLevel2").setVisible(false);
-				}
+				$.when(Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id)).done(function (oData){
+					if(oData.length > 0){
+						that.byId("idBiddingTypeLevel2").setVisible(true);
+						that.getView().setBusy(false);
+					}else{
+						that.byId("idBiddingTypeLevel2").setVisible(false);
+						that.getView().setBusy(false);
+					}
+				});
 
 			}
 		},
@@ -8373,19 +8388,24 @@ sap.ui.define([
 
 			let sCountry = this._country;
 			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().data("ID");
+			let that = this;
+
 
 			this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
 			if(sBindingTypeLevel2Id){
-				const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
-
-				if(aBindingTypeLevel3.length > 0){
-					this.byId("idBiddingTypeLevel3").setVisible(true);
-				}else{
-					this.byId("idBiddingTypeLevel3").setVisible(false);
-				}
-
+				this.getView().setBusy(true);
+				//const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
+				$.when(Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id)).done(function (oData){
+					if(oData.length > 0){
+						that.byId("idBiddingTypeLevel3").setVisible(true);
+						that.getView().setBusy(false);
+					}else{
+						that.byId("idBiddingTypeLevel3").setVisible(false);
+						that.getView().setBusy(false);
+					}
+				});
 			}
 
 		},
@@ -8395,7 +8415,7 @@ sap.ui.define([
 		},
 
 		onTenderChannelChange:function(oEvent){ 
-			if(Services.getCountryCodeofSelectedTender() === 'AR'){
+			if(Services.getSelectedCountry() === 'AR'){
 				this.toggleHighValueCheckboxVisibility();
 			}
 		},
