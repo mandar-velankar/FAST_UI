@@ -5549,9 +5549,13 @@ sap.ui.define([
 					oAddProduct.ActiveProduct = 1;
 					oAddProduct.Comment = "";
 					oAddProduct.INCOTerms = oProduct.INCO_TERMS;
+					oAddProduct.PricingPolicyCluster = oProduct.COUNTRY_CODE === 'CL' ? "Without Comodatos" : "";
+					oAddProduct.MinInvoiceAmount = "";
+					oAddProduct.DeliveryConditions = "";
 					
 					oAddProduct.SKU = {
-						PRODUCTPACKNAME: oProduct.PRODUCT_NAME
+						PRODUCTPACKNAME: oProduct.PRODUCT_NAME,
+						MoleculeName: oProduct.MoleculeName
 					};
 					if (aProducts && aProducts.length) {
 						oAddProduct.SORTER = aProducts.length; //added as last in the list

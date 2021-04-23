@@ -198,6 +198,13 @@
 							<Text text="{fastAppData>UnitPerPack}" wrapping="true"/>
 						</t:template>
 					</t:Column>
+					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/SapNo/visible}" >
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/SapNo/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>SKU/PRODUCTPACKID}" wrapping="true" />
+						</t:template>
+					</t:Column>
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" >
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Package/description',
 									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
@@ -284,21 +291,37 @@
 							</t:template>
 					</t:Column>
 
-					<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/MinInvoiceAmount/visible}">
+					<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/MinInvoiceAmount/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MinInvoiceAmount/description',
 									   formatter: '.formatter.offerProductsColumnName' }"	   
 								wrapping="true"/>
 						<t:template>
-							<Input type="Text" value="{fastAppData>PricingPolicyCluster}" placeholder="{i18n>pricingPolicyCluster}" editable="false"/>
+							<Input type="Text" value="{fastAppData>MinInvoiceAmount}" placeholder="{i18n>minInvoiceAmount}" editable="false"/>
 						</t:template>
 					</t:Column>
 
-					<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/Brand/visible}">
+					<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Brand/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Brand/description',
 									   formatter: '.formatter.offerProductsColumnName' }" 
 							   wrapping="true"/>
 						<t:template>
-							<Input value="{fastAppData>SKU/Product/HLEVEL4_NAME}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" />
+							<Text text="{fastAppData>SKU/Product/HLEVEL4_NAME}" maxLength="100" />
+						</t:template>
+					</t:Column>
+
+					<t:Column width="15rem" visible="{fastAppData>/permissions/tables/editofferProductId/MoleculeName/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MoleculeName/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>MoleculeName}" />
+						</t:template>
+					</t:Column>
+
+					<t:Column width="15rem" visible="{fastAppData>/permissions/tables/editofferProductId/DeliveryConditions/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/DeliveryConditions/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>DeliveryConditions}" />
 						</t:template>
 					</t:Column>
 
@@ -307,7 +330,7 @@
 									   formatter: '.formatter.offerProductsColumnName' }"	   
 							   wrapping="true"/>
 						<t:template>
-							<Input type="Text" value="{fastAppData>PricingPolicyCluster}" placeholder="{i18n>pricingPolicyCluster}" editable="false"/>
+							<Text text="{fastAppData>PricingPolicyCluster}" editable="false"/>
 						</t:template>
 					</t:Column>
 				</t:columns>

@@ -172,6 +172,15 @@
 										</Select>
 									</t:template>
 								</t:Column>
+								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/SapNo/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/SapNo/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/SapNo/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKU/PRODUCTPACKID}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}">
 									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Package/description',
 												   formatter: '.formatter.offerProductsColumnName' }"
@@ -328,6 +337,26 @@
 									</t:template>
 								</t:Column>
 
+								<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/MoleculeName/visible}">
+									<Label id="idMoleculeName" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MoleculeName/description',
+												  					   formatter: '.formatter.offerProductsColumnName' }" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/MoleculeName/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKU/MoleculeName}" editable="true" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/MoleculeName/visible}" />
+									</t:template>
+								</t:Column>
+
+								<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/DeliveryConditions/visible}">
+									<Label id="idDeliveryConditions" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/DeliveryConditions/description',
+												  					   formatter: '.formatter.offerProductsColumnName' }" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/DeliveryConditions/required}"/>
+									<t:template>
+										<Input value="{fastAppData>DeliveryConditions}" editable="true" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/DeliveryConditions/visible}" />
+									</t:template>
+								</t:Column>
+
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/PricingPolicyCluster/visible}">
 									<Label id="idPricingPolicyCluster"
 									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PricingPolicyCluster/description',
@@ -335,7 +364,7 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/PricingPolicyCluster/required}"/>
 									<t:template>
-										<Select  selectedKey="{fastAppData>PricingPolicyCluster}">
+										<Select  selectedKey="{fastAppData>PricingPolicyCluster}" enabled="{= ${fastAppData>SKU/Product/HLEVEL1_NAME} === 'Radiology' ? true : false }">
 											<items>
 												<core:Item text="Without Comodatos" key="Without Comodatos"/>
 												<core:Item text="With Comodatos (Stellant DX y Spectris Solaris)" key="With Comodatos (Stellant DX y Spectris Solaris)"/>
