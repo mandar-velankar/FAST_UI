@@ -1049,6 +1049,7 @@ sap.ui.define([
 						this.calculatePriceReduction(0, 0, false);
 
 						this.ppaState.saveDraftPolicyPricesForAllProducts().then((response) => {
+							this.refreshApprovals();
 							this.handleEffectiveDateUpdate();
 						});
 					} else {
