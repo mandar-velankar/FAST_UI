@@ -6,6 +6,11 @@ sap.ui.define([
 
     var product = BaseObject.extend("com.bayer.tender.uilib.model.Product", {
         constructor: function (data) {
+
+            if(data && data.ListPrice === null){
+                data.ListPrice = 'No Price'
+            }
+
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
             if (data) {
