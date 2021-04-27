@@ -7,16 +7,19 @@ sap.ui.define([
     var product = BaseObject.extend("com.bayer.tender.uilib.model.Product", {
         constructor: function (data) {
 
-            if(data && data.ListPrice === null){
-                data.ListPrice = 'No Price'
+           
+            if(data) {
+                if(data.ListPrice === null){
+                    data.ListPrice = "";
+                }
+                if(data.Currency === null){
+                    data.Currency = "";
+                }
             }
 
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
-            if (data) {
-                //copy array's manually to objects
-                //data.Prices && this.setPrices(data.Prices);
-            }
+            
 
             this.NspPricePercDiff = {
 				CDH_Clinic: "0%",

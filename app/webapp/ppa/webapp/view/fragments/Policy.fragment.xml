@@ -231,12 +231,12 @@
 														path:'ppa>listPrice', 
 														type: '.customTypes.Price'
 													} {ppa>currency}"
-													visible="{= ${ppa>listPrice} != 'No Price'}"
+													visible="{= ${ppa>listPrice} !== '' ? true : false }"
 												/>
 												<ObjectStatus
-													text="{ppa>listPrice}"
+													text="No Price"
 													state="Error" 
-													visible="{= ${ppa>listPrice} === 'No Price'}"
+													visible="{= ${ppa>listPrice} === '' ? true : false }"
 												/>
 											</VBox>
 										</cells>
