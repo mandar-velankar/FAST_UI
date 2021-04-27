@@ -1307,6 +1307,7 @@ sap.ui.define([
 		calculatePriceReduction: function(mspReductionPercentage, nspReductionPercentage, bUpdateStatus){
 
 			const draftProductPolicies = this.ppaState.data.aggregatedBrandPolicy.getDraftBrandPolicy().getProductPolicies();
+			const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
 
 			// update the draft product policy status
 			if(bUpdateStatus){
@@ -1314,14 +1315,17 @@ sap.ui.define([
 			}
 
 			if(this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy()){
-				const approvedProductPolicies =  this.ppaState.data.aggregatedBrandPolicy.getApprovedBrandPolicy().getProductPolicies();
+				
 
 				for(let i=0; i < approvedProductPolicies.length; i++){
 
+					const productPackID = approvedProductPolicies[i].productPackId;
 					const apporvedMspPrices = approvedProductPolicies[i].getMspPrices();
 					const apporvedNspPrices = approvedProductPolicies[i].getNspPrices();
-					const draftMspPrices = draftProductPolicies[i].getMspPrices();
-					const draftNspPrices = draftProductPolicies[i].getNspPrices();
+
+					const draftPrices = draftProductPolicies.find(item => item.productPackId === productPackID);
+					const draftMspPrices = draftPrices.getMspPrices();
+					const draftNspPrices = draftPrices.getNspPrices();
 
 					this.applyReduction(mspReductionPercentage, apporvedMspPrices, draftMspPrices);
 					this.applyReduction(nspReductionPercentage, apporvedNspPrices, draftNspPrices);
@@ -1330,7 +1334,7 @@ sap.ui.define([
 			}
 			
 			this.ppaState.updateModel();
-			this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct());
+			 // this.calculatePriceDifferenceProductSelect(this.ppaState.getSelectedProduct()); // TODO: ckeck if this call is needed here
 		},
 
 		updateProductPolicyStatus: function(aProductPolicies, mspReductionPercentage, nspReductionPercentage){ 
