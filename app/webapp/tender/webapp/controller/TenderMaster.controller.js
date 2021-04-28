@@ -64,7 +64,9 @@ sap.ui.define([
 				Services.setEditMode(false);
 
 				that.oProductsTable.attachUpdateFinished(oEvent => {
-					that._filterProductsTable(oEvent);
+					if(Services.getFastAppDataModel().getProperty("/LayoutType") !== "TwoColumnsMidExpanded"){
+						that._filterProductsTable(oEvent);
+					}
 				});
 
 				// close loading dialog
@@ -106,13 +108,14 @@ sap.ui.define([
 				var oCtx = item.getBindingContext("fastData");
 				var obj = oCtx.getObject(sPath);
 				var aBrands = obj.BRAND.__list;
-				Services.getTenderProducts(obj.TENDER_ID).then((async aProducts => {;
+				//Services.getTenderProducts(obj.TENDER_ID).then((async aProducts => {;
 
-					if (aProducts.data.results.length > 0 && this._bContainsSelectedBrand(aBrands)) {
+					//if (aProducts.data.results.length > 0 && this._bContainsSelectedBrand(aBrands)) {
+					if (this._bContainsSelectedBrand(aBrands, obj.OFFER_ID)) {
 						// add the item back to the table
 						this.oProductsTable.addItem(item);
 					}
-				}));
+				//}));
 			});
 			
 			oTable.setBusy(false);
@@ -123,12 +126,12 @@ sap.ui.define([
 		 * @param a list of brands
 		 * @return boolean
 		 */
-		_bContainsSelectedBrand: function (aBrands) {
+		_bContainsSelectedBrand: function (aBrands, sOfferId) {
 			let sSelectedBrand = this._sSelectedBrandId;	
 			let bBrandFound = false;
 
 			var bContainsBrand = aBrands.find(brand => {
-				bBrandFound = brand.lastIndexOf(sSelectedBrand) === -1 ? bBrandFound : true; 
+				bBrandFound = brand.lastIndexOf(sSelectedBrand) !== -1 && brand.lastIndexOf(sOfferId) !== -1 ? true : bBrandFound; 
 				return bBrandFound;
 			});
 

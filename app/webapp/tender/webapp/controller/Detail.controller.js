@@ -6696,7 +6696,24 @@ sap.ui.define([
 									that.byId("idCurrency").setSelectedKey(setCurrency);
 
 									//show success message
-									sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
+									//sap.m.MessageBox.success("Financial Offer Saved Successfully", {});
+									Services.getOfferCompositeMessages().push({
+										type: 'Success',
+										title: 'Financial Offer Saved Successfully',
+										description: 'Financial Offer Saved Successfully'
+									});
+									
+									if(oDataTenderOffer[0].results[0].Price.BusinessCasePrice && oDataTenderOffer[0].results[0].Price.BusinessCasePrice !== ""){
+										Services.getOfferCompositeMessages().push({
+											type: 'Warning',
+											title: 'Please upload the business case document',
+											description: 'Please upload the business case document'
+										});
+									}
+
+									Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+									Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
 									oDeferred_all.resolve("saving is done");
 									
 									//refresh tenders master table (left pane)
