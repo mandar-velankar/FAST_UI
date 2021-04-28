@@ -1,0 +1,77 @@
+<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.Detail" 
+    xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+    <!-- QUOTATION TAB -->
+        <ObjectPageSubSection id="QuotationNoOfferSubsection" title="{i18n>Quotation}">
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow>
+                    <l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                        <m:VBox>
+                            <m:FormattedText htmlText="Offer not available for quotation..."/>
+                        </m:VBox>
+                    </l:BlockLayoutCell>
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+        
+        <ObjectPageSubSection id="QuotationOfferSubsection" title="{i18n>Quotation}">
+            <actions>
+                <!-- DelayInSubmission -->	
+                <m:Switch 
+                    id="idDelayInSubmission" 
+                    customTextOn="Yes" 
+                    customTextOff="No" 
+                    state="{= ${fastData>Quotation/DelayInSubmission} === 'Yes' ? true : false}" 
+                    enabled="{= ${fastAppData>/SelectedOfferID} !== '' &amp;&amp; ${fastData>OfferStatus/STATUS} === 'Quotation Submitted' ? true : false}"
+                    change="onSwitchDelayInSubmission" />
+                
+                <!-- Download Quotation -->	
+                <m:Button
+                    id="btnSaveQuotation"
+                    text="{i18n>SaveQuotation}"
+                    icon="sap-icon://save"
+                    press=".onSaveDefaultQuotation"
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>
+                                            
+                <m:Button
+                    id="btnDownloadQuotation"
+                    text="{i18n>DownloadQuotation}"
+                    icon="sap-icon://download"
+                    press=".onDownloadQuotation"
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
+
+                <!-- Submit Quotation -->	
+                <m:Button
+                    id="btnSubmitQuotation"
+                    text="{i18n>SubmitQuotation}"
+                    icon="sap-icon://sys-enter"
+                    press=".onSubmitQuotation"
+                    enabled="false"/>
+            </actions>
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow visible="{= ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast'}">
+                    <l:BlockLayoutCell>
+                       <core:Fragment id="idQuotationView-Chile-Cenabast" type="XML" fragmentName="FAST_NS0FAST0.view.fragments.QuotationView_CL_Cenabast" />
+                    </l:BlockLayoutCell >
+                </l:BlockLayoutRow>
+                <l:BlockLayoutRow visible="{= ${fastAppData>/Tender/TenderChannel} === 'Direct'}">
+                    <l:BlockLayoutCell>
+                       <core:Fragment id="quotationViewChileId" type="XML" fragmentName="FAST_NS0FAST0.view.fragments.QuotationView_CL_DirectContracts" />
+                    </l:BlockLayoutCell >
+                </l:BlockLayoutRow>
+                <l:BlockLayoutRow visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Cenabast' &amp;&amp; ${fastAppData>/Tender/TenderChannel} !== 'Direct' }">
+                    <l:BlockLayoutCell>
+                       <core:Fragment id="quotationViewChileId" type="XML" fragmentName="FAST_NS0FAST0.view.fragments.QuotationView_CL_Others" />
+                    </l:BlockLayoutCell >
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+</core:FragmentDefinition>
