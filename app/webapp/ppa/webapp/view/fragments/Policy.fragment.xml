@@ -225,11 +225,20 @@
 											<Text text="{ppa>productName}"/>
 										</cells>
 										<cells>
-											<Text text="{
-													path:'ppa>listPrice', 
-													type: '.customTypes.Price'
-												} {ppa>currency}"
-											/>
+											<VBox>
+												<Text 
+													text="{
+														path:'ppa>listPrice', 
+														type: '.customTypes.Price'
+													} {ppa>currency}"
+													visible="{= ${ppa>listPrice} !== '' ? true : false }"
+												/>
+												<ObjectStatus
+													text="No Price"
+													state="Error" 
+													visible="{= ${ppa>listPrice} === '' ? true : false }"
+												/>
+											</VBox>
 										</cells>
 										<cells>
 											<ObjectStatus
