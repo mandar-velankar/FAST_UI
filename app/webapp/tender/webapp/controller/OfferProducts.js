@@ -48,6 +48,7 @@ sap.ui.define([
 			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
 			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 
 			//get form
 			var oForm = oDetailController.byId(formId);
@@ -148,7 +149,7 @@ sap.ui.define([
 				id: oDetailController.getView().createId(formId + "_idOfferPrice"),
 				value: formatter.priceTwoOrFour(price.offerPrice, undefined, price.uom),
 				description: price.offerCurrency,
-				enabled: sCountryCode === 'AR' ? false : forEdit,
+				enabled: sCountryCode === 'AR' || sCountryCode === 'CL' ? false : forEdit,
 				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
 			}));
 
@@ -170,14 +171,14 @@ sap.ui.define([
 			//Additional Discount
 			oForm.addContent(new sap.m.Label({
 					text: "{i18n>AdditionalDiscount}",
-					visible: sCountryCode === "AR" || sCountryCode === "BR" ? true : false
+					visible: sCountryCode === "AR" || sCountryCode === "BR" || (sCountryCode === "CL" && sInstituteType === 'Cenabast') ? true : false
 			}));
 			oForm.addContent(
 					new sap.m.Input({
 						id: oDetailController.getView().createId(formId + "_idAdditionalDiscount"),
 						value: formatter.percentageNoUnit(price.additionalDiscount),
 						description: "%",
-						visible: sCountryCode === "AR" || sCountryCode === "BR" ? true : false,
+						visible: sCountryCode === "AR" || sCountryCode === "BR" || (sCountryCode === "CL" && sInstituteType === 'Cenabast') ? true : false,
 						change: oDetailController.onEditFinancialOffer.bind(oDetailController),
 						enabled: forEdit
 					})
@@ -185,7 +186,8 @@ sap.ui.define([
 			
 			//FOC
 			oForm.addContent(new sap.m.Label({
-				text: "{i18n>FOC}"
+				text: "{i18n>FOC}",
+				visible: sCountryCode === "CL" ? false : true
 			}));
 			//Absolute or Percentage is defaulted by first saved price, if price is not yet saved... but can still be changed
 			let sFocAbsPCT = null;
@@ -206,7 +208,8 @@ sap.ui.define([
 				selectedKey: sFocAbsPCT,
 				maxWidth: "80%",
 				change: oDetailController.onEditFinancialOffer.bind(oDetailController),
-				enabled: forEdit
+				enabled: forEdit,
+				visible: sCountryCode === "CL" ? false : true
 			}));
 			//Percentage/Absolute amount FOC
 			oForm.addContent(new sap.m.Input({
@@ -214,18 +217,21 @@ sap.ui.define([
 				value: (price.focAbsPct === "PCT") ? formatter.percentageNoUnit(price.foc) : price.foc,
 				enabled: forEdit,
 				description: (price.focAbsPct === "PCT") ? "%" : price.uom,
-				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
+				visible: sCountryCode === "CL" ? false : true
 			}));
 
 			//Net Price
 			oForm.addContent(new sap.m.Label({
-				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>NetOfferPrice_TH} : ${i18n>NetOfferPrice}}"
+				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>NetOfferPrice_TH} : ${i18n>NetOfferPrice}}",
+				visible: sCountryCode === "CL" ? false : true
 			}));
 			oForm.addContent(new sap.m.Input({
 				id: oDetailController.getView().createId(formId + "_idNetOfferPrice"),
 				value: formatter.priceTwoOrFour(price.netOfferPrice, undefined, price.uom),
 				description: price.offerCurrency,
-				enabled: false
+				enabled: false,
+				visible: sCountryCode === "CL" ? false : true
 			}));
 
 			//Deductions
@@ -285,12 +291,12 @@ sap.ui.define([
 			//FOC additional product is not shown in argentinia
 			oForm.addContent(new sap.m.Label({
 				text: "{i18n>FOCAdditionalProd}",
-				visible: sCountryCode === "AR" ? false : true
+				visible: sCountryCode === "AR" || sCountryCode === "CL" ? false : true
 			}));
 				
 			oForm.addContent(new sap.m.ComboBox({
 				id: oDetailController.getView().createId(formId + "_idFOCProdBund1"), 
-				visible: sCountryCode === "AR" ? false : true,
+				visible: sCountryCode === "AR" || sCountryCode === "CL" ? false : true,
 				items: {
 						path: "fastData>/InstituteDistributorBrandProduct",
 						/*
@@ -331,13 +337,13 @@ sap.ui.define([
 				maxWidth: "80%",
 				change: oDetailController.onEditFinancialOffer.bind(oDetailController),
 				enabled: forEdit,
-				visible: sCountryCode === "AR" ? false : true 
+				visible: sCountryCode === "AR" || sCountryCode === "CL" ? false : true 
 			}));
 
 			//Value additional foc product
 			oForm.addContent(new sap.m.Input({
 				id: oDetailController.getView().createId(formId + "_idFoc1"),
-				visible: sCountryCode === "AR" ? false : true,
+				visible: sCountryCode === "AR" || sCountryCode === "CL" ? false : true,
 				value: (price.focAbsPct_bund1 === "PCT") ? formatter.percentageNoUnit(price.foc_bund1) : price.foc_bund1,
 				enabled: forEdit,
 				description: (price.focAbsPct_bund1 === "PCT") ? "%" : price.uom,
@@ -901,6 +907,7 @@ sap.ui.define([
 
 			const i18n = oDetailController.getView().getModel("i18n").getResourceBundle();
 			const sCountryCode = Services.getFastAppDataModel().getProperty("/Tender/CountryCode");
+			const sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 
 			//Cif price
 			var oCIFPriceData = {
@@ -963,6 +970,12 @@ sap.ui.define([
 			if(sCountryCode==='AR'){
 				//difference is that we have oAdditionalDiscountData
 				aChartData.push(oCIFPriceData,oDiscountsData,oOfferPriceData,oAdditionalDiscountData,oFOCData,oNetOfferPriceData,oDeductionsData,oNetPriceData);
+			} else if (sCountryCode === "CL"){
+				if(sInstituteType === 'Cenabast'){
+					aChartData.push(oCIFPriceData,oDiscountsData,oOfferPriceData,oAdditionalDiscountData,oDeductionsData,oNetPriceData);
+				} else {
+					aChartData.push(oCIFPriceData,oDiscountsData,oOfferPriceData,oDeductionsData,oNetPriceData);
+				}
 			}else{
 				aChartData.push(oCIFPriceData,oDiscountsData,oOfferPriceData,oFOCData,oNetOfferPriceData,oDeductionsData,oNetPriceData);
 			}
@@ -1006,7 +1019,7 @@ sap.ui.define([
 			let sSellingCompany = oOffer.SellingCompany || Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany") || Services.getSelectedSellingCompanyID() || null; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			let sBrandID = oProduct && oProduct.SKU && oProduct.SKU.Product && oProduct.SKU.Product.HLEVEL4_CODE;
 			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
-			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' ? await that.getStandardDiscount(sDistributorID,sBrandID) : "";
+			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL' ? await that.getStandardDiscount(sDistributorID,sBrandID) : "";
 			let iAdditionalDiscount = (oProduct && oProduct.Price && oProduct.Price.AdditionalDiscount) || 0;
 
 			//selected offer currency on screen
@@ -1118,7 +1131,7 @@ sap.ui.define([
 							
 						//for argentinia & brazilië the offerPrice is not the preApprovedPrice
 						let sDiscount = "";
-						if(sCountryCode==="AR" || sCountryCode==="BR"){	
+						if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){	
 								//offer price is in this case the standard price based upon CIF price & reductions
 								sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); //TODO get discount
 								sDiscount = iStandardDiscount;
