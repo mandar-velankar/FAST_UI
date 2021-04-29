@@ -104,7 +104,7 @@ sap.ui.define([
 
 			//CIF price
 			let oCifLabel = new sap.m.Label();
-			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' ? ('CIFPrice_' + sCountryCode) : 'CIFPrice'); //Diferent labels for Thailand & Argentinia
+			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL' ? ('CIFPrice_' + sCountryCode) : 'CIFPrice'); //Diferent labels for Thailand & Argentinia & chili
 			oCifLabel.setText(oResourceBundle.getText(i18nKey));
 			oForm.addContent(oCifLabel);
 			oForm.addContent(new sap.m.Input({
@@ -142,7 +142,7 @@ sap.ui.define([
 			
 			//OfferPrice / Standard price
 			let oOfferPriceLabel = new sap.m.Label();
-			i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' ? ('OfferPrice_' + sCountryCode) : 'OfferPrice'); //Diferent labels for Thailand & Argentinia
+			i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL' ? ('OfferPrice_' + sCountryCode) : 'OfferPrice'); //Diferent labels for Thailand & Argentinia & chili
 			oOfferPriceLabel.setText(oResourceBundle.getText(i18nKey));
 			oForm.addContent(oOfferPriceLabel);
 			oForm.addContent(new sap.m.Input({
@@ -528,7 +528,7 @@ sap.ui.define([
 				design: "Bold",
 				textAlign: "Center"
 			});
-			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' ? ('OfferPrice_' + sCountryCode) : 'OfferPrice'); //Diferent labels for Thailand & Argentinia
+			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL' ? ('OfferPrice_' + sCountryCode) : 'OfferPrice'); //Diferent labels for Thailand & Argentinia & chili
 			oOfferPriceLabel.setText(oResourceBundle.getText(i18nKey));
 
 			oTable.addColumn(new sap.m.Column({
@@ -911,7 +911,7 @@ sap.ui.define([
 
 			//Cif price
 			var oCIFPriceData = {
-				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia
+				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia & chili
 				"Value": oPrice.cifPrice,
 				"Type": "Revenue"
 			};
@@ -925,7 +925,7 @@ sap.ui.define([
 			
 			//OfferPrice
 			var oOfferPriceData = {
-				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR') ? i18n.getText('OfferPrice_' + sCountryCode) :  i18n.getText('OfferPrice'), //Diferent labels for Thailand & Argentinia
+				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL') ? i18n.getText('OfferPrice_' + sCountryCode) :  i18n.getText('OfferPrice'), //Diferent labels for Thailand & Argentinia & chili
 				"Value": oPrice.offerPrice,
 				"Type": "Total"
 			};
