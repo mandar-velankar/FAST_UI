@@ -420,6 +420,11 @@ sap.ui.define([
 			} else {
 				return 'Information';
 			}
+		},
+
+		offerProductsColumnName: function(description){
+			var resourceBundle = this.getView().getModel("i18n").getResourceBundle();
+			return resourceBundle.getText(description);
 		}
 		
 	};

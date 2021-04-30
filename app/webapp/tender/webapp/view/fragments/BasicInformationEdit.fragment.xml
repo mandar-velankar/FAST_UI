@@ -1,285 +1,309 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
 	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-	<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
-		adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
-		singleContainerFullSize="false" backgroundDesign="Solid">
-		<form:content>
-			<!-- Block - institute & type  -->
-			<core:Title text="Institute &amp; Type"/>
-			<Input id="idTenderID" value="{fastData>TenderID}" visible="false"/>
-			<Input id="idInstituteID" value="{fastData>InstituteID}" visible="false"/>
-			<!-- TODO this NewTenderID should be shown differently, we no longer check upon it, thats already done (Servicess.getNewTenderNo(  -->
-			<Label text="{i18n>TenderID}" design="Bold" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" required="true"/>
-			<Input id="idNewTenderID" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" enabled="false" />
-			<Label text="{i18n>tenderref}" design="Bold" required="true"/>
-			<Input id="idTenderName" value="{fastData>TenderName}" />
-			<Label text="{i18n>clasficn}" design="Bold" required="true"/>
-			<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" change="onClassificationChange" >
-				<items><!--RFQ/Tender/Budgetary Quote/Patient Access Programme-->
-					<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}" app:classificationId="{fastAppData>ID}"/>
-				</items>
-			</Select>
-			<!-- Argentina only -->
-			<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true"/>
-			<Select id="idBiddingTypeLevel1" 
-				selectedKey="{fastData>BindingTypeLevel1}"  
-				visible="{= 
-					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-					${fastAppData>/CountryBindingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
-				}" 
-				items="{ path: 'fastAppData>/CountryBindingTypeLevel1'}" 
-				change="onBiddingTypeLevel1Change">
-				<items>
-					<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}" />
-				</items>
-			</Select>
-			<Label text="{i18n>BiddingTypeLevel2}" design="Bold" required="true"/>
-			<Select id="idBiddingTypeLevel2" 
-				selectedKey="{fastData>BiddingTypeLevel2}" 
-				visible="{= 
-					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-					${fastAppData>/CountryBindingTypeLevel2} &amp;&amp; ${fastData>BindingTypeLevel1} &amp;&amp; ${fastAppData>CountryBindingTypeLevel2}.length > 0? true : false
-				}" 
-				items="{ path: 'fastAppData>/CountryBindingTypeLevel2'}" 
-				change="onBiddingTypeLevel2Change">
-				<items>
-					<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
-				</items>
-			</Select>
-			<Label text="{i18n>BiddingTypeLevel3}" design="Bold" required="true"/>
-			<Select id="idBiddingTypeLevel3" 
-				selectedKey="{fastData>BiddingTypeLevel3}" 
-				visible="{= 
-					${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-					${fastAppData>/CountryBindingTypeLevel3} &amp;&amp; ${fastData>BindingTypeLevel1} ? true : false
-				}" 
-				items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}"
-				change="onBiddingTypeLevel3Change">
-				<items>
-					<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
-				</items>
-			</Select>
-			<Label text="{i18n>Specifications}" design="Bold" required="true"/>
-			<MultiComboBox id="idSpecifications" 
-				selectionChange="handleSelectionChange"
-				selectionFinish="handleSelectionFinish"
-				visible="{= ${raModel>/visibleCountry} === 'AR'}"
-				items="{
-					path: 'fastAppData>/CountrySpecifications',
-					sorter: { path: 'Name' }
-				}">
-				<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}"/>
-			</MultiComboBox>
-			<!-- /Argentina only -->
-			<Label text="{i18n>insttyp}" design="Bold" required="true"/>
-			<Select id="idInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="resetInstituteName" enabled="false" items="{ path: 'fastAppData>/CountryChannels'}">
-				<items>
-					<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
-				</items>
-			</Select>
 
-			<Label text="{i18n>institnme}" design="Bold" required="true"/>
+	<VBox>
+		<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+			adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+			singleContainerFullSize="false" backgroundDesign="Solid">
+			<form:content>
+				<!-- Block - institute & type  -->
+				<core:Title text="Institute &amp; Type"/>
+				<Input id="idTenderID" value="{fastData>TenderID}" visible="false"/>
+				<Input id="idInstituteID" value="{fastData>InstituteID}" visible="false"/>
+				<!-- TODO this NewTenderID should be shown differently, we no longer check upon it, thats already done (Servicess.getNewTenderNo(  -->
+				<Label text="{i18n>TenderID}" design="Bold" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" required="true"/>
+				<Input id="idNewTenderID" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" enabled="false" />
+				<Label text="{i18n>tenderref}" design="Bold" required="true"/>
+				<Input id="idTenderName" value="{fastData>TenderName}" />
+				<Label text="{i18n>clasficn}" design="Bold" required="true"/>
+				<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" change="onClassificationChange" >
+					<items><!--RFQ/Tender/Budgetary Quote/Patient Access Programme-->
+						<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}" app:classificationId="{fastAppData>ID}"/>
+					</items>
+				</Select>
+				<!-- Argentina only -->
+				<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true"/>
+				<Select id="idBiddingTypeLevel1" 
+					selectedKey="{fastData>BindingTypeLevel1}"  
+					visible="{= 
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+						${fastAppData>/CountryBindingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
+					}" 
+					items="{ path: 'fastAppData>/CountryBindingTypeLevel1'}" 
+					change="onBiddingTypeLevel1Change">
+					<items>
+						<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}" />
+					</items>
+				</Select>
+				<Label text="{i18n>BiddingTypeLevel2}" design="Bold" required="true"/>
+				<Select id="idBiddingTypeLevel2" 
+					selectedKey="{fastData>BiddingTypeLevel2}" 
+					visible="{= 
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+						${fastAppData>/CountryBindingTypeLevel2} &amp;&amp; ${fastData>BindingTypeLevel1} &amp;&amp; ${fastAppData>CountryBindingTypeLevel2}.length > 0? true : false
+					}" 
+					items="{ path: 'fastAppData>/CountryBindingTypeLevel2'}" 
+					change="onBiddingTypeLevel2Change">
+					<items>
+						<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
+					</items>
+				</Select>
+				<Label text="{i18n>BiddingTypeLevel3}" design="Bold" required="true"/>
+				<Select id="idBiddingTypeLevel3" 
+					selectedKey="{fastData>BiddingTypeLevel3}" 
+					visible="{= 
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+						${fastAppData>/CountryBindingTypeLevel3} &amp;&amp; ${fastData>BindingTypeLevel1} ? true : false
+					}" 
+					items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}"
+					change="onBiddingTypeLevel3Change">
+					<items>
+						<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
+					</items>
+				</Select>
+				<Label text="{i18n>Specifications}" design="Bold" required="true"/>
+				<MultiComboBox id="idSpecifications" 
+					selectionChange="handleSelectionChange"
+					selectionFinish="handleSelectionFinish"
+					visible="{= ${raModel>/visibleCountry} === 'AR'}"
+					items="{
+						path: 'fastAppData>/CountrySpecifications',
+						sorter: { path: 'Name' }
+					}">
+					<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}"/>
+				</MultiComboBox>
+				<!-- /Argentina only -->
+				<Label text="{i18n>insttyp}" design="Bold" required="true"/>
+				<Select id="idInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="resetInstituteName" enabled="false" items="{ path: 'fastAppData>/CountryChannels'}">
+					<items>
+						<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
+					</items>
+				</Select>
 
-			<Input xmlns="sap.m" id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4"
-				value="{fastData>Institute/InstituteName}" enabled="false"/>
+				<Label text="{i18n>institnme}" design="Bold" required="true"/>
 
-			<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-			<Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="false" change="onTenderChannelChange">
-				<items>
-					<core:Item text="Distributor" key="Distributor"/>
-					<core:Item text="Direct" key="Direct"/>
-				<!--	<core:Item text="Other" key="Other"/>-->
-				</items>
-			</Select>
-			<Label text="{i18n>grpurchsng}" design="Bold" required="true"/>
-			<Select id="idGroupPurchasingEdit" selectedKey="{fastData>GroupPurchasing}" enabled="false" visible="false">
-				<items>
-					<core:Item text="Yes, Delivery Tracking Only" key="1"/>
-					<core:Item text="Yes, Requested Quantity - Delivery Tracking" key="2"/>
-				</items>
-			</Select>
-			<Label id="idLabelTenderTypeEdit" text="{i18n>tendertype}" design="Bold" required="true" visible="true"/>
-			<!-- TenderType: BeAware: binding is overwritten by controller logic -->
-			<Select id="idSelectTenderTypeEdit" 
-					selectedKey="{fastData>TENDER_TYPE_ID}" 
-					enabled="false" 
-					items="{ path: '', sorter: { path: '' } }">
-				<core:Item text="" key=""/>
-			</Select>
-			<!-- Block - Timeline -->
+				<Input xmlns="sap.m" id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4"
+					value="{fastData>Institute/InstituteName}" enabled="false"/>
 
-			<!-- Argentina only -->
-			<Label id="idHighValueLabel" text="{i18n>HighValue}" design="Bold" 
-				visible="{= 
-					${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
-				}"
-			/>
-			<CheckBox 
-				id="idHighValue"
-				selected="{fastData>HighValue}" 
-				visible="{= 
-					${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
-				}"
-			/>
-			<!--/ Argentina only -->
-			
-			<!-- Mexico: SalesType: -->
-			<Label id="idLabelSalesTypeEdit" text="{i18n>salestype}" design="Bold" required="true" visible="true"/>
-			<!-- SalesType: BeAware: binding is overwritten by controller logic -->
-			<Select id="idSelectSalesTypeEdit"
-					selectedKey="{fastData>SALES_TYPE_ID}"
+				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
+				<Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="false" change="onTenderChannelChange">
+					<items>
+						<core:Item text="Distributor" key="Distributor"/>
+						<core:Item text="Direct" key="Direct"/>
+					<!--	<core:Item text="Other" key="Other"/>-->
+					</items>
+				</Select>
+				<Label text="{i18n>grpurchsng}" design="Bold" required="true"/>
+				<Select id="idGroupPurchasingEdit" selectedKey="{fastData>GroupPurchasing}" enabled="false" visible="false">
+					<items>
+						<core:Item text="Yes, Delivery Tracking Only" key="1"/>
+						<core:Item text="Yes, Requested Quantity - Delivery Tracking" key="2"/>
+					</items>
+				</Select>
+				<Label id="idLabelTenderTypeEdit" text="{i18n>tendertype}" design="Bold" required="true" visible="true"/>
+				<!-- TenderType: BeAware: binding is overwritten by controller logic -->
+				<Select id="idSelectTenderTypeEdit" 
+						selectedKey="{fastData>TENDER_TYPE_ID}" 
+						enabled="false" 
+						items="{ path: '', sorter: { path: '' } }">
+					<core:Item text="" key=""/>
+				</Select>
+				<!-- Block - Timeline -->
+
+				<!-- Argentina only -->
+				<Label id="idHighValueLabel" text="{i18n>HighValue}" design="Bold" 
+					visible="{= 
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
+					}"
+				/>
+				<CheckBox 
+					id="idHighValue"
+					selected="{fastData>HighValue}" 
+					visible="{= 
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
+					}"
+				/>
+				<!--/ Argentina only -->
+				
+				<!-- Mexico: SalesType: -->
+				<Label id="idLabelSalesTypeEdit" text="{i18n>salestype}" design="Bold" required="true" visible="true"/>
+				<!-- SalesType: BeAware: binding is overwritten by controller logic -->
+				<Select id="idSelectSalesTypeEdit"
+						selectedKey="{fastData>SALES_TYPE_ID}"
+						enabled="false"
+						items="{ path: '', sorter: { path: '' } }">
+					<core:Item text="" key="" />
+				</Select>
+				
+				<!-- Mexico: Tender Origin -->
+				<Label id="idLabelTenderOriginEdit" text="{i18n>tenderOrigin}" design="Bold" required="true" visible="true"/>
+				<!-- TenderOrigin: BeAware: binding is overwritten by controller logic -->
+				<Select id="idSelectTenderOriginEdit"
+						selectedKey="{fastData>TENDER_ORIGIN_ID}"
+						enabled="false"
+						items="{ path: '', sorter: { path: '' } }">
+					<core:Item text="" key="" />
+				</Select>
+				
+				<!-- Mexico: Contract Type -->
+				<Label id="idLabelContractTypeEdit" text="{i18n>contracttype}" design="Bold" required="true" visible="true"/>
+				<!-- TenderOrigin: BeAware: binding is overwritten by controller logic -->
+				<Select id="idSelectContractTypeEdit"
+						selectedKey="{fastData>CONTRACT_TYPE_ID}"
+						enabled="false"
+						items="{ path: '', sorter: { path: '' } }">
+					<core:Item text="" key="" />
+				</Select>
+				<!-- Mexico: end of changes -->
+				
+				<!-- Thailand: Procurement Method-->
+				<Label id="idLabelProcurementMethodEdit" text="{i18n>procurementmethod}" design="Bold" required="true" visible="true"/>
+				<Select id="idSelectProcurementMethodEdit" 
+					selectedKey="{fastData>PROCUREMENT_METHOD_ID}" 
 					enabled="false"
-					items="{ path: '', sorter: { path: '' } }">
-				<core:Item text="" key="" />
-			</Select>
-			
-			<!-- Mexico: Tender Origin -->
-			<Label id="idLabelTenderOriginEdit" text="{i18n>tenderOrigin}" design="Bold" required="true" visible="true"/>
-			<!-- TenderOrigin: BeAware: binding is overwritten by controller logic -->
-			<Select id="idSelectTenderOriginEdit"
-					selectedKey="{fastData>TENDER_ORIGIN_ID}"
+					items="{ path: '', sorter: '' }"
+					change="onSelectionChangeProcurementMethod">
+					<core:Item text="" key="" />
+				</Select>
+
+				<Label id="idLabelProcurementReasonEdit" text="{i18n>procurementmethodreason}" design="Bold" required="true" visible="true"/>
+				<Input id="idProcurementReasonEdit" value="{fastData>PROCUREMENT_REASON}" enabled="false" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
+				<!-- End of Thailand Changes-->
+
+				<!-- Brazil only -->
+				<Label text="{i18n>IBIZId}" design="Bold" 
+					visible="{= 
+						${raModel>/visibleCountry} === 'BR'
+					}"
+				/>
+				<Input id="idIbizIDEdit" 
+					value="{fastData>IbizID}" 
 					enabled="false"
-					items="{ path: '', sorter: { path: '' } }">
-				<core:Item text="" key="" />
-			</Select>
-			
-			<!-- Mexico: Contract Type -->
-			<Label id="idLabelContractTypeEdit" text="{i18n>contracttype}" design="Bold" required="true" visible="true"/>
-			<!-- TenderOrigin: BeAware: binding is overwritten by controller logic -->
-			<Select id="idSelectContractTypeEdit"
-					selectedKey="{fastData>CONTRACT_TYPE_ID}"
-					enabled="false"
-					items="{ path: '', sorter: { path: '' } }">
-				<core:Item text="" key="" />
-			</Select>
-			<!-- Mexico: end of changes -->
-			
-			<!-- Thailand: Procurement Method-->
-			 <Label id="idLabelProcurementMethodEdit" text="{i18n>procurementmethod}" design="Bold" required="true" visible="true"/>
-			<Select id="idSelectProcurementMethodEdit" 
-				selectedKey="{fastData>PROCUREMENT_METHOD_ID}" 
-				enabled="false"
-				items="{ path: '', sorter: '' }"
-				change="onSelectionChangeProcurementMethod">
-				<core:Item text="" key="" />
-			</Select>
+					visible="{= 
+						${raModel>/visibleCountry} === 'BR'
+					}"
+				/>
+				<Label text="{i18n>PublicNotice}" design="Bold" 
+					visible="{= 
+						${raModel>/visibleCountry} === 'BR'
+					}"
+				/>
+				<TextArea id="idPublicNoticeEdit" rows="8" 
+					value="{fastData>PublicNotice}"
+					showExceededText="true" 
+					maxLength="500"
+					visible="{= 
+						${raModel>/visibleCountry} === 'BR'
+					}"
+				/>
 
-			<Label id="idLabelProcurementReasonEdit" text="{i18n>procurementmethodreason}" design="Bold" required="true" visible="true"/>
-			<Input id="idProcurementReasonEdit" value="{fastData>PROCUREMENT_REASON}" enabled="false" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
-			<!-- End of Thailand Changes-->
+				<!-- End Brazil only -->
 
-			<!-- Brazil only -->
-			<Label text="{i18n>IBIZId}" design="Bold" 
-				visible="{= 
-					${raModel>/visibleCountry} === 'BR'
-				}"
-			/>
-			<Input id="idIbizIDEdit" 
-				value="{fastData>IbizID}" 
-				enabled="false"
-				visible="{= 
-					${raModel>/visibleCountry} === 'BR'
-				}"
-			/>
-			<Label text="{i18n>PublicNotice}" design="Bold" 
-				visible="{= 
-					${raModel>/visibleCountry} === 'BR'
-				}"
-			/>
-			<TextArea id="idPublicNoticeEdit" rows="8" 
-				value="{fastData>PublicNotice}"
-				showExceededText="true" 
-				maxLength="500"
-				visible="{= 
-					${raModel>/visibleCountry} === 'BR'
-				}"
-			/>
+				<core:Title text="Timeline"/>
+				<Label text="{i18n>pubcndte}" design="Bold" required="true"/>
+				<!--<DatePicker id="idPublicationDate" value="{path :'fastData>PublicationDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->
+				<!--	valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
+				<DatePicker id="idPublicationDate" value="{path :'fastAppData>/EditTender/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+				<!--<Input value="{fastData>PublicationDate}"/>-->
+				<Label text="{i18n>offrdudte}" design="Bold" required="true"/>
+				<!--<DatePicker id="idBidDueDate" value="{path :'fastData>BidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy"-->
+				<!--	displayFormat="dd.MM.yyyy" />-->
+				<DatePicker id="idBidDueDate" value="{path :'fastAppData>/EditTender/BidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+				<!--<Input value="{fastData>BidDueDate}"/>-->
+				<Label text="{i18n>expctawdte}" design="Bold"/>
+				<!--<DatePicker id="idAwardDate" value="{path :'fastData>AwardDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy"
+					displayFormat="dd.MM.yyyy" />-->
+				<DatePicker id="idAwardDate" value="{path :'fastAppData>/EditTender/AwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+				<!--<Input value="{fastData>AwardDate}"/>-->
+				<Label text="{i18n>nwpubdate}" design="Bold"/>
+				<!--<DatePicker id="idNextPublicationDye" value="{path :'fastData>NextPublicationDye',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->
+					<!--valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
+				<DatePicker id="idNextPublicationDye" value="{path :'fastAppData>/EditTender/NextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
 
-			<!-- End Brazil only -->
+				<!-- Brazil only -->
+				<Label text="{i18n>OfferStartDate}" design="Bold"/>
+				<DatePicker id="idOfferStartDateEdit" 
+					value="{path :'fastAppData>/EditTender/OfferStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" 
+					visible="{= 
+						${raModel>/visibleCountry} === 'BR'
+					}"
+				/>
+				<!-- End Brazil only -->
 
-			<core:Title text="Timeline"/>
-			<Label text="{i18n>pubcndte}" design="Bold" required="true"/>
-			<!--<DatePicker id="idPublicationDate" value="{path :'fastData>PublicationDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->
-			<!--	valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
-			<DatePicker id="idPublicationDate" value="{path :'fastAppData>/EditTender/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
-			<!--<Input value="{fastData>PublicationDate}"/>-->
-			<Label text="{i18n>offrdudte}" design="Bold" required="true"/>
-			<!--<DatePicker id="idBidDueDate" value="{path :'fastData>BidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy"-->
-			<!--	displayFormat="dd.MM.yyyy" />-->
-			<DatePicker id="idBidDueDate" value="{path :'fastAppData>/EditTender/BidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
-			<!--<Input value="{fastData>BidDueDate}"/>-->
-			<Label text="{i18n>expctawdte}" design="Bold"/>
-			<!--<DatePicker id="idAwardDate" value="{path :'fastData>AwardDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy"
-				displayFormat="dd.MM.yyyy" />-->
-			<DatePicker id="idAwardDate" value="{path :'fastAppData>/EditTender/AwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
-			<!--<Input value="{fastData>AwardDate}"/>-->
-			<Label text="{i18n>nwpubdate}" design="Bold"/>
-			<!--<DatePicker id="idNextPublicationDye" value="{path :'fastData>NextPublicationDye',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->
-				<!--valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
-			<DatePicker id="idNextPublicationDye" value="{path :'fastAppData>/EditTender/NextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+				<!--<Input value="{fastData>NextPublicationDye}"/>-->
+				<Label text="{i18n>contleng}" design="Bold"/>
+				<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" />
+				<Label text="{i18n>contextnprd}" design="Bold"/>
+				<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" />
+				<!-- Status  tender -->
+				<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>
+				<Select id="idTenderStatus" selectedKey="{fastData>TenderStatus}" enabled="{= ${fastData>TenderID} !== null}" visible="false">
+					<items>
+						<core:Item text="Open" key="Open"/>
+						<core:Item text="Closed" key="Closed"/>
+						<core:Item text="Submitted" key="Submitted"/>
+						<core:Item text="Declined" key="Declined"/>
+						<core:Item text="Cancelled" key="Cancelled"/>
+					</items>
+				</Select>
 
-			<!-- Brazil only -->
-			<Label text="{i18n>OfferStartDate}" design="Bold"/>
-			<DatePicker id="idOfferStartDateEdit" 
-				value="{path :'fastAppData>/EditTender/OfferStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" 
-				visible="{= 
-					${raModel>/visibleCountry} === 'BR'
-				}"
-			/>
-			<!-- End Brazil only -->
+				<!-- Block - Award criteria -->
+				<core:Title text="{i18n>tilawrcrit}" id="idAwrdTitle"/>
+				<Grid xmlns="sap.ui.layout" defaultSpan="L12 M12 S12">
+					<content>
+						<!-- EDIT TABLE for award criteria -->
+						<Table xmlns="sap.m" id="idAwrdEdit" items="{tabModel>/Data}">
+							<columns>
+								<Column minScreenWidth="Tablet" demandPopin="true" width="4em">
+									<Label text="{i18n>critr}"/>
+								</Column>
+								<Column minScreenWidth="Tablet" demandPopin="true" width="4em">
+									<Label text="{i18n>weigh}"/>
+								</Column>
+								<Column minScreenWidth="Tablet" demandPopin="true" width="2em"></Column>
+								<Column minScreenWidth="Tablet" demandPopin="true" width="2em"></Column>
+							</columns>
+							<items>
+								<ColumnListItem type="Inactive">
+									<cells>
+										<Input value="{tabModel>AwardCriteria}" placeholder="{i18n>addCriteria}" enabled="{= ${tabModel>TENDERID} === ''}"/>
+										<Input value="{
+											path:'tabModel>Weight', 
+											formatter:'FAST_NS0FAST0.utils.Formatter.percentageNoUnit',
+											constraints : {
+												minimum: '0',
+												maximum: '99'
+											}}" description="%" type="Number" placeholder="{i18n>addWeight}" maxLength="3"/>
+										<Button xmlns="sap.m" icon="sap-icon://delete" type="Emphasized" press="handleDelete"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+						<Button xmlns="sap.m" icon="sap-icon://add" text="{i18n>Add}" type="Emphasized" press="onAddPressAwrd"/>
+					</content>
+				</Grid>
+				
+			</form:content>
+		</form:SimpleForm>
 
-			<!--<Input value="{fastData>NextPublicationDye}"/>-->
-			<Label text="{i18n>contleng}" design="Bold"/>
-			<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" />
-			<Label text="{i18n>contextnprd}" design="Bold"/>
-			<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" />
-			<!-- Status  tender -->
-			<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>
-			<Select id="idTenderStatus" selectedKey="{fastData>TenderStatus}" enabled="{= ${fastData>TenderID} !== null}" visible="false">
-				<items>
-					<core:Item text="Open" key="Open"/>
-					<core:Item text="Closed" key="Closed"/>
-					<core:Item text="Submitted" key="Submitted"/>
-					<core:Item text="Declined" key="Declined"/>
-					<core:Item text="Cancelled" key="Cancelled"/>
-				</items>
-			</Select>
-
-			<!-- Block - Award criteria -->
-			<core:Title text="{i18n>tilawrcrit}" id="idAwrdTitle"/>
-			<Grid xmlns="sap.ui.layout" defaultSpan="L12 M12 S12">
-				<content>
-					<!-- EDIT TABLE for award criteria -->
-					<Table xmlns="sap.m" id="idAwrdEdit" items="{tabModel>/Data}">
-						<columns>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="4em">
-								<Label text="{i18n>critr}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="4em">
-								<Label text="{i18n>weigh}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="2em"></Column>
-							<Column minScreenWidth="Tablet" demandPopin="true" width="2em"></Column>
-						</columns>
-						<items>
-							<ColumnListItem type="Inactive">
-								<cells>
-									<Input value="{tabModel>AwardCriteria}" placeholder="{i18n>addCriteria}" enabled="{= ${tabModel>TENDERID} === ''}"/>
-									<Input value="{
-										path:'tabModel>Weight', 
-										formatter:'FAST_NS0FAST0.utils.Formatter.percentageNoUnit',
-										constraints : {
-								            minimum: '0',
-								            maximum: '99'
-								        }}" description="%" type="Number" placeholder="{i18n>addWeight}" maxLength="3"/>
-									<Button xmlns="sap.m" icon="sap-icon://delete" type="Emphasized" press="handleDelete"/>
-								</cells>
-							</ColumnListItem>
-						</items>
-					</Table>
-					<Button xmlns="sap.m" icon="sap-icon://add" text="{i18n>Add}" type="Emphasized" press="onAddPressAwrd"/>
-				</content>
-			</Grid>
-		</form:content>
-	</form:SimpleForm>
+		<!-- Tender Information Only for Chile-->
+		<form:SimpleForm id="idTenderInformationSimpleFormEdit" editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+			adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+			singleContainerFullSize="false" backgroundDesign="Solid" visible="{= ${raModel>/visibleCountry} === 'CL' ? true : false }">
+			<form:content>
+				<!-- Block - Tender Information BEGIN-->
+				<core:Title text="{i18n>tenderInformation}" />
+				<Label />
+				<Button xmlns="sap.m" icon="sap-icon://document" text="{i18n>btnDocuments}" type="Emphasized" width="9em" press="onDocumentsPress"/>
+				<Label text="{i18n>Institute}" design="Bold" />
+				<Input value="{fastAppData>/CountrySpecificTenderInformation/Institute}" enabled="false" />
+				<Label text="{i18n>tenderref}" design="Bold"/>
+				<Input value="{fastAppData>/CountrySpecificTenderInformation/TenderReference}" enabled="false"/>
+				<Label text="{i18n>pubcndte}" design="Bold" required="true"/>
+				<DatePicker enabled="false" value="{path :'fastAppData>/CountrySpecificTenderInformation/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+				<Label text="{i18n>ClosingDate}" design="Bold" required="true"/>
+				<DatePicker enabled="false" value="{path :'fastAppData>/CountrySpecificTenderInformation/ClosingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
 </core:FragmentDefinition>

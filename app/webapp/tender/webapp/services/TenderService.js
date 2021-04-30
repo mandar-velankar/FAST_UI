@@ -214,7 +214,51 @@ sap.ui.define([
 			};
 
 			return this.odata(sPath).get(mParameters);			
-		}
+		},
+
+
+		//create CountrySpecificInformation
+		createCountrySpecificInformation: function (data) {
+
+			if(!data){
+				return;
+			}
+
+			//path of offer that is selected
+			var sPath = "/CountrySpecificInformation";
+
+			
+			return this.odata(sPath).post(data);
+
+		},
+
+		//update existing CountrySpecificInformation
+		updateCountrySpecificInformation: function (countrySpecificInformation) {
+
+			if(!countrySpecificInformation){
+				return;
+			}
+
+			const data = {
+				Institute: countrySpecificInformation.Institute,
+				TenderReference: countrySpecificInformation.TenderReference,
+				PublicationDate: countrySpecificInformation.PublicationDate,
+				ClosingDate: countrySpecificInformation.ClosingDate
+			}	
+
+			const oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			const sPath = oModel.createKey("/CountrySpecificInformation", {
+				TenderID: countrySpecificInformation.TenderID,
+				CountryCode: countrySpecificInformation.CountryCode,
+				
+			});
+
+			//Update
+			return this.odata(sPath).put(data);
+
+		},
 
 	});
 	
