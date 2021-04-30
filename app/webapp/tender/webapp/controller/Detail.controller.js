@@ -157,6 +157,8 @@ sap.ui.define([
 						expand: "Institute,Origin"
 					}
 				});
+			}else{
+				oFastAppDataModel.setProperty("/CountrySpecificTenderInformation", {});
 			}
 
 			//handle full screen buttons depending on layout 
@@ -569,7 +571,11 @@ sap.ui.define([
 
 				//should tendertype be visible on the basic info screen?
 				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
-					oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+					if(Services.getSelectedCountry() === 'CL'){
+						oDetailController.getView().byId("idSelectTenderType").setVisible(true);
+					}else{
+						oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+					}
 				});
 
 				/* Mexico */
@@ -1605,7 +1611,11 @@ sap.ui.define([
 					//should tendertype be visible on the basic info screen?
 					$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
-						that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+						if(Services.getSelectedCountry() === 'CL'){
+							that.getView().byId("idSelectTenderType").setVisible(true);
+						}else{
+							that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+						}
 					});
 
 					/* Mexico */
@@ -2061,6 +2071,12 @@ sap.ui.define([
 						} else {
 							oDistributor.setEnabled(false);
 						}
+
+						//distributor selector should not be shown if there's no given distributor for the selected country
+						if(that.byId('idDistributorName') && that.byId('idDistributorName').getSelectedItem() && that.byId('idDistributorName').getSelectedItem().getProperty('text') === 'No Distributor'){
+							that.byId('idDistributorName').setVisible(false);
+						}
+
 						break;
 
 					case Services.getFinancialOfferPageSectionID():
@@ -3268,6 +3284,13 @@ sap.ui.define([
 		//Reset institute name
 		resetInstituteName: function (oEvent) {
 			this.byId("idInstituteName").setValue("...Select Institute");
+
+			const selectedItem = oEvent.getParameter("selectedItem").getText();
+			if(selectedItem === 'Cenabast'){
+				this.byId("idSelectTenderTypeEdit").setVisible(true);
+			}else{
+				this.byId("idSelectTenderTypeEdit").setVisible(false);
+			}
 		},
 
 		//save basic information (tender info)
@@ -3356,7 +3379,6 @@ sap.ui.define([
 				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
 
-
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
 
@@ -3368,11 +3390,28 @@ sap.ui.define([
 					//convert Tender data for saving
 					var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
 
-					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(function (oResult) {
+					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(async function (oResult) {
 
 						//after saving we reload tender info even if it is already loaded
 						var sTenderID = Services.getSelectedTenderID();
 						var bLoadedCheck = false;
+						let selectedCountry = Services.getSelectedCountry();
+
+						/* Chile */
+						if(selectedCountry === 'CL'){
+							try{
+								const bCountrySpecificInformationExists = Services.getDefaultModel().getProperty("/PT_TMTEND('CL-21-1001')/CountrySpecificInformation");
+
+								if(bCountrySpecificInformationExists){
+									await that.updateCountrySpecificInformation();
+								}else{
+									await that.createCountrySpecificInformation(sTenderID, selectedCountry);
+								}
+
+							} catch(err){
+								console.error(err);
+							}
+						}
 
 						//load tender data again so refresh is done
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3475,13 +3514,14 @@ sap.ui.define([
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
 			oSaveBasicInfo.TenderNo = Services.getNewTenderNo(); //oSaveBasicInfo.TenderID.split("-")[2];
 
+
 			//check info to save
 			if (Services.checkBasicInfo(oSaveBasicInfo)) {
 
 				//convert Tender data for saving
 				var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
 
-				that.createBasicTenderInfo(oTenderToSave).then(function (oSaveResults) {
+				that.createBasicTenderInfo(oTenderToSave).then(async function (oSaveResults) {
 
 					//if save is executed succesfully
 					// if (oSaveResults) {
@@ -3491,6 +3531,16 @@ sap.ui.define([
 						//after saving we reload tender info even if it is already loaded
 						var sTenderID = Services.getSelectedTenderID();
 						var bLoadedCheck = false;
+						let selectedCountry = Services.getSelectedCountry();
+
+						/* Chile */
+						if(selectedCountry === 'CL'){
+							try{
+								await that.createCountrySpecificInformation(sTenderID, selectedCountry);
+							} catch(err){
+								console.error(err);
+							}
+						}
 
 						//load tender data so its in the FastAppData model in the same way as for an existing tender
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3512,6 +3562,21 @@ sap.ui.define([
 				});
 
 			}
+		},
+
+		createCountrySpecificInformation: async function(sTenderID, sCountryCode){
+			const oTenderInformation = Services.getFastAppDataModel().getProperty("/CountrySpecificTenderInformation");
+			const data = {
+				TenderID: sTenderID,
+				CountryCode: sCountryCode,
+				...oTenderInformation,
+			};
+			return Services.getService('Tender').createCountrySpecificInformation(data);
+		},
+
+		updateCountrySpecificInformation: async function(){
+			const oTenderInformation = Services.getFastAppDataModel().getProperty("/CountrySpecificTenderInformation");
+			return Services.getService('Tender').updateCountrySpecificInformation(oTenderInformation);
 		},
 
 		saveSpecifications: function(oTenderToSave, action){
@@ -5484,9 +5549,13 @@ sap.ui.define([
 					oAddProduct.ActiveProduct = 1;
 					oAddProduct.Comment = "";
 					oAddProduct.INCOTerms = oProduct.INCO_TERMS;
+					oAddProduct.PricingPolicyCluster = oProduct.COUNTRY_CODE === 'CL' ? "Without Comodatos" : "";
+					oAddProduct.MinInvoiceAmount = "";
+					oAddProduct.DeliveryConditions = "";
 					
 					oAddProduct.SKU = {
-						PRODUCTPACKNAME: oProduct.PRODUCT_NAME
+						PRODUCTPACKNAME: oProduct.PRODUCT_NAME,
+						MoleculeName: oProduct.MoleculeName
 					};
 					if (aProducts && aProducts.length) {
 						oAddProduct.SORTER = aProducts.length; //added as last in the list
