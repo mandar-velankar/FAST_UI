@@ -1,15 +1,97 @@
-<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.Detail" 
-    xmlns="sap.uxap" 
-	xmlns:m="sap.m" 
+<core:FragmentDefinition
+	xmlns="sap.m"
 	xmlns:f="sap.f"
-	xmlns:form="sap.ui.layout.form" 
-	xmlns:mvc="sap.ui.core.mvc" 
-	xmlns:t="sap.ui.table" 
-	xmlns:core="sap.ui.core" 
-	xmlns:l="sap.ui.layout"
-	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+	xmlns:form="sap.ui.layout.form"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout">
 
-    <m:VBox>
-        <m:Label text="DirectContracts" />
-    </m:VBox>
+
+	<VBox>
+		<HBox>
+			<items>
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="M" displayShape="Square" class="sapUiLargeMarginEnd"/>
+				<VBox>
+					<Label text="Bayer S.A" />
+					<Label text="Av. Andrés Bello 2457, Of. 2101, Piso 21, Providencia, Santiago" />
+					<Label text="Teléfono: +562-25208200" />
+					<Link text="www.bayer.cl" href="http://www.bayer.cl" target="_blank" />
+					<Link text="ventas.phcc@bayer.com" press="handleEmailPress" />
+				</VBox>
+			</items>
+		</HBox>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="true" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" labelSpanXL="1" labelSpanL="1" labelSpanM="2" emptySpanL="9" emptySpanM="6">
+			<form:content>
+				<Label text="N° cotizaciòn" />
+				<Input text="" />
+				<Label text="Cliente" />
+				<Input text="tst" />
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<Table  
+			items="{path : 'fastAppData>/OfferProductValidation/', sorter: [{path: 'SORTER', descending: false}]}" 
+			inset="false" 
+			class="sapFDynamicPageAlignContent" 
+			width="auto" 
+			alternateRowColors="true" 
+			fixedLayout="true">
+			<columns>
+				<Column>
+					<Text text="Producto"/>
+				</Column>
+				<Column>
+					<Text text="Principio activo"/>
+				</Column>
+				<Column>
+					<Text text="Presentación"/>
+				</Column>
+				<Column>
+					<Text text="Factor de empaque"/>
+				</Column>
+				<Column>
+					<Text text="Precio"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem>
+					<cells>
+						<Text text="{parts: [{path :'fastAppData>SKU'}], formatter: '.formatter.nullToBlank'}"/>
+						<Text text="{path :'fastAppData>PRODUCT_UNIT_NAME'}"/>
+						<Text text="{path :'fastAppData>PACKSIZE'}"/>
+						<Text text="{path :'fastAppData>PRODUCT_UNIT_NAME'}"/>
+						<Text text="{path :'fastAppData>PACKSIZE'}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="false" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" labelSpanXL="2" labelSpanL="2" labelSpanM="2" emptySpanXL="0" emptySpanL="0" emptySpanM="0">
+			<form:content>
+				<core:Title text="Vigencia cotización" />
+				<Label text="Condiciones de pago"/>
+				<Text text="30 dias fecha factura" />
+				<Label text="Monto mínimo" class="sapUiSmallMarginEnd"/>
+				<Text text="500.000 + IVA" />
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+	
+
+	<VBox class="sapUiLargeMarginTop">
+		<HBox>
+			<Text text="El envío de la orden de compra debe ser a" class="sapUiTinyMarginEnd" />
+			<Link text="gestinventas@bayer.com" class="sapUiTinyMarginEnd"/>
+			<Text text=" o Mercado Público." />
+		</HBox>
+	</VBox>
+
+	
 </core:FragmentDefinition>

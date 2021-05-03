@@ -2854,10 +2854,11 @@ sap.ui.define([
 
 		},
 
+		// TODO: improve the way of handeling of duplicate ID's. 
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
 			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
-			if(this._pageFragments && (this._pageFragments.QuotationView_AR || this._pageFragments.QuotationView || this._pageFragments.QuotationView_TH) ){
+			if(this._pageFragments){
 				if(this._pageFragments.QuotationView_AR){
 					this._pageFragments.QuotationView_AR = null;
 				}
@@ -2868,6 +2869,10 @@ sap.ui.define([
 
 				if(this._pageFragments.QuotationView_TH){
 					this._pageFragments.QuotationView_TH = null;
+				}
+
+				if(this._pageFragments.QuotationView_CL){
+					this._pageFragments.QuotationView_CL = null;
 				}
 			}
 

@@ -1,15 +1,142 @@
-<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.Detail" 
-    xmlns="sap.uxap" 
-	xmlns:m="sap.m" 
+<core:FragmentDefinition
+	xmlns="sap.m"
 	xmlns:f="sap.f"
-	xmlns:form="sap.ui.layout.form" 
-	xmlns:mvc="sap.ui.core.mvc" 
-	xmlns:t="sap.ui.table" 
-	xmlns:core="sap.ui.core" 
-	xmlns:l="sap.ui.layout"
-	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+	xmlns:form="sap.ui.layout.form"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout">
 
-    <m:VBox>
-        <m:Label text="Other" />
-    </m:VBox>
+	<VBox>
+		<HBox>
+			<items>
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="M" displayShape="Square" class="sapUiLargeMarginEnd"/>
+				<VBox>
+					<Label text="Bayer S.A" />
+					<Label text="Av. Andrés Bello 2457, Of. 2101, Piso 21, Providencia, Santiago" />
+					<Label text="Teléfono: +562-25208200" />
+					<Link text="www.bayer.cl" href="http://www.bayer.cl" target="_blank" />
+					<Link text="ventas.phcc@bayer.com" press="handleEmailPress" />
+				</VBox>
+			</items>
+		</HBox>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="true" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" >
+			<form:content>
+                <core:Title text="Datos de la Adquisición" />
+				<Label text="N° de la Adquisición" />
+				<Input text="" />
+				<Label text="Nombre" />
+				<Input text="" />
+                <Label text="Estado" />
+				<Input text="" />
+                <Label text="Comprador" />
+				<Input text="" />
+                <Label text="Observaciones del comprador" />
+				<Input text="" />
+                <Label text="Contacto" />
+				<Input placeholder="Name" />
+                <Input placeholder="Correo electrónico" />
+                <Label text="Teléfono" />
+				<Input text="" />
+                <Label text="Fecha de Publicación" />
+				<Input text="" />
+                <Label text="Fecha de Cierre" />
+				<Input text="" />
+                <Label text="Fecha de Apertura" />
+				<Input text="" />
+                <Label text="Clasificación ONU" />
+				<Input text="" />
+                <Label text="Espercificaciones del Camprador" />
+				<Input text="" />
+                <Label text="Cantidad" />
+				<Input text="" />
+                <Label text="Especificaciones del Proveedor" />
+				<Input text="" />
+                <core:Title text="Datos del Proveedor" />
+                <Label text="Nombre de usuario" />
+				<Input text="" />
+                <Label text="RUT empresa" />
+				<Input text="" />
+                <Label text="Razón Social" />
+				<Input text="" />
+                <core:Title text="Datos de  la Oferta" />
+                <Label text="Nombre de la Oferta" />
+				<Input text="" />
+                <Label text="Descripción de la Oferta" />
+				<Input text="" />
+                <Label text="Fecha y Hora de Ingreso" />
+				<Input text="" />
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<Table  
+			items="{path : 'fastAppData>/OfferProductValidation/', sorter: [{path: 'SORTER', descending: false}]}" 
+			inset="false" 
+			class="sapFDynamicPageAlignContent" 
+			width="auto" 
+			alternateRowColors="true" 
+			fixedLayout="true">
+			<columns>
+				<Column>
+					<Text text="#"/>
+				</Column>
+				<Column>
+					<Text text="Código"/>
+				</Column>
+                <Column>
+					<Text text="Producto"/>
+				</Column>
+				<Column>
+					<Text text="Principio activo"/>
+				</Column>
+				<Column>
+					<Text text="Presentación"/>
+				</Column>
+				<Column>
+					<Text text="Factor de empaque"/>
+				</Column>
+                <Column>
+					<Text text="Cantidad"/>
+				</Column>
+                <Column>
+					<Text text="Precio unitario"/>
+				</Column>
+                <Column>
+					<Text text="Precio total de la Oferta"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem>
+					<cells>
+						<Text text=""/>
+						<Text text=""/>
+						<Text text=""/>
+						<Text text=""/>
+						<Text text=""/>
+                        <Text text=""/>
+                        <Text text=""/>
+                        <Text text=""/>
+                        <Text text=""/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="false" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" labelSpanXL="2" labelSpanL="2" labelSpanM="2" emptySpanXL="0" emptySpanL="0" emptySpanM="0">
+			<form:content>
+				<core:Title text="Condiciones de despacho (se adjuntan)" />
+				<Label text="Condiciones de pago"/>
+				<Text text="" />
+				<Label text="Monto minimo de facturación (se adjuntan)" class="sapUiSmallMarginEnd"/>
+				<Text text="500.000 + IVA" />
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+	
 </core:FragmentDefinition>
