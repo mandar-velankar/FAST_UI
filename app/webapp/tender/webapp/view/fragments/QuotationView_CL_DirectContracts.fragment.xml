@@ -12,11 +12,7 @@
 			<items>
 				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="M" displayShape="Square" class="sapUiLargeMarginEnd"/>
 				<VBox>
-					<Label text="Bayer S.A" />
-					<Label text="Av. Andrés Bello 2457, Of. 2101, Piso 21, Providencia, Santiago" />
-					<Label text="Teléfono: +562-25208200" />
-					<Link text="www.bayer.cl" href="http://www.bayer.cl" target="_blank" />
-					<Link text="ventas.phcc@bayer.com" press="handleEmailPress" />
+					<FormattedText htmlText="{fastAppData>/OfferValidation/LETTERHEAD}" class="sapMText"/>
 				</VBox>
 			</items>
 		</HBox>
@@ -26,9 +22,9 @@
 		<form:SimpleForm  editable="true" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" labelSpanXL="1" labelSpanL="1" labelSpanM="2" emptySpanL="9" emptySpanM="6">
 			<form:content>
 				<Label text="N° cotizaciòn" />
-				<Input text="" />
+				<Input value="{fastAppData>/OfferValidation/OFFERID}" enabled="false" />
 				<Label text="Cliente" />
-				<Input text="tst" />
+				<Input value="{fastAppData>/OfferValidation/INSTITUTENAME}" enabled="false"/>
 			</form:content>
 		</form:SimpleForm>
 	</VBox>
@@ -61,11 +57,16 @@
 			<items>
 				<ColumnListItem>
 					<cells>
-						<Text text="{parts: [{path :'fastAppData>SKU'}], formatter: '.formatter.nullToBlank'}"/>
-						<Text text="{path :'fastAppData>PRODUCT_UNIT_NAME'}"/>
-						<Text text="{path :'fastAppData>PACKSIZE'}"/>
-						<Text text="{path :'fastAppData>PRODUCT_UNIT_NAME'}"/>
-						<Text text="{path :'fastAppData>PACKSIZE'}"/>
+						<Text text="{fastAppData>PRODUCTNAME}"/>
+						<Text text="{fastAppData>_DUMMY_}"/>
+						<Text text="{fastAppData>PRESENTATION}"/>
+						<Text text="{fastAppData>PACKSIZE}"/>
+						<Text text="{
+							parts: [
+                                {path: 'fastAppData>OFFER_PRICE'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"
+						/>
 					</cells>
 				</ColumnListItem>
 			</items>
@@ -77,9 +78,9 @@
 			<form:content>
 				<core:Title text="Vigencia cotización" />
 				<Label text="Condiciones de pago"/>
-				<Text text="30 dias fecha factura" />
+				<Text text="{fastAppData>/OfferValidation/PAYMENTTERMS}" />
 				<Label text="Monto mínimo" class="sapUiSmallMarginEnd"/>
-				<Text text="500.000 + IVA" />
+				<Text text="{fastAppData>/OfferValidation/_DUMMY_}" />
 			</form:content>
 		</form:SimpleForm>
 	</VBox>
