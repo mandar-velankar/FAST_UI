@@ -58,7 +58,7 @@
 				<ColumnListItem>
 					<cells>
 						<Text text="{fastAppData>PRODUCTNAME}"/>
-						<Text text="{fastAppData>_DUMMY_}"/>
+						<Text text="{fastAppData>ACTIVE_SUBSTANCE}"/>
 						<Text text="{fastAppData>PRESENTATION}"/>
 						<Text text="{fastAppData>PACKSIZE}"/>
 						<Text text="{
