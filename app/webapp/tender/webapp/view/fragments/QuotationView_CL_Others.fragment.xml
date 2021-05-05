@@ -1,0 +1,149 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout">
+
+	<VBox>
+		<HBox>
+			<items>
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="M" displayShape="Square" class="sapUiLargeMarginEnd"/>
+				<VBox>
+					<FormattedText htmlText="{fastAppData>/OfferValidation/LETTERHEAD}" class="sapMText"/>
+				</VBox>
+			</items>
+		</HBox>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="true" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" >
+			<form:content>
+                <core:Title text="Datos de la Adquisición" />
+				<Label text="N° de la Adquisición" />
+				<Input value="{fastAppData>/OfferValidation/OFFERID}" enabled="false" />
+				<Label text="Nombre" />
+				<Input value="{fastAppData>/OfferValidation/TENDERID}" enabled="false" />
+                <Label text="Estado" />
+				<Input value="{fastAppData>/OfferValidation/_DUMMY_}" enabled="false"/>
+                <Label text="Comprador" />
+				<Input value="{fastAppData>/OfferValidation/INSTITUTENAME}" enabled="false"/>
+                <Label text="Observaciones del comprador" />
+				<Input value="{fastAppData>/OfferValidation/_DUMMY_}" enabled="false"/>
+                <Label text="Contacto" />
+				<Input value="{fastAppData>/OfferValidation/DISTRIBUTORCONTACT}" placeholder="Name" enabled="false"/>
+                <Input value="{fastAppData>/OfferValidation/DISTRIBUTOREMAIL}" placeholder="Correo electrónico" enabled="false"/>
+                <Label text="Teléfono" />
+				<Input value="{fastAppData>/OfferValidation/DISTRIBUTORPHONE}" enabled="false"/>
+                <Label text="Fecha de Publicación" />
+				<Input value="{path :'fastAppData>/OfferValidation/PUBLICATION_DATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                <Label text="Fecha de Cierre" />
+				<Input value="{path :'fastAppData>/OfferValidation/BID_DUE_DATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                <Label text="Fecha de Apertura" />
+				<Input value="{fastAppData>/OfferValidation/_DUMMY_}" enabled="false"/>
+                <Label text="Clasificación ONU" />
+				<Input value="{fastAppData>/OfferValidation/CLASSIFICATION}" enabled="false"/>
+                <Label text="Espercificaciones del Camprador" />
+				<Input value="{fastAppData>/OfferValidation/CUSTOM_REMARKS}" enabled="false"/>
+                <Label text="Cantidad" />
+				<Input value="{fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS}" enabled="false"/>
+                <Label text="Especificaciones del Proveedor" />
+				<Input value="{fastAppData>/OfferValidation/REMARKS}" enabled="false"/>
+                <core:Title text="Datos del Proveedor" />
+                <Label text="Nombre de usuario" />
+				<Input value="{fastAppData>/OfferValidation/TENDER_SUBMITTED_BY}" enabled="false"/>
+                <Label text="RUT empresa" />
+				<Input value="{fastAppData>/OfferValidation/CUSTOMER_CODE}" enabled="false"/>
+                <Label text="Razón Social" />
+				<Input value="{fastAppData>/OfferValidation/DISTRIBUTORNAME}" enabled="false"/>
+                <core:Title text="Datos de  la Oferta" />
+                <Label text="Nombre de la Oferta" />
+				<Input value="{fastAppData>/OfferValidation/OFFERID}" enabled="false"/>
+                <Label text="Descripción de la Oferta" />
+				<Input value="{fastAppData>/OfferValidation/TENDERID}" enabled="false"/>
+                <Label text="Fecha y Hora de Ingreso" />
+				<Input value="{path :'fastAppData>/OfferValidation/OFFERDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<Table  
+			items="{path : 'fastAppData>/OfferProductValidation/', sorter: [{path: 'SORTER', descending: false}]}" 
+			inset="false" 
+			class="sapFDynamicPageAlignContent" 
+			width="auto" 
+			alternateRowColors="true" 
+			fixedLayout="true">
+			<columns>
+				<Column>
+					<Text text="#"/>
+				</Column>
+				<Column>
+					<Text text="Código"/>
+				</Column>
+                <Column>
+					<Text text="Producto"/>
+				</Column>
+				<Column>
+					<Text text="Principio activo"/>
+				</Column>
+				<Column>
+					<Text text="Presentación"/>
+				</Column>
+				<Column>
+					<Text text="Factor de empaque"/>
+				</Column>
+                <Column>
+					<Text text="Cantidad"/>
+				</Column>
+                <Column>
+					<Text text="Precio unitario"/>
+				</Column>
+                <Column>
+					<Text text="Precio total de la Oferta"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem>
+					<cells>
+						<Text text="{fastAppData>SORTER}"/>
+						<Text text="{parts: [{path :'fastAppData>CODE'}], formatter: '.formatter.nullToBlank'}"/>
+						<Text text="{fastAppData>PRODUCTNAME}"/>
+						<Text text="{fastAppData>ACTIVE_SUBSTANCE}"/>
+						<Text text="{fastAppData>PRESENTATION}"/>
+                        <Text text="{fastAppData>PACKSIZE}"/>
+                        <Text text="{fastAppData>TOTAL_QUANTITY_UNITS}"/>
+						<ObjectStatus
+							text="{parts: [
+								{path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+								{path: 'fastAppData>CURRENCY'}
+							], formatter:'.formatter.priceTwoOrFour'}"
+							state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+						/>
+						<Text text="{
+							parts: [
+                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"
+						/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="false" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" labelSpanXL="2" labelSpanL="2" labelSpanM="2" emptySpanXL="0" emptySpanL="0" emptySpanM="0">
+			<form:content>
+				<core:Title text="Condiciones de despacho (se adjuntan)" />
+				<Label text="Condiciones de pago"/>
+				<Text text="{fastAppData>/OfferValidation/PAYMENTTERMS}" />
+				<Label text="Monto minimo de facturación (se adjuntan)" class="sapUiSmallMarginEnd"/>
+				<Text text="" />
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+	
+</core:FragmentDefinition>
