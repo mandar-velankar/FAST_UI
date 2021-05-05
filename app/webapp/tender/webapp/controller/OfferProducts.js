@@ -933,14 +933,14 @@ sap.ui.define([
 			//Additional Discount
 			var oAdditionalDiscountData = {
 				"PriceType": "Additional Discount",
-				"Value": -oPrice.standardDiscount * oPrice.cifPrice,
+				"Value": -oPrice.additionalDiscount * oPrice.cifPrice,
 				"Type": "Cost"
 			};
 			
 			//FOC
 			var oFOCData = {
 				"PriceType": "FOC",
-				"Value": -oPrice.focChart * oPrice.offerPrice,
+				"Value": -oPrice.focChart * (oPrice.offerPrice - oPrice.additionalDiscount * oPrice.cifPrice),
 				"Type": "Cost"
 			};
 			
@@ -1843,7 +1843,13 @@ sap.ui.define([
 				var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
 			
 				var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+				//JH changed
 				var standardDiscount = oDetailController.byId("idEditPriceOffer_idStandardDiscount") && oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue()) / 100 : 0;
+				if(sCountryCode!=="AR"||sCountryCode!=="BR"){
+					standardDiscount = cifPrice && cifPrice!==0 ? (cifPrice - offerPrice) / cifPrice : 0;
+				}
+				//JH changed
+				
 				var additionalDiscount = oDetailController.byId("idEditPriceOffer_idAdditionalDiscount") && oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idAdditionalDiscount").getValue()) / 100 : 0;
 				var businessCasePrice = oDetailController.byId("idEditPriceOffer_idBusinessCasePrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idBusinessCasePrice").getValue().replace(",","")) : 0;
 				var focAbsPct = oDetailController.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
@@ -1870,7 +1876,7 @@ sap.ui.define([
 				var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
 					productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 					foc));
-				var netOfferPrice = cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart);
+				var netOfferPrice = cifPrice!==0 ? cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart) : offerPrice * (1 - focChart);//JH changed
 
 				let netPrice, discount = "";
 				if(sCountryCode==="AR"||sCountryCode==="BR"){
@@ -1956,7 +1962,10 @@ sap.ui.define([
 
 			//main foc product from selected scenario
 			var offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
-			var standardDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue()) / 100 : 0;							 
+			//var standardDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue()) / 100 : 0;							 
+			//if(sCountryCode!=="AR"||sCountryCode!=="BR"){
+			var standardDiscount = price.cifPrice && price.cifPrice!==0 ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
+			//}
 			var additionalDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
 			var focAbsPct = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
 			var foc = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;
@@ -1998,7 +2007,7 @@ sap.ui.define([
 			var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
 				productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 				foc));
-			var netOfferPrice = price.cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart);
+			var netOfferPrice = price.cifPrice !== 0 ? price.cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart): offerPrice * (1 - focChart);
 			var netPrice = (1 - price.deductions) * netOfferPrice;
 
 
