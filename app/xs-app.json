@@ -1,7 +1,8 @@
 {
   "authenticationMethod": "route",
   "logout": {
-    "logoutEndpoint": "/do/logout"
+    "logoutEndpoint": "/do/logout",
+    "logoutPage": "/app/logged-out.html"
   },
   "routes": [
     {
@@ -17,46 +18,59 @@
       "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": true
+    },{
+      "source": "^/app/index.html(.*)$",
+      "localDir": "dist/landingspage/webapp",
+      "authenticationType": "xsuaa",
+      "cacheControl": "no-cache, no-store, must-revalidate"
     },
     {
       "source": "^/app/(.*)$",
       "target": "$1",
-      "localDir": "dist/landingspage/webapp"
+      "localDir": "dist/landingspage/webapp",
+      "authenticationType": "xsuaa"
     },
     {
       "source": "^/appdebug/(.*)$",
       "target": "$1",
-      "localDir": "webapp/landingspage/webapp"
+      "localDir": "webapp/landingspage/webapp",
+      "authenticationType": "xsuaa"
     },
     {
       "source": "^/epa/(.*)$",
       "target": "$1",
-      "localDir": "dist/epa/webapp"
+      "localDir": "dist/epa/webapp",
+      "authenticationType": "xsuaa"
     },
     {
       "source": "^/contracts/(.*)$",
       "target": "$1",
-      "localDir": "dist/contracts/webapp"
+      "localDir": "dist/contracts/webapp",
+      "authenticationType": "xsuaa"
     },
     {
       "source": "^/tender/(.*)$",
       "target": "$1",
-      "localDir": "dist/tender/webapp"
+      "localDir": "dist/tender/webapp",
+      "authenticationType": "xsuaa"
     },
     {
       "source": "^/ppa/(.*)$",
       "target": "$1",
-      "localDir": "dist/ppa/webapp"
+      "localDir": "dist/ppa/webapp",
+      "authenticationType": "xsuaa"
     },
     {
       "source": "^/uilib/(.*)$",
       "target": "$1",
-      "localDir": "dist/uilib/src/com/bayer/tender/uilib"
+      "localDir": "dist/uilib/src/com/bayer/tender/uilib",
+      "authenticationType": "xsuaa"
     },
     {
       "source": "^/pdf/(.*)$",
       "target": "$1",
-      "localDir": "dist/pdf"
+      "localDir": "dist/pdf",
+      "authenticationType": "xsuaa"
     }
   ]
 }
