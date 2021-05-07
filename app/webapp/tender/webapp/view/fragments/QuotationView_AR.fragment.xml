@@ -304,7 +304,7 @@
                             <!-- Unit Price -->
                             <m:ObjectStatus
                                 text="{parts: [
-                                    {path: 'fastAppData>/OfferProductValidation/0/REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>/OfferProductValidation/0/NET_PRICE_UNIT_OFFER_CURRENCY'}, 
                                     {path: 'fastAppData>/OfferProductValidation/0/CURRENCY'}
                                 ], formatter:'.formatter.priceTwoOrFour'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
