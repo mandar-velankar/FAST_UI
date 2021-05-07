@@ -280,7 +280,7 @@
 		</blocks>
 	</ObjectPageSubSection>
 	<!-- LETTERS SUB SECTION PAGE -->
-	<ObjectPageSubSection id="DelivTrackLettersSubsection" title="Letters">
+	<ObjectPageSubSection id="DelivTrackLettersSubsection" title="Returns">
 		<blocks>
 			<m:VBox>
 				<m:Toolbar>
@@ -301,7 +301,7 @@
 							<m:Label text="Product SKU" wrapping="true"/>
 						</m:Column>-->
 						<m:Column width="7rem">
-							<m:Label text="Reason for Letter" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+							<m:Label text="Reason for Return" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 						</m:Column>
 						<m:Column width="7rem">
 							<m:Label text="Quantity" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
