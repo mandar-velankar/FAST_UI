@@ -178,7 +178,7 @@
 			<ObjectPageSection id="basicInformationId" title="{i18n>basicInformation}" visible="{fastAppData>/permissions/tabs/basicInformationId/visible}">
 				<subSections>
 					<ObjectPageSubSection id="basicInformationSubSectionId">
-						<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.BasicInformationView" type="XML" id="basicInformationFragmentId"></core:Fragment>
+						<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.BasicInformationView" type="XML" id="basicInformationFragmentId"/>
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
@@ -186,14 +186,14 @@
 			<!-- OFFER PRODUCTS TAB -->
 			<ObjectPageSection id="offerProductsId" title="{i18n>OfferProducts}" showTitle="true" visible="{fastAppData>/permissions/tabs/offerProductsId/visible}">
 				<subSections>
-					<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.OfferProductsView" type="XML" id="offerProductsFragmentId"></core:Fragment>
+					<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.OfferProductsView" type="XML" id="offerProductsFragmentId"/>
 				</subSections>
 			</ObjectPageSection>
 			
 			<!-- FINANCIAL OFFER TAB -->
 			<ObjectPageSection id="financialOfferId" title="{i18n>FinancialOffer}" showTitle="true" visible="{fastAppData>/permissions/tabs/financialOfferId/visible}">
 				<subSections>
-					<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOfferView" type="XML" id="financialOfferFragmentId"></core:Fragment>
+					<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOfferView" type="XML" id="financialOfferFragmentId"/>
 				</subSections>
 			</ObjectPageSection>
 			

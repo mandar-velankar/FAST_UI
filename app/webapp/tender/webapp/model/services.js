@@ -2011,7 +2011,7 @@ sap.ui.define([
 				oFastDataCalls.read(sTenderPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications"
+						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation"
 					},
 					success: function (oData, oResponse) {
 
@@ -2023,6 +2023,11 @@ sap.ui.define([
 						*/
 						oFastAppDataModel.setProperty("/Tender", oData);
 
+						// set the CountrySpecificInformation 
+						if(oData.CountrySpecificInformation){
+							oFastAppDataModel.setProperty("/CountrySpecificTenderInformation", oData.CountrySpecificInformation);
+						}
+						
 						//Keep institute + childeren list
 						that.bindInstituteWithChildren(oData.Institute);
 
@@ -3381,6 +3386,14 @@ sap.ui.define([
 						// CLOSE loading dialog
 						if (that._LoadingDialog) {
 							that._LoadingDialog.close();
+						}
+
+						// for Chile the TenderType is only shown when InstituteType == 'Cenabast'
+						// because of this requirement we default the bShowTenderType to false
+						// at later point in time the dropdown will set this to true
+						const country = that.getSelectedCountry();
+						if(country === 'CL'){
+							bShowTenderType = false;
 						}
 
 						//let the callback be triggered
@@ -5528,7 +5541,8 @@ sap.ui.define([
 					"countryCode": item.CountryCode,
 					"bindingPath": item.BindingPath.toLowerCase(),
 					"visible": item.Visible,
-					"required": item.Required
+					"required": item.Required,
+					"description": item.Description
 				}	
 
 			});
