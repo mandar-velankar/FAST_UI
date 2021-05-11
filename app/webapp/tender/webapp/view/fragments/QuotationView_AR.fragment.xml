@@ -111,7 +111,7 @@
                                                             <m:VBox width="28%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>BiddingTypeLevel1}" design="Bold"/>
-                                                                    <m:Text text="{fastAppData>/Tender/BindingTypeLevel1}"/>
+                                                                    <m:Text text="{fastAppData>/Tender/BiddingTypeLevel1}"/>
                                                                 </m:items>
                                                             </m:VBox>
                                                             <m:VBox width="2%">
@@ -119,7 +119,7 @@
                                                             <m:VBox width="28%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>BiddingTypeLevel2}" design="Bold"/>
-                                                                    <m:Text text="{fastAppData>/Tender/BindingTypeLevel2}"/>
+                                                                    <m:Text text="{fastAppData>/Tender/BiddingTypeLevel2}"/>
                                                                 </m:items>
                                                             </m:VBox>
                                                             <m:VBox width="2%">
@@ -127,7 +127,7 @@
                                                             <m:VBox width="28%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>BiddingTypeLevel3}" design="Bold"/>
-                                                                    <m:Text text="{fastAppData>/Tender/BindingTypeLevel3}"/>
+                                                                    <m:Text text="{fastAppData>/Tender/BiddingTypeLevel3}"/>
                                                                 </m:items>
                                                             </m:VBox>
                                                             <m:VBox width="2%">

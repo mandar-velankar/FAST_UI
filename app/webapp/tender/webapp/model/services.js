@@ -1469,8 +1469,8 @@ sap.ui.define([
 
 		},
 
-		// load CountryBindingTypeLevel1
-		loadCountryBindingTypeLevel1: function(sCountry, sClassificationID) {
+		// load CountryBiddingTypeLevel1
+		loadCountryBiddingTypeLevel1: function(sCountry, sClassificationID) {
 
 			// if no country is set don't run this method
 			if(!sCountry || sCountry.indexOf("NA") > -1 || !sClassificationID){
@@ -1486,7 +1486,7 @@ sap.ui.define([
 
 			var that = this;
 
-			var sPath = "/CountryBindingTypeLevel1";
+			var sPath = "/CountryBiddingTypeLevel1";
 
 			var aFilters = [];
 
@@ -1507,25 +1507,25 @@ sap.ui.define([
 					success: function (oData, oResponse) { 
 
 						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-						var aCountryBindingTypeLevel1 = oData.results;
+						var aCountryBiddingTypeLevel1 = oData.results;
 
 						// add an empty value at the begining of the array. needed for the dropdown
 						if(oData.results.length > 0){
-							aCountryBindingTypeLevel1.unshift({});
+							aCountryBiddingTypeLevel1.unshift({});
 						}
 
 
 						//data received is set
-						oFastAppDataModel.setProperty("/CountryBindingTypeLevel1", aCountryBindingTypeLevel1);
+						oFastAppDataModel.setProperty("/CountryBiddingTypeLevel1", aCountryBiddingTypeLevel1);
 
 						//let the callback be triggered
-						resolve(aCountryBindingTypeLevel1);
+						resolve(aCountryBiddingTypeLevel1);
 
 					},
 					error: function (oError) {
 
 						//show error message
-						that.showErrorMessage(oError, "Loading of country BindingTypeLevel1");
+						that.showErrorMessage(oError, "Loading of country BiddingTypeLevel1");
 
 						//let the callback be triggered
 						reject(oError);
@@ -1542,15 +1542,15 @@ sap.ui.define([
 		},
 
 		/**
-		 * load CountryBindingTypeLevel2
+		 * load CountryBiddingTypeLevel2
 		 * @param {string} sCountry - 
-		 * @param {string} sBindingTypeLevel1Id -
+		 * @param {string} sBiddingTypeLevel1Id -
 		 * @return {undefined} - returns a promise
 		 */
-		loadCountryBindingTypeLevel2: function(sCountry, sBindingTypeLevel1Id) {
+		loadCountryBiddingTypeLevel2: function(sCountry, sBiddingTypeLevel1Id) {
 
 			// if no country is set don't run this method
-			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel1Id){
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBiddingTypeLevel1Id){
 				return undefined;
 			}
 
@@ -1563,7 +1563,7 @@ sap.ui.define([
 
 			var that = this;
 
-			var sPath = "/CountryBindingTypeLevel2";
+			var sPath = "/CountryBiddingTypeLevel2";
 
 			var aFilters = [];
 
@@ -1572,8 +1572,8 @@ sap.ui.define([
 				aFilters.push(oCountryFilter);
 			}
 
-			if (sBindingTypeLevel1Id) {
-				let oFilter = new sap.ui.model.Filter("BindingTypeLevel1ID", sap.ui.model.FilterOperator.EQ, sBindingTypeLevel1Id);
+			if (sBiddingTypeLevel1Id) {
+				let oFilter = new sap.ui.model.Filter("BiddingTypeLevel1ID", sap.ui.model.FilterOperator.EQ, sBiddingTypeLevel1Id);
 				aFilters.push(oFilter);
 			}
 
@@ -1584,25 +1584,25 @@ sap.ui.define([
 					filters: aFilters,
 					success: function (oData, oResponse) { 
 						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-						var aCountryBindingTypeLevel2 = oData.results;
+						var aCountryBiddingTypeLevel2 = oData.results;
 
 						// add an empty value at the begining of the array. needed for the dropdown
 						if(oData.results.length > 0){
-							aCountryBindingTypeLevel2.unshift({});
+							aCountryBiddingTypeLevel2.unshift({});
 						}
 
 						//data received is set
-						oFastAppDataModel.setProperty("/CountryBindingTypeLevel2", aCountryBindingTypeLevel2);
+						oFastAppDataModel.setProperty("/CountryBiddingTypeLevel2", aCountryBiddingTypeLevel2);
 
 						//let the callback be triggered
-						//oDeferred.resolve(aCountryBindingTypeLevel2);
-						resolve(aCountryBindingTypeLevel2);
+						//oDeferred.resolve(aCountryBiddingTypeLevel2);
+						resolve(aCountryBiddingTypeLevel2);
 
 					},
 					error: function (oError) {
 
 						//show error message
-						that.showErrorMessage(oError, "Loading of country BindingTypeLevel2");
+						that.showErrorMessage(oError, "Loading of country BiddingTypeLevel2");
 
 						//let the callback be triggered
 						//oDeferred.reject(oError);
@@ -1620,11 +1620,11 @@ sap.ui.define([
 			//return oDeferred.promise();
 		},
 
-		// load CountryBindingTypeLevel3
-		loadCountryBindingTypeLevel3: function(sCountry, sBindingTypeLevel2Id) { 
+		// load CountryBiddingTypeLevel3
+		loadCountryBiddingTypeLevel3: function(sCountry, sBiddingTypeLevel2Id) { 
 
 			// if no country is set don't run this method
-			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel2Id){
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBiddingTypeLevel2Id){
 				return undefined;
 			}
 
@@ -1637,7 +1637,7 @@ sap.ui.define([
 
 			var that = this;
 
-			var sPath = "/CountryBindingTypeLevel3";
+			var sPath = "/CountryBiddingTypeLevel3";
 
 			var aFilters = [];
 
@@ -1646,8 +1646,8 @@ sap.ui.define([
 				aFilters.push(oCountryFilter);
 			}
 
-			if (sBindingTypeLevel2Id) {
-				let oFilter = new sap.ui.model.Filter("BindingTypeLevel2ID", sap.ui.model.FilterOperator.EQ, sBindingTypeLevel2Id);
+			if (sBiddingTypeLevel2Id) {
+				let oFilter = new sap.ui.model.Filter("BiddingTypeLevel2ID", sap.ui.model.FilterOperator.EQ, sBiddingTypeLevel2Id);
 				aFilters.push(oFilter);
 			}
 
@@ -1658,24 +1658,24 @@ sap.ui.define([
 					success: function (oData, oResponse) { 
 
 						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-						var aCountryBindingTypeLevel3 = oData.results;
+						var aCountryBiddingTypeLevel3 = oData.results;
 
 						// add an empty value at the begining of the array. needed for the dropdown
 						if(oData.results.length > 0){
-							aCountryBindingTypeLevel3.unshift({});
+							aCountryBiddingTypeLevel3.unshift({});
 						}
 						
 						//data received is set
-						oFastAppDataModel.setProperty("/CountryBindingTypeLevel3", aCountryBindingTypeLevel3);
+						oFastAppDataModel.setProperty("/CountryBiddingTypeLevel3", aCountryBiddingTypeLevel3);
 
 						//let the callback be triggered
-						resolve(aCountryBindingTypeLevel3);
+						resolve(aCountryBiddingTypeLevel3);
 
 					},
 					error: function (oError) {
 
 						//show error message
-						that.showErrorMessage(oError, "Loading of country BindingTypeLevel3");
+						that.showErrorMessage(oError, "Loading of country BiddingTypeLevel3");
 
 						//let the callback be triggered
 						reject(oError);

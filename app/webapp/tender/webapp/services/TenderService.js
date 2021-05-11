@@ -96,9 +96,9 @@ sap.ui.define([
 			oTenderToSave.SubmittedBy = oTenderSaveInfo.SubmittedBy;
 			oTenderToSave.Active = Number(oTenderSaveInfo.Active);
 			oTenderToSave.Classification = oTenderSaveInfo.Classification;
-			oTenderToSave.BindingTypeLevel1 = oTenderSaveInfo.BindingTypeLevel1;
-			oTenderToSave.BindingTypeLevel2 = oTenderSaveInfo.BindingTypeLevel2;
-			oTenderToSave.BindingTypeLevel3 = oTenderSaveInfo.BindingTypeLevel3;
+			oTenderToSave.BiddingTypeLevel1 = oTenderSaveInfo.BiddingTypeLevel1;
+			oTenderToSave.BiddingTypeLevel2 = oTenderSaveInfo.BiddingTypeLevel2;
+			oTenderToSave.BiddingTypeLevel3 = oTenderSaveInfo.BiddingTypeLevel3;
 			oTenderToSave.HighValue = oTenderSaveInfo.HighValue;
 			oTenderToSave.OfferStartDate = oTenderSaveInfo.OfferStartDate;
 			oTenderToSave.IbizID = oTenderSaveInfo.IbizID;
@@ -144,9 +144,9 @@ sap.ui.define([
 			oNewTender.SubmittedBy = "";
 			oNewTender.Active = 1;
 			oNewTender.Classification = "";
-			oNewTender.BindingTypeLevel1 = "";
-			oNewTender.BindingTypeLevel2 = "";
-			oNewTender.BindingTypeLevel3 = "";
+			oNewTender.BiddingTypeLevel1 = "";
+			oNewTender.BiddingTypeLevel2 = "";
+			oNewTender.BiddingTypeLevel3 = "";
 			oNewTender.HighValue = "";
 			oNewTender.OfferStartDate = "";
 			oNewTender.IbizID = "";

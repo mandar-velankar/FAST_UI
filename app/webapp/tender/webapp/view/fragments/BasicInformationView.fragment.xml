@@ -17,37 +17,37 @@
 				<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
-						(${fastData>BindingTypeLevel1} ? true : false)
+						(${fastData>BiddingTypeLevel1} ? true : false)
 					}"
 				/>
-				<Input id="idBindingTypeLevel1Display" value="{fastData>BindingTypeLevel1}" enabled="false" 
+				<Input id="idBiddingTypeLevel1Display" value="{fastData>BiddingTypeLevel1}" enabled="false" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
-						${fastData>BindingTypeLevel1}.length > 0
+						${fastData>BiddingTypeLevel1}.length > 0
 					}"
 				/>
 				<Label text="{i18n>BiddingTypeLevel2}" design="Bold" required="true" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
-						(${fastData>BindingTypeLevel2} ? true : false)
+						(${fastData>BiddingTypeLevel2} ? true : false)
 					}"
 				/>
-				<Input id="idBindingTypeLevel2Display" value="{fastData>BindingTypeLevel2}" enabled="false" 
+				<Input id="idBiddingTypeLevel2Display" value="{fastData>BiddingTypeLevel2}" enabled="false" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR'  &amp;&amp;
-						(${fastData>BindingTypeLevel2} ? true : false)
+						(${fastData>BiddingTypeLevel2} ? true : false)
 					}"
 				/>
 				<Label text="{i18n>BiddingTypeLevel3}" design="Bold" required="true" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR'  &amp;&amp;
-						(${fastData>BindingTypeLevel3} ? true : false)
+						(${fastData>BiddingTypeLevel3} ? true : false)
 					}"
 				/>
-				<Input id="idBindingTypeLevel3Display" value="{fastData>BindingTypeLevel3}" enabled="false" 
+				<Input id="idBiddingTypeLevel3Display" value="{fastData>BiddingTypeLevel3}" enabled="false" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR'  &amp;&amp;
-						(${fastData>BindingTypeLevel3} ? true : false)
+						(${fastData>BiddingTypeLevel3} ? true : false)
 					}"
 				/>
 				<Label text="{i18n>Specifications}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
@@ -87,14 +87,14 @@
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<CheckBox 
 					enabled="false"
 					selected="{fastData>HighValue}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<!-- / Argentina only -->

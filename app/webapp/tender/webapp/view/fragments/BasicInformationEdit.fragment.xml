@@ -24,12 +24,12 @@
 				<!-- Argentina only -->
 				<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true"/>
 				<Select id="idBiddingTypeLevel1" 
-					selectedKey="{fastData>BindingTypeLevel1}"  
+					selectedKey="{fastData>BiddingTypeLevel1}"  
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-						${fastAppData>/CountryBindingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
+						${fastAppData>/CountryBiddingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
 					}" 
-					items="{ path: 'fastAppData>/CountryBindingTypeLevel1'}" 
+					items="{ path: 'fastAppData>/CountryBiddingTypeLevel1'}" 
 					change="onBiddingTypeLevel1Change">
 					<items>
 						<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}" />
@@ -40,9 +40,9 @@
 					selectedKey="{fastData>BiddingTypeLevel2}" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-						${fastAppData>/CountryBindingTypeLevel2} &amp;&amp; ${fastData>BindingTypeLevel1} &amp;&amp; ${fastAppData>CountryBindingTypeLevel2}.length > 0? true : false
+						${fastAppData>/CountryBiddingTypeLevel2} &amp;&amp; ${fastData>BiddingTypeLevel1} &amp;&amp; ${fastAppData>CountryBiddingTypeLevel2}.length > 0? true : false
 					}" 
-					items="{ path: 'fastAppData>/CountryBindingTypeLevel2'}" 
+					items="{ path: 'fastAppData>/CountryBiddingTypeLevel2'}" 
 					change="onBiddingTypeLevel2Change">
 					<items>
 						<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
@@ -53,9 +53,9 @@
 					selectedKey="{fastData>BiddingTypeLevel3}" 
 					visible="{= 
 						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
-						${fastAppData>/CountryBindingTypeLevel3} &amp;&amp; ${fastData>BindingTypeLevel1} ? true : false
+						${fastAppData>/CountryBiddingTypeLevel3} &amp;&amp; ${fastData>BiddingTypeLevel1} ? true : false
 					}" 
-					items="{ path: 'fastAppData>/CountryBindingTypeLevel3'}"
+					items="{ path: 'fastAppData>/CountryBiddingTypeLevel3'}"
 					change="onBiddingTypeLevel3Change">
 					<items>
 						<core:Item text="{fastAppData>Name}" key="{fastAppData>Name}" app:ID="{fastAppData>ID}"/>
@@ -113,14 +113,14 @@
 				<!-- Argentina only -->
 				<Label id="idHighValueLabel" text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<CheckBox 
 					id="idHighValue"
 					selected="{fastData>HighValue}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BindingTypeLevel3} === 'Nacional'
+						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<!--/ Argentina only -->
