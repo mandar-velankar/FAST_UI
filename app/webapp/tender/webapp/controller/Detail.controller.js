@@ -8424,30 +8424,50 @@ sap.ui.define([
 
 		onClassificationChange: async function(oEvent){ 
 
+			const oForm = this.byId("idBasicInfoSimpleForm");
+			oForm.setBusyIndicatorDelay(0);
+
 			let sCountry = this._country;
 			let sClassificationId = oEvent.getSource().getSelectedItem().data("classificationId");
 
 			this._initializeCountrySpecificFields();
 			
 			if(sClassificationId){ 
-				const aBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(sCountry, sClassificationId);
-				const aSpecifications = await Services.loadCountrySpecifications(sCountry, sClassificationId);
 
-				if(aBindingTypeLevel1.length > 0){
-					this.byId("idBiddingTypeLevel1").setVisible(true);
+				try {
+
+					oForm.setBusy(true);
+
+					const aBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(sCountry, sClassificationId);
+				
+					if(aBindingTypeLevel1.length > 0){
+						this.byId("idBiddingTypeLevel1").setVisible(true);
+					}
+
+					const aSpecifications = await Services.loadCountrySpecifications(sCountry, sClassificationId);
+
+					if(aSpecifications.length > 0){
+						this.byId("idSpecifications").setVisible(true);
+					}
+					
+
+				} catch(err) {
+					console.log(err);
+				} finally{
+					oForm.setBusy(false);
+					this.byId("idBiddingTypeLevel2").getItems().length > 0 ? this.byId("idBiddingTypeLevel2").destroyItems() : "";
+					this.byId("idBiddingTypeLevel3").getItems().length > 0 ? this.byId("idBiddingTypeLevel3").destroyItems() : "";
 				}
 
-				if(aSpecifications.length > 0){
-					this.byId("idSpecifications").setVisible(true);
-				}
-
-				this.byId("idBiddingTypeLevel2").getItems().length > 0 ? this.byId("idBiddingTypeLevel2").destroyItems() : "";
-				this.byId("idBiddingTypeLevel3").getItems().length > 0 ? this.byId("idBiddingTypeLevel3").destroyItems() : "";
+				
 			}
 
 		},
 
 		onBiddingTypeLevel1Change: async function(oEvent){
+
+			const oForm = this.byId("idBasicInfoSimpleForm");
+			oForm.setBusyIndicatorDelay(0);
 
 			let sCountry = this._country;
 			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().data("ID");
@@ -8459,23 +8479,44 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
 			if(sBindingTypeLevel1Id){
-				that.getView().setBusy(true);
-				//const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
 
-				$.when(Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id)).done(function (oData){
-					if(oData.length > 0){
+				//that.getView().setBusy(true);
+				try {
+
+					oForm.setBusy(true);
+
+					const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
+
+					if(aBindingTypeLevel2.length > 0){
 						that.byId("idBiddingTypeLevel2").setVisible(true);
-						that.getView().setBusy(false);
 					}else{
 						that.byId("idBiddingTypeLevel2").setVisible(false);
-						that.getView().setBusy(false);
 					}
-				});
+
+				} catch(err) {
+					console.log(err);
+				} finally{
+					oForm.setBusy(false);
+				}
+				
+
+				// $.when(Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id)).done(function (oData){
+				// 	if(oData.length > 0){
+				// 		that.byId("idBiddingTypeLevel2").setVisible(true);
+				// 		that.getView().setBusy(false);
+				// 	}else{
+				// 		that.byId("idBiddingTypeLevel2").setVisible(false);
+				// 		that.getView().setBusy(false);
+				// 	}
+				// });
 
 			}
 		},
 
 		onBiddingTypeLevel2Change: async function(oEvent){ 
+
+			const oForm = this.byId("idBasicInfoSimpleForm");
+			oForm.setBusyIndicatorDelay(0);
 
 			let sCountry = this._country;
 			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().data("ID");
@@ -8486,17 +8527,36 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
 			if(sBindingTypeLevel2Id){
-				this.getView().setBusy(true);
-				//const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
-				$.when(Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id)).done(function (oData){
-					if(oData.length > 0){
+				// this.getView().setBusy(true);
+
+				try {
+
+					oForm.setBusy(true);
+
+					const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
+
+					if(aBindingTypeLevel3.length > 0){
 						that.byId("idBiddingTypeLevel3").setVisible(true);
-						that.getView().setBusy(false);
 					}else{
 						that.byId("idBiddingTypeLevel3").setVisible(false);
-						that.getView().setBusy(false);
 					}
-				});
+
+				} catch(err) {
+					console.log(err);
+				} finally{
+					oForm.setBusy(false);
+				}
+
+
+				// $.when(Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id)).done(function (oData){
+				// 	if(oData.length > 0){
+				// 		that.byId("idBiddingTypeLevel3").setVisible(true);
+				// 		that.getView().setBusy(false);
+				// 	}else{
+				// 		that.byId("idBiddingTypeLevel3").setVisible(false);
+				// 		that.getView().setBusy(false);
+				// 	}
+				// });
 			}
 
 		},
