@@ -7518,7 +7518,7 @@ sap.ui.define([
 			
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
-			var sSubject = 'Quotation for offer ' + Services.getSelectedOfferID();
+			var sSubject = 'Quotation for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
 
 			if (this._EmailQuotationDialog) {
 				this._EmailQuotationDialog.destroy();
