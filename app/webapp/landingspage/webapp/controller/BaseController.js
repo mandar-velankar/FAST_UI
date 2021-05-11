@@ -47,6 +47,9 @@ sap.ui.define([
 		getResourceBundle : function () {
 			return this.getOwnerComponent().getModel("i18n").getResourceBundle();
 		},
+		getText:function(key,params){
+			return this.getResourceBundle().getText(key,(params||[]));
+		},
 
 		/**
 		 * Event handler when the share by E-Mail button has been clicked
