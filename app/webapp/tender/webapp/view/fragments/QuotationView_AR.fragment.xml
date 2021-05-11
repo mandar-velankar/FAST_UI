@@ -206,6 +206,7 @@
                     </m:VBox>
         
         <!-- Quotation products -->
+        <!-- still TODO step away from using /ProductsForOffer/results on this table, use again /OfferProductValidation (same binding as other quotation fragments) and expand this view with the additional fields needed for Argentina (reason why we switched to products)-->
             <m:Table id="idQuotationTable"
                 items="{path : 'fastAppData>/ProductsForOffer/results', sorter: [{path: 'SORTER', descending: false}]}"
                 inset="false" class="sapFDynamicPageAlignContent" width="auto"
@@ -302,14 +303,23 @@
                             <m:Text text="{path :'fastAppData>RequestedVolume'}"/>
                             
                             <!-- Unit Price -->
+                            <!-- still TODO step away from using /ProductsForOffer/results on this table, but use again /OfferProductValidation and expand this view with the additional fields needed for Argentina-->
+                            <!--
                             <m:ObjectStatus
                                 text="{parts: [
-                                    {path: 'fastAppData>/OfferProductValidation/0/REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
-                                    {path: 'fastAppData>/OfferProductValidation/0/CURRENCY'}
+                                    {path: 'fastAppData>NET_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>CURRENCY'}
                                 ], formatter:'.formatter.priceTwoOrFour'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
-
+                            -->
+                            <m:ObjectStatus
+                                text="{parts: [
+                                    {path: 'fastAppData>Price/NetPrice'}, 
+                                    {path: 'fastAppData>Offer/Currency'}
+                                ], formatter:'.formatter.priceTwoOrFour'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />
                             <!-- UoM -->
                             <m:Text text="{path :'fastAppData>UnitPerPack'}"/>
 
