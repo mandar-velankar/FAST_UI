@@ -1484,6 +1484,8 @@ sap.ui.define([
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel1", {});
+
 			var that = this;
 
 			var sPath = "/CountryBiddingTypeLevel1";
@@ -1561,6 +1563,9 @@ sap.ui.define([
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 
+			// empty the CountryBiddingTypeLevel2 first. this is needed, otherwise the dropdown will be emtpty 
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel2", {});
+
 			var that = this;
 
 			var sPath = "/CountryBiddingTypeLevel2";
@@ -1584,18 +1589,16 @@ sap.ui.define([
 					filters: aFilters,
 					success: function (oData, oResponse) { 
 						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-						var aCountryBiddingTypeLevel2 = oData.results;
+						const aCountryBiddingTypeLevel2 = oData.results;
 
 						// add an empty value at the begining of the array. needed for the dropdown
 						if(oData.results.length > 0){
 							aCountryBiddingTypeLevel2.unshift({});
 						}
 
-						//data received is set
+						//data received is set to the model
 						oFastAppDataModel.setProperty("/CountryBiddingTypeLevel2", aCountryBiddingTypeLevel2);
 
-						//let the callback be triggered
-						//oDeferred.resolve(aCountryBiddingTypeLevel2);
 						resolve(aCountryBiddingTypeLevel2);
 
 					},
@@ -1634,6 +1637,8 @@ sap.ui.define([
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
+
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel3", {});
 
 			var that = this;
 
