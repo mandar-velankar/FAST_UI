@@ -63,7 +63,7 @@
     {
       "source": "^/uilib/(.*)$",
       "target": "$1",
-      "localDir": "dist/uilib/",
+      "localDir": "dist/uilib/src/com/bayer/tender/uilib",
       "authenticationType": "xsuaa"
     },
     {
