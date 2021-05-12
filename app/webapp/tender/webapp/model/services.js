@@ -1864,6 +1864,58 @@ sap.ui.define([
 
 		},
 
+		//load country channels
+		loadCountryOutcomes: function (sCountry) {
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sCountryChannelsPath = "/MASTER_COUNTRY_OUTCOMES";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sCountryChannelsPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryOutcomes = oData.results;
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryOutcomes", aCountryOutcomes);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryOutcomes);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country outcomes");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
 		//load new tender ID from DB
 		loadNewTenderID: function () {
 
