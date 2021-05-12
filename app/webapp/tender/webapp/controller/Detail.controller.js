@@ -1569,7 +1569,7 @@ sap.ui.define([
 		//save or cancel button below is pressed
 		onEditToggleButtonPress: function (oEvent) {
 			var that = this;
-			let sCountry = Services.getSelectedCountry();
+			let sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";;
 			var oObjectPage = that.getView().byId("DetailPage"),
 				bCurrentShowFooterState = oObjectPage.getShowFooter();
 			var sSelectedSection = oObjectPage.getSelectedSection();
@@ -1847,7 +1847,7 @@ sap.ui.define([
 					case Services.getBasicInformationPageSectionID():
 
 						/*initialize country filter for particular fields (tender type, tender origin, sales type, contract type) */
-						var sCountryCode = Services.getSelectedCountry();
+						var sCountryCode = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";
 						var aFilter = [];
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 

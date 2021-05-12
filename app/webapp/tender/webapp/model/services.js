@@ -1893,6 +1893,10 @@ sap.ui.define([
 					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
 					var aCountryOutcomes = oData.results;
 
+					if(oData.results.length > 0){
+						aCountryOutcomes.unshift({CountryCode:sCountry,Outcome:"",Sorter:"0"});
+					}
+
 					//data received is set
 					oFastAppDataModel.setProperty("/CountryOutcomes", aCountryOutcomes);
 
