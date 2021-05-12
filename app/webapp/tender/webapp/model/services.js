@@ -1484,7 +1484,7 @@ sap.ui.define([
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 
-			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel1", {});
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel1", []);
 
 			var that = this;
 
@@ -1564,7 +1564,7 @@ sap.ui.define([
 			var oFastAppDataModel = this.getFastAppDataModel();
 
 			// empty the CountryBiddingTypeLevel2 first. this is needed, otherwise the dropdown will be emtpty 
-			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel2", {});
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel2", []);
 
 			var that = this;
 
@@ -1638,7 +1638,7 @@ sap.ui.define([
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 
-			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel3", {});
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel3", []);
 
 			var that = this;
 
