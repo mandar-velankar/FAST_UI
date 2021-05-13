@@ -15,22 +15,23 @@ sap.ui.define([
 			//Routing
 			this.oOwnerComponent = this.getOwnerComponent();
 			this.oRouter = this.getOwnerComponent().getRouter();
-			setInterval(function () {
+			var intervalId = setInterval(()=>{
 				var unique = new Date().getTime().toString(16);
 				this.getView().getModel("access").setUseBatch(false);
 				this.getView().getModel("access").read("/getAccess", {
 					urlParameters: { time: unique },
 					error: () => {
-						MessageBox.warning(this.getKey("sessionEnd"), {
-							title: this.getKey("information"),
-							actions: [this.getKey("close")],
+						clearInterval(intervalId);
+						MessageBox.warning(this.getText("sessionEnd"), {
+							title: this.getText("information"),
+							actions: [this.getText("close")],
 							onClose: (sAction) => window.location.reload(true)
 						});
 					}
 				});
 				// this.getView().getModel("access").setUseBatch(true);
 				// this.getView().getModel("access").refreshMetadata();
-			}.bind(this), 15000);//900000); //15 minutes
+			}, 15000);//900000); //15 minutes
 			//attach method fnHandleRoutePatternMatched to the route
 			this.oRouter.attachRoutePatternMatched(this.fnHandleRoutePatternMatched, this);
 		},
