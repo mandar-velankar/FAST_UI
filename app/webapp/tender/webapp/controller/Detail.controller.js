@@ -2,6 +2,7 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/m/MessageToast",
 	"../controller/OfferProducts",
+	"../controller/DeliveryTracking.controller",
 	"sap/m/Button",
 	"sap/m/Dialog",
 	"sap/ui/core/BusyIndicator",
@@ -20,7 +21,7 @@ sap.ui.define([
 	"sap/m/Token",
 	"sap/m/Tokenizer",
 	"FAST_NS0FAST0/libs/ranking/Ranking"
-], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
+], function (Controller, MessageToast, DeliveryTracking, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
 	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking) {
 	"use strict";
@@ -46,8 +47,9 @@ sap.ui.define([
 			this.oRouter = this.oOwnerComponent.getRouter();
 			this.oModel = this.oOwnerComponent.getModel();
 
-			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
-			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
+			//this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
+			//this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
+			this.oDeliveryTrackingController = new DeliveryTracking();
 
 			Services.setRouterObject(this.oRouter);
 
@@ -1356,37 +1358,37 @@ sap.ui.define([
 					if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()),sSelectedSection)){
 
 						//Deliveries - subsection
-						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
+						var oDelivTrackOfferSubSection = that.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
 							oDelivTrackOfferSubSection.setVisible(true);
 						}
 
 						//Deliveries - Deliveries
-						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
+						var oDelivTrackDeliveriesSubSection = that.byId("DelivTrackDeliveriesSubsection");
 						if (oDelivTrackDeliveriesSubSection) {
 							oDelivTrackDeliveriesSubSection.setVisible(true);
 						}
 
 						//Deliveries - Delivery Detail
-						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
+						var oDeliveryDetailSubSection = that.byId("idDeliveryDetailSection");
 						if (oDeliveryDetailSubSection) {
 							oDeliveryDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letters
-						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
+						var oDelivTrackLettersSubSection = that.byId("DelivTrackLettersSubsection");
 						if (oDelivTrackLettersSubSection) {
 							oDelivTrackLettersSubSection.setVisible(true);
 						}
 
 						//Deliveries - Letter Details
-						var oLetterDetailSubSection = that.oDeliveryTrackingView.byId("idLetterDetailSection");
+						var oLetterDetailSubSection = that.byId("idLetterDetailSection");
 						if (oLetterDetailSubSection) {
 							oLetterDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - No offer subsection
-						var oDelivTrackNoOfferSubsection = that.oDeliveryTrackingView.byId("DelivTrackNoOfferSubsection");
+						var oDelivTrackNoOfferSubsection = that.byId("DelivTrackNoOfferSubsection");
 						if (oDelivTrackNoOfferSubsection) {
 							oDelivTrackNoOfferSubsection.setVisible(false);
 						}	
@@ -1395,37 +1397,37 @@ sap.ui.define([
 					} else {
 
 						//Deliveries - subsection
-						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
+						var oDelivTrackOfferSubSection = that.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
 							oDelivTrackOfferSubSection.setVisible(false);
 						}
 
 						//Deliveries - Deliveries
-						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
+						var oDelivTrackDeliveriesSubSection = that.byId("DelivTrackDeliveriesSubsection");
 						if (oDelivTrackDeliveriesSubSection) {
 							oDelivTrackDeliveriesSubSection.setVisible(false);
 						}
 
 						//Deliveries - Delivery Detail
-						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
+						var oDeliveryDetailSubSection = that.byId("idDeliveryDetailSection");
 						if (oDeliveryDetailSubSection) {
 							oDeliveryDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letters
-						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
+						var oDelivTrackLettersSubSection = that.byId("DelivTrackLettersSubsection");
 						if (oDelivTrackLettersSubSection) {
 							oDelivTrackLettersSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letter Details
-						var oLetterDetailSubSection = that.oDeliveryTrackingView.byId("idLetterDetailSection");
+						var oLetterDetailSubSection = that.byId("idLetterDetailSection");
 						if (oLetterDetailSubSection) {
 							oLetterDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - No offer subsection
-						var oDelivTrackNoOfferSubsection = that.oDeliveryTrackingView.byId("DelivTrackNoOfferSubsection");
+						var oDelivTrackNoOfferSubsection = that.byId("DelivTrackNoOfferSubsection");
 						if (oDelivTrackNoOfferSubsection) {
 							oDelivTrackNoOfferSubsection.setVisible(true);
 						}
@@ -2681,8 +2683,8 @@ sap.ui.define([
 
 				//DELIVERY TRACKING TAB
 				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
-				this.oDeliveryTrackingView.byId("idDeliveryDetailSection").setVisible(false);
-				this.oDeliveryTrackingView.byId("idLetterDetailSection").setVisible(false);
+				this.byId("idDeliveryDetailSection").setVisible(false);
+				this.byId("idLetterDetailSection").setVisible(false);
 				break;
 
 			default:
