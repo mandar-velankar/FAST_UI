@@ -314,6 +314,7 @@ sap.ui.define([
 			var oTenderType = this.getView().byId("idSelectTenderTypeEdit");
 			var oContractType = this.getView().byId("idSelectContractTypeEdit");
 			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
+			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 
 			var sCountryCode = Services.getSelectedCountry();
 			var aFilter = [];
@@ -344,6 +345,11 @@ sap.ui.define([
 			//should tendertype be visible on the screen based on data back-end
 			$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 				oTenderType.setVisible(bShowTenderType);
+				if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
+					oTenderType.setVisible(true);
+				}else{
+					oTenderType.setVisible(bShowTenderType);
+				}
 			});
 
 			//should tenderorigin be visible on the screen based on data back-end
@@ -553,6 +559,7 @@ sap.ui.define([
 			//get selected Tender Path
 			var sTenderID = Services.getSelectedTenderID();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 			//var sOfferID  = Services.getSelectedOfferID();
 
 			//if tender is already loaded, we will not load data again (refresh should be done after saving)
@@ -571,7 +578,7 @@ sap.ui.define([
 
 				//should tendertype be visible on the basic info screen?
 				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
-					if(Services.getSelectedCountry() === 'CL'){
+					if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
 						oDetailController.getView().byId("idSelectTenderType").setVisible(true);
 					}else{
 						oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
@@ -1569,7 +1576,7 @@ sap.ui.define([
 		//save or cancel button below is pressed
 		onEditToggleButtonPress: function (oEvent) {
 			var that = this;
-			let sCountry = Services.getSelectedCountry();
+			let sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";;
 			var oObjectPage = that.getView().byId("DetailPage"),
 				bCurrentShowFooterState = oObjectPage.getShowFooter();
 			var sSelectedSection = oObjectPage.getSelectedSection();
@@ -1580,6 +1587,7 @@ sap.ui.define([
 			var bEditAllowed = true; //default we allow editing
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			var oFastAppDataModel = Services.getFastAppDataModel();
+			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 
 			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
 			if (bCurrentShowFooterState === true) {
@@ -1611,10 +1619,10 @@ sap.ui.define([
 					//should tendertype be visible on the basic info screen?
 					$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
-						if(Services.getSelectedCountry() === 'CL'){
-							that.getView().byId("idSelectTenderType").setVisible(true);
+						if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
+							that.getView().byId("idSelectTenderTypeEdit").setVisible(true);
 						}else{
-							that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+							that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
 						}
 					});
 
@@ -1847,8 +1855,9 @@ sap.ui.define([
 					case Services.getBasicInformationPageSectionID():
 
 						/*initialize country filter for particular fields (tender type, tender origin, sales type, contract type) */
-						var sCountryCode = Services.getSelectedCountry();
+						var sCountryCode = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";
 						var aFilter = [];
+						let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
 						// Reload data
@@ -1885,6 +1894,11 @@ sap.ui.define([
 						//should tendertype be visible on the screen?
 						$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 							oTenderType.setVisible(bShowTenderType);
+							if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
+								oTenderType.setVisible(true);
+							}else{
+								oTenderType.setVisible(bShowTenderType);
+							}
 						});
 
 						//should group purchasing be visible on the screen based on data back-end
@@ -2195,6 +2209,7 @@ sap.ui.define([
 
 			Services.loadCountryChannels(sCountryCode);
 			Services.loadCountryCompetitors(sCountryCode);
+			Services.loadCountryOutcomes(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
 			// set the selected keys on the dropdowns

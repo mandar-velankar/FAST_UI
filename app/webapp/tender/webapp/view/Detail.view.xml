@@ -406,15 +406,12 @@
 											<m:Label text="Outcome"/>
 											<t:template>
 												<!--<m:Input value="{fastAppData>OUTCOME}" editable="false"/>-->
-												<m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" change="onChangeOutcome" width="20rem">
-													<m:items>
-														<core:Item text="" key=""/>
-														<core:Item text="Decision Pending" key="Decision Pending"/>
-														<core:Item text="FOC negotiation" key="FOC negotiation" enabled="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? true : false }"/>
-														<core:Item text="Won" key="Won"/>
-														<core:Item text="Lost" key="Lost"/>
-														<core:Item text="Cancelled" key="Cancelled"/>
-													</m:items>
+												<m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
+																					 enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
+																					 change="onChangeOutcome" 
+																					 items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' } }"
+																					 width="20rem">
+													<core:Item key="{fastAppData>Outcome}" text="{fastAppData>Outcome}"/>
 												</m:Select>
 											</t:template>
 										</t:Column>
