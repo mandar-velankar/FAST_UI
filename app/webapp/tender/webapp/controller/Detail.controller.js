@@ -2,7 +2,6 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/m/MessageToast",
 	"../controller/OfferProducts",
-	"../controller/DeliveryTracking.controller",
 	"sap/m/Button",
 	"sap/m/Dialog",
 	"sap/ui/core/BusyIndicator",
@@ -21,7 +20,7 @@ sap.ui.define([
 	"sap/m/Token",
 	"sap/m/Tokenizer",
 	"FAST_NS0FAST0/libs/ranking/Ranking"
-], function (Controller, MessageToast, DeliveryTracking, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
+], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
 	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking) {
 	"use strict";
@@ -47,10 +46,9 @@ sap.ui.define([
 			this.oRouter = this.oOwnerComponent.getRouter();
 			this.oModel = this.oOwnerComponent.getModel();
 
-			//this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
-			//this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
-			this.oDeliveryTrackingController = new DeliveryTracking();
-
+			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
+			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
+			
 			Services.setRouterObject(this.oRouter);
 
 			//TODO: talk about better solution with Wouter
@@ -1356,39 +1354,39 @@ sap.ui.define([
 					//reselect same offer if it exists, otherwise clear offer selected
 					//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
 					if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()),sSelectedSection)){
-
+						
 						//Deliveries - subsection
-						var oDelivTrackOfferSubSection = that.byId("DelivTrackOfferSubsection");
+						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
 							oDelivTrackOfferSubSection.setVisible(true);
 						}
 
 						//Deliveries - Deliveries
-						var oDelivTrackDeliveriesSubSection = that.byId("DelivTrackDeliveriesSubsection");
+						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
 						if (oDelivTrackDeliveriesSubSection) {
 							oDelivTrackDeliveriesSubSection.setVisible(true);
 						}
 
 						//Deliveries - Delivery Detail
-						var oDeliveryDetailSubSection = that.byId("idDeliveryDetailSection");
+						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
 						if (oDeliveryDetailSubSection) {
 							oDeliveryDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letters
-						var oDelivTrackLettersSubSection = that.byId("DelivTrackLettersSubsection");
+						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
 						if (oDelivTrackLettersSubSection) {
 							oDelivTrackLettersSubSection.setVisible(true);
 						}
 
 						//Deliveries - Letter Details
-						var oLetterDetailSubSection = that.byId("idLetterDetailSection");
+						var oLetterDetailSubSection = that.oDeliveryTrackingView.byId("idLetterDetailSection");
 						if (oLetterDetailSubSection) {
 							oLetterDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - No offer subsection
-						var oDelivTrackNoOfferSubsection = that.byId("DelivTrackNoOfferSubsection");
+						var oDelivTrackNoOfferSubsection = that.oDeliveryTrackingView.byId("DelivTrackNoOfferSubsection");
 						if (oDelivTrackNoOfferSubsection) {
 							oDelivTrackNoOfferSubsection.setVisible(false);
 						}	
@@ -1397,37 +1395,37 @@ sap.ui.define([
 					} else {
 
 						//Deliveries - subsection
-						var oDelivTrackOfferSubSection = that.byId("DelivTrackOfferSubsection");
+						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
 							oDelivTrackOfferSubSection.setVisible(false);
 						}
 
 						//Deliveries - Deliveries
-						var oDelivTrackDeliveriesSubSection = that.byId("DelivTrackDeliveriesSubsection");
+						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
 						if (oDelivTrackDeliveriesSubSection) {
 							oDelivTrackDeliveriesSubSection.setVisible(false);
 						}
 
 						//Deliveries - Delivery Detail
-						var oDeliveryDetailSubSection = that.byId("idDeliveryDetailSection");
+						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
 						if (oDeliveryDetailSubSection) {
 							oDeliveryDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letters
-						var oDelivTrackLettersSubSection = that.byId("DelivTrackLettersSubsection");
+						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
 						if (oDelivTrackLettersSubSection) {
 							oDelivTrackLettersSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letter Details
-						var oLetterDetailSubSection = that.byId("idLetterDetailSection");
+						var oLetterDetailSubSection = that.oDeliveryTrackingView.byId("idLetterDetailSection");
 						if (oLetterDetailSubSection) {
 							oLetterDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - No offer subsection
-						var oDelivTrackNoOfferSubsection = that.byId("DelivTrackNoOfferSubsection");
+						var oDelivTrackNoOfferSubsection = that.oDeliveryTrackingView.byId("DelivTrackNoOfferSubsection");
 						if (oDelivTrackNoOfferSubsection) {
 							oDelivTrackNoOfferSubsection.setVisible(true);
 						}

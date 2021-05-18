@@ -90,6 +90,8 @@ sap.ui.define([
 			oDeliverieToSave.PaidOrFree = oDeliverySaveInfo.PaidOrFree;
 			oDeliverieToSave.PO = oDeliverySaveInfo.PO;
 			oDeliverieToSave.InvoiceNo = oDeliverySaveInfo.InvoiceNo;
+			oDeliverieToSave.Contract = oDeliverySaveInfo.Contract;
+			oDeliverieToSave.PoDate = oDeliverySaveInfo.PoDate;
 
 			return oDeliverieToSave;
 
@@ -136,7 +138,9 @@ sap.ui.define([
 				PaidOrFree: "Paid",
 				PO: null,
 				InvoiceNo: null,
-				SNo: 0, //database uses an autoincrement for this
+				SNo: 0,
+				Contract: "",
+				PoDate: null, //database uses an autoincrement for this
 				_sOperation: 'POST'
 			};
 

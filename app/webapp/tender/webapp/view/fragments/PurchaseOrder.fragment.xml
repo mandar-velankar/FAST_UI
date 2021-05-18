@@ -1,49 +1,7 @@
-<mvc:Fragment controllerName="FAST_NS0FAST0.controller.DeliveryTracking" xmlns="sap.uxap" xmlns:m="sap.m" xmlns:f="sap.f"
+<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.DeliveryTracking" xmlns="sap.uxap" xmlns:m="sap.m" xmlns:f="sap.f"
 	xmlns:form="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:t="sap.ui.table" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
-	<!-- TENDER OFFER SUB SECTION PAGE -->
-	<ObjectPageSubSection id="DelivTrackNoOfferSubsection" title="{i18n>PurchaseOrders}">
-		<l:BlockLayout background="Light">
-			<l:BlockLayoutRow>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-					<m:VBox>
-						<m:FormattedText htmlText="Offer not available for purchase order overview..."/>
-					</m:VBox>
-				</l:BlockLayoutCell>
-			</l:BlockLayoutRow>
-		</l:BlockLayout>
-	</ObjectPageSubSection>
-	<ObjectPageSubSection id="DelivTrackOfferSubsection" title="Tender Offer" visible="{= ${fastAppData>/EditMode} === true ? false : true}">
-		<l:BlockLayout background="Light">
-			<l:BlockLayoutRow>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-					<m:VBox>
-						<m:Label/>
-						<!-- TABLE WITH PRODUCTS FOR DELIVERY TRACKING -->
-						<!--Product.results.Result[0].Outcome-->
-						<m:Table id="idDeliveryTrackViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto"
-							items="{ path: 'fastAppData>/ProductsForOffer/results/', sorter: [ {path: 'SORTER', descending: false} ], filters: [ { path : 'Active', operator : 'EQ', value1 : '1'}, { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, { path : 'Results/results/0/Outcome', operator : 'Contains', value1: 'Won'} ] }"
-							updateFinished="onBindingItemsFinished" mode="SingleSelectMaster" selectionChange="onDeliveryTrackProductItemSelect"
-							visible="{= ${fastAppData>/EditMode} === true ? false : true}">
-							<m:columns>
-								<m:Column>
-									<m:Text text="{i18n>Product}"/>
-								</m:Column>
-							</m:columns>
-							<m:items>
-								<m:ColumnListItem type="Navigation">
-									<m:cells>
-										<m:Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
-									</m:cells>
-								</m:ColumnListItem>
-							</m:items>
-						</m:Table>
-					</m:VBox>
-				</l:BlockLayoutCell>
-			</l:BlockLayoutRow>
-		</l:BlockLayout>
-	</ObjectPageSubSection>
-    
+	
 	<!-- PO SUB SECTION PAGE -->
 	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="Purchase Orders">
 		<blocks>
@@ -51,7 +9,7 @@
 				<!-- Buttons for editing -->
 				<m:Toolbar design="Solid">
 					<m:ToolbarSpacer/>
-					<m:Button id="idAddDelv" visible="false" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddDeliverie"/>
+					<m:Button id="idAddDelv" visible="false" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddPurchaseOrder"/>
 					<!--<m:Button id="idDelDelv" visible="false" text="{i18n>DeleteDelivery}" icon="sap-icon://delete" press="onDeleteDeliverie" enabled="{= ${fastAppData>/SelectedDeliverieProduct/Deliveries/results/length} > 0 }"/>-->
 				</m:Toolbar>
 				<!-- Deliveries table -->
@@ -65,38 +23,20 @@
 						] 
 					}">
 					<m:columns>
-						<m:Column width="7rem">
-							<m:Label text="{i18n>LocalOrDicectDelivery}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>PlannedInAPO}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
 						<m:Column width="8.5rem">
-							<m:Label text="{i18n>RequestedDeliveryDate}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
+							<m:Label text="{i18n>PoDate}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
 						</m:Column>
 						<m:Column width="6rem">
-							<m:Label text="{i18n>RequestedQuantity}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="8.5rem">
-							<m:Label text="{i18n>ActualDeliveryDate}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>ActualDeliveryQuantity}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>PaidOrFree}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
+							<m:Label text="{i18n>PoQty}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
 						</m:Column>
 						<m:Column width="6rem">
 							<m:Label text="{i18n>PONumber}" wrapping="true"/>
 						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>InvoiceNo}" wrapping="true"/>
+                        <m:Column width="6rem">
+							<m:Label text="{i18n>contract}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 						</m:Column>
-						<m:Column width="5.5rem">
-							<m:Label text="{i18n>Penalty}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>Compensated}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+                        <m:Column width="6rem">
+							<m:Label text="{i18n>Institute}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 						</m:Column>
 					</m:columns>
 					<m:items>
@@ -117,6 +57,10 @@
 										<core:Item text="No" key="No"/>
 									</m:items>
 								</m:Select>
+                                <m:Select id="idPoDetailInstituteID" selectedKey="{fastAppData>InstituteID}" items="{ path: 'fastAppData>/InstituteWithChildren/' }"
+                                        enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/GroupPurchasing} !== 0 ? true : false}">
+                                        <core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
+                                </m:Select>
 
 							</m:cells>
 						</m:ColumnListItem>
@@ -125,145 +69,4 @@
 			</m:VBox>
 		</blocks>
 	</ObjectPageSubSection>
-	<!-- FORM WITH DELIVERY DATA -->
-	<ObjectPageSubSection id="idDeliveryDetailSection" title="Delivery Details" visible="false">
-		<blocks>
-			<m:VBox width="100%">
-				<form:SimpleForm id="idDeliveryDetailForm" editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
-					class="editableForm" visible="true">
-					<form:content>
-						<m:Label text="{i18n>Institute}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						<m:Select id="idDeliveryDetailInstituteID" selectedKey="{fastAppData>InstituteID}" items="{ path: 'fastAppData>/InstituteWithChildren/' }"
-							enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/GroupPurchasing} !== 0 ? true : false}">
-							<core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
-						</m:Select>
-						<m:Label text="" required="false"/>
-						<m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
-							<m:items>
-								<m:SegmentedButtonItem icon="sap-icon://accept" text="Confirm" press="onConfirmDelivery"
-									visible="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-								<!--<m:SegmentedButtonItem icon="sap-icon://sys-cancel" text="Cancel" press="onCancelDeliveryEdit" visible="{= ${fastAppData>/EditMode} === true ? true : false}" />-->
-							</m:items>
-						</m:SegmentedButton>
-					</form:content>
-				</form:SimpleForm>
-			</m:VBox>
-		</blocks>
-	</ObjectPageSubSection>
-	<!-- LETTERS SUB SECTION PAGE -->
-	<ObjectPageSubSection id="DelivTrackLettersSubsection" title="Letters" visible="false">
-		<blocks>
-			<m:VBox>
-				<m:Toolbar>
-					<m:ToolbarSpacer/>
-					<m:Button id="idAddLtr" visible="false" text="{i18n>AddLetter}" icon="sap-icon://add" press="onAddLetter"/>
-				</m:Toolbar>
-				<!-- Letters table -->
-				<m:Table id="lettersTableID" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}" delete=".onDeleteLetter"
-					selectionChange=".onLetterItemSelect"
-					items="{ 
-						path: 'fastAppData>/SelectedDeliverieProduct/Letters/results/', 
-						filters: [ 
-							{ path : '_sOperation', operator : 'NE', value1 : 'DELETE' },
-							{ path : 'ACTIVE', operator : 'NE', value1 : 0 }  
-						] }">
-					<m:columns>
-						<!--<m:Column width="7rem">
-							<m:Label text="Product SKU" wrapping="true"/>
-						</m:Column>-->
-						<m:Column width="7rem">
-							<m:Label text="Reason for Letter" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="7rem">
-							<m:Label text="Quantity" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="7rem">
-							<m:Label text="Batch" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="8.5rem">
-							<m:Label text="Manufacturing date" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="8.5rem">
-							<m:Label text="Expiry Date" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="8.57rem">
-							<m:Label text="Returned Date" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="7rem">
-							<m:Label text="Returned Quantity" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="7rem">
-							<m:Label text="UOM" wrapping="true" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-					</m:columns>
-					<m:items>
-						<m:ColumnListItem id="lettersTableListID" type="{= ${fastAppData>/EditMode} === true ? 'DetailAndActive' : 'Navigation'}"
-							detailPress=".onLetterItemDetail" press="{= ${fastAppData>/EditMode} === true ? '.onLetterItemSelect' : ''}">
-							<m:cells>
-								<!--<m:ObjectIdentifier title="{fastAppData>SKUCODE}"/>-->
-								<!--<m:Input value="{fastAppData>SKUCODE}" enabled="false"/>-->
-								<m:Input value="{fastAppData>REASONFORLETTER}" enabled="false"/>
-								<m:Input value="{fastAppData>QUANTITY}" enabled="false"/>
-								<m:Input value="{fastAppData>BATCH}" enabled="false"/>
-								<!--<m:DatePicker id="idManufacturingDate"-->
-								<!--	placeholder="Manufacturing Date" -->
-								<!--	tooltip="Manufacturing Date"-->
-								<!--	dateValue="{fastAppData>MANUFACTURINGDATE}" -->
-								<!--	displayFormat="dd.MM.yyyy" -->
-								<!--	enabled="false"/>-->
-								<m:DatePicker id="idManufacturingDate"
-									value="{path :'fastAppData>MANUFACTURINGDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-									tooltip="Manufacturing Date" enabled="false" placeholder="Manufacturing Date"/>
-								<!--<m:DatePicker id="idExpiryDate"-->
-								<!--	placeholder="Expiration Date" -->
-								<!--	tooltip="Expiration Date"-->
-								<!--	dateValue="{fastAppData>EXPIRYDATE}"-->
-								<!--	displayFormat="dd.MM.yyyy" -->
-								<!--	enabled="false"/>-->
-								<m:DatePicker id="idExpiryDate"
-									value="{path :'fastAppData>EXPIRYDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-									tooltip="Expiration Date" enabled="false" placeholder="Expiration Date"/>
-								<!--<m:DatePicker id="idReturnDate"-->
-								<!--	placeholder="Return Date" -->
-								<!--	tooltip="Return Date"-->
-								<!--	dateValue="{fastAppData>RETURNDATE}"-->
-								<!--	displayFormat="dd.MM.yyyy" -->
-								<!--	enabled="false"/>-->
-								<m:DatePicker id="idReturnDate"
-									value="{path :'fastAppData>RETURNDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-									tooltip="Return Date" enabled="false" placeholder="Return Date"/>
-								<m:Input value="{fastAppData>RETURNEDQTY}" enabled="false"/>
-								<m:Input value="{fastAppData>UOM}" enabled="false"/>
-							</m:cells>
-						</m:ColumnListItem>
-					</m:items>
-				</m:Table>
-			</m:VBox>
-		</blocks>
-	</ObjectPageSubSection>
-	<!-- FORM WITH Letter DATA -->
-	<ObjectPageSubSection id="idLetterDetailSection" title="Letter Details" visible="false">
-		<blocks>
-			<m:VBox width="100%">
-				<form:SimpleForm id="idLetterDetailForm" editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
-					class="editableForm" visible="true">
-					<form:content>
-						<m:Label text="{i18n>Institute}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						<m:Select id="idLetterDetailInstituteID" selectedKey="{fastAppData>INSTITUTEID}" items="{ path: 'fastAppData>/InstituteWithChildren/' }"
-							enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/GroupPurchasing} !== 0 ? true : false}">
-							<core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
-						</m:Select>
-						<m:Label text="" required="false"/>
-						<m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
-							<m:items>
-								<m:SegmentedButtonItem icon="sap-icon://accept" text="Confirm" press="onConfirmLetter"
-									visible="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-								<!--<m:SegmentedButtonItem icon="sap-icon://sys-cancel" text="Cancel" press="onCancelDeliveryEdit" visible="{= ${fastAppData>/EditMode} === true ? true : false}" />-->
-							</m:items>
-						</m:SegmentedButton>
-					</form:content>
-				</form:SimpleForm>
-			</m:VBox>
-		</blocks>
-	</ObjectPageSubSection>
-</mvc:Fragment>
+</core:FragmentDefinition>

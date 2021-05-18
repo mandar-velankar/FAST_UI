@@ -16,7 +16,7 @@
 					
 					<DatePicker
 						id="idRequestedDeliveryDate"
-						value="{path :'fastAppData>/EditDelivery/RequestedDeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+						value="{path :'fastAppData>/EditDelivery/PoDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
 						tooltip="{i18n>EffDate}" 
 						placeholder="{i18n>Select_date}"
 						required="true">

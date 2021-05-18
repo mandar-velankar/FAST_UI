@@ -440,7 +440,9 @@
 			<!-- DELIVERY TRACKING TAB -->
 			<ObjectPageSection id="deliveryTrackingId" title="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? ${i18n>PurchaseOrders} : ${i18n>DeliveryTracking} }" visible="{fastAppData>/permissions/tabs/deliveryTrackingId/visible}">
 				<subSections>
-					<core:Fragment id="deliveryTrackingViewId" type="XML" fragmentName="FAST_NS0FAST0.view.fragments.DeliveryTracking"/>
+					<ObjectPageSubSection id="deliveryTrackingSubSectionId">
+						<mvc:XMLView id="deliveryTrackingViewId" viewName="FAST_NS0FAST0.view.DeliveryTracking"/>
+					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
 		</sections>
