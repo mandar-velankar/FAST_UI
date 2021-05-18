@@ -134,7 +134,7 @@ sap.ui.define([
 			oForm.addContent(
 				new sap.m.Input({
 					id: oDetailController.getView().createId(formId + "_idDiscount"),
-					value: formatter.percentageNoUnit(price.discount),
+					value: formatter.percentageNoUnit(price.discount === null? 0 : price.discount),
 					description: "%",
 					enabled: false
 				})
