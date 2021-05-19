@@ -60,7 +60,7 @@
 								<Column>
 									<Text text="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"/>
 								</Column>
-								<Column>
+								<Column visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}">
 									<Text text="{i18n>COGS}"/>
 								</Column>
 								<Column>
@@ -93,7 +93,7 @@
 					</l:HorizontalLayout>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable" alternateRowColors="true"></Table>
+					<Table id="idProfitabilityTable" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
 					<viz:VizFrame id="idListToNetChart" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -165,7 +165,7 @@
 							<Toolbar>
 								<content>
 									<ToolbarSpacer/>
-									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck"/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="false"/>
 									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
 									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>

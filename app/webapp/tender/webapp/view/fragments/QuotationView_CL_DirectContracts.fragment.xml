@@ -1,0 +1,98 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout">
+
+
+	<VBox>
+		<HBox>
+			<items>
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="M" displayShape="Square" class="sapUiLargeMarginEnd"/>
+				<VBox>
+					<FormattedText htmlText="{fastAppData>/OfferValidation/LETTERHEAD}" class="sapMText"/>
+				</VBox>
+			</items>
+		</HBox>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="true" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" labelSpanXL="1" labelSpanL="1" labelSpanM="2" emptySpanL="9" emptySpanM="6">
+			<form:content>
+				<Label text="N° cotizaciòn" />
+				<Input value="{fastAppData>/OfferValidation/OFFERID}" enabled="false" />
+				<Label text="Cliente" />
+				<Input value="{fastAppData>/OfferValidation/INSTITUTENAME}" enabled="false"/>
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<Table  
+			items="{path : 'fastAppData>/OfferProductValidation/', sorter: [{path: 'SORTER', descending: false}]}" 
+			inset="false" 
+			class="sapFDynamicPageAlignContent" 
+			width="auto" 
+			alternateRowColors="true" 
+			fixedLayout="true">
+			<columns>
+				<Column>
+					<Text text="Producto"/>
+				</Column>
+				<Column>
+					<Text text="Principio activo"/>
+				</Column>
+				<Column>
+					<Text text="Presentación"/>
+				</Column>
+				<Column>
+					<Text text="Factor de empaque"/>
+				</Column>
+				<Column>
+					<Text text="Precio"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem>
+					<cells>
+						<Text text="{fastAppData>PRODUCTNAME}"/>
+						<Text text="{fastAppData>ACTIVE_SUBSTANCE}"/>
+						<Text text="{fastAppData>PRESENTATION}"/>
+						<Text text="{fastAppData>PACKSIZE}"/>
+						<Text text="{
+							parts: [
+                                {path: 'fastAppData>OFFER_PRICE'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"
+						/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</VBox>
+
+	<VBox class="sapUiLargeMarginTop">
+		<form:SimpleForm  editable="false" maxContainerCols="3" layout="ResponsiveGridLayout" adjustLabelSpan="false" labelSpanXL="2" labelSpanL="2" labelSpanM="2" emptySpanXL="0" emptySpanL="0" emptySpanM="0">
+			<form:content>
+				<core:Title text="Vigencia cotización" />
+				<Label text="Condiciones de pago"/>
+				<Text text="{fastAppData>/OfferValidation/PAYMENTTERMS}" />
+				<Label text="Monto mínimo" class="sapUiSmallMarginEnd"/>
+				<Text text="{fastAppData>/OfferValidation/_DUMMY_}" />
+			</form:content>
+		</form:SimpleForm>
+	</VBox>
+	
+
+	<VBox class="sapUiLargeMarginTop">
+		<HBox>
+			<Text text="El envío de la orden de compra debe ser a" class="sapUiTinyMarginEnd" />
+			<Link text="gestinventas@bayer.com" class="sapUiTinyMarginEnd"/>
+			<Text text=" o Mercado Público." />
+		</HBox>
+	</VBox>
+
+	
+</core:FragmentDefinition>

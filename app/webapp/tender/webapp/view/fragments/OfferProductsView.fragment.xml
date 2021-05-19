@@ -313,7 +313,7 @@
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MoleculeName/description',
 									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>MoleculeName}" />
+							<Text text="{fastAppData>SKU/MoleculeName}" />
 						</t:template>
 					</t:Column>
 

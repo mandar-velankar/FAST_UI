@@ -258,7 +258,7 @@
                     
                     <!-- Samples -->
                     <m:Column width="7%">
-                        <m:Text text="{i18n>samples}"/>
+                        <m:Text text="{i18n>samplesTH}"/>
                     </m:Column>
 
                     <!-- Origin -->
@@ -297,22 +297,22 @@
                             <m:Text text="{path :'fastAppData>PRODUCT_UNIT_NAME'}"/>
                             
                             <!-- Quantity -->
-                            <m:FormattedText htmlText="{= ${fastAppData>PAID_QUANTITY_UNITS} + ' Units' }" class="sapMText"/>
+                            <m:FormattedText htmlText="{= ${fastAppData>PAID_VOLUME} + ' ' + ${fastAppData>UNIT} + 's'}" class="sapMText"/>
                             
                             <!-- Pack Factor -->
-                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+                            <m:Text text="{fastAppData>PACKSIZE}"/>
                             
                             <!-- MSP Excl Vat / Unit Price -->
                             <m:ObjectStatus
                                 text="{parts: [
-                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>OFFER_PRICE'}, 
                                     {path: 'fastAppData>CURRENCY'}
                                 ], formatter:'.formatter.priceTwoOrFour'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
 
                             <!-- MSP Incl VAT -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY_VAT'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>OFFER_PRICE_VAT'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"/>
 
                             <!-- Total -->
@@ -328,7 +328,7 @@
                             ], formatter:'.formatter.price'}"/>
                             
                             <!-- Samples -->
-                            <m:Text text="{path :'fastAppData>SAMPLES_UNIT'}"/>
+                            <m:Text text="{path :'fastAppData>SAMPLES'}"/>
 
                             <!-- Origin -->
                             <m:Text text="{path :'fastAppData>COUNTRYOFORIGIN'}"/>
@@ -337,15 +337,15 @@
                             <m:Text text="{= ${path :'fastAppData>OFFER_ID'} + '-' + ${path :'fastAppData>SORTER'} }"/>
                     
                             <!-- FOC -->
-                            <m:FormattedText htmlText="{= ${fastAppData>FOC_QUANTITY_UNITS} + ' Units' }" 
+                            <m:FormattedText htmlText="{= ${fastAppData>FOC} }" 
                                                 class="sapMText"/>
 
                             <!-- Total Qty-->
-                            <m:FormattedText htmlText="{= ${fastAppData>PAID_QUANTITY_UNITS} + ' Units'}" class="sapMText"/>
+                            <m:FormattedText htmlText="{= ${fastAppData>UNIT} === 'Unit' ? ${fastAppData>TOTAL_QUANTITY_UNITS} + ' ' + ${fastAppData>UNIT} + 's' : (${fastAppData>TOTAL_QUANTITY_UNITS} / ${fastAppData>PACKSIZE}) + ' ' + ${fastAppData>UNIT} + 's' } " class="sapMText"/>
 
                             <!-- NSP -->
                             <m:Text text="{parts: [
-                                {path: 'fastAppData>NET_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                {path: 'fastAppData>NET_PRICE'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
 

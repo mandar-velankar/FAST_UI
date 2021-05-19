@@ -1469,24 +1469,26 @@ sap.ui.define([
 
 		},
 
-		// load CountryBindingTypeLevel1
-		loadCountryBindingTypeLevel1: function(sCountry, sClassificationID) {
+		// load CountryBiddingTypeLevel1
+		loadCountryBiddingTypeLevel1: function(sCountry, sClassificationID) {
 
 			// if no country is set don't run this method
 			if(!sCountry || sCountry.indexOf("NA") > -1 || !sClassificationID){
-				return;
+				return undefined;
 			}
 
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
-			var oDeferred = $.Deferred();
+			//var oDeferred = $.Deferred();
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel1", []);
+
 			var that = this;
 
-			var sPath = "/CountryBindingTypeLevel1";
+			var sPath = "/CountryBiddingTypeLevel1";
 
 			var aFilters = [];
 
@@ -1500,60 +1502,73 @@ sap.ui.define([
 				aFilters.push(oFilter);
 			}
 
-			//Reading the back end data from the tender table
-			oFastDataCalls.read(sPath, {
-				filters: aFilters,
-				success: function (oData, oResponse) { 
+			const promise = new Promise((resolve, reject) => {
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) { 
 
-					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-					var aCountryBindingTypeLevel1 = oData.results;
+						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+						var aCountryBiddingTypeLevel1 = oData.results;
 
-					// add an empty value at the begining of the array. needed for the dropdown
-					if(oData.results.length > 0){
-						aCountryBindingTypeLevel1.unshift({});
+						// add an empty value at the begining of the array. needed for the dropdown
+						if(oData.results.length > 0){
+							aCountryBiddingTypeLevel1.unshift({});
+						}
+
+
+						//data received is set
+						oFastAppDataModel.setProperty("/CountryBiddingTypeLevel1", aCountryBiddingTypeLevel1);
+
+						//let the callback be triggered
+						resolve(aCountryBiddingTypeLevel1);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of country BiddingTypeLevel1");
+
+						//let the callback be triggered
+						reject(oError);
+
 					}
-
-
-					//data received is set
-					oFastAppDataModel.setProperty("/CountryBindingTypeLevel1", aCountryBindingTypeLevel1);
-
-					//let the callback be triggered
-					oDeferred.resolve(aCountryBindingTypeLevel1);
-
-				},
-				error: function (oError) {
-
-					//show error message
-					that.showErrorMessage(oError, "Loading of country BindingTypeLevel1");
-
-					//let the callback be triggered
-					oDeferred.reject(oError);
-
-				}
+				});
 			});
 
+			
+
 			//return promise so the function can check if execution is done
-			return oDeferred.promise();
+			// return oDeferred.promise();
+			return  promise;
 		},
 
-		// load CountryBindingTypeLevel2
-		loadCountryBindingTypeLevel2: function(sCountry, sBindingTypeLevel1Id) {
+		/**
+		 * load CountryBiddingTypeLevel2
+		 * @param {string} sCountry - 
+		 * @param {string} sBiddingTypeLevel1Id -
+		 * @return {undefined} - returns a promise
+		 */
+		loadCountryBiddingTypeLevel2: function(sCountry, sBiddingTypeLevel1Id) {
 
 			// if no country is set don't run this method
-			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel1Id){
-				return;
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBiddingTypeLevel1Id){
+				return undefined;
 			}
 
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
-			var oDeferred = $.Deferred();
+			// var oDeferred = $.Deferred();
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 
+			// empty the CountryBiddingTypeLevel2 first. this is needed, otherwise the dropdown will be emtpty 
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel2", []);
+
 			var that = this;
 
-			var sPath = "/CountryBindingTypeLevel2";
+			var sPath = "/CountryBiddingTypeLevel2";
 
 			var aFilters = [];
 
@@ -1562,63 +1577,72 @@ sap.ui.define([
 				aFilters.push(oCountryFilter);
 			}
 
-			if (sBindingTypeLevel1Id) {
-				let oFilter = new sap.ui.model.Filter("BindingTypeLevel1ID", sap.ui.model.FilterOperator.EQ, sBindingTypeLevel1Id);
+			if (sBiddingTypeLevel1Id) {
+				let oFilter = new sap.ui.model.Filter("BiddingTypeLevel1ID", sap.ui.model.FilterOperator.EQ, sBiddingTypeLevel1Id);
 				aFilters.push(oFilter);
 			}
 
-			//Reading the back end data from the tender table
-			oFastDataCalls.read(sPath, {
-				filters: aFilters,
-				success: function (oData, oResponse) { 
-					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-					var aCountryBindingTypeLevel2 = oData.results;
+			const promise = new Promise((resolve, reject) => {
 
-					// add an empty value at the begining of the array. needed for the dropdown
-					if(oData.results.length > 0){
-						aCountryBindingTypeLevel2.unshift({});
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) { 
+						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+						const aCountryBiddingTypeLevel2 = oData.results;
+
+						// add an empty value at the begining of the array. needed for the dropdown
+						if(oData.results.length > 0){
+							aCountryBiddingTypeLevel2.unshift({});
+						}
+
+						//data received is set to the model
+						oFastAppDataModel.setProperty("/CountryBiddingTypeLevel2", aCountryBiddingTypeLevel2);
+
+						resolve(aCountryBiddingTypeLevel2);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of country BiddingTypeLevel2");
+
+						//let the callback be triggered
+						//oDeferred.reject(oError);
+						reject(oError);
+
 					}
-
-					//data received is set
-					oFastAppDataModel.setProperty("/CountryBindingTypeLevel2", aCountryBindingTypeLevel2);
-
-					//let the callback be triggered
-					oDeferred.resolve(aCountryBindingTypeLevel2);
-
-				},
-				error: function (oError) {
-
-					//show error message
-					that.showErrorMessage(oError, "Loading of country BindingTypeLevel2");
-
-					//let the callback be triggered
-					oDeferred.reject(oError);
-
-				}
+				});
+				
 			});
 
+
+			return promise;
+
 			//return promise so the function can check if execution is done
-			return oDeferred.promise();
+			//return oDeferred.promise();
 		},
 
-		// load CountryBindingTypeLevel3
-		loadCountryBindingTypeLevel3: function(sCountry, sBindingTypeLevel2Id) { 
+		// load CountryBiddingTypeLevel3
+		loadCountryBiddingTypeLevel3: function(sCountry, sBiddingTypeLevel2Id) { 
 
 			// if no country is set don't run this method
-			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBindingTypeLevel2Id){
-				return;
+			if(!sCountry || sCountry.indexOf("NA") > -1 || !sBiddingTypeLevel2Id){
+				return undefined;
 			}
 
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
-			var oDeferred = $.Deferred();
+			// var oDeferred = $.Deferred();
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
 
+			oFastAppDataModel.setProperty("/CountryBiddingTypeLevel3", []);
+
 			var that = this;
 
-			var sPath = "/CountryBindingTypeLevel3";
+			var sPath = "/CountryBiddingTypeLevel3";
 
 			var aFilters = [];
 
@@ -1627,44 +1651,48 @@ sap.ui.define([
 				aFilters.push(oCountryFilter);
 			}
 
-			if (sBindingTypeLevel2Id) {
-				let oFilter = new sap.ui.model.Filter("BindingTypeLevel2ID", sap.ui.model.FilterOperator.EQ, sBindingTypeLevel2Id);
+			if (sBiddingTypeLevel2Id) {
+				let oFilter = new sap.ui.model.Filter("BiddingTypeLevel2ID", sap.ui.model.FilterOperator.EQ, sBiddingTypeLevel2Id);
 				aFilters.push(oFilter);
 			}
 
-			//Reading the back end data from the tender table
-			oFastDataCalls.read(sPath, {
-				filters: aFilters,
-				success: function (oData, oResponse) { 
+			const promise = new Promise((resolve, reject) => {
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) { 
 
-					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-					var aCountryBindingTypeLevel3 = oData.results;
+						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+						var aCountryBiddingTypeLevel3 = oData.results;
 
-					// add an empty value at the begining of the array. needed for the dropdown
-					if(oData.results.length > 0){
-						aCountryBindingTypeLevel3.unshift({});
+						// add an empty value at the begining of the array. needed for the dropdown
+						if(oData.results.length > 0){
+							aCountryBiddingTypeLevel3.unshift({});
+						}
+						
+						//data received is set
+						oFastAppDataModel.setProperty("/CountryBiddingTypeLevel3", aCountryBiddingTypeLevel3);
+
+						//let the callback be triggered
+						resolve(aCountryBiddingTypeLevel3);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of country BiddingTypeLevel3");
+
+						//let the callback be triggered
+						reject(oError);
+
 					}
-					
-					//data received is set
-					oFastAppDataModel.setProperty("/CountryBindingTypeLevel3", aCountryBindingTypeLevel3);
-
-					//let the callback be triggered
-					oDeferred.resolve(aCountryBindingTypeLevel3);
-
-				},
-				error: function (oError) {
-
-					//show error message
-					that.showErrorMessage(oError, "Loading of country BindingTypeLevel3");
-
-					//let the callback be triggered
-					oDeferred.reject(oError);
-
-				}
+				});
 			});
 
+			
+
 			//return promise so the function can check if execution is done
-			return oDeferred.promise();
+			return promise;
 		},
 
 		// load CountrySpecifications
@@ -1672,12 +1700,12 @@ sap.ui.define([
 
 			// if no country is set don't run this method
 			if(sCountry.indexOf("NA") > -1){
-				return;
+				return undefined;
 			}
 
 			
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
-			var oDeferred = $.Deferred();
+			// var oDeferred = $.Deferred();
 
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
@@ -1699,34 +1727,38 @@ sap.ui.define([
 				aFilters.push(oFilter);
 			}
 
-			//Reading the back end data from the tender table
-			oFastDataCalls.read(sPath, {
-				filters: aFilters,
-				success: function (oData, oResponse) { 
+			const promise = new Promise((resolve, reject) => {
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) { 
 
-					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
-					var aCountrySpecifications = oData.results;
+						//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+						var aCountrySpecifications = oData.results;
 
-					//data received is set
-					oFastAppDataModel.setProperty("/CountrySpecifications", aCountrySpecifications);
+						//data received is set
+						oFastAppDataModel.setProperty("/CountrySpecifications", aCountrySpecifications);
 
-					//let the callback be triggered
-					oDeferred.resolve(aCountrySpecifications);
+						//let the callback be triggered
+						resolve(aCountrySpecifications);
 
-				},
-				error: function (oError) {
+					},
+					error: function (oError) {
 
-					//show error message
-					that.showErrorMessage(oError, "Loading of country specifications");
+						//show error message
+						that.showErrorMessage(oError, "Loading of country specifications");
 
-					//let the callback be triggered
-					oDeferred.reject(oError);
+						//let the callback be triggered
+						reject(oError);
 
-				}
+					}
+				});
 			});
 
+			
+
 			//return promise so the function can check if execution is done
-			return oDeferred.promise();
+			return promise;
 		},
 
 		// load CountrySpecifications
@@ -1852,6 +1884,62 @@ sap.ui.define([
 
 					//show error message
 					that.showErrorMessage(oError, "Loading of country statusses");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
+		//load country channels
+		loadCountryOutcomes: function (sCountry) {
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sCountryChannelsPath = "/MASTER_COUNTRY_OUTCOMES";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sCountryChannelsPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryOutcomes = oData.results;
+
+					if(oData.results.length > 0){
+						aCountryOutcomes.unshift({CountryCode:sCountry,Outcome:"",Sorter:"0"});
+					}
+
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryOutcomes", aCountryOutcomes);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryOutcomes);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country outcomes");
 
 					//let the callback be triggered
 					oDeferred.reject(oError);

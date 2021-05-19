@@ -81,7 +81,7 @@
 						<!-- TABLE WITH PRODUCTS FOR DELIVERY TRACKING -->
 						<!--Product.results.Result[0].Outcome-->
 						<m:Table id="idDeliveryTrackViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto"
-							items="{ path: 'fastAppData>/ProductsForOffer/results/', sorter: [ {path: 'SORTER', descending: false} ], filters: [ { path : 'Active', operator : 'EQ', value1 : '1'}, { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, { path : 'Results/results/0/Outcome', operator : 'EQ', value1: 'Won'} ] }"
+							items="{ path: 'fastAppData>/ProductsForOffer/results/', sorter: [ {path: 'SORTER', descending: false} ], filters: [ { path : 'Active', operator : 'EQ', value1 : '1'}, { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, { path : 'Results/results/0/Outcome', operator : 'Contains', value1: 'Won'} ] }"
 							updateFinished="onBindingItemsFinished" mode="SingleSelectMaster" selectionChange="onDeliveryTrackProductItemSelect"
 							visible="{= ${fastAppData>/EditMode} === true ? false : true}">
 							<m:columns>
