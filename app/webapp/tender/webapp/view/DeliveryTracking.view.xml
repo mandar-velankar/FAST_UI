@@ -103,8 +103,12 @@
 		</l:BlockLayout>
 	</ObjectPageSubSection>
 	<!-- DELIVERIES SUB SECTION PAGE -->
-	
-	<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.DeliveryTracking" type="XML"/>
+
+	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="Purchase Orders">
+		<blocks>
+			<!-- <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.PurchaseOrder" type="XML"/>-->
+		</blocks>
+	</ObjectPageSubSection>
 
 	<!-- FORM WITH DELIVERY DATA -->
 	<ObjectPageSubSection id="idDeliveryDetailSection" title="Delivery Details" visible="false">

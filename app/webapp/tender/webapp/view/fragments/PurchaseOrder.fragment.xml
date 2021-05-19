@@ -3,8 +3,7 @@
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
 	
 	<!-- PO SUB SECTION PAGE -->
-	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="Purchase Orders">
-		<blocks>
+
 			<m:VBox>
 				<!-- Buttons for editing -->
 				<m:Toolbar design="Solid">
@@ -67,6 +66,4 @@
 					</m:items>
 				</m:Table>
 			</m:VBox>
-		</blocks>
-	</ObjectPageSubSection>
 </core:FragmentDefinition>

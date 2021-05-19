@@ -32,8 +32,6 @@ sap.ui.define([
 			this.oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this);
 			this.oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);
 
-			that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment'), "deliveryTrackingId");
-			
 		},
 
 		//Navigation between TenderMaster & Detail pages routing is matched
@@ -67,6 +65,14 @@ sap.ui.define([
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
 
+			//show delivery / purchase order table
+			let oSubsection = this.getView().byId('DelivTrackDeliveriesSubsection');
+			let oFragmentName = 'FAST_NS0FAST0.view.fragments.PurchaseOrder'; //+ Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment');
+			sap.ui.core.Fragment.load({ type: 'XML',
+										name: oFragmentName
+									  }).then(function(oFragment){
+										  oSubsection.addBlock(oFragment);
+									   });
 		},
 
 
@@ -308,9 +314,9 @@ sap.ui.define([
 			//Check for mandatory fields
 			//Check for mandatory fields
 			if (!oAddDelivery.PoDate ||
-				!oAddDelivery.ActualDeliveryDate ||
 				!oAddDelivery.ActualDeliveryQuantity ||
-				!oAddDelivery.Contract
+				!oAddDelivery.Contract ||
+				!oAddDelivery.PO
 			) {
 
 				//check mandatory fields

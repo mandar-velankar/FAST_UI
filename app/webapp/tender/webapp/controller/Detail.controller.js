@@ -896,7 +896,6 @@ sap.ui.define([
 					oPage.removeSubSection(oSubSection);
 				}
 			});
-
 		},
 
 		//Block expanding the panel, beceause we are fasing out this logic
@@ -1724,6 +1723,7 @@ sap.ui.define([
 					that.onEditOutcomTreeTable();
 					break;
 				case Services.getDeliveryTrackingPageSectionID():
+					//that._showSubSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/deliveryTrackingId/fragment'), 'deliveryTrackingId');
 					//DELIVERY TRACKING TAB
 					that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
 					//that.getView().byId("idDelDelv").setVisible(false);
@@ -2101,7 +2101,7 @@ sap.ui.define([
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
-						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+						that._showSubSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
@@ -2135,6 +2135,7 @@ sap.ui.define([
 						break;
 
 					case Services.getDeliveryTrackingPageSectionID():
+
 						//DELIVERY TRACKING TAB
 						that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
 						//that.getView().byId("idDelDelv").setVisible(true);
