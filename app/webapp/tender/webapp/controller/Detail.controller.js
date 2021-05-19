@@ -48,7 +48,7 @@ sap.ui.define([
 
 			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
-
+			
 			Services.setRouterObject(this.oRouter);
 
 			//TODO: talk about better solution with Wouter
@@ -1354,7 +1354,7 @@ sap.ui.define([
 					//reselect same offer if it exists, otherwise clear offer selected
 					//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
 					if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()),sSelectedSection)){
-
+						
 						//Deliveries - subsection
 						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
@@ -2681,8 +2681,8 @@ sap.ui.define([
 
 				//DELIVERY TRACKING TAB
 				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
-				this.oDeliveryTrackingView.byId("idDeliveryDetailSection").setVisible(false);
-				this.oDeliveryTrackingView.byId("idLetterDetailSection").setVisible(false);
+				this.byId("idDeliveryDetailSection").setVisible(false);
+				this.byId("idLetterDetailSection").setVisible(false);
 				break;
 
 			default:

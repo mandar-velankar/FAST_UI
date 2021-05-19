@@ -32,6 +32,8 @@ sap.ui.define([
 			this.oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this);
 			this.oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);
 
+			that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment'), "deliveryTrackingId");
+			
 		},
 
 		//Navigation between TenderMaster & Detail pages routing is matched
@@ -216,6 +218,114 @@ sap.ui.define([
 				$.when(Services.loadPenaltyReasons()).done(function (oTenderData) {
 
 				});
+
+			}
+
+		},
+
+		//When you click on add purchase order
+		onAddPurchaseOrder: function (oEvent) {
+
+			//distributor id is set on page form and should be used (instead of requested) when adding product
+			//payment terms and inco terns should set based on information in view providing product
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			var oTableDeliveries = this.byId("deliveriesTableID");
+
+			if (oTableDeliveries && Services.getDeliveryItemEdit() != -1) {
+				var oFastAppDataModel = Services.getFastAppDataModel();
+				var oSelectedItem = oTableDeliveries.getItems()[Services.getDeliveryItemEdit()];
+
+				if (oSelectedItem) {
+					var aCells = oSelectedItem.getCells();
+					aCells.forEach(function (oCell, index) {
+						oCell.setProperty("enabled", false);
+					});
+
+					Services.setDeliveryItemEdit(-1);
+					that.byId("idDeliveryDetailSection").setVisible(false);
+				}
+			}
+
+			if (!that._oDialogDeliverie) {
+				that._oDialogDeliverie = new sap.m.Dialog("addPurchaseOrderDialog", {
+					title: that.oBundle.getText("Add Purchase Order"),
+					buttons: [new sap.m.Button({
+							text: that.oBundle.getText("Add Purchase Order"),
+							tap: [that.onAddPurchaseOrderDialogConfirm, that]
+
+						}),
+						new sap.m.Button({
+							text: that.oBundle.getText("Cancel"),
+							tap: [that.onCancelAddDeliverie, that]
+						})
+					],
+					//content with all fields that need to be filled
+					content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.AddPurchaseOrder", that)]
+						// End of content of dialog
+				});
+
+			}
+
+			that.getView().addDependent(that._oDialogDeliverie);
+			that._oDialogDeliverie.open();
+
+			//empty delivery
+			var oEmptyDelivery = Services.getService('Delivery').getEmptyDelivery();
+
+			//give values to empty object
+			oEmptyDelivery.TenderID = Services.getSelectedTenderID();
+			oEmptyDelivery.OfferID = Services.getSelectedOfferID();
+			oEmptyDelivery.CountryCode = Services.getCountryCodeofSelectedTender();
+			oEmptyDelivery.ProductCode = Services.getSelectedProductID();
+			oEmptyDelivery.SKUCode = Services.getSelectedProductID();
+			oEmptyDelivery.SubmittedOn = moment().utc().toDate();
+			oEmptyDelivery.SubmittedBy = UserInfo.getCWID();
+			oEmptyDelivery.Active = 1;
+			oEmptyDelivery.PaidOrFree = "Paid";
+			oEmptyDelivery.LocalOrDirectDelivery = "Direct";
+			oEmptyDelivery.PlannedInAPO = "Yes";
+			oEmptyDelivery.Contract = "Yes";
+			oEmptyDelivery.RequestedQuantity = oFastAppDataModel.getProperty('/SelectedDeliverieProduct/RequestedVolume');
+			oEmptyDelivery.Penalty = "";
+			oEmptyDelivery.Compensated = "";
+			oEmptyDelivery.UndertakingLetters = "";
+
+			//set binding of empty delivery to dialog binding
+			Services.getFastAppDataModel().setProperty("/EditDelivery/", oEmptyDelivery);
+
+		},
+
+		//When you confirm adding a new deliverie
+		onAddPurchaseOrderDialogConfirm: function (oEvent) {
+
+			//Delivery is added
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oAddDelivery = oFastAppDataModel.getProperty("/EditDelivery/");
+			var that = this;
+
+			//Check for mandatory fields
+			//Check for mandatory fields
+			if (!oAddDelivery.PoDate ||
+				!oAddDelivery.ActualDeliveryDate ||
+				!oAddDelivery.ActualDeliveryQuantity ||
+				!oAddDelivery.Contract
+			) {
+
+				//check mandatory fields
+				sap.m.MessageBox.error("Please enter all the mandatory fields.");
+
+			} else {
+
+				var aDeliveries = oFastAppDataModel.getProperty("/SelectedDeliverieProduct/Deliveries/results/");
+				aDeliveries.push(oAddDelivery);
+
+				oFastAppDataModel.setProperty("/SelectedDeliverieProduct/Deliveries/results/", aDeliveries);
+
+				//oFastAppDataModel.updateBindings(true);
+				//close the dialog
+				this._oDialogDeliverie.close();
 
 			}
 
