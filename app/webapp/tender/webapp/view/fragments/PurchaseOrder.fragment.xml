@@ -58,7 +58,7 @@
 								</m:Select>
 
                                 <m:Select selectedKey="{fastAppData>InstituteID}" items="{ path: 'fastAppData>/InstituteWithChildren/' }"
-                                        enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/GroupPurchasing} !== 0 ? true : false}">
+                                        enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="true">
                                         <core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
                                 </m:Select>
 
