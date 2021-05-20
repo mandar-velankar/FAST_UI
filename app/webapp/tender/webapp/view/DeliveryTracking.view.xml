@@ -104,7 +104,7 @@
 	</ObjectPageSubSection>
 	<!-- DELIVERIES SUB SECTION PAGE -->
 
-	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="Purchase Orders">
+	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Purchase Orders' : 'Deliveries' }">
 		<blocks>
 			<!-- <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.PurchaseOrder" type="XML"/>-->
 		</blocks>
@@ -169,10 +169,10 @@
 	<!-- LETTERS SUB SECTION PAGE -->
 	<ObjectPageSubSection id="DelivTrackLettersSubsection" title="Returns" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 		<blocks>
-			<m:VBox>
+			<m:VBox visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 				<m:Toolbar>
 					<m:ToolbarSpacer/>
-					<m:Button id="idAddLtr" visible="false" text="{i18n>AddLetter}" icon="sap-icon://add" press="onAddLetter"/>
+					<m:Button id="idAddLtr" visible="{= ${fastAppData>/EditMode} === true ? true : false}" text="{i18n>AddLetter}" icon="sap-icon://add" press="onAddLetter"/>
 				</m:Toolbar>
 				<!-- Letters table -->
 				<m:Table id="lettersTableID" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}" delete=".onDeleteLetter"

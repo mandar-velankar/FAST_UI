@@ -6,9 +6,9 @@
 
 			<m:VBox>
 				<!-- Buttons for editing -->
-				<m:Toolbar design="Solid">
+				<m:Toolbar id='deliveriesTableToolbarId' design="Solid">
 					<m:ToolbarSpacer/>
-					<m:Button id="idAddDelv" visible="false" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddPurchaseOrder"/>
+					<m:Button visible="{= ${fastAppData>/EditMode} === true ? true : false}" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddPurchaseOrder"/>
 					<!--<m:Button id="idDelDelv" visible="false" text="{i18n>DeleteDelivery}" icon="sap-icon://delete" press="onDeleteDeliverie" enabled="{= ${fastAppData>/SelectedDeliverieProduct/Deliveries/results/length} > 0 }"/>-->
 				</m:Toolbar>
 				<!-- Deliveries table -->
@@ -39,7 +39,7 @@
 						</m:Column>
 					</m:columns>
 					<m:items>
-						<m:ColumnListItem id="deliveriesTableListID" type="{= ${fastAppData>/EditMode} === true ? 'DetailAndActive' : 'Navigation'}"
+						<m:ColumnListItem type="{= ${fastAppData>/EditMode} === true ? 'DetailAndActive' : 'Navigation'}"
 							detailPress=".onDeliveryItemDetail" press="{= ${fastAppData>/EditMode} === true ? '.onDeliveryItemSelect' : ''}">
 							<m:cells>
 								<m:DatePicker
@@ -50,13 +50,14 @@
 
 								<m:Input value="{fastAppData>PO}" enabled="false"/>
 
-                                <m:Select id="idPoContractYesNo" selectedKey="{fastAppData>Contract}" change="onChangeContract" enabled="false">
+                                <m:Select selectedKey="{fastAppData>Contract}" change="onChangeContract" enabled="false">
 									<m:items>
 										<core:Item text="Yes" key="Yes"/>
 										<core:Item text="No" key="No"/>
 									</m:items>
 								</m:Select>
-                                <m:Select id="idPoDetailInstituteID" selectedKey="{fastAppData>InstituteID}" items="{ path: 'fastAppData>/InstituteWithChildren/' }"
+
+                                <m:Select selectedKey="{fastAppData>InstituteID}" items="{ path: 'fastAppData>/InstituteWithChildren/' }"
                                         enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/GroupPurchasing} !== 0 ? true : false}">
                                         <core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
                                 </m:Select>

@@ -2,7 +2,7 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core">
 	<l:Grid defaultSpan="L12 M6 S12" width="auto" class="sapUiSizeCompact" position="Center">
 		<l:content>
-			<l:form.SimpleForm maxContainerCols="2" visible="true" id="idDeliverieForm" editable="true" labelMinWidth="0"
+			<l:form.SimpleForm maxContainerCols="2" visible="true" editable="true" labelMinWidth="0"
 				layout="ResponsiveGridLayout" labelSpanL="5" labelSpanM="1" emptySpanL="1" emptySpanM="1" columnsL="2" columnsM="2">
 				<l:content>
 					<core:Title text="Add Information for Purchase Order below"/>
@@ -15,7 +15,6 @@
 					</Label>
 					
 					<DatePicker
-						id="idRequestedDeliveryDate"
 						value="{path :'fastAppData>/EditDelivery/PoDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
 						tooltip="{i18n>EffDate}" 
 						placeholder="{i18n>Select_date}"
@@ -31,7 +30,7 @@
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input id="idActualDeliveryQuantity" value="{fastAppData>/EditDelivery/ActualDeliveryQuantity}" type="Number" required="true" >
+					<Input value="{fastAppData>/EditDelivery/ActualDeliveryQuantity}" type="Number" required="true" >
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
@@ -43,7 +42,7 @@
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input value="{fastAppData>/EditDelivery/PO}" id="idPO">
+					<Input value="{fastAppData>/EditDelivery/PO}">
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
@@ -55,7 +54,7 @@
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idInstituteDelivery" items="{ path: 'fastAppData>/InstituteWithChildren/' }" selectedKey="{fastAppData>/EditDelivery/InstituteID}">
+					<Select items="{ path: 'fastAppData>/InstituteWithChildren/' }" selectedKey="{fastAppData>/EditDelivery/InstituteID}">
 						<items>
 							<core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}"/>
 						</items>
@@ -70,7 +69,7 @@
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idContractYesNo" selectedKey="{fastAppData>/EditDelivery/Contract}">
+					<Select selectedKey="{fastAppData>/EditDelivery/Contract}">
 						<items>
 							<core:Item key="Yes" text="Yes"/>
 							<core:Item key="No" text="No"/>

@@ -5,9 +5,9 @@
 	<!-- DELIVERIES SUB SECTION PAGE -->
 			<m:VBox>
 				<!-- Buttons for editing -->
-				<m:Toolbar design="Solid">
+				<m:Toolbar id='deliveriesTableToolbarId' design="Solid">
 					<m:ToolbarSpacer/>
-					<m:Button id="idAddDelv" visible="false" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddDeliverie"/>
+					<m:Button visible="{= ${fastAppData>/EditMode} === true ? true : false}" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddDeliverie"/>
 					<!--<m:Button id="idDelDelv" visible="false" text="{i18n>DeleteDelivery}" icon="sap-icon://delete" press="onDeleteDeliverie" enabled="{= ${fastAppData>/SelectedDeliverieProduct/Deliveries/results/length} > 0 }"/>-->
 				</m:Toolbar>
 				<!-- Deliveries table -->
@@ -56,7 +56,7 @@
 						</m:Column>
 					</m:columns>
 					<m:items>
-						<m:ColumnListItem id="deliveriesTableListID" type="{= ${fastAppData>/EditMode} === true ? 'DetailAndActive' : 'Navigation'}"
+						<m:ColumnListItem type="{= ${fastAppData>/EditMode} === true ? 'DetailAndActive' : 'Navigation'}"
 							detailPress=".onDeliveryItemDetail" press="{= ${fastAppData>/EditMode} === true ? '.onDeliveryItemSelect' : ''}">
 							<m:cells>
 								<!--<m:ObjectIdentifier title="{fastAppData>LocalOrDirectDelivery}"/>-->
@@ -102,13 +102,13 @@
 								</m:Select>
 								<m:Input value="{fastAppData>PO}" enabled="false"/>
 								<m:Input value="{fastAppData>InvoiceNo}" enabled="false"/>
-								<m:Select id="idPenaltyDrop" selectedKey="{fastAppData>Penalty}" change="onChangePenalty" enabled="false">
+								<m:Select selectedKey="{fastAppData>Penalty}" change="onChangePenalty" enabled="false">
 									<m:items>
 										<core:Item text="Yes" key="Yes"/>
 										<core:Item text="No" key="No"/>
 									</m:items>
 								</m:Select>
-								<m:Select id="idCompensatedDrop" selectedKey="{fastAppData>Compensated}" change="onChangeCompensated" enabled="false">
+								<m:Select selectedKey="{fastAppData>Compensated}" change="onChangeCompensated" enabled="false">
 									<m:items>
 										<core:Item text="Yes" key="Yes"/>
 										<core:Item text="No" key="No"/>

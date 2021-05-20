@@ -1368,13 +1368,13 @@ sap.ui.define([
 
 						//Deliveries - Delivery Detail
 						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
-						if (oDeliveryDetailSubSection) {
+						if (oDeliveryDetailSubSection && Services.getSelectedCountry() !== 'CL') {
 							oDeliveryDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letters
 						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
-						if (oDelivTrackLettersSubSection) {
+						if (oDelivTrackLettersSubSection && Services.getSelectedCountry() !== 'CL') {
 							oDelivTrackLettersSubSection.setVisible(true);
 						}
 
@@ -1725,9 +1725,9 @@ sap.ui.define([
 				case Services.getDeliveryTrackingPageSectionID():
 					//that._showSubSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/deliveryTrackingId/fragment'), 'deliveryTrackingId');
 					//DELIVERY TRACKING TAB
-					that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
+					//that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
 					//that.getView().byId("idDelDelv").setVisible(false);
-					that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
+					//that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
 					//that.getView().byId("idDelLtr").setVisible(false);
 				break;
 				default:break;
@@ -2137,9 +2137,9 @@ sap.ui.define([
 					case Services.getDeliveryTrackingPageSectionID():
 
 						//DELIVERY TRACKING TAB
-						that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
+						//that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
 						//that.getView().byId("idDelDelv").setVisible(true);
-						that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(true);
+						//that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(true);
 						//that.getView().byId("idDelLtr").setVisible(true);
 						break;
 
@@ -2682,8 +2682,10 @@ sap.ui.define([
 
 				//DELIVERY TRACKING TAB
 				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
-				this.byId("idDeliveryDetailSection").setVisible(false);
-				this.byId("idLetterDetailSection").setVisible(false);
+				//this.byId("idDeliveryDetailSection").setVisible(false);
+				if(Services.getSelectedCountry() != 'CL'){
+					this.byId("idLetterDetailSection").setVisible(false);
+				}
 				break;
 
 			default:
