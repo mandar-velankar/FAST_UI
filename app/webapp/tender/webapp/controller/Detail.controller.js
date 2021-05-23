@@ -7409,6 +7409,14 @@ sap.ui.define([
 			// });
 		},
 
+		onExportToExcel: function (oEvent){
+			let sOfferId = Services.getSelectedOfferID();
+			var url = ("../../v2/tender/ExcelAttachment('$sOfferId')/content");
+			url = url.replace("$sOfferId", sOfferId);
+			sap.m.URLHelper.redirect(url, true);
+			//window.open(url);
+		},
+
 		//when submitting quotation, we will save data in the quotation tab + set the correct status on the offer
 		onSaveDefaultQuotation: function (oEvent) {
 			var that = this;
