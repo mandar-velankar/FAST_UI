@@ -1747,6 +1747,7 @@ sap.ui.define([
 						"Awaiting Approval",
 						"Quotation Submitted",
 						"In FOC Negotiation",
+						"Appeal in Progress",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -2275,6 +2276,7 @@ sap.ui.define([
 								"Awaiting Approval",
 								"Quotation Submitted",
 								"In FOC Negotiation",
+								"Appeal in Progress",
 								"Results Recorded",
 								"Delivery Ongoing"
 							];
@@ -3093,7 +3095,7 @@ sap.ui.define([
 								bCancelEnabled = true;
 							}
 
-							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Delivery Ongoing") {
+							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Appeal in Progress" && oData.STATUS !== "Delivery Ongoing") {
 								bSendApprovalEnabled = true;
 							}
 
@@ -4017,6 +4019,7 @@ sap.ui.define([
 						"Awaiting Approval",
 						"Quotation Submitted",
 						"In FOC Negotiation",
+						"Appeal in Progress",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -4088,6 +4091,7 @@ sap.ui.define([
 					if (
 						oData.STATUS === "Quotation Submitted" ||
 						oData.STATUS === "In FOC Negotiation" ||
+						oData.STATUS === "Appeal in Progress" ||
 						oData.STATUS === "Results Recorded"
 					) {
 
@@ -4104,7 +4108,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation' or in 'Results Recorded'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Appeal in Progress' or in 'Results Recorded'.", {});
 
 					}
 
@@ -4164,7 +4168,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Results Recorded' or 'Delivery Ongoing'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Appeal in Progress', 'Results Recorded' or 'Delivery Ongoing'.", {});
 
 					}
 
