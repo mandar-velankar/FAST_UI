@@ -85,6 +85,12 @@
 				"settings": {},
 				"componentData": {},
 				"lazy": true
+			},
+			"salesopportunityComponent": {
+				"name": "com.bayer.tender.salesopportunity",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
 			}
 		},
 		"resourceRoots":{
@@ -186,7 +192,15 @@
 						"name": "tender",
 						"prefix": "t"
 					}
-				}			
+				},
+				{
+					"name": "salesopportunity",
+					"pattern": "salesopportunity",
+					"target": {
+						"name": "salesopportunity",
+						"prefix": "s"
+					}
+				}		
 			],
 
 			"targets": {
@@ -211,6 +225,10 @@
 				"tender": {
 					"type": "Component",
 					"usage": "tenderComponent"
+				},
+				"salesopportunity": {
+					"type": "Component",
+					"usage": "salesopportunityComponent"
 				}
 			}
 		}
