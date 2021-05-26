@@ -58,6 +58,15 @@
 									</TileContent>
 								</GenericTile>
 								
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Admin app" 
+									press="onTileAdminPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
 					</Panel>
