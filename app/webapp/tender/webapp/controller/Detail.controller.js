@@ -6007,12 +6007,17 @@ sap.ui.define([
 
 					//should tender channel be defaulted/forced on distributor?
 					$.when(Services.checkTenderChannelOnDistributor(sCountry, sSelectedInstituteID)).done(function (bTenderChannelOnDistributor) {
-						//default on Distributor
-						if (bTenderChannelOnDistributor) {
-							that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+						//default on Distributor / Direct for Chile
+						if(Services.getSelectedCountry() === 'CL'){
+							that.getView().byId("idTenderChannel").setSelectedKey("Direct");
 							that.getView().byId("idTenderChannel").setEnabled(false);
 						} else {
-							that.getView().byId("idTenderChannel").setEnabled(true);
+							if (bTenderChannelOnDistributor) {
+								that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+								that.getView().byId("idTenderChannel").setEnabled(false);
+							} else {
+								that.getView().byId("idTenderChannel").setEnabled(true);
+							}
 						}
 					});
 				}
