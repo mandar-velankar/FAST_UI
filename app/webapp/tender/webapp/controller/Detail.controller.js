@@ -303,7 +303,12 @@ sap.ui.define([
 			oDetailController.getView().byId("idClassification").setEnabled(true);
 			oDetailController.getView().byId("idInstituteType").setEnabled(true);
 			oDetailController.getView().byId("idInstituteName").setEnabled(true);
-			oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			if(Services.getSelectedCountry() === 'CL'){
+				oDetailController.getView().byId("idTenderChannel").setSelectedKey("Direct");
+				oDetailController.getView().byId("idTenderChannel").setEnabled(false);
+			} else {
+				oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			}
 			oDetailController.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
 			// hide country specific fields
