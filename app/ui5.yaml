@@ -33,6 +33,12 @@ builder:
             filters:
               - com/bayer/tender/landingspage/Component.js
               - com/bayer/tender/landingspage/manifest.json
+              - com/bayer/tender/landingspage/webapp/i18n/**
+              - com/bayer/tender/landingspage/webapp/model/**
+              - com/bayer/tender/landingspage/webapp/controller/**
+              - com/bayer/tender/landingspage/webapp/service/**
+              - com/bayer/tender/landingspage/webapp/state/**
+              - com/bayer/tender/landingspage/webapp/view/**
               - "!com/bayer/tender/landingspage/contractsapp/**"
               - "!com/bayer/tender/landingspage/epa/**"
               - "!com/bayer/tender/landingspage/landingspage/**"
