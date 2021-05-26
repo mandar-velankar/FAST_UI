@@ -48,7 +48,7 @@ sap.ui.define([
 
 			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
-
+			
 			Services.setRouterObject(this.oRouter);
 
 			//TODO: talk about better solution with Wouter
@@ -896,7 +896,6 @@ sap.ui.define([
 					oPage.removeSubSection(oSubSection);
 				}
 			});
-
 		},
 
 		//Block expanding the panel, beceause we are fasing out this logic
@@ -1354,7 +1353,7 @@ sap.ui.define([
 					//reselect same offer if it exists, otherwise clear offer selected
 					//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
 					if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()),sSelectedSection)){
-
+						
 						//Deliveries - subsection
 						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
@@ -1369,13 +1368,13 @@ sap.ui.define([
 
 						//Deliveries - Delivery Detail
 						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
-						if (oDeliveryDetailSubSection) {
+						if (oDeliveryDetailSubSection && Services.getSelectedCountry() !== 'CL') {
 							oDeliveryDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letters
 						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
-						if (oDelivTrackLettersSubSection) {
+						if (oDelivTrackLettersSubSection && Services.getSelectedCountry() !== 'CL') {
 							oDelivTrackLettersSubSection.setVisible(true);
 						}
 
@@ -1724,10 +1723,11 @@ sap.ui.define([
 					that.onEditOutcomTreeTable();
 					break;
 				case Services.getDeliveryTrackingPageSectionID():
+					//that._showSubSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/deliveryTrackingId/fragment'), 'deliveryTrackingId');
 					//DELIVERY TRACKING TAB
-					that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
+					//that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
 					//that.getView().byId("idDelDelv").setVisible(false);
-					that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
+					//that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
 					//that.getView().byId("idDelLtr").setVisible(false);
 				break;
 				default:break;
@@ -2101,7 +2101,7 @@ sap.ui.define([
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
-						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+						that._showSubSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
@@ -2135,10 +2135,11 @@ sap.ui.define([
 						break;
 
 					case Services.getDeliveryTrackingPageSectionID():
+
 						//DELIVERY TRACKING TAB
-						that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
+						//that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
 						//that.getView().byId("idDelDelv").setVisible(true);
-						that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(true);
+						//that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(true);
 						//that.getView().byId("idDelLtr").setVisible(true);
 						break;
 
@@ -2681,8 +2682,10 @@ sap.ui.define([
 
 				//DELIVERY TRACKING TAB
 				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
-				this.oDeliveryTrackingView.byId("idDeliveryDetailSection").setVisible(false);
-				this.oDeliveryTrackingView.byId("idLetterDetailSection").setVisible(false);
+				//this.byId("idDeliveryDetailSection").setVisible(false);
+				if(Services.getSelectedCountry() != 'CL'){
+					this.byId("idLetterDetailSection").setVisible(false);
+				}
 				break;
 
 			default:
@@ -7404,6 +7407,14 @@ sap.ui.define([
 			// 		var a = 1;
 			// 	}
 			// });
+		},
+
+		onExportToExcel: function (oEvent){
+			let sOfferId = Services.getSelectedOfferID();
+			var url = ("../../v2/tender/ExcelAttachment('$sOfferId')/content");
+			url = url.replace("$sOfferId", sOfferId);
+			sap.m.URLHelper.redirect(url, true);
+			//window.open(url);
 		},
 
 		//when submitting quotation, we will save data in the quotation tab + set the correct status on the offer

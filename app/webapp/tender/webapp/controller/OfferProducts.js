@@ -1434,7 +1434,7 @@ sap.ui.define([
 				return null;
 			}else{
 				let oAggregatedDistributorBrandPolicy = await Services.getService('DistributorBrandPolicy').getAggregatedDistributorBrandPolicy(sDistributorID, sBrandID);
-				return Number(oAggregatedDistributorBrandPolicy.data.results[0].StandardDiscount) || null;
+				return Number(oAggregatedDistributorBrandPolicy.data.results[0].StandardDiscount);
 			}
 			
 			
@@ -1817,7 +1817,15 @@ sap.ui.define([
 			var sSellingCompany = productValues.SellingCompany; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			var sBrandID = oProduct.SKU.Product.HLEVEL4_CODE;
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
-				
+
+			let iStandardDiscount = 0;
+			if(sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL'){
+				aPromises.push(that.getStandardDiscount(sDistributorID,sBrandID).then(iResult=>{
+					iStandardDiscount = iResult;
+					return iResult;
+				}));
+			}
+
 			//get additional FOC product if its filled
 			var oAddBrandProduct = oDetailController.getView().byId("idEditPriceOffer_idFOCProdBund1");
 			var sAddBrandProductCode = 0;
@@ -1841,12 +1849,20 @@ sap.ui.define([
 				var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
 				var cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;
 				var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
-			
-				var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+				
+				let offerPrice = 0;
+				if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){
+					let sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount);
+					offerPrice = sPreApprovedPrice;
+				}else{
+					offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+				}
+
 				//JH changed
 				var standardDiscount = oDetailController.byId("idEditPriceOffer_idStandardDiscount") && oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue()) / 100 : 0;
-				if(sCountryCode!=="AR"||sCountryCode!=="BR"){
+				if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
 					standardDiscount = cifPrice && cifPrice!==0 ? (cifPrice - offerPrice) / cifPrice : 0;
+					standardDiscount = iStandardDiscount;
 				}
 				//JH changed
 				
@@ -1879,7 +1895,7 @@ sap.ui.define([
 				var netOfferPrice = cifPrice!==0 ? cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart) : offerPrice * (1 - focChart);//JH changed
 
 				let netPrice, discount = "";
-				if(sCountryCode==="AR"||sCountryCode==="BR"){
+				if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
 					netPrice = (1 - deductions) * netOfferPrice;
 					discount = standardDiscount;
 				}else{
@@ -1957,15 +1973,29 @@ sap.ui.define([
 		
 		//local method for updating the scenario
 		_updateScenario: function (oDetailController, price, productValues, idScenario) {
+
+			//get selected country
+			let sCountryCode = Services.getSelectedCountry();
+
+			//get name & description for specific scenario
 			price.name = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idName").getValue();
 			price.description = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idDescription").getValue();
 
 			//main foc product from selected scenario
-			var offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			let offerPrice = 0;
+			if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){
+				//for AR/BR/CL the offerPrice is a pre-approved price that is not changable
+				let sPreApprovedPrice = price.cifPrice - (price.cifPrice * price.standardDiscount);
+				offerPrice = sPreApprovedPrice;
+			}else{
+				//for other countries this can be filled
+				offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			}
+
+			let standardDiscount = 0;
 			//var standardDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue()) / 100 : 0;							 
-			//if(sCountryCode!=="AR"||sCountryCode!=="BR"){
-			var standardDiscount = price.cifPrice && price.cifPrice!==0 ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
-			//}
+			standardDiscount = price.cifPrice && price.cifPrice!==0 ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
+	
 			var additionalDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
 			var focAbsPct = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
 			var foc = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;

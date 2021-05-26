@@ -40,7 +40,7 @@
                     icon="sap-icon://save"
                     press=".onSaveDefaultQuotation"
                     enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>
-                                            
+
                 <m:Button
                     id="btnDownloadQuotation"
                     text="{i18n>DownloadQuotation}"
@@ -55,6 +55,15 @@
                     icon="sap-icon://sys-enter"
                     press=".onSubmitQuotation"
                     enabled="false"/>
+                    
+                    
+                <m:Button
+                    id="btnExportToExcel"
+                    text="{i18n>ExportToExcel}"
+                    icon="sap-icon://excel-attachment"
+                    press=".onExportToExcel"
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
+
             </actions>
             <l:BlockLayout background="Light">
                 <l:BlockLayoutRow>

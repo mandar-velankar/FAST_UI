@@ -38,6 +38,7 @@ sap.ui.define([
 		_onTenderMatched: function (oEvent) {
 
 			var sTab = oEvent.getParameter("arguments").tab || "";
+			let that = this;
 
 			// check if we are on the delivery tab, otherwise don't run the code after the if statement
 			if (sTab !== Services.getDeliveryTrackingPageSectionID()) {
@@ -65,8 +66,33 @@ sap.ui.define([
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
 
+			//remove delivery table if it exists
+			this._removeDeliveryTableFragment();
+
+			//show delivery / purchase order table
+			let oSubsection = this.getView().byId('DelivTrackDeliveriesSubsection');
+			let oFragmentName = 'FAST_NS0FAST0.view.fragments.' + Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment') ; //+ Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment');
+			sap.ui.core.Fragment.load({ type: 'XML',
+										name: oFragmentName,
+										id: 'deliveryTableFragment',
+										controller: this
+									  }).then(function(oFragment){
+										  	oSubsection.addBlock(oFragment);
+									   });
 		},
 
+		_removeDeliveryTableFragment: function(){
+			//destroy the table
+			let oTable = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
+			let oToolbar = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableToolbarId');
+			let oSubsection = this.getView().byId('DelivTrackDeliveriesSubsection');
+
+			if(oTable && oToolbar && oSubsection){
+				oTable.destroy();
+				oToolbar.destroy();
+				oSubsection.removeAllBlocks();
+			}
+		},
 
 		//when items are bound and displayed on the view, we should select the first item
 		onBindingItemsFinished: function (oEvent) {
@@ -221,6 +247,114 @@ sap.ui.define([
 
 		},
 
+		//When you click on add purchase order
+		onAddPurchaseOrder: function (oEvent) {
+
+			//distributor id is set on page form and should be used (instead of requested) when adding product
+			//payment terms and inco terns should set based on information in view providing product
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
+
+			if (oTableDeliveries && Services.getDeliveryItemEdit() != -1) {
+				var oFastAppDataModel = Services.getFastAppDataModel();
+				var oSelectedItem = oTableDeliveries.getItems()[Services.getDeliveryItemEdit()];
+
+				if (oSelectedItem) {
+					var aCells = oSelectedItem.getCells();
+					aCells.forEach(function (oCell, index) {
+						oCell.setProperty("enabled", false);
+					});
+
+					Services.setDeliveryItemEdit(-1);
+					that.byId("idDeliveryDetailSection").setVisible(false);
+				}
+			}
+
+			if (!that._oDailogPurchaseOrder) {
+				that._oDailogPurchaseOrder = new sap.m.Dialog("addPurchaseOrderDialog", {
+					title: that.oBundle.getText("Add Purchase Order"),
+					buttons: [new sap.m.Button({
+							text: that.oBundle.getText("Add Purchase Order"),
+							tap: [that.onAddPurchaseOrderDialogConfirm, that]
+
+						}),
+						new sap.m.Button({
+							text: that.oBundle.getText("Cancel"),
+							tap: [that.onCancelAddPurchaseOrder, that]
+						})
+					],
+					//content with all fields that need to be filled
+					content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.AddPurchaseOrder", that)]
+						// End of content of dialog
+				});
+
+			}
+
+			that.getView().addDependent(that._oDailogPurchaseOrder);
+			that._oDailogPurchaseOrder.open();
+
+			//empty delivery
+			var oEmptyDelivery = Services.getService('Delivery').getEmptyDelivery();
+
+			//give values to empty object
+			oEmptyDelivery.TenderID = Services.getSelectedTenderID();
+			oEmptyDelivery.OfferID = Services.getSelectedOfferID();
+			oEmptyDelivery.CountryCode = Services.getCountryCodeofSelectedTender();
+			oEmptyDelivery.ProductCode = Services.getSelectedProductID();
+			oEmptyDelivery.SKUCode = Services.getSelectedProductID();
+			oEmptyDelivery.SubmittedOn = moment().utc().toDate();
+			oEmptyDelivery.SubmittedBy = UserInfo.getCWID();
+			oEmptyDelivery.Active = 1;
+			oEmptyDelivery.PaidOrFree = "Paid";
+			oEmptyDelivery.LocalOrDirectDelivery = "Direct";
+			oEmptyDelivery.PlannedInAPO = "Yes";
+			oEmptyDelivery.Contract = "Yes";
+			oEmptyDelivery.RequestedQuantity = oFastAppDataModel.getProperty('/SelectedDeliverieProduct/RequestedVolume');
+			oEmptyDelivery.Penalty = "";
+			oEmptyDelivery.Compensated = "";
+			oEmptyDelivery.UndertakingLetters = "";
+
+			//set binding of empty delivery to dialog binding
+			Services.getFastAppDataModel().setProperty("/EditDelivery/", oEmptyDelivery);
+
+		},
+
+		//When you confirm adding a new deliverie
+		onAddPurchaseOrderDialogConfirm: function (oEvent) {
+
+			//Delivery is added
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oAddDelivery = oFastAppDataModel.getProperty("/EditDelivery/");
+			var that = this;
+
+			//Check for mandatory fields
+			//Check for mandatory fields
+			if (!oAddDelivery.PoDate ||
+				!oAddDelivery.ActualDeliveryQuantity ||
+				!oAddDelivery.Contract ||
+				!oAddDelivery.PO
+			) {
+
+				//check mandatory fields
+				sap.m.MessageBox.error("Please enter all the mandatory fields.");
+
+			} else {
+
+				var aDeliveries = oFastAppDataModel.getProperty("/SelectedDeliverieProduct/Deliveries/results/");
+				aDeliveries.push(oAddDelivery);
+
+				oFastAppDataModel.setProperty("/SelectedDeliverieProduct/Deliveries/results/", aDeliveries);
+
+				//oFastAppDataModel.updateBindings(true);
+				//close the dialog
+				this._oDailogPurchaseOrder.close();
+
+			}
+
+		},
+
 		//When you click on add deliverie
 		onAddDeliverie: function (oEvent) {
 
@@ -228,7 +362,7 @@ sap.ui.define([
 			//payment terms and inco terns should set based on information in view providing product
 			var that = this;
 
-			var oTableDeliveries = this.byId("deliveriesTableID");
+			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
 
 			if (oTableDeliveries && Services.getDeliveryItemEdit() != -1) {
 				var oFastAppDataModel = Services.getFastAppDataModel();
@@ -396,12 +530,16 @@ sap.ui.define([
 
 		},
 
+		onCancelAddPurchaseOrder: function (oEvent){
+			this._oDailogPurchaseOrder.close();
+		},
+
 		//whe you click on delete deliverie
 		onDeleteDeliverie: function (oEvent) {
 			var that = this;
 
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oTableDeliveries = this.byId("deliveriesTableID");
+			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
 			var aSelectedItem = oEvent.getParameter("listItem");
 			var sPathSelectedDelivery = aSelectedItem.getBindingContextPath();
 			var iIndex = parseInt(sPathSelectedDelivery.substring(sPathSelectedDelivery.lastIndexOf('/') + 1));
@@ -429,7 +567,7 @@ sap.ui.define([
 
 		onDeliveryItemDetail: function (oEvent) {
 			var that = this;
-			var oTableDeliveries = this.byId("deliveriesTableID");
+			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
 
 			if (oTableDeliveries) {
 				var oFastAppDataModel = Services.getFastAppDataModel();
@@ -437,8 +575,9 @@ sap.ui.define([
 				var sPathSelectedItem = oEvent.getSource().getBindingContextPath();
 				var oSelectedItem = oFastAppDataModel.getProperty(sPathSelectedItem);
 				var iIndex = parseInt(sPathSelectedItem.substring(sPathSelectedItem.lastIndexOf('/') + 1));
+				var oCountry = Services.getSelectedCountry();
 
-				if (oSelectedItem) {
+				if (oSelectedItem && oCountry != 'CL') {
 					this.byId("idDeliveryDetailForm").bindElement({
 						path: sPathSelectedItem,
 						model: "fastAppData"
@@ -470,14 +609,14 @@ sap.ui.define([
 					Services.setDeliveryItemEdit(iIndex);
 				}
 			}
-
-			that.byId("idDeliveryDetailSection").setVisible(true);
-
+			if (oCountry != 'CL') {
+				that.byId("idDeliveryDetailSection").setVisible(true);
+			}
 		},
 
 		onDeliveryItemSelect: function (oEvent) {
 			var that = this;
-			var oTableDeliveries = this.byId("deliveriesTableID");
+			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
 
 			if (oTableDeliveries) {
 				var oFastAppDataModel = Services.getFastAppDataModel();
@@ -486,14 +625,17 @@ sap.ui.define([
 				var sPathSelectedItem = aSelectedItem.getBindingContext('fastAppData').sPath;
 				var iIndex = parseInt(sPathSelectedItem.substring(sPathSelectedItem.lastIndexOf('/') + 1));
 				var oSelectedItem = oFastAppDataModel.getProperty(sPathSelectedItem);
+				var oCountry = Services.getSelectedCountry();
 
 				if (aDeliveries[iIndex] && oSelectedItem) {
 
-					this.byId("idDeliveryDetailForm").bindElement({
-						path: sPathSelectedItem,
-						model: "fastAppData"
-					});
-					this.byId("idDeliveryDetailForm").setVisible(true);
+					if(oCountry !== 'CL'){
+						this.byId("idDeliveryDetailForm").bindElement({
+							path: sPathSelectedItem,
+							model: "fastAppData"
+						});
+						this.byId("idDeliveryDetailForm").setVisible(true);
+					}
 
 					oTableDeliveries.setSelectedItem(aDeliveries[iIndex], true);
 					aDeliveries[iIndex].setSelected(true);
@@ -525,17 +667,21 @@ sap.ui.define([
 				}
 			}
 
-			that.byId("idDeliveryDetailSection").setVisible(true);
-
+			if(oCountry !== 'CL'){
+				that.byId("idDeliveryDetailSection").setVisible(true);
+			}
 		},
 
 		onCancelDeliveryEdit: function (oEvent) {
 			var that = this;
-			var oTableDeliveries = this.byId("deliveriesTableID");
-
+			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
+			var oCountry = Services.getSelectedCountry();
+			
 			//switch to correct view edit/display
 			that.ODetailController.onEditToggleButtonPress();
-			that.byId("idDeliveryDetailSection").setVisible(false);
+			if(oCountry !== 'CL'){
+				that.byId("idDeliveryDetailSection").setVisible(false);
+			}
 
 			if (oTableDeliveries && Services.getDeliveryItemEdit() !== -1) {
 				var oRow = oTableDeliveries.getItems()[Services.getDeliveryItemEdit()];
@@ -552,7 +698,7 @@ sap.ui.define([
 
 		onConfirmDelivery: function (oEvent) {
 			var that = this;
-			var oTableDeliveries = this.byId("deliveriesTableID");
+			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var oDelivery = oFastAppDataModel.getProperty("/SelectedDeliverieProduct/Deliveries/results/" + Services.getDeliveryItemEdit());
 
@@ -854,9 +1000,10 @@ sap.ui.define([
 			var aDeliveriesSaveInfo = Services.getFastAppDataModel().getProperty('/SelectedDeliverieProduct/Deliveries/results/');
 			var aLettersSaveInfo = Services.getFastAppDataModel().getProperty('/SelectedDeliverieProduct/Letters/results/');
 			var oTender = Services.getFastAppDataModel().getProperty("/Tender");
+			var sCountry = Services.getSelectedCountry();
 
 			aDeliveriesSaveInfo.forEach(function (oDeliverySaveInfo, index) {
-				if (oDeliverySaveInfo._sOperation !== "DELETE") {
+				if (oDeliverySaveInfo._sOperation !== "DELETE" && sCountry != 'CL') {
 					if (!oDeliverySaveInfo.PlannedInAPO ||
 						!oDeliverySaveInfo.RequestedDeliveryDate ||
 						!oDeliverySaveInfo.RequestedQuantity ||
@@ -880,6 +1027,19 @@ sap.ui.define([
 						aMessages.push(oMessage);
 						bError = true;
 					}
+				} else if (oDeliverySaveInfo._sOperation !== "DELETE" && sCountry != 'CL') {
+					if (!oDeliverySaveInfo.PoDate ||
+						!oDeliverySaveInfo.PO ||
+						!oDeliverySaveInfo.ActualDeliveryQuantity ||
+						!oDeliverySaveInfo.Contract)
+
+						var oMessage = {
+							type: 'Error',
+							title: 'Please enter all the mandatory fields for purchase order ' + (index + 1),
+						};
+
+						aMessages.push(oMessage);
+						bError = true;
 				}
 			});
 

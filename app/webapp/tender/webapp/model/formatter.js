@@ -271,6 +271,13 @@ sap.ui.define([
 			}
 			return x;
 		},
+		countryValidation: function(countryCode){
+			if(countryCode === 'CL'){
+				return true;
+			}
+
+			return false;
+		},
 		
 		/*
 		sending_selectedKey: function (sStatus, sApproverType, sSelectedKey){
