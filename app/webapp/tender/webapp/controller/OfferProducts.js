@@ -1973,15 +1973,29 @@ sap.ui.define([
 		
 		//local method for updating the scenario
 		_updateScenario: function (oDetailController, price, productValues, idScenario) {
+
+			//get selected country
+			let sCountryCode = Services.getSelectedCountry();
+
+			//get name & description for specific scenario
 			price.name = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idName").getValue();
 			price.description = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idDescription").getValue();
 
 			//main foc product from selected scenario
-			var offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			let offerPrice = 0;
+			if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){
+				//for AR/BR/CL the offerPrice is a pre-approved price that is not changable
+				let sPreApprovedPrice = price.cifPrice - (price.cifPrice * price.standardDiscount);
+				offerPrice = sPreApprovedPrice;
+			}else{
+				//for other countries this can be filled
+				offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			}
+
+			let standardDiscount = 0;
 			//var standardDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue()) / 100 : 0;							 
-			//if(sCountryCode!=="AR"||sCountryCode!=="BR"){
-			var standardDiscount = price.cifPrice && price.cifPrice!==0 ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
-			//}
+			standardDiscount = price.cifPrice && price.cifPrice!==0 ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
+	
 			var additionalDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
 			var focAbsPct = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
 			var foc = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;
