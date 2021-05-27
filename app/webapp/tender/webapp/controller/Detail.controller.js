@@ -6619,10 +6619,12 @@ sap.ui.define([
 			Promise.all(promises).then(async (result) => {
 
 				// validate distributor offer product net prices
-				const bNetPricesAreValid = await that._validateDistributorProductNetPrices();
-				if(!bNetPricesAreValid){
-					that.getView().setBusy(false);
-					return;
+				if(Services.getSelectedCountry() === 'AR'){
+					const bNetPricesAreValid = await that._validateDistributorProductNetPrices();
+					if(!bNetPricesAreValid){
+						that.getView().setBusy(false);
+						return;
+					}
 				}
 
 				//if all saving promises are done
