@@ -1129,12 +1129,53 @@ sap.ui.define([
 						//Calculate the CIF price
 						let cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
 							
-						//for argentinia & brazilië the offerPrice is not the preApprovedPrice
+						//for argentinia & brazilië & Chile the offerPrice is not the preApprovedPrice
 						let sDiscount = "";
 						if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){	
-								//offer price is in this case the standard price based upon CIF price & reductions
-								sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); //TODO get discount
-								sDiscount = iStandardDiscount;
+							//offer price is in this case the standard price based upon CIF price & reductions
+							sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); 
+							sDiscount = iStandardDiscount;
+						}
+
+						//deductions
+						let iDeductions = productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE;
+						
+						//get FOC info
+						var sFocType = oDetailController.byId("idFOCType").getSelectedKey();
+						let iFoc = oDetailController.byId(formId + "_idFoc") ? oDetailController.byId(formId + "_idFoc").getValue() : 0 ;
+						let sFocAbsPct = oDetailController.byId(formId + "_idFocAbsPct") ? oDetailController.byId(formId + "_idFocAbsPct").getSelectedKey() : "PCT";
+
+						//convert foc based upon PCT/ABSOLUTE
+						if(iFoc !== 0){
+							if(sFocAbsPct === "PCT"){
+								iFoc = parseFloat(oDetailController.byId(formId + "_idFoc").getValue()) / 100 ;
+							}else{
+								iFoc = parseFloat(oDetailController.byId(formId + "_idFoc").getValue());
+							} 
+						}
+
+						//convert focChart based upon PCT/ABSOLUTE
+						var iFocChart = 0;
+						if(sFocAbsPct === "PCT"){
+							iFocChart = ((sFocType === "FOC 1") ? iFoc : 1 - 1 / (1 + iFoc));
+						}else{
+							iFocChart = ((sFocType === "FOC 1") ? 
+								(1 - (productValues.RequestedVolume - iFoc) / productValues.RequestedVolume) 
+								: 
+								(1 - productValues.RequestedVolume / (productValues.RequestedVolume + iFoc)) 
+							);
+						}	
+						
+						//calculate the netOfferPrice for argentinia & brazilië & chile
+						let sNetOfferPrice = "";
+						if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
+							sNetOfferPrice = cifPrice!==0 ? cifPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - iFocChart) : sPreApprovedPrice * (1 - iFocChart);
+						}
+
+						//calculate the netPrice for argentinia & brazilië & chile
+						let sNetPrice = "";
+						if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
+							sNetPrice = (1 - iDeductions) * sNetOfferPrice;
 						}
 
 						var price = {
@@ -1154,9 +1195,9 @@ sap.ui.define([
 								foc_bund1: "",//0,
 								focChart: 0,
 								businessCasePrice : "",
-								netOfferPrice: "",
-								deductions: productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE,// 0,
-								netPrice: "",
+								netOfferPrice: sNetOfferPrice,
+								deductions: iDeductions,// 0,
+								netPrice: sNetPrice,
 								offerCurrency: offerCurrency,
 								spotRate: spotRate,
 								budgetRate: budgetRate,

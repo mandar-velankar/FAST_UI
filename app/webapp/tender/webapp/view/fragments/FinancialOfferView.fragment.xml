@@ -34,7 +34,7 @@
 							<Label text="{i18n>Currency}"/>
 							<Select id="idCurrency" enabled="false"></Select>
 							<Label text="{i18n>FOC}"/>
-							<Select selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
+							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
 								<items>
 									<core:Item key="FOC 2" text="In addition to requested volume" />
 									<core:Item key="FOC 1" text="Part of requested volume" />									
