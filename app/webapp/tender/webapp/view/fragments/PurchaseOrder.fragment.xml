@@ -8,7 +8,7 @@
 				<!-- Buttons for editing -->
 				<m:Toolbar id='deliveriesTableToolbarId' design="Solid">
 					<m:ToolbarSpacer/>
-					<m:Button visible="{= ${fastAppData>/EditMode} === true ? true : false}" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddPurchaseOrder"/>
+					<m:Button visible="{= ${fastAppData>/EditMode} === true ? true : false}" text="{i18n>AddPo}" icon="sap-icon://add" press="onAddPurchaseOrder"/>
 					<!--<m:Button id="idDelDelv" visible="false" text="{i18n>DeleteDelivery}" icon="sap-icon://delete" press="onDeleteDeliverie" enabled="{= ${fastAppData>/SelectedDeliverieProduct/Deliveries/results/length} > 0 }"/>-->
 				</m:Toolbar>
 				<!-- Deliveries table -->
