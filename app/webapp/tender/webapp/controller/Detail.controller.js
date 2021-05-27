@@ -4156,6 +4156,7 @@ sap.ui.define([
 					if (
 						oData.STATUS === "Quotation Submitted" ||
 						oData.STATUS === "In FOC Negotiation" ||
+						oData.STATUS === "Appeal in Progress" ||
 						oData.STATUS === "Results Recorded" ||
 						oData.STATUS === "Delivery Ongoing"
 					) {

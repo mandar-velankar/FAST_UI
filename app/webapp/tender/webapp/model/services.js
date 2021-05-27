@@ -976,7 +976,7 @@ sap.ui.define([
 						//	- 'Results Recorded'
 						//  - 'Delivery Ongoing'
 						if (oOffer.OfferStatus.STATUS === 'In FOC Negotiation' ||
-							oOffer.OfferSTatus.STATUS === 'Appeal in Progress' ||
+							oOffer.OfferStatus.STATUS === 'Appeal in Progress' ||
 							oOffer.OfferStatus.STATUS === 'Results Recorded' ||
 							oOffer.OfferStatus.STATUS === 'Delivery Ongoing') {
 							bVisible = true;
