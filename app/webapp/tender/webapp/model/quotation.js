@@ -417,6 +417,7 @@ sap.ui.define([
 						var aStatusNoReSubmitting = [
 							"Quotation Submitted",
 							"In FOC Negotiation",
+							"Appeal in Progress",
 							"Results Recorded",
 							"Delivery Ongoing"
 						];
@@ -711,6 +712,7 @@ sap.ui.define([
 						var aStatusNoReSubmitting = [
 							"Quotation Submitted",
 							"In FOC Negotiation",
+							"Appeal in Progress",
 							"Results Recorded",
 							"Delivery Ongoing"
 						];

@@ -303,7 +303,12 @@ sap.ui.define([
 			oDetailController.getView().byId("idClassification").setEnabled(true);
 			oDetailController.getView().byId("idInstituteType").setEnabled(true);
 			oDetailController.getView().byId("idInstituteName").setEnabled(true);
-			oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			if(Services.getSelectedCountry() === 'CL'){
+				oDetailController.getView().byId("idTenderChannel").setSelectedKey("Direct");
+				oDetailController.getView().byId("idTenderChannel").setEnabled(false);
+			} else {
+				oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			}
 			oDetailController.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
 			// hide country specific fields
@@ -1747,6 +1752,7 @@ sap.ui.define([
 						"Awaiting Approval",
 						"Quotation Submitted",
 						"In FOC Negotiation",
+						"Appeal in Progress",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -2275,6 +2281,7 @@ sap.ui.define([
 								"Awaiting Approval",
 								"Quotation Submitted",
 								"In FOC Negotiation",
+								"Appeal in Progress",
 								"Results Recorded",
 								"Delivery Ongoing"
 							];
@@ -3093,7 +3100,7 @@ sap.ui.define([
 								bCancelEnabled = true;
 							}
 
-							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Delivery Ongoing") {
+							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Appeal in Progress" && oData.STATUS !== "Delivery Ongoing") {
 								bSendApprovalEnabled = true;
 							}
 
@@ -4017,6 +4024,7 @@ sap.ui.define([
 						"Awaiting Approval",
 						"Quotation Submitted",
 						"In FOC Negotiation",
+						"Appeal in Progress",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -4088,6 +4096,7 @@ sap.ui.define([
 					if (
 						oData.STATUS === "Quotation Submitted" ||
 						oData.STATUS === "In FOC Negotiation" ||
+						oData.STATUS === "Appeal in Progress" ||
 						oData.STATUS === "Results Recorded"
 					) {
 
@@ -4104,7 +4113,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation' or in 'Results Recorded'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Appeal in Progress' or in 'Results Recorded'.", {});
 
 					}
 
@@ -4164,7 +4173,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Results Recorded' or 'Delivery Ongoing'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Appeal in Progress', 'Results Recorded' or 'Delivery Ongoing'.", {});
 
 					}
 
@@ -6003,12 +6012,17 @@ sap.ui.define([
 
 					//should tender channel be defaulted/forced on distributor?
 					$.when(Services.checkTenderChannelOnDistributor(sCountry, sSelectedInstituteID)).done(function (bTenderChannelOnDistributor) {
-						//default on Distributor
-						if (bTenderChannelOnDistributor) {
-							that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+						//default on Distributor / Direct for Chile
+						if(Services.getSelectedCountry() === 'CL'){
+							that.getView().byId("idTenderChannel").setSelectedKey("Direct");
 							that.getView().byId("idTenderChannel").setEnabled(false);
 						} else {
-							that.getView().byId("idTenderChannel").setEnabled(true);
+							if (bTenderChannelOnDistributor) {
+								that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+								that.getView().byId("idTenderChannel").setEnabled(false);
+							} else {
+								that.getView().byId("idTenderChannel").setEnabled(true);
+							}
 						}
 					});
 				}
