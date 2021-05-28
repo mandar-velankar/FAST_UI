@@ -198,7 +198,7 @@
 					"pattern": "admin",
 					"target": {
 						"name": "admin",
-						"prefix": "t"
+						"prefix": "a"
 					}
 				}			
 			],
