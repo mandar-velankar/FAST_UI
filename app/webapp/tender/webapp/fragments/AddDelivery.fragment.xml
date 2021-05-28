@@ -2,18 +2,18 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core">
 	<l:Grid defaultSpan="L12 M6 S12" width="auto" class="sapUiSizeCompact" position="Center">
 		<l:content>
-			<l:form.SimpleForm maxContainerCols="2" visible="true" id="idDeliverieForm" editable="true" labelMinWidth="0"
+			<l:form.SimpleForm maxContainerCols="2" visible="true" editable="true" labelMinWidth="0"
 				layout="ResponsiveGridLayout" labelSpanL="5" labelSpanM="1" emptySpanL="1" emptySpanM="1" columnsL="2" columnsM="2">
 				<l:content>
 					<core:Title text="Add Information for Delivery below"/>
 					 
 					<!-- Local or direct delivery -->
-					<Label text="{i18n>LocalOrDicectDelivery}" required="true">
+					<Label text="{i18n>LocalOrDicectDelivery}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idLocalorDirectDelivery" selectedKey="{fastAppData>/EditDelivery/LocalOrDirectDelivery}" >
+					<Select selectedKey="{fastAppData>/EditDelivery/LocalOrDirectDelivery}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<items>
 							<core:Item text="Direct" key="D"/>
 							<core:Item text="Local" key="L"/>
@@ -24,12 +24,12 @@
 					</Select>
 					
 					<!-- Planned In APO -->
-					<Label text="{i18n>PlannedInAPO}" required="true">
+					<Label text="{i18n>PlannedInAPO}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idPlannedInAPO" selectedKey="{fastAppData>/EditDelivery/PlannedInAPO}">
+					<Select  selectedKey="{fastAppData>/EditDelivery/PlannedInAPO}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<items>
 							<core:Item text="Yes" key="Yes"/>
 							<core:Item text="No" key="No"/>
@@ -40,7 +40,7 @@
 					</Select>
 					
 					<!-- Requested Delivery Date -->
-					<Label text="{i18n>RequestedDeliveryDate}" required="true">
+					<Label text="{i18n>RequestedDeliveryDate}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
@@ -59,31 +59,31 @@
 						</layoutData>
 					</DatePicker>
 					-->
-					<DatePicker
-						id="idRequestedDeliveryDate"
+					<DatePicker 
 						value="{path :'fastAppData>/EditDelivery/RequestedDeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
 						tooltip="{i18n>EffDate}" 
 						placeholder="{i18n>Select_date}"
-						required="true">
+						required="true"
+						visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>	
 					</DatePicker>
 					
 	        		<!-- Requested Quantity -->
-					<Label text="{i18n>RequestedQuantity}" required="true">
+					<Label text="{i18n>RequestedQuantity}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input id="idRequestedQuantity" value="{fastAppData>/EditDelivery/RequestedQuantity}" type="Number" required="true">
+					<Input value="{fastAppData>/EditDelivery/RequestedQuantity}" type="Number" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
 					</Input>
 					
 					<!-- Actual delivery Date -->
-					<Label text="{i18n>ActualDeliveryDate}" required="true">
+					<Label text="{i18n>ActualDeliveryDate}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
@@ -102,36 +102,36 @@
 						</layoutData>
 					</DatePicker>
 					-->
-					<DatePicker
-						id="idActualDeliveryDate"
+					<DatePicker 
 						value="{path :'fastAppData>/EditDelivery/ActualDeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
 						tooltip="{i18n>EffDate}" 
 						placeholder="{i18n>Select_date}"
-						required="true">
+						required="true"
+						visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>	
 					</DatePicker>
 					
 					<!-- Actual Delivery Quantity -->
-					<Label text="{i18n>ActualDeliveryQuantity}" required="true">
+					<Label text="{i18n>ActualDeliveryQuantity}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input id="idActualDeliveryQuantity" value="{fastAppData>/EditDelivery/ActualDeliveryQuantity}" type="Number" required="true" >
+					<Input value="{fastAppData>/EditDelivery/ActualDeliveryQuantity}" type="Number" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }" >
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
 					</Input>
 					
 					<!-- Penalty -->
-					<Label text="{i18n>Penalty}" required="true">
+					<Label text="{i18n>Penalty}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idPenalty" change="onChangePenalty" selectedKey="{fastAppData>/EditDelivery/Penalty}">
+					<Select id="idPenalty" change="onChangePenalty" selectedKey="{fastAppData>/EditDelivery/Penalty}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<items>
 							<core:Item text="No" key="No"/>
 							<core:Item text="Yes" key="Yes"/>
@@ -142,24 +142,24 @@
 					</Select>
 
 					<!-- Penalty Value if Penalty is yes -->
-					<Label text="{i18n>PenaltyValue}" required="true">
+					<Label text="{i18n>PenaltyValue}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input id="idPenaltyValue" value="{fastAppData>/EditDelivery/PenaltyValue}" type="Number" >
+					<Input id="idPenaltyValue" value="{fastAppData>/EditDelivery/PenaltyValue}" type="Number" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
 					</Input>	
 					
 					<!-- Currency -->
-					<Label text="{i18n>Currency}" required="true">
+					<Label text="{i18n>Currency}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idCurrency" items="{ path: 'fastAppData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' } }" selectedKey="{fastAppData>/EditDelivery/Currency}">
+					<Select id="idCurrency" items="{ path: 'fastAppData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' } }" selectedKey="{fastAppData>/EditDelivery/Currency}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 					
 						<core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>
 						
@@ -170,12 +170,12 @@
 					</Select>
 
 					<!-- PenaltyReason -->
-					<Label text="{i18n>PenaltyReason}" required="true">
+					<Label text="{i18n>PenaltyReason}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idPenaltyReason" items="{ path: 'fastAppData>/PenaltyReasons/', sorter: { path: 'PenaltyReasons' } }" selectedKey="{fastAppData>/EditDelivery/PenaltyReason}">
+					<Select id="idPenaltyReason" items="{ path: 'fastAppData>/PenaltyReasons/', sorter: { path: 'PenaltyReasons' } }" selectedKey="{fastAppData>/EditDelivery/PenaltyReason}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 					
 						<core:Item key="{fastAppData>PenaltyReasons}" text="{fastAppData>PenaltyReasons}"/>
 						
@@ -186,12 +186,12 @@
 					</Select>					
 					
 					<!-- Undertaking Letters -->
-					<Label text="{i18n>UndertakingLetters}" required="true">
+					<Label text="{i18n>UndertakingLetters}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idUndertakingLetters" selectedKey="{fastAppData>/EditDelivery/UndertakingLetters}">
+					<Select id="idUndertakingLetters" selectedKey="{fastAppData>/EditDelivery/UndertakingLetters}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<items>
 							<core:Item text="No" key="No"/>
 							<core:Item text="Yes" key="Yes"/>
@@ -202,12 +202,12 @@
 					</Select>					
 
 					<!-- Compensated -->
-					<Label text="{i18n>Compensated}" required="true">
+					<Label text="{i18n>Compensated}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }"> 
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idCompensated" change="onChangeCompensated" selectedKey="{fastAppData>/EditDelivery/Compensated}">
+					<Select id="idCompensated" change="onChangeCompensated" selectedKey="{fastAppData>/EditDelivery/Compensated}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<items>
 							<core:Item text="No" key="No"/>
 							<core:Item text="Yes" key="Yes"/>
@@ -218,24 +218,24 @@
 					</Select>
 
 					<!-- Compensation Comment -->
-					<Label text="{i18n>CompensationComment}" required="true">
+					<Label text="{i18n>CompensationComment}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input id="idCompensationComment" value="{fastAppData>/EditDelivery/CompensationComment}">
+					<Input id="idCompensationComment" value="{fastAppData>/EditDelivery/CompensationComment}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
 					</Input>					
 					
 					<!-- Paid or Free -->
-					<Label text="{i18n>PaidOrFree}" required="true">
+					<Label text="{i18n>PaidOrFree}" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idPaidOrFree" selectedKey="{fastAppData>/EditDelivery/PaidOrFree}">
+					<Select id="idPaidOrFree" selectedKey="{fastAppData>/EditDelivery/PaidOrFree}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<items>
 							<core:Item text="Paid" key="Paid"/>
 							<core:Item text="Free" key="Free"/>
@@ -251,19 +251,19 @@
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input value="{fastAppData>/EditDelivery/PO}" id="idPO">
+					<Input value="{fastAppData>/EditDelivery/PO}" >
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
 					</Input>
 					
 					<!-- Invoice No -->
-					<Label text="{i18n>InvoiceNo}">
+					<Label text="{i18n>InvoiceNo}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Input value="{fastAppData>/EditDelivery/InvoiceNo}" id="idInvoiceNo">
+					<Input value="{fastAppData>/EditDelivery/InvoiceNo}" id="idInvoiceNo" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 						<layoutData>
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>

@@ -81,7 +81,7 @@
 						<!-- TABLE WITH PRODUCTS FOR DELIVERY TRACKING -->
 						<!--Product.results.Result[0].Outcome-->
 						<m:Table id="idDeliveryTrackViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto"
-							items="{ path: 'fastAppData>/ProductsForOffer/results/', sorter: [ {path: 'SORTER', descending: false} ], filters: [ { path : 'Active', operator : 'EQ', value1 : '1'}, { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, { path : 'Results/results/0/Outcome', operator : 'EQ', value1: 'Won'} ] }"
+							items="{ path: 'fastAppData>/ProductsForOffer/results/', sorter: [ {path: 'SORTER', descending: false} ], filters: [ { path : 'Active', operator : 'EQ', value1 : '1'}, { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, { path : 'Results/results/0/Outcome', operator : 'Contains', value1: 'Won'} ] }"
 							updateFinished="onBindingItemsFinished" mode="SingleSelectMaster" selectionChange="onDeliveryTrackProductItemSelect"
 							visible="{= ${fastAppData>/EditMode} === true ? false : true}">
 							<m:columns>
@@ -103,126 +103,13 @@
 		</l:BlockLayout>
 	</ObjectPageSubSection>
 	<!-- DELIVERIES SUB SECTION PAGE -->
-	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="Deliveries">
+
+	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Purchase Orders' : 'Deliveries' }">
 		<blocks>
-			<m:VBox>
-				<!-- Buttons for editing -->
-				<m:Toolbar design="Solid">
-					<m:ToolbarSpacer/>
-					<m:Button id="idAddDelv" visible="false" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddDeliverie"/>
-					<!--<m:Button id="idDelDelv" visible="false" text="{i18n>DeleteDelivery}" icon="sap-icon://delete" press="onDeleteDeliverie" enabled="{= ${fastAppData>/SelectedDeliverieProduct/Deliveries/results/length} > 0 }"/>-->
-				</m:Toolbar>
-				<!-- Deliveries table -->
-				<m:Table id="deliveriesTableID" popinLayout="GridSmall" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}"
-					delete=".onDeleteDeliverie" selectionChange=".onDeliveryItemSelect"
-					items="{ 
-						path: 'fastAppData>/SelectedDeliverieProduct/Deliveries/results/', 
-						filters: [ 
-							{ path : '_sOperation', operator : 'NE', value1 : 'DELETE' },
-							{ path : 'Active', operator : 'NE', value1 : 0 } 
-						] 
-					}">
-					<m:columns>
-						<m:Column width="7rem">
-							<m:Label text="{i18n>LocalOrDicectDelivery}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>PlannedInAPO}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="8.5rem">
-							<m:Label text="{i18n>RequestedDeliveryDate}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>RequestedQuantity}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="8.5rem">
-							<m:Label text="{i18n>ActualDeliveryDate}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>ActualDeliveryQuantity}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>PaidOrFree}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>PONumber}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>InvoiceNo}" wrapping="true"/>
-						</m:Column>
-						<m:Column width="5.5rem">
-							<m:Label text="{i18n>Penalty}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-						<m:Column width="6rem">
-							<m:Label text="{i18n>Compensated}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-						</m:Column>
-					</m:columns>
-					<m:items>
-						<m:ColumnListItem id="deliveriesTableListID" type="{= ${fastAppData>/EditMode} === true ? 'DetailAndActive' : 'Navigation'}"
-							detailPress=".onDeliveryItemDetail" press="{= ${fastAppData>/EditMode} === true ? '.onDeliveryItemSelect' : ''}">
-							<m:cells>
-								<!--<m:ObjectIdentifier title="{fastAppData>LocalOrDirectDelivery}"/>-->
-								<m:Select selectedKey="{fastAppData>LocalOrDirectDelivery}" enabled="false">
-									<m:items>
-										<core:Item text="Direct" key="D"/>
-										<core:Item text="Local" key="L"/>
-									</m:items>
-								</m:Select>
-								<m:Select selectedKey="{fastAppData>PlannedInAPO}" enabled="false">
-									<m:items>
-										<core:Item text="Yes" key="Yes"/>
-										<core:Item text="No" key="No"/>
-									</m:items>
-								</m:Select>
-								<!--<m:DatePicker -->
-								<!--	placeholder="{i18n>Select_date}" -->
-								<!--	tooltip="{i18n>RequestedDeliveryDate}"-->
-								<!--	dateValue="{fastAppData>RequestedDeliveryDate}"-->
-								<!--	displayFormat="dd.MM.yyyy" -->
-								<!--	enabled="false"-->
-								<!--/>-->
-								<m:DatePicker
-									value="{path :'fastAppData>RequestedDeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-									tooltip="{i18n>RequestedDeliveryDate}" enabled="false" placeholder="{i18n>Select_date}"/>
-								<m:Input value="{fastAppData>RequestedQuantity}" type="Number" enabled="false"/>
-								<!--<m:DatePicker -->
-								<!--	placeholder="{i18n>Select_date}" -->
-								<!--	tooltip="{i18n>EffDate}"-->
-								<!--	dateValue="{fastAppData>ActualDeliveryDate}"-->
-								<!--	displayFormat="dd.MM.yyyy" -->
-								<!--	required="true"-->
-								<!--	enabled="false"/>-->
-								<m:DatePicker
-									value="{path :'fastAppData>ActualDeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-									tooltip="{i18n>EffDate}" enabled="false" placeholder="{i18n>Select_date}"/>
-								<m:Input value="{fastAppData>ActualDeliveryQuantity}" type="Number" enabled="false" required="true"/>
-								<m:Select selectedKey="{fastAppData>PaidOrFree}" enabled="false">
-									<m:items>
-										<core:Item text="Paid" key="Paid"/>
-										<core:Item text="Free" key="Free"/>
-									</m:items>
-								</m:Select>
-								<m:Input value="{fastAppData>PO}" enabled="false"/>
-								<m:Input value="{fastAppData>InvoiceNo}" enabled="false"/>
-								<m:Select id="idPenaltyDrop" selectedKey="{fastAppData>Penalty}" change="onChangePenalty" enabled="false">
-									<m:items>
-										<core:Item text="Yes" key="Yes"/>
-										<core:Item text="No" key="No"/>
-									</m:items>
-								</m:Select>
-								<m:Select id="idCompensatedDrop" selectedKey="{fastAppData>Compensated}" change="onChangeCompensated" enabled="false">
-									<m:items>
-										<core:Item text="Yes" key="Yes"/>
-										<core:Item text="No" key="No"/>
-									</m:items>
-								</m:Select>
-							</m:cells>
-						</m:ColumnListItem>
-					</m:items>
-				</m:Table>
-			</m:VBox>
+			<!-- <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.PurchaseOrder" type="XML"/>-->
 		</blocks>
 	</ObjectPageSubSection>
+
 	<!-- FORM WITH DELIVERY DATA -->
 	<ObjectPageSubSection id="idDeliveryDetailSection" title="Delivery Details" visible="false">
 		<blocks>
@@ -280,12 +167,12 @@
 		</blocks>
 	</ObjectPageSubSection>
 	<!-- LETTERS SUB SECTION PAGE -->
-	<ObjectPageSubSection id="DelivTrackLettersSubsection" title="Returns">
+	<ObjectPageSubSection id="DelivTrackLettersSubsection" title="Returns" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 		<blocks>
-			<m:VBox>
+			<m:VBox visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 				<m:Toolbar>
 					<m:ToolbarSpacer/>
-					<m:Button id="idAddLtr" visible="false" text="{i18n>AddLetter}" icon="sap-icon://add" press="onAddLetter"/>
+					<m:Button id="idAddLtr" visible="{= ${fastAppData>/EditMode} === true ? true : false}" text="{i18n>AddLetter}" icon="sap-icon://add" press="onAddLetter"/>
 				</m:Toolbar>
 				<!-- Letters table -->
 				<m:Table id="lettersTableID" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}" delete=".onDeleteLetter"

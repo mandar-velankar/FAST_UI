@@ -134,7 +134,7 @@ sap.ui.define([
 			oForm.addContent(
 				new sap.m.Input({
 					id: oDetailController.getView().createId(formId + "_idDiscount"),
-					value: formatter.percentageNoUnit(price.discount),
+					value: formatter.percentageNoUnit(price.discount === null? 0 : price.discount),
 					description: "%",
 					enabled: false
 				})
@@ -1129,12 +1129,53 @@ sap.ui.define([
 						//Calculate the CIF price
 						let cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice; //if offer in units, divide by pack factor, otherwise pack value if good
 							
-						//for argentinia & brazilië the offerPrice is not the preApprovedPrice
+						//for argentinia & brazilië & Chile the offerPrice is not the preApprovedPrice
 						let sDiscount = "";
 						if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){	
-								//offer price is in this case the standard price based upon CIF price & reductions
-								sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); //TODO get discount
-								sDiscount = iStandardDiscount;
+							//offer price is in this case the standard price based upon CIF price & reductions
+							sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount); 
+							sDiscount = iStandardDiscount;
+						}
+
+						//deductions
+						let iDeductions = productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE;
+						
+						//get FOC info
+						var sFocType = oDetailController.byId("idFOCType").getSelectedKey();
+						let iFoc = oDetailController.byId(formId + "_idFoc") ? oDetailController.byId(formId + "_idFoc").getValue() : 0 ;
+						let sFocAbsPct = oDetailController.byId(formId + "_idFocAbsPct") ? oDetailController.byId(formId + "_idFocAbsPct").getSelectedKey() : "PCT";
+
+						//convert foc based upon PCT/ABSOLUTE
+						if(iFoc !== 0){
+							if(sFocAbsPct === "PCT"){
+								iFoc = parseFloat(oDetailController.byId(formId + "_idFoc").getValue()) / 100 ;
+							}else{
+								iFoc = parseFloat(oDetailController.byId(formId + "_idFoc").getValue());
+							} 
+						}
+
+						//convert focChart based upon PCT/ABSOLUTE
+						var iFocChart = 0;
+						if(sFocAbsPct === "PCT"){
+							iFocChart = ((sFocType === "FOC 1") ? iFoc : 1 - 1 / (1 + iFoc));
+						}else{
+							iFocChart = ((sFocType === "FOC 1") ? 
+								(1 - (productValues.RequestedVolume - iFoc) / productValues.RequestedVolume) 
+								: 
+								(1 - productValues.RequestedVolume / (productValues.RequestedVolume + iFoc)) 
+							);
+						}	
+						
+						//calculate the netOfferPrice for argentinia & brazilië & chile
+						let sNetOfferPrice = "";
+						if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
+							sNetOfferPrice = cifPrice!==0 ? cifPrice * (1 - (iStandardDiscount + iAdditionalDiscount)) * (1 - iFocChart) : sPreApprovedPrice * (1 - iFocChart);
+						}
+
+						//calculate the netPrice for argentinia & brazilië & chile
+						let sNetPrice = "";
+						if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
+							sNetPrice = (1 - iDeductions) * sNetOfferPrice;
 						}
 
 						var price = {
@@ -1154,9 +1195,9 @@ sap.ui.define([
 								foc_bund1: "",//0,
 								focChart: 0,
 								businessCasePrice : "",
-								netOfferPrice: "",
-								deductions: productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE,// 0,
-								netPrice: "",
+								netOfferPrice: sNetOfferPrice,
+								deductions: iDeductions,// 0,
+								netPrice: sNetPrice,
 								offerCurrency: offerCurrency,
 								spotRate: spotRate,
 								budgetRate: budgetRate,
@@ -1434,7 +1475,7 @@ sap.ui.define([
 				return null;
 			}else{
 				let oAggregatedDistributorBrandPolicy = await Services.getService('DistributorBrandPolicy').getAggregatedDistributorBrandPolicy(sDistributorID, sBrandID);
-				return Number(oAggregatedDistributorBrandPolicy.data.results[0].StandardDiscount) || null;
+				return Number(oAggregatedDistributorBrandPolicy.data.results[0].StandardDiscount);
 			}
 			
 			
@@ -1817,7 +1858,15 @@ sap.ui.define([
 			var sSellingCompany = productValues.SellingCompany; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			var sBrandID = oProduct.SKU.Product.HLEVEL4_CODE;
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
-				
+
+			let iStandardDiscount = 0;
+			if(sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL'){
+				aPromises.push(that.getStandardDiscount(sDistributorID,sBrandID).then(iResult=>{
+					iStandardDiscount = iResult;
+					return iResult;
+				}));
+			}
+
 			//get additional FOC product if its filled
 			var oAddBrandProduct = oDetailController.getView().byId("idEditPriceOffer_idFOCProdBund1");
 			var sAddBrandProductCode = 0;
@@ -1841,12 +1890,20 @@ sap.ui.define([
 				var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
 				var cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;
 				var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
-			
-				var offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+				
+				let offerPrice = 0;
+				if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){
+					let sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount);
+					offerPrice = sPreApprovedPrice;
+				}else{
+					offerPrice = oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",","")) : 0;
+				}
+
 				//JH changed
 				var standardDiscount = oDetailController.byId("idEditPriceOffer_idStandardDiscount") && oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idStandardDiscount").getValue()) / 100 : 0;
-				if(sCountryCode!=="AR"||sCountryCode!=="BR"){
+				if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
 					standardDiscount = cifPrice && cifPrice!==0 ? (cifPrice - offerPrice) / cifPrice : 0;
+					standardDiscount = iStandardDiscount;
 				}
 				//JH changed
 				
@@ -1879,7 +1936,7 @@ sap.ui.define([
 				var netOfferPrice = cifPrice!==0 ? cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart) : offerPrice * (1 - focChart);//JH changed
 
 				let netPrice, discount = "";
-				if(sCountryCode==="AR"||sCountryCode==="BR"){
+				if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
 					netPrice = (1 - deductions) * netOfferPrice;
 					discount = standardDiscount;
 				}else{
@@ -1957,15 +2014,29 @@ sap.ui.define([
 		
 		//local method for updating the scenario
 		_updateScenario: function (oDetailController, price, productValues, idScenario) {
+
+			//get selected country
+			let sCountryCode = Services.getSelectedCountry();
+
+			//get name & description for specific scenario
 			price.name = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idName").getValue();
 			price.description = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idDescription").getValue();
 
 			//main foc product from selected scenario
-			var offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			let offerPrice = 0;
+			if(sCountryCode==="AR" || sCountryCode==="BR" || sCountryCode==="CL"){
+				//for AR/BR/CL the offerPrice is a pre-approved price that is not changable
+				let sPreApprovedPrice = price.cifPrice - (price.cifPrice * price.standardDiscount);
+				offerPrice = sPreApprovedPrice;
+			}else{
+				//for other countries this can be filled
+				offerPrice = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idOfferPrice").getValue().replace(",","")) : 0;
+			}
+
+			let standardDiscount = 0;
 			//var standardDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idStandardDiscount").getValue()) / 100 : 0;							 
-			//if(sCountryCode!=="AR"||sCountryCode!=="BR"){
-			var standardDiscount = price.cifPrice && price.cifPrice!==0 ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
-			//}
+			standardDiscount = price.cifPrice && price.cifPrice!==0 ? (price.cifPrice - offerPrice) / price.cifPrice : 0;
+	
 			var additionalDiscount = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idAdditionalDiscount").getValue()) / 100 : 0;
 			var focAbsPct = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocAbsPct").getSelectedKey();
 			var foc = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFoc").getValue()) : 0;

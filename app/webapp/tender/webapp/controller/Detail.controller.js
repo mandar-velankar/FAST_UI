@@ -48,7 +48,7 @@ sap.ui.define([
 
 			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
-
+			
 			Services.setRouterObject(this.oRouter);
 
 			//TODO: talk about better solution with Wouter
@@ -245,39 +245,39 @@ sap.ui.define([
 		},
 
 		/**
-		 * @return {String} Returns bindingTypeLevel1Id from FastAppDataModel
+		 * @return {String} Returns BiddingTypeLevel1Id from FastAppDataModel
 		 */
-		getBindingTypeLevel1Id: async function(){ 
+		getBiddingTypeLevel1Id: async function(){ 
 
-			const bindingTypeLevel1Txt = this.getView().byId("idBindingTypeLevel1Display") && this.getView().byId("idBindingTypeLevel1Display").getValue();
-			let aCountryBindingTypeLevel1 = Services.getFastAppDataModel().getProperty("/CountryBindingTypeLevel1");
+			const biddingTypeLevel1Txt = this.getView().byId("idBiddingTypeLevel1Display") && this.getView().byId("idBiddingTypeLevel1Display").getValue();
+			let aCountryBiddingTypeLevel1 = Services.getFastAppDataModel().getProperty("/CountryBiddingTypeLevel1");
 
-			if(!aCountryBindingTypeLevel1){
+			if(!aCountryBiddingTypeLevel1){
 				const sClassificationId = await this.getClassificationId();
-				aCountryBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(Services.getSelectedCountry(), sClassificationId);
+				aCountryBiddingTypeLevel1 = await Services.loadCountryBiddingTypeLevel1(Services.getSelectedCountry(), sClassificationId);
 			}
 
-			const bindingTypeLevel1IdFilter = aCountryBindingTypeLevel1 && aCountryBindingTypeLevel1.filter(item => item.Name && item.Name.indexOf(bindingTypeLevel1Txt) > -1 );
+			const biddingTypeLevel1IdFilter = aCountryBiddingTypeLevel1 && aCountryBiddingTypeLevel1.filter(item => item.Name && item.Name.indexOf(biddingTypeLevel1Txt) > -1 );
 
-			const bindingTypeLevel1Id =  bindingTypeLevel1IdFilter && bindingTypeLevel1IdFilter instanceof Array && bindingTypeLevel1IdFilter.length > 0 && bindingTypeLevel1IdFilter[0].ID || undefined;
+			const biddingTypeLevel1Id =  biddingTypeLevel1IdFilter && biddingTypeLevel1IdFilter instanceof Array && biddingTypeLevel1IdFilter.length > 0 && biddingTypeLevel1IdFilter[0].ID || undefined;
 
-			return bindingTypeLevel1Id;
+			return biddingTypeLevel1Id;
 		},
 
 
 		/**
-		 * @return {String} Returns bindingTypeLevel2Id from FastAppDataModel
+		 * @return {String} Returns biddingTypeLevel2Id from FastAppDataModel
 		 */
-		getBindingTypeLevel2Id: function(){
+		getBiddingTypeLevel2Id: function(){
 
-			const bindingTypeLevel2Txt = this.getView().byId("idBindingTypeLevel2Display") && this.getView().byId("idBindingTypeLevel2Display").getValue();
-			const aCountryBindingTypeLevel2 = Services.getFastAppDataModel().getProperty("/CountryBindingTypeLevel2");
+			const biddingTypeLevel2Txt = this.getView().byId("idBiddingTypeLevel2Display") && this.getView().byId("idBiddingTypeLevel2Display").getValue();
+			const aCountryBiddingTypeLevel2 = Services.getFastAppDataModel().getProperty("/CountryBiddingTypeLevel2");
 
-			const bindingTypeLevel2IdFilter = aCountryBindingTypeLevel2 && aCountryBindingTypeLevel2.filter(item => item.Name && item.Name.indexOf(bindingTypeLevel2Txt) > -1 );
+			const biddingTypeLevel2IdFilter = aCountryBiddingTypeLevel2 && aCountryBiddingTypeLevel2.filter(item => item.Name && item.Name.indexOf(biddingTypeLevel2Txt) > -1 );
 
-			const bindingTypeLevel2Id =  bindingTypeLevel2IdFilter && bindingTypeLevel2IdFilter instanceof Array && bindingTypeLevel2IdFilter.length > 0 && bindingTypeLevel2IdFilter[0].ID || undefined;
+			const biddingTypeLevel2Id =  biddingTypeLevel2IdFilter && biddingTypeLevel2IdFilter instanceof Array && biddingTypeLevel2IdFilter.length > 0 && biddingTypeLevel2IdFilter[0].ID || undefined;
 
-			return bindingTypeLevel2Id;
+			return biddingTypeLevel2Id;
 		},
 
 		
@@ -303,7 +303,12 @@ sap.ui.define([
 			oDetailController.getView().byId("idClassification").setEnabled(true);
 			oDetailController.getView().byId("idInstituteType").setEnabled(true);
 			oDetailController.getView().byId("idInstituteName").setEnabled(true);
-			oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			if(Services.getSelectedCountry() === 'CL'){
+				oDetailController.getView().byId("idTenderChannel").setSelectedKey("Direct");
+				oDetailController.getView().byId("idTenderChannel").setEnabled(false);
+			} else {
+				oDetailController.getView().byId("idTenderChannel").setEnabled(true);
+			}
 			oDetailController.getView().byId("idGroupPurchasingEdit").setEnabled(true);
 
 			// hide country specific fields
@@ -314,6 +319,7 @@ sap.ui.define([
 			var oTenderType = this.getView().byId("idSelectTenderTypeEdit");
 			var oContractType = this.getView().byId("idSelectContractTypeEdit");
 			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
+			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 
 			var sCountryCode = Services.getSelectedCountry();
 			var aFilter = [];
@@ -344,6 +350,11 @@ sap.ui.define([
 			//should tendertype be visible on the screen based on data back-end
 			$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 				oTenderType.setVisible(bShowTenderType);
+				if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
+					oTenderType.setVisible(true);
+				}else{
+					oTenderType.setVisible(bShowTenderType);
+				}
 			});
 
 			//should tenderorigin be visible on the screen based on data back-end
@@ -553,6 +564,7 @@ sap.ui.define([
 			//get selected Tender Path
 			var sTenderID = Services.getSelectedTenderID();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 			//var sOfferID  = Services.getSelectedOfferID();
 
 			//if tender is already loaded, we will not load data again (refresh should be done after saving)
@@ -571,7 +583,7 @@ sap.ui.define([
 
 				//should tendertype be visible on the basic info screen?
 				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
-					if(Services.getSelectedCountry() === 'CL'){
+					if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
 						oDetailController.getView().byId("idSelectTenderType").setVisible(true);
 					}else{
 						oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
@@ -723,9 +735,9 @@ sap.ui.define([
 		},
 
 		/**
-		 * Sets the selected key for BindingTypeLevel1 on BasicInformationEdit page
+		 * Sets the selected key for BiddingTypeLevel1 on BasicInformationEdit page
 		 */
-		setTenderBindingTypeLevel1SelectedKey: async function(){
+		setTenderBiddingTypeLevel1SelectedKey: async function(){
 
 			const oBiddingTypeLevel1ComboBox = this.byId("idBiddingTypeLevel1"); 
 
@@ -734,13 +746,13 @@ sap.ui.define([
 
 				const sCountry = Services.getSelectedCountry();
 				const sClassificationId = await this.getClassificationId();
-				const oBindingTypeLevel1DisplayInput = this.getView().byId("idBindingTypeLevel1Display");
-				const sBindingTypeLevel1Txt = oBindingTypeLevel1DisplayInput && oBindingTypeLevel1DisplayInput.getValue();
+				const oBiddingTypeLevel1DisplayInput = this.getView().byId("idBiddingTypeLevel1Display");
+				const sBiddingTypeLevel1Txt = oBiddingTypeLevel1DisplayInput && oBiddingTypeLevel1DisplayInput.getValue();
 	
-				const aTenderBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(sCountry, sClassificationId);
-				const oTenderBindingTypeLevel1 = aTenderBindingTypeLevel1 && aTenderBindingTypeLevel1.filter(item => item.Name && item.Name.indexOf(sBindingTypeLevel1Txt) > -1);
+				const aTenderBiddingTypeLevel1 = await Services.loadCountryBiddingTypeLevel1(sCountry, sClassificationId);
+				const oTenderBiddingTypeLevel1 = aTenderBiddingTypeLevel1 && aTenderBiddingTypeLevel1.filter(item => item.Name && item.Name.indexOf(sBiddingTypeLevel1Txt) > -1);
 	
-				const selectedKey = oTenderBindingTypeLevel1 && oTenderBindingTypeLevel1.length >0 && oTenderBindingTypeLevel1[0].Name || undefined;
+				const selectedKey = oTenderBiddingTypeLevel1 && oTenderBiddingTypeLevel1.length >0 && oTenderBiddingTypeLevel1[0].Name || undefined;
 	
 				oBiddingTypeLevel1ComboBox.setBusy(false);
 	
@@ -752,32 +764,32 @@ sap.ui.define([
 		},
 
 		/**
-		 * Sets the selected key for BindingTypeLevel2 on BasicInformationEdit page
+		 * Sets the selected key for BiddingTypeLevel2 on BasicInformationEdit page
 		 */
-		setTenderBindingTypeLevel2SelectedKey: async function(){
+		setTenderBiddingTypeLevel2SelectedKey: async function(){
 
 			const oBiddingTypeLevel2ComboBox = this.byId("idBiddingTypeLevel2");
 
 			if(oBiddingTypeLevel2ComboBox){
 				oBiddingTypeLevel2ComboBox.setBusy(true);
 			
-				const oBindingTypeLevel2DisplayInput = this.getView().byId("idBindingTypeLevel2Display");
-				const sBindingTypeLevel2Txt = oBindingTypeLevel2DisplayInput && oBindingTypeLevel2DisplayInput.getValue();
+				const oBiddingTypeLevel2DisplayInput = this.getView().byId("idBiddingTypeLevel2Display");
+				const sBiddingTypeLevel2Txt = oBiddingTypeLevel2DisplayInput && oBiddingTypeLevel2DisplayInput.getValue();
 
-				// if BindingTypeLevel2 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
-				if(!sBindingTypeLevel2Txt){
+				// if BiddingTypeLevel2 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
+				if(!sBiddingTypeLevel2Txt){
 					oBiddingTypeLevel2ComboBox.setVisible(false);
 					oBiddingTypeLevel2ComboBox.setBusy(false);
 					return;
 				}
 
 				const sCountry = Services.getSelectedCountry();
-				const sBindingTypeLevel1Id = await this.getBindingTypeLevel1Id();
+				const sBiddingTypeLevel1Id = await this.getBiddingTypeLevel1Id();
 				
-				const aTenderBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
-				const oTenderBindingTypeLevel2 = aTenderBindingTypeLevel2 && aTenderBindingTypeLevel2.filter(item => item.Name && item.Name.indexOf(sBindingTypeLevel2Txt) > -1);
+				const aTenderBiddingTypeLevel2 = await Services.loadCountryBiddingTypeLevel2(sCountry, sBiddingTypeLevel1Id);
+				const oTenderBiddingTypeLevel2 = aTenderBiddingTypeLevel2 && aTenderBiddingTypeLevel2.filter(item => item.Name && item.Name.indexOf(sBiddingTypeLevel2Txt) > -1);
 
-				const selectedKey = oTenderBindingTypeLevel2 && oTenderBindingTypeLevel2.length > 0 && oTenderBindingTypeLevel2[0].Name || undefined;
+				const selectedKey = oTenderBiddingTypeLevel2 && oTenderBiddingTypeLevel2.length > 0 && oTenderBiddingTypeLevel2[0].Name || undefined;
 
 				oBiddingTypeLevel2ComboBox.setBusy(false);
 
@@ -789,32 +801,32 @@ sap.ui.define([
 		},
 
 		/**
-		 * Sets the selected key for BindingTypeLevel3 on BasicInformationEdit page
+		 * Sets the selected key for BiddingTypeLevel3 on BasicInformationEdit page
 		 */
-		setTenderBindingTypeLevel3SelectedKeys: async function(){
+		setTenderBiddingTypeLevel3SelectedKeys: async function(){
 
 			const oBiddingTypeLevel3ComboBox = this.byId("idBiddingTypeLevel3");
 
 			if(oBiddingTypeLevel3ComboBox){
 				oBiddingTypeLevel3ComboBox.setBusy(true);
 			
-				const oBindingTypeLevel3DisplayInput = this.getView().byId("idBindingTypeLevel3Display");
-				const sBindingTypeLevel3Txt = oBindingTypeLevel3DisplayInput && oBindingTypeLevel3DisplayInput.getValue();
+				const oBiddingTypeLevel3DisplayInput = this.getView().byId("idBiddingTypeLevel3Display");
+				const sBiddingTypeLevel3Txt = oBiddingTypeLevel3DisplayInput && oBiddingTypeLevel3DisplayInput.getValue();
 
-				// if BindingTypeLevel3 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
-				if(!sBindingTypeLevel3Txt){
+				// if BiddingTypeLevel3 did not have a value on the display page, it means that it was not set and therefore should not be displayed.
+				if(!sBiddingTypeLevel3Txt){
 					oBiddingTypeLevel3ComboBox.setVisible(false);
 					oBiddingTypeLevel3ComboBox.setBusy(false);
 					return;
 				}
 
 				const sCountry = Services.getSelectedCountry();
-				const sBindingTypeLevel2Id = await this.getBindingTypeLevel2Id();
+				const sBiddingTypeLevel2Id = await this.getBiddingTypeLevel2Id();
 				
-				const aTenderBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
-				const oTenderBindingTypeLevel3 = aTenderBindingTypeLevel3 && aTenderBindingTypeLevel3.filter(item => item.Name && item.Name.indexOf(sBindingTypeLevel3Txt) > -1);
+				const aTenderBiddingTypeLevel3 = await Services.loadCountryBiddingTypeLevel3(sCountry, sBiddingTypeLevel2Id);
+				const oTenderBiddingTypeLevel3 = aTenderBiddingTypeLevel3 && aTenderBiddingTypeLevel3.filter(item => item.Name && item.Name.indexOf(sBiddingTypeLevel3Txt) > -1);
 
-				const selectedKey = oTenderBindingTypeLevel3 && oTenderBindingTypeLevel3.length > 0 && oTenderBindingTypeLevel3[0].Name || undefined;
+				const selectedKey = oTenderBiddingTypeLevel3 && oTenderBiddingTypeLevel3.length > 0 && oTenderBiddingTypeLevel3[0].Name || undefined;
 
 				oBiddingTypeLevel3ComboBox.setBusy(false);
 
@@ -889,7 +901,6 @@ sap.ui.define([
 					oPage.removeSubSection(oSubSection);
 				}
 			});
-
 		},
 
 		//Block expanding the panel, beceause we are fasing out this logic
@@ -1347,7 +1358,7 @@ sap.ui.define([
 					//reselect same offer if it exists, otherwise clear offer selected
 					//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
 					if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()),sSelectedSection)){
-
+						
 						//Deliveries - subsection
 						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
@@ -1362,13 +1373,13 @@ sap.ui.define([
 
 						//Deliveries - Delivery Detail
 						var oDeliveryDetailSubSection = that.oDeliveryTrackingView.byId("idDeliveryDetailSection");
-						if (oDeliveryDetailSubSection) {
+						if (oDeliveryDetailSubSection && Services.getSelectedCountry() !== 'CL') {
 							oDeliveryDetailSubSection.setVisible(false);
 						}
 
 						//Deliveries - Letters
 						var oDelivTrackLettersSubSection = that.oDeliveryTrackingView.byId("DelivTrackLettersSubsection");
-						if (oDelivTrackLettersSubSection) {
+						if (oDelivTrackLettersSubSection && Services.getSelectedCountry() !== 'CL') {
 							oDelivTrackLettersSubSection.setVisible(true);
 						}
 
@@ -1569,7 +1580,7 @@ sap.ui.define([
 		//save or cancel button below is pressed
 		onEditToggleButtonPress: function (oEvent) {
 			var that = this;
-			let sCountry = Services.getSelectedCountry();
+			let sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";;
 			var oObjectPage = that.getView().byId("DetailPage"),
 				bCurrentShowFooterState = oObjectPage.getShowFooter();
 			var sSelectedSection = oObjectPage.getSelectedSection();
@@ -1580,6 +1591,7 @@ sap.ui.define([
 			var bEditAllowed = true; //default we allow editing
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			var oFastAppDataModel = Services.getFastAppDataModel();
+			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 
 			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
 			if (bCurrentShowFooterState === true) {
@@ -1611,10 +1623,10 @@ sap.ui.define([
 					//should tendertype be visible on the basic info screen?
 					$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
-						if(Services.getSelectedCountry() === 'CL'){
-							that.getView().byId("idSelectTenderType").setVisible(true);
+						if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
+							that.getView().byId("idSelectTenderTypeEdit").setVisible(true);
 						}else{
-							that.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
+							that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
 						}
 					});
 
@@ -1716,10 +1728,11 @@ sap.ui.define([
 					that.onEditOutcomTreeTable();
 					break;
 				case Services.getDeliveryTrackingPageSectionID():
+					//that._showSubSectionFragment(oFastAppDataModel.getProperty('/permissions/fragments/deliveryTrackingId/fragment'), 'deliveryTrackingId');
 					//DELIVERY TRACKING TAB
-					that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
+					//that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(false);
 					//that.getView().byId("idDelDelv").setVisible(false);
-					that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
+					//that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(false);
 					//that.getView().byId("idDelLtr").setVisible(false);
 				break;
 				default:break;
@@ -1739,6 +1752,7 @@ sap.ui.define([
 						"Awaiting Approval",
 						"Quotation Submitted",
 						"In FOC Negotiation",
+						"Appeal in Progress",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -1847,8 +1861,9 @@ sap.ui.define([
 					case Services.getBasicInformationPageSectionID():
 
 						/*initialize country filter for particular fields (tender type, tender origin, sales type, contract type) */
-						var sCountryCode = Services.getSelectedCountry();
+						var sCountryCode = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";
 						var aFilter = [];
+						let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
 
 						// Reload data
@@ -1885,6 +1900,11 @@ sap.ui.define([
 						//should tendertype be visible on the screen?
 						$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
 							oTenderType.setVisible(bShowTenderType);
+							if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
+								oTenderType.setVisible(true);
+							}else{
+								oTenderType.setVisible(bShowTenderType);
+							}
 						});
 
 						//should group purchasing be visible on the screen based on data back-end
@@ -2087,7 +2107,7 @@ sap.ui.define([
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
-						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+						that._showSubSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
@@ -2121,10 +2141,11 @@ sap.ui.define([
 						break;
 
 					case Services.getDeliveryTrackingPageSectionID():
+
 						//DELIVERY TRACKING TAB
-						that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
+						//that.getView().byId("deliveryTrackingViewId").byId("idAddDelv").setVisible(true);
 						//that.getView().byId("idDelDelv").setVisible(true);
-						that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(true);
+						//that.getView().byId("deliveryTrackingViewId").byId("idAddLtr").setVisible(true);
 						//that.getView().byId("idDelLtr").setVisible(true);
 						break;
 
@@ -2181,26 +2202,27 @@ sap.ui.define([
 				that.getClassificationId().then(async sClassificationId => {
 					if(sClassificationId){
 						Services.loadCountrySpecifications(sCountryCode, sClassificationId);
-						Services.loadCountryBindingTypeLevel1(sCountryCode, sClassificationId);
+						Services.loadCountryBiddingTypeLevel1(sCountryCode, sClassificationId);
 					}
 
-					let sBindingTypeLevel1Id = await that.getBindingTypeLevel1Id();
-					let sBindingTypeLevel2Id = await that.getBindingTypeLevel2Id();
+					let sBiddingTypeLevel1Id = await that.getBiddingTypeLevel1Id();
+					let sBiddingTypeLevel2Id = await that.getBiddingTypeLevel2Id();
 					
-					Services.loadCountryBindingTypeLevel2(sCountryCode, sBindingTypeLevel1Id);
-					Services.loadCountryBindingTypeLevel3(sCountryCode, sBindingTypeLevel2Id);
+					Services.loadCountryBiddingTypeLevel2(sCountryCode, sBiddingTypeLevel1Id);
+					Services.loadCountryBiddingTypeLevel3(sCountryCode, sBiddingTypeLevel2Id);
 				}); 
 				
 			});
 
 			Services.loadCountryChannels(sCountryCode);
 			Services.loadCountryCompetitors(sCountryCode);
+			Services.loadCountryOutcomes(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
 			// set the selected keys on the dropdowns
-			that.setTenderBindingTypeLevel1SelectedKey()
-				.then(that.setTenderBindingTypeLevel2SelectedKey.bind(that))
-					.then(that.setTenderBindingTypeLevel3SelectedKeys.bind(that));
+			that.setTenderBiddingTypeLevel1SelectedKey()
+				.then(that.setTenderBiddingTypeLevel2SelectedKey.bind(that))
+					.then(that.setTenderBiddingTypeLevel3SelectedKeys.bind(that));
 			
 			that.setTenderSpecificationsSelectedKeys(Services.getSelectedTenderID());
 
@@ -2259,6 +2281,7 @@ sap.ui.define([
 								"Awaiting Approval",
 								"Quotation Submitted",
 								"In FOC Negotiation",
+								"Appeal in Progress",
 								"Results Recorded",
 								"Delivery Ongoing"
 							];
@@ -2666,8 +2689,10 @@ sap.ui.define([
 
 				//DELIVERY TRACKING TAB
 				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
-				this.oDeliveryTrackingView.byId("idDeliveryDetailSection").setVisible(false);
-				this.oDeliveryTrackingView.byId("idLetterDetailSection").setVisible(false);
+				//this.byId("idDeliveryDetailSection").setVisible(false);
+				if(Services.getSelectedCountry() != 'CL'){
+					this.byId("idLetterDetailSection").setVisible(false);
+				}
 				break;
 
 			default:
@@ -2854,10 +2879,11 @@ sap.ui.define([
 
 		},
 
+		// TODO: improve the way of handeling of duplicate ID's. 
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
 			//Otherwise, an error message will be thrown which informs the user that ID's with the same name are being added multiple times
-			if(this._pageFragments && (this._pageFragments.QuotationView_AR || this._pageFragments.QuotationView || this._pageFragments.QuotationView_TH) ){
+			if(this._pageFragments){
 				if(this._pageFragments.QuotationView_AR){
 					this._pageFragments.QuotationView_AR = null;
 				}
@@ -2868,6 +2894,10 @@ sap.ui.define([
 
 				if(this._pageFragments.QuotationView_TH){
 					this._pageFragments.QuotationView_TH = null;
+				}
+
+				if(this._pageFragments.QuotationView_CL){
+					this._pageFragments.QuotationView_CL = null;
 				}
 			}
 
@@ -3070,7 +3100,7 @@ sap.ui.define([
 								bCancelEnabled = true;
 							}
 
-							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Delivery Ongoing") {
+							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Appeal in Progress" && oData.STATUS !== "Delivery Ongoing") {
 								bSendApprovalEnabled = true;
 							}
 
@@ -3329,9 +3359,9 @@ sap.ui.define([
 
 				oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
 
-				oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem()&& this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
-				oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
-				oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+				oSaveBasicInfo.BiddingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem()&& this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+				oSaveBasicInfo.BiddingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+				oSaveBasicInfo.BiddingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
 				oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
 
 				// Brazil only
@@ -3465,9 +3495,9 @@ sap.ui.define([
 			}
 
 			oSaveBasicInfo.Classification = this.byId("idClassification").getSelectedItem().getText();
-			oSaveBasicInfo.BindingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem() && this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
-			oSaveBasicInfo.BindingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
-			oSaveBasicInfo.BindingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
+			oSaveBasicInfo.BiddingTypeLevel1 = this.byId("idBiddingTypeLevel1").getSelectedItem() && this.byId("idBiddingTypeLevel1").getSelectedItem().getText();
+			oSaveBasicInfo.BiddingTypeLevel2 = this.byId("idBiddingTypeLevel2").getSelectedItem() && this.byId("idBiddingTypeLevel2").getSelectedItem().getText();
+			oSaveBasicInfo.BiddingTypeLevel3 = this.byId("idBiddingTypeLevel3").getSelectedItem() && this.byId("idBiddingTypeLevel3").getSelectedItem().getText();
 			oSaveBasicInfo.HighValue = this.byId("idHighValue") && this.byId("idHighValue").getSelected();
 
 			// Brazil only
@@ -3994,6 +4024,7 @@ sap.ui.define([
 						"Awaiting Approval",
 						"Quotation Submitted",
 						"In FOC Negotiation",
+						"Appeal in Progress",
 						"Results Recorded",
 						"Delivery Ongoing"
 					];
@@ -4065,6 +4096,7 @@ sap.ui.define([
 					if (
 						oData.STATUS === "Quotation Submitted" ||
 						oData.STATUS === "In FOC Negotiation" ||
+						oData.STATUS === "Appeal in Progress" ||
 						oData.STATUS === "Results Recorded"
 					) {
 
@@ -4081,7 +4113,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation' or in 'Results Recorded'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Appeal in Progress' or in 'Results Recorded'.", {});
 
 					}
 
@@ -4124,6 +4156,7 @@ sap.ui.define([
 					if (
 						oData.STATUS === "Quotation Submitted" ||
 						oData.STATUS === "In FOC Negotiation" ||
+						oData.STATUS === "Appeal in Progress" ||
 						oData.STATUS === "Results Recorded" ||
 						oData.STATUS === "Delivery Ongoing"
 					) {
@@ -4141,7 +4174,7 @@ sap.ui.define([
 
 					} else {
 
-						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Results Recorded' or 'Delivery Ongoing'.", {});
+						sap.m.MessageBox.warning("Offer status must be 'Quotation Submitted', 'In FOC Negotiation', 'Appeal in Progress', 'Results Recorded' or 'Delivery Ongoing'.", {});
 
 					}
 
@@ -5980,12 +6013,17 @@ sap.ui.define([
 
 					//should tender channel be defaulted/forced on distributor?
 					$.when(Services.checkTenderChannelOnDistributor(sCountry, sSelectedInstituteID)).done(function (bTenderChannelOnDistributor) {
-						//default on Distributor
-						if (bTenderChannelOnDistributor) {
-							that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+						//default on Distributor / Direct for Chile
+						if(Services.getSelectedCountry() === 'CL'){
+							that.getView().byId("idTenderChannel").setSelectedKey("Direct");
 							that.getView().byId("idTenderChannel").setEnabled(false);
 						} else {
-							that.getView().byId("idTenderChannel").setEnabled(true);
+							if (bTenderChannelOnDistributor) {
+								that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+								that.getView().byId("idTenderChannel").setEnabled(false);
+							} else {
+								that.getView().byId("idTenderChannel").setEnabled(true);
+							}
 						}
 					});
 				}
@@ -6581,10 +6619,12 @@ sap.ui.define([
 			Promise.all(promises).then(async (result) => {
 
 				// validate distributor offer product net prices
-				const bNetPricesAreValid = await that._validateDistributorProductNetPrices();
-				if(!bNetPricesAreValid){
-					that.getView().setBusy(false);
-					return;
+				if(Services.getSelectedCountry() === 'AR'){
+					const bNetPricesAreValid = await that._validateDistributorProductNetPrices();
+					if(!bNetPricesAreValid){
+						that.getView().setBusy(false);
+						return;
+					}
 				}
 
 				//if all saving promises are done
@@ -7384,6 +7424,14 @@ sap.ui.define([
 			// 		var a = 1;
 			// 	}
 			// });
+		},
+
+		onExportToExcel: function (oEvent){
+			let sOfferId = Services.getSelectedOfferID();
+			var url = ("../../v2/tender/ExcelAttachment('$sOfferId')/content");
+			url = url.replace("$sOfferId", sOfferId);
+			sap.m.URLHelper.redirect(url, true);
+			//window.open(url);
 		},
 
 		//when submitting quotation, we will save data in the quotation tab + set the correct status on the offer
@@ -8419,33 +8467,53 @@ sap.ui.define([
 
 		onClassificationChange: async function(oEvent){ 
 
+			const oForm = this.byId("idBasicInfoSimpleForm");
+			oForm.setBusyIndicatorDelay(0);
+
 			let sCountry = this._country;
 			let sClassificationId = oEvent.getSource().getSelectedItem().data("classificationId");
 
 			this._initializeCountrySpecificFields();
 			
 			if(sClassificationId){ 
-				const aBindingTypeLevel1 = await Services.loadCountryBindingTypeLevel1(sCountry, sClassificationId);
-				const aSpecifications = await Services.loadCountrySpecifications(sCountry, sClassificationId);
 
-				if(aBindingTypeLevel1.length > 0){
-					this.byId("idBiddingTypeLevel1").setVisible(true);
+				try {
+
+					oForm.setBusy(true);
+
+					const aBiddingTypeLevel1 = await Services.loadCountryBiddingTypeLevel1(sCountry, sClassificationId);
+				
+					if(aBiddingTypeLevel1.length > 0){
+						this.byId("idBiddingTypeLevel1").setVisible(true);
+					}
+
+					const aSpecifications = await Services.loadCountrySpecifications(sCountry, sClassificationId);
+
+					if(aSpecifications.length > 0){
+						this.byId("idSpecifications").setVisible(true);
+					}
+					
+
+				} catch(err) {
+					console.log(err);
+				} finally{
+					oForm.setBusy(false);
+					this.byId("idBiddingTypeLevel2").getItems().length > 0 ? this.byId("idBiddingTypeLevel2").destroyItems() : "";
+					this.byId("idBiddingTypeLevel3").getItems().length > 0 ? this.byId("idBiddingTypeLevel3").destroyItems() : "";
 				}
 
-				if(aSpecifications.length > 0){
-					this.byId("idSpecifications").setVisible(true);
-				}
-
-				this.byId("idBiddingTypeLevel2").getItems().length > 0 ? this.byId("idBiddingTypeLevel2").destroyItems() : "";
-				this.byId("idBiddingTypeLevel3").getItems().length > 0 ? this.byId("idBiddingTypeLevel3").destroyItems() : "";
+				
 			}
 
 		},
 
 		onBiddingTypeLevel1Change: async function(oEvent){
 
+			const oForm = this.byId("idBasicInfoSimpleForm");
+			oForm.setBusyIndicatorDelay(0);
+
 			let sCountry = this._country;
-			let sBindingTypeLevel1Id = oEvent.getSource().getSelectedItem().data("ID");
+			let sBiddingTypeLevel1Id = oEvent.getSource().getSelectedItem().data("ID");
 			let that = this;
 
 			this.byId("idBiddingTypeLevel2").setVisible(false);
@@ -8453,45 +8521,85 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2").clearSelection();
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
-			if(sBindingTypeLevel1Id){
-				that.getView().setBusy(true);
-				//const aBindingTypeLevel2 = await Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id);
+			if(sBiddingTypeLevel1Id){
 
-				$.when(Services.loadCountryBindingTypeLevel2(sCountry, sBindingTypeLevel1Id)).done(function (oData){
-					if(oData.length > 0){
+				//that.getView().setBusy(true);
+				try {
+
+					oForm.setBusy(true);
+
+					const aBiddingTypeLevel2 = await Services.loadCountryBiddingTypeLevel2(sCountry, sBiddingTypeLevel1Id);
+
+					if(aBiddingTypeLevel2.length > 0){
 						that.byId("idBiddingTypeLevel2").setVisible(true);
-						that.getView().setBusy(false);
 					}else{
 						that.byId("idBiddingTypeLevel2").setVisible(false);
-						that.getView().setBusy(false);
 					}
-				});
+
+				} catch(err) {
+					console.log(err);
+				} finally{
+					oForm.setBusy(false);
+				}
+				
+
+				// $.when(Services.loadCountryBiddingTypeLevel2(sCountry, sBiddingTypeLevel1Id)).done(function (oData){
+				// 	if(oData.length > 0){
+				// 		that.byId("idBiddingTypeLevel2").setVisible(true);
+				// 		that.getView().setBusy(false);
+				// 	}else{
+				// 		that.byId("idBiddingTypeLevel2").setVisible(false);
+				// 		that.getView().setBusy(false);
+				// 	}
+				// });
 
 			}
 		},
 
 		onBiddingTypeLevel2Change: async function(oEvent){ 
 
+			const oForm = this.byId("idBasicInfoSimpleForm");
+			oForm.setBusyIndicatorDelay(0);
+
 			let sCountry = this._country;
-			let sBindingTypeLevel2Id = oEvent.getSource().getSelectedItem().data("ID");
+			let sBiddingTypeLevel2Id = oEvent.getSource().getSelectedItem().data("ID");
 			let that = this;
 
 
 			this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idBiddingTypeLevel3").clearSelection();
 
-			if(sBindingTypeLevel2Id){
-				this.getView().setBusy(true);
-				//const aBindingTypeLevel3 = await Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id);
-				$.when(Services.loadCountryBindingTypeLevel3(sCountry, sBindingTypeLevel2Id)).done(function (oData){
-					if(oData.length > 0){
+			if(sBiddingTypeLevel2Id){
+				// this.getView().setBusy(true);
+
+				try {
+
+					oForm.setBusy(true);
+
+					const aBiddingTypeLevel3 = await Services.loadCountryBiddingTypeLevel3(sCountry, sBiddingTypeLevel2Id);
+
+					if(aBiddingTypeLevel3.length > 0){
 						that.byId("idBiddingTypeLevel3").setVisible(true);
-						that.getView().setBusy(false);
 					}else{
 						that.byId("idBiddingTypeLevel3").setVisible(false);
-						that.getView().setBusy(false);
 					}
-				});
+
+				} catch(err) {
+					console.log(err);
+				} finally{
+					oForm.setBusy(false);
+				}
+
+
+				// $.when(Services.loadCountryBiddingTypeLevel3(sCountry, sBiddingTypeLevel2Id)).done(function (oData){
+				// 	if(oData.length > 0){
+				// 		that.byId("idBiddingTypeLevel3").setVisible(true);
+				// 		that.getView().setBusy(false);
+				// 	}else{
+				// 		that.byId("idBiddingTypeLevel3").setVisible(false);
+				// 		that.getView().setBusy(false);
+				// 	}
+				// });
 			}
 
 		},

@@ -312,7 +312,10 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/Comment/required}"/>
 									<t:template>
-										<Input type="Text" value="{fastAppData>Comment}" placeholder="{i18n>Comment}" editable="{= ${fastAppData>ActiveProduct} === 2 || ${fastAppData>ActiveProduct} === '2'}"/>
+										<Input type="Text" 
+											   value="{fastAppData>Comment}" 
+											   placeholder="{i18n>Comment}" 
+											   editable="{= ${fastAppData>/Tender/CountryCode} === 'CL' || (${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; (${fastAppData>ActiveProduct} === 2 || ${fastAppData>ActiveProduct} === '2'))}"/>
 									</t:template>
 								</t:Column>
 
@@ -333,7 +336,7 @@
 												    		   wrapping="true" 
 															   required="{fastAppData>/permissions/tables/editofferProductId/Brand/required}"/>
 									<t:template>
-										<Input value="{fastAppData>SKU/Product/HLEVEL4_NAME}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" />
+										<Input value="{fastAppData>SKU/Product/HLEVEL4_NAME}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/Brand/visible}" />
 									</t:template>
 								</t:Column>
 
@@ -341,9 +344,9 @@
 									<Label id="idMoleculeName" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MoleculeName/description',
 												  					   formatter: '.formatter.offerProductsColumnName' }" 
 												    		   wrapping="true" 
-															   required="{fastAppData>/permissions/tables/editofferProductId/MoleculeName/required}"/>
+															   required="false"/>
 									<t:template>
-										<Input value="{fastAppData>SKU/MoleculeName}" editable="true" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/MoleculeName/visible}" />
+										<Input value="{fastAppData>SKU/MoleculeName}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/MoleculeName/visible}" />
 									</t:template>
 								</t:Column>
 

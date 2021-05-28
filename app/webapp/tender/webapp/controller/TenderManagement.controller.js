@@ -20,8 +20,7 @@ sap.ui.define([
 		
 		onRouteMatched: function (oEvent) {
 			var sRouteName = oEvent.getParameter("name"),
-				oArguments = oEvent.getParameter("arguments"),
-				that = this;
+				oArguments = oEvent.getParameter("arguments");
 
 			this._updateUIElements();
 			
@@ -32,9 +31,9 @@ sap.ui.define([
 
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
-			var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
-			var sOfferID = oEvent.getParameter("arguments").offer;
-			var sTab =  oEvent.getParameter("arguments").tab || Services.getBasicInformationPageSectionID();
+			//var sCountry = oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
+			//var sOfferID = oEvent.getParameter("arguments").offer;
+			//var sTab =  oEvent.getParameter("arguments").tab || Services.getBasicInformationPageSectionID();
 			var sLayout = oEvent.getParameter("arguments").layout;
 /*			
 			//check if we need to navigate straight to different layout, page
