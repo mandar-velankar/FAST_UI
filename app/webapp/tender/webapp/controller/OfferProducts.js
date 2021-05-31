@@ -1929,19 +1929,25 @@ sap.ui.define([
 						(productValues.UnitPerPack === "Unit") ? 1 / oAddFocProduct.PACKFACTOR : 1 //JH: same correction for factor
 					);
 				}
-				
+
+				//discount calculation
+				let discount = "";
+				if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
+					discount = standardDiscount;
+				}else{
+					discount = (cifPrice !== 0) ? (cifPrice - offerPrice) / cifPrice : 0;
+				}
+
 				var focChart = (focAbsPct === "PCT") ? ((focType === "FOC 1") ? foc : 1 - 1 / (1 + foc)) : ((focType === "FOC 1") ? 1 - (
 					productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 					foc));
-				var netOfferPrice = cifPrice!==0 ? cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart) : offerPrice * (1 - focChart);//JH changed
+				var netOfferPrice = cifPrice!==0 ? cifPrice * (1 - (discount + additionalDiscount)) * (1 - focChart) : offerPrice * (1 - focChart);//JH changed
 
-				let netPrice, discount = "";
+				let netPrice = "";
 				if(sCountryCode==="AR"||sCountryCode==="BR"||sCountryCode==="CL"){
 					netPrice = (1 - deductions) * netOfferPrice;
-					discount = standardDiscount;
 				}else{
 					netPrice = (1 - deductions) * netOfferPrice;
-					discount = (cifPrice !== 0) ? (cifPrice - offerPrice) / cifPrice : 0;
 				}		
 		
 				//mainProductQuantity
