@@ -705,8 +705,8 @@ sap.ui.define([
 			//that.ODetailController.onEditToggleButtonPress();
 			that.byId("idLetterDetailSection").setVisible(false);
 
-			if (oTableReturns && Services.getDeliveryItemEdit() !== -1) {
-				var oRow = oTableReturns.getItems()[Services.getDeliveryItemEdit()];
+			if (oTableReturns && Services.getLetterItemEdit() !== -1) {
+				var oRow = oTableReturns.getItems()[Services.getLetterItemEdit()];
 				if (oRow) {
 					var aCells = oRow.getCells();
 					aCells.forEach(function (oCell, index) {
