@@ -49,6 +49,11 @@
       "localDir": "dist/ppa/webapp"
     },
     {
+      "source": "^/salesopportunity/(.*)$",
+      "target": "$1",
+      "localDir": "dist/salesopportunity/webapp"
+    },
+    {
       "source": "^/uilib/(.*)$",
       "target": "$1",
       "localDir": "dist/uilib/src/com/bayer/tender/uilib"
