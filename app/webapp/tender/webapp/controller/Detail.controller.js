@@ -2691,7 +2691,7 @@ sap.ui.define([
 				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
 				//this.byId("idDeliveryDetailSection").setVisible(false);
 				if(Services.getSelectedCountry() != 'CL'){
-					this.byId("idLetterDetailSection").setVisible(false);
+					this.oDeliveryTrackingView.byId("idLetterDetailSection").setVisible(false);
 				}
 				break;
 
