@@ -2606,9 +2606,9 @@ sap.ui.define([
 						//TODO when offer table is removed on each tab, this will no longer be needed
 						//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
 
-						if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+						/*if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
 							that.oDeliveryTrackingController.onDelivryTrackingOfferPress();
-						}
+						}*/eryTrackingController.onCancelDeliveryEdit();
 
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelDeliveryTrackingOfferTableID").setExpanded(true);
