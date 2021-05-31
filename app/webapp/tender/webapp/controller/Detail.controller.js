@@ -2608,7 +2608,9 @@ sap.ui.define([
 
 						/*if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
 							that.oDeliveryTrackingController.onDelivryTrackingOfferPress();
-						}*/eryTrackingController.onCancelDeliveryEdit();
+						}*/
+						that.oDeliveryTrackingController.onCancelDeliveryEdit();
+						that.oDeliveryTrackingController.onCancelReturnEdit();
 
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelDeliveryTrackingOfferTableID").setExpanded(true);

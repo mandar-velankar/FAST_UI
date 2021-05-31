@@ -1055,7 +1055,7 @@ sap.ui.define([
 
 			// refresh 
 			oEvent.getSource().getBinding("items").refresh(true);
-			this.ctrState.setLetterItemEdit(-1);
+			//this.ctrState.setLetterItemEdit(-1);
 			oProductsDetail.setVisible(false);
 		},
 

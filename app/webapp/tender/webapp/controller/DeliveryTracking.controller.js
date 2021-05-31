@@ -176,6 +176,7 @@ sap.ui.define([
 			that.byId("idDeliveryDetailSection").setVisible(false);
 			that.byId("idLetterDetailSection").setVisible(false);
 			Services.setDeliveryItemEdit(-1);
+			Services.setLetterItemEdit(-1);
 
 		},
 
@@ -678,11 +679,11 @@ sap.ui.define([
 			var oCountry = Services.getSelectedCountry();
 			
 			//switch to correct view edit/display
-			that.ODetailController.onEditToggleButtonPress();
+			
+			//that.ODetailController.onEditToggleButtonPress();
 			if(oCountry !== 'CL'){
 				that.byId("idDeliveryDetailSection").setVisible(false);
 			}
-
 			if (oTableDeliveries && Services.getDeliveryItemEdit() !== -1) {
 				var oRow = oTableDeliveries.getItems()[Services.getDeliveryItemEdit()];
 				if (oRow) {
@@ -692,6 +693,27 @@ sap.ui.define([
 					});
 
 					Services.setDeliveryItemEdit(-1);
+				}
+			}
+		},
+
+		onCancelReturnEdit: function (oEvent) {
+			var that = this;
+			var oTableReturns = this.byId("lettersTableID");
+
+			//switch to correct view edit/display
+			//that.ODetailController.onEditToggleButtonPress();
+			that.byId("idLetterDetailSection").setVisible(false);
+
+			if (oTableReturns && Services.getDeliveryItemEdit() !== -1) {
+				var oRow = oTableReturns.getItems()[Services.getDeliveryItemEdit()];
+				if (oRow) {
+					var aCells = oRow.getCells();
+					aCells.forEach(function (oCell, index) {
+						oCell.setProperty("enabled", Services.getEditMode());
+					});
+
+					Services.setLetterItemEdit(-1);
 				}
 			}
 		},
@@ -980,6 +1002,30 @@ sap.ui.define([
 					aLetters[iIndex].setSelected(true);
 					aLetters[iIndex].setActive(true);
 				}
+			}
+
+			if (Services.getLetterItemEdit() !== -1) {
+				//another line is currently in edit mode. Set this back to display first.
+				var oRow = oTableLetters.getItems()[Services.getLetterItemEdit()];
+				if (oRow) {
+					var aCells = oRow.getCells();
+					aCells.forEach(function (oCell, index) {
+						oCell.setProperty("enabled", false);
+					});
+
+					Services.setLetterItemEdit(-1);
+				}
+			}
+
+			//now set the other line in edit mode
+			var oRow = oTableLetters.getItems()[iIndex];
+			if (oRow) {
+				var aCells = oRow.getCells();
+				aCells.forEach(function (oCell, index) {
+					oCell.setProperty("enabled", Services.getEditMode());
+				});
+
+				Services.setLetterItemEdit(iIndex);
 			}
 
 			that.byId("idLetterDetailSection").setVisible(true);
