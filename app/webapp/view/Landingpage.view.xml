@@ -1,0 +1,172 @@
+<mvc:View id="MainViewId" controllerName="com.bayer.tender.landingspage.controller.Landingpage" displayBlock="true" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:tnt="sap.tnt">
+	
+	<!-- Icon tab bar for showing 2 tabs Business apps & Administration -->
+	<IconTabBar id="navLevel0" stretchContentHeight="true" backgroundDesign="Transparent" applyContentPadding="false" class="sapUiResponsiveContentPadding" expandable="false">
+		<items>
+			
+			<!-- Business apps TODO give the press methods an understandable name f.e pressTenderManagement-->		
+			<IconTabFilter id="navLevel0Tab0" text="Business Apps">
+				
+				<!-- Use a scrollbar on a smaller screen -->
+				<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+					
+                    <!-- Tender management tile -->
+                    <Panel headerText="Transactional">
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="TileContainerExpanded0" allowWrapping="true">
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Tender Management" 
+									press="onTileTenderManagementPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/tender}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
+								
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Pricing Management" 
+									press="onTileEpaManagementPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/epa}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
+
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Pricing Policy Management" 
+									press="onTilePpaManagementPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/ppa}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
+
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Contract Management" 
+									press="onTileContractManagementPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/contract}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
+								
+							</l:HorizontalLayout>
+						</l:VerticalLayout>
+					</Panel>
+					
+					<!-- Analytics panel -->
+					<Panel headerText="Analytics">
+						
+						<!-- DATA governance tile -->
+						<!--<l:VerticalLayout>-->
+						<!--	<l:HorizontalLayout id="idDataGovernanceDash" allowWrapping="true">-->
+						<!--		<GenericTile -->
+						<!--			class="sapUiTinyMarginBegin -->
+						<!--			sapUiTinyMarginTop tileLayout" -->
+						<!--			header="Data Governance Dashboard" -->
+						<!--			press="onTileDataGovPress">-->
+						<!--			<TileContent footer="Go to tableau...">-->
+						<!--				<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>-->
+						<!--			</TileContent>-->
+						<!--		</GenericTile>-->
+						<!--	</l:HorizontalLayout>-->
+						<!--</l:VerticalLayout>-->
+						
+						<!-- Transactional Dashboard -->
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="idTransactionalDash" allowWrapping="true">
+								<GenericTile 
+									class="sapUiTinyMarginBegin 
+									sapUiTinyMarginTop tileLayout" 
+									header="Transactional Dashboard" 
+									press="onTileTransDashPress">
+									<TileContent footer="Go to tableau...">
+										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+									</TileContent>
+								</GenericTile>
+							</l:HorizontalLayout>
+						</l:VerticalLayout>
+
+						<!-- Tender Manager Dashboard-->
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="idTenderManagementDash" allowWrapping="true">
+								<GenericTile 
+									class="sapUiTinyMarginBegin 
+									sapUiTinyMarginTop tileLayout" 
+									header="Tender Manager Dashboard" 
+									press="onTileTenderManagerDashPress">
+									<TileContent footer="Go to tableau...">
+										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+									</TileContent>
+								</GenericTile>
+							</l:HorizontalLayout>
+						</l:VerticalLayout>	
+
+						<!-- Caliber Connect -->
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="idCaliberConnect" allowWrapping="true">
+								<GenericTile 
+									class="sapUiTinyMarginBegin 
+									sapUiTinyMarginTop tileLayout" 
+									header="Caliber Connect" 
+									press="onTileCaliberConnectPress">
+									<TileContent footer="Go to tableau...">
+										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+									</TileContent>
+								</GenericTile>
+							</l:HorizontalLayout>
+						</l:VerticalLayout>	
+
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="idTableauDash" allowWrapping="true">
+								<GenericTile
+									class="sapUiTinyMarginBegin
+									sapUiTinyMarginTop tileLayout"
+									header="Tableau Dashboard"
+									press="onTileTableauDashPress">
+									<TileContent footer="Go to tableau...">
+										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+									</TileContent>
+								</GenericTile>
+							</l:HorizontalLayout>
+						</l:VerticalLayout>
+											
+					</Panel>
+
+				</ScrollContainer>
+				
+			</IconTabFilter>
+			
+			
+			<!-- Administration TODO use same layouting as in Business apps? -->
+			<IconTabFilter id="navLevel0Tab1" text="Administration" visible="false">
+				<l:VerticalLayout>
+					<l:HorizontalLayout id="TileContainerExpanded2" allowWrapping="true">
+						
+						<!-- Users tile -->
+						<GenericTile 
+							class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+							header="Users" 
+							press="onTileUserManagementPress" 
+							visible="false"
+							backgroundImage="{imageModel>/path}/Company-Logo-White.svg">
+								<TileContent footer="Go to tableau...">
+									<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+								</TileContent>
+						</GenericTile>
+						
+					</l:HorizontalLayout>
+				</l:VerticalLayout>
+			</IconTabFilter>
+			
+		</items>
+	</IconTabBar>
+</mvc:View>

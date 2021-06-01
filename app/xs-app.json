@@ -27,13 +27,13 @@
     {
       "source": "^/app/(.*)$",
       "target": "$1",
-      "localDir": "dist/landingspage/webapp",
+      "localDir": "dist",
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/appdebug/(.*)$",
+      "source": "^/tender/(.*)$",
       "target": "$1",
-      "localDir": "webapp/landingspage/webapp",
+      "localDir": "dist/tender/webapp",
       "authenticationType": "xsuaa"
     },
     {
@@ -49,27 +49,21 @@
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/tender/(.*)$",
-      "target": "$1",
-      "localDir": "dist/tender/webapp",
-      "authenticationType": "xsuaa"
-    },
-    {
       "source": "^/ppa/(.*)$",
       "target": "$1",
       "localDir": "dist/ppa/webapp",
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/uilib/(.*)$",
+      "source": "^/appdebug/(.*)$",
       "target": "$1",
-      "localDir": "dist/uilib/src/com/bayer/tender/uilib",
+      "localDir": "webapp",
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/pdf/(.*)$",
+      "source": "^(.*)$",
       "target": "$1",
-      "localDir": "dist/pdf",
+      "localDir": "dist",
       "authenticationType": "xsuaa"
     }
   ]
