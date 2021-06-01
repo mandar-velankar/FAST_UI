@@ -153,7 +153,7 @@ sap.ui.define([
 		},
 
 		_onMetadataLoaded : function () {
-			// Store original busy indicator delay for the detail view
+			/*// Store original busy indicator delay for the detail view
 			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
 				oViewModel = this.getModel("detailView"),
 				oLineItemTable = this.byId("lineItemsList"),
@@ -168,6 +168,18 @@ sap.ui.define([
 				// Restore original busy indicator delay for line item table
 				oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
 			});
+
+			// Binding the view will set it to not busy - so the view is always busy if it is not bound
+			oViewModel.setProperty("/busy", true);
+			// Restore original busy indicator delay for the detail view
+			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);*/
+			// Store original busy indicator delay for the detail view
+			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
+				oViewModel = this.getModel("detailView");
+
+			// Make sure busy indicator is displayed immediately when
+			// detail view is displayed for the first time
+			oViewModel.setProperty("/delay", 0);
 
 			// Binding the view will set it to not busy - so the view is always busy if it is not bound
 			oViewModel.setProperty("/busy", true);
