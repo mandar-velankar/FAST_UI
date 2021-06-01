@@ -72,6 +72,10 @@ sap.ui.define([
 				}.bind(this)
 			});
 
+
+			this.soaState = this.getOwnerComponent().getState(this.getOwnerComponent().SOA);
+			this.setModel(this.soaState.getModel(), "soa");
+
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 		},

@@ -1,0 +1,51 @@
+sap.ui.define([
+	"com/bayer/tender/uilib/objects/BaseState",
+	"../model/PublicMarketTender"
+], function (BaseState, PublicMarketTender) {
+	"use strict";
+
+	var soaState = BaseState.extend("com.bayer.tender.salesopportunity.state.SoaState", {
+
+		constructor: function (oService) {
+			//data used for the view
+			// this.data = ObservableSlim.create({
+			this.data = {
+				opportunities: [],
+				editMode: false
+				//pricing: new Pricing()
+			};
+			// , true, (changes) => {
+			// 	this.updateModel();
+			// });
+
+			this.soaService = oService;
+			BaseState.call(this);
+		},
+
+		getService: function () {
+			return this.soaService;
+		},
+
+		setEditMode: function (sEditMode){
+			this.setProperty("editMode", sEditMode);
+		},
+
+		/**
+		 * Fetches opportunities from the backend.
+		 * @param {string} sPublicationDate - 
+		 * @returns {promise} - a list of opportunities
+		 */
+		getOpportunities: async function(sPublicationDate){
+			const data = await this.getService().getOpportunities(sPublicationDate);
+			const opportunities = data.map(item => new PublicMarketTender(item));
+			this.setProperty("opportunities", opportunities);
+			return this.getProperty("opportunities");
+		},
+
+
+
+	});
+
+	return soaState;
+
+});
