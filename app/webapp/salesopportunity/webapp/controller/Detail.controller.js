@@ -252,6 +252,7 @@ sap.ui.define([
 					if (sAction === "CLOSE") {
 						sap.m.MessageToast.show("Tender creation done...");
 					} else {
+						window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/CL-21-1001//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 					}
 				}
 			});
