@@ -50,6 +50,7 @@
 				<!-- ACTIONS -->
 				<actions>
 					<m:Button id="participateButtonId" icon="sap-icon://action" text="Participate" type="Emphasized" press="onParticipateOpportunityPress" enabled="true" />
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="false }"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
