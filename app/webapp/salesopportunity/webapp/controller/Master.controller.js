@@ -296,9 +296,9 @@ sap.ui.define([
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
 
-			// get Opportunities -> for testing 
-			const date = new Date('2019-10-15T12:50:51Z').toJSON();
-			this.soaState.getOpportunities(date);
+			// get Opportunities 
+			// const date = new Date('2019-10-15T12:50:51Z').toJSON();
+			// this.soaState.getOpportunities(date);
 		},
 
 		/**
