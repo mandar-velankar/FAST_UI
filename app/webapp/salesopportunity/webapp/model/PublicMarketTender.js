@@ -12,14 +12,16 @@ sap.ui.define([
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
 
+            /* eslint-disable */
             if (data) {
-                /* eslint-disable */
-                    data.Comprador && !data.Comprador.__deferred && this.setBuyer(data.Comprador);
-                    data.Items && !data.Items.__deferred && this.setProducts(data.Items);
-                /* eslint-enable */
-
+               
+                    data.Buyer && !data.Buyer.__deferred && this.setBuyer(data.Buyer);
+                    data.Items && !data.Items.__deferred && this.setProducts(data.Items.results);
+               
             }
 
+            this["Items"] && delete this["Items"];
+            /* eslint-enable */
         },
 
         setBuyer: function (buyer) {
@@ -32,13 +34,13 @@ sap.ui.define([
             return this.buyer;
         },
 
-        setProduct: function (products) {
+        setProducts: function (products) {
             if (products) {
                 this.products = products.map(prd => new Product(prd));
             }
         },
 
-        getProduct: function () {
+        getProducts: function () {
             return this.products || [];
         },
         
@@ -53,29 +55,79 @@ sap.ui.define([
         //     //do something when countryCode changes in the view/ui
         // },
      
-        // getJSON: function () {
-        //     const json = this.getJSONObject([
-        //         "activeRecord", 
-        //         "address",
-        //         "contactNo",
-        //         "contactPerson",
-        //         "countryCode",
-        //         "distributorID",
-        //         "distributorName",
-        //         "fax"
-        //     ]);
+        getJSON: function () {
+            return this.getJSONObject([
+                "advertisingOfferStatus", 
+                "awardDate", 
+                "awardMinutesURL", 
+                "awardNumber", 
+                "awardNumberOfBidders", 
+                "awardType", 
+                "bidClosingDays", 
+                "busy", 
+                "callType", 
+                "claimsAmount", 
+                "closingDate", 
+                "codeType", 
+                "codigoExterno", 
+                "buyer_ID", 
+                "contract", 
+                "contractDurationTime", 
+                "contractDurationType", 
+                "contractingProhibition", 
+                "createdAt", 
+                "currency", 
+                "datePubAnswers", 
+                "deliveryAddress", 
+                "description", 
+                "economicOpeningActDate", 
+                "estimate", 
+                "estimatedAwardDate", 
+                "estimatedJustificationAmount", 
+                "finalDate", 
+                "financingSource", 
+                "isBaseType", 
+                "isRenewable", 
+                "justificationAdvertising", 
+                "modality", 
+                "name", 
+                "notified", 
+                "outsourcing", 
+                "paymentType", 
+                "publicationDate", 
+                "reason", 
+                "renewalTimePeriod", 
+                "renewalTimeValue", 
+                "responsibleContractEmail", 
+                "responsibleContractName", 
+                "responsibleContractPhone", 
+                "responsiblePaymentEmail", 
+                "responsiblePaymentName", 
+                "stages", 
+                "startDate", 
+                "stateCode", 
+                "stateSteps", 
+                "status", 
+                "technicalOpeningActDate", 
+                "tenderContractUnitTime", 
+                "tenderType", 
+                "termExtension", 
+                "unitEvaluationTime", 
+                "unitTime", 
+                "unitTimeContractDuration", 
+                "visibilityAmount", 
+                "visitAddress", 
+                "works"
+            ]);
+        },
 
-        //     return {
-        //         ...json,
-        //         DistributorID: +DistributorID
-        //     }
-        // },
-
-        // getAll: function () {
-        //     // return {
-        //     //     ...this
-        //     // };
-        // }
+        getAll: function () {
+            return {
+                ...this.getJSON(),
+                Buyer: this.getBuyer().getJSON(),
+                Items: this.getProducts().map(item => item.getJSON())
+            };
+        }
         
     });
 

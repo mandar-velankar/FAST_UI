@@ -36,12 +36,11 @@ sap.ui.define([
 		 * @returns {promise} - a list of opportunities
 		 */
 		getOpportunities: async function(sPublicationDate){
-			const data = await this.getService().getOpportunities(sPublicationDate);
-			const opportunities = data.map(item => new PublicMarketTender(item));
+			const { data } = await this.getService().getOpportunities(sPublicationDate);
+			const opportunities = data.results.map(item => new PublicMarketTender(item));
 			this.setProperty("opportunities", opportunities);
 			return this.getProperty("opportunities");
 		},
-
 
 
 	});

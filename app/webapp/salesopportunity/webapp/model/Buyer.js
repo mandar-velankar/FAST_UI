@@ -23,23 +23,24 @@ sap.ui.define([
         //     //do something when countryCode changes in the view/ui
         // },
      
-        // getJSON: function () {
-        //     const json = this.getJSONObject([
-        //         "activeRecord", 
-        //         "address",
-        //         "contactNo",
-        //         "contactPerson",
-        //         "countryCode",
-        //         "distributorID",
-        //         "distributorName",
-        //         "fax"
-        //     ]);
+        getJSON: function () {
+            return this.getJSONObject([
+                "cargoUsuario",
+                "codigoOrganismo",
+                "codigoUnidad",
+                "codigoUsuario",
+                "comunaUnidad",
+                "direccionUnidad",
+                "iD",
+                "nombreOrganismo",
+                "nombreUnidad",
+                "nombreUsuario",
+                "regionUnidad",
+                "rutUnidad",
+                "rutUsuario"
+            ]);
 
-        //     return {
-        //         ...json,
-        //         DistributorID: +DistributorID
-        //     }
-        // },
+        },
 
         // getAll: function () {
         //     // return {

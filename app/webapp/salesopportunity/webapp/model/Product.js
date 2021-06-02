@@ -23,23 +23,27 @@ sap.ui.define([
         //     //do something when countryCode changes in the view/ui
         // },
      
-        // getJSON: function () {
-        //     const json = this.getJSONObject([
-        //         "activeRecord", 
-        //         "address",
-        //         "contactNo",
-        //         "contactPerson",
-        //         "countryCode",
-        //         "distributorID",
-        //         "distributorName",
-        //         "fax"
-        //     ]);
-
-        //     return {
-        //         ...json,
-        //         DistributorID: +DistributorID
-        //     }
-        // },
+        getJSON: function () {
+            return this.getJSONObject([
+                "adjudicacionCantidad", 
+                "adjudicacionMontoUnitario", 
+                "adjudicacionNombreProveedor", 
+                "adjudicacionRutProveedor", 
+                "busy", 
+                "cantidad", 
+                "categoria", 
+                "codigoCategoria", 
+                "codigoProducto", 
+                "correlativo", 
+                "descripcion", 
+                "iD", 
+                "licitacione_CodigoExterno", 
+                "matchedProductKeyword", 
+                "matchedProductName", 
+                "nombreProducto", 
+                "unidadMedida"
+            ]);
+        },
 
         // getAll: function () {
         //     // return {

@@ -34,7 +34,10 @@ sap.ui.define([
 
 			
 			var mParameters = {
-				filters: aFilters
+				filters: aFilters,
+				urlParameters: {
+					"$expand": "Buyer,Items"
+				}
 			};
 
 			return this.odata("/PublicMarketTenders").get(mParameters);
