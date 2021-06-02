@@ -35,6 +35,9 @@
 							sorter: {
 								path: 'CodigoExterno',
 								descending: false
+							},
+							parameters: {
+								expand: 'Comprador,Items'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -83,7 +86,7 @@
 							<cells>
 								<Text text="{CodigoExterno}"/>
 								<Text text="{Name}"/>
-								<Text text="{Comprador/0/OrganismNumber}"/>
+								<Text text="{Comprador/OrganismNumber}"/>
 								<Text text="Products"/>
 								<Text text="{
 										path: 'ClosingDate',

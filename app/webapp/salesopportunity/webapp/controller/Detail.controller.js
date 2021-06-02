@@ -211,6 +211,50 @@ sap.ui.define([
 				// reset to previous layout
 				this.getModel("appView").setProperty("/layout",  this.getModel("appView").getProperty("/previousLayout"));
 			}
+		},
+
+		onParticipateOpportunityPress: function(){
+			this._getParticipationDialog().open();
+		},
+
+		/**
+		 * New contracting dialog
+		 * @returns {dialog} - oDialog
+		 */
+		 _getParticipationDialog: function () {
+
+			//create new dialog if not yet existing
+			if (!this._oParticipationDialog) {
+
+					//get dialog
+					this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.salesopportunity.view.fragments.OpportunityInfo", this);
+					this.getView().addDependent(this._oParticipationDialog);
+					
+			}
+
+			return this._oParticipationDialog;
+
+
+
+		},
+
+		onCancelParticipation: function (oEvent){
+			this._oParticipationDialog.close();
+		},
+
+		onSaveParticipation: function (){
+			this._oParticipationDialog.close();
+			//successfully created tender
+			sap.m.MessageBox.success("Tender created with ID (CL-21-1001).", {
+				actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
+				styleClass: "sapUiSizeCompact",
+				onClose: function (sAction) {
+					if (sAction === "CLOSE") {
+						sap.m.MessageToast.show("Tender creation done...");
+					} else {
+					}
+				}
+			});
 		}
 	});
 
