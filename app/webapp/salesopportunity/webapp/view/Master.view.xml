@@ -83,7 +83,7 @@
 							<cells>
 								<Text text="{CodigoExterno}"/>
 								<Text text="{Name}"/>
-								<Text text="{Comprador/OrganismNumber}"/>
+								<Text text="{Comprador/0/OrganismNumber}"/>
 								<Text text="Products"/>
 								<Text text="{
 										path: 'ClosingDate',

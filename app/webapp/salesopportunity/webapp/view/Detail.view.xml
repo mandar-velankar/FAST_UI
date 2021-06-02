@@ -55,6 +55,46 @@
 			</ObjectPageDynamicHeaderTitle>
 		</headerTitle>
 
+		<headerContent>
+			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+				
+				<!-- LOGO 
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="L" displayShape="Square" class="sapUiTinyMarginEnd"></f:Avatar>
+				-->
+				
+				<!-- INSTITUTE INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Code"/>
+					<m:Text id="idhdrInstNme" text="{CodigoExterno}"/>
+				</m:VBox>
+
+				<!-- SELECTED CONTRACT -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Name"/>
+					<m:Text  text="{Name}"/>
+				</m:VBox>
+
+				<!-- SELECTED CONTRACT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Institute"/>
+					<m:Text text="{Comprador/0/OrganismNumber}"/>
+				</m:VBox>				
+				
+				<!-- SELECTED PRODUCT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Closing Date"/>
+					<m:Text text="{
+										path: 'ClosingDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+				</m:VBox>	
+			</m:FlexBox>
+		</headerContent>
+
 		<sections>
 			<!-- OPPORTUNITY INFORMATION TAB -->
 			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
