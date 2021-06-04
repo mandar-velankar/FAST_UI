@@ -2606,9 +2606,11 @@ sap.ui.define([
 						//TODO when offer table is removed on each tab, this will no longer be needed
 						//that._selectOfferInOfferTable("deliveryTrackingOfferTableViewID","deliveryTrackingOfferTableOfferID");
 
-						if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
+						/*if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
 							that.oDeliveryTrackingController.onDelivryTrackingOfferPress();
-						}
+						}*/
+						that.oDeliveryTrackingController.onCancelDeliveryEdit();
+						that.oDeliveryTrackingController.onCancelReturnEdit();
 
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelDeliveryTrackingOfferTableID").setExpanded(true);
@@ -2691,7 +2693,7 @@ sap.ui.define([
 				this.oDeliveryTrackingController._onSaveDelvrTracking(oEvent);
 				//this.byId("idDeliveryDetailSection").setVisible(false);
 				if(Services.getSelectedCountry() != 'CL'){
-					this.byId("idLetterDetailSection").setVisible(false);
+					this.oDeliveryTrackingView.byId("idLetterDetailSection").setVisible(false);
 				}
 				break;
 
