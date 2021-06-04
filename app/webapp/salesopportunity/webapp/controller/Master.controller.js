@@ -72,6 +72,10 @@ sap.ui.define([
 				}.bind(this)
 			});
 
+
+			this.soaState = this.getOwnerComponent().getState(this.getOwnerComponent().SOA);
+			this.setModel(this.soaState.getModel(), "soa");
+
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 		},
@@ -291,6 +295,10 @@ sap.ui.define([
 		_onMasterMatched :  function() {
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
+
+			// get Opportunities 
+			// const date = new Date('2019-10-15T12:50:51Z').toJSON();
+			// this.soaState.getOpportunities(date);
 		},
 
 		/**
