@@ -58,7 +58,7 @@
 				<ColumnListItem>
 					<cells>
 						<Text text="{fastAppData>PRODUCTNAME}"/>
-						<Text text="{fastAppData>ACTIVE_SUBSTANCE}"/>
+						<Text text="{fastAppData>MOLECULE_NAME}"/>
 						<Text text="{fastAppData>PRESENTATION}"/>
 						<Text text="{fastAppData>PACKSIZE}"/>
 						<Text text="{
@@ -80,7 +80,7 @@
 				<Label text="Condiciones de pago"/>
 				<Text text="{fastAppData>/OfferValidation/PAYMENTTERMS}" />
 				<Label text="Monto mínimo" class="sapUiSmallMarginEnd"/>
-				<Text text="{fastAppData>/OfferValidation/_DUMMY_}" />
+				<Text text="$ 500.000 + IVA" />
 			</form:content>
 		</form:SimpleForm>
 	</VBox>
