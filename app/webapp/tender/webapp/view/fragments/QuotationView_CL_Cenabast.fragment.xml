@@ -26,7 +26,7 @@
 				<Label text="Nombre" />
 				<Input value="{fastAppData>/OfferValidation/TENDERID}" enabled="false" />
                 <Label text="Estado" />
-				<Input value="{fastAppData>/OfferValidation/_DUMMY_}" enabled="false"/>
+				<Input value="{fastAppData>/OfferValidation/INSTITUTE_STATE}" enabled="false"/>
                 <Label text="Comprador" />
 				<Input value="{fastAppData>/OfferValidation/INSTITUTENAME}" enabled="false"/>
                 <Label text="Observaciones del comprador" />
@@ -41,7 +41,7 @@
                 <Label text="Fecha de Cierre" />
 				<Input value="{path :'fastAppData>/OfferValidation/BID_DUE_DATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
                 <Label text="Fecha de Apertura" />
-				<Input value="{fastAppData>/OfferValidation/_DUMMY_}" enabled="false"/>
+				<Input value="{path :'fastAppData>/OfferValidation/PUBLICATION_DATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
                 <Label text="Clasificación ONU" />
 				<Input value="{fastAppData>/OfferValidation/CLASSIFICATION}" enabled="false"/>
                 <Label text="Espercificaciones del Camprador" />
