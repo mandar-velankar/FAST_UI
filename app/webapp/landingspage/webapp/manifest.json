@@ -85,6 +85,12 @@
 				"settings": {},
 				"componentData": {},
 				"lazy": true
+			},
+			"adminComponent": {
+				"name": "com.bayer.tender.admin",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
 			}
 		},
 		"resourceRoots":{
@@ -186,6 +192,14 @@
 						"name": "tender",
 						"prefix": "t"
 					}
+				}	,
+				{
+					"name": "admin",
+					"pattern": "admin",
+					"target": {
+						"name": "admin",
+						"prefix": "a"
+					}
 				}			
 			],
 
@@ -211,6 +225,10 @@
 				"tender": {
 					"type": "Component",
 					"usage": "tenderComponent"
+				},
+				"admin": {
+					"type": "Component",
+					"usage": "adminComponent"
 				}
 			}
 		}

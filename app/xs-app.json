@@ -18,6 +18,11 @@
       "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": true
+    },
+    {
+      "source": "/admin/(.*)$",
+      "target": "$1",
+      "destination": "adminapp"
     },{
       "source": "^/app/index.html(.*)$",
       "localDir": "dist/landingspage/webapp",
