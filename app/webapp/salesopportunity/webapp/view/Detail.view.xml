@@ -1,0 +1,170 @@
+<mvc:View
+	controllerName="com.bayer.tender.salesopportunity.controller.Detail"
+	xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" 
+	xmlns:viz="sap.viz.ui5.controls" 
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+	<!-- ObjectPage Layout -->
+	<ObjectPageLayout 
+		id="DetailPage" 
+		showTitleInHeaderContent="true" 
+		alwaysShowContentHeader="true" 
+		preserveHeaderStateOnScroll="false"
+		headerContentPinnable="true" 
+		isChildPage="true" 
+		toggleHeaderOnTitleClick="true" 
+		showFooter="false" 
+		upperCaseAnchorBar="false"
+		enableLazyLoading="false" 
+		useIconTabBar="true" 
+		navigate="onNavigate"
+		selectedSection="basicInformationId"
+		showAnchorBarPopover="false">
+
+	<headerTitle>
+			<ObjectPageDynamicHeaderTitle>
+				
+				<!-- Heading part that is used when heading is not collapsed -->
+				<expandedHeading>
+					<m:Title text="{fastData>TenderID}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
+				</expandedHeading>
+
+				<!-- WINDOW ACTIONS -->
+				<navigationActions>
+					<m:OverflowToolbarButton id="enterFullScreenButton" type="Transparent" icon="sap-icon://full-screen" press=".toggleFullScreen"
+						tooltip="Enter Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
+					<m:OverflowToolbarButton id="exitFullScreenButton" type="Transparent" icon="sap-icon://exit-full-screen" press=".toggleFullScreen"
+						tooltip="Exit Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"/>
+					<m:OverflowToolbarButton id="closeScreenButton" type="Transparent" icon="sap-icon://decline" press=".onCloseDetailPress" tooltip="Close column"
+						visible="true"/>
+				</navigationActions>
+				
+				<!-- ACTIONS -->
+				<actions>
+					<m:Button id="participateButtonId" icon="sap-icon://action" text="Participate" type="Emphasized" press="onParticipateOpportunityPress" enabled="true" />
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="false }"/>
+				</actions>
+				
+			</ObjectPageDynamicHeaderTitle>
+		</headerTitle>
+
+		<headerContent>
+			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+				
+				<!-- LOGO 
+				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="L" displayShape="Square" class="sapUiTinyMarginEnd"></f:Avatar>
+				-->
+				
+				<!-- INSTITUTE INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Code"/>
+					<m:Text id="idhdrInstNme" text="{CodigoExterno}"/>
+				</m:VBox>
+
+				<!-- SELECTED CONTRACT -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Name"/>
+					<m:Text  text="{Name}"/>
+				</m:VBox>
+
+				<!-- SELECTED CONTRACT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Institute"/>
+					<m:Text text="{Comprador/OrganismNumber}"/>
+				</m:VBox>				
+				
+				<!-- SELECTED PRODUCT INFO -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+					<m:Label text="Closing Date"/>
+					<m:Text text="{
+										path: 'ClosingDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+				</m:VBox>	
+			</m:FlexBox>
+		</headerContent>
+
+		<sections>
+			<!-- OPPORTUNITY INFORMATION TAB -->
+			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
+					<ObjectPageSubSection mode="Expanded">
+						<l:BlockLayout background="Light">
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+									<form:SimpleForm id="opportunityCommentFormId" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout"  labelSpanL="12" labelSpanM="12"
+											emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true">
+											<form:content>
+												<core:Title text="Comment"/>
+												<m:Label text="{Comment}" required="false"/>
+												<m:TextArea value="{Description}" growing="true" width="100%"/>
+											</form:content>
+									</form:SimpleForm>
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
+						</l:BlockLayout>
+					</ObjectPageSubSection>
+					
+			</ObjectPageSection>
+
+			<!-- OPPORTUNITY PRODUCTS TAB -->
+			<ObjectPageSection id="opportunityProductsId" title="Products"  visible="true">
+					<ObjectPageSubSection mode="Expanded">
+						<l:BlockLayout background="Light">
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+									<m:VBox fitContainer="true">
+										<m:Table id="ProductsTableID" 
+												 mode="SingleSelectMaster"
+												 delete="onDeleteProduct"
+												 selectionChange="onProductItemSelect"
+												 items="{
+												    	path: 'Items' }">
+										<m:columns>
+											<m:Column width="20%">
+												<m:Label text="Product" wrapping="true"/>  <!-- NAME -->
+											</m:Column>
+											<m:Column width="10%">
+												<m:Label text="Quantity" wrapping="true"/> <!-- Quantity -->
+											</m:Column>
+											<m:Column width="70%">
+												<m:Label text="Comment" wrapping="true"/>
+											</m:Column>
+										</m:columns>
+										<m:items>
+											<m:ColumnListItem id="productTableListID" 
+												type="{= ${ctr>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
+												press="onProductItemSelect"
+												detailPress="onProductItemSelect">
+												<m:cells>
+
+													<m:Text id="productCodeID" text="{ProductCode}"/> 
+													<m:Text id="productPackNameID" text="{NombreProducto}"/> 
+													
+													<m:TextArea value="{Description}" growing="true" width="100%"/>
+											
+												</m:cells>
+											</m:ColumnListItem>
+										</m:items>
+									</m:Table>
+									</m:VBox> 
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
+						</l:BlockLayout>
+					</ObjectPageSubSection>
+			</ObjectPageSection>
+		</sections>
+	</ObjectPageLayout>
+
+</mvc:View>

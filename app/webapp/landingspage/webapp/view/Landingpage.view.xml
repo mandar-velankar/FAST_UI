@@ -57,6 +57,17 @@
 										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
 									</TileContent>
 								</GenericTile>
+
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Sales Opportunity Application" 
+									press="onTileSalesOpportunityPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/salesopportunity}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
 								
 								<GenericTile 
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
