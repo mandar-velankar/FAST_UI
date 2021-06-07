@@ -32,6 +32,11 @@ sap.ui.define([
 			this.setModel(oViewModel, "detailView");
 
 			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
+
+			this.soaState = this.getOwnerComponent().getState(this.getOwnerComponent().SOA);
+			this.setModel(this.soaState.getModel(), "soa");
+			this.oObjectPageLayout = this.byId("DetailPage");
+			this.soaState.setDetailPage(this.oObjectPageLayout);
 		},
 
 		/* =========================================================== */
@@ -256,6 +261,15 @@ sap.ui.define([
 					}
 				}
 			});
+		},
+
+		/**
+		 * Go to edit mode
+		 */
+		 onEditModePress: function(oEvent){
+			
+			this.soaState.setEditMode(true);
+			this.oObjectPageLayout.setShowFooter(true);	
 		}
 	});
 

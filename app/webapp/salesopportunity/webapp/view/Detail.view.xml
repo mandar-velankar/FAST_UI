@@ -50,7 +50,7 @@
 				<!-- ACTIONS -->
 				<actions>
 					<m:Button id="participateButtonId" icon="sap-icon://action" text="Participate" type="Emphasized" press="onParticipateOpportunityPress" enabled="true" />
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="false }"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${ctr>/editMode} === false ? true : false } }"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
@@ -108,7 +108,7 @@
 											<form:content>
 												<core:Title text="Comment"/>
 												<m:Label text="{Comment}" required="false"/>
-												<m:TextArea value="{Description}" growing="true" width="100%"/>
+												<m:TextArea value="{Description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 											</form:content>
 									</form:SimpleForm>
 								</l:BlockLayoutCell>
@@ -144,7 +144,7 @@
 										</m:columns>
 										<m:items>
 											<m:ColumnListItem id="productTableListID" 
-												type="{= ${ctr>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
+												type="{= ${soa>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
 												press="onProductItemSelect"
 												detailPress="onProductItemSelect">
 												<m:cells>
@@ -152,7 +152,7 @@
 													<m:Text id="productNameId" text="{ProductName}"/> 
 													<m:Text id="productQtyId" text="{Quantity}"/> 
 													
-													<m:TextArea value="{Description}" growing="true" width="100%"/>
+													<m:TextArea value="{Description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 											
 												</m:cells>
 											</m:ColumnListItem>
@@ -165,6 +165,15 @@
 					</ObjectPageSubSection>
 			</ObjectPageSection>
 		</sections>
+
+		<!-- footer bar-->
+		<footer>
+			<m:OverflowToolbar>
+				<m:ToolbarSpacer />
+				<m:Button type="Accept" text="Save" press="onFooterSavePress()"/>
+				<m:Button type="Reject" text="Cancel" press="onFooterCancelPress()"/>
+			</m:OverflowToolbar>
+		</footer>
 	</ObjectPageLayout>
 
 </mvc:View>
