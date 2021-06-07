@@ -37,7 +37,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Comprador,Items'
+								expand: 'Buyer,Items'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -86,7 +86,7 @@
 							<cells>
 								<Text text="{CodigoExterno}"/>
 								<Text text="{Name}"/>
-								<Text text="{Comprador/OrganismNumber}"/>
+								<Text text="{Buyer/OrganismNumber}"/>
 								<Text text="Products"/>
 								<Text text="{
 										path: 'ClosingDate',
