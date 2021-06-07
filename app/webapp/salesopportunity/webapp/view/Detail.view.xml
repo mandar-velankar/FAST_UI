@@ -78,7 +78,7 @@
 				<!-- SELECTED CONTRACT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Institute"/>
-					<m:Text text="{Comprador/OrganismNumber}"/>
+					<m:Text text="{Buyer/OrganismNumber}"/>
 				</m:VBox>				
 				
 				<!-- SELECTED PRODUCT INFO -->
