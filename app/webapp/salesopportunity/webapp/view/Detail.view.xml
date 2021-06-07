@@ -149,8 +149,8 @@
 												detailPress="onProductItemSelect">
 												<m:cells>
 
-													<m:Text id="productCodeID" text="{ProductCode}"/> 
-													<m:Text id="productPackNameID" text="{NombreProducto}"/> 
+													<m:Text id="productNameId" text="{ProductName}"/> 
+													<m:Text id="productQtyId" text="{Quantity}"/> 
 													
 													<m:TextArea value="{Description}" growing="true" width="100%"/>
 											
