@@ -66,10 +66,10 @@ sap.ui.define([
 			this.getView().setModel(oDateModel, "dateModel");
 
 			// Responsibility Assignment Model - this model can be used to set the visibility of the controls for a specific country in the user interface
-			this._oRaModel = new sap.ui.model.json.JSONModel({
+			/*this._oRaModel = new sap.ui.model.json.JSONModel({
 				visibleCountry: ""
 			});	
-			this.getView().setModel(this._oRaModel, "raModel");
+			this.getView().setModel(this._oRaModel, "raModel");*/
 
 		},
 
@@ -121,7 +121,7 @@ sap.ui.define([
 			that._country = sCountry;
 
 			// set the visible country
-			this._oRaModel.setProperty("/visibleCountry", sCountry);
+			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
 
 			//keep layout and bind it to the view, so we can show, hide elements based on layout (onecolumn, twocolumn, ....)
 			//to use for hiding or display certain fields
@@ -614,7 +614,7 @@ sap.ui.define([
 				/* End of Thailand */
 
 				//should group purchasing be visible on the screen based on data back-end
-				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+				$.when(Services.checkInstituteChilderen(oTender.CountryCode)).done(function (bShowGroupPurchasing) {
 					oDetailController.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 				});
 
