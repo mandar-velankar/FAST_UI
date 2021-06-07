@@ -26,7 +26,7 @@
 				<Select id="idBiddingTypeLevel1" 
 					selectedKey="{fastData>BiddingTypeLevel1}"  
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel1'}" 
@@ -39,7 +39,7 @@
 				<Select id="idBiddingTypeLevel2" 
 					selectedKey="{fastData>BiddingTypeLevel2}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel2} &amp;&amp; ${fastData>BiddingTypeLevel1} &amp;&amp; ${fastAppData>CountryBiddingTypeLevel2}.length > 0? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel2'}" 
@@ -52,7 +52,7 @@
 				<Select id="idBiddingTypeLevel3" 
 					selectedKey="{fastData>BiddingTypeLevel3}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; 
+						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel3} &amp;&amp; ${fastData>BiddingTypeLevel1} ? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel3'}"
@@ -65,7 +65,7 @@
 				<MultiComboBox id="idSpecifications" 
 					selectionChange="handleSelectionChange"
 					selectionFinish="handleSelectionFinish"
-					visible="{= ${raModel>/visibleCountry} === 'AR'}"
+					visible="{= ${fastAppData>/Tender/CountryCode} === 'AR'}"
 					items="{
 						path: 'fastAppData>/CountrySpecifications',
 						sorter: { path: 'Name' }
@@ -86,7 +86,7 @@
 					value="{fastData>Institute/InstituteName}" enabled="false"/>
 
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-				<Select id="idTenderChannel" selectedKey="{= ${raModel>/visibleCountry} === 'CL' ? 'Direct' : ${fastData>TenderChannel} }" enabled="false" change="onTenderChannelChange">
+				<Select id="idTenderChannel" selectedKey="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Direct' : ${fastData>TenderChannel} }" enabled="false" change="onTenderChannelChange">
 					<items>
 						<core:Item text="Distributor" key="Distributor"/>
 						<core:Item text="Direct" key="Direct"/>
@@ -113,14 +113,14 @@
 				<!-- Argentina only -->
 				<Label id="idHighValueLabel" text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
+						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<CheckBox 
 					id="idHighValue"
 					selected="{fastData>HighValue}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
+						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<!--/ Argentina only -->
@@ -173,19 +173,19 @@
 				<!-- Brazil only -->
 				<Label text="{i18n>IBIZId}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<Input id="idIbizIDEdit" 
 					value="{fastData>IbizID}" 
 					enabled="false"
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<Label text="{i18n>PublicNotice}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<TextArea id="idPublicNoticeEdit" rows="8" 
@@ -193,7 +193,7 @@
 					showExceededText="true" 
 					maxLength="500"
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 
@@ -225,7 +225,7 @@
 				<DatePicker id="idOfferStartDateEdit" 
 					value="{path :'fastAppData>/EditTender/OfferStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<!-- End Brazil only -->
@@ -289,7 +289,7 @@
 		<!-- Tender Information Only for Chile-->
 		<form:SimpleForm id="idTenderInformationSimpleFormEdit" editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
-			singleContainerFullSize="false" backgroundDesign="Solid" visible="{= ${raModel>/visibleCountry} === 'CL' ? true : false }">
+			singleContainerFullSize="false" backgroundDesign="Solid" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? true : false }">
 			<form:content>
 				<!-- Block - Tender Information BEGIN-->
 				<core:Title text="{i18n>tenderInformation}" />
