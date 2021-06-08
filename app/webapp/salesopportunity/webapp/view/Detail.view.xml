@@ -99,7 +99,14 @@
 		<sections>
 			<!-- OPPORTUNITY INFORMATION TAB -->
 			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
-					<ObjectPageSubSection mode="Expanded">
+					<ObjectPageSubSection mode="Expanded" title="Comment">
+						<actions>
+							<m:Switch state="{= ${TenderMatchingStatus} === 'In' ? true : false }" customTextOn="In" customTextOff="Out" enabled="{= ${soa>/editMode} === true }">
+								<m:layoutData>
+									<m:FlexItemData growFactor="1" />
+								</m:layoutData>
+							</m:Switch>
+						</actions>
 						<l:BlockLayout background="Light">
 							<l:BlockLayoutRow>
 								<l:BlockLayoutCell>
