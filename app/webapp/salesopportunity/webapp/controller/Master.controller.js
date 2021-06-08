@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/m/GroupHeaderListItem",
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
+	"sap/ui/model/FilterType",
 	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter) {
+], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, formatter) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.salesopportunity.controller.Master", {
@@ -116,7 +117,7 @@ sap.ui.define([
 			var sQuery = oEvent.getParameter("query");
 
 			if (sQuery) {
-				this._oListFilterState.aSearch = [new Filter("Nombre", FilterOperator.Contains, sQuery)];
+				this._oListFilterState.aSearch = [new Filter("Name", FilterOperator.Contains, sQuery)];
 			} else {
 				this._oListFilterState.aSearch = [];
 			}
@@ -139,7 +140,7 @@ sap.ui.define([
 		 * @public
 		 */
 		onOpenViewSettings : function (oEvent) {
-			var sDialogTab = "filter";
+			var sDialogTab = "sort";
 			if (oEvent.getSource() instanceof sap.m.Button) {
 				var sButtonId = oEvent.getSource().getId();
 				if (sButtonId.match("sort")) {
@@ -287,7 +288,7 @@ sap.ui.define([
 				delay: 0,
 				title: this.getResourceBundle().getText("masterTitleCount", [0]),
 				noDataText: this.getResourceBundle().getText("masterListNoDataText"),
-				sortBy: "Nombre",
+				sortBy: "Name",
 				groupBy: "None"
 			});
 		},
@@ -404,7 +405,57 @@ sap.ui.define([
 			});
 		},
 
+		/* Filtering & sorting functionalities */
+		setFilter: function (oSelection) {
 
+			//var oFastAppData = Services.getFastAppDataModel();
+
+			var sSearch = this.byId("idSearch").getProperty("value");
+
+			//Add filters if they are set (so not the default, all...)
+			var orFilters = [];
+			var andFilters = [];
+			
+			//oSelection is empty when you are navigating back to the tender list after selecting a tender
+			var sIdSource = "";
+			if (oSelection) {
+				sIdSource = oSelection.getSource().getId();
+			}
+
+			if (sSearch.length > 0) {
+
+				orFilters.push(new Filter({
+					path: "CodigoExterno",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Name",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Buyer/OrganismNumber",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				andFilters.push(new sap.ui.model.Filter(orFilters, false));
+			}
+
+			var oFilters = new sap.ui.model.Filter(andFilters, true);
+
+			//Binding to table with the filters and the sorters
+			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
+
+			this.getCountryContractBrands(oCountry);
+
+		},
 	});
 
 });

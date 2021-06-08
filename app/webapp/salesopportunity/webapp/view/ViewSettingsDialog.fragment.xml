@@ -7,34 +7,41 @@
 		confirm=".onConfirmViewSettingsDialog">
 		<sortItems>
 			<ViewSettingsItem
-				text="{i18n>masterSort1}"
-				key="Nombre"
+				text="{i18n>Name}"
+				key="Name"
 				selected="true"/>
 			<ViewSettingsItem
-				text="{i18n>masterSort2}"
-				key="CodigoEstado"/>
+				text="{i18n>Code}"
+				key="Code"/>
+			<ViewSettingsItem
+				text="{i18n>Institute}"
+				key="Buyer/OrganismNumber"/>
 		</sortItems>
 		<filterItems>
 			<ViewSettingsFilterItem
 				id="filterItems"
-				text="{i18n>masterFilterName}"
+				text="Filters"
 				multiSelect="false">
 				<items>
 					<ViewSettingsItem
 						id="viewFilter1"
-						text="{i18n>masterFilter1}"
-						key="Filter1"/>
+						text="{i18n>Name}"
+						key="Name"/>
 					<ViewSettingsItem
 						id="viewFilter2"
-						text="{i18n>masterFilter2}"
-						key="Filter2"/>
+						text="{i18n>Code}"
+						key="Code"/>
+					<ViewSettingsItem
+						id="viewFilter3"
+						text="{i18n>Institute}"
+						key="Buyer/OrganismNumber"/>
 				</items>
 			</ViewSettingsFilterItem>
 		</filterItems>
 		<groupItems>
 			<ViewSettingsItem
-				text="{i18n>masterGroup1}"
-				key="CodigoEstado"/>
+				text="{i18n>Code}"
+				key="Code"/>
 		</groupItems>
 	</ViewSettingsDialog>
 </core:FragmentDefinition>

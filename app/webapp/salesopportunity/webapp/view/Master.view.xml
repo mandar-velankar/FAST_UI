@@ -24,7 +24,6 @@
 					<ToolbarSpacer/>
 					
 					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
-					<OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter"/>
 					<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
 				<Table
@@ -82,7 +81,7 @@
 						</Column>
 					</columns>
 					<items>
-						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Success">
+						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Success" id="items">
 							<cells>
 								<Text text="{CodigoExterno}"/>
 								<Text text="{Name}"/>
