@@ -160,6 +160,7 @@
 			
 			<!-- Administration TODO use same layouting as in Business apps? -->
 			<IconTabFilter id="navLevel0Tab1" text="Administration" visible="true">
+			 <Panel headerText="Transactional">
 				<l:VerticalLayout>
 					<l:HorizontalLayout id="TileContainerExpanded2" allowWrapping="true">
 						
@@ -176,6 +177,7 @@
 						
 					</l:HorizontalLayout>
 				</l:VerticalLayout>
+				</Panel>
 			</IconTabFilter>
 			
 		</items>
