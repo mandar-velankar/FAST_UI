@@ -54,8 +54,8 @@ sap.ui.define([
             this.detailPage = oDetailPage;
 		},
 
-		getNewTenderID: function(){
-			return this.getService().getNewTenderID().then(newTenderId => {
+		getNewTenderID: function(sCountry){
+			return this.getService().getNewTenderID(sCountry).then(newTenderId => {
 				//get year & country
 				var sYear = moment().format('YY');
 				var sCountry = 'CL';
@@ -68,8 +68,8 @@ sap.ui.define([
 		/**
          * Get a new empty tender object
          */
-		 createNewTenderObject: async function(){ 
-			const sTenderId = await this.getNewTenderID();
+		 createNewTenderObject: async function(sCountry){ 
+			const sTenderId = await this.getNewTenderID(sCountry);
 
             const data = {
                 "ID" : this.create_UUID(),
@@ -84,9 +84,41 @@ sap.ui.define([
 		 * sets temporary new contract
 		 * used for creating e new contract 
 		 */
-		setTemporaryTender: async function(){
-			const tender = await this.createNewTenderObject();
+		setTemporaryTender: async function(sCountry){
+			const tender = await this.createNewTenderObject(sCountry);
 			this.setProperty("newTender", tender);
+		},
+
+		loadCountryChannels: async function(sCountry){
+			const aCountryChannels = await this.getService().loadCountryChannels(sCountry);
+			this.setProperty("CountryChannels", aCountryChannels.data.results);
+		},
+
+		loadCountryClassifications: async function(sCountry){
+			const aCountryClassifications = await this.getService().loadCountryClassifications(sCountry);
+			this.setProperty("CountryClassifications", aCountryClassifications.data.results);
+		},
+
+		loadCountryTenderTypes: async function(sCountry){
+			const aCountryTenderTypes = await this.getService().loadCountryTenderTypes(sCountry);
+			this.setProperty("CountryTenderTypes", aCountryTenderTypes.data.results);
+		},
+
+		loadCountryInstitutes: async function(sCountry, sInstituteType){
+			const aCountryInstitutes = await this.getService().loadCountryInstitutes(sCountry, sInstituteType);
+			this.setProperty("CountryInstitutes", aCountryInstitutes.data.results);
+		},
+
+		//sorting an array of objects
+		sortByKeyAsc: function (array, key) {
+			if (array) {
+				return array.sort(function (a, b) {
+					var x = a[key];
+					var y = b[key];
+					return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+				});
+			}
+
 		},
 
 	});

@@ -22,24 +22,20 @@
                         <Label text="Tender Reference" design="Bold" required="true"/>
                         <Input id="idTenderName" value="{fastData>TenderName}" />
                         <Label text="{i18n>clasficn}" design="Bold" required="true"/>
-                        <Select id="idClassification" selectedKey="Contract" enabled="true" change="onClassificationChange" >
-                            <core:Item text="Contract" key="Contract"/>
-                            <core:Item text="Tender" key="Tender"/>
+                        <Select id="idClassification" selectedKey="Contract" enabled="true" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
+                            <core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
                         </Select>
                         <Label text="{i18n>insttyp}" design="Bold" required="true"/>
-                        <Select id="idInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="resetInstituteName" enabled="true">
-                                <core:Item text="Public" key="Public"/>
-                                <core:Item text="Direct" key="Direct"/>
+                        <Select id="idInstituteType" selectedKey="{soa>/newTender/instituteType}" change="resetInstituteName" enabled="true" items="{path: 'soa>/CountryChannels' }">
+                                <core:Item text="{soa>ChannelName}" key="{soa>ChannelName}"/>
                         </Select>
 
                         <Label text="{i18n>institnme}" design="Bold" required="true"/>
-                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4" value="{Buyer/OrganismNumber}" enabled="true"/>
+                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{Buyer/OrganismNumber}" enabled="true"/>
 
                         <Label text="{i18n>typechnl}" design="Bold" required="true"/>
-                        <Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="true" change="onTenderChannelChange">
-                                <core:Item text="Distributor" key="Distributor"/>
-                                <core:Item text="Direct" key="Direct"/>
-                            <!--	<core:Item text="Other" key="Other"/>-->
+                        <Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="true" change="onTenderChannelChange" items="{path: 'soa>/CountryTenderTypes' }">
+                                <core:Item text="{soa>TenderType/NAME}" key="{soa>TenderType/ID}"/>
                         </Select>
 
                         <core:Title text="Timeline"/>
