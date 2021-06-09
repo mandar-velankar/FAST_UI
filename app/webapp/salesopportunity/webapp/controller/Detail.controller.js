@@ -218,17 +218,18 @@ sap.ui.define([
 			}
 		},
 
-		onParticipateOpportunityPress: function(){
+		onParticipateOpportunityPress: async function(){
+			await this.soaState.setTemporaryTender();
 			this._getParticipationDialog().open();
+			/*const oParticipationDialog = await this._getParticipationDialog();
+			oParticipationDialog.open();*/
 		},
 
 		/**
 		 * New contracting dialog
 		 * @returns {dialog} - oDialog
 		 */
-		 _getParticipationDialog: async function () {
-
-			let sNewTenderID = await this.soaState.getNewTenderID();
+		 _getParticipationDialog: function () {
 				//create new dialog if not yet existing
 			if (!this._oParticipationDialog) {
 

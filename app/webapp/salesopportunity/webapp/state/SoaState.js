@@ -1,7 +1,9 @@
 sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseState",
-	"../model/PublicMarketTender"
-], function (BaseState, PublicMarketTender) {
+	"../model/PublicMarketTender",
+	"FAST_NS0FAST0/libs/momentjs/moment.min",
+	"../model/Tender"
+], function (BaseState, PublicMarketTender, MomentJS, Tender) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.salesopportunity.state.SoaState", {
@@ -54,8 +56,37 @@ sap.ui.define([
 
 		getNewTenderID: function(){
 			return this.getService().getNewTenderID().then(newTenderId => {
-				return newTenderId.data.NEXT_TENDER_NO;
+				//get year & country
+				var sYear = moment().format('YY');
+				var sCountry = 'CL';
+
+				//new tender ID is build by country
+				return sCountry + "-" + sYear + "-" +  newTenderId.data.NEXT_TENDER_NO;
 			});
+		},
+
+		/**
+         * Get a new empty tender object
+         */
+		 createNewTenderObject: async function(){ 
+			const sTenderId = await this.getNewTenderID();
+
+            const data = {
+                "ID" : this.create_UUID(),
+				"TenderId": sTenderId
+            };
+
+            const oTender = new Tender(data);
+            return oTender;
+		}, 	
+		
+		/**
+		 * sets temporary new contract
+		 * used for creating e new contract 
+		 */
+		setTemporaryTender: async function(){
+			const tender = await this.createNewTenderObject();
+			this.setProperty("newTender", tender);
 		},
 
 	});

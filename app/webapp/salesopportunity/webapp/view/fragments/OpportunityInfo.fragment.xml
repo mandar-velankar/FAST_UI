@@ -18,7 +18,7 @@
                     <form:content>
                         <core:Title text="Institute &amp; Type"/>
                         <Label text="Tender ID" design="Bold" required="true"/>
-                        <Input value="CL-21-1001" enabled="false"/>
+                        <Input id="newTenderIdID" value="{soa>/newTender/tenderId}" enabled="false"/>
                         <Label text="Tender Reference" design="Bold" required="true"/>
                         <Input id="idTenderName" value="{fastData>TenderName}" />
                         <Label text="{i18n>clasficn}" design="Bold" required="true"/>
