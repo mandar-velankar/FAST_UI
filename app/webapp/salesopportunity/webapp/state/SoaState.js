@@ -11,6 +11,7 @@ sap.ui.define([
 			// this.data = ObservableSlim.create({
 			this.data = {
 				opportunities: [],
+				selectedOpportunity: {},
 				editMode: false
 				//pricing: new Pricing()
 			};
@@ -28,6 +29,35 @@ sap.ui.define([
 
 		setEditMode: function (sEditMode){
 			this.setProperty("editMode", sEditMode);
+		},
+
+		setTenderMatchingStatus:function(status){
+			this.getSelectedOpportunity().setTenderMatchingStatus(status);
+			this.updateModel();
+		},
+
+		createOpportunity: function(data){
+			if(data){
+				return new PublicMarketTender(data);
+			}
+
+			return "You must provide an object literal as a parameter to create an opportunity.";
+		},
+
+		setSelectedOpportunity: function(opportunity){
+			this.setProperty("selectedOpportunity", opportunity);
+		},
+
+		getSelectedOpportunity: function(){
+			return this.getProperty("selectedOpportunity");
+		},
+
+		/**
+		 * Saves a given opportunity in the backend.
+		 * @returns {Promise} - Return a promise
+		 */
+		saveSelectedOpportunity: function(){
+			return this.getService().saveOpportunity(this.getSelectedOpportunity());
 		},
 
 		/**

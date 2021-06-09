@@ -33,7 +33,7 @@
                         </Select>
 
                         <Label text="{i18n>institnme}" design="Bold" required="true"/>
-                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4" value="{Buyer/OrganismNumber}" enabled="true"/>
+                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4" value="{Comprador/OrganismNumber}" enabled="true"/>
 
                         <Label text="{i18n>typechnl}" design="Bold" required="true"/>
                         <Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="true" change="onTenderChannelChange">
@@ -104,7 +104,7 @@
                         <Label />
                         <Button xmlns="sap.m" icon="sap-icon://document" text="{i18n>btnDocuments}" type="Emphasized" width="9em" press="onDocumentsPress"/>
                         <Label text="{i18n>Institute}" design="Bold"/>
-                        <Input value="{Buyer/OrganismNumber}" enabled="false"/>
+                        <Input value="{Comprador/OrganismNumber}" enabled="false"/>
                         <Label text="{i18n>tenderref}" design="Bold"/>
                         <Input value="{CodigoExterno}" enabled="false"/>
                         <Label text="{i18n>pubcndte}" design="Bold" required="true"/>

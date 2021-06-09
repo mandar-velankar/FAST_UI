@@ -25,19 +25,19 @@ sap.ui.define([
      
         getJSON: function () {
             return this.getJSONObject([
-                "cargoUsuario",
-                "codigoOrganismo",
-                "codigoUnidad",
-                "codigoUsuario",
-                "comunaUnidad",
-                "direccionUnidad",
                 "iD",
-                "nombreOrganismo",
-                "nombreUnidad",
-                "nombreUsuario",
-                "regionUnidad",
-                "rutUnidad",
-                "rutUsuario"
+                "organismCode",
+                "organismNumber",
+                "unitID",
+                "unitCode",
+                "unitName",
+                "unitAddress",
+                "unitCommunity",
+                "unitRegion",
+                "userID",
+                "userCode",
+                "userNumber",
+                "userTitle",
             ]);
 
         },

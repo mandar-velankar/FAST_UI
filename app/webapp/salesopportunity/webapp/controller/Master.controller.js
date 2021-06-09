@@ -439,7 +439,7 @@ sap.ui.define([
 				}));
 
 				orFilters.push(new Filter({
-					path: "Buyer/OrganismNumber",
+					path: "Comprador/OrganismNumber",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false

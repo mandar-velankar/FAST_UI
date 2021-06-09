@@ -99,6 +99,7 @@ sap.ui.define([
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
+
 		},
 
 		/**
@@ -115,47 +116,54 @@ sap.ui.define([
 			// If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
 			oViewModel.setProperty("/busy", false);
 
-			this.getView().bindElement({
-				path : sObjectPath,
-				events: {
-					change : this._onBindingChange.bind(this),
-					dataRequested : function () {
-						oViewModel.setProperty("/busy", true);
-					},
-					dataReceived: function () {
-						oViewModel.setProperty("/busy", false);
-					}
-				}
-			});
+			const opportunity = this.createStateObject(sObjectPath);
+			this.soaState.setSelectedOpportunity(opportunity);
 		},
 
-		_onBindingChange : function () {
-			var oView = this.getView(),
-				oElementBinding = oView.getElementBinding();
+		/**
+		 * Creates an opportunity object in the State
+		 * @param {string} sObjectPath - the path of the selected object
+		 * @returns {object} - On opportunity object
+		 */
+		createStateObject: function(sObjectPath){
 
-			// No data for the binding
-			if (!oElementBinding.getBoundContext()) {
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				// if object could not be found, the selection in the master list
-				// does not make sense anymore.
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-				return;
-			}
+			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
-			var sPath = oElementBinding.getPath(),
-				oResourceBundle = this.getResourceBundle(),
-				oObject = oView.getModel().getObject(sPath),
-				sObjectId = oObject.CodigoExterno,
-				sObjectName = oObject.Nombre,
-				oViewModel = this.getModel("detailView");
+			// expand Comprador and Items
+			selectedObj["Comprador"] =this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
+			selectedObj["Items"]["results"]  = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
 
-			this.getOwnerComponent().oListSelector.selectAListItem(sPath);
+			return this.soaState.createOpportunity(selectedObj);
 
-			oViewModel.setProperty("/shareSendEmailSubject",
-				oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
-			oViewModel.setProperty("/shareSendEmailMessage",
-				oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
 		},
+
+		// _onBindingChange : function () {
+		// 	var oView = this.getView(),
+		// 		oElementBinding = oView.getElementBinding();
+
+		// 	// No data for the binding
+		// 	if (!oElementBinding.getBoundContext()) {
+		// 		this.getRouter().getTargets().display("detailObjectNotFound");
+		// 		// if object could not be found, the selection in the master list
+		// 		// does not make sense anymore.
+		// 		this.getOwnerComponent().oListSelector.clearMasterListSelection();
+		// 		return;
+		// 	}
+
+		// 	var sPath = oElementBinding.getPath();
+		// 		// oResourceBundle = this.getResourceBundle(),
+		// 		// oObject = oView.getModel().getObject(sPath),
+		// 		// sObjectId = oObject.CodigoExterno,
+		// 		// sObjectName = oObject.Nombre,
+		// 		// oViewModel = this.getModel("detailView");
+
+		// 	this.getOwnerComponent().oListSelector.selectAListItem(sPath);
+
+		// 	// oViewModel.setProperty("/shareSendEmailSubject",
+		// 	// 	oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
+		// 	// oViewModel.setProperty("/shareSendEmailMessage",
+		// 	// 	oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
+		// },
 
 		_onMetadataLoaded : function () {
 			/*// Store original busy indicator delay for the detail view
@@ -268,6 +276,28 @@ sap.ui.define([
 			
 			this.soaState.setEditMode(true);
 			this.oObjectPageLayout.setShowFooter(true);	
+		},
+
+		onTenderMatchingStatusChange: function(oEvent){
+			const status = oEvent.getParameter("state") ? 'In' : 'Out';
+			this.soaState.setTenderMatchingStatus(status);
+		},
+
+		onFooterCancelPress: function(){
+			this.soaState.setEditMode(false);
+			this.oObjectPageLayout.setShowFooter(false);	
+		},
+
+		onFooterSavePress: function(){
+
+			this.getView().setBusy(true);
+			this.getView().setBusyIndicatorDelay(0);
+
+			this.soaState.saveSelectedOpportunity().then(() => {
+				this.getView().setBusy(false);
+				this.soaState.setEditMode(false);
+				this.oObjectPageLayout.setShowFooter(false);
+			});
 		}
 	});
 
