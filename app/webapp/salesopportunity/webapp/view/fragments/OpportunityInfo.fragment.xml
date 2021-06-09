@@ -18,28 +18,24 @@
                     <form:content>
                         <core:Title text="Institute &amp; Type"/>
                         <Label text="Tender ID" design="Bold" required="true"/>
-                        <Input value="CL-21-1001" enabled="false"/>
+                        <Input id="newTenderIdID" value="{soa>/newTender/tenderId}" enabled="false"/>
                         <Label text="Tender Reference" design="Bold" required="true"/>
                         <Input id="idTenderName" value="{fastData>TenderName}" />
                         <Label text="{i18n>clasficn}" design="Bold" required="true"/>
-                        <Select id="idClassification" selectedKey="Contract" enabled="true" change="onClassificationChange" >
-                            <core:Item text="Contract" key="Contract"/>
-                            <core:Item text="Tender" key="Tender"/>
+                        <Select id="idClassification" selectedKey="Contract" enabled="true" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
+                            <core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
                         </Select>
                         <Label text="{i18n>insttyp}" design="Bold" required="true"/>
-                        <Select id="idInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="resetInstituteName" enabled="true">
-                                <core:Item text="Public" key="Public"/>
-                                <core:Item text="Direct" key="Direct"/>
+                        <Select id="idInstituteType" selectedKey="{soa>/newTender/instituteType}" change="resetInstituteName" enabled="true" items="{path: 'soa>/CountryChannels' }">
+                                <core:Item text="{soa>ChannelName}" key="{soa>ChannelName}"/>
                         </Select>
 
                         <Label text="{i18n>institnme}" design="Bold" required="true"/>
-                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4" value="{Comprador/OrganismNumber}" enabled="true"/>
+                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{Comprador/OrganismNumber}" enabled="true"/>
 
                         <Label text="{i18n>typechnl}" design="Bold" required="true"/>
-                        <Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="true" change="onTenderChannelChange">
-                                <core:Item text="Distributor" key="Distributor"/>
-                                <core:Item text="Direct" key="Direct"/>
-                            <!--	<core:Item text="Other" key="Other"/>-->
+                        <Select id="idTenderChannel" selectedKey="{fastData>TenderChannel}" enabled="true" change="onTenderChannelChange" items="{path: 'soa>/CountryTenderTypes' }">
+                                <core:Item text="{soa>TenderType/NAME}" key="{soa>TenderType/ID}"/>
                         </Select>
 
                         <core:Title text="Timeline"/>
@@ -100,14 +96,14 @@
                     adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
                     singleContainerFullSize="false" backgroundDesign="Solid" visible="true">
                     <form:content>
-                        <core:Title text="{i18n>tenderInformation}" />
+                        <core:Title text="{i18n>mercadoPublico}" />
                         <Label />
                         <Button xmlns="sap.m" icon="sap-icon://document" text="{i18n>btnDocuments}" type="Emphasized" width="9em" press="onDocumentsPress"/>
-                        <Label text="{i18n>Institute}" design="Bold"/>
+                        <Label text="{i18n>issuer}" design="Bold"/>
                         <Input value="{Comprador/OrganismNumber}" enabled="false"/>
-                        <Label text="{i18n>tenderref}" design="Bold"/>
+                        <Label text="{i18n>mercadoPublicoCode}" design="Bold"/>
                         <Input value="{CodigoExterno}" enabled="false"/>
-                        <Label text="{i18n>pubcndte}" design="Bold" required="true"/>
+                        <Label text="{i18n>openingDate}" design="Bold" required="true"/>
                         <DatePicker enabled="false" value="{path :'PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
                         <Label text="{i18n>ClosingDate}" design="Bold" required="true"/>
                         <DatePicker  enabled="false" value="{path :'ClosingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />

@@ -37,6 +37,10 @@ sap.ui.define([
 			this.setModel(this.soaState.getModel(), "soa");
 			this.oObjectPageLayout = this.byId("DetailPage");
 			this.soaState.setDetailPage(this.oObjectPageLayout);
+
+			this.soaState.loadCountryChannels("CL");
+			this.soaState.loadCountryClassifications("CL");
+			this.soaState.loadCountryTenderTypes("CL");
 		},
 
 		/* =========================================================== */
@@ -226,7 +230,8 @@ sap.ui.define([
 			}
 		},
 
-		onParticipateOpportunityPress: function(){
+		onParticipateOpportunityPress: async function(){
+			await this.soaState.setTemporaryTender('CL');
 			this._getParticipationDialog().open();
 		},
 
@@ -234,9 +239,7 @@ sap.ui.define([
 		 * New contracting dialog
 		 * @returns {dialog} - oDialog
 		 */
-		 _getParticipationDialog: async function () {
-
-			let sNewTenderID = await this.soaState.getNewTenderID();
+		 _getParticipationDialog: function () {
 				//create new dialog if not yet existing
 			if (!this._oParticipationDialog) {
 
@@ -256,7 +259,7 @@ sap.ui.define([
 		onSaveParticipation: function (){
 			this._oParticipationDialog.close();
 			//successfully created tender
-			sap.m.MessageBox.success("Tender created with ID (CL-21-1001).", {
+			sap.m.MessageBox.success("Tender created with ID (" + this.getModel('soa').oData.newTender.tenderId + ").", {
 				actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
 				styleClass: "sapUiSizeCompact",
 				onClose: function (sAction) {
@@ -298,7 +301,52 @@ sap.ui.define([
 				this.soaState.setEditMode(false);
 				this.oObjectPageLayout.setShowFooter(false);
 			});
+		},
+		
+		/* handle search helps */
+		handleValueHelp : async function (oEvent) {
+			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+
+			var oView = this.getView();
+			this._sInputId = this.byId('idInstituteName').getId();
+	
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "com.bayer.tender.salesopportunity.view.fragments.InstitutesSearchHelp",
+					controller: this
+				}).then(function(oValueHelpDialog){
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+	
+			// open value help dialog
+			this._pValueHelpDialog.then(function(oValueHelpDialog){
+				oValueHelpDialog.open();
+			});
+		},
+	
+		_handleValueHelpSearch : function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter(
+				"InstituteName",
+				FilterOperator.Contains, sValue
+			);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+	
+		_handleValueHelpClose : function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var productInput = this.byId(this._sInputId);
+				productInput.setValue(oSelectedItem.getTitle());
+			}
+			oEvent.getSource().getBinding("items").filter([]);
 		}
+
+		/* end of search help handlers */
 	});
 
 });

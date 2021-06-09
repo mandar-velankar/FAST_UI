@@ -1,7 +1,9 @@
 sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseState",
-	"../model/PublicMarketTender"
-], function (BaseState, PublicMarketTender) {
+	"../model/PublicMarketTender",
+	"FAST_NS0FAST0/libs/momentjs/moment.min",
+	"../model/Tender"
+], function (BaseState, PublicMarketTender, MomentJS, Tender) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.salesopportunity.state.SoaState", {
@@ -82,10 +84,71 @@ sap.ui.define([
             this.detailPage = oDetailPage;
 		},
 
-		getNewTenderID: function(){
-			return this.getService().getNewTenderID().then(newTenderId => {
-				return newTenderId.data.NEXT_TENDER_NO;
+		getNewTenderID: function(sCountry){
+			return this.getService().getNewTenderID(sCountry).then(newTenderId => {
+				//get year & country
+				var sYear = moment().format('YY');
+				var sCountry = 'CL';
+
+				//new tender ID is build by country
+				return sCountry + "-" + sYear + "-" +  newTenderId.data.NEXT_TENDER_NO;
 			});
+		},
+
+		/**
+         * Get a new empty tender object
+         */
+		 createNewTenderObject: async function(sCountry){ 
+			const sTenderId = await this.getNewTenderID(sCountry);
+
+            const data = {
+                "ID" : this.create_UUID(),
+				"TenderId": sTenderId
+            };
+
+            const oTender = new Tender(data);
+            return oTender;
+		}, 	
+		
+		/**
+		 * sets temporary new contract
+		 * used for creating e new contract 
+		 */
+		setTemporaryTender: async function(sCountry){
+			const tender = await this.createNewTenderObject(sCountry);
+			this.setProperty("newTender", tender);
+		},
+
+		loadCountryChannels: async function(sCountry){
+			const aCountryChannels = await this.getService().loadCountryChannels(sCountry);
+			this.setProperty("CountryChannels", aCountryChannels.data.results);
+		},
+
+		loadCountryClassifications: async function(sCountry){
+			const aCountryClassifications = await this.getService().loadCountryClassifications(sCountry);
+			this.setProperty("CountryClassifications", aCountryClassifications.data.results);
+		},
+
+		loadCountryTenderTypes: async function(sCountry){
+			const aCountryTenderTypes = await this.getService().loadCountryTenderTypes(sCountry);
+			this.setProperty("CountryTenderTypes", aCountryTenderTypes.data.results);
+		},
+
+		loadCountryInstitutes: async function(sCountry, sInstituteType){
+			const aCountryInstitutes = await this.getService().loadCountryInstitutes(sCountry, sInstituteType);
+			this.setProperty("CountryInstitutes", aCountryInstitutes.data.results);
+		},
+
+		//sorting an array of objects
+		sortByKeyAsc: function (array, key) {
+			if (array) {
+				return array.sort(function (a, b) {
+					var x = a[key];
+					var y = b[key];
+					return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+				});
+			}
+
 		},
 
 	});
