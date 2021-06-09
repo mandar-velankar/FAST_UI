@@ -47,7 +47,11 @@ sap.ui.define([
 
 			const data = opportunity.getAll();
 
-			return this.odata("/PublicMarketTenders").put(data);
+			const sKey = this.model.createKey("/PublicMarketTenders", {
+				CodigoExterno: data.CodigoExterno
+			});
+
+			return this.odata(sKey).put(data);
 
 		},
 

@@ -290,10 +290,14 @@ sap.ui.define([
 
 		onFooterSavePress: function(){
 
-			const oViewModel = this.getModel("detailView");
-			oViewModel.setProperty("/busy", true);
+			this.getView().setBusy(true);
+			this.getView().setBusyIndicatorDelay(0);
 
-			this.soaState.saveSelectedOpportunity().then(() => {oViewModel.setProperty("/busy", false)});
+			this.soaState.saveSelectedOpportunity().then(() => {
+				this.getView().setBusy(false);
+				this.soaState.setEditMode(false);
+				this.oObjectPageLayout.setShowFooter(false);
+			});
 		}
 	});
 
