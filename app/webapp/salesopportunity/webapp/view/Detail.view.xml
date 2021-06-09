@@ -66,26 +66,26 @@
 				<!-- INSTITUTE INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Code"/>
-					<m:Text id="idhdrInstNme" text="{CodigoExterno}"/>
+					<m:Text id="idhdrInstNme" text="{soa>/selectedOpportunity/codigoExterno}"/>
 				</m:VBox>
 
 				<!-- SELECTED CONTRACT -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Name"/>
-					<m:Text  text="{Name}"/>
+					<m:Text  text="{soa>/selectedOpportunity/name}"/>
 				</m:VBox>
 
 				<!-- SELECTED CONTRACT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Institute"/>
-					<m:Text text="{Buyer/OrganismNumber}"/>
+					<m:Text text="{soa>/selectedOpportunity/buyer/organismNumber}"/>
 				</m:VBox>				
 				
 				<!-- SELECTED PRODUCT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Closing Date"/>
 					<m:Text text="{
-										path: 'ClosingDate',
+										path: 'soa>/selectedOpportunity/closingDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
@@ -114,8 +114,8 @@
 											emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true">
 											<form:content>
 												<core:Title text="Comment"/>
-												<m:Label text="{Comment}" required="false"/>
-												<m:TextArea value="{Description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
+												<m:Label text="{soa>/selectedOpportunity/comment}" required="false"/>
+												<m:TextArea value="{soa>/selectedOpportunity/description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 											</form:content>
 									</form:SimpleForm>
 								</l:BlockLayoutCell>
@@ -137,7 +137,7 @@
 												 delete="onDeleteProduct"
 												 selectionChange="onProductItemSelect"
 												 items="{
-												    	path: 'Items' }">
+												    	path: 'soa>/selectedOpportunity/products' }">
 										<m:columns>
 											<m:Column width="20%">
 												<m:Label text="Product" wrapping="true"/>  <!-- NAME -->
@@ -156,10 +156,10 @@
 												detailPress="onProductItemSelect">
 												<m:cells>
 
-													<m:Text id="productNameId" text="{ProductName}"/> 
-													<m:Text id="productQtyId" text="{Quantity}"/> 
+													<m:Text id="productNameId" text="{soa>productName}"/> 
+													<m:Text id="productQtyId" text="{soa>quantity}"/> 
 													
-													<m:TextArea value="{Description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
+													<m:TextArea value="{soa>description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 											
 												</m:cells>
 											</m:ColumnListItem>
