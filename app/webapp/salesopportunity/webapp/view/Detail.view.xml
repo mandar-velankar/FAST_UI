@@ -101,7 +101,7 @@
 			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
 					<ObjectPageSubSection mode="Expanded" title="Comment">
 						<actions>
-							<m:Switch state="{= ${TenderMatchingStatus} === 'In' ? true : false }" customTextOn="In" customTextOff="Out" enabled="{= ${soa>/editMode} === true }">
+							<m:Switch state="{= ${soa>/selectedOpportunity/tenderMatchingStatus} === 'In' ? true : false }" change="onTenderMatchingStatusChange" customTextOn="In" customTextOff="Out" enabled="{= ${soa>/editMode} === true }">
 								<m:layoutData>
 									<m:FlexItemData growFactor="1" />
 								</m:layoutData>
@@ -114,7 +114,6 @@
 											emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true">
 											<form:content>
 												<core:Title text="Comment"/>
-												<m:Label text="{soa>/selectedOpportunity/comment}" required="false"/>
 												<m:TextArea value="{soa>/selectedOpportunity/description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 											</form:content>
 									</form:SimpleForm>

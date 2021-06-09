@@ -31,6 +31,11 @@ sap.ui.define([
 			this.setProperty("editMode", sEditMode);
 		},
 
+		setTenderMatchingStatus:function(status){
+			this.getSelectedOpportunity().setTenderMatchingStatus(status);
+			this.updateModel();
+		},
+
 		createOpportunity: function(data){
 			if(data){
 				return new PublicMarketTender(data);
@@ -44,7 +49,15 @@ sap.ui.define([
 		},
 
 		getSelectedOpportunity: function(){
-			return this.getProperty("/selectedOpportunity");
+			return this.getProperty("selectedOpportunity");
+		},
+
+		/**
+		 * Saves a given opportunity in the backend.
+		 * @returns {Promise} - Return a promise
+		 */
+		saveSelectedOpportunity: function(){
+			return this.getService().saveOpportunity(this.getSelectedOpportunity());
 		},
 
 		/**

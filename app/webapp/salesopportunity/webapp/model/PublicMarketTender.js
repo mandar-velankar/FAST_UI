@@ -15,7 +15,7 @@ sap.ui.define([
             /* eslint-disable */
             if (data) {
                
-                    data.Buyer && !data.Buyer.__deferred && this.setBuyer(data.Buyer);
+                    data.Comprador && !data.Comprador.__deferred && this.setBuyer(data.Comprador);
                     data.Items && !data.Items.__deferred && this.setProducts(data.Items.results);
                
             }
@@ -43,6 +43,10 @@ sap.ui.define([
         getProducts: function () {
             return this.products || [];
         },
+
+        setTenderMatchingStatus: function(status){
+            if(status) this.tenderMatchingStatus = status;
+        },
         
         /*
         distributorIDChanged:function(state,event){
@@ -63,14 +67,12 @@ sap.ui.define([
                 "awardNumber", 
                 "awardNumberOfBidders", 
                 "awardType", 
-                "bidClosingDays", 
-                "busy", 
+                "bidClosingDays",
                 "callType", 
                 "claimsAmount", 
                 "closingDate", 
                 "codeType", 
-                "codigoExterno", 
-                "buyer_ID", 
+                "codigoExterno",
                 "contract", 
                 "contractDurationTime", 
                 "contractDurationType", 
@@ -117,14 +119,15 @@ sap.ui.define([
                 "unitTimeContractDuration", 
                 "visibilityAmount", 
                 "visitAddress", 
-                "works"
+                "works",
+                "tenderMatchingStatus"
             ]);
         },
 
         getAll: function () {
             return {
                 ...this.getJSON(),
-                Buyer: this.getBuyer().getJSON(),
+                Comprador: this.getBuyer().getJSON(),
                 Items: this.getProducts().map(item => item.getJSON())
             };
         }

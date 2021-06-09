@@ -129,8 +129,8 @@ sap.ui.define([
 
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
-			// expand Buyer and Items
-			selectedObj["Buyer"] =this.getView().getModel().getObject(`/${selectedObj.Buyer.__ref}`);
+			// expand Comprador and Items
+			selectedObj["Comprador"] =this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
 			selectedObj["Items"]["results"]  = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
 
 			return this.soaState.createOpportunity(selectedObj);
@@ -278,6 +278,10 @@ sap.ui.define([
 			this.oObjectPageLayout.setShowFooter(true);	
 		},
 
+		onTenderMatchingStatusChange: function(oEvent){
+			const status = oEvent.getParameter("state") ? 'In' : 'Out';
+			this.soaState.setTenderMatchingStatus(status);
+		},
 
 		onFooterCancelPress: function(){
 			this.soaState.setEditMode(false);
@@ -285,7 +289,11 @@ sap.ui.define([
 		},
 
 		onFooterSavePress: function(){
-			
+
+			const oViewModel = this.getModel("detailView");
+			oViewModel.setProperty("/busy", true);
+
+			this.soaState.saveSelectedOpportunity().then(() => {oViewModel.setProperty("/busy", false)});
 		}
 	});
 

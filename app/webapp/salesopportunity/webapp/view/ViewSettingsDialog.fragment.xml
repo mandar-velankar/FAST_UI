@@ -15,7 +15,7 @@
 				key="Code"/>
 			<ViewSettingsItem
 				text="{i18n>Institute}"
-				key="Buyer/OrganismNumber"/>
+				key="Comprador/OrganismNumber"/>
 		</sortItems>
 		<filterItems>
 			<ViewSettingsFilterItem
@@ -34,7 +34,7 @@
 					<ViewSettingsItem
 						id="viewFilter3"
 						text="{i18n>Institute}"
-						key="Buyer/OrganismNumber"/>
+						key="Comprador/OrganismNumber"/>
 				</items>
 			</ViewSettingsFilterItem>
 		</filterItems>

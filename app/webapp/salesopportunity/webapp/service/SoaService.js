@@ -36,11 +36,19 @@ sap.ui.define([
 			var mParameters = {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "Buyer,Items"
+					"$expand": "Comprador,Items"
 				}
 			};
 
 			return this.odata("/PublicMarketTenders").get(mParameters);
+		},
+
+		saveOpportunity: function(opportunity){
+
+			const data = opportunity.getAll();
+
+			return this.odata("/PublicMarketTenders").put(data);
+
 		},
 
 		/* get a new Tender ID */
