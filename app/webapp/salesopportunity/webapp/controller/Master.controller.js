@@ -79,6 +79,10 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
+
+			this.soaState.loadCountryChannels("CL");
+			this.soaState.loadCountryClassifications("CL");
+			this.soaState.loadCountryTenderTypes("CL");
 		},
 
 		/* =========================================================== */
@@ -360,7 +364,8 @@ sap.ui.define([
 		},
 
 		/* handling participate button press */
-		onParticipateOpportunityPress: function(){
+		onParticipateOpportunityPress: async function(){
+			await this.soaState.setTemporaryTender('CL');
 			this._getParticipationDialog().open();
 		},
 
@@ -380,9 +385,6 @@ sap.ui.define([
 			}
 
 			return this._oParticipationDialog;
-
-
-
 		},
 
 		onCancelParticipation: function (oEvent){
@@ -456,6 +458,51 @@ sap.ui.define([
 			this.getCountryContractBrands(oCountry);
 
 		},
+
+		/* handle search helps */
+		handleValueHelp : async function (oEvent) {
+			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+
+			var oView = this.getView();
+			this._sInputId = this.byId('idInstituteName').getId();
+	
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "com.bayer.tender.salesopportunity.view.fragments.InstitutesSearchHelp",
+					controller: this
+				}).then(function(oValueHelpDialog){
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+	
+			// open value help dialog
+			this._pValueHelpDialog.then(function(oValueHelpDialog){
+				oValueHelpDialog.open();
+			});
+		},
+	
+		_handleValueHelpSearch : function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter(
+				"InstituteName",
+				FilterOperator.Contains, sValue
+			);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+	
+		_handleValueHelpClose : function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var productInput = this.byId(this._sInputId);
+				productInput.setValue(oSelectedItem.getTitle());
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		}
+
+		/* end of search help handlers */
 	});
 
 });

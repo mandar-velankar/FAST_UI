@@ -38,9 +38,9 @@ sap.ui.define([
 			this.oObjectPageLayout = this.byId("DetailPage");
 			this.soaState.setDetailPage(this.oObjectPageLayout);
 
-			this.soaState.loadCountryChannels("CL");
+			/*this.soaState.loadCountryChannels("CL");
 			this.soaState.loadCountryClassifications("CL");
-			this.soaState.loadCountryTenderTypes("CL");
+			this.soaState.loadCountryTenderTypes("CL");*/ //currently done in master, no need to do it again here
 		},
 
 		/* =========================================================== */
