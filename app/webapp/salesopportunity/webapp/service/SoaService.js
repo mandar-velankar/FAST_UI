@@ -43,6 +43,17 @@ sap.ui.define([
 			return this.odata("/PublicMarketTenders").get(mParameters);
 		},
 
+		/* get a new Tender ID */
+		getNewTenderID: function(){
+			//get selected country
+			var sCountry = 'CL';
+
+			const sKey = this.model.createKey("/CountryTenderNo", {
+				COUNTRY_CODE: sCountry
+			});
+
+			return this.odata(sKey).get();
+		},
 
 
     });

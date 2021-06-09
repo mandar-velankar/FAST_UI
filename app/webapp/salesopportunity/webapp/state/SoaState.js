@@ -52,6 +52,12 @@ sap.ui.define([
             this.detailPage = oDetailPage;
 		},
 
+		getNewTenderID: function(){
+			return this.getService().getNewTenderID().then(newTenderId => {
+				return newTenderId.data.NEXT_TENDER_NO;
+			});
+		},
+
 	});
 
 	return soaState;

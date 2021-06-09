@@ -226,9 +226,10 @@ sap.ui.define([
 		 * New contracting dialog
 		 * @returns {dialog} - oDialog
 		 */
-		 _getParticipationDialog: function () {
+		 _getParticipationDialog: async function () {
 
-			//create new dialog if not yet existing
+			let sNewTenderID = await this.soaState.getNewTenderID();
+				//create new dialog if not yet existing
 			if (!this._oParticipationDialog) {
 
 					//get dialog
@@ -238,9 +239,6 @@ sap.ui.define([
 			}
 
 			return this._oParticipationDialog;
-
-
-
 		},
 
 		onCancelParticipation: function (oEvent){
