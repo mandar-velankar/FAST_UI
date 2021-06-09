@@ -221,8 +221,6 @@ sap.ui.define([
 		onParticipateOpportunityPress: async function(){
 			await this.soaState.setTemporaryTender();
 			this._getParticipationDialog().open();
-			/*const oParticipationDialog = await this._getParticipationDialog();
-			oParticipationDialog.open();*/
 		},
 
 		/**
@@ -249,7 +247,7 @@ sap.ui.define([
 		onSaveParticipation: function (){
 			this._oParticipationDialog.close();
 			//successfully created tender
-			sap.m.MessageBox.success("Tender created with ID (CL-21-1001).", {
+			sap.m.MessageBox.success("Tender created with ID (" + this.getModel('soa').oData.newTender.tenderId + ").", {
 				actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
 				styleClass: "sapUiSizeCompact",
 				onClose: function (sAction) {
