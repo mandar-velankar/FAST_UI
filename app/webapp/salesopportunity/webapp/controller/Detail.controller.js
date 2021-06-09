@@ -256,20 +256,34 @@ sap.ui.define([
 			this._oParticipationDialog.close();
 		},
 
-		onSaveParticipation: function (){
-			this._oParticipationDialog.close();
-			//successfully created tender
-			sap.m.MessageBox.success("Tender created with ID (" + this.getModel('soa').oData.newTender.tenderId + ").", {
-				actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
-				styleClass: "sapUiSizeCompact",
-				onClose: function (sAction) {
-					if (sAction === "CLOSE") {
-						sap.m.MessageToast.show("Tender creation done...");
-					} else {
-						window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/CL-21-1001//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		onSaveParticipation: async function (){
+
+			const oTender = this.soaState.getNewTender();
+			if(this._validateNewTender(oTender)){
+
+				await this.soaState.createTender(oTender);
+
+				this._oParticipationDialog.close();
+				//successfully created tender
+				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+					actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "CLOSE") {
+							sap.m.MessageToast.show("Tender creation done...");
+						} else {
+							window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+						}
 					}
-				}
-			});
+				});
+			}
+		},
+
+		_validateNewTender: function(oTender){
+			//TODO: implement checks to make sure tender is valid
+			let bValid = false;
+			bValid = true;
+			return bValid;
 		},
 
 		/**
@@ -340,8 +354,13 @@ sap.ui.define([
 		_handleValueHelpClose : function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
-				var productInput = this.byId(this._sInputId);
-				productInput.setValue(oSelectedItem.getTitle());
+				var oInputfield = this.byId(this._sInputId);
+				oInputfield.setValue(oSelectedItem.getTitle());
+
+				if(this._sInputId.includes("InstituteName")){
+					const oTender = this.soaState.getNewTender();
+					oTender.instituteID = Number(oSelectedItem.getDescription());
+				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
 		}

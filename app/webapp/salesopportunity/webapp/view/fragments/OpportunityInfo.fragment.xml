@@ -18,11 +18,11 @@
                     <form:content>
                         <core:Title text="Institute &amp; Type"/>
                         <Label text="Tender ID" design="Bold" required="true"/>
-                        <Input id="newTenderIdID" value="{soa>/newTender/tenderId}" enabled="false"/>
+                        <Input id="newTenderIdID" value="{soa>/newTender/tenderID}" enabled="false"/>
                         <Label text="Tender Reference" design="Bold" required="true"/>
-                        <Input id="idTenderName" value="{soa>/newTender/TenderName}" />
+                        <Input id="idTenderName" value="{soa>/newTender/tenderName}" />
                         <Label text="{i18n>clasficn}" design="Bold" required="true"/>
-                        <Select id="idClassification" selectedKey="Contract" enabled="true" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
+                        <Select id="idClassification" selectedKey="{soa>/newTender/classification}" enabled="true" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
                             <core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
                         </Select>
                         <Label text="{i18n>insttyp}" design="Bold" required="true"/>
@@ -34,19 +34,32 @@
                         <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/>
 
                         <Label text="{i18n>typechnl}" design="Bold" required="true"/>
-                        <Select id="idTenderChannel" selectedKey="{soa>/newTender/TenderChannel}" enabled="true" change="onTenderChannelChange" items="{path: 'soa>/CountryTenderTypes' }">
-                                <core:Item text="{soa>TenderType/NAME}" key="{soa>TenderType/ID}"/>
+                        <Select id="idTenderChannel" selectedKey="Direct" enabled="false" change="onTenderChannelChange">
+                            <items>
+                                <core:Item text="Distributor" key="Distributor"/>
+                                <core:Item text="Direct" key="Direct"/>
+                            <!--	<core:Item text="Other" key="Other"/>-->
+                            </items>
+                        </Select>
+
+                        <Label id="idLabelTenderTypeEdit" text="{i18n>tendertype}" design="Bold" required="true" visible="{= ${soa>/newTender/instituteType} === 'Cenabast' ? true : false }"/>
+                        <Select id="idSelectTenderTypeEdit" 
+                                selectedKey="{soa>/newTender/tENDER_TYPE_ID}" 
+                                enabled="true" 
+                                items="{path: 'soa>/CountryTenderTypes' }"
+                                visible="{= ${soa>/newTender/instituteType} === 'Cenabast' ? true : false }">
+                            <core:Item text="{soa>TenderType/NAME}" key="{soa>TenderType/ID}"/>
                         </Select>
 
                         <core:Title text="Timeline"/>
                         <Label text="Publication Date" design="Bold" required="true"/>
-                        <DatePicker id="idPublicationDate" value="{path :'soa>/selectedOpportunity/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+                        <DatePicker id="idPublicationDate" value="{path :'soa>/newTender/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
                         <Label text="{i18n>offrdudte}" design="Bold" required="true"/>
-                        <DatePicker id="idBidDueDate" value="{path :'soa>/selectedOpportunity/FinalDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+                        <DatePicker id="idBidDueDate" value="{path :'soa>/newTender/bidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
                         <Label text="{i18n>expctawdte}" design="Bold"/>
-                        <DatePicker id="idAwardDate" value="{path :'soa>/selectedOpportunity/EstimatedAwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+                        <DatePicker id="idAwardDate" value="{path :'soa>/newTender/awardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
                         <Label text="{i18n>nwpubdate}" design="Bold"/>
-                        <DatePicker id="idNextPublicationDye" value="{path :'soa>/selectedOpportunity/DatePubAnswers', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+                        <DatePicker id="idNextPublicationDye" value="{path :'soa>/newTender/nextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
 
                         <Label text="Contract Length [months]" design="Bold"/>
                         <Input id="idContractLength" value="ContractDurationTime" type="Number" />

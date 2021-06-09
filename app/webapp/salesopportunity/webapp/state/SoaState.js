@@ -54,6 +54,14 @@ sap.ui.define([
 			return this.getProperty("selectedOpportunity");
 		},
 
+		getNextTenderNo: function(){
+			return this.nextTenderNo;
+		},
+
+		setNextTenderNo: function(sTenderNo){
+			this.nextTenderNo = Number(sTenderNo);
+		},
+
 		/**
 		 * Saves a given opportunity in the backend.
 		 * @returns {Promise} - Return a promise
@@ -78,21 +86,34 @@ sap.ui.define([
 		getDetailPage: function () {
 		    return this.detailPage;	
 		},
+
+		/**
+		 * Returns a newTender from the State. No backend calls here.
+		 */
+		 getNewTender: function(){
+			return this.getProperty("newTender") || {};
+		},
 		
         //keep detailPage so we can access it everywhere
         setDetailPage: function (oDetailPage){
             this.detailPage = oDetailPage;
 		},
 
-		getNewTenderID: function(sCountry){
-			return this.getService().getNewTenderID(sCountry).then(newTenderId => {
-				//get year & country
-				var sYear = moment().format('YY');
-				var sCountry = 'CL';
-
-				//new tender ID is build by country
-				return sCountry + "-" + sYear + "-" +  newTenderId.data.NEXT_TENDER_NO;
+		getNewTenderNo: function(sCountry){
+			return this.getService().getNewTenderNo(sCountry).then(newTenderId => {
+				this.setNextTenderNo(newTenderId.data.NEXT_TENDER_NO);
+				return newTenderId.data.NEXT_TENDER_NO;
 			});
+		},
+
+		getNewTenderID: async function(sCountry){
+			let sTenderNo = await this.getNewTenderNo(sCountry);
+
+			//get year & country
+			var sYear = moment().format('YY');
+
+			//new tender ID is build by country
+			return sCountry + "-" + sYear + "-" + sTenderNo;
 		},
 
 		/**
@@ -100,10 +121,28 @@ sap.ui.define([
          */
 		 createNewTenderObject: async function(sCountry){ 
 			const sTenderId = await this.getNewTenderID(sCountry);
+			const oSelectedOpportunity = this.getModel('soa').getProperty('/selectedOpportunity');
 
             const data = {
-                "ID" : this.create_UUID(),
-				"TenderId": sTenderId
+                //"ID" : this.create_UUID(),
+				"TenderID": sTenderId,
+				"TenderNo": this.getNextTenderNo(),
+				"CountryCode": sCountry,
+				"Active": 1,
+				"Classification": "Contract",
+				"TenderName": "",
+				"InstituteID": 0,
+				"TenderChannel": "Direct",
+				"PublicationDate": oSelectedOpportunity.publicationDate,
+				"BidDueDate": oSelectedOpportunity.finalDate,
+				"AwardDate": oSelectedOpportunity.estimatedAwardDate,
+				"NextPublicationDye": oSelectedOpportunity.datePubAnswers,
+				"TenderStatus": "Open",
+				"GroupPurchasing": 0,
+				"TENDER_TYPE_ID": 6,
+				"PROCUREMENT_METHOD_ID": "Not Specified",
+				"PROCUREMENT_REASON": "",
+				"HighValue": false,
             };
 
             const oTender = new Tender(data);
@@ -137,6 +176,11 @@ sap.ui.define([
 		loadCountryInstitutes: async function(sCountry, sInstituteType){
 			const aCountryInstitutes = await this.getService().loadCountryInstitutes(sCountry, sInstituteType);
 			this.setProperty("CountryInstitutes", aCountryInstitutes.data.results);
+		},
+
+		/* create & update */
+		 createTender: function (oTender) {
+			return this.getService().createTender(oTender);
 		},
 
 		//sorting an array of objects
