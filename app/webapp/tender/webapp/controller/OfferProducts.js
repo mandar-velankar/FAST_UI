@@ -1015,11 +1015,12 @@ sap.ui.define([
 			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
 			let sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
 			let sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
-			let sTenderChannel = Services.getLoadedTender().TenderChannel; //Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			let sChannelName = Services.getLoadedTender().Institute.InstituteType; //Institute type = channel Name
 			let sSellingCompany = oOffer.SellingCompany || Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany") || Services.getSelectedSellingCompanyID() || null; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+			let sProductPackID = oProduct && oProduct.SKU && oProduct.SKU.PRODUCTPACKID;
 			let sBrandID = oProduct && oProduct.SKU && oProduct.SKU.Product && oProduct.SKU.Product.HLEVEL4_CODE;
 			let aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
-			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL' ? await that.getStandardDiscount(sDistributorID,sBrandID) : "";
+			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL' ? await that.getStandardDiscount(sCountryCode,sChannelName,sProductPackID,sDistributorID,sBrandID) : "";
 			let iAdditionalDiscount = (oProduct && oProduct.Price && oProduct.Price.AdditionalDiscount) || 0;
 
 			//selected offer currency on screen
@@ -1105,7 +1106,7 @@ sap.ui.define([
 
 				//when an additional FOC product is selected and results are found, calculate some fields
 				var sCogsAddFOCProduct = 0;
-				aPromises.push(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sSellingCompany, sBrandID, sAddBrandProductCode, aCommercialAgreement).then(oAddFocProduct => {
+				aPromises.push(Services.loadFOCAdditionalBrandProductData(sInstituteID, sCountryCode, sDistributorID, sChannelName, sSellingCompany, sBrandID, sAddBrandProductCode, aCommercialAgreement).then(oAddFocProduct => {
 					if(oAddFocProduct){
 						sCogsAddFOCProduct = oAddFocProduct.COGS * 
 						(
@@ -1465,19 +1466,37 @@ sap.ui.define([
 		},
 		
 		/**
-		 * Get standard discount that is valid for a certain Brand or Distributor
+		 * Get standard discount that is valid for a certain Brand or Distributor or for chile linked to Channel/Product combination
+		 * @param {string} sCountryCode country 
+		 * @param {string} sChannelName Channel
+		 * @param {string} sChannelName Channel
 		 * @param {string} sDistributorID distributor
 		 * @param {string} sBrandID brand
 		 */
-		getStandardDiscount: async function(sDistributorID, sBrandID){
+		getStandardDiscount: async function(sCountryCode,sChannelName,sProductPackID,sDistributorID, sBrandID){
 
-			if(!sDistributorID || !sBrandID){
-				return null;
-			}else{
-				let oAggregatedDistributorBrandPolicy = await Services.getService('DistributorBrandPolicy').getAggregatedDistributorBrandPolicy(sDistributorID, sBrandID);
-				return Number(oAggregatedDistributorBrandPolicy.data.results[0].StandardDiscount);
-			}
-			
+			//Chile has a different way of getting the standard discount
+			switch (sCountryCode) {
+				
+				case 'CL':
+
+					if(!sChannelName || !sProductPackID){
+						return null;
+					}else{
+						let oChannelProductPolicy = await Services.getService('ChannelProductPolicy').getChannelProductPolicy(sCountryCode, sChannelName, sProductPackID);
+						let iStandardDiscount = oChannelProductPolicy.data.results.length > 0 ? Number(oChannelProductPolicy.data.results[0].StandardDiscount) : 0;
+						return iStandardDiscount;
+					}
+
+				default:
+					if(!sDistributorID || !sBrandID){
+						return null;
+					}else{
+						let oAggregatedDistributorBrandPolicy = await Services.getService('DistributorBrandPolicy').getAggregatedDistributorBrandPolicy(sDistributorID,sBrandID);
+						let iStandardDiscount = oAggregatedDistributorBrandPolicy.data.results.length > 0 ? Number(oAggregatedDistributorBrandPolicy.data.results[0].StandardDiscount) : 0;
+						return iStandardDiscount;
+					}
+			  }	
 			
 		},
 
@@ -1854,14 +1873,16 @@ sap.ui.define([
 			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
 			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
 			var sDistributorID = Services.getSelectedDistributorID();     //DISTRIBUTOR_ID
-			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			let sTenderChannel = Services.getLoadedTender().sTenderChannel; //TENDERCHANNEL
+			let sChannelName = Services.getLoadedTender().Institute.InstituteType; //Institute type = channel Name
 			var sSellingCompany = productValues.SellingCompany; //Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			var sBrandID = oProduct.SKU.Product.HLEVEL4_CODE;
+			var sProductPackID = oProduct.SKU.PRODUCTPACKID; 
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
 
 			let iStandardDiscount = 0;
 			if(sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL'){
-				aPromises.push(that.getStandardDiscount(sDistributorID,sBrandID).then(iResult=>{
+				aPromises.push(that.getStandardDiscount(sCountryCode,sChannelName,sProductPackID,sDistributorID,sBrandID).then(iResult=>{
 					iStandardDiscount = iResult;
 					return iResult;
 				}));

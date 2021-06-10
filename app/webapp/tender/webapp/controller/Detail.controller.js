@@ -4655,13 +4655,19 @@ sap.ui.define([
 			let OfferProducts = Services.getFinancialModel();
 
 			//Get brandID
-			let sBrandID = null;
+			let sBrandID,sProductPackID = null;
 			if (product && product.SKU && product.SKU.Product){
+				sProductPackID = product && product.SKU && product.SKU.ProductPackId;
 				sBrandID = product.SKU.Product.HLEVEL4_CODE;
 			}
 
+			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			let sChannelName = Services.getLoadedTender().Institute.InstituteType; //Institute type = channel Name
+			//let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
+			let sDistributorID = offer.DistributorID;
+
 			//Get standard discount
-			const iStandardDiscount = await OfferProducts.getStandardDiscount(offer.DistributorID,sBrandID);
+			const iStandardDiscount = await OfferProducts.getStandardDiscount(sCountryCode,sChannelName,sProductPackID,sDistributorID,sBrandID);
 
 			//re-calculate additional discount based upon new standard discount from new distributor/brand
 			let iCalcAdditionalDiscount = (Number(oNewPrice.Discount) + Number(oNewPrice.AdditionalDiscount)) - iStandardDiscount;

@@ -35,6 +35,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/GroupPurchasingService",
 	"FAST_NS0FAST0/services/PriceService",
 	"FAST_NS0FAST0/services/DistributorBrandPolicyService",
+	"FAST_NS0FAST0/services/ChannelProductPolicyService",
 	"FAST_NS0FAST0/services/ProductService",
 	"FAST_NS0FAST0/services/ResultService",
 	"FAST_NS0FAST0/services/ScenarioService",
@@ -44,7 +45,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/MailService",
 ], function (UIComponent, JSONModel, fioriLibrary, FlexibleColumnLayoutSemanticHelper, Button, Dialog, Label, MessageToast, Text,
 	TextArea, ODataModel, Services, OfferService, TenderService, ApprovalService, AwardCriteriaService, CompetitorResultService, 
-	DeliveryService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ProductService, ResultService, ScenarioService, QuotationService, SpecificationService, Device, MailService) {
+	DeliveryService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, ScenarioService, QuotationService, SpecificationService, Device, MailService) {
 	"use strict";
 
 	return UIComponent.extend("FAST_NS0FAST0.Component", {
@@ -96,6 +97,7 @@ sap.ui.define([
 			this.GroupPurchasingService = new GroupPurchasingService(oDefaultModel);
 			this.PriceService = new PriceService(oDefaultModel);
 			this.DistributorBrandPolicyService = new DistributorBrandPolicyService(oDefaultModel);
+			this.ChannelProductPolicyService = new ChannelProductPolicyService(oDefaultModel);
 			this.ProductService = new ProductService(oDefaultModel);
 			this.ResultService = new ResultService(oDefaultModel);
 			this.ScenarioService = new ScenarioService(oDefaultModel);
@@ -114,6 +116,7 @@ sap.ui.define([
 				GroupPurchasingService:this.GroupPurchasingService,
 				PriceService:this.PriceService,
 				DistributorBrandPolicyService: this.DistributorBrandPolicyService,
+				ChannelProductPolicyService: this.ChannelProductPolicyService,
 				ProductService:this.ProductService,
 				ResultService:this.ResultService,
 				ScenarioService:this.ScenarioService,
