@@ -138,13 +138,15 @@ sap.ui.define([
 				"AwardDate": oSelectedOpportunity.estimatedAwardDate,
 				"NextPublicationDye": oSelectedOpportunity.datePubAnswers,
 				"TenderStatus": "Open",
-				"GroupPurchasing": 0,
-				"TENDER_TYPE_ID": 6,
+				"GroupPurchasing": Number(0),
+				"SALES_TYPE_ID": Number(0),
+				"TENDER_TYPE_ID": Number(6),
 				"PROCUREMENT_METHOD_ID": "Not Specified",
 				"PROCUREMENT_REASON": "",
 				"HighValue": false,
-				"ContractLength": Number(oSelectedOpportunity.contractDurationTime),
-				"ContractExtension": Number(oSelectedOpportunity.TermExtension)
+				"ContractLength": oSelectedOpportunity.contractDurationTime ? Number(oSelectedOpportunity.contractDurationTime) : Number(0),
+				"ContractExtenseion": oSelectedOpportunity.TermExtension ? Number(oSelectedOpportunity.TermExtension) : Number(0),
+				"CONTRACT_TYPE_ID": Number(0)
             };
 
             const oTender = new Tender(data);
