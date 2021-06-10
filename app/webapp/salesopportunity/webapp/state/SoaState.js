@@ -187,8 +187,10 @@ sap.ui.define([
 		},
 
 		/* create & update */
-		 createTender: function (oTender) {
-			return this.getService().createTender(oTender);
+		 createTender: async function (tender) {
+			await this.getService().createTender(this.getNewTender());
+			await this.getService().createCountrySpecificInformation(this.getNewTender(),this.getSelectedOpportunity());
+			// return this.getService().createTender(oTender);
 		},
 
 		//sorting an array of objects

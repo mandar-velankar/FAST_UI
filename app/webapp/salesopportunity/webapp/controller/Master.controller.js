@@ -8,8 +8,9 @@ sap.ui.define([
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/FilterType",
+	"sap/ui/core/BusyIndicator",
 	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, formatter) {
+], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType,BusyIndicator, formatter) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.salesopportunity.controller.Master", {
@@ -418,10 +419,10 @@ sap.ui.define([
 
 			const oTender = this.soaState.getNewTender();
 			if(this._validateNewTender(oTender)){
-
-				await this.soaState.createTender(oTender);
-
-				this.soastate.clearSelectedOpportunity();
+				BusyIndicator.show(0);
+				await this.soaState.createTender(oTender).catch(()=>BusyIndicator.hide());
+				BusyIndicator.hide()
+				this.soaState.clearSelectedOpportunity();
 				this._oParticipationDialog.close();
 				//successfully created tender
 				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
@@ -488,12 +489,12 @@ sap.ui.define([
 				andFilters.push(new sap.ui.model.Filter(orFilters, false));
 			}
 
-			var oFilters = new sap.ui.model.Filter(andFilters, true);
+			var oFilters = ( andFilters.length > 0 && new sap.ui.model.Filter(andFilters, true) ) || [];
 
 			//Binding to table with the filters and the sorters
 			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
 
-			this.getCountryContractBrands(oCountry);
+			// this.getCountryContractBrands(oCountry);//not sure what this does but country is not available here.. which results in an error
 
 		},
 
