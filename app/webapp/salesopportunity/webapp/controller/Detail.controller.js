@@ -32,6 +32,15 @@ sap.ui.define([
 			this.setModel(oViewModel, "detailView");
 
 			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
+
+			this.soaState = this.getOwnerComponent().getState(this.getOwnerComponent().SOA);
+			this.setModel(this.soaState.getModel(), "soa");
+			this.oObjectPageLayout = this.byId("DetailPage");
+			this.soaState.setDetailPage(this.oObjectPageLayout);
+
+			/*this.soaState.loadCountryChannels("CL");
+			this.soaState.loadCountryClassifications("CL");
+			this.soaState.loadCountryTenderTypes("CL");*/ //currently done in master, no need to do it again here
 		},
 
 		/* =========================================================== */
@@ -94,6 +103,7 @@ sap.ui.define([
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
+
 		},
 
 		/**
@@ -110,47 +120,54 @@ sap.ui.define([
 			// If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
 			oViewModel.setProperty("/busy", false);
 
-			this.getView().bindElement({
-				path : sObjectPath,
-				events: {
-					change : this._onBindingChange.bind(this),
-					dataRequested : function () {
-						oViewModel.setProperty("/busy", true);
-					},
-					dataReceived: function () {
-						oViewModel.setProperty("/busy", false);
-					}
-				}
-			});
+			const opportunity = this.createStateObject(sObjectPath);
+			this.soaState.setSelectedOpportunity(opportunity);
 		},
 
-		_onBindingChange : function () {
-			var oView = this.getView(),
-				oElementBinding = oView.getElementBinding();
+		/**
+		 * Creates an opportunity object in the State
+		 * @param {string} sObjectPath - the path of the selected object
+		 * @returns {object} - On opportunity object
+		 */
+		createStateObject: function(sObjectPath){
 
-			// No data for the binding
-			if (!oElementBinding.getBoundContext()) {
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				// if object could not be found, the selection in the master list
-				// does not make sense anymore.
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-				return;
-			}
+			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
-			var sPath = oElementBinding.getPath(),
-				oResourceBundle = this.getResourceBundle(),
-				oObject = oView.getModel().getObject(sPath),
-				sObjectId = oObject.CodigoExterno,
-				sObjectName = oObject.Nombre,
-				oViewModel = this.getModel("detailView");
+			// expand Comprador and Items
+			selectedObj["Comprador"] =this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
+			selectedObj["Items"]["results"]  = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
 
-			this.getOwnerComponent().oListSelector.selectAListItem(sPath);
+			return this.soaState.createOpportunity(selectedObj);
 
-			oViewModel.setProperty("/shareSendEmailSubject",
-				oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
-			oViewModel.setProperty("/shareSendEmailMessage",
-				oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
 		},
+
+		// _onBindingChange : function () {
+		// 	var oView = this.getView(),
+		// 		oElementBinding = oView.getElementBinding();
+
+		// 	// No data for the binding
+		// 	if (!oElementBinding.getBoundContext()) {
+		// 		this.getRouter().getTargets().display("detailObjectNotFound");
+		// 		// if object could not be found, the selection in the master list
+		// 		// does not make sense anymore.
+		// 		this.getOwnerComponent().oListSelector.clearMasterListSelection();
+		// 		return;
+		// 	}
+
+		// 	var sPath = oElementBinding.getPath();
+		// 		// oResourceBundle = this.getResourceBundle(),
+		// 		// oObject = oView.getModel().getObject(sPath),
+		// 		// sObjectId = oObject.CodigoExterno,
+		// 		// sObjectName = oObject.Nombre,
+		// 		// oViewModel = this.getModel("detailView");
+
+		// 	this.getOwnerComponent().oListSelector.selectAListItem(sPath);
+
+		// 	// oViewModel.setProperty("/shareSendEmailSubject",
+		// 	// 	oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
+		// 	// oViewModel.setProperty("/shareSendEmailMessage",
+		// 	// 	oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
+		// },
 
 		_onMetadataLoaded : function () {
 			/*// Store original busy indicator delay for the detail view
@@ -195,6 +212,7 @@ sap.ui.define([
 			// No item should be selected on master after detail page is closed
 			this.getOwnerComponent().oListSelector.clearMasterListSelection();
 			this.getRouter().navTo("master");
+			this.soaState.clearSelectedOpportunity();
 		},
 
 		/**
@@ -213,7 +231,8 @@ sap.ui.define([
 			}
 		},
 
-		onParticipateOpportunityPress: function(){
+		onParticipateOpportunityPress: async function(){
+			await this.soaState.setTemporaryTender('CL');
 			this._getParticipationDialog().open();
 		},
 
@@ -222,8 +241,7 @@ sap.ui.define([
 		 * @returns {dialog} - oDialog
 		 */
 		 _getParticipationDialog: function () {
-
-			//create new dialog if not yet existing
+				//create new dialog if not yet existing
 			if (!this._oParticipationDialog) {
 
 					//get dialog
@@ -233,30 +251,122 @@ sap.ui.define([
 			}
 
 			return this._oParticipationDialog;
-
-
-
 		},
 
 		onCancelParticipation: function (oEvent){
 			this._oParticipationDialog.close();
 		},
 
-		onSaveParticipation: function (){
-			this._oParticipationDialog.close();
-			//successfully created tender
-			sap.m.MessageBox.success("Tender created with ID (CL-21-1001).", {
-				actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
-				styleClass: "sapUiSizeCompact",
-				onClose: function (sAction) {
-					if (sAction === "CLOSE") {
-						sap.m.MessageToast.show("Tender creation done...");
-					} else {
-						window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/CL-21-1001//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		onSaveParticipation: async function (){
+
+			const oTender = this.soaState.getNewTender();
+			if(this._validateNewTender(oTender)){
+
+				await this.soaState.createTender(oTender);
+
+				this._oParticipationDialog.close();
+				//successfully created tender
+				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+					actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "CLOSE") {
+							sap.m.MessageToast.show("Tender creation done...");
+						} else {
+							window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+						}
 					}
-				}
+				});
+			}
+		},
+
+		_validateNewTender: function(oTender){
+			//TODO: implement checks to make sure tender is valid
+			let bValid = false;
+			bValid = true;
+			return bValid;
+		},
+
+		/**
+		 * Go to edit mode
+		 */
+		 onEditModePress: function(oEvent){
+			
+			this.soaState.setEditMode(true);
+			this.oObjectPageLayout.setShowFooter(true);	
+		},
+
+		onTenderMatchingStatusChange: function(oEvent){
+			const status = oEvent.getParameter("state") ? 'In' : 'Out';
+			this.soaState.setTenderMatchingStatus(status);
+		},
+
+		onFooterCancelPress: function(){
+			this.soaState.setEditMode(false);
+			this.oObjectPageLayout.setShowFooter(false);	
+		},
+
+		onFooterSavePress: function(){
+
+			this.getView().setBusy(true);
+			this.getView().setBusyIndicatorDelay(0);
+
+			this.soaState.saveSelectedOpportunity().then(() => {
+				this.getView().setBusy(false);
+				this.soaState.setEditMode(false);
+				this.oObjectPageLayout.setShowFooter(false);
 			});
+		},
+		
+		/* handle search helps */
+		handleValueHelp : async function (oEvent) {
+			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+
+			var oView = this.getView();
+			this._sInputId = this.byId('idInstituteName').getId();
+	
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "com.bayer.tender.salesopportunity.view.fragments.InstitutesSearchHelp",
+					controller: this
+				}).then(function(oValueHelpDialog){
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+	
+			// open value help dialog
+			this._pValueHelpDialog.then(function(oValueHelpDialog){
+				oValueHelpDialog.open();
+			});
+		},
+	
+		_handleValueHelpSearch : function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter(
+				"InstituteName",
+				FilterOperator.Contains, sValue
+			);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+	
+		_handleValueHelpClose : function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oInputfield = this.byId(this._sInputId);
+				oInputfield.setValue(oSelectedItem.getTitle());
+
+				if(this._sInputId.includes("InstituteName")){
+					const oTender = this.soaState.getNewTender();
+					oTender.instituteID = Number(oSelectedItem.getDescription());
+				}
+			}
+			oEvent.getSource().getBinding("items").filter([]);
 		}
+
+		/* end of search help handlers */
 	});
 
 });

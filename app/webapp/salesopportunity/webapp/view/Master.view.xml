@@ -24,7 +24,6 @@
 					<ToolbarSpacer/>
 					
 					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
-					<OverflowToolbarButton icon="sap-icon://filter" text="Filter" type="Transparent" press=".onFilter"/>
 					<OverflowToolbarButton icon="sap-icon://sort" text="Sort" type="Transparent" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
 				<Table
@@ -37,7 +36,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Buyer,Items'
+								expand: 'Comprador,Items'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -82,11 +81,11 @@
 						</Column>
 					</columns>
 					<items>
-						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Success">
+						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Success" id="items">
 							<cells>
 								<Text text="{CodigoExterno}"/>
 								<Text text="{Name}"/>
-								<Text text="{Buyer/OrganismNumber}"/>
+								<Text text="{Comprador/OrganismNumber}"/>
 								<Text text="Products"/>
 								<Text text="{
 										path: 'ClosingDate',
@@ -96,7 +95,7 @@
 										}
 									}" 
 								/>
-								<Button text="Participate" type="Emphasized"/>
+								<Button text="Participate" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
 					</items>
@@ -104,97 +103,4 @@
 			</VBox>
 		</f:content>
 	</f:DynamicPage>
-
-	<!--<semantic:SemanticPage
-		id="masterPage"
-		preserveHeaderStateOnScroll="true"
-		toggleHeaderOnTitleClick="false">
-		<semantic:titleHeading>
-			<Title
-				id="masterPageTitle"
-				text="{masterView>/title}"
-				level="H2"/>
-		</semantic:titleHeading>
-		<semantic:content>-->
-			<!-- For client side filtering add this to the items attribute: parameters: {operationMode: 'Client'}}" -->
-			<!--<List
-				id="list"
-				width="auto"
-				class="sapFDynamicPageAlignContent"
-				items="{
-					path: '/PublicMarketTenders',
-					sorter: {
-						path: 'Nombre',
-						descending: false
-					},
-					groupHeaderFactory: '.createGroupHeader'
-				}"
-				busyIndicatorDelay="{masterView>/delay}"
-				noDataText="{masterView>/noDataText}"
-				mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
-				growing="true"
-				growingScrollToLoad="true"
-				updateFinished=".onUpdateFinished"
-				selectionChange=".onSelectionChange">
-				<infoToolbar>
-					<Toolbar
-						active="true"
-						id="filterBar"
-						visible="{masterView>/isFilterBarVisible}"
-						press=".onOpenViewSettings">
-						<Title
-							id="filterBarLabel"
-							text="{masterView>/filterBarLabel}"
-							level="H3"/>
-					</Toolbar>
-				</infoToolbar>
-				<headerToolbar>
-					<OverflowToolbar>
-						<SearchField
-							id="searchField"
-							showRefreshButton="true"
-							tooltip="{i18n>masterSearchTooltip}"
-							search=".onSearch"
-							width="auto">
-							<layoutData>
-								<OverflowToolbarLayoutData
-									minWidth="150px"
-									maxWidth="240px"
-									shrinkable="true"
-									priority="NeverOverflow"/>
-							</layoutData>
-						</SearchField>
-						<ToolbarSpacer/>
-						<Button
-							id="sortButton"
-							press=".onOpenViewSettings"
-							icon="sap-icon://sort"
-							type="Transparent"/>
-						<Button
-							id="filterButton"
-							press=".onOpenViewSettings"
-							icon="sap-icon://filter"
-							type="Transparent"/>
-						<Button
-							id="groupButton"
-							press=".onOpenViewSettings"
-							icon="sap-icon://group-2"
-							type="Transparent"/>
-					</OverflowToolbar>
-				</headerToolbar>
-				<items>
-					<ObjectListItem
-						type="Navigation"
-						press=".onSelectionChange"
-						title="{Nombre}"
-						number="{
-							path: 'CodigoEstado',
-							formatter: '.formatter.currencyValue'
-						}"
->
-					</ObjectListItem>
-				</items>
-			</List>
-		</semantic:content>
-	</semantic:SemanticPage>-->
 </mvc:View>

@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/m/GroupHeaderListItem",
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
+	"sap/ui/model/FilterType",
 	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter) {
+], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, formatter) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.salesopportunity.controller.Master", {
@@ -78,6 +79,10 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
+
+			this.soaState.loadCountryChannels("CL");
+			this.soaState.loadCountryClassifications("CL");
+			this.soaState.loadCountryTenderTypes("CL");
 		},
 
 		/* =========================================================== */
@@ -116,7 +121,7 @@ sap.ui.define([
 			var sQuery = oEvent.getParameter("query");
 
 			if (sQuery) {
-				this._oListFilterState.aSearch = [new Filter("Nombre", FilterOperator.Contains, sQuery)];
+				this._oListFilterState.aSearch = [new Filter("Name", FilterOperator.Contains, sQuery)];
 			} else {
 				this._oListFilterState.aSearch = [];
 			}
@@ -139,7 +144,7 @@ sap.ui.define([
 		 * @public
 		 */
 		onOpenViewSettings : function (oEvent) {
-			var sDialogTab = "filter";
+			var sDialogTab = "sort";
 			if (oEvent.getSource() instanceof sap.m.Button) {
 				var sButtonId = oEvent.getSource().getId();
 				if (sButtonId.match("sort")) {
@@ -287,7 +292,7 @@ sap.ui.define([
 				delay: 0,
 				title: this.getResourceBundle().getText("masterTitleCount", [0]),
 				noDataText: this.getResourceBundle().getText("masterListNoDataText"),
-				sortBy: "Nombre",
+				sortBy: "Name",
 				groupBy: "None"
 			});
 		},
@@ -356,8 +361,191 @@ sap.ui.define([
 			var oViewModel = this.getModel("masterView");
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
+		},
+
+		/**
+		 * Creates an opportunity object in the State
+		 * @param {string} sObjectPath - the path of the selected object
+		 * @returns {object} - On opportunity object
+		 */
+		 createStateObject: function(sObjectPath){
+
+			const selectedObj = this.getView().getModel().getObject(sObjectPath);
+
+			// expand Comprador and Items
+			selectedObj["Comprador"] =this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
+			selectedObj["Items"]["results"]  = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+
+			return this.soaState.createOpportunity(selectedObj);
+
+		},
+
+		/* handling participate button press */
+		onParticipateOpportunityPress: async function(oEvent){
+			/* get the selected line in the table and set it as current opportunity */ 
+			let sPath = oEvent.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
+			const opportunity = this.createStateObject(sPath);
+			this.soaState.setSelectedOpportunity(opportunity);
+
+			await this.soaState.setTemporaryTender('CL');
+			this._getParticipationDialog().open();
+		},
+
+		/**
+		 * New contracting dialog
+		 * @returns {dialog} - oDialog
+		 */
+		 _getParticipationDialog: function () {
+
+			//create new dialog if not yet existing
+			if (!this._oParticipationDialog) {
+
+					//get dialog
+					this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.salesopportunity.view.fragments.OpportunityInfo", this);
+					this.getView().addDependent(this._oParticipationDialog);
+					
+			}
+
+			return this._oParticipationDialog;
+		},
+
+		onCancelParticipation: function (oEvent){
+			this._oParticipationDialog.close();
+			this.soastate.clearSelectedOpportunity();
+		},
+
+		onSaveParticipation: async function (){
+
+			const oTender = this.soaState.getNewTender();
+			if(this._validateNewTender(oTender)){
+
+				await this.soaState.createTender(oTender);
+
+				this.soastate.clearSelectedOpportunity();
+				this._oParticipationDialog.close();
+				//successfully created tender
+				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+					actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "CLOSE") {
+							sap.m.MessageToast.show("Tender creation done...");
+						} else {
+							window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+						}
+					}
+				});
+			}
+		},
+
+		_validateNewTender: function(oTender){
+			//TODO: implement checks to make sure tender is valid
+			let bValid = false;
+			bValid = true;
+			return bValid;
+		},
+
+		/* Filtering & sorting functionalities */
+		setFilter: function (oSelection) {
+
+			//var oFastAppData = Services.getFastAppDataModel();
+
+			var sSearch = this.byId("idSearch").getProperty("value");
+
+			//Add filters if they are set (so not the default, all...)
+			var orFilters = [];
+			var andFilters = [];
+			
+			//oSelection is empty when you are navigating back to the tender list after selecting a tender
+			var sIdSource = "";
+			if (oSelection) {
+				sIdSource = oSelection.getSource().getId();
+			}
+
+			if (sSearch.length > 0) {
+
+				orFilters.push(new Filter({
+					path: "CodigoExterno",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Name",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Comprador/OrganismNumber",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				andFilters.push(new sap.ui.model.Filter(orFilters, false));
+			}
+
+			var oFilters = new sap.ui.model.Filter(andFilters, true);
+
+			//Binding to table with the filters and the sorters
+			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
+
+			this.getCountryContractBrands(oCountry);
+
+		},
+
+		/* handle search helps */
+		handleValueHelp : async function (oEvent) {
+			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+
+			var oView = this.getView();
+			this._sInputId = this.byId('idInstituteName').getId();
+	
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "com.bayer.tender.salesopportunity.view.fragments.InstitutesSearchHelp",
+					controller: this
+				}).then(function(oValueHelpDialog){
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+	
+			// open value help dialog
+			this._pValueHelpDialog.then(function(oValueHelpDialog){
+				oValueHelpDialog.open();
+			});
+		},
+	
+		_handleValueHelpSearch : function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter(
+				"InstituteName",
+				FilterOperator.Contains, sValue
+			);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+	
+		_handleValueHelpClose : function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oInputfield = this.byId(this._sInputId);
+				oInputfield.setValue(oSelectedItem.getTitle());
+
+				if(this._sInputId.includes("InstituteName")){
+					const oTender = this.soaState.getNewTender();
+					oTender.instituteID = Number(oSelectedItem.getDescription());
+				}
+			}
+			oEvent.getSource().getBinding("items").filter([]);
 		}
 
+		/* end of search help handlers */
 	});
 
 });

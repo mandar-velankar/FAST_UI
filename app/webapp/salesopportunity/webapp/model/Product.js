@@ -25,23 +25,22 @@ sap.ui.define([
      
         getJSON: function () {
             return this.getJSONObject([
-                "adjudicacionCantidad", 
-                "adjudicacionMontoUnitario", 
-                "adjudicacionNombreProveedor", 
-                "adjudicacionRutProveedor", 
-                "busy", 
-                "cantidad", 
-                "categoria", 
-                "codigoCategoria", 
-                "codigoProducto", 
-                "correlativo", 
-                "descripcion", 
-                "iD", 
-                "licitacione_CodigoExterno", 
+                "iD",
+                "correlative",
+                "productCode",
+                "categoryCode",
+                "category",
+                "productName",
+                "description",
+                "uoM",
+                "quantity",
+                "supplierAwardID",
+                "supplierAwardName",
+                "awardAmount",
+                "awardCurrency",
                 "matchedProductKeyword", 
                 "matchedProductName", 
-                "nombreProducto", 
-                "unidadMedida"
+                "tenders_CodigoExterno"
             ]);
         },
 
