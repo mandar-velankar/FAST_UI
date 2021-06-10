@@ -212,6 +212,7 @@ sap.ui.define([
 			// No item should be selected on master after detail page is closed
 			this.getOwnerComponent().oListSelector.clearMasterListSelection();
 			this.getRouter().navTo("master");
+			this.soaState.clearSelectedOpportunity();
 		},
 
 		/**

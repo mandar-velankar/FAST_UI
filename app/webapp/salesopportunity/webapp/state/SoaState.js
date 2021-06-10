@@ -62,6 +62,10 @@ sap.ui.define([
 			this.nextTenderNo = Number(sTenderNo);
 		},
 
+		clearSelectedOpportunity: function(){
+			this.setSelectedOpportunity({});
+		},
+
 		/**
 		 * Saves a given opportunity in the backend.
 		 * @returns {Promise} - Return a promise
