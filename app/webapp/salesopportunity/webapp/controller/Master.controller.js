@@ -79,6 +79,10 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
+
+			this.soaState.loadCountryChannels("CL");
+			this.soaState.loadCountryClassifications("CL");
+			this.soaState.loadCountryTenderTypes("CL");
 		},
 
 		/* =========================================================== */
@@ -360,7 +364,8 @@ sap.ui.define([
 		},
 
 		/* handling participate button press */
-		onParticipateOpportunityPress: function(){
+		onParticipateOpportunityPress: async function(){
+			await this.soaState.setTemporaryTender('CL');
 			this._getParticipationDialog().open();
 		},
 
@@ -380,29 +385,40 @@ sap.ui.define([
 			}
 
 			return this._oParticipationDialog;
-
-
-
 		},
 
 		onCancelParticipation: function (oEvent){
 			this._oParticipationDialog.close();
 		},
 
-		onSaveParticipation: function (){
-			this._oParticipationDialog.close();
-			//successfully created tender
-			sap.m.MessageBox.success("Tender created with ID (CL-21-1001).", {
-				actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
-				styleClass: "sapUiSizeCompact",
-				onClose: function (sAction) {
-					if (sAction === "CLOSE") {
-						sap.m.MessageToast.show("Tender creation done...");
-					} else {
-						window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/CL-21-1001//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		onSaveParticipation: async function (){
+
+			const oTender = this.soaState.getNewTender();
+			if(this._validateNewTender(oTender)){
+
+				await this.soaState.createTender(oTender);
+
+				this._oParticipationDialog.close();
+				//successfully created tender
+				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+					actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "CLOSE") {
+							sap.m.MessageToast.show("Tender creation done...");
+						} else {
+							window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+						}
 					}
-				}
-			});
+				});
+			}
+		},
+
+		_validateNewTender: function(oTender){
+			//TODO: implement checks to make sure tender is valid
+			let bValid = false;
+			bValid = true;
+			return bValid;
 		},
 
 		/* Filtering & sorting functionalities */
@@ -456,6 +472,56 @@ sap.ui.define([
 			this.getCountryContractBrands(oCountry);
 
 		},
+
+		/* handle search helps */
+		handleValueHelp : async function (oEvent) {
+			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
+
+			var oView = this.getView();
+			this._sInputId = this.byId('idInstituteName').getId();
+	
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "com.bayer.tender.salesopportunity.view.fragments.InstitutesSearchHelp",
+					controller: this
+				}).then(function(oValueHelpDialog){
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+	
+			// open value help dialog
+			this._pValueHelpDialog.then(function(oValueHelpDialog){
+				oValueHelpDialog.open();
+			});
+		},
+	
+		_handleValueHelpSearch : function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter(
+				"InstituteName",
+				FilterOperator.Contains, sValue
+			);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+	
+		_handleValueHelpClose : function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oInputfield = this.byId(this._sInputId);
+				oInputfield.setValue(oSelectedItem.getTitle());
+
+				if(this._sInputId.includes("InstituteName")){
+					const oTender = this.soaState.getNewTender();
+					oTender.instituteID = Number(oSelectedItem.getDescription());
+				}
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		}
+
+		/* end of search help handlers */
 	});
 
 });

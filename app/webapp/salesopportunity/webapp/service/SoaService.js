@@ -56,7 +56,7 @@ sap.ui.define([
 		},
 
 		/* get a new Tender ID */
-		getNewTenderID: function(sCountry){
+		getNewTenderNo: function(sCountry){
 			const sKey = this.model.createKey("/CountryTenderNo", {
 				COUNTRY_CODE: sCountry
 			});
@@ -133,7 +133,16 @@ sap.ui.define([
 			return this.odata(sInstitutesPath).get(mParameters);
 		},
 
+		/* create & update */
+		createTender: function(oTender) {
+
+			const data = oTender.getJSON();
+			return this.odata("/PT_TMTEND").post(data);
+
+		},
     });
+
+	
     
 	return SoaService;
 });
