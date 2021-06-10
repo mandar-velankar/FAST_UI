@@ -14,7 +14,7 @@ sap.ui.define([
 
         getJSON: function () {
 
-            return this.getJSONObject([
+            const json = this.getJSONObject([
                 //"iD",
                 "tenderID",
                 "countryCode",
@@ -31,17 +31,30 @@ sap.ui.define([
                 "awardDate",
                 "nextPublicationDye",
                 "contractLength",
-                "ContractExtenseion",
-                "ContractLength",
-                "ContractExtension",
+                "contractExtenseion",
+                "contractLength",
                 "tenderStatus",
-                "TENDER_TYPE_ID",
-                "CONTRACT_TYPE_ID",
-                "SALES_TYPE_ID",
-                "TENDER_ORIGIN_ID",
-                "PROCUREMENT_METHOD_ID",
-                "PROCUREMENT_REASON",
+                "tENDER_TYPE_ID",
+                "cONTRACT_TYPE_ID",
+                "sALES_TYPE_ID",
+                "tENDER_ORIGIN_ID",
+                "pROCUREMENT_METHOD_ID",
+                "pROCUREMENT_REASON",
             ]);
+
+            return {
+                ...json,
+                TenderNo: +json.TenderNo,
+                InstituteID: +json.InstituteID,
+                Active: +json.Active,
+                GroupPurchasing: +json.GroupPurchasing,
+                ContractLength: +json.ContractLength,
+                //ContractExtenseion: +json.ContractExtenseion,
+                TENDER_TYPE_ID: +json.TENDER_TYPE_ID,
+                CONTRACT_TYPE_ID: +json.CONTRACT_TYPE_ID,
+                SALES_TYPE_ID: +json.SALES_TYPE_ID,
+                TENDER_ORIGIN_ID: +json.TENDER_TYPE_ID
+            }
         },
 
     });
