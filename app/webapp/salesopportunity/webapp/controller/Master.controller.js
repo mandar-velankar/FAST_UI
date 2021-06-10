@@ -363,8 +363,30 @@ sap.ui.define([
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
 		},
 
+		/**
+		 * Creates an opportunity object in the State
+		 * @param {string} sObjectPath - the path of the selected object
+		 * @returns {object} - On opportunity object
+		 */
+		 createStateObject: function(sObjectPath){
+
+			const selectedObj = this.getView().getModel().getObject(sObjectPath);
+
+			// expand Comprador and Items
+			selectedObj["Comprador"] =this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
+			selectedObj["Items"]["results"]  = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+
+			return this.soaState.createOpportunity(selectedObj);
+
+		},
+
 		/* handling participate button press */
-		onParticipateOpportunityPress: async function(){
+		onParticipateOpportunityPress: async function(oEvent){
+			/* get the selected line in the table and set it as current opportunity */ 
+			let sPath = oEvent.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
+			const opportunity = this.createStateObject(sPath);
+			this.soaState.setSelectedOpportunity(opportunity);
+
 			await this.soaState.setTemporaryTender('CL');
 			this._getParticipationDialog().open();
 		},
@@ -389,6 +411,7 @@ sap.ui.define([
 
 		onCancelParticipation: function (oEvent){
 			this._oParticipationDialog.close();
+			this.soastate.clearSelectedOpportunity();
 		},
 
 		onSaveParticipation: async function (){
@@ -398,6 +421,7 @@ sap.ui.define([
 
 				await this.soaState.createTender(oTender);
 
+				this.soastate.clearSelectedOpportunity();
 				this._oParticipationDialog.close();
 				//successfully created tender
 				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
