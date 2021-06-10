@@ -99,6 +99,25 @@
 		<sections>
 			<!-- OPPORTUNITY INFORMATION TAB -->
 			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
+					<ObjectPageSubSection mode="Expanded" title="Opportunity Details">
+						<l:BlockLayout background="Light">
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+									<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+													 adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+													 singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
+											<form:content>
+												<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
+												<m:Input value="{fastData>TenderName}" enabled="false"/>
+												<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
+												<m:Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" />
+											</form:content>
+									</form:SimpleForm>
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
+						</l:BlockLayout>
+					</ObjectPageSubSection>
+
 					<ObjectPageSubSection mode="Expanded" title="Comment">
 						<actions>
 							<m:Switch state="{= ${soa>/selectedOpportunity/tenderMatchingStatus} === 'In' ? true : false }" change="onTenderMatchingStatusChange" customTextOn="In" customTextOff="Out" enabled="{= ${soa>/editMode} === true }">
