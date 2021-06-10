@@ -32,13 +32,15 @@ sap.ui.define([
                 "nextPublicationDye",
                 "contractLength",
                 "ContractExtenseion",
+                "ContractLength",
+                "ContractExtension",
                 "tenderStatus",
                 "TENDER_TYPE_ID",
                 "CONTRACT_TYPE_ID",
                 "SALES_TYPE_ID",
                 "TENDER_ORIGIN_ID",
                 "PROCUREMENT_METHOD_ID",
-                "PROCUREMENT_REASON"
+                "PROCUREMENT_REASON",
             ]);
         },
 

@@ -62,9 +62,9 @@
                         <DatePicker id="idNextPublicationDye" value="{path :'soa>/newTender/nextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
 
                         <Label text="Contract Length [months]" design="Bold"/>
-                        <Input id="idContractLength" value="ContractDurationTime" type="Number" />
+                        <Input id="idContractLength" value="{soa>/newTender/contractDurationTime}" type="Number" />
                         <Label text="Extension Period [months]" design="Bold"/>
-                        <Input id="idContractExtenseion" value="TermExtension" type="Number" />
+                        <Input id="idContractExtenseion" value="{soa>/newTender/termExtension}" type="Number" />
 
                         <!-- Block - Award criteria -->
                         <core:Title text="Award Criteria" id="idAwrdTitle"/>

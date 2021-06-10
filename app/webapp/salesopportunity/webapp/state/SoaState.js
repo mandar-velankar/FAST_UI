@@ -143,6 +143,8 @@ sap.ui.define([
 				"PROCUREMENT_METHOD_ID": "Not Specified",
 				"PROCUREMENT_REASON": "",
 				"HighValue": false,
+				"ContractLength": Number(oSelectedOpportunity.contractDurationTime),
+				"ContractExtension": Number(oSelectedOpportunity.TermExtension)
             };
 
             const oTender = new Tender(data);
