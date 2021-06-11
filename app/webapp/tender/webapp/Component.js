@@ -38,6 +38,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/ChannelProductPolicyService",
 	"FAST_NS0FAST0/services/ProductService",
 	"FAST_NS0FAST0/services/ResultService",
+	"FAST_NS0FAST0/services/SalesOpportunityService",
 	"FAST_NS0FAST0/services/ScenarioService",
 	"FAST_NS0FAST0/services/QuotationService",
 	"FAST_NS0FAST0/services/SpecificationService",
@@ -45,7 +46,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/MailService",
 ], function (UIComponent, JSONModel, fioriLibrary, FlexibleColumnLayoutSemanticHelper, Button, Dialog, Label, MessageToast, Text,
 	TextArea, ODataModel, Services, OfferService, TenderService, ApprovalService, AwardCriteriaService, CompetitorResultService, 
-	DeliveryService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, ScenarioService, QuotationService, SpecificationService, Device, MailService) {
+	DeliveryService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, SalesOpportunityService, ScenarioService, QuotationService, SpecificationService, Device, MailService) {
 	"use strict";
 
 	return UIComponent.extend("FAST_NS0FAST0.Component", {
@@ -100,6 +101,7 @@ sap.ui.define([
 			this.ChannelProductPolicyService = new ChannelProductPolicyService(oDefaultModel);
 			this.ProductService = new ProductService(oDefaultModel);
 			this.ResultService = new ResultService(oDefaultModel);
+			this.SalesOpportunityService = new SalesOpportunityService(oDefaultModel);
 			this.ScenarioService = new ScenarioService(oDefaultModel);
 			this.QuotationService = new QuotationService(oDefaultModel);
 			this.SpecificationService = new SpecificationService(oDefaultModel);
@@ -119,6 +121,7 @@ sap.ui.define([
 				ChannelProductPolicyService: this.ChannelProductPolicyService,
 				ProductService:this.ProductService,
 				ResultService:this.ResultService,
+				SalesOpportunityService:this.SalesOpportunityService,
 				ScenarioService:this.ScenarioService,
 				QuotationService:this.QuotationService,
 				SpecificationService: this.SpecificationService,

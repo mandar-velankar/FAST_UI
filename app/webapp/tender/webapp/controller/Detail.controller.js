@@ -5116,7 +5116,7 @@ sap.ui.define([
 		},
 
 		//show dialog for adding a Product offer: OfferProductsEdit.fragment.xml
-		onAddProductForOffer: function (oEvent) {
+		onAddProductForOffer: async function (oEvent) {
 
 			//distributor id is set on page form and should be used (instead of requested) when adding product
 			//payment terms and inco terns should set based on information in view providing product
@@ -5124,10 +5124,20 @@ sap.ui.define([
 			//data declarations
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var that = this;
+			let oTender = Services.getLoadedTender();
+			let sTenderReference = oTender.CountrySpecificInformation && oTender.CountrySpecificInformation.TenderReference;
+
 			Services.setSelectedDistributorID(that.getView().byId("idDistributorName").getSelectedKey());
 			//clear fields
 			oFastAppDataModel.setProperty("/ProductCollection", null);
 			//oFastAppDataModel.setProperty("/ProductCollectionOutput", null);
+
+			if(Services.getSelectedCountry() === 'CL'){
+				//const salesOpportunity = await Services.getService('SalesOpportunity').getOpportunity(sTenderReference);
+				//let o = salesOpportunity.data && salesOpportunity.data.results && salesOpportunity.data.results > 0;
+				//TenderMatchingStatus
+				//oFastAppDataModel.setProperty("/MercadoInProducts", oSalesOpportunity);
+			}
 
 			//if dialog exists destroy it first, so we always set dialog buttons in correct state
 			if (that._oDialog) {
