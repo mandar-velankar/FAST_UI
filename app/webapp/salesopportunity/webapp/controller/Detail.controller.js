@@ -233,11 +233,20 @@ sap.ui.define([
 			}
 		},
 
-		onParticipateOpportunityPress: async function () {
+		onParticipateOpportunityPress: async function (oEvent) {
+			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
+			if (oSelectedOpportunity.mainStatus === "Participated") {
+				this.openTender(oSelectedOpportunity.tenderID);
+				return true;
+			}
+
 			await this.soaState.setTemporaryTender('CL');
 			this._getParticipationDialog().open();
 		},
 
+		openTender:function(tenderId){
+			window.open("/app/index.html#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		},
 		/**
 		 * New contracting dialog
 		 * @returns {dialog} - oDialog
