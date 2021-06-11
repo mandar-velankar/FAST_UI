@@ -138,14 +138,35 @@
 												 items="{
 												    	path: 'soa>/selectedOpportunity/products' }">
 										<m:columns>
-											<m:Column width="20%">
+											<m:Column >
+												<m:Label text="Correlative" wrapping="true"/>  
+											</m:Column>
+											<m:Column >
+												<m:Label text="Code" wrapping="true"/>  
+											</m:Column>
+											<m:Column >
 												<m:Label text="Product" wrapping="true"/>  <!-- NAME -->
 											</m:Column>
-											<m:Column width="10%">
+											<m:Column >
+												<m:Label text="UoM" wrapping="true"/>
+											</m:Column>
+											<m:Column>
 												<m:Label text="Quantity" wrapping="true"/> <!-- Quantity -->
 											</m:Column>
-											<m:Column width="70%">
+											<m:Column  minScreenWidth="Desktop" demandPopin="true" width="400px">
 												<m:Label text="Comment" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="120px" popinDisplay="Inline">
+												<m:Label text="SupplierAwardID" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="SupplierAwardName" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="AwardAmount" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="AwardCurrency" wrapping="true"/>
 											</m:Column>
 										</m:columns>
 										<m:items>
@@ -154,12 +175,16 @@
 												press="onProductItemSelect"
 												detailPress="onProductItemSelect">
 												<m:cells>
-
+													<m:Text text="{soa>correlative}"/>
+													<m:Text text="{soa>productCode}"/>
 													<m:Text id="productNameId" text="{soa>productName}"/> 
+													<m:Text text="{soa>uoM}"/>
 													<m:Text id="productQtyId" text="{soa>quantity}"/> 
-													
 													<m:TextArea value="{soa>description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
-											
+													<m:Text text="{soa>supplierAwardID}"/>
+													<m:Text text="{soa>supplierAwardName}"/>
+													<m:Text text="{soa>awardAmount}"/>
+													<m:Text text="{soa>awardCurrency}"/>
 												</m:cells>
 											</m:ColumnListItem>
 										</m:items>
