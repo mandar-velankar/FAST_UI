@@ -30,7 +30,7 @@
 						id="list"
 						inset="false"
 						items="{
-							path: '/PublicMarketTenders',
+							path: '/PublicMarketOpportunities',
 							sorter: {
 								path: 'CodigoExterno',
 								descending: false
