@@ -12,7 +12,7 @@
 				selected="true"/>
 			<ViewSettingsItem
 				text="{i18n>Code}"
-				key="Code"/>
+				key="CodigoExterno"/>
 			<ViewSettingsItem
 				text="{i18n>Institute}"
 				key="Comprador/OrganismNumber"/>
@@ -30,7 +30,7 @@
 					<ViewSettingsItem
 						id="viewFilter2"
 						text="{i18n>Code}"
-						key="Code"/>
+						key="CodigoExterno"/>
 					<ViewSettingsItem
 						id="viewFilter3"
 						text="{i18n>Institute}"
@@ -41,7 +41,7 @@
 		<groupItems>
 			<ViewSettingsItem
 				text="{i18n>Code}"
-				key="Code"/>
+				key="CodigoExterno"/>
 		</groupItems>
 	</ViewSettingsDialog>
 </core:FragmentDefinition>

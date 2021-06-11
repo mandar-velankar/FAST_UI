@@ -10,7 +10,7 @@ sap.ui.define([
 
 		constructor: function (model) {
 			CoreService.call(this, model);
-        },
+		},
 
 		/**
 		 * Fetches opportunities from the backend.
@@ -18,10 +18,10 @@ sap.ui.define([
 		 * @returns {promise} - a list of opportunities
 		 */
 		getOpportunities: function (sPublicationDate) {
-			
+
 			var aFilters = [];
 
-			if(sPublicationDate){
+			if (sPublicationDate) {
 
 				var oPublicationDateFilter = new Filter({
 					path: 'PublicationDate',
@@ -32,7 +32,7 @@ sap.ui.define([
 				aFilters.push(oPublicationDateFilter);
 			}
 
-			
+
 			var mParameters = {
 				filters: aFilters,
 				urlParameters: {
@@ -43,7 +43,7 @@ sap.ui.define([
 			return this.odata("/PublicMarketTenders").get(mParameters);
 		},
 
-		saveOpportunity: function(opportunity){
+		saveOpportunity: function (opportunity) {
 
 			const data = opportunity.getAll();
 
@@ -56,7 +56,7 @@ sap.ui.define([
 		},
 
 		/* get a new Tender ID */
-		getNewTenderNo: function(sCountry){
+		getNewTenderNo: function (sCountry) {
 			const sKey = this.model.createKey("/CountryTenderNo", {
 				COUNTRY_CODE: sCountry
 			});
@@ -65,7 +65,7 @@ sap.ui.define([
 		},
 
 		/* get a new Tender ID */
-		loadCountryChannels: function(sCountry){
+		loadCountryChannels: function (sCountry) {
 			const sCountryChannelsPath = "/CountryChannels";
 			var aFilters = [];
 
@@ -134,15 +134,22 @@ sap.ui.define([
 		},
 
 		/* create & update */
-		createTender: function(oTender) {
+		createTender: function (oTender) {
 
 			const data = oTender.getJSON();
 			return this.odata("/PT_TMTEND").post(data);
 
 		},
-    });
+		createCountrySpecificInformation: function (tender, opportunity) {
+			const data = {
+				...tender.getJSONTenderID(),
+				...opportunity.getJSONCountrySpecificTenderInfo()
+			};
+			return this.odata("/CountrySpecificInformation").post(data);
+		}
+	});
 
-	
-    
+
+
 	return SoaService;
 });

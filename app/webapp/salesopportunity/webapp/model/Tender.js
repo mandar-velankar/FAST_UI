@@ -11,7 +11,9 @@ sap.ui.define([
             BaseObject.call(this, data);
 
         },
-
+        getJSONTenderID:function(){
+            return this.getJSONObject(["tenderID"]);
+        },
         getJSON: function () {
 
             const json = this.getJSONObject([

@@ -8,8 +8,9 @@ sap.ui.define([
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
 	"sap/ui/model/FilterType",
+	"sap/ui/core/BusyIndicator",
 	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, formatter) {
+], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, BusyIndicator, formatter) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.salesopportunity.controller.Master", {
@@ -24,7 +25,7 @@ sap.ui.define([
 		 * Called when the master list controller is instantiated. It sets up the event handling for the master/detail communication and other lifecycle tasks.
 		 * @public
 		 */
-		onInit : function () {
+		onInit: function () {
 			// Control state model
 			var oList = this.byId("list"),
 				oViewModel = this._createViewModel(),
@@ -34,7 +35,7 @@ sap.ui.define([
 				iOriginalBusyDelay = oList.getBusyIndicatorDelay();
 
 			this._oGroupFunctions = {
-				CodigoEstado : function(oContext) {
+				CodigoEstado: function (oContext) {
 					var iNumber = oContext.getProperty('CodigoEstado'),
 						key, text;
 					if (iNumber <= 20) {
@@ -54,15 +55,15 @@ sap.ui.define([
 			this._oList = oList;
 			// keeps the filter and search state
 			this._oListFilterState = {
-				aFilter : [],
-				aSearch : []
+				aFilter: [],
+				aSearch: []
 			};
 
 			this.setModel(oViewModel, "masterView");
 			// Make sure, busy indication is showing immediately so there is no
 			// break after the busy indication for loading the view's meta data is
 			// ended (see promise 'oWhenMetadataIsLoaded' in AppController)
-			oList.attachEventOnce("updateFinished", function(){
+			oList.attachEventOnce("updateFinished", function () {
 				// Restore original busy indicator delay for the list
 				oViewModel.setProperty("/delay", iOriginalBusyDelay);
 			});
@@ -95,7 +96,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the update finished event
 		 * @public
 		 */
-		onUpdateFinished : function (oEvent) {
+		onUpdateFinished: function (oEvent) {
 			// update the master list object counter after new data is loaded
 			this._updateListItemCount(oEvent.getParameter("total"));
 		},
@@ -108,7 +109,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the search event
 		 * @public
 		 */
-		onSearch : function (oEvent) {
+		onSearch: function (oEvent) {
 			if (oEvent.getParameters().refreshButtonPressed) {
 				// Search field's 'refresh' button has been pressed.
 				// This is visible if you select any master list item.
@@ -134,7 +135,7 @@ sap.ui.define([
 		 * and group settings and refreshes the list binding.
 		 * @public
 		 */
-		onRefresh : function () {
+		onRefresh: function () {
 			this._oList.getBinding("items").refresh();
 		},
 
@@ -143,7 +144,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the button press event
 		 * @public
 		 */
-		onOpenViewSettings : function (oEvent) {
+		onOpenViewSettings: function (oEvent) {
 			var sDialogTab = "sort";
 			if (oEvent.getSource() instanceof sap.m.Button) {
 				var sButtonId = oEvent.getSource().getId();
@@ -159,7 +160,7 @@ sap.ui.define([
 					id: this.getView().getId(),
 					name: "com.bayer.tender.salesopportunity.view.ViewSettingsDialog",
 					controller: this
-				}).then(function(oDialog){
+				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
 					this.getView().addDependent(oDialog);
 					oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
@@ -179,7 +180,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the confirm event
 		 * @public
 		 */
-		onConfirmViewSettingsDialog : function (oEvent) {
+		onConfirmViewSettingsDialog: function (oEvent) {
 			var aFilterItems = oEvent.getParameters().filterItems,
 				aFilters = [],
 				aCaptions = [];
@@ -188,13 +189,13 @@ sap.ui.define([
 			// combine the filter array and the filter string
 			aFilterItems.forEach(function (oItem) {
 				switch (oItem.getKey()) {
-					case "Filter1" :
+					case "Filter1":
 						aFilters.push(new Filter("CodigoEstado", FilterOperator.LE, 100));
 						break;
-					case "Filter2" :
+					case "Filter2":
 						aFilters.push(new Filter("CodigoEstado", FilterOperator.GT, 100));
 						break;
-					default :
+					default:
 						break;
 				}
 				aCaptions.push(oItem.getText());
@@ -235,7 +236,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the list selectionChange event
 		 * @public
 		 */
-		onSelectionChange : function (oEvent) {
+		onSelectionChange: function (oEvent) {
 			var oList = oEvent.getSource(),
 				bSelected = oEvent.getParameter("selected");
 
@@ -251,7 +252,7 @@ sap.ui.define([
 		 * If there was an object selected in the master list, that selection is removed.
 		 * @public
 		 */
-		onBypassed : function () {
+		onBypassed: function () {
 			this._oList.removeSelections(true);
 		},
 
@@ -263,10 +264,10 @@ sap.ui.define([
 		 * @public
 		 * @returns {sap.m.GroupHeaderListItem} group header with non-capitalized caption.
 		 */
-		createGroupHeader : function (oGroup) {
+		createGroupHeader: function (oGroup) {
 			return new GroupHeaderListItem({
-				title : oGroup.text,
-				upperCase : false
+				title: oGroup.text,
+				upperCase: false
 			});
 		},
 
@@ -275,7 +276,7 @@ sap.ui.define([
 		 * We navigate back in the browser historz
 		 * @public
 		 */
-		onNavBack : function() {
+		onNavBack: function () {
 			// eslint-disable-next-line sap-no-history-manipulation
 			history.go(-1);
 		},
@@ -285,7 +286,7 @@ sap.ui.define([
 		/* =========================================================== */
 
 
-		_createViewModel : function() {
+		_createViewModel: function () {
 			return new JSONModel({
 				isFilterBarVisible: false,
 				filterBarLabel: "",
@@ -297,7 +298,7 @@ sap.ui.define([
 			});
 		},
 
-		_onMasterMatched :  function() {
+		_onMasterMatched: function () {
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
 
@@ -312,12 +313,12 @@ sap.ui.define([
 		 * @param {sap.m.ObjectListItem} oItem selected Item
 		 * @private
 		 */
-		_showDetail : function (oItem) {
+		_showDetail: function (oItem) {
 			var bReplace = !Device.system.phone;
 			// set the layout property of FCL control to show two columns
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getRouter().navTo("object", {
-				objectId : oItem.getBindingContext().getProperty("CodigoExterno")
+				objectId: oItem.getBindingContext().getProperty("CodigoExterno")
 			}, bReplace);
 		},
 
@@ -326,7 +327,7 @@ sap.ui.define([
 		 * @param {integer} iTotalItems the total number of items in the list
 		 * @private
 		 */
-		_updateListItemCount : function (iTotalItems) {
+		_updateListItemCount: function (iTotalItems) {
 			var sTitle;
 			// only update the counter if the length is final
 			if (this._oList.getBinding("items").isLengthFinal()) {
@@ -339,7 +340,7 @@ sap.ui.define([
 		 * Internal helper method to apply both filter and search state together on the list binding
 		 * @private
 		 */
-		_applyFilterSearch : function () {
+		_applyFilterSearch: function () {
 			var aFilters = this._oListFilterState.aSearch.concat(this._oListFilterState.aFilter),
 				oViewModel = this.getModel("masterView");
 			this._oList.getBinding("items").filter(aFilters, "Application");
@@ -357,7 +358,7 @@ sap.ui.define([
 		 * @param {string} sFilterBarText the selected filter value
 		 * @private
 		 */
-		_updateFilterBar : function (sFilterBarText) {
+		_updateFilterBar: function (sFilterBarText) {
 			var oViewModel = this.getModel("masterView");
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
@@ -368,21 +369,21 @@ sap.ui.define([
 		 * @param {string} sObjectPath - the path of the selected object
 		 * @returns {object} - On opportunity object
 		 */
-		 createStateObject: function(sObjectPath){
+		createStateObject: function (sObjectPath) {
 
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
 			// expand Comprador and Items
-			selectedObj["Comprador"] =this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
-			selectedObj["Items"]["results"]  = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+			selectedObj["Comprador"] = this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
+			selectedObj["Items"]["results"] = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
 
 			return this.soaState.createOpportunity(selectedObj);
 
 		},
 
 		/* handling participate button press */
-		onParticipateOpportunityPress: async function(oEvent){
-			/* get the selected line in the table and set it as current opportunity */ 
+		onParticipateOpportunityPress: async function (oEvent) {
+			/* get the selected line in the table and set it as current opportunity */
 			let sPath = oEvent.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
 			const opportunity = this.createStateObject(sPath);
 			this.soaState.setSelectedOpportunity(opportunity);
@@ -395,50 +396,55 @@ sap.ui.define([
 		 * New contracting dialog
 		 * @returns {dialog} - oDialog
 		 */
-		 _getParticipationDialog: function () {
+		_getParticipationDialog: function () {
 
 			//create new dialog if not yet existing
 			if (!this._oParticipationDialog) {
 
-					//get dialog
-					this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.salesopportunity.view.fragments.OpportunityInfo", this);
-					this.getView().addDependent(this._oParticipationDialog);
-					
+				//get dialog
+				this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.salesopportunity.view.fragments.OpportunityInfo", this);
+				this.getView().addDependent(this._oParticipationDialog);
+
 			}
 
 			return this._oParticipationDialog;
 		},
 
-		onCancelParticipation: function (oEvent){
+		onCancelParticipation: function (oEvent) {
 			this._oParticipationDialog.close();
-			this.soastate.clearSelectedOpportunity();
+			this.soaState.clearSelectedOpportunity();
 		},
 
-		onSaveParticipation: async function (){
+		onSaveParticipation: async function () {
 
 			const oTender = this.soaState.getNewTender();
-			if(this._validateNewTender(oTender)){
-
-				await this.soaState.createTender(oTender);
-
-				this.soastate.clearSelectedOpportunity();
-				this._oParticipationDialog.close();
-				//successfully created tender
-				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-					actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
-					styleClass: "sapUiSizeCompact",
-					onClose: function (sAction) {
-						if (sAction === "CLOSE") {
-							sap.m.MessageToast.show("Tender creation done...");
-						} else {
-							window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+			if (this._validateNewTender(oTender)) {
+				try {
+					BusyIndicator.show(0);
+					await this.soaState.createTender(oTender);
+					BusyIndicator.hide()
+					this.soaState.clearSelectedOpportunity();
+					this._oParticipationDialog.close();
+					//successfully created tender
+					sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+						actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction === "CLOSE") {
+								sap.m.MessageToast.show("Tender creation done...");
+							} else {
+								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+							}
 						}
-					}
-				});
+					});
+				} catch (error) {
+					BusyIndicator.hide()
+				}
 			}
 		},
 
-		_validateNewTender: function(oTender){
+		_validateNewTender: function (oTender) {
 			//TODO: implement checks to make sure tender is valid
 			let bValid = false;
 			bValid = true;
@@ -455,7 +461,7 @@ sap.ui.define([
 			//Add filters if they are set (so not the default, all...)
 			var orFilters = [];
 			var andFilters = [];
-			
+
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
 			var sIdSource = "";
 			if (oSelection) {
@@ -488,41 +494,41 @@ sap.ui.define([
 				andFilters.push(new sap.ui.model.Filter(orFilters, false));
 			}
 
-			var oFilters = new sap.ui.model.Filter(andFilters, true);
+			var oFilters = (andFilters.length > 0 && new sap.ui.model.Filter(andFilters, true)) || [];
 
 			//Binding to table with the filters and the sorters
 			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
 
-			this.getCountryContractBrands(oCountry);
+			// this.getCountryContractBrands(oCountry);//not sure what this does but country is not available here.. which results in an error
 
 		},
 
 		/* handle search helps */
-		handleValueHelp : async function (oEvent) {
+		handleValueHelp: async function (oEvent) {
 			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
 
 			var oView = this.getView();
 			this._sInputId = this.byId('idInstituteName').getId();
-	
+
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
 				this._pValueHelpDialog = sap.ui.core.Fragment.load({
 					id: oView.getId(),
 					name: "com.bayer.tender.salesopportunity.view.fragments.InstitutesSearchHelp",
 					controller: this
-				}).then(function(oValueHelpDialog){
+				}).then(function (oValueHelpDialog) {
 					oView.addDependent(oValueHelpDialog);
 					return oValueHelpDialog;
 				});
 			}
-	
+
 			// open value help dialog
-			this._pValueHelpDialog.then(function(oValueHelpDialog){
+			this._pValueHelpDialog.then(function (oValueHelpDialog) {
 				oValueHelpDialog.open();
 			});
 		},
-	
-		_handleValueHelpSearch : function (oEvent) {
+
+		_handleValueHelpSearch: function (oEvent) {
 			var sValue = oEvent.getParameter("value");
 			var oFilter = new Filter(
 				"InstituteName",
@@ -530,14 +536,14 @@ sap.ui.define([
 			);
 			oEvent.getSource().getBinding("items").filter([oFilter]);
 		},
-	
-		_handleValueHelpClose : function (oEvent) {
+
+		_handleValueHelpClose: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
 				var oInputfield = this.byId(this._sInputId);
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				if(this._sInputId.includes("InstituteName")){
+				if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
 					oTender.instituteID = Number(oSelectedItem.getDescription());
 				}
