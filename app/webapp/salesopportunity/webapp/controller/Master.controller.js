@@ -390,7 +390,7 @@ sap.ui.define([
 			// let sPath = event.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
 			const selectedObj = event.getSource().getBindingContext().getObject()//shorter using public functions
 
-			const selectedItemStatus = event.getSource().getBindingContext().getProperty("Status");
+			const selectedItemStatus = event.getSource().getBindingContext().getProperty("MainStatus");
 			if (selectedItemStatus === "Participated") {
 				this.openTender(selectedObj.TenderID);
 				return true;
