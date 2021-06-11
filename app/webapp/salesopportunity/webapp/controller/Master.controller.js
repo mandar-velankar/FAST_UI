@@ -540,12 +540,13 @@ sap.ui.define([
 		_handleValueHelpClose: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
-				var oInputfield = this.byId(this._sInputId);
-				oInputfield.setValue(oSelectedItem.getTitle());
+				// var oInputfield = this.byId(this._sInputId); 
+				// oInputfield.setValue(oSelectedItem.getTitle());
 
 				if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
 					oTender.instituteID = Number(oSelectedItem.getDescription());
+					oTender.instituteName = oSelectedItem.getTitle();
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
