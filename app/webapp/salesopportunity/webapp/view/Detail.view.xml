@@ -50,7 +50,7 @@
 				<!-- ACTIONS -->
 				<actions>
 					<m:Button id="participateButtonId" icon="sap-icon://action" text="Participate" type="Emphasized" press="onParticipateOpportunityPress" enabled="true" />
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${ctr>/editMode} === false ? true : false } }"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${soa>/editMode} === false ? true : false }"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
@@ -99,34 +99,6 @@
 		<sections>
 			<!-- OPPORTUNITY INFORMATION TAB -->
 			<ObjectPageSection id="opportunityInfoId" title="Opportunity Info"  visible="true">
-					<ObjectPageSubSection mode="Expanded" title="Opportunity Details">
-						<l:BlockLayout background="Light">
-							<l:BlockLayoutRow>
-								<l:BlockLayoutCell>
-									<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
-													 adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
-													 singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
-											<form:content>
-												<core:Title text="Institute &amp; Type"/>
-												<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
-												<m:Input value="{fastData>TenderName}" enabled="false"/>
-												<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
-												<m:Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" />
-
-												<core:Title text="Timeline"/>
-												<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
-												<m:Input value="{fastData>TenderName}" enabled="false"/>
-
-												<core:Title text="Test 3"/>
-												<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
-												<m:Input value="{fastData>TenderName}" enabled="false"/>
-											</form:content>
-									</form:SimpleForm>
-								</l:BlockLayoutCell>
-							</l:BlockLayoutRow>
-						</l:BlockLayout>
-					</ObjectPageSubSection>
-
 					<ObjectPageSubSection mode="Expanded" title="Comment">
 						<actions>
 							<m:Switch state="{= ${soa>/selectedOpportunity/tenderMatchingStatus} === 'In' ? true : false }" change="onTenderMatchingStatusChange" customTextOn="In" customTextOff="Out" enabled="{= ${soa>/editMode} === true }">
@@ -139,17 +111,265 @@
 							<l:BlockLayoutRow>
 								<l:BlockLayoutCell>
 									<form:SimpleForm id="opportunityCommentFormId" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout"  labelSpanL="12" labelSpanM="12"
-											emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true">
+											emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true" backgroundDesign="Solid">
 											<form:content>
-												<core:Title text="Comment"/>
+												<!-- <core:Title text="Comment"/>-->
 												<m:TextArea value="{soa>/selectedOpportunity/description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 											</form:content>
 									</form:SimpleForm>
 								</l:BlockLayoutCell>
 							</l:BlockLayoutRow>
 						</l:BlockLayout>
+					</ObjectPageSubSection>	
+
+					<ObjectPageSubSection mode="Expanded" title="Opportunity Details">
+						
+						<l:BlockLayout background="Light">
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+									<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+													 adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+													 singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
+											<form:content>
+											<core:Title text="Opportunity Details &amp; Type"/>
+												<m:Label text="{i18n>extnCode}" design="Bold"  required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/codigoExterno}"  enabled="false"/>
+
+												<m:Label text="{i18n>Name}" design="Bold" required="true"/>
+												<m:Input  value="{soa>/selectedOpportunity/name}"  enabled="false" />
+
+												<m:Label text="{i18n>Description}" design="Bold" required="true"/>
+												<m:Input  value="{soa>/selectedOpportunity/description}"  enabled="false" />
+
+												<m:Label text="{i18n>Status}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/status}"  enabled="false" />
+
+												<m:Label text="{i18n>StatusCode}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/stateCode}"  enabled="false" />
+
+												<m:Label text="{i18n>Type}" design="Bold" required="true"/>
+												<m:Input  value="{soa>/selectedOpportunity/tenderType}"  enabled="false" />
+
+												<m:Label text="{i18n>CallType}" design="Bold" required="true"/>
+												<m:Input  value="{soa>/selectedOpportunity/callType}"  enabled="false" />
+
+												<m:Label text="{i18n>currency}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/currency}"  enabled="false" />
+
+												<m:Label text="{i18n>stages}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/stages}"  enabled="false" />
+
+												<m:Label text="{i18n>reason}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/reason}"  enabled="false" />
+
+												<m:Label text="{i18n>contract}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/contract}"  enabled="false" />
+
+												<m:Label text="{i18n>visitAddr}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/visitAddress}"  enabled="false" />
+												
+												<m:Label text="{i18n>delivAddr}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/deliveryAddress}"  enabled="false" />
+
+												<m:Label text="{i18n>estimate}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/estimate}"  enabled="false" />
+
+												<m:Label text="{i18n>financingSource}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/financingSource}"  enabled="false" />
+
+												<m:Label text="{i18n>amountVisi}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/visibilityAmount}"  enabled="false" />
+
+												<m:Label text="{i18n>estimatedAmount}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/estimatedAmount}"  enabled="false" />
+
+												<m:Label text="{i18n>Tiempo}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/tenderTime}"  enabled="false" />
+
+												<m:Label text="{i18n>tiempoUnit}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/unitTime}"  enabled="false" />
+
+												<m:Label text="{i18n>modality}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/modality}" type="Number" enabled="false" />
+
+												<m:Label text="{i18n>paymentType}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/paymentType}"  enabled="false" />
+
+												<m:Label text="{i18n>ContractingProhibition}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/contractingProhibition}"  enabled="false" />
+												
+												<m:Label text="{i18n>SubContracting}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/subContracting}"  enabled="false" />
+
+												<m:Label text="{i18n>EstimatedJustificationAmount}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/estimatedJustificationAmount}"  enabled="false" />
+
+												<m:Label text="{i18n>ContractObservation}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/contractObservation}"  enabled="false" />
+
+												<m:Label text="{i18n>extensionTerm}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/extensionTerm}"  enabled="false" />
+
+												<m:Label text="{i18n>IsBaseType}" design="Bold" required="true"/>
+												<m:CheckBox selected="{= ${soa>/selectedOpportunity/isBaseType} === 0 || ${soa>/selectedOpportunity/isBaseType} === undefined ? false : true }" enabled="false" />
+
+												<m:Label text="{i18n>IsRenewable}" design="Bold" required="true"/>
+												<m:CheckBox selected="{= ${soa>/selectedOpportunity/isRenewable} === 0 || ${soa>/selectedOpportunity/isRenewable} === undefined ? false : true }" enabled="false" />
+
+												<m:Label text="{i18n>RenewalTimePeriod}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/renewalTimePeriod}"  enabled="false" />
+
+												<m:Label text="{i18n>RenewalTimeValue}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/renewalTimeValue}"  enabled="false" />
+											<core:Title text="Timeline"/>
+												<m:Label text="{i18n>creationDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/createdAt', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>ClosingDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/closingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>startDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/startDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>endDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/finalDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>DatePubAnswers}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/datePubAnswers', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+												
+												<m:Label text="{i18n>TechnicalOpeningActDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/technicalOpeningActDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>EconomicOpeningActDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/economicOpeningActDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>PhysicalSupportDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/physicalSupportDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>EstimatedSignatureDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false"  value="{path :'soa>/selectedOpportunity/estimatedSignatureDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>evaluationDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/dateTimeEvaluation', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>estSignatureDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/estimatedSignatureDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>userDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/userDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>bgDelivDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/deliveryBackgroundDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+											<core:Title text="Responsible Employees"/>
+												<m:Label text="{i18n>ResponsiblePaymentName}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/responsiblePaymentName}"  enabled="false"/>
+
+												<m:Label text="{i18n>ResponsiblePaymentEmail}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/responsiblePaymentEmail}"  enabled="false"/>
+
+												<m:Label text="{i18n>ResponsibleContractName}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/responsibleContractName}"  enabled="false"/>
+
+												<m:Label text="{i18n>ResponsibleContractEmail}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/responsibleContractEmail}"  enabled="false"/>
+
+												<m:Label text="{i18n>ResponsibleContractPhone}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/responsibleContractPhone}"  enabled="false"/>
+
+											<core:Title text="Contract Duration"/>
+												<m:Label text="{i18n>ContractDurationTime}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/contractDurationTime}"  enabled="false"/>
+
+												<m:Label text="{i18n>UnitTimeContractDuration}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/unitTimeContractDuration}" type="Number" enabled="false"/>
+
+												<m:Label text="{i18n>ContractDurationType}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/contractDurationType}"  enabled="false"/>
+
+												<m:Label text="{i18n>contractLength}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/contractLength}"  enabled="false"/>
+
+												<m:Label text="{i18n>contractExtension}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/contractExtension}"  enabled="false"/>
+
+											<core:Title text="Award Details"/>
+												<m:Label text="{i18n>AwardType}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/awardType}"  enabled="false"/>
+
+												<m:Label text="{i18n>AwardNumber}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/awardNumber}"  enabled="false"/>
+
+												<m:Label text="{i18n>AwardNumberOfBidders}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/awardNumberOfBidders}"  enabled="false"/>
+
+												<m:Label text="{i18n>AwardMinutesURL}" design="Bold" required="true"/>
+												<m:Input value="{soa>/selectedOpportunity/awardMinutesURL}"  enabled="false"/>
+
+												<m:Label text="{i18n>AwardDate}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/awardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+												<m:Label text="{i18n>expctawdte}" design="Bold" required="true"/>
+												<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/estimatedAwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+
+											</form:content>
+									</form:SimpleForm>
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
+						</l:BlockLayout>
 					</ObjectPageSubSection>
-					
+
+					<ObjectPageSubSection mode="Expanded" title="Buyer Details">
+						<l:BlockLayout background="Light">
+							<l:BlockLayoutRow>
+								<l:BlockLayoutCell>
+									<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+													 adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+													 singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityBuyerInfoId">
+											<form:content>
+												<core:Title text="Unit Details"/>
+													<m:Label text="{i18n>OrganismCode}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/organismCode}"  enabled="false"/>
+
+													<m:Label text="{i18n>OrganismName}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/organismNumber}"  enabled="false"/>
+
+													<m:Label text="{i18n>UnitID}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/unitID}"  enabled="false"/>
+
+													<m:Label text="{i18n>UnitCode}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/unitCode}"  enabled="false"/>
+
+													<m:Label text="{i18n>UnitName}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/unitName}"  enabled="false"/>
+
+													<m:Label text="{i18n>UnitAddress}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/unitAddress}"  enabled="false"/>
+
+													<m:Label text="{i18n>UnitCommunity}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/unitCommunity}"  enabled="false"/>
+
+													<m:Label text="{i18n>UnitRegion}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/unitRegion}"  enabled="false"/>
+
+												<core:Title text="User Info"/>
+													<m:Label text="{i18n>UserID}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/userID}"  enabled="false"/>
+
+													<m:Label text="{i18n>UserName}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/userNumber}"  enabled="false"/>
+
+													<m:Label text="{i18n>UserTitle}" design="Bold" required="true"/>
+													<m:Input value="{soa>/selectedOpportunity/buyer/userTitle}"  enabled="false"/>
+											</form:content>
+									</form:SimpleForm>
+								</l:BlockLayoutCell>
+							</l:BlockLayoutRow>
+						</l:BlockLayout>
+					</ObjectPageSubSection>
 			</ObjectPageSection>
 
 			<!-- OPPORTUNITY PRODUCTS TAB -->
