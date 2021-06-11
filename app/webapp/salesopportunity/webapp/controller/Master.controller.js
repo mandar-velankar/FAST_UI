@@ -9,14 +9,15 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"sap/ui/model/FilterType",
 	"sap/ui/core/BusyIndicator",
-	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, BusyIndicator, formatter) {
+	"../model/formatter",
+	"../utils/OpportunityFormatter"
+], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, BusyIndicator, formatter,OpportunityFormatter) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.salesopportunity.controller.Master", {
 
 		formatter: formatter,
-
+		OpportunityFormatter:OpportunityFormatter,
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
@@ -369,9 +370,9 @@ sap.ui.define([
 		 * @param {string} sObjectPath - the path of the selected object
 		 * @returns {object} - On opportunity object
 		 */
-		createStateObject: function (sObjectPath) {
+		createStateObject: function (selectedObj) {
 
-			const selectedObj = this.getView().getModel().getObject(sObjectPath);
+			// const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
 			// expand Comprador and Items
 			selectedObj["Comprador"] = this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
@@ -380,12 +381,22 @@ sap.ui.define([
 			return this.soaState.createOpportunity(selectedObj);
 
 		},
+		onOpenTender:function(event){
 
+		},
 		/* handling participate button press */
-		onParticipateOpportunityPress: async function (oEvent) {
+		onParticipateOpportunityPress: async function (event) {
 			/* get the selected line in the table and set it as current opportunity */
-			let sPath = oEvent.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
-			const opportunity = this.createStateObject(sPath);
+			// let sPath = event.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
+			const selectedObj = event.getSource().getBindingContext().getObject()//shorter using public functions
+
+			const selectedItemStatus = event.getSource().getBindingContext().getProperty("Status");
+			if (selectedItemStatus === "Participated") {
+				this.openTender(selectedObj.TenderID);
+				return true;
+			}
+			
+			const opportunity = this.createStateObject(selectedObj);
 			this.soaState.setSelectedOpportunity(opportunity);
 
 			await this.soaState.setTemporaryTender('CL');
@@ -429,12 +440,12 @@ sap.ui.define([
 					sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
 						actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
 						styleClass: "sapUiSizeCompact",
-						onClose: function (sAction) {
+						onClose: (sAction)=>{
 							if (sAction === "CLOSE") {
 								sap.m.MessageToast.show("Tender creation done...");
 							} else {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-								window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								this.openTender(oTender.tenderID);
 							}
 						}
 					});
@@ -443,7 +454,9 @@ sap.ui.define([
 				}
 			}
 		},
-
+		openTender:function(tenderId){
+			window.open("/app/index.html#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		},
 		_validateNewTender: function (oTender) {
 			//TODO: implement checks to make sure tender is valid
 			let bValid = false;
