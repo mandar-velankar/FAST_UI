@@ -100,7 +100,7 @@ sap.ui.define([
 			var sObjectId = oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getModel().metadataLoaded().then(function () {
-				var sObjectPath = this.getModel().createKey("PublicMarketTenders", {
+				var sObjectPath = this.getModel().createKey("PublicMarketOpportunities", {
 					CodigoExterno: sObjectId
 				});
 				this._bindView("/" + sObjectPath);
