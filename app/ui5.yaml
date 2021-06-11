@@ -20,7 +20,7 @@ server:
     afterMiddleware: compression
     mountPath: /app
     configuration:
-      baseUri: "http://localhost:8080/landingspage/webapp/index.html"
+      baseUri: "http://localhost:8080/landingspage/webapp/"
       removeETag: true
 builder:
   resources:
