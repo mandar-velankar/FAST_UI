@@ -31,7 +31,8 @@
                         </Select>
 
                         <Label text="{i18n>institnme}" design="Bold" required="true"/>
-                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/>
+                        <!-- <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/> -->
+                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/newTender/instituteName}" enabled="true"/>
 
                         <Label text="{i18n>typechnl}" design="Bold" required="true"/>
                         <Select id="idTenderChannel" selectedKey="Direct" enabled="false" change="onTenderChannelChange">
