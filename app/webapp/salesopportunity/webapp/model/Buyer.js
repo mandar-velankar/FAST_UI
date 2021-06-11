@@ -11,8 +11,8 @@ sap.ui.define([
             BaseObject.call(this, data);
 
         },
-        getOrganismNumber(){
-            return this.organismNumber;
+        getOrganismCode(){
+            return this.organismCode;
         },
         /*
         distributorIDChanged:function(state,event){
