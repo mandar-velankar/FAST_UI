@@ -270,13 +270,14 @@ sap.ui.define([
 					this._oParticipationDialog.close();
 					//successfully created tender
 					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-						actions: ["Go to new Tender", .MessageBox.Action.CLOSE],
+						actions: ["Go to new Tender", MessageBox.Action.CLOSE],
 						styleClass: "sapUiSizeCompact",
 						onClose: function (sAction) {
 							if (sAction === "CLOSE") {
 								sap.m.MessageToast.show("Tender creation done...");
 							} else {
-								window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 							}
 						}
 					});
@@ -310,6 +311,7 @@ sap.ui.define([
 
 		onFooterCancelPress: function () {
 			this.soaState.setEditMode(false);
+			this.soaState.restoreBackup();
 			this.oObjectPageLayout.setShowFooter(false);
 		},
 

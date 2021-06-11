@@ -412,7 +412,7 @@ sap.ui.define([
 
 		onCancelParticipation: function (oEvent) {
 			this._oParticipationDialog.close();
-			this.soastate.clearSelectedOpportunity();
+			this.soaState.clearSelectedOpportunity();
 		},
 
 		onSaveParticipation: async function () {
@@ -433,7 +433,8 @@ sap.ui.define([
 							if (sAction === "CLOSE") {
 								sap.m.MessageToast.show("Tender creation done...");
 							} else {
-								window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 							}
 						}
 					});
