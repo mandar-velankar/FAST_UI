@@ -20,7 +20,21 @@
 		<f:content>
 			<VBox fitContainer="true">
 			<OverflowToolbar class="sapFDynamicPageAlignContent">
-					
+					<!-- Filter for Status -->
+					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="In" text="In"/>
+							<core:Item key="Out" text="Out"/>
+							<core:Item key="Participate" text="Participate"/>
+					</Select>
+
+					<!-- Filter for Substatus -->
+					<Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="NA" text="NA"/>
+							<core:Item key="Draft" text="Draft"/>
+							<core:Item key="Appeal in Progress" text="Appeal in Progress"/>
+							<core:Item key="Won" text="Won"/>
+							<core:Item key="Lost" text="Lost"/>
+					</Select>
 					<ToolbarSpacer/>
 					
 					<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
@@ -64,14 +78,24 @@
 								<ObjectIdentifier title="{i18n>Institute}" />
 							</header>
 						</Column>
-						<Column width="20%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="12%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
 							<header>
 								<ObjectIdentifier title="{i18n>Products}" />
 							</header>
 						</Column>
-						<Column width="15%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="8%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
 							<header>
 								<ObjectIdentifier title="Publ. Closing" />
+							</header>
+						</Column>
+						<Column width="7.5%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Status" />
+							</header>
+						</Column>
+						<Column width="7.5%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+							<header>
+								<ObjectIdentifier title="Substatus" />
 							</header>
 						</Column>
 						<Column width="5%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
@@ -79,6 +103,7 @@
 								<ObjectIdentifier title="" />
 							</header>
 						</Column>
+						
 					</columns>
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{parts:['MainStatus','SubStatus'],formatter:'.OpportunityFormatter.statusToColor'}" id="items">
@@ -95,6 +120,8 @@
 										}
 									}" 
 								/>
+								<Text text="{MainStatus}"/>
+								<Text text="{SubStatus}"/>
 								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
