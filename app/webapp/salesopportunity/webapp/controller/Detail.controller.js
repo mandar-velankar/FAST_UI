@@ -5,7 +5,7 @@ sap.ui.define([
 	"../model/formatter",
 	"sap/ui/core/BusyIndicator",
 	"sap/m/library"
-], function (BaseController, JSONModel, MessageBox, formatter,BusyIndicator, mobileLibrary) {
+], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -263,22 +263,27 @@ sap.ui.define([
 
 			const oTender = this.soaState.getNewTender();
 			if (this._validateNewTender(oTender)) {
-				BusyIndicator.show(0);
-				await this.soaState.createTender(oTender).catch(()=>BusyIndicator.hide());
-				BusyIndicator.hide()
-				this._oParticipationDialog.close();
-				//successfully created tender
-				MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-					actions: ["Go to new Tender", .MessageBox.Action.CLOSE],
-					styleClass: "sapUiSizeCompact",
-					onClose: function (sAction) {
-						if (sAction === "CLOSE") {
-							sap.m.MessageToast.show("Tender creation done...");
-						} else {
-							window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+				try {
+					BusyIndicator.show(0);
+					await this.soaState.createTender(oTender);
+					BusyIndicator.hide()
+					this._oParticipationDialog.close();
+					//successfully created tender
+					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+						actions: ["Go to new Tender", .MessageBox.Action.CLOSE],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction === "CLOSE") {
+								sap.m.MessageToast.show("Tender creation done...");
+							} else {
+								window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+							}
 						}
-					}
-				});
+					});
+
+				} catch (error) {
+					BusyIndicator.hide()
+				}
 			}
 		},
 
