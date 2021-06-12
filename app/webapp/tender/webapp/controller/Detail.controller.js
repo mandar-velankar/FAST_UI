@@ -5128,15 +5128,30 @@ sap.ui.define([
 			let sTenderReference = oTender.CountrySpecificInformation && oTender.CountrySpecificInformation.TenderReference;
 
 			Services.setSelectedDistributorID(that.getView().byId("idDistributorName").getSelectedKey());
+
 			//clear fields
 			oFastAppDataModel.setProperty("/ProductCollection", null);
 			//oFastAppDataModel.setProperty("/ProductCollectionOutput", null);
 
+			//for chile we show the products that were mached to say the the salesopportunity was IN (intresting for bayer fast)
 			if(Services.getSelectedCountry() === 'CL'){
-				//const salesOpportunity = await Services.getService('SalesOpportunity').getOpportunity(sTenderReference);
-				//let o = salesOpportunity.data && salesOpportunity.data.results && salesOpportunity.data.results > 0;
+
+				const salesOpportunity = await Services.getService('SalesOpportunity').getOpportunity(sTenderReference);
+				let oSalesOpportunity = salesOpportunity.data && salesOpportunity.data.results && salesOpportunity.data.results.length > 0 && salesOpportunity.data.results[0];
+				let sMercadoInProductsMessage = 'Sales opportunity was matched upon the following products: ';
+				if(oSalesOpportunity.TenderMatchingStatus === 'In'){ //(intresting for bayer fast)
+					
+					let aProducts = oSalesOpportunity.Items && oSalesOpportunity.Items.results.length > 0 && oSalesOpportunity.Items.results;
+					aProducts.forEach(oProduct => {
+						sMercadoInProductsMessage = sMercadoInProductsMessage + oProduct.ProductName + ","
+					});
+					
+				}else{
+					sMercadoInProductsMessage = '';
+				}
+
 				//TenderMatchingStatus
-				//oFastAppDataModel.setProperty("/MercadoInProducts", oSalesOpportunity);
+				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
 			}
 
 			//if dialog exists destroy it first, so we always set dialog buttons in correct state

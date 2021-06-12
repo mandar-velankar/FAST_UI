@@ -27,7 +27,9 @@
 							<!-- message strip -->
 							<MessageStrip
 								id="inProductsStripID"
-								text="In products.. /MercadoInProducts"
+								type="Success"
+								text="{fastAppData>/MercadoInProductsMessage}"
+								visible="{= ${fastAppData>/MercadoInProductsMessage} === '' ? false : true"
 								enableFormattedText="true"
 								showIcon="true"
 								showCloseButton="true"
