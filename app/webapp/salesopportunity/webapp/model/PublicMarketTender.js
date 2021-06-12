@@ -62,7 +62,7 @@ sap.ui.define([
         // },
         getJSONCountrySpecificTenderInfo: function () {
             return {
-                Institute: this.getBuyer().getOrganismNumber(),
+                Institute: this.getBuyer().getOrganismCode(),
                 TenderReference: this.getCodigoExterno(),
                 CountryCode:"CL",
                 ...this.getJSONObject(["publicationDate", "closingDate"])
