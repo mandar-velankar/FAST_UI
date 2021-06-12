@@ -331,6 +331,7 @@ sap.ui.define([
 
 			this.soaState.saveSelectedOpportunity().then(() => {
 				this.getView().setBusy(false);
+				this.getView().getModel().refresh();
 				this.soaState.setEditMode(false);
 				this.oObjectPageLayout.setShowFooter(false);
 			});
