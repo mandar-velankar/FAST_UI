@@ -30,7 +30,7 @@
 						id="list"
 						inset="false"
 						items="{
-							path: '/PublicMarketTenders',
+							path: '/PublicMarketOpportunities',
 							sorter: {
 								path: 'CodigoExterno',
 								descending: false
@@ -81,7 +81,7 @@
 						</Column>
 					</columns>
 					<items>
-						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Success" id="items">
+						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{parts:['MainStatus','SubStatus'],formatter:'.OpportunityFormatter.statusToColor'}" id="items">
 							<cells>
 								<Text text="{CodigoExterno}"/>
 								<Text text="{Name}"/>
@@ -95,7 +95,7 @@
 										}
 									}" 
 								/>
-								<Button text="Participate" type="Emphasized" press="onParticipateOpportunityPress"/>
+								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
 					</items>

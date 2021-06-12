@@ -30,9 +30,12 @@ sap.ui.define([
 		},
 
 		setEditMode: function (sEditMode){
+			sEditMode && ( this.backupOpportunity = this.getSelectedOpportunity().getAll() );
 			this.setProperty("editMode", sEditMode);
 		},
-
+		restoreBackup:function(){
+			this.backupOpportunity && this.setSelectedOpportunity(this.createOpportunity(this.backupOpportunity));
+		},
 		setTenderMatchingStatus:function(status){
 			this.getSelectedOpportunity().setTenderMatchingStatus(status);
 			this.updateModel();
@@ -135,7 +138,8 @@ sap.ui.define([
 				"Active": 1,
 				"Classification": "Contract",
 				"TenderName": "",
-				"InstituteID": 0,
+				"InstituteID": +oSelectedOpportunity.buyer.organismCode||0,
+				"InstituteName": oSelectedOpportunity.buyer.organismNumber||"",
 				"TenderChannel": "Direct",
 				"PublicationDate": oSelectedOpportunity.publicationDate,
 				"BidDueDate": oSelectedOpportunity.finalDate,
@@ -187,8 +191,10 @@ sap.ui.define([
 		},
 
 		/* create & update */
-		 createTender: function (oTender) {
-			return this.getService().createTender(oTender);
+		 createTender: async function (tender) {
+			await this.getService().createTender(this.getNewTender());
+			await this.getService().createCountrySpecificInformation(this.getNewTender(),this.getSelectedOpportunity());
+			// return this.getService().createTender(oTender);
 		},
 
 		//sorting an array of objects

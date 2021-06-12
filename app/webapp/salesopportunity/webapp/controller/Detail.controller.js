@@ -1,9 +1,11 @@
 sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
+	"sap/m/MessageBox",
 	"../model/formatter",
+	"sap/ui/core/BusyIndicator",
 	"sap/m/library"
-], function (BaseController, JSONModel, formatter, mobileLibrary) {
+], function (BaseController, JSONModel, MessageBox, formatter, BusyIndicator, mobileLibrary) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -17,14 +19,14 @@ sap.ui.define([
 		/* lifecycle methods                                           */
 		/* =========================================================== */
 
-		onInit : function () {
+		onInit: function () {
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
 			var oViewModel = new JSONModel({
-				busy : false,
-				delay : 0,
-				lineItemListTitle : this.getResourceBundle().getText("detailLineItemTableHeading")
+				busy: false,
+				delay: 0,
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
 			});
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
@@ -51,7 +53,7 @@ sap.ui.define([
 		 * Event handler when the share by E-Mail button has been clicked
 		 * @public
 		 */
-		onSendEmailPress : function () {
+		onSendEmailPress: function () {
 			var oViewModel = this.getModel("detailView");
 
 			URLHelper.triggerEmail(
@@ -67,7 +69,7 @@ sap.ui.define([
 		 * @param {object} oEvent an event containing the total number of items in the list
 		 * @private
 		 */
-		onListUpdateFinished : function (oEvent) {
+		onListUpdateFinished: function (oEvent) {
 			var sTitle,
 				iTotalItems = oEvent.getParameter("total"),
 				oViewModel = this.getModel("detailView");
@@ -94,12 +96,12 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent pattern match event in route 'object'
 		 * @private
 		 */
-		_onObjectMatched : function (oEvent) {
-			var sObjectId =  oEvent.getParameter("arguments").objectId;
+		_onObjectMatched: function (oEvent) {
+			var sObjectId = oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
-			this.getModel().metadataLoaded().then( function() {
-				var sObjectPath = this.getModel().createKey("PublicMarketTenders", {
-					CodigoExterno :  sObjectId
+			this.getModel().metadataLoaded().then(function () {
+				var sObjectPath = this.getModel().createKey("PublicMarketOpportunities", {
+					CodigoExterno: sObjectId
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
@@ -113,7 +115,7 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		_bindView : function (sObjectPath) {
+		_bindView: function (sObjectPath) {
 			// Set busy indicator during view binding
 			var oViewModel = this.getModel("detailView");
 
@@ -129,13 +131,13 @@ sap.ui.define([
 		 * @param {string} sObjectPath - the path of the selected object
 		 * @returns {object} - On opportunity object
 		 */
-		createStateObject: function(sObjectPath){
+		createStateObject: function (sObjectPath) {
 
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
 			// expand Comprador and Items
-			selectedObj["Comprador"] =this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
-			selectedObj["Items"]["results"]  = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+			selectedObj["Comprador"] = this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
+			selectedObj["Items"]["results"] = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
 
 			return this.soaState.createOpportunity(selectedObj);
 
@@ -169,7 +171,7 @@ sap.ui.define([
 		// 	// 	oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
 		// },
 
-		_onMetadataLoaded : function () {
+		_onMetadataLoaded: function () {
 			/*// Store original busy indicator delay for the detail view
 			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
 				oViewModel = this.getModel("detailView"),
@@ -227,60 +229,75 @@ sap.ui.define([
 				this.getModel("appView").setProperty("/layout", "MidColumnFullScreen");
 			} else {
 				// reset to previous layout
-				this.getModel("appView").setProperty("/layout",  this.getModel("appView").getProperty("/previousLayout"));
+				this.getModel("appView").setProperty("/layout", this.getModel("appView").getProperty("/previousLayout"));
 			}
 		},
 
-		onParticipateOpportunityPress: async function(){
+		onParticipateOpportunityPress: async function (oEvent) {
+			let oSelectedOpportunity = this.soaState.getSelectedOpportunity();
+			if (oSelectedOpportunity.mainStatus === "Participated") {
+				this.openTender(oSelectedOpportunity.tenderID);
+				return true;
+			}
+
 			await this.soaState.setTemporaryTender('CL');
 			this._getParticipationDialog().open();
 		},
 
+		openTender:function(tenderId){
+			window.open("/app/index.html#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+		},
 		/**
 		 * New contracting dialog
 		 * @returns {dialog} - oDialog
 		 */
-		 _getParticipationDialog: function () {
-				//create new dialog if not yet existing
+		_getParticipationDialog: function () {
+			//create new dialog if not yet existing
 			if (!this._oParticipationDialog) {
 
-					//get dialog
-					this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.salesopportunity.view.fragments.OpportunityInfo", this);
-					this.getView().addDependent(this._oParticipationDialog);
-					
+				//get dialog
+				this._oParticipationDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.salesopportunity.view.fragments.OpportunityInfo", this);
+				this.getView().addDependent(this._oParticipationDialog);
+
 			}
 
 			return this._oParticipationDialog;
 		},
 
-		onCancelParticipation: function (oEvent){
+		onCancelParticipation: function (oEvent) {
 			this._oParticipationDialog.close();
 		},
 
-		onSaveParticipation: async function (){
+		onSaveParticipation: async function () {
 
 			const oTender = this.soaState.getNewTender();
-			if(this._validateNewTender(oTender)){
-
-				await this.soaState.createTender(oTender);
-
-				this._oParticipationDialog.close();
-				//successfully created tender
-				sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
-					actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
-					styleClass: "sapUiSizeCompact",
-					onClose: function (sAction) {
-						if (sAction === "CLOSE") {
-							sap.m.MessageToast.show("Tender creation done...");
-						} else {
-							window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+			if (this._validateNewTender(oTender)) {
+				try {
+					BusyIndicator.show(0);
+					await this.soaState.createTender(oTender);
+					BusyIndicator.hide()
+					this._oParticipationDialog.close();
+					//successfully created tender
+					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
+						actions: ["Go to new Tender", MessageBox.Action.CLOSE],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction === "CLOSE") {
+								sap.m.MessageToast.show("Tender creation done...");
+							} else {
+								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+							}
 						}
-					}
-				});
+					});
+
+				} catch (error) {
+					BusyIndicator.hide()
+				}
 			}
 		},
 
-		_validateNewTender: function(oTender){
+		_validateNewTender: function (oTender) {
 			//TODO: implement checks to make sure tender is valid
 			let bValid = false;
 			bValid = true;
@@ -290,60 +307,62 @@ sap.ui.define([
 		/**
 		 * Go to edit mode
 		 */
-		 onEditModePress: function(oEvent){
-			
+		onEditModePress: function (oEvent) {
+
 			this.soaState.setEditMode(true);
-			this.oObjectPageLayout.setShowFooter(true);	
+			this.oObjectPageLayout.setShowFooter(true);
 		},
 
-		onTenderMatchingStatusChange: function(oEvent){
+		onTenderMatchingStatusChange: function (oEvent) {
 			const status = oEvent.getParameter("state") ? 'In' : 'Out';
 			this.soaState.setTenderMatchingStatus(status);
 		},
 
-		onFooterCancelPress: function(){
+		onFooterCancelPress: function () {
 			this.soaState.setEditMode(false);
-			this.oObjectPageLayout.setShowFooter(false);	
+			this.soaState.restoreBackup();
+			this.oObjectPageLayout.setShowFooter(false);
 		},
 
-		onFooterSavePress: function(){
+		onFooterSavePress: function () {
 
 			this.getView().setBusy(true);
 			this.getView().setBusyIndicatorDelay(0);
 
 			this.soaState.saveSelectedOpportunity().then(() => {
 				this.getView().setBusy(false);
+				this.getView().getModel().refresh();
 				this.soaState.setEditMode(false);
 				this.oObjectPageLayout.setShowFooter(false);
 			});
 		},
-		
+
 		/* handle search helps */
-		handleValueHelp : async function (oEvent) {
+		handleValueHelp: async function (oEvent) {
 			await this.soaState.loadCountryInstitutes('CL', this.byId('idInstituteType').getSelectedKey());
 
 			var oView = this.getView();
 			this._sInputId = this.byId('idInstituteName').getId();
-	
+
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
 				this._pValueHelpDialog = sap.ui.core.Fragment.load({
 					id: oView.getId(),
 					name: "com.bayer.tender.salesopportunity.view.fragments.InstitutesSearchHelp",
 					controller: this
-				}).then(function(oValueHelpDialog){
+				}).then(function (oValueHelpDialog) {
 					oView.addDependent(oValueHelpDialog);
 					return oValueHelpDialog;
 				});
 			}
-	
+
 			// open value help dialog
-			this._pValueHelpDialog.then(function(oValueHelpDialog){
+			this._pValueHelpDialog.then(function (oValueHelpDialog) {
 				oValueHelpDialog.open();
 			});
 		},
-	
-		_handleValueHelpSearch : function (oEvent) {
+
+		_handleValueHelpSearch: function (oEvent) {
 			var sValue = oEvent.getParameter("value");
 			var oFilter = new Filter(
 				"InstituteName",
@@ -351,14 +370,14 @@ sap.ui.define([
 			);
 			oEvent.getSource().getBinding("items").filter([oFilter]);
 		},
-	
-		_handleValueHelpClose : function (oEvent) {
+
+		_handleValueHelpClose: function (oEvent) {
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
 				var oInputfield = this.byId(this._sInputId);
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				if(this._sInputId.includes("InstituteName")){
+				if (this._sInputId.includes("InstituteName")) {
 					const oTender = this.soaState.getNewTender();
 					oTender.instituteID = Number(oSelectedItem.getDescription());
 				}

@@ -14,10 +14,10 @@ sap.ui.define([
 
             /* eslint-disable */
             if (data) {
-               
-                    data.Comprador && !data.Comprador.__deferred && this.setBuyer(data.Comprador);
-                    data.Items && !data.Items.__deferred && this.setProducts(data.Items.results);
-               
+
+                data.Comprador && !data.Comprador.__deferred && this.setBuyer(data.Comprador);
+                data.Items && !data.Items.__deferred && this.setProducts(data.Items.results);
+
             }
 
             this["Items"] && delete this["Items"];
@@ -44,10 +44,12 @@ sap.ui.define([
             return this.products || [];
         },
 
-        setTenderMatchingStatus: function(status){
-            if(status) this.tenderMatchingStatus = status;
+        setTenderMatchingStatus: function (status) {
+            if (status) this.tenderMatchingStatus = status;
         },
-        
+        getCodigoExterno:function(){
+            return this.codigoExterno;
+        },
         /*
         distributorIDChanged:function(state,event){
             console.log("onChagned ditributor id");
@@ -58,67 +60,74 @@ sap.ui.define([
         // countryCodeChanged: function (state, event) {
         //     //do something when countryCode changes in the view/ui
         // },
-     
+        getJSONCountrySpecificTenderInfo: function () {
+            return {
+                Institute: this.getBuyer().getOrganismCode(),
+                TenderReference: this.getCodigoExterno(),
+                CountryCode:"CL",
+                ...this.getJSONObject(["publicationDate", "closingDate"])
+            };
+        },
         getJSON: function () {
             return this.getJSONObject([
-                "advertisingOfferStatus", 
-                "awardDate", 
-                "awardMinutesURL", 
-                "awardNumber", 
-                "awardNumberOfBidders", 
-                "awardType", 
+                "advertisingOfferStatus",
+                "awardDate",
+                "awardMinutesURL",
+                "awardNumber",
+                "awardNumberOfBidders",
+                "awardType",
                 "bidClosingDays",
-                "callType", 
-                "claimsAmount", 
-                "closingDate", 
-                "codeType", 
+                "callType",
+                "claimsAmount",
+                "closingDate",
+                "codeType",
                 "codigoExterno",
-                "contract", 
-                "contractDurationTime", 
-                "contractDurationType", 
-                "contractingProhibition", 
-                "createdAt", 
-                "currency", 
-                "datePubAnswers", 
-                "deliveryAddress", 
-                "description", 
-                "economicOpeningActDate", 
-                "estimate", 
-                "estimatedAwardDate", 
-                "estimatedJustificationAmount", 
-                "finalDate", 
-                "financingSource", 
-                "isBaseType", 
-                "isRenewable", 
-                "justificationAdvertising", 
-                "modality", 
-                "name", 
-                "notified", 
-                "outsourcing", 
-                "paymentType", 
-                "publicationDate", 
-                "reason", 
-                "renewalTimePeriod", 
-                "renewalTimeValue", 
-                "responsibleContractEmail", 
-                "responsibleContractName", 
-                "responsibleContractPhone", 
-                "responsiblePaymentEmail", 
-                "responsiblePaymentName", 
-                "stages", 
-                "startDate", 
-                "stateCode", 
-                "stateSteps", 
-                "status", 
-                "technicalOpeningActDate", 
-                "tenderContractUnitTime", 
-                "tenderType", 
-                "termExtension", 
-                "unitEvaluationTime", 
-                "unitTime", 
-                "unitTimeContractDuration", 
-                "visibilityAmount", 
-                "visitAddress", 
+                "contract",
+                "contractDurationTime",
+                "contractDurationType",
+                "contractingProhibition",
+                "createdAt",
+                "currency",
+                "datePubAnswers",
+                "deliveryAddress",
+                "description",
+                "economicOpeningActDate",
+                "estimate",
+                "estimatedAwardDate",
+                "estimatedJustificationAmount",
+                "finalDate",
+                "financingSource",
+                "isBaseType",
+                "isRenewable",
+                "justificationAdvertising",
+                "modality",
+                "name",
+                "notified",
+                "outsourcing",
+                "paymentType",
+                "publicationDate",
+                "reason",
+                "renewalTimePeriod",
+                "renewalTimeValue",
+                "responsibleContractEmail",
+                "responsibleContractName",
+                "responsibleContractPhone",
+                "responsiblePaymentEmail",
+                "responsiblePaymentName",
+                "stages",
+                "startDate",
+                "stateCode",
+                "stateSteps",
+                "status",
+                "technicalOpeningActDate",
+                "tenderContractUnitTime",
+                "tenderType",
+                "termExtension",
+                "unitEvaluationTime",
+                "unitTime",
+                "unitTimeContractDuration",
+                "visibilityAmount",
+                "visitAddress",
                 "works",
                 "tenderMatchingStatus"
             ]);
@@ -131,7 +140,7 @@ sap.ui.define([
                 Items: this.getProducts().map(item => item.getJSON())
             };
         }
-        
+
     });
 
     return publicMarketTender;

@@ -31,7 +31,8 @@
                         </Select>
 
                         <Label text="{i18n>institnme}" design="Bold" required="true"/>
-                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/>
+                        <!-- <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="true"/> -->
+                        <Input id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{soa>/newTender/instituteName}" enabled="true"/>
 
                         <Label text="{i18n>typechnl}" design="Bold" required="true"/>
                         <Select id="idTenderChannel" selectedKey="Direct" enabled="false" change="onTenderChannelChange">
@@ -67,10 +68,9 @@
                         <Input id="idContractExtenseion" value="{soa>/newTender/termExtension}" type="Number" />
 
                         <!-- Block - Award criteria -->
-                        <core:Title text="Award Criteria" id="idAwrdTitle"/>
+                       <!--  <core:Title text="Award Criteria" id="idAwrdTitle"/>
                         <Grid xmlns="sap.ui.layout" defaultSpan="L12 M12 S12">
                             <content>
-                                <!-- EDIT TABLE for award criteria -->
                                 <Table xmlns="sap.m" id="idAwrdEdit" items="{tabModel>/Data}">
                                     <columns>
                                         <Column minScreenWidth="Tablet" demandPopin="true" width="4em">
@@ -100,7 +100,7 @@
                                 </Table>
                                 <Button xmlns="sap.m" icon="sap-icon://add" text="{i18n>Add}" type="Emphasized" press="onAddPressAwrd"/>
                             </content>
-                        </Grid>
+                        </Grid>-->
                     </form:content>
                 </form:SimpleForm>
 

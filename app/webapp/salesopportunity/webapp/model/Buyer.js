@@ -11,7 +11,9 @@ sap.ui.define([
             BaseObject.call(this, data);
 
         },
-        
+        getOrganismCode(){
+            return this.organismCode;
+        },
         /*
         distributorIDChanged:function(state,event){
             console.log("onChagned ditributor id");
