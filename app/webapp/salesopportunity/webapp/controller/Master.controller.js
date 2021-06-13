@@ -455,7 +455,7 @@ sap.ui.define([
 			}
 		},
 		openTender:function(tenderId){
-			window.open("/app/index.html#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+			window.open("/app/#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 		},
 
 		_validateNewTender: function (oTender) {
