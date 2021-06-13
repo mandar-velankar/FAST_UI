@@ -22,13 +22,15 @@
 			<OverflowToolbar class="sapFDynamicPageAlignContent">
 					<!-- Filter for Status -->
 					<Select id="idSlctStatusFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="" text=""/>
 							<core:Item key="In" text="In"/>
 							<core:Item key="Out" text="Out"/>
-							<core:Item key="Participate" text="Participate"/>
+							<core:Item key="Participated" text="Participated"/>
 					</Select>
 
 					<!-- Filter for Substatus -->
 					<Select id="idSlctSubStatusFilter" forceSelection="true" change=".setFilter">
+							<core:Item key="" text=""/>
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
 							<core:Item key="Appeal in Progress" text="Appeal in Progress"/>
