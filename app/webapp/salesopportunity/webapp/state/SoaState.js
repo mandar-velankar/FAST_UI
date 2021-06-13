@@ -2,8 +2,9 @@ sap.ui.define([
 	"com/bayer/tender/uilib/objects/BaseState",
 	"../model/PublicMarketTender",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-	"../model/Tender"
-], function (BaseState, PublicMarketTender, MomentJS, Tender) {
+	"../model/Tender",
+	"sap/ui/model/json/JSONModel",
+], function (BaseState, PublicMarketTender, MomentJS, Tender, JSONModel) {
 	"use strict";
 
 	var soaState = BaseState.extend("com.bayer.tender.salesopportunity.state.SoaState", {
@@ -206,6 +207,74 @@ sap.ui.define([
 					return ((x < y) ? -1 : ((x > y) ? 1 : 0));
 				});
 			}
+
+		},
+
+		/* UI helpers */
+		showMessageCompositeView: function (sTitle, aMessages, sState) {
+
+			var that = this;
+
+			var oMessageTemplate = new sap.m.MessageItem({
+				type: '{type}',
+				title: '{title}',
+				description: '{description}',
+				subtitle: '{subtitle}',
+				counter: '{counter}',
+				markupDescription: '{markupDescription}'
+					//link: oLink
+			});
+
+			//Message view (where multiple errors can be bundeled)
+			var oMessageView = new sap.m.MessageView({
+					showDetailsPageHeader: false,
+					itemSelect: function () {
+						oBackButton.setVisible(true);
+					},
+					items: {
+						path: "/",
+						template: oMessageTemplate
+					}
+				}),
+				oBackButton = new sap.m.Button({
+					icon: sap.ui.core.IconPool.getIconURI("nav-back"),
+					visible: false,
+					press: function () {
+						oMessageView.navigateBack();
+						this.setVisible(false);
+					}
+				});
+
+			//add messages	
+			var oMessageModel = new JSONModel();
+			oMessageModel.setData(aMessages);
+			oMessageView.setModel(oMessageModel);
+
+			//show dialog
+			var oDialogMessages = new sap.m.Dialog({
+				resizable: true,
+				content: oMessageView,
+				state: sState,
+				beginButton: new sap.m.Button({
+					press: function () {
+						this.getParent().close();
+					},
+					text: "Close"
+				}),
+				customHeader: new sap.m.Bar({
+					contentMiddle: [
+						new sap.m.Text({
+							text: sTitle
+						})
+					],
+					contentLeft: [oBackButton]
+				}),
+				contentHeight: "300px",
+				contentWidth: "500px",
+				verticalScrolling: false
+			});
+
+			oDialogMessages.open();
 
 		},
 
