@@ -457,10 +457,127 @@ sap.ui.define([
 		openTender:function(tenderId){
 			window.open("/app/index.html#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 		},
+
 		_validateNewTender: function (oTender) {
-			//TODO: implement checks to make sure tender is valid
-			let bValid = false;
-			bValid = true;
+
+			//TODO: move to state
+
+			var bValid = true;
+			var bWarning = false;
+			var aMessages = [];
+
+			//check mandatory fields
+			if (
+				oTender.tenderName === "" ||
+				oTender.classification === "" ||
+				oTender.instituteID === "" || //IntituteType is property of institute
+				oTender.tenderChannel === "" ||
+				oTender.groupPurchasing === "" ||
+				!oTender.publicationDate ||
+				!oTender.bidDueDate) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Mandatory fields.',
+					description: '- Tender Name \n' +
+						'- Classification \n' +
+						'- Institute \n' +
+						'- Channel \n' +
+						'- Group Purchasing \n' +
+						'- Publication Date \n' +
+						'- Bid due Date \n',
+					subtitle: 'Please enter all the mandatory fields..',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+
+			}
+
+			//check if dates are correct
+			if (!moment(oTender.publicationDate).isBefore(oTender.bidDueDate)) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Publication Date',
+					description: 'Publication date should be before the offer due date. \n',
+					subtitle: 'Publication date should be before the offer due date.',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+			}
+
+			//check if dates are correct
+			if (oTender.AwardDate) { //optional date
+
+				if (!moment(oTender.bidDueDate).isBefore(oTender.awardDate)) {
+
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'OfferDuedate',
+						description: 'OfferDuedate date should be before the Award date. \n',
+						subtitle: 'OfferDuedate date should be before the Award date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+			}
+
+			//check if dates are correct
+			if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
+
+				if (!moment(oTender.awardDate).isBefore(oTender.nextPublicationDye)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Award date',
+						description: 'Award date should be before the next publication date. \n',
+						subtitle: 'Award date should be before the next publication date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+
+			}
+
+			//check if dates are correct
+			if (oTender.BidDueDate && oTender.InternalBidDueDate) { //optional dates
+
+				if (!moment(oTender.internalBidDueDate).isBefore(oTender.bidDueDate)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Internal due date',
+						description: 'Internal due date should be before the offer due date. \n',
+						subtitle: 'Internal due date should be before the offer due date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+			}
+
+			//if errors (or warnings) occured, show the messages in 1 dialog
+			if (!bValid || bWarning) {
+
+				//if this check is performed for the original tender that we clone from
+				var sTitle = 'Error';
+
+				//Show error messages
+				this.soaState.showMessageCompositeView(sTitle, aMessages, 'Error');
+			}
+
 			return bValid;
 		},
 
@@ -470,10 +587,20 @@ sap.ui.define([
 			//var oFastAppData = Services.getFastAppDataModel();
 
 			var sSearch = this.byId("idSearch").getProperty("value");
+			var sStatus = this.byId("idSlctStatusFilter").getSelectedKey();
+			var sSubStatus = this.byId("idSlctSubStatusFilter").getSelectedKey();
 
 			//Add filters if they are set (so not the default, all...)
 			var orFilters = [];
 			var andFilters = [];
+
+			if(sStatus){
+				andFilters.push(new sap.ui.model.Filter("MainStatus", "EQ", sStatus));
+			}
+
+			if (sSubStatus && sSubStatus != 'NA'){
+				andFilters.push(new sap.ui.model.Filter("SubStatus", "EQ", sSubStatus));
+			}
 
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
 			var sIdSource = "";
