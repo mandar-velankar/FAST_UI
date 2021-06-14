@@ -18,7 +18,7 @@ modules:
       - npm install
       - npm run build
     parameters:
-      memory: 2048M
+      memory: 1024M
       disk-quota: 4096M
     requires:
       - name: srv_api
@@ -26,6 +26,12 @@ modules:
         properties:
           forwardAuthToken: true
           name: srv_api
+          url: '~{url}'
+      - name: adminapp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: adminapp
           url: '~{url}'
       - name: uaa_FAST
 resources:
@@ -39,6 +45,15 @@ resources:
     type: configuration
     parameters:
       provider-id: FAST:srv_api
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: adminapp
+    type: configuration
+    parameters:
+      provider-id: FASTUIADMIN:adminapp
       provider-nid: mta
       target:
         org: ${org}

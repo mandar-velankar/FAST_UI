@@ -17,8 +17,8 @@ sap.ui.define([
 
         /**
          * Get Aggregated Distributor Brand Policy
-         * @param {String} sBrandID Brand id for who we get the policy
          * @param {String} sDistributorID Distributor id for who we get the policy
+         * @param {String} sBrandID Brand id for who we get the policy 
          * @returns {Object} Country 
          */
 		getAggregatedDistributorBrandPolicy: function (sDistributorID,sBrandID) {

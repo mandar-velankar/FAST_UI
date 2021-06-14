@@ -24,6 +24,19 @@
 								class="sapUiMediumMarginBottom">
 							</MessageStrip>
 							
+							<!-- message strip -->
+							<MessageStrip
+								id="inProductsStripID"
+								type="Success"
+								text="{fastAppData>/MercadoInProductsMessage}"
+								visible="{= ${fastAppData>/MercadoInProductsMessage} === '' ? false : true"
+								enableFormattedText="true"
+								showIcon="true"
+								showCloseButton="true"
+								class="sapUiMediumMarginBottom">
+							</MessageStrip>
+							
+							
 							<!-- Select brand -->
 							<MultiInput id="idBrandList" width="50%" enabled="true" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="brandNameList_f4" value="" placeholder="{i18n>SelectBrand}" tokenUpdate="onBrandTokenChange"/>
 							

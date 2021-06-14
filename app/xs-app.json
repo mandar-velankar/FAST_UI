@@ -18,6 +18,11 @@
       "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": true
+    },
+    {
+      "source": "/admin/(.*)$",
+      "target": "$1",
+      "destination": "adminapp"
     },{
       "source": "^/app/index.html(.*)$",
       "localDir": "dist/landingspage/webapp",
@@ -59,6 +64,11 @@
       "target": "$1",
       "localDir": "dist/ppa/webapp",
       "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^/salesopportunity/(.*)$",
+      "target": "$1",
+      "localDir": "dist/salesopportunity/webapp"
     },
     {
       "source": "^/uilib/(.*)$",

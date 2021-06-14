@@ -4655,13 +4655,19 @@ sap.ui.define([
 			let OfferProducts = Services.getFinancialModel();
 
 			//Get brandID
-			let sBrandID = null;
+			let sBrandID,sProductPackID = null;
 			if (product && product.SKU && product.SKU.Product){
+				sProductPackID = product && product.SKU && product.SKU.ProductPackId;
 				sBrandID = product.SKU.Product.HLEVEL4_CODE;
 			}
 
+			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			let sChannelName = Services.getLoadedTender().Institute.InstituteType; //Institute type = channel Name
+			//let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
+			let sDistributorID = offer.DistributorID;
+
 			//Get standard discount
-			const iStandardDiscount = await OfferProducts.getStandardDiscount(offer.DistributorID,sBrandID);
+			const iStandardDiscount = await OfferProducts.getStandardDiscount(sCountryCode,sChannelName,sProductPackID,sDistributorID,sBrandID);
 
 			//re-calculate additional discount based upon new standard discount from new distributor/brand
 			let iCalcAdditionalDiscount = (Number(oNewPrice.Discount) + Number(oNewPrice.AdditionalDiscount)) - iStandardDiscount;
@@ -5110,7 +5116,7 @@ sap.ui.define([
 		},
 
 		//show dialog for adding a Product offer: OfferProductsEdit.fragment.xml
-		onAddProductForOffer: function (oEvent) {
+		onAddProductForOffer: async function (oEvent) {
 
 			//distributor id is set on page form and should be used (instead of requested) when adding product
 			//payment terms and inco terns should set based on information in view providing product
@@ -5118,10 +5124,35 @@ sap.ui.define([
 			//data declarations
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var that = this;
+			let oTender = Services.getLoadedTender();
+			let sTenderReference = oTender.CountrySpecificInformation && oTender.CountrySpecificInformation.TenderReference;
+
 			Services.setSelectedDistributorID(that.getView().byId("idDistributorName").getSelectedKey());
+
 			//clear fields
 			oFastAppDataModel.setProperty("/ProductCollection", null);
 			//oFastAppDataModel.setProperty("/ProductCollectionOutput", null);
+
+			//for chile we show the products that were mached to say the the salesopportunity was IN (intresting for bayer fast)
+			if(Services.getSelectedCountry() === 'CL'){
+
+				const salesOpportunity = await Services.getService('SalesOpportunity').getOpportunity(sTenderReference);
+				let oSalesOpportunity = salesOpportunity.data && salesOpportunity.data.results && salesOpportunity.data.results.length > 0 && salesOpportunity.data.results[0];
+				let sMercadoInProductsMessage = 'Sales opportunity was matched upon the following products: ';
+				if(oSalesOpportunity.TenderMatchingStatus === 'In'){ //(intresting for bayer fast)
+					
+					let aProducts = oSalesOpportunity.Items && oSalesOpportunity.Items.results.length > 0 && oSalesOpportunity.Items.results;
+					aProducts.forEach(oProduct => {
+						sMercadoInProductsMessage = sMercadoInProductsMessage + oProduct.ProductName + ","
+					});
+					
+				}else{
+					sMercadoInProductsMessage = '';
+				}
+
+				//TenderMatchingStatus
+				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
+			}
 
 			//if dialog exists destroy it first, so we always set dialog buttons in correct state
 			if (that._oDialog) {
