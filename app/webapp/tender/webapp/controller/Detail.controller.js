@@ -6817,6 +6817,7 @@ sap.ui.define([
 								//otherwise nextOfferID is f.e still the one that is already created
 								var sTenderPath = Services.getSelectedTenderPath();
 								var sTenderID = Services.getSelectedTenderID();
+								let bWarning = false;
 
 								//we will load tender again after save is done
 								var bLoadedCheck = false;
@@ -6845,7 +6846,14 @@ sap.ui.define([
 										description: 'Financial Offer Saved Successfully'
 									});
 									
-									if(oDataTenderOffer[0].results[0].Price.BusinessCasePrice && oDataTenderOffer[0].results[0].Price.BusinessCasePrice !== ""){
+									if(oOffer.CountryCode === "AR"){
+										oOffer.Product.results.map((product) => {
+											if(product.Price.BusinessCasePrice !== "" && product.Price.BusinessCasePrice !== null){
+												bWarning = true;
+											}
+										});
+									}
+									if(bWarning){
 										Services.getOfferCompositeMessages().push({
 											type: 'Warning',
 											title: 'Please upload the business case document',
