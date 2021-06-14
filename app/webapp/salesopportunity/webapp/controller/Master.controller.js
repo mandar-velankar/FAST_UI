@@ -442,6 +442,7 @@ sap.ui.define([
 						styleClass: "sapUiSizeCompact",
 						onClose: (sAction)=>{
 							if (sAction === "CLOSE") {
+								this.byId('list').getBinding('items').refresh()
 								sap.m.MessageToast.show("Tender creation done...");
 							} else {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
