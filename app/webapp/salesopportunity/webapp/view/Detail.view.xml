@@ -364,7 +364,7 @@
 										selectionChange=".onProductItemSelect"
 										items="{
 											path: 'soa>/selectedOpportunity/products',
-											sorter: { path: 'soa>matchedProductName', descending: true} 
+											sorter: { path: 'matchedProductName', descending: true} 
 									}"
 							>
 								<m:columns>

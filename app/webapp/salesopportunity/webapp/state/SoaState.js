@@ -15,6 +15,7 @@ sap.ui.define([
 			this.data = {
 				opportunities: [],
 				selectedOpportunity: {},
+				selectedProduct: {},
 				editMode: false
 				//pricing: new Pricing()
 			};
@@ -56,6 +57,18 @@ sap.ui.define([
 
 		getSelectedOpportunity: function(){
 			return this.getProperty("selectedOpportunity");
+		},
+
+		setSelectedProduct: function(opportunity){
+			this.setProperty("selectedProduct", opportunity);
+		},
+
+		getSelectedProduct: function(){
+			return this.getProperty("selectedProduct");
+		},
+
+		getProductFromSelectedOpportunityByProductCode: function(correlative, productCode){
+			return this.getSelectedOpportunity().getProducts().find(prod => prod.correlative == correlative && prod.productCode == productCode);
 		},
 
 		getNextTenderNo: function(){
