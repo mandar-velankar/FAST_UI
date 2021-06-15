@@ -77,7 +77,7 @@
 													
 											</m:content>
 										</m:Panel>	-->
-						<m:Label/>
+						<!-- <m:Label/> -->
 						<!-- TABLE WITH PRODUCTS FOR DELIVERY TRACKING -->
 						<!--Product.results.Result[0].Outcome-->
 						<m:Table id="idDeliveryTrackViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto"
