@@ -26,7 +26,8 @@ sap.ui.define([
 			var oViewModel = new JSONModel({
 				busy: false,
 				delay: 0,
-				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading"),
+				isProductDetailVisible: false
 			});
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
@@ -499,6 +500,16 @@ sap.ui.define([
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+		},
+
+		onProductItemSelect: function(oEvent){
+			const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
+
+			const detailSubsection = this.byId("idProductDetailSection");
+			detailSubsection.setBindingContext(objContext, "soa");
+
+			let oViewModel = this.getModel("detailView");
+			oViewModel.setProperty("/isProductDetailVisible", true);
 		}
 
 		/* end of search help handlers */
