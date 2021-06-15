@@ -14,93 +14,87 @@
 		</l:BlockLayout>
 	</ObjectPageSubSection>
 	<ObjectPageSubSection id="DelivTrackOfferSubsection" title="Tender Offer" visible="{= ${fastAppData>/EditMode} === true ? false : true}">
-		<l:BlockLayout background="Light">
-			<l:BlockLayoutRow>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-					<m:VBox>
-						<!-- Panel for offers so, we can hide the table -->
-						<!--<m:Panel id="panelDeliveryTrackingOfferTableID" expandable="true" width="auto" class="sapUiResponsiveMargin" expanded="false" expand="onExpandOfferTable" expandAnimation="false">
-											-->
-						<!-- BUTTONS -->
-						<!--<m:headerToolbar>
-												<m:OverflowToolbar height="3rem">
-														<m:Title level="H3" text="Offers"/>
-														<m:ToolbarSpacer/>-->
-						<!--<Button text="Scenario Planner" icon="sap-icon://customize" press="tbd"/>-->
-						<!--</m:OverflowToolbar>
-											</m:headerToolbar>-->
-						<!-- TABLE WITH OFFERS FOR DELIVERY TRACKING -->
-						<!--<m:content>	-->
-						<!-- DELIVERY TRACKING OFFERS -->
-						<!--<m:Table id="deliveryTrackingOfferTableViewID"
-														items="{ 
-															path: 'fastData>Offer',
-															sorter: [
-																{path: 'TenderOfferNo', descending: true},
-																{path: 'RevisedOfferNo', descending: true}
-															],
-															filters: [
-																{ path : 'Active', operator : 'EQ', value1 : '1'},
-																{ path : 'ActiveOffer', operator : 'EQ', value1 : '1'},
-																{ path : 'OfferStatus/STATUS', operator : 'EQ', value1 : 'Delivery Ongoing'},
-        														{ path : 'OfferStatus/STATUS', operator : 'EQ', value1 : 'Results Recorded'},
-																{ path : 'WholesaleOffer', operator : 'EQ', value1 : 'No'}
-															], 
-															parameters: {'expand': 'Distributor'} 
-														}"
-														inset="false" class="sapFDynamicPageAlignContent" width="auto">
-														<m:columns>
-															<m:Column id="deliveryTrackingOfferTableOfferID" width="14rem">
-																<m:Text text="{i18n>OfferID}"/>
-															</m:Column>
-															<m:Column>
-																<m:Text text="{i18n>Distributor}"/>
-															</m:Column>
-															<m:Column width="6rem">
-																<m:Text text="{i18n>OfferDate}"/>
-															</m:Column>
-															<m:Column width="10rem">
-																<m:Text text="{i18n>OfferStatus}"/>
-															</m:Column>
-														</m:columns>
-														<m:items>
-															<m:ColumnListItem type="Navigation" press=".onDelvrTrackPressfun">
-																<m:cells>
-																	<m:ObjectIdentifier title="{fastData>OfferID}"/>
-																	<m:Text text="{fastData>Distributor/DistributorName}"/>
-																	<m:Text text="{path :'fastData>OfferStatus/Date',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>
-																	<m:Text text="{fastData>OfferStatus/STATUS}"/>
-																</m:cells>
-															</m:ColumnListItem>
-														</m:items>
-													</m:Table>
-													
-											</m:content>
-										</m:Panel>	-->
-						<!-- <m:Label/> -->
-						<!-- TABLE WITH PRODUCTS FOR DELIVERY TRACKING -->
-						<!--Product.results.Result[0].Outcome-->
-						<m:Table id="idDeliveryTrackViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto"
-							items="{ path: 'fastAppData>/ProductsForOffer/results/', sorter: [ {path: 'SORTER', descending: false} ], filters: [ { path : 'Active', operator : 'EQ', value1 : '1'}, { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, { path : 'Results/results/0/Outcome', operator : 'Contains', value1: 'Won'} ] }"
-							updateFinished="onBindingItemsFinished" mode="SingleSelectMaster" selectionChange="onDeliveryTrackProductItemSelect"
-							visible="{= ${fastAppData>/EditMode} === true ? false : true}">
-							<m:columns>
-								<m:Column>
-									<m:Text text="{i18n>Product}"/>
-								</m:Column>
-							</m:columns>
-							<m:items>
-								<m:ColumnListItem type="Navigation">
-									<m:cells>
-										<m:Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
-									</m:cells>
-								</m:ColumnListItem>
-							</m:items>
-						</m:Table>
-					</m:VBox>
-				</l:BlockLayoutCell>
-			</l:BlockLayoutRow>
-		</l:BlockLayout>
+		<m:VBox>
+			<!-- Panel for offers so, we can hide the table -->
+			<!--<m:Panel id="panelDeliveryTrackingOfferTableID" expandable="true" width="auto" class="sapUiResponsiveMargin" expanded="false" expand="onExpandOfferTable" expandAnimation="false">
+								-->
+			<!-- BUTTONS -->
+			<!--<m:headerToolbar>
+									<m:OverflowToolbar height="3rem">
+											<m:Title level="H3" text="Offers"/>
+											<m:ToolbarSpacer/>-->
+			<!--<Button text="Scenario Planner" icon="sap-icon://customize" press="tbd"/>-->
+			<!--</m:OverflowToolbar>
+								</m:headerToolbar>-->
+			<!-- TABLE WITH OFFERS FOR DELIVERY TRACKING -->
+			<!--<m:content>	-->
+			<!-- DELIVERY TRACKING OFFERS -->
+			<!--<m:Table id="deliveryTrackingOfferTableViewID"
+											items="{ 
+												path: 'fastData>Offer',
+												sorter: [
+													{path: 'TenderOfferNo', descending: true},
+													{path: 'RevisedOfferNo', descending: true}
+												],
+												filters: [
+													{ path : 'Active', operator : 'EQ', value1 : '1'},
+													{ path : 'ActiveOffer', operator : 'EQ', value1 : '1'},
+													{ path : 'OfferStatus/STATUS', operator : 'EQ', value1 : 'Delivery Ongoing'},
+													{ path : 'OfferStatus/STATUS', operator : 'EQ', value1 : 'Results Recorded'},
+													{ path : 'WholesaleOffer', operator : 'EQ', value1 : 'No'}
+												], 
+												parameters: {'expand': 'Distributor'} 
+											}"
+											inset="false" class="sapFDynamicPageAlignContent" width="auto">
+											<m:columns>
+												<m:Column id="deliveryTrackingOfferTableOfferID" width="14rem">
+													<m:Text text="{i18n>OfferID}"/>
+												</m:Column>
+												<m:Column>
+													<m:Text text="{i18n>Distributor}"/>
+												</m:Column>
+												<m:Column width="6rem">
+													<m:Text text="{i18n>OfferDate}"/>
+												</m:Column>
+												<m:Column width="10rem">
+													<m:Text text="{i18n>OfferStatus}"/>
+												</m:Column>
+											</m:columns>
+											<m:items>
+												<m:ColumnListItem type="Navigation" press=".onDelvrTrackPressfun">
+													<m:cells>
+														<m:ObjectIdentifier title="{fastData>OfferID}"/>
+														<m:Text text="{fastData>Distributor/DistributorName}"/>
+														<m:Text text="{path :'fastData>OfferStatus/Date',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>
+														<m:Text text="{fastData>OfferStatus/STATUS}"/>
+													</m:cells>
+												</m:ColumnListItem>
+											</m:items>
+										</m:Table>
+										
+								</m:content>
+							</m:Panel>	-->
+			<!-- <m:Label/> -->
+			<!-- TABLE WITH PRODUCTS FOR DELIVERY TRACKING -->
+			<!--Product.results.Result[0].Outcome-->
+			<m:Table id="idDeliveryTrackViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto"
+				items="{ path: 'fastAppData>/ProductsForOffer/results/', sorter: [ {path: 'SORTER', descending: false} ], filters: [ { path : 'Active', operator : 'EQ', value1 : '1'}, { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, { path : 'Results/results/0/Outcome', operator : 'Contains', value1: 'Won'} ] }"
+				updateFinished="onBindingItemsFinished" mode="SingleSelectMaster" selectionChange="onDeliveryTrackProductItemSelect"
+				visible="{= ${fastAppData>/EditMode} === true ? false : true}">
+				<m:columns>
+					<m:Column>
+						<m:Text text="{i18n>Product}"/>
+					</m:Column>
+				</m:columns>
+				<m:items>
+					<m:ColumnListItem type="Navigation">
+						<m:cells>
+							<m:Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+						</m:cells>
+					</m:ColumnListItem>
+				</m:items>
+			</m:Table>
+		</m:VBox>
 	</ObjectPageSubSection>
 	<!-- DELIVERIES SUB SECTION PAGE -->
 
