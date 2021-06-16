@@ -20,13 +20,18 @@ sap.ui.define([
 		/* =========================================================== */
 
 		onInit: function () {
+
+			this.oOwnerComponent = this.getOwnerComponent();
+			this.oRouter = this.oOwnerComponent.getRouter();
+
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
 			var oViewModel = new JSONModel({
 				busy: false,
 				delay: 0,
-				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading"),
+				isProductDetailVisible: false
 			});
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
@@ -98,7 +103,8 @@ sap.ui.define([
 		 */
 		_onObjectMatched: function (oEvent) {
 			var sObjectId = oEvent.getParameter("arguments").objectId;
-			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+			let layout = oEvent.getParameter("arguments").layout;
+			this.getModel("appView").setProperty("/layout", layout);
 			this.getModel().metadataLoaded().then(function () {
 				var sObjectPath = this.getModel().createKey("PublicMarketOpportunities", {
 					CodigoExterno: sObjectId
@@ -504,6 +510,29 @@ sap.ui.define([
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+		},
+
+		onProductItemSelect: function(oEvent){
+			const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
+			const selectedObj = objContext?.getObject();
+
+			// const detailSubsection = this.byId("idProductDetailSection");
+			// detailSubsection.setBindingContext(objContext, "soa");
+
+			// let oViewModel = this.getModel("detailView");
+			// oViewModel.setProperty("/isProductDetailVisible", true);
+
+			let oNextUIState = "";
+
+			this.oOwnerComponent.getHelper().then(function (oHelper) {
+				oNextUIState = oHelper.getNextUIState(2);
+				this.oRouter.navTo("objectDetail", {
+					layout: oNextUIState.layout,
+					objectId: selectedObj?.tenders_CodigoExterno,
+					correlative: selectedObj?.correlative,
+					productCode: selectedObj?.productCode
+				});
+			}.bind(this));
 		}
 
 		/* end of search help handlers */

@@ -20,7 +20,9 @@ sap.ui.define([
 	"./controller/ErrorHandler",
 	"./service/SoaService",
 	"./state/SoaState",
-], function (UIComponent, Device, models, ListSelector, ErrorHandler, SoaService, SoaState) {
+	'sap/f/FlexibleColumnLayoutSemanticHelper',
+	'sap/f/library'
+], function (UIComponent, Device, models, ListSelector, ErrorHandler, SoaService, SoaState, FlexibleColumnLayoutSemanticHelper, fioriLibrary) {
 	"use strict";
 
 	return UIComponent.extend("com.bayer.tender.salesopportunity.Component", {
@@ -91,6 +93,31 @@ sap.ui.define([
 				}
 			}
 			return this._sContentDensityClass;
+		},
+
+		getHelper: function () {
+			return this._getFcl().then(function(oFCL) {
+				var oSettings = {
+					defaultTwoColumnLayoutType: fioriLibrary.LayoutType.TwoColumnsMidExpanded,
+					defaultThreeColumnLayoutType: fioriLibrary.LayoutType.ThreeColumnsMidExpanded,
+					initialColumnsCount: 2
+				};
+				return (FlexibleColumnLayoutSemanticHelper.getInstanceFor(oFCL, oSettings));
+			});
+		},
+
+		_getFcl: function () {
+			return new Promise(function(resolve, reject) {
+				var oFCL = this.getRootControl().byId('layout');
+				if (!oFCL) {
+					this.getRootControl().attachAfterInit(function(oEvent) {
+						resolve(oEvent.getSource().byId('layout'));
+					}, this);
+					return;
+				}
+				resolve(oFCL);
+
+			}.bind(this));
 		}
 
 	});
