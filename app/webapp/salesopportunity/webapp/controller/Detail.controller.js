@@ -102,6 +102,10 @@ sap.ui.define([
 		 * @private
 		 */
 		_onObjectMatched: function (oEvent) {
+
+			// removes the selection of the products table. This is needed to always be able to click on the item.
+			this.byId("ProductsTableID").removeSelections();
+
 			var sObjectId = oEvent.getParameter("arguments").objectId;
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
