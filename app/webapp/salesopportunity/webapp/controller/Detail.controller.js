@@ -106,12 +106,12 @@ sap.ui.define([
 			// removes the selection of the products table. This is needed to always be able to click on the item.
 			this.byId("ProductsTableID").removeSelections();
 
-			var sObjectId = oEvent.getParameter("arguments").objectId;
+			this.sObjectId = oEvent.getParameter("arguments").objectId;
 			let layout = oEvent.getParameter("arguments").layout;
 			this.getModel("appView").setProperty("/layout", layout);
 			this.getModel().metadataLoaded().then(function () {
 				var sObjectPath = this.getModel().createKey("PublicMarketOpportunities", {
-					CodigoExterno: sObjectId
+					CodigoExterno: this.sObjectId
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
@@ -520,12 +520,6 @@ sap.ui.define([
 			const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
 			const selectedObj = objContext?.getObject();
 
-			// const detailSubsection = this.byId("idProductDetailSection");
-			// detailSubsection.setBindingContext(objContext, "soa");
-
-			// let oViewModel = this.getModel("detailView");
-			// oViewModel.setProperty("/isProductDetailVisible", true);
-
 			let oNextUIState = "";
 
 			this.oOwnerComponent.getHelper().then(function (oHelper) {
@@ -542,11 +536,23 @@ sap.ui.define([
 		onSectionNavigate: function(oEvent){
 			const selectedSection = oEvent.getParameter("section").getTitle();
 
-			// Products Section
+			// Products Tab
 			if(selectedSection && selectedSection.indexOf("Products") > -1){
 				this.byId("editButtonId").setVisible(false);
-			}else{
+			}
+			
+			// Opportunity Info Tab
+			if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
 				this.byId("editButtonId").setVisible(true);
+
+				let oNextUIState = "";
+				this.oOwnerComponent.getHelper().then(function (oHelper) {
+					oNextUIState = oHelper.getNextUIState(1);
+					this.oRouter.navTo("object", {
+						layout: oNextUIState.layout,
+						objectId: this.sObjectId
+					});
+				}.bind(this));
 			}
 		},
 
