@@ -4,7 +4,7 @@
 	xmlns:m="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:form="sap.ui.layout.form">
-	<DynamicPage toggleHeaderOnTitleClick="false">
+	<DynamicPage id="idDynamicPage" toggleHeaderOnTitleClick="false">
 		<title>
 			<DynamicPageTitle>
 				<heading>
@@ -12,6 +12,11 @@
 						<m:Title text="{products>text}" wrapping="true" class="sapUiTinyMarginEnd"/>
 					</m:FlexBox>
 				</heading>
+
+				<!-- ACTIONS -->
+				<actions>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${soa>/editMode} === false ? true : false }"/>
+				</actions>
 
 				<navigationActions>
 					<m:OverflowToolbarButton
@@ -48,5 +53,13 @@
 				</form:SimpleForm>
 			</m:VBox>
 		</content>
+		<!-- footer bar-->
+		<footer>
+			<m:OverflowToolbar>
+				<m:ToolbarSpacer />
+				<m:Button type="Accept" text="Save" press=".onFooterSavePress()"/>
+				<m:Button type="Reject" text="Cancel" press=".onFooterCancelPress()"/>
+			</m:OverflowToolbar>
+		</footer>
 	</DynamicPage>
 </mvc:View>

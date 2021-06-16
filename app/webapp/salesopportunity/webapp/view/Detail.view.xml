@@ -26,7 +26,7 @@
 		upperCaseAnchorBar="false"
 		enableLazyLoading="false" 
 		useIconTabBar="true" 
-		navigate="onNavigate"
+		navigate=".onSectionNavigate"
 		selectedSection="basicInformationId"
 		showAnchorBarPopover="false">
 
@@ -401,7 +401,7 @@
 								</m:columns>
 								<m:items>
 									<m:ColumnListItem id="productTableListID" 
-										type="{= ${soa>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
+										type="Navigation"
 										press="onProductItemSelect"
 										detailPress="onProductItemSelect">
 										<m:cells>
