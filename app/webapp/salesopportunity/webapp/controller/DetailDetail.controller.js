@@ -187,8 +187,9 @@ sap.ui.define([
 		},
 
 		onFooterCancelPress: function(){
-			
 			this.soaState.restoreBackup();
+			const product = this.soaState.getProductFromSelectedOpportunityByProductCode(this.correlative, this.productCode);
+			this.soaState.setSelectedProduct(product);
 			this.setEditMode(false);
 		},
 

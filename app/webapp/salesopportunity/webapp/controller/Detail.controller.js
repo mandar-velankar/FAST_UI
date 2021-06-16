@@ -439,7 +439,6 @@ sap.ui.define([
 		 * Go to edit mode
 		 */
 		onEditModePress: function (oEvent) {
-
 			this.soaState.setEditMode(true);
 			this.oObjectPageLayout.setShowFooter(true);
 		},
