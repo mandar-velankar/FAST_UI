@@ -533,9 +533,19 @@ sap.ui.define([
 					productCode: selectedObj?.productCode
 				});
 			}.bind(this));
-		}
+		},
 
-		/* end of search help handlers */
+		onSectionNavigate: function(oEvent){
+			const selectedSection = oEvent.getParameter("section").getTitle();
+
+			// Products Section
+			if(selectedSection && selectedSection.indexOf("Products") > -1){
+				this.byId("editButtonId").setVisible(false);
+			}else{
+				this.byId("editButtonId").setVisible(true);
+			}
+		},
+
 	});
 
 });

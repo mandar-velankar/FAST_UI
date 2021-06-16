@@ -17,6 +17,7 @@ sap.ui.define([
 
 			this.oOwnerComponent = this.getOwnerComponent();
 			this.oRouter = this.oOwnerComponent.getRouter();
+			this.oDynamicPage = this.byId("idDynamicPage");
 
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
@@ -168,6 +169,32 @@ sap.ui.define([
 				});
 			}.bind(this));
 
+		},
+
+		onEditModePress: function (oEvent) {
+			this.setEditMode(true);
+		},
+
+		onFooterSavePress: function(){
+			this.getView().setBusy(true);
+			this.getView().setBusyIndicatorDelay(0);
+
+			this.soaState.saveSelectedOpportunity().then(() => {
+				this.getView().setBusy(false);
+				this.getView().getModel().refresh();
+				this.setEditMode(false);
+			});
+		},
+
+		onFooterCancelPress: function(){
+			
+			this.soaState.restoreBackup();
+			this.setEditMode(false);
+		},
+
+		setEditMode: function(isEditable){
+			this.soaState.setEditMode(isEditable);
+			this.oDynamicPage.setShowFooter(isEditable);
 		},
 
 		onExit: function () {
