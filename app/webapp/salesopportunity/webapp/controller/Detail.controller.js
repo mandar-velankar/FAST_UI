@@ -271,6 +271,8 @@ sap.ui.define([
 		onSaveParticipation: async function () {
 
 			const oTender = this.soaState.getNewTender();
+			var that = this;
+
 			if (this._validateNewTender(oTender)) {
 				try {
 					BusyIndicator.show(0);
@@ -283,6 +285,9 @@ sap.ui.define([
 						styleClass: "sapUiSizeCompact",
 						onClose: function (sAction) {
 							if (sAction === "CLOSE") {
+								let opp = that.soaState.getSelectedOpportunity();
+								opp.mainStatus = "Participated";
+								that.soaState.setSelectedOpportunity(opp);
 								sap.m.MessageToast.show("Tender creation done...");
 							} else {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
