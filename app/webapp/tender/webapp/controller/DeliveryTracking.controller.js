@@ -193,7 +193,9 @@ sap.ui.define([
 
 			//Get selected ProductPath
 			var oTable = this.byId("idDeliveryTrackViewProduct");
-			var sSelectedProductPath = '/ProductsForOffer/results/' + oTable.indexOfItem(oTable.getSelectedItem());
+			var sPathSelectedItem = oTable.getSelectedContextPaths()[0];
+			var iIndex = parseInt(sPathSelectedItem.substring(sPathSelectedItem.lastIndexOf('/') + 1));
+			var sSelectedProductPath = '/ProductsForOffer/results/' + iIndex;
 			Services.setSelectedProductPath(sSelectedProductPath);
 
 			//Get the Product info
