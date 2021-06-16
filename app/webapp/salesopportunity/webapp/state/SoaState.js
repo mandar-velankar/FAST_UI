@@ -45,6 +45,11 @@ sap.ui.define([
 
 		createOpportunity: function(data){
 			if(data){
+
+				// add results as wrapper in case Items does not contain one. 
+				// This is needed to correctly create a PublicMarketTender object
+				data.Items && !data.Items.results && (data.Items = {results: data.Items});
+
 				return new PublicMarketTender(data);
 			}
 
