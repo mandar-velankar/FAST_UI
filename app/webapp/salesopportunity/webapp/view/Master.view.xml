@@ -70,42 +70,41 @@
 								<ObjectIdentifier title="{i18n>Code}" />
 							</header>
 						</Column>
-						<Column width="25%" minScreenWidth="920px" demandPopin="true" popinDisplay="Inline" visible="true">
+						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
 							<header>
 								<ObjectIdentifier title="{i18n>Name}" />
 							</header>
 						</Column>
-						<Column width="25%" visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="{i18n>Institute}" />
 							</header>
 						</Column>
-						<Column width="12%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="{i18n>Products}" />
 							</header>
 						</Column>
-						<Column width="8%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="8%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="Publ. Closing" />
 							</header>
 						</Column>
-						<Column width="7.5%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="Status" />
 							</header>
 						</Column>
-						<Column width="7.5%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
 								<ObjectIdentifier title="Substatus" />
 							</header>
 						</Column>
-						<Column width="5%"  visible="{= ${appView>/layout} !== 'TwoColumnsMidExpanded' }">
+						<Column width="5%" minScreenWidth="Desktop" demandPopin="false" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="" />
+								<Label text=""/>
 							</header>
 						</Column>
-						
 					</columns>
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{parts:['MainStatus','SubStatus'],formatter:'.OpportunityFormatter.statusToColor'}" id="items">

@@ -9,7 +9,7 @@
 		"description": "{{appDescription}}",
 
 		"applicationVersion": {
-		"version": "1.0.0"
+		"version": "0.0.3"
 		},
 		"resources": "resources.json",
 		"dataSources": {
@@ -96,11 +96,20 @@
 					"target": "master"
 				},
 				{
-					"pattern": "PublicMarketTenders/{objectId}",
+					"pattern": "PublicMarketTenders/{objectId}/{layout}",
 					"name": "object",
 					"target": [
 						"master",
 						"object"
+					]
+				},
+				{
+					"pattern": "PublicMarketTenders/{objectId}/product/{correlative},{productCode}/{layout}",
+					"name": "objectDetail",
+					"target": [
+						"master",
+						"object",
+						"objectDetail"
 					]
 				}
 			],
@@ -116,6 +125,10 @@
 					"viewId": "detail",
 					"viewLevel": 1,
 					"controlAggregation": "midColumnPages"
+				},
+				"objectDetail": {
+					"viewName": "DetailDetail",
+					"controlAggregation": "endColumnPages"
 				},
 				"detailObjectNotFound": {
 					"viewName": "DetailObjectNotFound",
