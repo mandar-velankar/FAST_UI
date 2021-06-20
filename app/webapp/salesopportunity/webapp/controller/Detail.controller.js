@@ -20,13 +20,18 @@ sap.ui.define([
 		/* =========================================================== */
 
 		onInit: function () {
+
+			this.oOwnerComponent = this.getOwnerComponent();
+			this.oRouter = this.oOwnerComponent.getRouter();
+
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
 			var oViewModel = new JSONModel({
 				busy: false,
 				delay: 0,
-				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading"),
+				isProductDetailVisible: false
 			});
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
@@ -97,11 +102,16 @@ sap.ui.define([
 		 * @private
 		 */
 		_onObjectMatched: function (oEvent) {
-			var sObjectId = oEvent.getParameter("arguments").objectId;
-			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+
+			// removes the selection of the products table. This is needed to always be able to click on the item.
+			this.byId("ProductsTableID").removeSelections();
+
+			this.sObjectId = oEvent.getParameter("arguments").objectId;
+			let layout = oEvent.getParameter("arguments").layout;
+			this.getModel("appView").setProperty("/layout", layout);
 			this.getModel().metadataLoaded().then(function () {
 				var sObjectPath = this.getModel().createKey("PublicMarketOpportunities", {
-					CodigoExterno: sObjectId
+					CodigoExterno: this.sObjectId
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
@@ -271,6 +281,8 @@ sap.ui.define([
 		onSaveParticipation: async function () {
 
 			const oTender = this.soaState.getNewTender();
+			var that = this;
+
 			if (this._validateNewTender(oTender)) {
 				try {
 					BusyIndicator.show(0);
@@ -283,6 +295,9 @@ sap.ui.define([
 						styleClass: "sapUiSizeCompact",
 						onClose: function (sAction) {
 							if (sAction === "CLOSE") {
+								let opp = that.soaState.getSelectedOpportunity();
+								opp.mainStatus = "Participated";
+								that.soaState.setSelectedOpportunity(opp);
 								sap.m.MessageToast.show("Tender creation done...");
 							} else {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
@@ -313,7 +328,9 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate) {
+				!oTender.bidDueDate ||
+				!oTender.nextPublicationDye || 
+				!oTender.awardDate) {
 
 				//add error message
 				var oMessage = {
@@ -424,7 +441,6 @@ sap.ui.define([
 		 * Go to edit mode
 		 */
 		onEditModePress: function (oEvent) {
-
 			this.soaState.setEditMode(true);
 			this.oObjectPageLayout.setShowFooter(true);
 		},
@@ -499,9 +515,48 @@ sap.ui.define([
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
-		}
+		},
 
-		/* end of search help handlers */
+		onProductItemSelect: function(oEvent){
+			const objContext = oEvent.getParameter("listItem").getBindingContext("soa");
+			const selectedObj = objContext?.getObject();
+
+			let oNextUIState = "";
+
+			this.oOwnerComponent.getHelper().then(function (oHelper) {
+				oNextUIState = oHelper.getNextUIState(2);
+				this.oRouter.navTo("objectDetail", {
+					layout: oNextUIState.layout,
+					objectId: selectedObj?.tenders_CodigoExterno,
+					correlative: selectedObj?.correlative,
+					productCode: selectedObj?.productCode
+				});
+			}.bind(this));
+		},
+
+		onSectionNavigate: function(oEvent){
+			const selectedSection = oEvent.getParameter("section").getTitle();
+
+			// Products Tab
+			if(selectedSection && selectedSection.indexOf("Products") > -1){
+				this.byId("editButtonId").setVisible(false);
+			}
+			
+			// Opportunity Info Tab
+			if(selectedSection && selectedSection.indexOf("Opportunity Info") > -1){
+				this.byId("editButtonId").setVisible(true);
+
+				let oNextUIState = "";
+				this.oOwnerComponent.getHelper().then(function (oHelper) {
+					oNextUIState = oHelper.getNextUIState(1);
+					this.oRouter.navTo("object", {
+						layout: oNextUIState.layout,
+						objectId: this.sObjectId
+					});
+				}.bind(this));
+			}
+		},
+
 	});
 
 });

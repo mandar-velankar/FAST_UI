@@ -317,9 +317,10 @@ sap.ui.define([
 		_showDetail: function (oItem) {
 			var bReplace = !Device.system.phone;
 			// set the layout property of FCL control to show two columns
-			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+			// this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getRouter().navTo("object", {
-				objectId: oItem.getBindingContext().getProperty("CodigoExterno")
+				objectId: oItem.getBindingContext().getProperty("CodigoExterno"),
+				layout: "TwoColumnsMidExpanded"
 			}, bReplace);
 		},
 
@@ -442,6 +443,7 @@ sap.ui.define([
 						styleClass: "sapUiSizeCompact",
 						onClose: (sAction)=>{
 							if (sAction === "CLOSE") {
+								this.byId('list').getBinding('items').refresh()
 								sap.m.MessageToast.show("Tender creation done...");
 							} else {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");

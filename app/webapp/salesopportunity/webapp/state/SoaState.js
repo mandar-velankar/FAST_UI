@@ -15,6 +15,7 @@ sap.ui.define([
 			this.data = {
 				opportunities: [],
 				selectedOpportunity: {},
+				selectedProduct: {},
 				editMode: false
 				//pricing: new Pricing()
 			};
@@ -44,6 +45,11 @@ sap.ui.define([
 
 		createOpportunity: function(data){
 			if(data){
+
+				// add results as wrapper in case Items does not contain one. 
+				// This is needed to correctly create a PublicMarketTender object
+				data.Items && !data.Items.results && (data.Items = {results: data.Items});
+
 				return new PublicMarketTender(data);
 			}
 
@@ -56,6 +62,18 @@ sap.ui.define([
 
 		getSelectedOpportunity: function(){
 			return this.getProperty("selectedOpportunity");
+		},
+
+		setSelectedProduct: function(opportunity){
+			this.setProperty("selectedProduct", opportunity);
+		},
+
+		getSelectedProduct: function(){
+			return this.getProperty("selectedProduct");
+		},
+
+		getProductFromSelectedOpportunityByProductCode: function(correlative, productCode){
+			return this.getSelectedOpportunity().getProducts().find(prod => prod.correlative == correlative && prod.productCode == productCode);
 		},
 
 		getNextTenderNo: function(){
