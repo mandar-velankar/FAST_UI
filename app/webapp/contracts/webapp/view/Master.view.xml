@@ -129,7 +129,7 @@
 								<Text text="{ctr>countryCode}"/>
 								<ObjectIdentifier text="{ctr>contractNumber}"/>
 								<Text text="{ctr>contractName}"/>
-								<Text text="{ctr>instituteNames}"/>
+								<ExpandableText class="sapUiTinyMarginBottom sapUiTinyMarginTop" text="{ctr>instituteNames}" overflowMode="Popover" />
 								<Text text="{ctr>distributor/distributorName}"/>
 								<Text text="{
 										path:'ctr>offerValue', 
