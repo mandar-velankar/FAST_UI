@@ -2772,8 +2772,8 @@ sap.ui.define([
 
 					if (oData.results) { //if offers are found add them to the Model
 
-						//sorting by product name
-						oData.results = that.sortByKeyAsc(oData.results, "PRODUCT_NAME");
+						//sorting by product name (We now sort on the node js layer!! )
+						//oData.results = that.sortByKeyAsc(oData.results, "PRODUCT_NAME");
 
 					}
 
