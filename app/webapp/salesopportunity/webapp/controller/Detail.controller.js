@@ -328,7 +328,9 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate) {
+				!oTender.bidDueDate ||
+				!oTender.nextPublicationDye || 
+				!oTender.awardDate) {
 
 				//add error message
 				var oMessage = {
