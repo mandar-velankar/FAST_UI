@@ -37,7 +37,7 @@ sap.ui.define([
 
 			this._oGroupFunctions = {
 				CodigoEstado: function (oContext) {
-					var iNumber = oContext.getProperty('CodigoEstado'),
+					var iNumber = oContext.getProperty('TenderReference'),
 						key, text;
 					if (iNumber <= 20) {
 						key = "LE20";
@@ -319,7 +319,7 @@ sap.ui.define([
 			// set the layout property of FCL control to show two columns
 			// this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getRouter().navTo("object", {
-				objectId: oItem.getBindingContext().getProperty("CodigoExterno"),
+				objectId: oItem.getBindingContext().getProperty("ID"),
 				layout: "TwoColumnsMidExpanded"
 			}, bReplace);
 		},

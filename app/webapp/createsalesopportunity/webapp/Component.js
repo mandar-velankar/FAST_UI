@@ -1,11 +1,11 @@
 if(location.hostname.indexOf("localhost")>-1){
-	jQuery.sap.registerModulePath("com.bayer.tender.createsalesopportunity", "/salesopportunity/webapp");
+	jQuery.sap.registerModulePath("com.bayer.tender.createsalesopportunity", "/createsalesopportunity/webapp");
 	// jQuery.sap.registerModulePath("com.bayer.tender.contracts", "/contracts/webapp"); 
 	// jQuery.sap.registerModulePath("com.bayer.tender.uilib", "/uilib/src/com/bayer/tender/uilib"); 
 	sap.ui.getCore().loadLibrary("com.bayer.tender.uilib","/uilib/src/com/bayer/tender/uilib");
 	// jQuery.sap.registerModulePath("FAST_NS0FAST0", "/tender/webapp"); 
 }else{
-	jQuery.sap.registerModulePath("com.bayer.tender.createsalesopportunity", "/salesopportunity");
+	jQuery.sap.registerModulePath("com.bayer.tender.createsalesopportunity", "/createsalesopportunity");
 	// jQuery.sap.registerModulePath("com.bayer.tender.ppa", "/ppa");
 	// jQuery.sap.registerModulePath("com.bayer.tender.contracts", "/contracts"); 
 	// jQuery.sap.registerModulePath("com.bayer.tender.uilib", "/uilib"); 

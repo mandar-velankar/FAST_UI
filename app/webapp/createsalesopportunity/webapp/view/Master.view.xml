@@ -46,13 +46,13 @@
 						id="list"
 						inset="false"
 						items="{
-							path: '/PublicMarketOpportunities',
+							path: '/SalesOpportunities',
 							sorter: {
-								path: 'CodigoExterno',
+								path: 'TenderReference',
 								descending: false
 							},
 							parameters: {
-								expand: 'Comprador,Items'
+								expand: 'Products,Institute'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -67,37 +67,42 @@
 					<columns>
 						<Column width="10%" visible="true">
 							<header>
-								<ObjectIdentifier title="{i18n>Code}" />
+								<ObjectIdentifier title="{i18n>tenderref}" />
 							</header>
 						</Column>
 						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline" visible="true">
 							<header>
-								<ObjectIdentifier title="{i18n>Name}" />
+								<ObjectIdentifier title="{i18n>clasficn}" />
 							</header>
 						</Column>
 						<Column width="25%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="{i18n>Institute}" />
+								<ObjectIdentifier title="{i18n>typechnl}" />
 							</header>
 						</Column>
 						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="{i18n>Products}" />
+								<ObjectIdentifier title="{i18n>pubcndte}" />
+							</header>
+						</Column>
+						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>offrdudte}" />
+							</header>
+						</Column>
+						<Column width="12%"  minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+							<header>
+								<ObjectIdentifier title="{i18n>nwpubdate}" />
 							</header>
 						</Column>
 						<Column width="8%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="Publ. Closing" />
+								<ObjectIdentifier title="{i18n>contractLength}" />
 							</header>
 						</Column>
 						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 							<header>
-								<ObjectIdentifier title="Status" />
-							</header>
-						</Column>
-						<Column width="7.5%" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-							<header>
-								<ObjectIdentifier title="Substatus" />
+								<ObjectIdentifier title="{i18n>contractExtension}" />
 							</header>
 						</Column>
 						<Column width="5%" minScreenWidth="Desktop" demandPopin="false" popinDisplay="Inline">
@@ -109,20 +114,35 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{parts:['MainStatus','SubStatus'],formatter:'.OpportunityFormatter.statusToColor'}" id="items">
 							<cells>
-								<Text text="{CodigoExterno}"/>
-								<Text text="{Name}"/>
-								<Text text="{Comprador/OrganismNumber}"/>
-								<Text text="Products"/>
+								<Text text="{TenderReference}"/>
+								<Text text="{Classification}"/>
+								<Text text="{TenderChannel}"/>
 								<Text text="{
-										path: 'ClosingDate',
+										path: 'PublicationDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
 										}
 									}" 
 								/>
-								<Text text="{MainStatus}"/>
-								<Text text="{SubStatus}"/>
+								<Text text="{
+										path: 'OfferDueDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{
+										path: 'NextPublicationDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{ContractLength}"/>
+								<Text text="{ExtensionPeriod}"/>
 								<Button text="{= ${MainStatus}==='Participated'?${i18n>goToTender}:${i18n>participate}}" type="Emphasized" press="onParticipateOpportunityPress"/>
 							</cells>
 						</ColumnListItem>
