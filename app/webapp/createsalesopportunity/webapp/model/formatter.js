@@ -18,24 +18,5 @@ sap.ui.define([], function () {
 		},
 
 
-		productMachedState: function (sMachedProductName) {
-			
-			if(sMachedProductName && sMachedProductName.length > 0){
-				return 8;
-			}else{
-				return 3;
-			}
-
-			// switch (sValueToLower) {
-			// 	case "available":
-			// 		return 8;
-			// 	case "sold out":
-			// 		return 3;
-			// 	case "delivery expected":
-			// 		return 5;
-			// 	default:
-			// 		return 9;
-			// }
-		}
 	};
 });

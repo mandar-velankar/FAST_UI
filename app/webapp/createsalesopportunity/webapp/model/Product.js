@@ -26,21 +26,9 @@ sap.ui.define([
         getJSON: function () {
             return this.getJSONObject([
                 "iD",
-                "correlative",
-                "productCode",
-                "categoryCode",
-                "category",
-                "productName",
-                "description",
-                "uoM",
-                "quantity",
-                "supplierAwardID",
-                "supplierAwardName",
-                "awardAmount",
-                "awardCurrency",
-                "matchedProductKeyword", 
-                "matchedProductName", 
-                "tenders_CodigoExterno"
+                "brandID",
+                "comment",
+                "opportunity_ID"
             ]);
         },
 

@@ -3,7 +3,7 @@ sap.ui.define([
 ], function (BaseObject) {
     "use strict";
 
-    var buyer = BaseObject.extend("com.bayer.tender.createsalesopportunity.model.Buyer", {
+    var institute = BaseObject.extend("com.bayer.tender.createsalesopportunity.model.Institute", {
 
         constructor: function (data) {
 
@@ -27,19 +27,20 @@ sap.ui.define([
      
         getJSON: function () {
             return this.getJSONObject([
-                "iD",
-                "organismCode",
-                "organismNumber",
-                "unitID",
-                "unitCode",
-                "unitName",
-                "unitAddress",
-                "unitCommunity",
-                "unitRegion",
-                "userID",
-                "userCode",
-                "userNumber",
-                "userTitle",
+                "countryCode",
+                "instituteID",
+                "customerID",
+                "instituteName",
+                "instituteType",
+                "address",
+                "contactNo",
+                "fax",
+                "contactPerson",
+                "activeRecord",
+                "comment",
+                "city",
+                "iNSTITUTE_HIERARCHY_ID",
+                "state"
             ]);
 
         },
@@ -52,5 +53,5 @@ sap.ui.define([
         
     });
 
-    return buyer;
+    return institute;
 });

@@ -58,15 +58,14 @@ sap.ui.define([
 		_onObjectMatched: function (oEvent) {
 
 			this.sObjectId = oEvent.getParameter("arguments").objectId;
-			this.correlative = oEvent.getParameter("arguments").correlative;
-			this.productCode = oEvent.getParameter("arguments").productCode;
+			this.productId = oEvent.getParameter("arguments").productId;
 			this.layout = oEvent.getParameter("arguments").layout;
 
 			this.getModel("appView").setProperty("/layout", this.layout);
 
 			this.getModel().metadataLoaded().then(function () {
-				var sObjectPath = this.getModel().createKey("PublicMarketOpportunities", {
-					CodigoExterno: this.sObjectId
+				var sObjectPath = this.getModel().createKey("SalesOpportunities", {
+					ID: this.sObjectId
 				});
 				this._bindView("/" + sObjectPath);
 			}.bind(this));
@@ -87,7 +86,7 @@ sap.ui.define([
 			// If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
 			oViewModel.setProperty("/busy", false);
 
-			const product = this.soaState.getProductFromSelectedOpportunityByProductCode(this.correlative, this.productCode);
+			const product = this.soaState.getProductFromSelectedOpportunityByProductId(this.productId);
 			this.soaState.setSelectedProduct(product);
 		},
 
@@ -141,8 +140,7 @@ sap.ui.define([
 				this.oRouter.navTo("objectDetail", {
 					layout: oNextUIState.layout,
 					objectId: this.sObjectId,
-					correlative: this.correlative,
-					productCode: this.productCode
+					productId: this.productId
 				});
 			}.bind(this));
 		},
@@ -153,8 +151,7 @@ sap.ui.define([
 				this.oRouter.navTo("objectDetail", {
 					layout: "ThreeColumnsMidExpanded",
 					objectId: this.sObjectId,
-					correlative: this.correlative,
-					productCode: this.productCode
+					productId: this.productId
 				});
 			}.bind(this));
 		},
@@ -188,7 +185,7 @@ sap.ui.define([
 
 		onFooterCancelPress: function(){
 			this.soaState.restoreBackup();
-			const product = this.soaState.getProductFromSelectedOpportunityByProductCode(this.correlative, this.productCode);
+			const product = this.soaState.getProductFromSelectedOpportunityByProductId(this.productId);
 			this.soaState.setSelectedProduct(product);
 			this.setEditMode(false);
 		},

@@ -45,10 +45,10 @@
 				<form:SimpleForm  editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
 					class="editableForm" visible="true">
 					<form:content>
-						<m:Label text="SupplierAwardID" />
-						<m:Text text="{soa>/selectedProduct/supplierAwardID}"/>
+						<m:Label text="Brand" />
+						<m:Text text="{soa>/selectedProduct/brandID}"/>
 						<m:Label text="Comment" />
-						<m:TextArea value="{soa>/selectedProduct/description}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
+						<m:TextArea value="{soa>/selectedProduct/comment}" growing="true" width="100%" enabled="{= ${soa>/editMode} === true }"/>
 					</form:content>
 				</form:SimpleForm>
 			</m:VBox>
