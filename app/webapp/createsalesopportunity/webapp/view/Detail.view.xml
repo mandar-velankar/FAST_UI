@@ -67,7 +67,7 @@
 				<!-- INSTITUTE INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Code"/>
-					<m:Text id="idhdrInstNme" text="{soa>/selectedOpportunity/codigoExterno}"/>
+					<m:Text id="idhdrInstNme" text="{soa>/selectedOpportunity/tenderReference}"/>
 				</m:VBox>
 
 				<!-- SELECTED CONTRACT -->
@@ -79,7 +79,7 @@
 				<!-- SELECTED CONTRACT INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="Institute"/>
-					<m:Text text="{soa>/selectedOpportunity/buyer/organismNumber}"/>
+					<m:Text text="{soa>/selectedOpportunity/institute/organismNumber}"/>
 				</m:VBox>				
 				
 				<!-- SELECTED PRODUCT INFO -->
@@ -107,29 +107,29 @@
 							<form:content>
 								<core:Title text="Opportunity Details &amp; Type"/>
 								<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
-								<m:Input value="{soa>/selectedOpportunity/TenderReference}"  enabled="false"/>
+								<m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="false"/>
 
 								<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/Classification}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/classification}"  enabled="false" />
 
 								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/TenderChannel}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/tenderChannel}"  enabled="false" />
 
 								<core:Title text="Timeline"/>
 								<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
-								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>offrdudte}" design="Bold" required="true"/>
-								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/OfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/offerDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>nwpubdate}" design="Bold" required="true"/>
-								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/NextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/nextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>contractLength}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/ContractLength}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/contractLength}"  enabled="false" />
 
 								<m:Label text="{i18n>contractExtension}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/ExtensionPeriod}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/extensionPeriod}"  enabled="false" />
 
 							</form:content>
 					</form:SimpleForm>

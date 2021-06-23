@@ -146,8 +146,8 @@ sap.ui.define([
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 
 			// expand Comprador and Items
-			selectedObj["Comprador"] = this.getView().getModel().getObject(`/${selectedObj.Comprador.__ref}`);
-			selectedObj["Items"]["results"] = selectedObj.Items.__list.map(path => this.getView().getModel().getObject(`/${path}`));
+			selectedObj["Institute"] = selectedObj.Institute && this.getView().getModel().getObject(`/${selectedObj.Institute.__ref}`);
+			selectedObj["Products"]["results"] = selectedObj.Products && selectedObj.Products.__list.map(path => this.getView().getModel().getObject(`/${path}`));
 
 			return this.soaState.createOpportunity(selectedObj);
 
@@ -527,9 +527,8 @@ sap.ui.define([
 				oNextUIState = oHelper.getNextUIState(2);
 				this.oRouter.navTo("objectDetail", {
 					layout: oNextUIState.layout,
-					objectId: selectedObj?.tenders_CodigoExterno,
-					correlative: selectedObj?.correlative,
-					productCode: selectedObj?.productCode
+					objectId: selectedObj?.opportunity_ID,
+					productId: selectedObj?.iD
 				});
 			}.bind(this));
 		},
