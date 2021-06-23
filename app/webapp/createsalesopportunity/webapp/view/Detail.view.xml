@@ -107,29 +107,29 @@
 							<form:content>
 								<core:Title text="Opportunity Details &amp; Type"/>
 								<m:Label text="{i18n>tenderref}" design="Bold"  required="true"/>
-								<m:Input value="{soa>/selectedOpportunity/TenderReference}"  enabled="false"/>
+								<m:Input value="{soa>/selectedOpportunity/TenderReference}"  enabled="{= ${soa>/editMode} === false ? true : false }"/>
 
 								<m:Label text="{i18n>clasficn}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/Classification}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/Classification}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
 
 								<m:Label text="{i18n>typechnl}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/TenderChannel}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/TenderChannel}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
 
 								<core:Title text="Timeline"/>
 								<m:Label text="{i18n>pubcndte}" design="Bold" required="true"/>
-								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>offrdudte}" design="Bold" required="true"/>
-								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/OfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/OfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>nwpubdate}" design="Bold" required="true"/>
-								<m:DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/NextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+								<m:DatePicker enabled="{= ${soa>/editMode} === false ? true : false }" value="{path :'soa>/selectedOpportunity/NextPublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 
 								<m:Label text="{i18n>contractLength}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/ContractLength}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/ContractLength}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
 
 								<m:Label text="{i18n>contractExtension}" design="Bold" required="true"/>
-								<m:Input  value="{soa>/selectedOpportunity/ExtensionPeriod}"  enabled="false" />
+								<m:Input  value="{soa>/selectedOpportunity/ExtensionPeriod}"  enabled="{= ${soa>/editMode} === false ? true : false }" />
 
 							</form:content>
 					</form:SimpleForm>
