@@ -321,6 +321,17 @@ sap.ui.define([
 			}, bReplace);
 		},
 
+		onAdd: function (){
+			var bReplace = !Device.system.phone;
+
+			this.getRouter().navTo("object", {
+				objectId: this.soaState.getNewUUID(),
+				layout: "TwoColumnsMidExpanded"
+			}, bReplace);
+
+			this.getModel("masterView").setProperty("/newOpportunity", true);
+		},
+
 		/**
 		 * Sets the item count on the master list header
 		 * @param {integer} iTotalItems the total number of items in the list
