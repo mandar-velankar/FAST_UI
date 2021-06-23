@@ -7,41 +7,44 @@
 		confirm=".onConfirmViewSettingsDialog">
 		<sortItems>
 			<ViewSettingsItem
-				text="{i18n>Name}"
-				key="Name"
+				text="{i18n>Tender Reference}"
+				key="TenderReference"
 				selected="true"/>
 			<ViewSettingsItem
-				text="{i18n>Code}"
-				key="CodigoExterno"/>
+				text="{i18n>Classification}"
+				key="Classification"/>
 			<ViewSettingsItem
-				text="{i18n>Institute}"
-				key="Comprador/OrganismNumber"/>
+				text="{i18n>Tender Channel}"
+				key="TenderChannel"/>
 		</sortItems>
 		<filterItems>
 			<ViewSettingsFilterItem
 				id="filterItems"
-				text="Filters"
+				text="Tender Channel"
 				multiSelect="false">
 				<items>
 					<ViewSettingsItem
-						id="viewFilter1"
-						text="{i18n>Name}"
-						key="Name"/>
+						id="distributor"
+						text="{i18n>Distributor}"
+						key="distributor"/>
+				</items>
+			</ViewSettingsFilterItem>
+			<ViewSettingsFilterItem
+				id="filterItems2"
+				text="Classification"
+				multiSelect="false">
+				<items>
 					<ViewSettingsItem
-						id="viewFilter2"
-						text="{i18n>Code}"
-						key="CodigoExterno"/>
-					<ViewSettingsItem
-						id="viewFilter3"
-						text="{i18n>Institute}"
-						key="Comprador/OrganismNumber"/>
+						id="rfq"
+						text="{i18n>RFQ}"
+						key="rfq"/>
 				</items>
 			</ViewSettingsFilterItem>
 		</filterItems>
 		<groupItems>
 			<ViewSettingsItem
-				text="{i18n>Code}"
-				key="CodigoExterno"/>
+				text="{i18n>Tender Channel}"
+				key="TenderChannel"/>
 		</groupItems>
 	</ViewSettingsDialog>
 </core:FragmentDefinition>
