@@ -81,10 +81,7 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
-
-			this.soaState.loadCountryChannels("CL");
-			this.soaState.loadCountryClassifications("CL");
-			this.soaState.loadCountryTenderTypes("CL");
+			
 		},
 
 		/* =========================================================== */
