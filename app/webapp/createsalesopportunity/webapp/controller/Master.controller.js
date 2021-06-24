@@ -99,34 +99,34 @@ sap.ui.define([
 			this._updateListItemCount(oEvent.getParameter("total"));
 		},
 
-		/**
-		 * Event handler for the master search field. Applies current
-		 * filter value and triggers a new search. If the search field's
-		 * 'refresh' button has been pressed, no new search is triggered
-		 * and the list binding is refresh instead.
-		 * @param {sap.ui.base.Event} oEvent the search event
-		 * @public
-		 */
-		onSearch: function (oEvent) {
-			if (oEvent.getParameters().refreshButtonPressed) {
-				// Search field's 'refresh' button has been pressed.
-				// This is visible if you select any master list item.
-				// In this case no new search is triggered, we only
-				// refresh the list binding.
-				this.onRefresh();
-				return;
-			}
+		// /**
+		//  * Event handler for the master search field. Applies current
+		//  * filter value and triggers a new search. If the search field's
+		//  * 'refresh' button has been pressed, no new search is triggered
+		//  * and the list binding is refresh instead.
+		//  * @param {sap.ui.base.Event} oEvent the search event
+		//  * @public
+		//  */
+		// onSearch: function (oEvent) {
+		// 	if (oEvent.getParameters().refreshButtonPressed) {
+		// 		// Search field's 'refresh' button has been pressed.
+		// 		// This is visible if you select any master list item.
+		// 		// In this case no new search is triggered, we only
+		// 		// refresh the list binding.
+		// 		this.onRefresh();
+		// 		return;
+		// 	}
 
-			var sQuery = oEvent.getParameter("query");
+		// 	var sQuery = oEvent.getParameter("query");
 
-			if (sQuery) {
-				this._oListFilterState.aSearch = [new Filter("Name", FilterOperator.Contains, sQuery)];
-			} else {
-				this._oListFilterState.aSearch = [];
-			}
-			this._applyFilterSearch();
+		// 	if (sQuery) {
+		// 		this._oListFilterState.aSearch = [new Filter("Name", FilterOperator.Contains, sQuery)];
+		// 	} else {
+		// 		this._oListFilterState.aSearch = [];
+		// 	}
+		// 	this._applyFilterSearch();
 
-		},
+		// },
 
 		/**
 		 * Event handler for refresh event. Keeps filter, sort
@@ -187,11 +187,11 @@ sap.ui.define([
 			// combine the filter array and the filter string
 			aFilterItems.forEach(function (oItem) {
 				switch (oItem.getKey()) {
-					case "Filter1":
-						aFilters.push(new Filter("CodigoEstado", FilterOperator.LE, 100));
+					case "distributor":
+						aFilters.push(new Filter("TenderChannel", FilterOperator.EQ, "Distributor"));
 						break;
-					case "Filter2":
-						aFilters.push(new Filter("CodigoEstado", FilterOperator.GT, 100));
+					case "rfq":
+						aFilters.push(new Filter("Classification", FilterOperator.EQ, "RFQ"));
 						break;
 					default:
 						break;
@@ -599,45 +599,40 @@ sap.ui.define([
 			//var oFastAppData = Services.getFastAppDataModel();
 
 			var sSearch = this.byId("idSearch").getProperty("value");
-			var sStatus = this.byId("idSlctStatusFilter").getSelectedKey();
-			var sSubStatus = this.byId("idSlctSubStatusFilter").getSelectedKey();
+			// var sStatus = this.byId("idSlctStatusFilter").getSelectedKey();
 
 			//Add filters if they are set (so not the default, all...)
 			var orFilters = [];
 			var andFilters = [];
 
-			if(sStatus){
-				andFilters.push(new sap.ui.model.Filter("MainStatus", "EQ", sStatus));
-			}
-
-			if (sSubStatus && sSubStatus != 'NA'){
-				andFilters.push(new sap.ui.model.Filter("SubStatus", "EQ", sSubStatus));
-			}
+			// if(sStatus){
+			// 	andFilters.push(new sap.ui.model.Filter("MainStatus", "EQ", sStatus));
+			// }
 
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
-			var sIdSource = "";
-			if (oSelection) {
-				sIdSource = oSelection.getSource().getId();
-			}
+			// let sIdSource = "";
+			// if (oSelection) {
+			// 	sIdSource = oSelection.getSource().getId();
+			// }
 
 			if (sSearch.length > 0) {
 
 				orFilters.push(new Filter({
-					path: "CodigoExterno",
+					path: "TenderReference",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false
 				}));
 
 				orFilters.push(new Filter({
-					path: "Name",
+					path: "Classification",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false
 				}));
 
 				orFilters.push(new Filter({
-					path: "Comprador/OrganismNumber",
+					path: "TenderChannel",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false
@@ -651,7 +646,6 @@ sap.ui.define([
 			//Binding to table with the filters and the sorters
 			this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
 
-			// this.getCountryContractBrands(oCountry);//not sure what this does but country is not available here.. which results in an error
 
 		},
 
