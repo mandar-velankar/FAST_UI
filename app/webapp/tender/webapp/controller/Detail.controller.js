@@ -82,7 +82,7 @@ sap.ui.define([
 			var url =
 				"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
 			var countryCode = Services.getCountryCodeofSelectedTender();
-			var tenderId = Services.getSelectedTenderID();;
+			var tenderId = Services.getSelectedTenderID();
 			url = url.replace("$CountryCode", countryCode);
 			url = url.replace("$TenderId", tenderId);
 			window.open(url);
@@ -5134,11 +5134,12 @@ sap.ui.define([
 			//oFastAppDataModel.setProperty("/ProductCollectionOutput", null);
 
 			//for chile we show the products that were mached to say the the salesopportunity was IN (intresting for bayer fast)
+			let sMercadoInProductsMessage = '';
 			if(Services.getSelectedCountry() === 'CL'){
 
 				const salesOpportunity = await Services.getService('SalesOpportunity').getOpportunity(sTenderReference);
 				let oSalesOpportunity = salesOpportunity.data && salesOpportunity.data.results && salesOpportunity.data.results.length > 0 && salesOpportunity.data.results[0];
-				let sMercadoInProductsMessage = 'Sales opportunity was matched upon the following products: ';
+				sMercadoInProductsMessage = 'Sales opportunity was matched upon the following products: ';
 				if(oSalesOpportunity.TenderMatchingStatus === 'In'){ //(intresting for bayer fast)
 					
 					let aProducts = oSalesOpportunity.Items && oSalesOpportunity.Items.results.length > 0 && oSalesOpportunity.Items.results;
@@ -5152,7 +5153,11 @@ sap.ui.define([
 
 				//TenderMatchingStatus
 				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
+			}else{
+				//Make message empty if other country (otherwise previous message from CL could be shown again)
+				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
 			}
+			
 
 			//if dialog exists destroy it first, so we always set dialog buttons in correct state
 			if (that._oDialog) {
