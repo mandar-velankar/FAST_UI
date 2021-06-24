@@ -6910,7 +6910,7 @@ sap.ui.define([
 			const selectedOfferID = Services.getSelectedOfferID();
 			const selectedProductID = Services.getSelectedProductID();
 			const selectedProductName = Services.getSelectedProductName();
-			const selectedProductNewNetPrice = +this.byId("idEditPriceOffer_idNetPrice").getValue();
+			const selectedProductNewNetPrice = parseFloat(this.byId("idEditPriceOffer_idNetPrice").getValue().replace(',',''));
 			const otherDistributorProduct = allTenderOffers
 				.filter(offer => offer.OfferID !== selectedOfferID)
 				.map(offer => offer.Product.results.find(prod => (prod && prod.Price && prod.ProductCode === selectedProductID)))
