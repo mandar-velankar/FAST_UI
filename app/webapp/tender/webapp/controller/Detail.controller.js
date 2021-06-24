@@ -1360,10 +1360,10 @@ sap.ui.define([
 					if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()),sSelectedSection)){
 						
 						//Deliveries - subsection
-						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
+						/*var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
 							oDelivTrackOfferSubSection.setVisible(true);
-						}
+						}*/
 
 						//Deliveries - Deliveries
 						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
@@ -1399,10 +1399,10 @@ sap.ui.define([
 					} else {
 
 						//Deliveries - subsection
-						var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
+						/*var oDelivTrackOfferSubSection = that.oDeliveryTrackingView.byId("DelivTrackOfferSubsection");
 						if (oDelivTrackOfferSubSection) {
 							oDelivTrackOfferSubSection.setVisible(false);
-						}
+						}*/
 
 						//Deliveries - Deliveries
 						var oDelivTrackDeliveriesSubSection = that.oDeliveryTrackingView.byId("DelivTrackDeliveriesSubsection");
