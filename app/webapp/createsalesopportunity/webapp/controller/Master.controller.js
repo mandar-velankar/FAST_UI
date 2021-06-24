@@ -315,6 +315,8 @@ sap.ui.define([
 			var bReplace = !Device.system.phone;
 			// set the layout property of FCL control to show two columns
 			// this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+			this.soaState.setEditMode(false);
+
 			this.getRouter().navTo("object", {
 				objectId: oItem.getBindingContext().getProperty("ID"),
 				layout: "TwoColumnsMidExpanded"
@@ -322,6 +324,7 @@ sap.ui.define([
 		},
 
 		onAdd: function (){
+			this.soaState.setEditMode(true);
 			var bReplace = !Device.system.phone;
 
 			this.getRouter().navTo("object", {
@@ -329,7 +332,6 @@ sap.ui.define([
 				layout: "TwoColumnsMidExpanded"
 			}, bReplace);
 
-			this.getModel("masterView").setProperty("/newOpportunity", true);
 		},
 
 		/**
