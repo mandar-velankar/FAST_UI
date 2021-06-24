@@ -6777,34 +6777,34 @@ sap.ui.define([
 						PRICE_UPDATE: 0
 					};
 
-					//convert price to save
-					var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
-
-					if (pricePath !== null) {
-						//update Price
-						promises_saving.push(Services.getService('Price').updatePrice(oPriceToSave).catch(function (oError) {
-							//show error message
-							Services.showErrorMessage(oError, "Update of Price");
-							//promises must fail as well
-							throw new Error(oError);
-						}));
-					} else {
-						//create Price
-						promises_saving.push(Services.getService('Price').createPrice(oPriceToSave).catch(function (oError) {
-							//show error message
-							Services.showErrorMessage(oError, "Creation of Price");
-							//promises must fail as well
-							throw new Error(oError);
-						}));
-					}
-
 					//check if any of the pricing data is changed
 					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
+
+						//convert price to save
+						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
 
 						//if oOriginalPrices = false, they were not found, and we are creating new
 						if (oOriginalPrices !== false) {
 							//otherwise they were found and the check results for price update should be used
-							oNewPriceInfo.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+							oPriceToSave.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+						}
+
+						if (pricePath !== null) {
+							//update Price
+							promises_saving.push(Services.getService('Price').updatePrice(oPriceToSave).catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Update of Price");
+								//promises must fail as well
+								throw new Error(oError);
+							}));
+						} else {
+							//create Price
+							promises_saving.push(Services.getService('Price').createPrice(oPriceToSave).catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Creation of Price");
+								//promises must fail as well
+								throw new Error(oError);
+							}));
 						}
 
 						//Save all scenario's
