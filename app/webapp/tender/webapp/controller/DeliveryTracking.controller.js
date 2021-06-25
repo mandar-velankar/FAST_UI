@@ -13,7 +13,7 @@ sap.ui.define([
 		//Formatting functions
 		formatter: formatter,
 
-		onInit: function () {
+		onInit: function (oEvent) {
 
 			//get resource bundle for translations or texts
 			this.oOwnerComponent = this.getOwnerComponent();
@@ -71,14 +71,30 @@ sap.ui.define([
 
 			//show delivery / purchase order table
 			let oSubsection = this.getView().byId('DelivTrackDeliveriesSubsection');
-			let oFragmentName = 'FAST_NS0FAST0.view.fragments.' + Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment') ; //+ Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment');
-			sap.ui.core.Fragment.load({ type: 'XML',
-										name: oFragmentName,
-										id: 'deliveryTableFragment',
-										controller: this
-									  }).then(function(oFragment){
-										  	oSubsection.addBlock(oFragment);
-									   });
+			
+			if(Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment')){
+
+				let oFragmentName = 'FAST_NS0FAST0.view.fragments.' + Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment') ; //+ Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment');
+				sap.ui.core.Fragment.load({ type: 'XML',
+											name: oFragmentName,
+											id: 'deliveryTableFragment',
+											controller: this
+										}).then(function(oFragment){
+												oSubsection.addBlock(oFragment);
+										});
+			} else {
+				Services.loadCountryPermissions(sCountry).then(() => {
+						let oFragmentName = 'FAST_NS0FAST0.view.fragments.' + Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment') ; //+ Services.getFastAppDataModel().getProperty('/permissions/fragments/deliveryTrackingId/fragment');
+						sap.ui.core.Fragment.load({ type: 'XML',
+												name: oFragmentName,
+												id: 'deliveryTableFragment',
+												controller: this
+											}).then(function(oFragment){
+													oSubsection.addBlock(oFragment);
+											});
+					}
+				);
+			}
 		},
 
 		_removeDeliveryTableFragment: function(){
