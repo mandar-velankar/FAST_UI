@@ -307,6 +307,7 @@ sap.ui.define([
 					});
 
 				} catch (error) {
+					console.error(error);
 					BusyIndicator.hide()
 				}
 			}
@@ -328,9 +329,10 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye || 
-				!oTender.awardDate) {
+				!oTender.bidDueDate// ||
+				// !oTender.nextPublicationDye || 
+				// !oTender.awardDate
+				) {
 
 				//add error message
 				var oMessage = {

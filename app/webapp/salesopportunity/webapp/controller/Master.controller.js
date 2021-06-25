@@ -452,6 +452,7 @@ sap.ui.define([
 						}
 					});
 				} catch (error) {
+					console.error(error);
 					BusyIndicator.hide()
 				}
 			}
