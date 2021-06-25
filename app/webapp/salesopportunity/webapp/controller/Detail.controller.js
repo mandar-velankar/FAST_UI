@@ -290,7 +290,7 @@ sap.ui.define([
 					BusyIndicator.hide()
 					this._oParticipationDialog.close();
 					this.getModel().refresh();
-					
+
 					let opp = that.soaState.getSelectedOpportunity();
 					opp.mainStatus = "Participated";
 					that.soaState.setSelectedOpportunity(opp);
@@ -302,7 +302,7 @@ sap.ui.define([
 						onClose: function (sAction) {
 							if (sAction !== MessageBox.Action.CLOSE) {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-								window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app/#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 							}
 						}
 					});
