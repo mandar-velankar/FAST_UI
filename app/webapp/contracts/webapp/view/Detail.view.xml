@@ -125,7 +125,7 @@
 				<!-- INSTITUTE INFO -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
 					<m:Label text="{i18n>institutes}"/>
-					<m:ExpandableText id="idhdrInstNme" class="sapUiTinyMarginBottom sapUiTinyMarginTop" text="{ctr>/currentContract/instituteNames}" overflowMode="Popover" />
+					<m:Text id="idhdrInstNme" text="{ctr>/currentContract/instituteNames}"/>
 					<m:Text id="idhdrInstID" text="{ctr>/currentContract/institute/instituteID}" visible="false"/>
 				</m:VBox>
 
