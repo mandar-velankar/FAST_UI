@@ -291,7 +291,7 @@
 													<m:Select selectedKey="{fastAppData>AWARDEDCOMPANYCOMP}" 
 															  enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
 															  items="{
-																  path: 'fastAppData>/CountryCompetitorCompanies/'
+																  path: 'fastAppData>/CountryCompetitorCompanies/', templateShareable:false
 															  }"
 															  visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
 															  change="onChangeAwardedCompanyCompetitor">
@@ -322,7 +322,7 @@
 														 		id="idSelectCompetitorProduct"
 																selectedKey="{fastAppData>PRODUCTCOMP}" 
 																enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
-																items="{ path: 'fastAppData>CountryCompetitorProducts/'}"
+																items="{ path: 'fastAppData>CountryCompetitorProducts/', templateShareable:false}"
 																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
 																change="onChangeAwardedProductCompetitor">
 															<m:items>
@@ -409,7 +409,7 @@
 												<m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
 																					 enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
 																					 change="onChangeOutcome" 
-																					 items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' } }"
+																					 items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' }, templateShareable:false }"
 																					 width="20rem">
 													<core:Item key="{fastAppData>Outcome}" text="{fastAppData>Outcome}"/>
 												</m:Select>

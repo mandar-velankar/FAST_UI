@@ -305,7 +305,7 @@
 									   formatter: '.formatter.offerProductsColumnName' }" 
 							   wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>SKU/Product/HLEVEL4_NAME}" maxLength="100" />
+							<Text text="{fastAppData>SKU/Product/HLEVEL4_NAME}" />
 						</t:template>
 					</t:Column>
 
@@ -330,7 +330,7 @@
 									   formatter: '.formatter.offerProductsColumnName' }"	   
 							   wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>PricingPolicyCluster}" editable="false"/>
+							<Text text="{fastAppData>PricingPolicyCluster}"/>
 						</t:template>
 					</t:Column>
 				</t:columns>
