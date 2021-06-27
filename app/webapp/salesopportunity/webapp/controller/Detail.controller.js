@@ -289,24 +289,26 @@ sap.ui.define([
 					await this.soaState.createTender(oTender);
 					BusyIndicator.hide()
 					this._oParticipationDialog.close();
+					this.getModel().refresh();
+
+					let opp = that.soaState.getSelectedOpportunity();
+					opp.mainStatus = "Participated";
+					that.soaState.setSelectedOpportunity(opp);
+					sap.m.MessageToast.show("Tender creation done...");
 					//successfully created tender
 					MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
 						actions: ["Go to new Tender", MessageBox.Action.CLOSE],
 						styleClass: "sapUiSizeCompact",
 						onClose: function (sAction) {
-							if (sAction === "CLOSE") {
-								let opp = that.soaState.getSelectedOpportunity();
-								opp.mainStatus = "Participated";
-								that.soaState.setSelectedOpportunity(opp);
-								sap.m.MessageToast.show("Tender creation done...");
-							} else {
+							if (sAction !== MessageBox.Action.CLOSE) {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-								window.open("/app/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+								window.open("/app/#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 							}
 						}
 					});
 
 				} catch (error) {
+					console.error(error);
 					BusyIndicator.hide()
 				}
 			}
@@ -328,9 +330,10 @@ sap.ui.define([
 				oTender.tenderChannel === "" ||
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
-				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye || 
-				!oTender.awardDate) {
+				!oTender.bidDueDate// ||
+				// !oTender.nextPublicationDye || 
+				// !oTender.awardDate
+				) {
 
 				//add error message
 				var oMessage = {
