@@ -282,9 +282,9 @@ sap.ui.define([
 			this._oParticipationDialog.close();
 		},
 
-		onSaveParticipation: async function () {
+		onFooterSavePress: async function () {
 
-			const oTender = this.soaState.getNewTender();
+			const oTender = this.soaState.createOpportunity();
 			var that = this;
 
 			if (this._validateNewTender(oTender)) {
