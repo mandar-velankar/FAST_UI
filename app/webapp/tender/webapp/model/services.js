@@ -2284,7 +2284,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry,Offer,GroupPurchasing/Institute" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry,Offer,GroupPurchasing/Institute" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 

@@ -2107,7 +2107,7 @@ sap.ui.define([
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
-						that._showSubSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
