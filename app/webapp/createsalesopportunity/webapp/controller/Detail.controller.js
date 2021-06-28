@@ -287,7 +287,7 @@ sap.ui.define([
 			const oTender = this.soaState.createOpportunity();
 			var that = this;
 
-			if (this._validateNewTender(oTender)) {
+			if (this._validateNewOpportunity(oTender)) {
 				try {
 					BusyIndicator.show(0);
 					await this.soaState.createTender(oTender);
@@ -316,7 +316,7 @@ sap.ui.define([
 			}
 		},
 
-		_validateNewTender: function (oTender) {
+		_validateNewOpportunity: function (oTender) {
 
 			//TODO: move to state
 
@@ -333,8 +333,9 @@ sap.ui.define([
 				oTender.groupPurchasing === "" ||
 				!oTender.publicationDate ||
 				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye || 
-				!oTender.awardDate) {
+				!oTender.nextPublicationDye
+				//!oTender.awardDate
+				) {
 
 				//add error message
 				var oMessage = {
@@ -392,7 +393,7 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
+			/*if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
 
 				if (!moment(oTender.awardDate).isBefore(oTender.nextPublicationDye)) {
 					//add error message
@@ -408,7 +409,7 @@ sap.ui.define([
 					bValid = false;
 				}
 
-			}
+			}*/
 
 			//check if dates are correct
 			if (oTender.BidDueDate && oTender.InternalBidDueDate) { //optional dates
