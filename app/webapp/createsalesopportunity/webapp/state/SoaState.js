@@ -128,6 +128,26 @@ sap.ui.define([
 
 		},
 
+		loadCountryChannels: async function(sCountry){
+			const aCountryChannels = await this.getService().loadCountryChannels(sCountry);
+			this.setProperty("CountryChannels", aCountryChannels.data.results);
+		},
+
+		loadCountryClassifications: async function(sCountry){
+			const aCountryClassifications = await this.getService().loadCountryClassifications(sCountry);
+			this.setProperty("CountryClassifications", aCountryClassifications.data.results);
+		},
+
+		loadCountryTenderTypes: async function(sCountry){
+			const aCountryTenderTypes = await this.getService().loadCountryTenderTypes(sCountry);
+			this.setProperty("CountryTenderTypes", aCountryTenderTypes.data.results);
+		},
+
+		loadCountryInstitutes: async function(sCountry, sInstituteType){
+			const aCountryInstitutes = await this.getService().loadCountryInstitutes(sCountry, sInstituteType);
+			this.setProperty("CountryInstitutes", aCountryInstitutes.data.results);
+		},
+
 		/* UI helpers */
 		// showMessageCompositeView: function (sTitle, aMessages, sState) {
 
