@@ -2284,7 +2284,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry,Offer,GroupPurchasing/Institute" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 
@@ -2345,6 +2345,16 @@ sap.ui.define([
 									});
 
 								}
+
+								if (oProduct.SKUCountry && oProduct.SKUCountry.ProductPack && oProduct.SKUCountry.ProductPack.ProductPackSKUs.results.length > 0) {
+									//filter out non active values
+									let oProducts = oProduct.SKUCountry.ProductPack.ProductPackSKUs.results.filter(function(sku, index, arr){ 
+										return sku.ActiveRecord === 'Yes';
+									});
+
+									oProduct.SKUCountry.ProductPack.ProductPackSKUs.results = oProducts[oProducts.length - 1]; //get the last entry
+								}
+
 
 							});
 						}
