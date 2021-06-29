@@ -145,6 +145,9 @@ sap.ui.define([
 		createStateObject: function (sObjectPath) {
 
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
+			if(!selectedObj){
+				this.soaState.getSelectedOpportunity(); //we're handling a new opportunity
+			}
 
 			// expand Comprador and Items
 			if(selectedObj){
@@ -460,8 +463,8 @@ sap.ui.define([
 				oInputfield.setValue(oSelectedItem.getTitle());
 
 				if (this._sInputId.includes("InstituteName")) {
-					const oTender = this.soaState.getNewTender();
-					oTender.instituteID = Number(oSelectedItem.getDescription());
+					const oOpportunity = this.soaState.getSelectedOpportunity();
+					oOpportunity.instituteID = Number(oSelectedItem.getDescription());
 				}
 			}
 			oEvent.getSource().getBinding("items").filter([]);
