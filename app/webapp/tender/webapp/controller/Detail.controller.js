@@ -4001,6 +4001,12 @@ sap.ui.define([
 				path: "SORTER",
 				descending: false
 			});
+
+			/*let oProducts = oFastAppDataModel.getProperty("/SelectedOffer/Product/results");
+			let skuCountries = oProducts.map((product) => { 
+				return product.SKUCountry;
+			});*/
+
 			oTable.bindRows({
 				path: sProductPath,
 				model: "fastAppData",
