@@ -282,9 +282,9 @@ sap.ui.define([
 			this._oParticipationDialog.close();
 		},
 
-		onFooterSavePress: async function () {
+		/*onFooterSavePress: async function () {
 
-			const oTender = this.soaState.createOpportunity();
+			const oTender = this.soaState.getSelectedOpportunity();
 			var that = this;
 
 			if (this._validateNewOpportunity(oTender)) {
@@ -314,9 +314,9 @@ sap.ui.define([
 					BusyIndicator.hide()
 				}
 			}
-		},
+		},*/
 
-		_validateNewOpportunity: function (oTender) {
+		_validateNewOpportunity: function (oOpportunity) {
 
 			//TODO: move to state
 
@@ -326,28 +326,25 @@ sap.ui.define([
 
 			//check mandatory fields
 			if (
-				oTender.tenderName === "" ||
-				oTender.classification === "" ||
-				oTender.instituteID === "" || //IntituteType is property of institute
-				oTender.tenderChannel === "" ||
-				oTender.groupPurchasing === "" ||
-				!oTender.publicationDate ||
-				!oTender.bidDueDate ||
-				!oTender.nextPublicationDye
-				//!oTender.awardDate
+				oOpportunity.tenderReference === "" ||
+				oOpportunity.classification === "" ||
+				//oTender.instituteID === "" || //IntituteType is property of institute
+				oOpportunity.tenderChannel === "" ||
+				!oOpportunity.publicationDate ||
+				!oOpportunity.offerDueDate ||
+				!oOpportunity.nextPublicationDate
 				) {
 
 				//add error message
 				var oMessage = {
 					type: 'Error',
 					title: 'Mandatory fields.',
-					description: '- Tender Name \n' +
+					description: '- Tender Reference \n' +
 						'- Classification \n' +
 						'- Institute \n' +
 						'- Channel \n' +
-						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Offer due Date \n',
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -358,7 +355,7 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (!moment(oTender.publicationDate).isBefore(oTender.bidDueDate)) {
+			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.bidDueDate)) {
 
 				//add error message
 				var oMessage = {
@@ -371,62 +368,6 @@ sap.ui.define([
 				aMessages.push(oMessage);
 
 				bValid = false;
-			}
-
-			//check if dates are correct
-			if (oTender.AwardDate) { //optional date
-
-				if (!moment(oTender.bidDueDate).isBefore(oTender.awardDate)) {
-
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'OfferDuedate',
-						description: 'OfferDuedate date should be before the Award date. \n',
-						subtitle: 'OfferDuedate date should be before the Award date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-			}
-
-			//check if dates are correct
-			/*if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
-
-				if (!moment(oTender.awardDate).isBefore(oTender.nextPublicationDye)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Award date',
-						description: 'Award date should be before the next publication date. \n',
-						subtitle: 'Award date should be before the next publication date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
-
-			}*/
-
-			//check if dates are correct
-			if (oTender.BidDueDate && oTender.InternalBidDueDate) { //optional dates
-
-				if (!moment(oTender.internalBidDueDate).isBefore(oTender.bidDueDate)) {
-					//add error message
-					var oMessage = {
-						type: 'Error',
-						title: 'Internal due date',
-						description: 'Internal due date should be before the offer due date. \n',
-						subtitle: 'Internal due date should be before the offer due date.',
-						counter: 1
-					}
-					aMessages.push(oMessage);
-
-					bValid = false;
-				}
 			}
 
 			//if errors (or warnings) occured, show the messages in 1 dialog
@@ -466,12 +407,16 @@ sap.ui.define([
 			this.getView().setBusy(true);
 			this.getView().setBusyIndicatorDelay(0);
 
-			this.soaState.saveSelectedOpportunity().then(() => {
+			if(this._validateNewOpportunity(this.soaState.getSelectedOpportunity())){
+				this.soaState.saveSelectedOpportunity().then(() => {
+					this.getView().setBusy(false);
+					this.getView().getModel().refresh();
+					this.soaState.setEditMode(false);
+					this.oObjectPageLayout.setShowFooter(false);
+				});
+			} else {
 				this.getView().setBusy(false);
-				this.getView().getModel().refresh();
-				this.soaState.setEditMode(false);
-				this.oObjectPageLayout.setShowFooter(false);
-			});
+			}
 		},
 
 		/* handle search helps */

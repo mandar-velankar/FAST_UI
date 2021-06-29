@@ -330,9 +330,10 @@ sap.ui.define([
 		onAdd: function (){
 			this.soaState.setEditMode(true);
 			var bReplace = !Device.system.phone;
-
+			let sId = this.soaState.getNewUUID();
+			//let oOpportunity = this.soaState.createNewOpportunityObject();
 			this.getRouter().navTo("object", {
-				objectId: this.soaState.getNewUUID(),
+				objectId: sId,
 				layout: "TwoColumnsMidExpanded"
 			}, bReplace);
 
