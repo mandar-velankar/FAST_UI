@@ -29,7 +29,7 @@
 								id="inProductsStripID"
 								type="Success"
 								text="{fastAppData>/MercadoInProductsMessage}"
-								visible="{= ${fastAppData>/MercadoInProductsMessage} === '' ? false : true"
+								visible="{= ${fastAppData>/MercadoInProductsMessage} === '' ? false : true }"
 								enableFormattedText="true"
 								showIcon="true"
 								showCloseButton="true"

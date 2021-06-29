@@ -82,7 +82,7 @@ sap.ui.define([
 			var url =
 				"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
 			var countryCode = Services.getCountryCodeofSelectedTender();
-			var tenderId = Services.getSelectedTenderID();;
+			var tenderId = Services.getSelectedTenderID();
 			url = url.replace("$CountryCode", countryCode);
 			url = url.replace("$TenderId", tenderId);
 			window.open(url);
@@ -2107,7 +2107,7 @@ sap.ui.define([
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
-						that._showSubSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
@@ -4001,6 +4001,12 @@ sap.ui.define([
 				path: "SORTER",
 				descending: false
 			});
+
+			/*let oProducts = oFastAppDataModel.getProperty("/SelectedOffer/Product/results");
+			let skuCountries = oProducts.map((product) => { 
+				return product.SKUCountry;
+			});*/
+
 			oTable.bindRows({
 				path: sProductPath,
 				model: "fastAppData",
@@ -5134,11 +5140,12 @@ sap.ui.define([
 			//oFastAppDataModel.setProperty("/ProductCollectionOutput", null);
 
 			//for chile we show the products that were mached to say the the salesopportunity was IN (intresting for bayer fast)
+			let sMercadoInProductsMessage = '';
 			if(Services.getSelectedCountry() === 'CL'){
 
 				const salesOpportunity = await Services.getService('SalesOpportunity').getOpportunity(sTenderReference);
 				let oSalesOpportunity = salesOpportunity.data && salesOpportunity.data.results && salesOpportunity.data.results.length > 0 && salesOpportunity.data.results[0];
-				let sMercadoInProductsMessage = 'Sales opportunity was matched upon the following products: ';
+				sMercadoInProductsMessage = 'Sales opportunity was matched upon the following products: ';
 				if(oSalesOpportunity.TenderMatchingStatus === 'In'){ //(intresting for bayer fast)
 					
 					let aProducts = oSalesOpportunity.Items && oSalesOpportunity.Items.results.length > 0 && oSalesOpportunity.Items.results;
@@ -5152,7 +5159,11 @@ sap.ui.define([
 
 				//TenderMatchingStatus
 				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
+			}else{
+				//Make message empty if other country (otherwise previous message from CL could be shown again)
+				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
 			}
+			
 
 			//if dialog exists destroy it first, so we always set dialog buttons in correct state
 			if (that._oDialog) {
@@ -6772,34 +6783,34 @@ sap.ui.define([
 						PRICE_UPDATE: 0
 					};
 
-					//convert price to save
-					var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
-
-					if (pricePath !== null) {
-						//update Price
-						promises_saving.push(Services.getService('Price').updatePrice(oPriceToSave).catch(function (oError) {
-							//show error message
-							Services.showErrorMessage(oError, "Update of Price");
-							//promises must fail as well
-							throw new Error(oError);
-						}));
-					} else {
-						//create Price
-						promises_saving.push(Services.getService('Price').createPrice(oPriceToSave).catch(function (oError) {
-							//show error message
-							Services.showErrorMessage(oError, "Creation of Price");
-							//promises must fail as well
-							throw new Error(oError);
-						}));
-					}
-
 					//check if any of the pricing data is changed
 					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
+
+						//convert price to save
+						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
 
 						//if oOriginalPrices = false, they were not found, and we are creating new
 						if (oOriginalPrices !== false) {
 							//otherwise they were found and the check results for price update should be used
-							oNewPriceInfo.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+							oPriceToSave.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+						}
+
+						if (pricePath !== null) {
+							//update Price
+							promises_saving.push(Services.getService('Price').updatePrice(oPriceToSave).catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Update of Price");
+								//promises must fail as well
+								throw new Error(oError);
+							}));
+						} else {
+							//create Price
+							promises_saving.push(Services.getService('Price').createPrice(oPriceToSave).catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Creation of Price");
+								//promises must fail as well
+								throw new Error(oError);
+							}));
 						}
 
 						//Save all scenario's
@@ -6817,6 +6828,7 @@ sap.ui.define([
 								//otherwise nextOfferID is f.e still the one that is already created
 								var sTenderPath = Services.getSelectedTenderPath();
 								var sTenderID = Services.getSelectedTenderID();
+								let bWarning = false;
 
 								//we will load tender again after save is done
 								var bLoadedCheck = false;
@@ -6845,7 +6857,14 @@ sap.ui.define([
 										description: 'Financial Offer Saved Successfully'
 									});
 									
-									if(oDataTenderOffer[0].results[0].Price.BusinessCasePrice && oDataTenderOffer[0].results[0].Price.BusinessCasePrice !== ""){
+									if(oOffer.CountryCode === "AR"){
+										oOffer.Product.results.map((product) => {
+											if(product.Price.BusinessCasePrice !== "" && product.Price.BusinessCasePrice !== null){
+												bWarning = true;
+											}
+										});
+									}
+									if(bWarning){
 										Services.getOfferCompositeMessages().push({
 											type: 'Warning',
 											title: 'Please upload the business case document',
@@ -6902,7 +6921,7 @@ sap.ui.define([
 			const selectedOfferID = Services.getSelectedOfferID();
 			const selectedProductID = Services.getSelectedProductID();
 			const selectedProductName = Services.getSelectedProductName();
-			const selectedProductNewNetPrice = +this.byId("idEditPriceOffer_idNetPrice").getValue();
+			const selectedProductNewNetPrice = parseFloat(this.byId("idEditPriceOffer_idNetPrice").getValue().replace(',',''));
 			const otherDistributorProduct = allTenderOffers
 				.filter(offer => offer.OfferID !== selectedOfferID)
 				.map(offer => offer.Product.results.find(prod => (prod && prod.Price && prod.ProductCode === selectedProductID)))

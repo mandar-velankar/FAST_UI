@@ -11,13 +11,13 @@ sap.ui.define([
 	"sap/ui/core/BusyIndicator",
 	"../model/formatter",
 	"../utils/OpportunityFormatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, BusyIndicator, formatter,OpportunityFormatter) {
+], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, FilterType, BusyIndicator, formatter, OpportunityFormatter) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.salesopportunity.controller.Master", {
 
 		formatter: formatter,
-		OpportunityFormatter:OpportunityFormatter,
+		OpportunityFormatter: OpportunityFormatter,
 		/* =========================================================== */
 		/* lifecycle methods                                           */
 		/* =========================================================== */
@@ -317,9 +317,10 @@ sap.ui.define([
 		_showDetail: function (oItem) {
 			var bReplace = !Device.system.phone;
 			// set the layout property of FCL control to show two columns
-			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+			// this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getRouter().navTo("object", {
-				objectId: oItem.getBindingContext().getProperty("CodigoExterno")
+				objectId: oItem.getBindingContext().getProperty("CodigoExterno"),
+				layout: "TwoColumnsMidExpanded"
 			}, bReplace);
 		},
 
@@ -381,7 +382,7 @@ sap.ui.define([
 			return this.soaState.createOpportunity(selectedObj);
 
 		},
-		onOpenTender:function(event){
+		onOpenTender: function (event) {
 
 		},
 		/* handling participate button press */
@@ -395,7 +396,7 @@ sap.ui.define([
 				this.openTender(selectedObj.TenderID);
 				return true;
 			}
-			
+
 			const opportunity = this.createStateObject(selectedObj);
 			this.soaState.setSelectedOpportunity(opportunity);
 
@@ -436,25 +437,28 @@ sap.ui.define([
 					BusyIndicator.hide()
 					this.soaState.clearSelectedOpportunity();
 					this._oParticipationDialog.close();
+
+					// this.getModel().refresh();
+					this.byId('list').getBinding('items').refresh()
+					sap.m.MessageToast.show("Tender creation done...");
 					//successfully created tender
 					sap.m.MessageBox.success("Tender created with ID (" + oTender.tenderID + ").", {
 						actions: ["Go to new Tender", sap.m.MessageBox.Action.CLOSE],
 						styleClass: "sapUiSizeCompact",
-						onClose: (sAction)=>{
-							if (sAction === "CLOSE") {
-								sap.m.MessageToast.show("Tender creation done...");
-							} else {
+						onClose: (sAction) => {
+							if (sAction !== sap.m.MessageBox.Action.CLOSE) {
 								// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 								this.openTender(oTender.tenderID);
 							}
 						}
 					});
 				} catch (error) {
+					console.error(error);
 					BusyIndicator.hide()
 				}
 			}
 		},
-		openTender:function(tenderId){
+		openTender: function (tenderId) {
 			window.open("/app/#/tender&/t/detail/CL/" + tenderId + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 		},
 
@@ -594,11 +598,11 @@ sap.ui.define([
 			var orFilters = [];
 			var andFilters = [];
 
-			if(sStatus){
+			if (sStatus) {
 				andFilters.push(new sap.ui.model.Filter("MainStatus", "EQ", sStatus));
 			}
 
-			if (sSubStatus && sSubStatus != 'NA'){
+			if (sSubStatus && sSubStatus != 'NA') {
 				andFilters.push(new sap.ui.model.Filter("SubStatus", "EQ", sSubStatus));
 			}
 
