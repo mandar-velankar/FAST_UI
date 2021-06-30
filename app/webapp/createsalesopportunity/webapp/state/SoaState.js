@@ -134,7 +134,7 @@ sap.ui.define([
                 "ID" : sObjectId,
 				"Classification": "Contract",
 				"TenderReference": "",
-				"TenderChannel": "",
+				"TenderChannel": "Distributor",
 				"InstituteID": "",
 				"InstituteName": "",
 				"InstituteType": "Direct",

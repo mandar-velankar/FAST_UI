@@ -146,7 +146,7 @@ sap.ui.define([
 
 			const selectedObj = this.getView().getModel().getObject(sObjectPath);
 			if(!selectedObj){
-				this.soaState.getSelectedOpportunity(); //we're handling a new opportunity
+				return this.soaState.getSelectedOpportunity(); //we're handling a new opportunity
 			}
 
 			// expand Comprador and Items
@@ -159,55 +159,7 @@ sap.ui.define([
 
 		},
 
-		// _onBindingChange : function () {
-		// 	var oView = this.getView(),
-		// 		oElementBinding = oView.getElementBinding();
-
-		// 	// No data for the binding
-		// 	if (!oElementBinding.getBoundContext()) {
-		// 		this.getRouter().getTargets().display("detailObjectNotFound");
-		// 		// if object could not be found, the selection in the master list
-		// 		// does not make sense anymore.
-		// 		this.getOwnerComponent().oListSelector.clearMasterListSelection();
-		// 		return;
-		// 	}
-
-		// 	var sPath = oElementBinding.getPath();
-		// 		// oResourceBundle = this.getResourceBundle(),
-		// 		// oObject = oView.getModel().getObject(sPath),
-		// 		// sObjectId = oObject.CodigoExterno,
-		// 		// sObjectName = oObject.Nombre,
-		// 		// oViewModel = this.getModel("detailView");
-
-		// 	this.getOwnerComponent().oListSelector.selectAListItem(sPath);
-
-		// 	// oViewModel.setProperty("/shareSendEmailSubject",
-		// 	// 	oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
-		// 	// oViewModel.setProperty("/shareSendEmailMessage",
-		// 	// 	oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
-		// },
-
 		_onMetadataLoaded: function () {
-			/*// Store original busy indicator delay for the detail view
-			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
-				oViewModel = this.getModel("detailView"),
-				oLineItemTable = this.byId("lineItemsList"),
-				iOriginalLineItemTableBusyDelay = oLineItemTable.getBusyIndicatorDelay();
-
-			// Make sure busy indicator is displayed immediately when
-			// detail view is displayed for the first time
-			oViewModel.setProperty("/delay", 0);
-			oViewModel.setProperty("/lineItemTableDelay", 0);
-
-			oLineItemTable.attachEventOnce("updateFinished", function() {
-				// Restore original busy indicator delay for line item table
-				oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
-			});
-
-			// Binding the view will set it to not busy - so the view is always busy if it is not bound
-			oViewModel.setProperty("/busy", true);
-			// Restore original busy indicator delay for the detail view
-			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);*/
 			// Store original busy indicator delay for the detail view
 			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
 				oViewModel = this.getModel("detailView");
@@ -287,10 +239,10 @@ sap.ui.define([
 
 		/*onFooterSavePress: async function () {
 
-			const oTender = this.soaState.getSelectedOpportunity();
+			const oTender = this.soaState.getNewTender();
 			var that = this;
 
-			if (this._validateNewOpportunity(oTender)) {
+			if (this._validateNewTender(oTender)) {
 				try {
 					BusyIndicator.show(0);
 					await this.soaState.createTender(oTender);
@@ -358,7 +310,7 @@ sap.ui.define([
 			}
 
 			//check if dates are correct
-			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.bidDueDate)) {
+			if (!moment(oOpportunity.publicationDate).isBefore(oOpportunity.offerDueDate)) {
 
 				//add error message
 				var oMessage = {
@@ -371,6 +323,129 @@ sap.ui.define([
 				aMessages.push(oMessage);
 
 				bValid = false;
+			}
+
+			//if errors (or warnings) occured, show the messages in 1 dialog
+			if (!bValid || bWarning) {
+
+				//if this check is performed for the original tender that we clone from
+				var sTitle = 'Error';
+
+				//Show error messages
+				this.soaState.showMessageCompositeView(sTitle, aMessages, 'Error');
+			}
+
+			return bValid;
+		},
+
+		_validateNewTender: function (oTender) {
+
+			//TODO: move to state
+
+			var bValid = true;
+			var bWarning = false;
+			var aMessages = [];
+
+			//check mandatory fields
+			if (
+				oTender.tenderName === "" ||
+				oTender.classification === "" ||
+				oTender.instituteID === "" || //IntituteType is property of institute
+				oTender.tenderChannel === "" ||
+				oTender.groupPurchasing === "" ||
+				!oTender.publicationDate ||
+				!oTender.bidDueDate) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Mandatory fields.',
+					description: '- Tender Name \n' +
+						'- Classification \n' +
+						'- Institute \n' +
+						'- Channel \n' +
+						'- Group Purchasing \n' +
+						'- Publication Date \n' +
+						'- Bid due Date \n',
+					subtitle: 'Please enter all the mandatory fields..',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+
+			}
+
+			//check if dates are correct
+			if (!moment(oTender.publicationDate).isBefore(oTender.bidDueDate)) {
+
+				//add error message
+				var oMessage = {
+					type: 'Error',
+					title: 'Publication Date',
+					description: 'Publication date should be before the offer due date. \n',
+					subtitle: 'Publication date should be before the offer due date.',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+
+				bValid = false;
+			}
+
+			//check if dates are correct
+			if (oTender.AwardDate) { //optional date
+
+				if (!moment(oTender.bidDueDate).isBefore(oTender.awardDate)) {
+
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'OfferDuedate',
+						description: 'OfferDuedate date should be before the Award date. \n',
+						subtitle: 'OfferDuedate date should be before the Award date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+			}
+
+			//check if dates are correct
+			if (oTender.awardDate && oTender.nextPublicationDye) { //optional dates
+
+				if (!moment(oTender.awardDate).isBefore(oTender.nextPublicationDye)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Award date',
+						description: 'Award date should be before the next publication date. \n',
+						subtitle: 'Award date should be before the next publication date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
+
+			}
+
+			//check if dates are correct
+			if (oTender.BidDueDate && oTender.InternalBidDueDate) { //optional dates
+
+				if (!moment(oTender.internalBidDueDate).isBefore(oTender.bidDueDate)) {
+					//add error message
+					var oMessage = {
+						type: 'Error',
+						title: 'Internal due date',
+						description: 'Internal due date should be before the offer due date. \n',
+						subtitle: 'Internal due date should be before the offer due date.',
+						counter: 1
+					}
+					aMessages.push(oMessage);
+
+					bValid = false;
+				}
 			}
 
 			//if errors (or warnings) occured, show the messages in 1 dialog
