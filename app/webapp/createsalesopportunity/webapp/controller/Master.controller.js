@@ -331,7 +331,7 @@ sap.ui.define([
 			this.soaState.setEditMode(true);
 			var bReplace = !Device.system.phone;
 			let sId = this.soaState.getNewUUID();
-			let oOpportunity = this.soaState.createNewOpportunityObject();
+			let oOpportunity = this.soaState.createNewOpportunityObject(sId);
 
 			this.getRouter().navTo("object", {
 				objectId: sId,
