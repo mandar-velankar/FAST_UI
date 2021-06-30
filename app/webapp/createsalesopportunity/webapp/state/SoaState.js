@@ -138,9 +138,9 @@ sap.ui.define([
 				"InstituteID": "",
 				"InstituteName": "",
 				"InstituteType": "Direct",
-				"PublicationDate": new Date(),
-				"BidDueDate": new Date(),
-				"NextPublicationDye": new Date(),
+				"PublicationDate": "",
+				"BidDueDate": "",
+				"NextPublicationDye": "",
 				"ContractLength": 0,
 				"ExtensionPeriod": 0,
             };
