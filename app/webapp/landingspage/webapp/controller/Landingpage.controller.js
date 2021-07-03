@@ -38,6 +38,7 @@ sap.ui.define([
 				ppa:false,
 				contract:false,
 				salesopportunity:false,
+				createsalesopportunity:false,
 				masterdata:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
@@ -119,6 +120,12 @@ sap.ui.define([
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("salesopportunity");
+		},
+		onTileCreateSalesOpportunityPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("createsalesopportunity");
 		},
 		//Tile tender manager press
 		onTileTenderManagerDashPress: function (oEvent) {

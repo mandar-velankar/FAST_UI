@@ -18,6 +18,12 @@ server:
       removeETag: true
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
+    mountPath: /createsalesopportunity
+    configuration:
+      baseUri: "http://localhost:8084/"
+      removeETag: true
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
     mountPath: /app
     configuration:
       baseUri: "http://localhost:8080/landingspage/webapp/"
