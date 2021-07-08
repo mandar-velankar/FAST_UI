@@ -148,6 +148,7 @@ sap.ui.define([
 		 createNewTenderObject: async function(sCountry){ 
 			const sTenderId = await this.getNewTenderID(sCountry);
 			const oSelectedOpportunity = this.getModel('soa').getProperty('/selectedOpportunity');
+			let   oDefaultInstitute = this.data.CountryInstitutes.find(institute => institute.MercadoPublicoIssuer === this.data.selectedOpportunity.buyer.organismCode)
 
             const data = {
                 //"ID" : this.create_UUID(),
@@ -157,8 +158,8 @@ sap.ui.define([
 				"Active": 1,
 				"Classification": "Contract",
 				"TenderName": "",
-				"InstituteID": "",
-				"InstituteName": "",
+				"InstituteID": oDefaultInstitute.InstituteID,
+				"InstituteName": oDefaultInstitute.InstituteName,
 				"TenderChannel": "Direct",
 				"PublicationDate": oSelectedOpportunity.publicationDate,
 				"BidDueDate": oSelectedOpportunity.finalDate,
