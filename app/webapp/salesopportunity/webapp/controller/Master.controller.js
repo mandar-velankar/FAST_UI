@@ -389,6 +389,7 @@ sap.ui.define([
 		onParticipateOpportunityPress: async function (event) {
 			/* get the selected line in the table and set it as current opportunity */
 			// let sPath = event.getSource()._getPropertiesToPropagate().oBindingContexts.undefined.getPath();
+			await this.soaState.loadCountryInstitutes('CL');
 			const selectedObj = event.getSource().getBindingContext().getObject()//shorter using public functions
 
 			const selectedItemStatus = event.getSource().getBindingContext().getProperty("MainStatus");
