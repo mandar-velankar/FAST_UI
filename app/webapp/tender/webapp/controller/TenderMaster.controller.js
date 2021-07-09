@@ -667,6 +667,13 @@ sap.ui.define([
 				}));
 
 				orFilters.push(new Filter({
+					path: "TENDER_REFERENCE",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
 					path: "TENDER_ID",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
