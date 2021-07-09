@@ -92,6 +92,13 @@
 							<ObjectIdentifier title="{i18n>Country}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
+
+					<!-- CHILE - Mercado Publico Reference -->
+					<Column id="idMercadoPublicoRef" minScreenWidth="920px" width="4rem">
+						<header>
+							<ObjectIdentifier title="{i18n>mpreference}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
 					
 					<!-- tender id -->
 					<Column id="TenderTableTenderID" minScreenWidth="920px" width="7rem">
