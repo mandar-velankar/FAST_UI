@@ -116,9 +116,9 @@
                         <Input value="{soa>/selectedOpportunity/buyer/organismNumber}" enabled="false"/>
                         <Label text="{i18n>mercadoPublicoCode}" design="Bold"/>
                         <Input value="{soa>/selectedOpportunity/codigoExterno}" enabled="false"/>
-                        <Label text="{i18n>openingDate}" design="Bold" required="true"/>
+                        <Label text="{i18n>pubcndte}" design="Bold" required="true"/>
                         <DatePicker enabled="false" value="{path :'soa>/selectedOpportunity/publicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
-                        <Label text="{i18n>ClosingDate}" design="Bold" required="true"/>
+                        <Label text="{i18n>offrdudte}" design="Bold" required="true"/>
                         <DatePicker  enabled="false" value="{path :'soa>/selectedOpportunity/closingDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
                     </form:content>
                 </form:SimpleForm>
