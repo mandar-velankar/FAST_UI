@@ -23,7 +23,8 @@
       "source": "/admin/(.*)$",
       "target": "$1",
       "destination": "adminapp"
-    },{
+    },
+    {
       "source": "^/app/index.html(.*)$",
       "localDir": "dist/landingspage/webapp",
       "authenticationType": "xsuaa",
@@ -71,9 +72,9 @@
       "localDir": "dist/salesopportunity/webapp"
     },
     {
-      "source": "^/createsalesopportunity/(.*)$",
+      "source": "/createsalesopportunity/(.*)$",
       "target": "$1",
-      "localDir": "dist/createsalesopportunity/webapp"
+      "destination": "createsalesopportunity"
     },    
     {
       "source": "^/uilib/(.*)$",
