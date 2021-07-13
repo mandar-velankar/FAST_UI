@@ -74,7 +74,7 @@
     {
       "source": "/createsalesopportunity/(.*)$",
       "target": "$1",
-      "destination": "createsalesopportunity"
+      "destination": "createSalesOppApp"
     },    
     {
       "source": "^/uilib/(.*)$",
