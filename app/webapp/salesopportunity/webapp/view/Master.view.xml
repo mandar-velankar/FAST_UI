@@ -34,6 +34,8 @@
 							<core:Item key="NA" text="NA"/>
 							<core:Item key="Draft" text="Draft"/>
 							<core:Item key="Appeal in Progress" text="Appeal in Progress"/>
+							<core:Item key="PO" text="PO"/>
+							<core:Item key="Results Available" text="Results Available"/>
 							<core:Item key="Won" text="Won"/>
 							<core:Item key="Lost" text="Lost"/>
 					</Select>
