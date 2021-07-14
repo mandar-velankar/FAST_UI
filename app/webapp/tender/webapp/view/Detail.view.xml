@@ -164,8 +164,15 @@
 				<!-- Tender origin -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastData>Origin/CODE} === 'NA' ? false : true }">
 				<!--<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">-->
-					<m:Label text="{i18n>tenderOrigin}:"/>
+					<m:Label text="{i18n>tenderOrigin}"/>
 					<m:Text text="{fastData>Origin/CODE}"/>		
+				</m:VBox>
+
+				<!-- Tender origin -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? true : false }">
+				<!--<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">-->
+					<m:Label text="{i18n>mercadoreference}"/>
+					<m:Text text="{fastData>CountrySpecificInformation/TenderReference}"/>		
 				</m:VBox>
 				
 			</m:FlexBox>

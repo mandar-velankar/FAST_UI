@@ -139,7 +139,7 @@ sap.ui.define([
 			oProductToSave.PAYMENT_UPDATE = (oProductSaveInfo.PAYMENT_UPDATE) ? Number(oProductSaveInfo.PAYMENT_UPDATE) : null;
 			oProductToSave.Line = oProductSaveInfo.Line;
 			oProductToSave.PricingPolicyCluster = oProductSaveInfo.PricingPolicyCluster;
-			oProductToSave.MinInvoiceAmount = Number(oProductSaveInfo.MinInvoiceAmount);
+			oProductToSave.MinInvoiceAmount = oProductSaveInfo.MinInvoiceAmount ? Number(oProductSaveInfo.MinInvoiceAmount) : 0;
 			oProductToSave.DeliveryConditions = oProductSaveInfo.DeliveryConditions;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 

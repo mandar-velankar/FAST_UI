@@ -63,11 +63,21 @@
 										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
 									</TileContent>
 								</GenericTile>
+								
+							</l:HorizontalLayout>
+						</l:VerticalLayout>
+					</Panel>
+					
+					<!-- Sales tiles -->
+					<Panel headerText="Sales">
+						<l:VerticalLayout>
+							
+							<l:HorizontalLayout id="idSalesDash" allowWrapping="true">
 
-								<!-- Sales opportunity management -->
+								<!-- Sales opportunity (Mercado Publico)-->
 								<GenericTile 
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
-									header="Sales Opportunity Application" 
+									header="Sales Opportunity (Mercado Publico)" 
 									press="onTileSalesOpportunityPress" 
 									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
 									visible="{tiles>/salesopportunity}">
@@ -75,16 +85,33 @@
 										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
 									</TileContent>
 								</GenericTile>
+
+								<!-- Create Sales opportunity -->
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Create Sales Opportunity" 
+									press="onTileCreateSalesOpportunityPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/createsalesopportunity}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
 								
 							</l:HorizontalLayout>
-						</l:VerticalLayout>
+						</l:VerticalLayout>											
 					</Panel>
-					
-					<!-- Analytics tiles -->
-					<Panel headerText="Analytics">
-						
-						<!-- Transactional Dashboard -->
-						<l:VerticalLayout>
+
+				</ScrollContainer>
+				
+			</IconTabFilter>
+			
+			<!-- Administration tab -->
+			<IconTabFilter id="navLevel0Tab2" text="Analytics">
+
+				<!-- Masterdata tiles-->
+				<Panel headerText="Analytics">
+					<l:VerticalLayout>
 							<l:HorizontalLayout id="idTransactionalDash" allowWrapping="true">
 								<GenericTile 
 									class="sapUiTinyMarginBegin 
@@ -98,7 +125,7 @@
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
 
-						<!-- Tender Manager Dashboard-->
+					<!-- Tender Manager Dashboard-->
 						<l:VerticalLayout>
 							<l:HorizontalLayout id="idTenderManagementDash" allowWrapping="true">
 								<GenericTile 
@@ -142,16 +169,11 @@
 								</GenericTile>
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
-											
-					</Panel>
-
-				</ScrollContainer>
-				
+				</Panel>
 			</IconTabFilter>
 			
-			
 			<!-- Administration tab -->
-			<IconTabFilter id="navLevel0Tab1" text="Administration" visible="{tiles>/masterdata}">
+			<IconTabFilter id="navLevel0Tab3" text="Administration" visible="{tiles>/masterdata}">
 
 				<!-- Masterdata tiles-->
 				<Panel headerText="Masterdata">
