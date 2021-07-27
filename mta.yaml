@@ -33,6 +33,12 @@ modules:
           forwardAuthToken: true
           name: adminapp
           url: '~{url}'
+      - name: createSalesOppApp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: createSalesOppApp
+          url: '~{url}'
       - name: uaa_FAST
 resources:
   - name: uaa_FAST
@@ -54,6 +60,15 @@ resources:
     type: configuration
     parameters:
       provider-id: FASTUIADMIN:adminapp
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: createSalesOppApp
+    type: configuration
+    parameters:
+      provider-id: FASTCREATESALESOPP:createSalesOppApp
       provider-nid: mta
       target:
         org: ${org}

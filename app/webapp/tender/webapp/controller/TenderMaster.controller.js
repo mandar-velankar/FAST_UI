@@ -537,6 +537,9 @@ sap.ui.define([
 			var sTenderOrigin = this.byId("idSlctTenderOrigin").getSelectedItem() ? this.byId("idSlctTenderOrigin").getSelectedItem().getKey() :
 				"All";
 			var sSearch = this.byId("idSearch").getProperty("value");
+
+			let oMercadoPublicoRef = this.byId("idMercadoPublicoRef");
+
 			if (sSearch.length > 0) {
 				this.byId("idCheckBoxInactive").setSelected(true);
 			}
@@ -563,6 +566,9 @@ sap.ui.define([
 				cells: [
 					new sap.m.Text({
 						text: "{fastData>COUNTRY}"
+					}),
+					new sap.m.Text({
+						text: "{fastData>TENDER_REFERENCE}"
 					}),
 					new sap.m.Text({
 						text: "{fastData>TENDER_ID}"
@@ -661,6 +667,13 @@ sap.ui.define([
 				}));
 
 				orFilters.push(new Filter({
+					path: "TENDER_REFERENCE",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
 					path: "TENDER_ID",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
@@ -731,6 +744,8 @@ sap.ui.define([
 				this.setCountryStatusses(oCountry);
 				Services.loadCountryPermissions(oCountry);
 			}
+
+			oMercadoPublicoRef.setVisible(oCountry === 'CL');
 		},
 
 		/*
