@@ -5450,6 +5450,9 @@ sap.ui.define([
 			oOfferSaveInfo.ContinuationOfferNo = ContinuedOfferNo;
 			oOfferSaveInfo.APPROVALS_SENT = 0;
 
+			/* 01/08/2021 - Division */
+			oOfferSaveInfo.Division = that.byId("idProductOfferDivision").getSelectedKey()
+
 			/* 13/02/2020 - Offer products check on internal due date */
 			if (oFastAppDataModel.oData.Tender.BidDueDate != null) {
 				var bidDueDate = oFastAppDataModel.oData.Tender.BidDueDate;
@@ -5770,6 +5773,7 @@ sap.ui.define([
 			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sOfferDivision = Services.getFastAppDataModel().getProperty("/EditOffer/Division");
 			var aBrandTokens = [];
 			that.aBrandProducts = [];
 
@@ -5777,7 +5781,7 @@ sap.ui.define([
 			if (sDistributorID) {
 
 				//load the corresponding products for the input list
-				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+				$.when(Services.loadBrandProductNameList(sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
 					aCommercialAgreement)).done(function (oData) {
 
 					//check if results are found
@@ -5952,10 +5956,11 @@ sap.ui.define([
 			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sOfferDivision = Services.getFastAppDataModel().getProperty("/EditOffer/Division");
 
 			//load products for list
 			if (that._aBrandTokens && that._aBrandTokens.length > 0) {
-				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+				$.when(Services.loadBrandProductNameList(sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
 					aCommercialAgreement, that._aBrandTokens)).done(function (oData) {
 					//loaded products
 
