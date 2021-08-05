@@ -92,6 +92,18 @@
 				"componentData": {},
 				"lazy": true
 			},
+			"bankguaranteesComponent": {
+				"name": "com.bayer.tender.bankguarantees",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"priceagreementsComponent": {
+				"name": "com.bayer.tender.priceagreements",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
 			"salesopportunityComponent": {
 				"name": "com.bayer.tender.salesopportunity",
 				"settings": {},
@@ -211,6 +223,22 @@
 					"target": {
 						"name": "admin",
 						"prefix": "a"
+					}			
+				},
+				{
+					"name": "bankguarantees",
+					"pattern": "bankguarantees",
+					"target": {
+						"name": "bankguarantees",
+						"prefix": "b"
+					}			
+				},
+				{
+					"name": "priceagreements",
+					"pattern": "priceagreements",
+					"target": {
+						"name": "priceagreements",
+						"prefix": "pa"
 					}			
 				},
 				{
