@@ -72,6 +72,16 @@
       "localDir": "dist/salesopportunity/webapp"
     },
     {
+      "source": "/bankguarantees/(.*)$",
+      "target": "$1",
+      "destination": "bankGuaranteesApp"
+    }, 
+    {
+      "source": "/priceagreements/(.*)$",
+      "target": "$1",
+      "destination": "priceAgreementsApp"
+    },    
+    {
       "source": "/createsalesopportunity/(.*)$",
       "target": "$1",
       "destination": "createSalesOppApp"
