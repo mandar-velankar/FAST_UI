@@ -45,8 +45,8 @@ builder:
       - "lib"
       - "libs"
       - "themes"
-    - name: ui5-task-cachebuster-indexing
-      afterTask: generateVersionInfo
+  - name: ui5-task-cachebuster-indexing
+    afterTask: generateVersionInfo
   bundles:
     - bundleDefinition:
         name: "com/bayer/tender/landingspage/Component-preload.js"

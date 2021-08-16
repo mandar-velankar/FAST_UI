@@ -36,7 +36,10 @@ sap.ui.define([
 				tender: false,
 				epa:false,
 				ppa:false,
-				contract:false
+				contract:false,
+				salesopportunity:false,
+				createsalesopportunity:false,
+				masterdata:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
 			this.getView().getModel("access").metadataLoaded().then(() => this.getView().getModel("access").read("/getAccess", { success: (result) => this.getView().getModel("tiles").setData(result) }));
@@ -106,6 +109,24 @@ sap.ui.define([
 				.getRouter()
 				.navTo("contract");
 		},
+		onTileAdminPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("admin");
+		},
+		onTileSalesOpportunityPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("salesopportunity");
+		},
+		onTileCreateSalesOpportunityPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("createsalesopportunity");
+		},
 		//Tile tender manager press
 		onTileTenderManagerDashPress: function (oEvent) {
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboard/OfferSubmissions?:iid=2"); //check where to store constants
@@ -127,9 +148,10 @@ sap.ui.define([
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboardv1_1_20181127/OfferSubmissions?:iid=4"); //check where to store constants
 		},
 
-		//Tile Tableau Dashboard press
-		onTileTableauDashPress: function (oEvent) {
-			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboard/OfferSubmissions?:iid=2"); //check where to store constants
-		},
+		//Tile analytics press
+		onTileAnalyticsDashPress: function(oEvent) {
+			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/FASTAnalytics/ExecutiveSummary?:iid=1"); //check where to store constants
+		}
+		
 	});
 });

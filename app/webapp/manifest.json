@@ -85,13 +85,35 @@
 				"settings": {},
 				"componentData": {},
 				"lazy": true
+			},
+			"adminComponent": {
+				"name": "com.bayer.tender.admin",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"salesopportunityComponent": {
+				"name": "com.bayer.tender.salesopportunity",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"createsalesopportunityComponent": {
+				"name": "com.bayer.tender.createsalesopportunity",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
 			}
 		},
 		"resourceRoots":{
 			"com.bayer.tender.ppa": "./ppa/webapp",
 			"com.bayer.tender.epa": "./epa/webapp",
 			"com.bayer.tender.contracts": "./contracts/webapp",
-			"FAST_NS0FAST0": "./tender/webapp"
+			"com.bayer.tender.admin": "./admin",
+			"com.bayer.tender.salesopportunity": "./salesopportunity",
+			"com.bayer.tender.createsalesopportunity": "./createsalesopportunity",
+			"FAST_NS0FAST0": "./tender/webapp",
+			"com.bayer.tender.uilib": "./uilib/src/com/bayer/tender/uilib"
 		},
 		"dependencies": {
 			"minUI5Version": "1.71.0",
@@ -100,8 +122,10 @@
 				"sap.ushell": {},
 				"sap.m": {},
 				"sap.collaboration": {},
-				"sap.f": {}
+				"sap.f": {},
+				"com.bayer.tender.uilib": {}
 			}
+			
 		},
 
 		"contentDensities": {
@@ -190,6 +214,30 @@
 						"name": "tender",
 						"prefix": "t"
 					}
+				},
+				{
+					"name": "admin",
+					"pattern": "admin",
+					"target": {
+						"name": "admin",
+						"prefix": "a"
+					}			
+				},
+				{
+					"name": "salesopportunity",
+					"pattern": "salesopportunity",
+					"target": {
+						"name": "salesopportunity",
+						"prefix": "s"
+					}
+				},
+				{
+					"name": "createsalesopportunity",
+					"pattern": "createsalesopportunity",
+					"target": {
+						"name": "createsalesopportunity",
+						"prefix": "c"
+					}
 				}			
 			],
 
@@ -215,6 +263,18 @@
 				"tender": {
 					"type": "Component",
 					"usage": "tenderComponent"
+				},
+				"admin": {
+					"type": "Component",
+					"usage": "adminComponent"
+				},
+				"salesopportunity": {
+					"type": "Component",
+					"usage": "salesopportunityComponent"
+				},
+				"createsalesopportunity": {
+					"type": "Component",
+					"usage": "createsalesopportunityComponent"
 				}
 			}
 		}

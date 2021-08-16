@@ -20,6 +20,11 @@
       "csrfProtection": true
     },
     {
+      "source": "/app/admin/(.*)$",
+      "target": "$1",
+      "destination": "adminapp"
+    },
+    {
       "source": "/admin/(.*)$",
       "target": "$1",
       "destination": "adminapp"
@@ -43,30 +48,6 @@
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/tender/(.*)$",
-      "target": "$1",
-      "localDir": "dist/tender/webapp",
-      "authenticationType": "xsuaa"
-    },
-    {
-      "source": "^/epa/(.*)$",
-      "target": "$1",
-      "localDir": "dist/epa/webapp",
-      "authenticationType": "xsuaa"
-    },
-    {
-      "source": "^/contracts/(.*)$",
-      "target": "$1",
-      "localDir": "dist/contracts/webapp",
-      "authenticationType": "xsuaa"
-    },
-    {
-      "source": "^/ppa/(.*)$",
-      "target": "$1",
-      "localDir": "dist/ppa/webapp",
-      "authenticationType": "xsuaa"
-    },
-    {
       "source": "^/salesopportunity/(.*)$",
       "target": "$1",
       "localDir": "dist/salesopportunity/webapp"
@@ -76,12 +57,6 @@
       "target": "$1",
       "destination": "createSalesOppApp"
     },    
-    {
-      "source": "^/uilib/(.*)$",
-      "target": "$1",
-      "localDir": "webapp",
-      "authenticationType": "xsuaa"
-    },
     {
       "source": "^(.*)$",
       "target": "$1",
