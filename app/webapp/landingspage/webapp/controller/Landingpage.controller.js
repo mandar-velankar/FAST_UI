@@ -36,7 +36,10 @@ sap.ui.define([
 				tender: false,
 				epa:false,
 				ppa:false,
-				contract:false
+				contract:false,
+				salesopportunity:false,
+				createsalesopportunity:false,
+				masterdata:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
 			this.getView().getModel("access").metadataLoaded().then(() => this.getView().getModel("access").read("/getAccess", { success: (result) => this.getView().getModel("tiles").setData(result) }));
@@ -105,6 +108,24 @@ sap.ui.define([
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("contract");
+		},
+		onTileAdminPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("admin");
+		},
+		onTileSalesOpportunityPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("salesopportunity");
+		},
+		onTileCreateSalesOpportunityPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("createsalesopportunity");
 		},
 		//Tile tender manager press
 		onTileTenderManagerDashPress: function (oEvent) {

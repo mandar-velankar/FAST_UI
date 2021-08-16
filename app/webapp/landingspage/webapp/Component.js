@@ -2,6 +2,9 @@ if (location.hostname.indexOf("localhost") > -1) {
 	jQuery.sap.registerModulePath("com.bayer.tender.ppa", "/ppa/webapp");
 	jQuery.sap.registerModulePath("com.bayer.tender.epa", "/epa/webapp");
 	jQuery.sap.registerModulePath("com.bayer.tender.contracts", "/contracts/webapp");
+	jQuery.sap.registerModulePath("com.bayer.tender.admin", "/admin");
+	jQuery.sap.registerModulePath("com.bayer.tender.salesopportunity", "/salesopportunity/webapp");
+	jQuery.sap.registerModulePath("com.bayer.tender.createsalesopportunity", "/createsalesopportunity");
 	// jQuery.sap.registerModulePath("com.bayer.tender.uilib", "/uilib/src/com/bayer/tender/uilib"); 
 	sap.ui.getCore().loadLibrary("com.bayer.tender.uilib", "/uilib/src/com/bayer/tender/uilib");
 	jQuery.sap.registerModulePath("FAST_NS0FAST0", "/tender/webapp");
@@ -9,6 +12,9 @@ if (location.hostname.indexOf("localhost") > -1) {
 	jQuery.sap.registerModulePath("com.bayer.tender.ppa", "/ppa");
 	jQuery.sap.registerModulePath("com.bayer.tender.epa", "/epa");
 	jQuery.sap.registerModulePath("com.bayer.tender.contracts", "/contracts");
+	jQuery.sap.registerModulePath("com.bayer.tender.admin", "/admin");
+	jQuery.sap.registerModulePath("com.bayer.tender.salesopportunity", "/salesopportunity");
+	jQuery.sap.registerModulePath("com.bayer.tender.createsalesopportunity", "/createsalesopportunity");
 	// jQuery.sap.registerModulePath("com.bayer.tender.uilib", "/uilib"); 
 	sap.ui.getCore().loadLibrary("com.bayer.tender.uilib", "/uilib");
 	jQuery.sap.registerModulePath("FAST_NS0FAST0", "/tender");

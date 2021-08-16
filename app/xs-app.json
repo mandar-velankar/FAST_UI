@@ -18,7 +18,13 @@
       "authenticationType": "xsuaa",
       "destination": "srv_api",
       "csrfProtection": true
-    },{
+    },
+    {
+      "source": "/admin/(.*)$",
+      "target": "$1",
+      "destination": "adminapp"
+    },
+    {
       "source": "^/app/index.html(.*)$",
       "localDir": "dist/landingspage/webapp",
       "authenticationType": "xsuaa",
@@ -28,6 +34,12 @@
       "source": "^/app/(.*)$",
       "target": "$1",
       "localDir": "dist",
+      "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^/appdebug/(.*)$",
+      "target": "$1",
+      "localDir": "webapp",
       "authenticationType": "xsuaa"
     },
     {
@@ -55,7 +67,17 @@
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/appdebug/(.*)$",
+      "source": "^/salesopportunity/(.*)$",
+      "target": "$1",
+      "localDir": "dist/salesopportunity/webapp"
+    },
+    {
+      "source": "/createsalesopportunity/(.*)$",
+      "target": "$1",
+      "destination": "createSalesOppApp"
+    },    
+    {
+      "source": "^/uilib/(.*)$",
       "target": "$1",
       "localDir": "webapp",
       "authenticationType": "xsuaa"

@@ -164,8 +164,15 @@
 				<!-- Tender origin -->
 				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastData>Origin/CODE} === 'NA' ? false : true }">
 				<!--<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">-->
-					<m:Label text="{i18n>tenderOrigin}:"/>
+					<m:Label text="{i18n>tenderOrigin}"/>
 					<m:Text text="{fastData>Origin/CODE}"/>		
+				</m:VBox>
+
+				<!-- Tender origin -->
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? true : false }">
+				<!--<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">-->
+					<m:Label text="{i18n>mercadoreference}"/>
+					<m:Text text="{fastData>CountrySpecificInformation/TenderReference}"/>		
 				</m:VBox>
 				
 			</m:FlexBox>
@@ -291,7 +298,7 @@
 													<m:Select selectedKey="{fastAppData>AWARDEDCOMPANYCOMP}" 
 															  enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
 															  items="{
-																  path: 'fastAppData>/CountryCompetitorCompanies/'
+																  path: 'fastAppData>/CountryCompetitorCompanies/', templateShareable:false
 															  }"
 															  visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
 															  change="onChangeAwardedCompanyCompetitor">
@@ -322,7 +329,7 @@
 														 		id="idSelectCompetitorProduct"
 																selectedKey="{fastAppData>PRODUCTCOMP}" 
 																enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
-																items="{ path: 'fastAppData>CountryCompetitorProducts/'}"
+																items="{ path: 'fastAppData>CountryCompetitorProducts/', templateShareable:false}"
 																visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
 																change="onChangeAwardedProductCompetitor">
 															<m:items>
@@ -409,7 +416,7 @@
 												<m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
 																					 enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
 																					 change="onChangeOutcome" 
-																					 items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' } }"
+																					 items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' }, templateShareable:false }"
 																					 width="20rem">
 													<core:Item key="{fastAppData>Outcome}" text="{fastAppData>Outcome}"/>
 												</m:Select>

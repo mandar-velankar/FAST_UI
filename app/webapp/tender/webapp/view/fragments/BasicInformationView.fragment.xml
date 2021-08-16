@@ -16,44 +16,44 @@
 				<!-- Argentina only -->
 				<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
+						${fastAppData>/Tender/CountryCode} === 'AR'  &amp;&amp; 
 						(${fastData>BiddingTypeLevel1} ? true : false)
 					}"
 				/>
 				<Input id="idBiddingTypeLevel1Display" value="{fastData>BiddingTypeLevel1}" enabled="false" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
+						${fastAppData>/Tender/CountryCode} === 'AR'  &amp;&amp; 
 						${fastData>BiddingTypeLevel1}.length > 0
 					}"
 				/>
 				<Label text="{i18n>BiddingTypeLevel2}" design="Bold" required="true" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR'  &amp;&amp; 
+						${fastAppData>/Tender/CountryCode} === 'AR'  &amp;&amp; 
 						(${fastData>BiddingTypeLevel2} ? true : false)
 					}"
 				/>
 				<Input id="idBiddingTypeLevel2Display" value="{fastData>BiddingTypeLevel2}" enabled="false" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR'  &amp;&amp;
+						${fastAppData>/Tender/CountryCode} === 'AR'  &amp;&amp;
 						(${fastData>BiddingTypeLevel2} ? true : false)
 					}"
 				/>
 				<Label text="{i18n>BiddingTypeLevel3}" design="Bold" required="true" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR'  &amp;&amp;
+						${fastAppData>/Tender/CountryCode} === 'AR'  &amp;&amp;
 						(${fastData>BiddingTypeLevel3} ? true : false)
 					}"
 				/>
 				<Input id="idBiddingTypeLevel3Display" value="{fastData>BiddingTypeLevel3}" enabled="false" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR'  &amp;&amp;
+						${fastAppData>/Tender/CountryCode} === 'AR'  &amp;&amp;
 						(${fastData>BiddingTypeLevel3} ? true : false)
 					}"
 				/>
-				<Label text="{i18n>Specifications}" design="Bold" required="true" visible="{= ${raModel>/visibleCountry} === 'AR'}"/>
+				<Label text="{i18n>Specifications}" design="Bold" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'AR'}"/>
 				<MultiComboBox
 					id="idSpecificationsDisplay"
-					visible="{= ${raModel>/visibleCountry} === 'AR'}"
+					visible="{= ${fastAppData>/Tender/CountryCode} === 'AR'}"
 					enabled="false"
 					items="{
 						path: 'fastData>/Specifications',
@@ -87,14 +87,14 @@
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
+						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<CheckBox 
 					enabled="false"
 					selected="{fastData>HighValue}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
+						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; ${fastData>TenderChannel} === 'Direct' &amp;&amp; ${fastData>BiddingTypeLevel3} === 'Nacional'
 					}"
 				/>
 				<!-- / Argentina only -->
@@ -143,19 +143,19 @@
 				<!-- Brazil only -->
 				<Label text="{i18n>IBIZId}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<Input id="idIbizID"
 					value="{fastData>IbizID}" 
 					enabled="false"
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<Label text="{i18n>PublicNotice}" design="Bold" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<TextArea id="idPublicNotice" rows="8" 
@@ -164,7 +164,7 @@
 					showExceededText="true" 
 					maxLength="500"
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<!-- End Brazil only -->
@@ -190,7 +190,7 @@
 					enabled="false"
 					value="{path :'fastData>OfferStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" 
 					visible="{= 
-						${raModel>/visibleCountry} === 'BR'
+						${fastAppData>/Tender/CountryCode} === 'BR'
 					}"
 				/>
 				<!-- End Brazil only -->
@@ -243,7 +243,7 @@
 		<!-- Tender Information Only for Chile-->
 		<form:SimpleForm id="idTenderInformationSimpleForm" editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 			adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
-			singleContainerFullSize="false" backgroundDesign="Solid" visible="{= ${raModel>/visibleCountry} === 'CL' ? true : false }">
+			singleContainerFullSize="false" backgroundDesign="Solid" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? true : false }">
 			<form:content>
 				<!-- Block - Tender Information BEGIN-->
 				<core:Title text="{i18n>tenderInformation}" />

@@ -20,7 +20,7 @@
 	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
-			<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onTenderOverviewPress" visible="{= ${raModel>/visibleCountry} === 'AR' }" />	
+			<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onTenderOverviewPress" visible="{= ${fastAppData>/Tender/CountryCode} === 'AR' }" />	
 			
 		</u:actions>
 		<l:BlockLayout background="Light">
@@ -165,7 +165,8 @@
 							<Toolbar>
 								<content>
 									<ToolbarSpacer/>
-									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="false"/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck"
+											  visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false }"/>
 									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
 									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>

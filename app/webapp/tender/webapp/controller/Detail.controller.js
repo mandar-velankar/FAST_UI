@@ -66,10 +66,10 @@ sap.ui.define([
 			this.getView().setModel(oDateModel, "dateModel");
 
 			// Responsibility Assignment Model - this model can be used to set the visibility of the controls for a specific country in the user interface
-			this._oRaModel = new sap.ui.model.json.JSONModel({
+			/*this._oRaModel = new sap.ui.model.json.JSONModel({
 				visibleCountry: ""
 			});	
-			this.getView().setModel(this._oRaModel, "raModel");
+			this.getView().setModel(this._oRaModel, "raModel");*/
 
 		},
 
@@ -82,7 +82,7 @@ sap.ui.define([
 			var url =
 				"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
 			var countryCode = Services.getCountryCodeofSelectedTender();
-			var tenderId = Services.getSelectedTenderID();;
+			var tenderId = Services.getSelectedTenderID();
 			url = url.replace("$CountryCode", countryCode);
 			url = url.replace("$TenderId", tenderId);
 			window.open(url);
@@ -121,7 +121,7 @@ sap.ui.define([
 			that._country = sCountry;
 
 			// set the visible country
-			this._oRaModel.setProperty("/visibleCountry", sCountry);
+			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
 
 			//keep layout and bind it to the view, so we can show, hide elements based on layout (onecolumn, twocolumn, ....)
 			//to use for hiding or display certain fields
@@ -614,7 +614,7 @@ sap.ui.define([
 				/* End of Thailand */
 
 				//should group purchasing be visible on the screen based on data back-end
-				$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) {
+				$.when(Services.checkInstituteChilderen(oTender.CountryCode)).done(function (bShowGroupPurchasing) {
 					oDetailController.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
 				});
 
@@ -2107,7 +2107,7 @@ sap.ui.define([
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
-						that._showSubSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
+						that._showSectionFragment(Services.getFastAppDataModel().getProperty('/permissions/fragments/quotationViewId/fragment'), "quotationId");
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
@@ -4001,6 +4001,12 @@ sap.ui.define([
 				path: "SORTER",
 				descending: false
 			});
+
+			/*let oProducts = oFastAppDataModel.getProperty("/SelectedOffer/Product/results");
+			let skuCountries = oProducts.map((product) => { 
+				return product.SKUCountry;
+			});*/
+
 			oTable.bindRows({
 				path: sProductPath,
 				model: "fastAppData",
@@ -4655,13 +4661,19 @@ sap.ui.define([
 			let OfferProducts = Services.getFinancialModel();
 
 			//Get brandID
-			let sBrandID = null;
+			let sBrandID,sProductPackID = null;
 			if (product && product.SKU && product.SKU.Product){
+				sProductPackID = product && product.SKU && product.SKU.ProductPackId;
 				sBrandID = product.SKU.Product.HLEVEL4_CODE;
 			}
 
+			let sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			let sChannelName = Services.getLoadedTender().Institute.InstituteType; //Institute type = channel Name
+			//let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
+			let sDistributorID = offer.DistributorID;
+
 			//Get standard discount
-			const iStandardDiscount = await OfferProducts.getStandardDiscount(offer.DistributorID,sBrandID);
+			const iStandardDiscount = await OfferProducts.getStandardDiscount(sCountryCode,sChannelName,sProductPackID,sDistributorID,sBrandID);
 
 			//re-calculate additional discount based upon new standard discount from new distributor/brand
 			let iCalcAdditionalDiscount = (Number(oNewPrice.Discount) + Number(oNewPrice.AdditionalDiscount)) - iStandardDiscount;
@@ -5110,7 +5122,7 @@ sap.ui.define([
 		},
 
 		//show dialog for adding a Product offer: OfferProductsEdit.fragment.xml
-		onAddProductForOffer: function (oEvent) {
+		onAddProductForOffer: async function (oEvent) {
 
 			//distributor id is set on page form and should be used (instead of requested) when adding product
 			//payment terms and inco terns should set based on information in view providing product
@@ -5118,10 +5130,40 @@ sap.ui.define([
 			//data declarations
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var that = this;
+			let oTender = Services.getLoadedTender();
+			let sTenderReference = oTender.CountrySpecificInformation && oTender.CountrySpecificInformation.TenderReference;
+
 			Services.setSelectedDistributorID(that.getView().byId("idDistributorName").getSelectedKey());
+
 			//clear fields
 			oFastAppDataModel.setProperty("/ProductCollection", null);
 			//oFastAppDataModel.setProperty("/ProductCollectionOutput", null);
+
+			//for chile we show the products that were mached to say the the salesopportunity was IN (intresting for bayer fast)
+			let sMercadoInProductsMessage = '';
+			if(Services.getSelectedCountry() === 'CL'){
+
+				const salesOpportunity = await Services.getService('SalesOpportunity').getOpportunity(sTenderReference);
+				let oSalesOpportunity = salesOpportunity.data && salesOpportunity.data.results && salesOpportunity.data.results.length > 0 && salesOpportunity.data.results[0];
+				sMercadoInProductsMessage = 'Sales opportunity was matched upon the following products: ';
+				if(oSalesOpportunity.TenderMatchingStatus === 'In'){ //(intresting for bayer fast)
+					
+					let aProducts = oSalesOpportunity.Items && oSalesOpportunity.Items.results.length > 0 && oSalesOpportunity.Items.results;
+					aProducts.forEach(oProduct => {
+						sMercadoInProductsMessage = sMercadoInProductsMessage + oProduct.ProductName + ","
+					});
+					
+				}else{
+					sMercadoInProductsMessage = '';
+				}
+
+				//TenderMatchingStatus
+				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
+			}else{
+				//Make message empty if other country (otherwise previous message from CL could be shown again)
+				oFastAppDataModel.setProperty("/MercadoInProductsMessage", sMercadoInProductsMessage);
+			}
+			
 
 			//if dialog exists destroy it first, so we always set dialog buttons in correct state
 			if (that._oDialog) {
@@ -6741,34 +6783,34 @@ sap.ui.define([
 						PRICE_UPDATE: 0
 					};
 
-					//convert price to save
-					var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
-
-					if (pricePath !== null) {
-						//update Price
-						promises_saving.push(Services.getService('Price').updatePrice(oPriceToSave).catch(function (oError) {
-							//show error message
-							Services.showErrorMessage(oError, "Update of Price");
-							//promises must fail as well
-							throw new Error(oError);
-						}));
-					} else {
-						//create Price
-						promises_saving.push(Services.getService('Price').createPrice(oPriceToSave).catch(function (oError) {
-							//show error message
-							Services.showErrorMessage(oError, "Creation of Price");
-							//promises must fail as well
-							throw new Error(oError);
-						}));
-					}
-
 					//check if any of the pricing data is changed
 					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
+
+						//convert price to save
+						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
 
 						//if oOriginalPrices = false, they were not found, and we are creating new
 						if (oOriginalPrices !== false) {
 							//otherwise they were found and the check results for price update should be used
-							oNewPriceInfo.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+							oPriceToSave.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+						}
+
+						if (pricePath !== null) {
+							//update Price
+							promises_saving.push(Services.getService('Price').updatePrice(oPriceToSave).catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Update of Price");
+								//promises must fail as well
+								throw new Error(oError);
+							}));
+						} else {
+							//create Price
+							promises_saving.push(Services.getService('Price').createPrice(oPriceToSave).catch(function (oError) {
+								//show error message
+								Services.showErrorMessage(oError, "Creation of Price");
+								//promises must fail as well
+								throw new Error(oError);
+							}));
 						}
 
 						//Save all scenario's
@@ -6786,6 +6828,7 @@ sap.ui.define([
 								//otherwise nextOfferID is f.e still the one that is already created
 								var sTenderPath = Services.getSelectedTenderPath();
 								var sTenderID = Services.getSelectedTenderID();
+								let bWarning = false;
 
 								//we will load tender again after save is done
 								var bLoadedCheck = false;
@@ -6814,7 +6857,14 @@ sap.ui.define([
 										description: 'Financial Offer Saved Successfully'
 									});
 									
-									if(oDataTenderOffer[0].results[0].Price.BusinessCasePrice && oDataTenderOffer[0].results[0].Price.BusinessCasePrice !== ""){
+									if(oOffer.CountryCode === "AR"){
+										oOffer.Product.results.map((product) => {
+											if(product.Price.BusinessCasePrice !== "" && product.Price.BusinessCasePrice !== null){
+												bWarning = true;
+											}
+										});
+									}
+									if(bWarning){
 										Services.getOfferCompositeMessages().push({
 											type: 'Warning',
 											title: 'Please upload the business case document',
@@ -6871,7 +6921,7 @@ sap.ui.define([
 			const selectedOfferID = Services.getSelectedOfferID();
 			const selectedProductID = Services.getSelectedProductID();
 			const selectedProductName = Services.getSelectedProductName();
-			const selectedProductNewNetPrice = +this.byId("idEditPriceOffer_idNetPrice").getValue();
+			const selectedProductNewNetPrice = parseFloat(this.byId("idEditPriceOffer_idNetPrice").getValue().replace(',',''));
 			const otherDistributorProduct = allTenderOffers
 				.filter(offer => offer.OfferID !== selectedOfferID)
 				.map(offer => offer.Product.results.find(prod => (prod && prod.Price && prod.ProductCode === selectedProductID)))
