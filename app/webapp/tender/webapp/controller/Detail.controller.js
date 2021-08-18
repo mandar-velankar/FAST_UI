@@ -7599,8 +7599,35 @@ sap.ui.define([
 
 		
 		onCreateGuarantee: function (oEvent) {
+			//this.ctrState.setTemporaryContract();
+			this._getCreateBankGuaranteeDialog().open();
+		},
+
+		onAddNewContract: function (oEvent){
+
+			this.ctrState.setTemporaryContract();
+			this._getCreateContractDialog().open();
 
 		},
+		
+		/**
+		 * New contracting dialog
+		 * @returns {dialog} - oDialog
+		 */
+		 _getCreateBankGuaranteeDialog: function () {
+
+			//create new dialog if not yet existing
+			if (!this._oAddNewBankGuaranteeDialog) {
+
+					//get dialog
+					this._oAddNewBankGuaranteeDialog = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.NewBankGuarantee", this);
+					this.getView().addDependent(this._oAddNewBankGuaranteeDialog);
+					
+			}
+
+			return this._oAddNewBankGuaranteeDialog;
+		},
+
 
 		onSubmitQuotation: function (oEvent) {
 

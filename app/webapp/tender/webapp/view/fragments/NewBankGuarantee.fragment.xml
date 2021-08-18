@@ -15,9 +15,9 @@
 
 		<!-- FORM WITH OFFER DATA -->
 		<form:SimpleForm 
-			id="offerDetailForm" 
+			id="idCreateBankGuaranteeForm" 
 			editable="true" 
-			maxContainerCols="2" 
+			maxContainerCols="1" 
 			layout="ResponsiveGridLayout"  
 			labelSpanL="12" 
 			labelSpanM="12"
@@ -47,29 +47,12 @@
 
 				<!-- Amount -->
 				<Label text="{i18n>amount}" required="true"/>
-				<Input id="idBankGuaranteeReference" value="{fastAppData>/newBankGuarantee/reference}" required="true" type="Number"/>
+				<Input id="idBankGuaranteeAmount" value="{fastAppData>/newBankGuarantee/amount}" required="true" type="Number"/>
 
 				<!-- Currency -->
 				<Label text="{i18n>Currency}" required="true" />
 				<Select id="idCurrencynewBankGuarantee" selectedKey="{fastAppData>/newBankGuarantee/currency}" items="{ path: 'fastAppData>/currencies/', sorter: { path: 'cOUNTRY_CODE' } }">
 					<core:Item key="{fastAppData>cURRENCY}" text="{fastAppData>cURRENCY}"/>
-				</Select>
-
-				<!-- Contract channel -->
-				<Label text="{i18n>channel}" required="true"/>
-				<Select id="idChannelnewBankGuarantee"
-						selectedKey="{ctr>/newBankGuarantee/channelId}" 
-						items="{ 
-							path: 'ctr>/channels',
-							filters: [
-								{path: 'channelName', operator: 'NE', value1: 'Tender'}
-							]
-						}"
-						enabled="true"
-				>
-					<items>
-						<core:Item text="{ctr>channelName}" key="{ctr>iD}" />
-					</items>
 				</Select>
 
 				<!-- Contract Date -->
@@ -95,8 +78,11 @@
 					enabled="true"/>
 
                 <Label text="{i18n>comment}"/>
-				<Input id="idBankGuaranteeComment" value="{fastAppData>/newBankGuarantee/comment}" required="true"/>
-				<core:Title/>
+				<TextArea value="{ctr>/currentContract/selectedProduct/comment}" 
+								          		  showExceededText="true" 
+										  		  maxLength="500" 
+										  		  valueLiveUpdate="false" liveChange="handleLiveChange"
+												  enabled="true"/>
 				
 
 			</form:content>
