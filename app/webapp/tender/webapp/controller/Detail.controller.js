@@ -7596,6 +7596,12 @@ sap.ui.define([
 				}
 			});
 		},
+
+		
+		onCreateGuarantee: function (oEvent) {
+
+		},
+
 		onSubmitQuotation: function (oEvent) {
 
 			//that is this

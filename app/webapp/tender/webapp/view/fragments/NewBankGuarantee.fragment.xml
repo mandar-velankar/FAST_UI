@@ -1,0 +1,110 @@
+<!-- Fragment for Creating a new contract -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+
+	<Dialog title="Create Bank Guarantee" stretch="true">
+		<buttons>
+			<Button text="Save" press="onSaveNewBankGuarantee" />
+			<Button text="Cancel" press="onCancelNewBankGuarantee" />
+		</buttons>
+
+
+		<!-- FORM WITH OFFER DATA -->
+		<form:SimpleForm 
+			id="offerDetailForm" 
+			editable="true" 
+			maxContainerCols="2" 
+			layout="ResponsiveGridLayout"  
+			labelSpanL="12" 
+			labelSpanM="12"
+			emptySpanL="0" 
+			emptySpanM="0" 
+			columnsL="2" 
+			columnsM="2" 
+			class="editableForm" 
+			visible="true">
+
+			<form:content>
+			<core:Title/>
+
+				<!-- Reference -->
+				<Label text="{i18n>reference}"/>
+				<Input id="idBankGuaranteeReference" value="{fastAppData>/newBankGuarantee/reference}" required="true"/>
+
+				<!-- Type -->
+				<Label text="{i18n>type}"/>
+				<Select id="idCountrynewBankGuarantee" 
+						selectedKey="{fastAppData>/newBankGuarantee/type}"
+						change=".onChangeGuaranteeType"
+						enabled="true">
+					<core:Item text="Type A" key="Type A"/>
+                    <core:Item text="Type B" key="Type B"/>
+				</Select>
+
+				<!-- Amount -->
+				<Label text="{i18n>amount}" required="true"/>
+				<Input id="idBankGuaranteeReference" value="{fastAppData>/newBankGuarantee/reference}" required="true" type="Number"/>
+
+				<!-- Currency -->
+				<Label text="{i18n>Currency}" required="true" />
+				<Select id="idCurrencynewBankGuarantee" selectedKey="{fastAppData>/newBankGuarantee/currency}" items="{ path: 'fastAppData>/currencies/', sorter: { path: 'cOUNTRY_CODE' } }">
+					<core:Item key="{fastAppData>cURRENCY}" text="{fastAppData>cURRENCY}"/>
+				</Select>
+
+				<!-- Contract channel -->
+				<Label text="{i18n>channel}" required="true"/>
+				<Select id="idChannelnewBankGuarantee"
+						selectedKey="{ctr>/newBankGuarantee/channelId}" 
+						items="{ 
+							path: 'ctr>/channels',
+							filters: [
+								{path: 'channelName', operator: 'NE', value1: 'Tender'}
+							]
+						}"
+						enabled="true"
+				>
+					<items>
+						<core:Item text="{ctr>channelName}" key="{ctr>iD}" />
+					</items>
+				</Select>
+
+				<!-- Contract Date -->
+				<Label text="{i18n>issueDate}" required="true"/>
+				<DatePicker 
+					id="idIssueDateNewBankGuarantee" 
+					value="{
+						path :'fastAppData>/newBankGuarantee/issueDate', 
+						type: 'sap.ui.model.type.Date', 
+						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+					}" 
+					enabled="true"/>
+
+				<!-- Contract Date -->
+				<Label text="{i18n>closingDate}" required="true"/>
+				<DatePicker 
+					id="idClosingDateNewBankGuarantee" 
+					value="{
+						path :'fastAppData>/newBankGuarantee/closingDate', 
+						type: 'sap.ui.model.type.Date', 
+						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+					}" 
+					enabled="true"/>
+
+                <Label text="{i18n>comment}"/>
+				<Input id="idBankGuaranteeComment" value="{fastAppData>/newBankGuarantee/comment}" required="true"/>
+				<core:Title/>
+				
+
+			</form:content>
+		</form:SimpleForm>
+
+				
+				
+
+
+   	</Dialog>	
+</core:FragmentDefinition>
