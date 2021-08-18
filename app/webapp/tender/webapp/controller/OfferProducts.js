@@ -104,7 +104,7 @@ sap.ui.define([
 
 			//CIF price
 			let oCifLabel = new sap.m.Label();
-			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL' ? ('CIFPrice_' + sCountryCode) : 'CIFPrice'); //Diferent labels for Thailand & Argentinia & chili
+			let i18nKey = (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL' || sCountryCode === 'MX' ? ('CIFPrice_' + sCountryCode) : 'CIFPrice'); //Diferent labels for Thailand & Argentinia & chili
 			oCifLabel.setText(oResourceBundle.getText(i18nKey));
 			oForm.addContent(oCifLabel);
 			oForm.addContent(new sap.m.Input({
@@ -911,7 +911,7 @@ sap.ui.define([
 
 			//Cif price
 			var oCIFPriceData = {
-				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia & chili
+				"PriceType": (sCountryCode === 'TH' || sCountryCode === 'AR' || sCountryCode === 'CL' || sCountryCode === 'MX') ? i18n.getText('CIFPrice_' + sCountryCode) :  i18n.getText('CIFPrice'), //Diferent labels for Thailand & Argentinia & chili
 				"Value": oPrice.cifPrice,
 				"Type": "Revenue"
 			};
