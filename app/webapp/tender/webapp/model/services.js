@@ -6847,10 +6847,22 @@ sap.ui.define([
 			var that = this;
 
 			let promises = [];
-			promises.push(that.getService('BankGuarantee').createBankGuarantee(oBankGuaranteeSaveInfo).catch(function (oError) {
-				that.showErrorMessage(oError, "Create Bank Guarantee");
-				throw new Error(oError);
-			}));
+			switch(oBankGuaranteeSaveInfo._sOperation){
+				case "POST":
+					delete oBankGuaranteeSaveInfo._sOperation;
+					promises.push(that.getService('BankGuarantee').createBankGuarantee(oBankGuaranteeSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Create Bank Guarantee");
+						throw new Error(oError);
+					}));
+					break;
+				case "PUT":
+					delete oBankGuaranteeSaveInfo._sOperation;
+					promises.push(that.getService('BankGuarantee').updateBankGuarantee(oBankGuaranteeSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Update Bank Guarantee");
+						throw new Error(oError);
+					}));
+					break;
+			}
 
 			oBankGuaranteeSaveInfo = {};
 

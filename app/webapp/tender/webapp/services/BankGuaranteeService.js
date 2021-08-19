@@ -21,6 +21,22 @@ sap.ui.define([
 			return this.odata(sPath).post(oBankGuarantee);
 
 		},
+
+		//create new delivery
+		updateBankGuarantee: function (oBankGuarantee) {
+
+			//get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/BankGuarantees", {
+				ID: oBankGuarantee.ID
+			});
+
+			//Create
+			return this.odata(sPath).put(oBankGuarantee);
+
+		},
 		
 		//getting an empty Delivery
 		createEmptyBankGuarantee: function () {
@@ -37,7 +53,7 @@ sap.ui.define([
                 Reference: "",
                 IssueDate: null,
                 ClosingDate: null,
-                Status: "Preliminary",
+                Status: "",
                 Type: "",
                 GuaranteedAmount: 0,
                 Currency: "",

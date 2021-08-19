@@ -7633,17 +7633,34 @@ sap.ui.define([
 		onSaveNewBankGuarantee: function (oEvent){
 			BusyIndicator.show();
 			let oBankGuaranteeSaveInfo = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
+			let bUpdate = false;
+
+			if(!oBankGuaranteeSaveInfo.Status || oBankGuaranteeSaveInfo.Status === ''){
+				oBankGuaranteeSaveInfo.Status = "Preliminary";
+				oBankGuaranteeSaveInfo._sOperation = "POST";
+			} else {
+				oBankGuaranteeSaveInfo._sOperation = "PUT";
+				bUpdate = true;
+			}
 
 			if(Services.checkNewBankGuarantee(oBankGuaranteeSaveInfo)){
 				$.when(Services.saveBankGuarantee(oBankGuaranteeSaveInfo)).done(() => {
 					this._getCreateBankGuaranteeDialog().close();
-					this.byId("btnCreateBankGuarantee").setEnabled(false);
 
-					Services.getOfferCompositeMessages().push({
-						type: 'Success',
-						title: 'Bank Guarantee Created',
-						description: 'A new bank guarantee has been created for this tender.'
-					});
+					if(bUpdate === false){
+						this.byId("btnCreateBankGuarantee").setText("Edit Bank Guarantee");
+
+						Services.getOfferCompositeMessages().push({
+							type: 'Success',
+							title: 'Bank Guarantee Created',
+							description: 'A new bank guarantee has been created for this tender.'
+						});
+					} else {
+						Services.getOfferCompositeMessages().push({
+							type: 'Success',
+							title: 'Bank Guarantee Update',
+							description: 'Bank guarantee for this tender has been updated succesfully.'
+					});}
 					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
 				});
 			} else {
