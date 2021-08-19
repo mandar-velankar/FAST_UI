@@ -55,7 +55,7 @@
                     text="{i18n>CreateGuarantee}"
                     icon="sap-icon://create-form"
                     press=".onCreateGuarantee"
-                    enabled="true"/>
+                    enabled="{= ${fastData>OfferStatus/STATUS} === 'Offer Created' || ${fastData>OfferStatus/STATUS} === 'Offer Approved' ? false : true }"/>
 
                 <!-- Submit Quotation -->	
                 <m:Button
