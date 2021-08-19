@@ -7609,24 +7609,25 @@ sap.ui.define([
 
 		
 		onCreateGuarantee: function (oEvent) {
-			//this.ctrState.setTemporaryContract();
-			//load currency for country (dropdown)
 			var that = this;
-			let aCountryCurrencies = Services.getFastAppDataModel().getProperty("/CountryCurrency");
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
+			let oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
 
-			//Create empty bank guarantee object
-			$.when(Services.getService('BankGuarantee').createEmptyBankGuarantee()).done(function (oEmptyBankGuarantee) {
-				Services.getFastAppDataModel().setProperty("/newBankGuarantee/", oEmptyBankGuarantee);
+			if(!oBankGuarantee){
+				oBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee();
+				oFastAppDataModel.setProperty("/newBankGuarantee/", oBankGuarantee);
+			}
 
-				//Open the dialog
-				if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+			//Open the dialog
+			if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+				that._getCreateBankGuaranteeDialog().open();
+			} else {
+				$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
 					that._getCreateBankGuaranteeDialog().open();
-				} else {
-					$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
-						that._getCreateBankGuaranteeDialog().open();
-					});
-				}
-			});
+				});
+			}
+
 		},
 
 		onSaveNewBankGuarantee: function (oEvent){
