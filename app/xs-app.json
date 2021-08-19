@@ -20,6 +20,11 @@
       "csrfProtection": true
     },
     {
+      "source": "/app/admin/(.*)$",
+      "target": "$1",
+      "destination": "adminapp"
+    },
+    {
       "source": "/admin/(.*)$",
       "target": "$1",
       "destination": "adminapp"
@@ -33,43 +38,29 @@
     {
       "source": "^/app/(.*)$",
       "target": "$1",
-      "localDir": "dist/landingspage/webapp",
+      "localDir": "dist",
       "authenticationType": "xsuaa"
     },
     {
       "source": "^/appdebug/(.*)$",
       "target": "$1",
-      "localDir": "webapp/landingspage/webapp",
+      "localDir": "webapp",
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/epa/(.*)$",
+      "source": "/app/bankguarantees/(.*)$",
       "target": "$1",
-      "localDir": "dist/epa/webapp",
-      "authenticationType": "xsuaa"
-    },
+      "destination": "bankGuaranteesApp"
+    }, 
     {
-      "source": "^/contracts/(.*)$",
+      "source": "/app/priceagreements/(.*)$",
       "target": "$1",
-      "localDir": "dist/contracts/webapp",
-      "authenticationType": "xsuaa"
-    },
+      "destination": "priceAgreementsApp"
+    },    
     {
-      "source": "^/tender/(.*)$",
+      "source": "/app/createsalesopportunity/(.*)$",
       "target": "$1",
-      "localDir": "dist/tender/webapp",
-      "authenticationType": "xsuaa"
-    },
-    {
-      "source": "^/ppa/(.*)$",
-      "target": "$1",
-      "localDir": "dist/ppa/webapp",
-      "authenticationType": "xsuaa"
-    },
-    {
-      "source": "^/salesopportunity/(.*)$",
-      "target": "$1",
-      "localDir": "dist/salesopportunity/webapp"
+      "destination": "createSalesOppApp"
     },
     {
       "source": "/bankguarantees/(.*)$",
@@ -87,15 +78,9 @@
       "destination": "createSalesOppApp"
     },    
     {
-      "source": "^/uilib/(.*)$",
+      "source": "^(.*)$",
       "target": "$1",
-      "localDir": "dist/uilib/src/com/bayer/tender/uilib",
-      "authenticationType": "xsuaa"
-    },
-    {
-      "source": "^/pdf/(.*)$",
-      "target": "$1",
-      "localDir": "dist/pdf",
+      "localDir": "dist",
       "authenticationType": "xsuaa"
     }
   ]

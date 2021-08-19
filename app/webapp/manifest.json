@@ -1,19 +1,46 @@
 {
-	"_version": "1.7.0",
+	"_version": "1.12.0",
+
 	"sap.app": {
-		"id": "com.bayer.tender",
+		"id": "com.bayer.tender.landingspage",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
 		"applicationVersion": {
-			"version": "1.0.0"
+			"version": "1.0.1"
 		},
-		"title": "Root app",
-		"description": "Root app"
+		"ach": "set-ach",
+		"resources": "resources.json",
+		"dataSources": {
+			"tender": {
+				"uri": "/v2/tender/",
+				"type": "OData",
+				"settings": {
+					"localUri": "localService/tender/metadata.xml"
+				}
+			},
+			"accessService": {
+				"uri": "/v2/access/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml"
+				}
+			}
+		}
 	},
+
+	"sap.fiori": {
+		"registrationIds": [
+		],
+		"archeType": "transactional"
+	},
+
 	"sap.ui": {
 		"technology": "UI5",
 		"icons": {
-			"icon": "",
+			"icon": "sap-icon://task",
 			"favIcon": "",
 			"phone": "",
 			"phone@2": "",
@@ -24,24 +51,234 @@
 			"desktop": true,
 			"tablet": true,
 			"phone": true
-		},
-		"supportedThemes": [
-			"sap_belize"
-		]
+		}
 	},
+
 	"sap.ui5": {
-		"dependencies": {
-			"minUI5Version": "1.30.0",
-			"libs": {
-				"sap.f": {},
-				"sap.m": {}
+		"rootView": {
+			"viewName": "com.bayer.tender.landingspage.view.App",
+			"type": "XML",
+			"async": true,
+			"id": "app"
+		},
+		"componentUsages": {
+			"tenderComponent": {
+				"name": "FAST_NS0FAST0",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"epaComponent": {
+				"name": "com.bayer.tender.epa",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"ppaComponent": {
+				"name": "com.bayer.tender.ppa",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"contractComponent": {
+				"name": "com.bayer.tender.contracts",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"adminComponent": {
+				"name": "com.bayer.tender.admin",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"salesopportunityComponent": {
+				"name": "com.bayer.tender.salesopportunity",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
+			"createsalesopportunityComponent": {
+				"name": "com.bayer.tender.createsalesopportunity",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
 			}
 		},
 		"resourceRoots":{
+			"com.bayer.tender.ppa": "./ppa/webapp",
+			"com.bayer.tender.epa": "./epa/webapp",
+			"com.bayer.tender.contracts": "./contracts/webapp",
+			"com.bayer.tender.admin": "./admin",
+			"com.bayer.tender.salesopportunity": "./salesopportunity",
+			"com.bayer.tender.createsalesopportunity": "./createsalesopportunity",
+			"com.bayer.tender.bankguarantees": "./bankguarantees",
+			"com.bayer.tender.priceagreements": "./priceagreements",
+			"FAST_NS0FAST0": "./tender/webapp",
+			"com.bayer.tender.uilib": "./uilib/src/com/bayer/tender/uilib"
 		},
+		"dependencies": {
+			"minUI5Version": "1.71.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.ushell": {},
+				"sap.m": {},
+				"sap.collaboration": {},
+				"sap.f": {},
+				"com.bayer.tender.uilib": {}
+			}
+			
+		},
+
 		"contentDensities": {
 			"compact": true,
-			"cozy": false
+			"cozy": true
+		},
+
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.bayer.tender.landingspage.i18n.i18n"
+				}
+			},
+			"fastData": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "Request"
+				},
+				"dataSource": "tender",
+				"preload": true
+			},
+			"access": {
+				"dataSource": "accessService",
+				"preload": true
+			}
+		},		
+		"resources": {
+			"css": [
+				{
+					"uri": "css/style.css",
+					"id": ""
+				}
+			],
+			"js": []
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "com.bayer.tender.landingspage.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"bypassed": {
+					"target": ["notFound"]
+				},
+				"async": true
+			},
+
+			"routes": [
+				{
+					"pattern": "",
+					"name": "Landingpage",
+					"target": ["Landingpage"]
+				},
+				{
+					"name": "epa",
+					"pattern": "epa",
+					"target": {
+						"name": "epa",
+						"prefix": "e"
+					}
+				},
+				{
+					"name": "ppa",
+					"pattern": "ppa",
+					"target": {
+						"name": "ppa",
+						"prefix": "p"
+					}
+				},
+				{
+					"name": "contract",
+					"pattern": "contract",
+					"target": {
+						"name": "contract",
+						"prefix": "e"
+					}
+				},
+				{
+					"name": "tender",
+					"pattern": "tender",
+					"target": {
+						"name": "tender",
+						"prefix": "t"
+					}
+				},
+				{
+					"name": "admin",
+					"pattern": "admin",
+					"target": {
+						"name": "admin",
+						"prefix": "a"
+					}			
+				},
+				{
+					"name": "salesopportunity",
+					"pattern": "salesopportunity",
+					"target": {
+						"name": "salesopportunity",
+						"prefix": "s"
+					}
+				},
+				{
+					"name": "createsalesopportunity",
+					"pattern": "createsalesopportunity",
+					"target": {
+						"name": "createsalesopportunity",
+						"prefix": "c"
+					}
+				}			
+			],
+
+			"targets": {
+				"Landingpage": {
+					"viewName": "Landingpage",
+					"viewId": "Landingpage",
+					"viewLevel": 1,
+					"title": "{i18n>worklistViewTitle}"
+				},
+				"epa": {
+					"type": "Component",
+					"usage": "epaComponent"
+				},
+				"ppa": {
+					"type": "Component",
+					"usage": "ppaComponent"
+				},
+				"contract": {
+					"type": "Component",
+					"usage": "contractComponent"
+				},
+				"tender": {
+					"type": "Component",
+					"usage": "tenderComponent"
+				},
+				"admin": {
+					"type": "Component",
+					"usage": "adminComponent"
+				},
+				"salesopportunity": {
+					"type": "Component",
+					"usage": "salesopportunityComponent"
+				},
+				"createsalesopportunity": {
+					"type": "Component",
+					"usage": "createsalesopportunityComponent"
+				}
+			}
 		}
 	}
 }
