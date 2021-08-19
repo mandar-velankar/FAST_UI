@@ -48,9 +48,19 @@
       "authenticationType": "xsuaa"
     },
     {
-      "source": "^/salesopportunity/(.*)$",
+      "source": "/app/bankguarantees/(.*)$",
       "target": "$1",
-      "localDir": "dist/salesopportunity/webapp"
+      "destination": "bankGuaranteesApp"
+    }, 
+    {
+      "source": "/app/priceagreements/(.*)$",
+      "target": "$1",
+      "destination": "priceAgreementsApp"
+    },    
+    {
+      "source": "/app/createsalesopportunity/(.*)$",
+      "target": "$1",
+      "destination": "createSalesOppApp"
     },
     {
       "source": "/bankguarantees/(.*)$",
