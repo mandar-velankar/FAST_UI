@@ -7394,6 +7394,11 @@ sap.ui.define([
 
 			});
 
+			$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
+
+			});
+			
+
 			//set to fastappdata model for easy access on the view
 			oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
 			var oForm = that.byId("IdQuotationInfo");
@@ -7429,6 +7434,7 @@ sap.ui.define([
 			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(function (oData) {
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
+				var oBankGuarantee = oFastAppDataModel.getProperty("/BankGuarantee");
 
 				//enable or disable download button 
 				var enableDownload = false;
@@ -7439,7 +7445,7 @@ sap.ui.define([
 
 				//enable or disable submit button
 				var enableSubmit = false;
-				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1)) {
+				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
 					enableSubmit = true;
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
