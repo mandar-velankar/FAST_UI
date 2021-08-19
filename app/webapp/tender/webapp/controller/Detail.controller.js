@@ -147,6 +147,10 @@ sap.ui.define([
 			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
 			//Services.loadCountryPermissions(sCountry);
 
+			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
+
+			});
+
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
 				that.getView().bindElement({
@@ -7394,9 +7398,9 @@ sap.ui.define([
 
 			});
 
-			$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
+			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
 
-			});
+			});*/
 			
 
 			//set to fastappdata model for easy access on the view
