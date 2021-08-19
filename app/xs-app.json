@@ -46,32 +46,12 @@
       "target": "$1",
       "localDir": "webapp",
       "authenticationType": "xsuaa"
-    },
-    {
-      "source": "/app/bankguarantees/(.*)$",
-      "target": "$1",
-      "destination": "bankGuaranteesApp"
-    }, 
-    {
-      "source": "/app/priceagreements/(.*)$",
-      "target": "$1",
-      "destination": "priceAgreementsApp"
-    },    
+    },   
     {
       "source": "/app/createsalesopportunity/(.*)$",
       "target": "$1",
       "destination": "createSalesOppApp"
-    },
-    {
-      "source": "/bankguarantees/(.*)$",
-      "target": "$1",
-      "destination": "bankGuaranteesApp"
-    }, 
-    {
-      "source": "/priceagreements/(.*)$",
-      "target": "$1",
-      "destination": "priceAgreementsApp"
-    },    
+    },  
     {
       "source": "/createsalesopportunity/(.*)$",
       "target": "$1",

@@ -33,12 +33,6 @@ modules:
           forwardAuthToken: true
           name: adminapp
           url: '~{url}'
-      - name: bankGuaranteesApp
-        group: destinations
-        properties:
-          forwardAuthToken: true
-          name: bankGuaranteesApp
-          url: '~{url}'
       - name: createSalesOppApp
         group: destinations
         properties:
@@ -66,24 +60,6 @@ resources:
     type: configuration
     parameters:
       provider-id: FASTUIADMIN:adminapp
-      provider-nid: mta
-      target:
-        org: ${org}
-        space: ${space}
-      version: '>=0.0.0'
-  - name: bankGuaranteesApp
-    type: configuration
-    parameters:
-      provider-id: FASTBANKGUARANTEES:bankGuaranteesApp
-      provider-nid: mta
-      target:
-        org: ${org}
-        space: ${space}
-      version: '>=0.0.0'
-  - name: priceAgreementsApp
-    type: configuration
-    parameters:
-      provider-id: FASTPRICEAGREEMENTS:priceAgreementsApp
       provider-nid: mta
       target:
         org: ${org}
