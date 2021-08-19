@@ -910,6 +910,14 @@ sap.ui.define([
 			}
 		},
 
+		onExportDeliveriesToExcel: function (oEvent){
+			let sOfferId = Services.getSelectedOfferID();
+			var url = ("../../v2/tender/DeliveryExcel('$sOfferId')/content");
+			url = url.replace("$sOfferId", sOfferId);
+			sap.m.URLHelper.redirect(url, true);
+			//window.open(url);
+		},
+
 		//When you cancel the adding of a new deliverie
 		onCancelAddLetter: function (oEvent) {
 

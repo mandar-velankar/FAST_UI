@@ -2735,7 +2735,7 @@ sap.ui.define([
 
 		//Load brand product name list after selecting the brand
 		//JHHERE
-		loadBrandProductNameList: function (sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity, aCommercialAgreement,
+		loadBrandProductNameList: function (sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity, aCommercialAgreement,
 			aBrandTokens) {
 
 			//lets work with callbacks (3 places, return, resolve, reject)
@@ -2753,6 +2753,10 @@ sap.ui.define([
 				new sap.ui.model.Filter("CHANNEL", sap.ui.model.FilterOperator.EQ, sTenderChannel),
 				new sap.ui.model.Filter("LEGAL_ENTITY_CODE", sap.ui.model.FilterOperator.EQ, sLegalEntity)
 			);
+
+			if(sOfferDivision &&  sOfferDivision != ""){
+				aFilters.push(new sap.ui.model.Filter("DIVISION", sap.ui.model.FilterOperator.EQ, sOfferDivision));
+			}
 
 			//add origin's to filter
 			if (aCommercialAgreement) {
