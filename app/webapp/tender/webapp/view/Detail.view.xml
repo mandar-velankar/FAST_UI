@@ -87,9 +87,9 @@
 											</m:VBox>
 											
 											<!-- product -->
-											<m:VBox visible="{= ${fastData>Origin/CODE} === 'NA' ?  false : true }" >
+											<m:VBox visible="{= ${fastAppData>/Tender/CountryCode} === 'MX' ? true : false }" >
 												<m:items>
-													<m:Label text="{i18n>tenderOrigin}:" labelFor="selectedOrigininHeading"  />
+													<m:Label text="{i18n>tenderOrigin}:" labelFor="selectedOrigininHeading" />
 													<m:Text id="selectedOrigininHeading" text="{fastData>Origin/CODE}"/>													
 												</m:items>
 											</m:VBox>
@@ -162,7 +162,7 @@
 				</m:VBox>				
 				
 				<!-- Tender origin -->
-				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastData>Origin/CODE} === 'NA' ? false : true }">
+				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/Tender/CountryCode} === 'MX' ? true : false }">
 				<!--<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">-->
 					<m:Label text="{i18n>tenderOrigin}"/>
 					<m:Text text="{fastData>Origin/CODE}"/>		
