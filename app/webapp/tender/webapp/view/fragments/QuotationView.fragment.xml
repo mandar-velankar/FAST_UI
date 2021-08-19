@@ -49,6 +49,14 @@
                     press=".onDownloadQuotation"
                     enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
 
+                <!-- Bank Guarantee 
+                <m:Button
+                    id="btnCreateBankGuarantee"
+                    text="{i18n>CreateGuarantee}"
+                    icon="sap-icon://create-form"
+                    press=".onCreateGuarantee"
+                    enabled="true"/>-->	
+
                 <!-- Submit Quotation -->	
                 <m:Button
                     id="btnSubmitQuotation"
@@ -57,13 +65,6 @@
                     press=".onSubmitQuotation"
                     enabled="false"/>
 
-                <!-- Bank Guarantee -->	
-                <m:Button
-                    id="btnCreateBankGuarantee"
-                    text="{i18n>CreateGuarantee}"
-                    icon="sap-icon://create-form"
-                    press=".onCreateGuarantee"
-                    enabled="true"/>
             </actions>
             <l:BlockLayout background="Light">
                 <l:BlockLayoutRow>

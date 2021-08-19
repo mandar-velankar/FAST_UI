@@ -6825,6 +6825,37 @@ sap.ui.define([
 
 		},
 
+		//check new bank guarantee
+		checkNewBankGuarantee: function(oBankGuarantee){
+			let bValid = false;
+			
+			if(oBankGuarantee.Reference && 
+			   oBankGuarantee.Type && 
+			   oBankGuarantee.GuaranteedAmount != 0 && 
+			   oBankGuarantee.Currency && 
+			   oBankGuarantee.IssueDate && 
+			   oBankGuarantee.ClosingDate){
+					bValid = true;
+			}
+
+			return bValid;
+		},
+
+		//save bank guarantee
+		saveBankGuarantee: function(oBankGuaranteeSaveInfo){
+			let oDeferred = $.Deferred();
+			var that = this;
+
+			let promises = [];
+			promises.push(that.getService('BankGuarantee').createBankGuarantee(oBankGuaranteeSaveInfo).catch(function (oError) {
+				that.showErrorMessage(oError, "Create Bank Guarantee");
+				throw new Error(oError);
+			}));
+
+			oBankGuaranteeSaveInfo = {};
+
+		},
+
 		//save the deliveries
 		saveDeliveries: function () {
 

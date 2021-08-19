@@ -7600,14 +7600,50 @@ sap.ui.define([
 		
 		onCreateGuarantee: function (oEvent) {
 			//this.ctrState.setTemporaryContract();
-			this._getCreateBankGuaranteeDialog().open();
+			//load currency for country (dropdown)
+			var that = this;
+			let aCountryCurrencies = Services.getFastAppDataModel().getProperty("/CountryCurrency");
+
+			//Create empty bank guarantee object
+			$.when(Services.getService('BankGuarantee').createEmptyBankGuarantee()).done(function (oEmptyBankGuarantee) {
+				Services.getFastAppDataModel().setProperty("/newBankGuarantee/", oEmptyBankGuarantee);
+
+				//Open the dialog
+				if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+					that._getCreateBankGuaranteeDialog().open();
+				} else {
+					$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
+						that._getCreateBankGuaranteeDialog().open();
+					});
+				}
+			});
 		},
 
-		onAddNewContract: function (oEvent){
+		onSaveNewBankGuarantee: function (oEvent){
+			BusyIndicator.show();
+			let oBankGuaranteeSaveInfo = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
 
-			this.ctrState.setTemporaryContract();
-			this._getCreateContractDialog().open();
+			if(Services.checkNewBankGuarantee(oBankGuaranteeSaveInfo)){
+				$.when(Services.saveBankGuarantee(oBankGuaranteeSaveInfo)).done(() => {
+					this._getCreateBankGuaranteeDialog().close();
+					this.byId("btnCreateBankGuarantee").setEnabled(false);
 
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Bank Guarantee Created',
+						description: 'A new bank guarantee has been created for this tender.'
+					});
+					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+				});
+			} else {
+				sap.m.MessageBox.error("Please enter all mandatory fields.");
+			}
+
+			BusyIndicator.hide();
+		},
+
+		onCancelNewBankGuarantee: function (oEvent){
+			this._getCreateBankGuaranteeDialog().close();
 		},
 		
 		/**

@@ -33,26 +33,33 @@
 
 				<!-- Reference -->
 				<Label text="{i18n>reference}"/>
-				<Input id="idBankGuaranteeReference" value="{fastAppData>/newBankGuarantee/reference}" required="true"/>
+				<Input id="idBankGuaranteeReference"
+					   value="{fastAppData>/newBankGuarantee/Reference}"
+					   required="true"/>
 
 				<!-- Type -->
 				<Label text="{i18n>type}"/>
 				<Select id="idCountrynewBankGuarantee" 
-						selectedKey="{fastAppData>/newBankGuarantee/type}"
+						selectedKey="{fastAppData>/newBankGuarantee/Type}"
 						change=".onChangeGuaranteeType"
 						enabled="true">
-					<core:Item text="Type A" key="Type A"/>
-                    <core:Item text="Type B" key="Type B"/>
+					<core:Item text="" key=""/>
+					<core:Item text="Impegno" key="Impegno"/>
+                    <core:Item text="Provisoria" key="Provisoria"/>
+					<core:Item text="Definitiva" key="Definitiva"/>
 				</Select>
 
 				<!-- Amount -->
 				<Label text="{i18n>amount}" required="true"/>
-				<Input id="idBankGuaranteeAmount" value="{fastAppData>/newBankGuarantee/amount}" required="true" type="Number"/>
+				<Input id="idBankGuaranteeAmount" 
+					   value="{fastAppData>/newBankGuarantee/GuaranteedAmount}" 
+					   required="true" 
+					   type="Number"/>
 
 				<!-- Currency -->
 				<Label text="{i18n>Currency}" required="true" />
-				<Select id="idCurrencynewBankGuarantee" selectedKey="{fastAppData>/newBankGuarantee/currency}" items="{ path: 'fastAppData>/currencies/', sorter: { path: 'cOUNTRY_CODE' } }">
-					<core:Item key="{fastAppData>cURRENCY}" text="{fastAppData>cURRENCY}"/>
+				<Select id="idCurrencynewBankGuarantee" selectedKey="{fastAppData>/newBankGuarantee/Currency}" items="{ path: 'fastAppData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' } }">
+					<core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>
 				</Select>
 
 				<!-- Contract Date -->
@@ -60,7 +67,7 @@
 				<DatePicker 
 					id="idIssueDateNewBankGuarantee" 
 					value="{
-						path :'fastAppData>/newBankGuarantee/issueDate', 
+						path :'fastAppData>/newBankGuarantee/IssueDate', 
 						type: 'sap.ui.model.type.Date', 
 						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 					}" 
@@ -71,14 +78,14 @@
 				<DatePicker 
 					id="idClosingDateNewBankGuarantee" 
 					value="{
-						path :'fastAppData>/newBankGuarantee/closingDate', 
+						path :'fastAppData>/newBankGuarantee/ClosingDate', 
 						type: 'sap.ui.model.type.Date', 
 						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 					}" 
 					enabled="true"/>
 
                 <Label text="{i18n>comment}"/>
-				<TextArea value="{ctr>/currentContract/selectedProduct/comment}" 
+				<TextArea value="{fastAppData>/newBankGuarantee/Comment}" 
 								          		  showExceededText="true" 
 										  		  maxLength="500" 
 										  		  valueLiveUpdate="false" liveChange="handleLiveChange"
