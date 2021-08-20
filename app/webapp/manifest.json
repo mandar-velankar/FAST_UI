@@ -110,7 +110,7 @@
 			"com.bayer.tender.epa": "./epa/webapp",
 			"com.bayer.tender.contracts": "./contracts/webapp",
 			"com.bayer.tender.admin": "./admin",
-			"com.bayer.tender.salesopportunity": "./salesopportunity",
+			"com.bayer.tender.salesopportunity": "./salesopportunity/webapp",
 			"com.bayer.tender.createsalesopportunity": "./createsalesopportunity",
 			"com.bayer.tender.bankguarantees": "./bankguarantees",
 			"com.bayer.tender.priceagreements": "./priceagreements",

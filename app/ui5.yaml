@@ -61,13 +61,14 @@ builder:
             filters:
               - com/bayer/tender/landingspage/Component.js
               - com/bayer/tender/landingspage/manifest.json
-              - com/bayer/tender/landingspage/webapp/i18n/**
-              - com/bayer/tender/landingspage/webapp/model/**
-              - com/bayer/tender/landingspage/webapp/controller/**
-              - com/bayer/tender/landingspage/webapp/service/**
-              - com/bayer/tender/landingspage/webapp/state/**
-              - com/bayer/tender/landingspage/webapp/view/**
+              - com/bayer/tender/landingspage/i18n/**
+              - com/bayer/tender/landingspage/model/**
+              - com/bayer/tender/landingspage/controller/**
+              - com/bayer/tender/landingspage/service/**
+              - com/bayer/tender/landingspage/state/**
+              - com/bayer/tender/landingspage/view/**
               - "!com/bayer/tender/landingspage/contractsapp/**"
+              - "!com/bayer/tender/landingspage/salesopportunity/**"
               - "!com/bayer/tender/landingspage/epa/**"
               - "!com/bayer/tender/landingspage/landingspage/**"
               - "!com/bayer/tender/landingspage/templates/**"
@@ -98,6 +99,30 @@ builder:
               - com/bayer/tender/landingspage/contracts/webapp/service/**
               - com/bayer/tender/landingspage/contracts/webapp/state/**
               - com/bayer/tender/landingspage/contracts/webapp/view/**
+            resolve: false
+            sort: true
+      bundleOptions:
+        optimize: true
+        usePredefineCalls: true
+    - bundleDefinition:
+        name: "com/bayer/tender/landingspage/salesopportunity/webapp/Component-preload.js"
+        defaultFileTypes:
+        - ".js"
+        - ".json"
+        - ".xml"
+        - ".html"
+        - ".library"
+        sections:
+          - mode: preload
+            filters:
+              - com/bayer/tender/landingspage/salesopportunity/webapp/Component.js
+              - com/bayer/tender/landingspage/salesopportunity/webapp/manifest.json
+              - com/bayer/tender/landingspage/salesopportunity/webapp/controller/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/i18n/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/model/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/service/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/state/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:

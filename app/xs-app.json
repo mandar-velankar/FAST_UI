@@ -30,8 +30,18 @@
       "destination": "adminapp"
     },
     {
+      "source": "/app/createsalesopportunity/(.*)$",
+      "target": "$1",
+      "destination": "createSalesOppApp"
+    },  
+    {
+      "source": "/createsalesopportunity/(.*)$",
+      "target": "$1",
+      "destination": "createSalesOppApp"
+    },  
+    {
       "source": "^/app/index.html(.*)$",
-      "localDir": "dist/landingspage/webapp",
+      "localDir": "dist",
       "authenticationType": "xsuaa",
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
@@ -46,17 +56,7 @@
       "target": "$1",
       "localDir": "webapp",
       "authenticationType": "xsuaa"
-    },   
-    {
-      "source": "/app/createsalesopportunity/(.*)$",
-      "target": "$1",
-      "destination": "createSalesOppApp"
-    },  
-    {
-      "source": "/createsalesopportunity/(.*)$",
-      "target": "$1",
-      "destination": "createSalesOppApp"
-    },    
+    },     
     {
       "source": "^(.*)$",
       "target": "$1",
