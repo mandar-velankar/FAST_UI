@@ -7585,7 +7585,7 @@ sap.ui.define([
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							if (sStatus === "Offer Approved" && (oQuotation)) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+							if (sStatus === "Offer Approved" && (oQuotation) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
 							}
 							that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7692,6 +7692,58 @@ sap.ui.define([
 			return this._oAddNewBankGuaranteeDialog;
 		},
 
+		onUpdateBankGuarantee: function(){
+			BusyIndicator.show();
+
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let oTenderResults = oFastAppDataModel.getProperty('/ResultsForTree');
+			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
+			let oBankGuaranteeSaveInfo = oFastAppDataModel.getProperty('/newBankGuarantee');
+			let that = this;
+
+			oTenderResults.forEach(function (oTenderResult, iIndex) {
+				if(oTenderResult.OUTCOME === "Won"){
+					//update the status
+					oBankGuaranteeSaveInfo.Status = "Confirmed";
+					oBankGuaranteeSaveInfo._sOperation = "PUT";
+
+					//Open the dialog
+					if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+						that._getCreateBankGuaranteeDialog().open();
+					} else {
+						$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
+							that._getCreateBankGuaranteeDialog().open();
+						});
+					}
+				} else {
+					//Ask user if he's sure to cancel the bank guarantee
+					sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
+						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction === "YES") {
+								oBankGuaranteeSaveInfo.Status = "Cancelled";
+								oBankGuaranteeSaveInfo._sOperation = "PUT";
+								if(Services.checkNewBankGuarantee(oBankGuaranteeSaveInfo)){
+									$.when(Services.saveBankGuarantee(oBankGuaranteeSaveInfo)).done(() => {
+											Services.getOfferCompositeMessages().push({
+												type: 'Success',
+												title: 'Bank Guarantee Update',
+												description: 'Bank guarantee has been cancelled.'
+										});
+									});
+								}
+							} else {
+								return;
+							}
+						}
+					});
+				}
+			});
+
+
+			BusyIndicator.hide();
+		},
 
 		onSubmitQuotation: function (oEvent) {
 
