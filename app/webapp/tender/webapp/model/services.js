@@ -2690,7 +2690,7 @@ sap.ui.define([
 			}
 
 			//add origin's to filter
-			if (aCommercialAgreement) {
+			if (aCommercialAgreement && aCommercialAgreement.results && aCommercialAgreement.results.length > 0) {
 				aCommercialAgreement.results.forEach(function (oCommercialAgreement, iIndex) {
 					aFilters.push(new sap.ui.model.Filter("COUNTRY_OF_ORIGIN", sap.ui.model.FilterOperator.EQ, oCommercialAgreement.COUNTRY_OF_ORIGIN));
 				});
@@ -2759,7 +2759,7 @@ sap.ui.define([
 			}
 
 			//add origin's to filter
-			if (aCommercialAgreement) {
+			if (aCommercialAgreement && aCommercialAgreement.results && aCommercialAgreement.results.length > 0) {
 				aCommercialAgreement.results.forEach(function (oCommercialAgreement, iIndex) {
 					aFilters.push(new sap.ui.model.Filter("COUNTRY_OF_ORIGIN", sap.ui.model.FilterOperator.EQ, oCommercialAgreement.COUNTRY_OF_ORIGIN));
 				});
