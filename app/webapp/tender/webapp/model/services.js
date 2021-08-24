@@ -4387,6 +4387,8 @@ sap.ui.define([
 		_sIDprevDistributor: "",
 		_sIDsellingcompany: "",
 		_sIDprevSellingcompany: "",
+		_sIDdivision: "",
+		_sIDprevDivision: "",
 		_oOfferSaveInfo: {},
 		_aProductsSaveInfo: [],
 		_bNewOfferPressed: false,
@@ -4415,6 +4417,15 @@ sap.ui.define([
 
 		getPrevSelectedSellingCompanyID: function () {
 			return this._sIDprevSellingcompany;
+		},
+
+		//get selected divisionID
+		getSelectedDivisionID: function () {
+			return this._sIDdivision;
+		},
+
+		getPrevSelectedDivisionID: function () {
+			return this._sIDprevDivision;
 		},
 
 		//get selected offerID TenderOfferNo
@@ -4583,6 +4594,15 @@ sap.ui.define([
 
 		setPrevSelectedSellingCompanyID: function (sIDsellingCompany) {
 			this._sIDprevSellingcompany = sIDsellingCompany;
+		},
+
+		//set selected divisionID
+		setSelectedDivisionID: function (sIDdivision) {
+			this._sIDdivision = sIDdivision;
+		},
+
+		setPrevSelectedDivisionID: function (sIDdivision) {
+			this._sIDprevDivision = sIDdivision;
 		},
 
 		//New offer button is pressed
