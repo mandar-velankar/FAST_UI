@@ -5217,14 +5217,13 @@ sap.ui.define([
 
 			//Deleting products
 			var oTableProducts = this.byId("editofferProductId");
-			var aProductTableRows = oTableProducts.getRows();
 			var aIndexSelectedRows = oTableProducts.getSelectedIndices();
 
 			var aProductsToRemove = [];
 			var oProductToRemove = {};
-			var aExistingProducts = Services.getProductsSaveInfo();
-			if(aExistingProducts.length === 0){
-				var aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+			let aExistingProducts = Services.getProductsSaveInfo();
+			if(!aExistingProducts || aExistingProducts.length === 0){ 
+				aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
 			}
 
 			//already deleted products are not visible in table, so indexselectedrows should ignore these products
