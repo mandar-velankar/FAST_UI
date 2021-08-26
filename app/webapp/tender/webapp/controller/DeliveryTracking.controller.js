@@ -1157,7 +1157,7 @@ sap.ui.define([
 
 						//In this case we might dit some changes in the fastAppData model, we will load all data from the database again
 						//otherwise nextOfferID is f.e still the one that is already created
-						var sTenderID = Services.getSelectedTenderID();
+						//var sTenderID = Services.getSelectedTenderID();
 
 						that.ODetailController.onRefresh();
 						//we will load tender again after save is done
