@@ -1,4 +1,4 @@
-specVersion: '2.2'
+specVersion: '2.3'
 metadata:
   name: com.bayer.app
 type: application
@@ -29,6 +29,8 @@ server:
       baseUri: "http://localhost:8080/landingspage/webapp/"
       removeETag: true
 builder:
+  cachebuster:
+    signatureType: time
   resources:
     excludes:
       - "/templates/**"
@@ -43,9 +45,11 @@ builder:
       - "lib"
       - "libs"
       - "themes"
+  - name: ui5-task-cachebuster-indexing
+    afterTask: generateVersionInfo
   bundles:
     - bundleDefinition:
-        name: "com/bayer/tender/Component-preload.js"
+        name: "com/bayer/tender/landingspage/Component-preload.js"
         defaultFileTypes:
         - ".js"
         - ".json"
@@ -55,22 +59,29 @@ builder:
         sections:
           - mode: preload
             filters:
-              - com/bayer/tender/Component.js
-              - com/bayer/tender/manifest.json
-              - "!com/bayer/tender/contractsapp/**"
-              - "!com/bayer/tender/epa/**"
-              - "!com/bayer/tender/landingspage/**"
-              - "!com/bayer/tender/templates/**"
-              - "!com/bayer/tender/tender/**"
-              - "!com/bayer/tender/ppa/**"
-              - "!com/bayer/tender/uilib/**"
+              - com/bayer/tender/landingspage/Component.js
+              - com/bayer/tender/landingspage/manifest.json
+              - com/bayer/tender/landingspage/i18n/**
+              - com/bayer/tender/landingspage/model/**
+              - com/bayer/tender/landingspage/controller/**
+              - com/bayer/tender/landingspage/service/**
+              - com/bayer/tender/landingspage/state/**
+              - com/bayer/tender/landingspage/view/**
+              - "!com/bayer/tender/landingspage/contractsapp/**"
+              - "!com/bayer/tender/landingspage/salesopportunity/**"
+              - "!com/bayer/tender/landingspage/epa/**"
+              - "!com/bayer/tender/landingspage/landingspage/**"
+              - "!com/bayer/tender/landingspage/templates/**"
+              - "!com/bayer/tender/landingspage/tender/**"
+              - "!com/bayer/tender/landingspage/ppa/**"
+              - "!com/bayer/tender/landingspage/uilib/**"
             resolve: false
             sort: true
       bundleOptions:
         optimize: true
         usePredefineCalls: true
     - bundleDefinition:
-        name: "com/bayer/tender/contracts/webapp/Component-preload.js"
+        name: "com/bayer/tender/landingspage/contracts/webapp/Component-preload.js"
         defaultFileTypes:
         - ".js"
         - ".json"
@@ -80,21 +91,21 @@ builder:
         sections:
           - mode: preload
             filters:
-              - com/bayer/tender/contracts/webapp/Component.js
-              - com/bayer/tender/contracts/webapp/manifest.json
-              - com/bayer/tender/contracts/webapp/controller/**
-              - com/bayer/tender/contracts/webapp/i18n/**
-              - com/bayer/tender/contracts/webapp/model/**
-              - com/bayer/tender/contracts/webapp/service/**
-              - com/bayer/tender/contracts/webapp/state/**
-              - com/bayer/tender/contracts/webapp/view/**
+              - com/bayer/tender/landingspage/contracts/webapp/Component.js
+              - com/bayer/tender/landingspage/contracts/webapp/manifest.json
+              - com/bayer/tender/landingspage/contracts/webapp/controller/**
+              - com/bayer/tender/landingspage/contracts/webapp/i18n/**
+              - com/bayer/tender/landingspage/contracts/webapp/model/**
+              - com/bayer/tender/landingspage/contracts/webapp/service/**
+              - com/bayer/tender/landingspage/contracts/webapp/state/**
+              - com/bayer/tender/landingspage/contracts/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:
         optimize: true
         usePredefineCalls: true
     - bundleDefinition:
-        name: "com/bayer/tender/epa/webapp/Component-preload.js"
+        name: "com/bayer/tender/landingspage/salesopportunity/webapp/Component-preload.js"
         defaultFileTypes:
         - ".js"
         - ".json"
@@ -104,21 +115,21 @@ builder:
         sections:
           - mode: preload
             filters:
-              - com/bayer/tender/epa/webapp/Component.js
-              - com/bayer/tender/epa/webapp/manifest.json
-              - com/bayer/tender/epa/webapp/controller/**
-              - com/bayer/tender/epa/webapp/i18n/**
-              - com/bayer/tender/epa/webapp/model/**
-              - com/bayer/tender/epa/webapp/service/**
-              - com/bayer/tender/epa/webapp/state/**
-              - com/bayer/tender/epa/webapp/view/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/Component.js
+              - com/bayer/tender/landingspage/salesopportunity/webapp/manifest.json
+              - com/bayer/tender/landingspage/salesopportunity/webapp/controller/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/i18n/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/model/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/service/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/state/**
+              - com/bayer/tender/landingspage/salesopportunity/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:
         optimize: true
         usePredefineCalls: true
     - bundleDefinition:
-        name: "com/bayer/tender/landingspage/webapp/Component-preload.js"
+        name: "com/bayer/tender/landingspage/epa/webapp/Component-preload.js"
         defaultFileTypes:
         - ".js"
         - ".json"
@@ -128,21 +139,21 @@ builder:
         sections:
           - mode: preload
             filters:
-              - com/bayer/tender/landingspage/webapp/Component.js
-              - com/bayer/tender/landingspage/webapp/manifest.json
-              - com/bayer/tender/landingspage/webapp/controller/**
-              - com/bayer/tender/landingspage/webapp/i18n/**
-              - com/bayer/tender/landingspage/webapp/model/**
-              - com/bayer/tender/landingspage/webapp/service/**
-              - com/bayer/tender/landingspage/webapp/state/**
-              - com/bayer/tender/landingspage/webapp/view/**
+              - com/bayer/tender/landingspage/epa/webapp/Component.js
+              - com/bayer/tender/landingspage/epa/webapp/manifest.json
+              - com/bayer/tender/landingspage/epa/webapp/controller/**
+              - com/bayer/tender/landingspage/epa/webapp/i18n/**
+              - com/bayer/tender/landingspage/epa/webapp/model/**
+              - com/bayer/tender/landingspage/epa/webapp/service/**
+              - com/bayer/tender/landingspage/epa/webapp/state/**
+              - com/bayer/tender/landingspage/epa/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:
         optimize: true
         usePredefineCalls: true
     - bundleDefinition:
-        name: "com/bayer/tender/tender/webapp/Component-preload.js"
+        name: "com/bayer/tender/landingspage/landingspage/webapp/Component-preload.js"
         defaultFileTypes:
         - ".js"
         - ".json"
@@ -152,21 +163,21 @@ builder:
         sections:
           - mode: preload
             filters:
-              - com/bayer/tender/tender/webapp/Component.js
-              - com/bayer/tender/tender/webapp/manifest.json
-              - com/bayer/tender/tender/webapp/controller/**
-              - com/bayer/tender/tender/webapp/i18n/**
-              - com/bayer/tender/tender/webapp/model/**
-              - com/bayer/tender/tender/webapp/service/**
-              - com/bayer/tender/tender/webapp/state/**
-              - com/bayer/tender/tender/webapp/view/**
+              - com/bayer/tender/landingspage/landingspage/webapp/Component.js
+              - com/bayer/tender/landingspage/landingspage/webapp/manifest.json
+              - com/bayer/tender/landingspage/landingspage/webapp/controller/**
+              - com/bayer/tender/landingspage/landingspage/webapp/i18n/**
+              - com/bayer/tender/landingspage/landingspage/webapp/model/**
+              - com/bayer/tender/landingspage/landingspage/webapp/service/**
+              - com/bayer/tender/landingspage/landingspage/webapp/state/**
+              - com/bayer/tender/landingspage/landingspage/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:
         optimize: true
         usePredefineCalls: true
     - bundleDefinition:
-        name: "com/bayer/tender/ppa/webapp/Component-preload.js"
+        name: "com/bayer/tender/landingspage/tender/webapp/Component-preload.js"
         defaultFileTypes:
         - ".js"
         - ".json"
@@ -176,21 +187,21 @@ builder:
         sections:
           - mode: preload
             filters:
-              - com/bayer/tender/ppa/webapp/Component.js
-              - com/bayer/tender/ppa/webapp/manifest.json
-              - com/bayer/tender/ppa/webapp/controller/**
-              - com/bayer/tender/ppa/webapp/i18n/**
-              - com/bayer/tender/ppa/webapp/model/**
-              - com/bayer/tender/ppa/webapp/service/**
-              - com/bayer/tender/ppa/webapp/state/**
-              - com/bayer/tender/ppa/webapp/view/**
+              - com/bayer/tender/landingspage/tender/webapp/Component.js
+              - com/bayer/tender/landingspage/tender/webapp/manifest.json
+              - com/bayer/tender/landingspage/tender/webapp/controller/**
+              - com/bayer/tender/landingspage/tender/webapp/i18n/**
+              - com/bayer/tender/landingspage/tender/webapp/model/**
+              - com/bayer/tender/landingspage/tender/webapp/service/**
+              - com/bayer/tender/landingspage/tender/webapp/state/**
+              - com/bayer/tender/landingspage/tender/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:
         optimize: true
         usePredefineCalls: true
     - bundleDefinition:
-        name: "com/bayer/tender/uilib/src/com/bayer/tender/uilib/library-preload.js"
+        name: "com/bayer/tender/landingspage/ppa/webapp/Component-preload.js"
         defaultFileTypes:
         - ".js"
         - ".json"
@@ -200,14 +211,38 @@ builder:
         sections:
           - mode: preload
             filters:
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/library.js
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/manifest.json
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/messagebyndle.properties
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/controllers/**
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/controls/**
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/libs/**
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/objects/**
-              - com/bayer/tender/uilib/src/com/bayer/tender/uilib/themes/**
+              - com/bayer/tender/landingspage/ppa/webapp/Component.js
+              - com/bayer/tender/landingspage/ppa/webapp/manifest.json
+              - com/bayer/tender/landingspage/ppa/webapp/controller/**
+              - com/bayer/tender/landingspage/ppa/webapp/i18n/**
+              - com/bayer/tender/landingspage/ppa/webapp/model/**
+              - com/bayer/tender/landingspage/ppa/webapp/service/**
+              - com/bayer/tender/landingspage/ppa/webapp/state/**
+              - com/bayer/tender/landingspage/ppa/webapp/view/**
+            resolve: false
+            sort: true
+      bundleOptions:
+        optimize: true
+        usePredefineCalls: true
+    - bundleDefinition:
+        name: "com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/library-preload.js"
+        defaultFileTypes:
+        - ".js"
+        - ".json"
+        - ".xml"
+        - ".html"
+        - ".library"
+        sections:
+          - mode: preload
+            filters:
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/library.js
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/manifest.json
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/messagebyndle.properties
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/controllers/**
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/controls/**
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/libs/**
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/objects/**
+              - com/bayer/tender/landingspage/uilib/src/com/bayer/tender/uilib/themes/**
             resolve: false
             sort: true
       bundleOptions:

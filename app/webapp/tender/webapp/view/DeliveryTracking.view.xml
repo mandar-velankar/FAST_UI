@@ -37,6 +37,15 @@
 	<!-- DELIVERIES SUB SECTION PAGE -->
 
 	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Purchase Orders' : 'Deliveries' }">
+		<actions>
+			<m:Button
+					id="btnExportDeliveriesToExcel"
+					text="{i18n>ExportToExcel}"
+					icon="sap-icon://excel-attachment"
+					press=".onExportDeliveriesToExcel"
+					enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"
+					visible="false"/>
+        </actions>
 		<blocks>
 			<!-- <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.PurchaseOrder" type="XML"/>-->
 		</blocks>
