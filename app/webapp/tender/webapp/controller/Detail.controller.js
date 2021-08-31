@@ -2071,6 +2071,11 @@ sap.ui.define([
 						Services.setSelectedSellingCompanyID(sSellingCompanyID);
 						Services.setPrevSelectedSellingCompanyID(sSellingCompanyID);
 
+						//keep default selected division
+						var sDivisionID = that.getView().byId("idProductOfferDivision").getSelectedKey();
+						Services.setSelectedDivisionID(sDivisionID);
+						Services.setPrevSelectedDivisionID(sDivisionID);
+
 						//make fields mandatory based on list
 						var aMandatoryFields = oFastAppDataModel.getProperty('/MandatoryFields');
 						if (aMandatoryFields.length > 0) {
@@ -5212,14 +5217,13 @@ sap.ui.define([
 
 			//Deleting products
 			var oTableProducts = this.byId("editofferProductId");
-			var aProductTableRows = oTableProducts.getRows();
 			var aIndexSelectedRows = oTableProducts.getSelectedIndices();
 
 			var aProductsToRemove = [];
 			var oProductToRemove = {};
-			var aExistingProducts = Services.getProductsSaveInfo();
-			if(aExistingProducts.length === 0){
-				var aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+			let aExistingProducts = Services.getProductsSaveInfo();
+			if(!aExistingProducts || aExistingProducts.length === 0){ 
+				aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
 			}
 
 			//already deleted products are not visible in table, so indexselectedrows should ignore these products
@@ -5449,6 +5453,9 @@ sap.ui.define([
 			}
 			oOfferSaveInfo.ContinuationOfferNo = ContinuedOfferNo;
 			oOfferSaveInfo.APPROVALS_SENT = 0;
+
+			/* 01/08/2021 - Division */
+			oOfferSaveInfo.Division = that.byId("idProductOfferDivision").getSelectedKey();
 
 			/* 13/02/2020 - Offer products check on internal due date */
 			if (oFastAppDataModel.oData.Tender.BidDueDate != null) {
@@ -5770,6 +5777,7 @@ sap.ui.define([
 			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sOfferDivision = Services.getFastAppDataModel().getProperty("/EditOffer/Division");
 			var aBrandTokens = [];
 			that.aBrandProducts = [];
 
@@ -5777,7 +5785,7 @@ sap.ui.define([
 			if (sDistributorID) {
 
 				//load the corresponding products for the input list
-				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+				$.when(Services.loadBrandProductNameList(sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
 					aCommercialAgreement)).done(function (oData) {
 
 					//check if results are found
@@ -5952,10 +5960,11 @@ sap.ui.define([
 			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
 			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sOfferDivision = Services.getFastAppDataModel().getProperty("/EditOffer/Division");
 
 			//load products for list
 			if (that._aBrandTokens && that._aBrandTokens.length > 0) {
-				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+				$.when(Services.loadBrandProductNameList(sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
 					aCommercialAgreement, that._aBrandTokens)).done(function (oData) {
 					//loaded products
 
@@ -6102,7 +6111,36 @@ sap.ui.define([
 			} else {
 				Services.setSelectedDistributorID(this.getView().byId("idDistributorName").getSelectedKey());
 				Services.setPrevSelectedDistributorID(Services.getSelectedDistributorID());
-			};
+			}
+		},
+
+		//ProductOfferEdit fragment: Value help for Division
+		onChangeDivision: function (oEvent) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
+				var that = this;
+
+				sap.m.MessageBox.warning("Are you sure you want to change the Division? Existing products will be removed.", {
+					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+					styleClass: "sapUiSizeCompact",
+					onClose: function (sAction) {
+						if (sAction === "YES") {
+							var oTableProducts = that.byId("editofferProductId");
+							oTableProducts.selectAll();
+							that.onDeleteProductForOffer();
+							Services.setSelectedDivisionID(that.getView().byId("idProductOfferDivision").getSelectedKey());
+							Services.setPrevSelectedDivisionID(Services.getSelectedDivisionID());
+							that.getView().byId("idProductOfferDivision").setSelectedKey(Services.getSelectedDivisionID());
+						} else {
+							that.getView().byId("idProductOfferDivision").setSelectedKey(Services.getPrevSelectedDivisionID());
+						}
+					}
+				});
+			} else {
+				Services.setSelectedDivisionID(this.getView().byId("idProductOfferDivision").getSelectedKey());
+				Services.setPrevSelectedDivisionID(Services.getSelectedDivisionID());
+			}
 		},
 
 		//when selecting a new selling company
@@ -6337,7 +6375,6 @@ sap.ui.define([
 
 			var sInstituteID = Number(sap.ui.getCore().byId("idInstituteRequestedGroupPurch").getSelectedKey());
 			var sCountry = Services.getSelectedCountry();
-			var sDistributorID = Services.getSelectedDistributorID();
 			var oSelectedProduct = that._oDialog.data("SelectedProduct");
 
 			//get requested group Purchasing

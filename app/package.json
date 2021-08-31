@@ -3,10 +3,12 @@
   "description": "",
   "private": true,
   "devDependencies": {
-    "eslint": "7.17.0"
+    "eslint": "7.17.0",
+    "ui5-task-cachebuster-indexing": "1.0.0"
   },
   "scripts": {
     "start": "node node_modules/@sap/approuter/approuter.js",
+    "start:dev": "serve dist",
     "lint": "eslint webapp",
     "serve": "ui5 serve",
     "build": "ui5 build --clean-dest"
@@ -16,14 +18,17 @@
   },
   "dependencies": {
     "@sap/approuter": "^9",
-    "@ui5/cli": "2.6.4",
+    "@ui5/builder": "2.8.2",
+    "@ui5/cli": "2.10.2",
     "ui5-middleware-simpleproxy": "^0.6.0",
-    "ui5-task-transpile": "0.3.0"
+    "ui5-task-transpile": "0.3.0",
+    "serve": "11.3.2"
   },
   "ui5": {
     "dependencies": [
       "ui5-middleware-simpleproxy",
-      "ui5-task-transpile"
+      "ui5-task-transpile",
+      "ui5-task-cachebuster-indexing"
     ]
   }
 }

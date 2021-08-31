@@ -1,18 +1,45 @@
-
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
+<head>
+	
+	<link href="./images/Company-Logo-White.svg" rel="shortcut icon" type="image/x-icon" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- <meta http-equiv="cache-control" content="no-cache" /> -->
+	<title>FAST Tender Framework</title>
+	
+	<script>
+		// (function() {
+		// 	var proxied = window.XMLHttpRequest.prototype.open;
+		// 	var cacheTimestamp = '%CACHE-TIMESTAMP%';
+		// 	if(cacheTimestamp === '%CACHE-TIMESTAMP%') cacheTimestamp = new Date().getTime();
+		// 	window.XMLHttpRequest.prototype.open = function() {
+		// 		var url = arguments[1];
+		// 		if(url.indexOf("?") == -1){ url = url + "?"; }
+		// 		// if(url.indexOf("/resources/") === -1  && url.indexOf("/v4") === -1 && url.indexOf("/v2") === -1 ){
+		// 			arguments[1] = url + "&cache-timestamp=" + cacheTimestamp;//data._TheAppVersion;
+		// 		// }
+		// 		return proxied.apply(this, [].slice.call(arguments));
+		// 	};
+		// })();
+	</script>
+	<script id="sap-ui-bootstrap"
+			src="https://sapui5.hana.ondemand.com/1.72.11/resources/sap-ui-core.js"
+			data-sap-ui-theme="sap_belize"
+			data-sap-ui-resourceroots='{
+				"com.bayer.tender.landingspage": "./"
+			}'
+			data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+			data-sap-ui-compatVersion="edge"
+			data-sap-ui-async="true"
+			data-sap-ui-frameOptions="trusted">
+			//disable cache
+			//https://sapui5.hana.ondemand.com/1.72.11/resources/sap-ui-cachebuster/sap-ui-core.js"
+			//data-sap-ui-appCacheBuster="./"
+	</script>
 
-	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta charset="UTF-8">
-		<title>FAST CAP</title>
-	</head>
-
-	<body class="sapUiBody" id="content">
-		<h2>Launch apps</h2>
-		<ul>
-			<li><a href="/landingspage/webapp/index.html">Landingspage</a></li>
-		</ul>
-	</body>
-
+</head>
+<body class="sapUiBody">
+	<div data-sap-ui-component data-name="com.bayer.tender.landingspage" data-id="container" data-height="100%" style="height: 100%" data-settings='{"id" : "landingspage"}'></div>
+</body>
 </html>

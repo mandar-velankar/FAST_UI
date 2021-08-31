@@ -162,6 +162,7 @@ sap.ui.define([
 			oOfferToSave.ContinuationOfferNo = Number(oOfferSaveInfo.ContinuationOfferNo);
 			oOfferToSave.FOCType = oOfferSaveInfo.FOCType;
 			oOfferToSave.DEFAULT_FOC_ABS_PCT = oOfferSaveInfo.DEFAULT_FOC_ABS_PCT;
+			oOfferToSave.Division = oOfferSaveInfo.Division;
 
 			return oOfferToSave;
 

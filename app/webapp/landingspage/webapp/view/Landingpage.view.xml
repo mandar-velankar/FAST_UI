@@ -63,6 +63,30 @@
 										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
 									</TileContent>
 								</GenericTile>
+
+								<!-- Bank Guarantees -->
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Bank Guarantees" 
+									press="onTileBankGuaranteesPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/bankguarantees}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
+
+								<!-- Price Agreements -->
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Price Agreements" 
+									press="onTilePriceAgreementsPress" 
+									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									visible="{tiles>/priceagreements}">
+									<TileContent footer="Go to application...">
+										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									</TileContent>
+								</GenericTile>
 								
 							</l:HorizontalLayout>
 						</l:VerticalLayout>

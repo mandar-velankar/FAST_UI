@@ -115,6 +115,18 @@ sap.ui.define([
 				.getRouter()
 				.navTo("admin");
 		},
+		onTileBankGuaranteesPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("bankguarantees");
+		},
+		onTilePriceAgreementsPress: function (event) {
+
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("priceagreements");
+		},
 		onTileSalesOpportunityPress: function (event) {
 
 			this.getOwnerComponent()

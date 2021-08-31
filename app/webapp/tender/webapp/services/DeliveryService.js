@@ -67,7 +67,7 @@ sap.ui.define([
 			oDeliverieToSave.TenderID = oDeliverySaveInfo.TenderID;
 			oDeliverieToSave.OfferID = oDeliverySaveInfo.OfferID;
 			oDeliverieToSave.CountryCode = oDeliverySaveInfo.CountryCode;
-			oDeliverieToSave.InstituteID = Number(oDeliverySaveInfo.InstituteID);
+			oDeliverieToSave.InstituteID = oDeliverySaveInfo.InstituteID ? Number(oDeliverySaveInfo.InstituteID) : Services.getLoadedTender().InstituteID;
 			oDeliverieToSave.SNo = Number(oDeliverySaveInfo.SNo);
 			oDeliverieToSave.SKUCode = oDeliverySaveInfo.SKUCode;
 			oDeliverieToSave.SubmittedOn = moment(oDeliverySaveInfo.SubmittedOn).utc().toDate();

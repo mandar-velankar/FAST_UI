@@ -2690,7 +2690,7 @@ sap.ui.define([
 			}
 
 			//add origin's to filter
-			if (aCommercialAgreement) {
+			if (aCommercialAgreement && aCommercialAgreement.results && aCommercialAgreement.results.length > 0) {
 				aCommercialAgreement.results.forEach(function (oCommercialAgreement, iIndex) {
 					aFilters.push(new sap.ui.model.Filter("COUNTRY_OF_ORIGIN", sap.ui.model.FilterOperator.EQ, oCommercialAgreement.COUNTRY_OF_ORIGIN));
 				});
@@ -2735,7 +2735,7 @@ sap.ui.define([
 
 		//Load brand product name list after selecting the brand
 		//JHHERE
-		loadBrandProductNameList: function (sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity, aCommercialAgreement,
+		loadBrandProductNameList: function (sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity, aCommercialAgreement,
 			aBrandTokens) {
 
 			//lets work with callbacks (3 places, return, resolve, reject)
@@ -2754,8 +2754,12 @@ sap.ui.define([
 				new sap.ui.model.Filter("LEGAL_ENTITY_CODE", sap.ui.model.FilterOperator.EQ, sLegalEntity)
 			);
 
+			if(sOfferDivision &&  sOfferDivision != ""){
+				aFilters.push(new sap.ui.model.Filter("DIVISION", sap.ui.model.FilterOperator.EQ, sOfferDivision));
+			}
+
 			//add origin's to filter
-			if (aCommercialAgreement) {
+			if (aCommercialAgreement && aCommercialAgreement.results && aCommercialAgreement.results.length > 0) {
 				aCommercialAgreement.results.forEach(function (oCommercialAgreement, iIndex) {
 					aFilters.push(new sap.ui.model.Filter("COUNTRY_OF_ORIGIN", sap.ui.model.FilterOperator.EQ, oCommercialAgreement.COUNTRY_OF_ORIGIN));
 				});
@@ -4383,6 +4387,8 @@ sap.ui.define([
 		_sIDprevDistributor: "",
 		_sIDsellingcompany: "",
 		_sIDprevSellingcompany: "",
+		_sIDdivision: "",
+		_sIDprevDivision: "",
 		_oOfferSaveInfo: {},
 		_aProductsSaveInfo: [],
 		_bNewOfferPressed: false,
@@ -4411,6 +4417,15 @@ sap.ui.define([
 
 		getPrevSelectedSellingCompanyID: function () {
 			return this._sIDprevSellingcompany;
+		},
+
+		//get selected divisionID
+		getSelectedDivisionID: function () {
+			return this._sIDdivision;
+		},
+
+		getPrevSelectedDivisionID: function () {
+			return this._sIDprevDivision;
 		},
 
 		//get selected offerID TenderOfferNo
@@ -4579,6 +4594,15 @@ sap.ui.define([
 
 		setPrevSelectedSellingCompanyID: function (sIDsellingCompany) {
 			this._sIDprevSellingcompany = sIDsellingCompany;
+		},
+
+		//set selected divisionID
+		setSelectedDivisionID: function (sIDdivision) {
+			this._sIDdivision = sIDdivision;
+		},
+
+		setPrevSelectedDivisionID: function (sIDdivision) {
+			this._sIDprevDivision = sIDdivision;
 		},
 
 		//New offer button is pressed
