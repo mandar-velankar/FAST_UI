@@ -24,6 +24,18 @@ server:
       removeETag: true
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
+    mountPath: /bankguarantees
+    configuration:
+      baseUri: "http://localhost:8085/"
+      removeETag: true
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
+    mountPath: /priceagreements
+    configuration:
+      baseUri: "http://localhost:8086/"
+      removeETag: true
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
     mountPath: /app
     configuration:
       baseUri: "http://localhost:8080/landingspage/webapp/"
