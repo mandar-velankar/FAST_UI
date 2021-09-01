@@ -64,7 +64,7 @@
 									</TileContent>
 								</GenericTile>
 
-								<!-- Bank Guarantees 
+								<!-- Bank Guarantees -->
 								<GenericTile 
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Bank Guarantees" 
@@ -75,9 +75,8 @@
 										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
 									</TileContent>
 								</GenericTile>
-								-->
-
-								<!-- Price Agreements 
+								
+								<!-- Price Agreements -->
 								<GenericTile 
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Price Agreements" 
@@ -88,7 +87,7 @@
 										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
 									</TileContent>
 								</GenericTile>
-								-->
+								
 								
 							</l:HorizontalLayout>
 						</l:VerticalLayout>

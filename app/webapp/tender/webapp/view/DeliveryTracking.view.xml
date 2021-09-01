@@ -34,8 +34,8 @@
 			</m:Table>
 		</m:VBox>
 	</ObjectPageSubSection>
-	<!-- DELIVERIES SUB SECTION PAGE -->
 
+	<!-- DELIVERIES SUB SECTION PAGE -->
 	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Purchase Orders' : 'Deliveries' }">
 		<actions>
 			<m:Button
@@ -43,8 +43,7 @@
 					text="{i18n>ExportToExcel}"
 					icon="sap-icon://excel-attachment"
 					press=".onExportDeliveriesToExcel"
-					enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"
-					visible="false"/>
+					enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
         </actions>
 		<blocks>
 			<!-- <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.PurchaseOrder" type="XML"/>-->

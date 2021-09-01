@@ -245,7 +245,7 @@
 
 					<ObjectPageSubSection id="TenderResOfferAwardedComp" title="Tender Results">
 						<!-- outcome awarded companies -->
-
+					
 						<blocks>
 							<!-- REMARK! As described here (https://github.com/SAP/openui5/issues/1822)
 								filter has no effect when 
@@ -274,6 +274,7 @@
 										<m:OverflowToolbar>
 											<m:Button id="btnAddAwardProduct" text="Add awarded product" icon="sap-icon://add" press="onAddAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 											<m:Button id="btnDeleteAwardProduct" text="Remove awarded product" icon="sap-icon://delete" press="onDeleteAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+											<m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }"/>
 											<m:ToolbarSpacer/>
 											<m:Button text="Collapse all" press="onCollapseOutcome"/>
 											<m:Button text="Expand all" press="onExpandOutcome"/>
