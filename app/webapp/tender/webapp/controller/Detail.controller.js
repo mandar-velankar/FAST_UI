@@ -5789,8 +5789,8 @@ sap.ui.define([
 			if (sDistributorID) {
 
 				//load the corresponding products for the input list
-				$.when(Services.loadBrandProductNameList(sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
-					aCommercialAgreement)).done(function (oData) {
+				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+					aCommercialAgreement, aBrandTokens, sOfferDivision)).done(function (oData) {
 
 					//check if results are found
 					if (oData && oData.results.length > 0) {
@@ -5968,8 +5968,8 @@ sap.ui.define([
 
 			//load products for list
 			if (that._aBrandTokens && that._aBrandTokens.length > 0) {
-				$.when(Services.loadBrandProductNameList(sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
-					aCommercialAgreement, that._aBrandTokens)).done(function (oData) {
+				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+					aCommercialAgreement, that._aBrandTokens, sOfferDivision)).done(function (oData) {
 					//loaded products
 
 					//path where the products should be stored
