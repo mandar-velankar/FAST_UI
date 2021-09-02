@@ -2735,8 +2735,8 @@ sap.ui.define([
 
 		//Load brand product name list after selecting the brand
 		//JHHERE
-		loadBrandProductNameList: function (sOfferDivision, sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity, aCommercialAgreement,
-			aBrandTokens) {
+		loadBrandProductNameList: function (sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity, aCommercialAgreement,
+			aBrandTokens, sOfferDivision) {
 
 			//lets work with callbacks (3 places, return, resolve, reject)
 			var oDeferred = $.Deferred();
