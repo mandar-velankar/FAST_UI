@@ -6868,6 +6868,43 @@ sap.ui.define([
 
 		},
 
+		//save bank guarantee
+		savePriceAgreement: function(oPriceAgreementSaveInfo){
+			let oDeferred = $.Deferred();
+			var that = this;
+
+			let promises = [];
+
+			//default closing date
+			let oNewToDate = new Date("9999-12-31")
+			oNewToDate.setHours(0,0,0,0);
+
+			// Convert to UTC time
+			const timeOffsetInMS = oNewToDate.getTimezoneOffset() * 60000;
+			oNewToDate.setTime(oNewToDate.getTime() - timeOffsetInMS);
+			oPriceAgreementSaveInfo.ClosingDate = oNewToDate;
+
+			switch(oPriceAgreementSaveInfo._sOperation){
+				case "POST":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Create Price Agreement");
+						throw new Error(oError);
+					}));
+					break;
+				case "PUT":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Update Price Agreement");
+						throw new Error(oError);
+					}));
+					break;
+			}
+
+			oPriceAgreementSaveInfo = {};
+
+		},
+
 		//save the deliveries
 		saveDeliveries: function () {
 

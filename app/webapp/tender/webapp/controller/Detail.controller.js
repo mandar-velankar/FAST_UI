@@ -7745,6 +7745,51 @@ sap.ui.define([
 			BusyIndicator.hide();
 		},
 
+		onCreatePriceAgreement: function (oEvent) {
+			//get model & selected row
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
+			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+			
+			//check if a product is selected
+			if (oRowContext === null) {
+				sap.m.MessageToast.show("Select an awarded product to delete");
+				return;
+			}
+
+			var sPathSelectedRow = oRowContext.getPath();
+			var iRowIndexAwarded = sPathSelectedRow.split('/')[4];
+			var iRowIndexParent = sPathSelectedRow.split('/')[2];
+
+			var sPathResultsForTree = "/ResultsForTree";
+			var sPathResultsForTreeAwarded = "/ResultsForTree/" + iRowIndexParent + "/OutcomeLevel/";
+
+			//TODO in the future iLevel should just not be 0 so every line will be able to select the awarded product
+			if (sPathSelectedRow.includes("/OutcomeLevel")) {
+				//message that you should
+				sap.m.MessageToast.show("Select a Bayer product to create a price agreement");
+			} else {
+				BusyIndicator.show();
+				let oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
+				let bUpdate = false;
+
+				if(!oPriceAgreementSaveInfo){
+					oPriceAgreementSaveInfo = {};
+					oPriceAgreementSaveInfo._sOperation = "POST";
+				} else {
+					oPriceAgreementSaveInfo._sOperation = "PUT";
+					bUpdate = true;
+				}
+
+				$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
+					//message that you 
+					sap.m.MessageToast.show("Price Agreement has been created");
+				});
+
+			}
+		},
+
 		onSubmitQuotation: function (oEvent) {
 
 			//that is this
