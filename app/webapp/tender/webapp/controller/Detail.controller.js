@@ -151,6 +151,10 @@ sap.ui.define([
 
 			});
 
+			$.when(Services.loadTenderPriceAgreement(sTenderID)).done(function (oData) {
+
+			});
+
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
 				that.getView().bindElement({
@@ -7745,6 +7749,24 @@ sap.ui.define([
 			BusyIndicator.hide();
 		},
 
+		preparePriceAgreementSaveInfo: function(oTenderResult){
+
+			let oPriceAgreementSaveInfo = {};
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let oTender = oFastAppDataModel.getProperty("/EditTender/");
+
+			oPriceAgreementSaveInfo.AwardedVolume = oTenderResult.AWARDEDQTY;
+			oPriceAgreementSaveInfo.ProductPackId = oTenderResult.PRODUCTCODE;
+			oPriceAgreementSaveInfo.TenderId = oTender.TenderID;
+			oPriceAgreementSaveInfo.Currency = oTenderResult.CURRENCY;
+			oPriceAgreementSaveInfo.UoM = oTenderResult.UOM;
+			oPriceAgreementSaveInfo.Price = oTenderResult.AWARDEDPRICE;
+			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
+			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
+
+			return oPriceAgreementSaveInfo;
+		},
+
 		onCreatePriceAgreement: function (oEvent) {
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -7759,6 +7781,7 @@ sap.ui.define([
 			}
 
 			var sPathSelectedRow = oRowContext.getPath();
+			let oSelectedTenderResult = oFastAppDataModel.getProperty(sPathSelectedRow);
 			var iRowIndexAwarded = sPathSelectedRow.split('/')[4];
 			var iRowIndexParent = sPathSelectedRow.split('/')[2];
 
@@ -7768,14 +7791,45 @@ sap.ui.define([
 			//TODO in the future iLevel should just not be 0 so every line will be able to select the awarded product
 			if (sPathSelectedRow.includes("/OutcomeLevel")) {
 				//message that you should
-				sap.m.MessageToast.show("Select a Bayer product to create a price agreement");
+				sap.m.MessageToast.show("Select a Bayer specific product to create a price agreement");
+			} else if (oSelectedTenderResult.OUTCOME !== "Won"){
+				//message that you should
+				sap.m.MessageToast.show("The product you have selected has not been won");
 			} else {
 				BusyIndicator.show();
-				let oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
-				let bUpdate = false;
+				var oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
+				var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
+				var bUpdate = false;
+
+				if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
+					BusyIndicator.hide();
+					sap.m.MessageBox.warning("Please confirm the bank guarantee first, before creating a price agreement.", {});
+					return;
+					/*re enable this part of code if this should be "integrated" in the process, unless message is sufficient
+					//Ask user if he's sure to cancel the bank guarantee
+					sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
+						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+						styleClass: "sapUiSizeCompact",
+						onClose: function (sAction) {
+							if (sAction === "YES") {
+								//Open the dialog
+								if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+									that._getCreateBankGuaranteeDialog().open();
+								} else {
+									$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
+										that._getCreateBankGuaranteeDialog().open();
+									});
+								}
+							} else {
+								return;
+							}
+						}
+					});*/
+					
+				}
 
 				if(!oPriceAgreementSaveInfo){
-					oPriceAgreementSaveInfo = {};
+					oPriceAgreementSaveInfo = this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
 					oPriceAgreementSaveInfo._sOperation = "POST";
 				} else {
 					oPriceAgreementSaveInfo._sOperation = "PUT";
@@ -7783,8 +7837,10 @@ sap.ui.define([
 				}
 
 				$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
+					oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 					//message that you 
 					sap.m.MessageToast.show("Price Agreement has been created");
+					BusyIndicator.hide();
 				});
 
 			}
