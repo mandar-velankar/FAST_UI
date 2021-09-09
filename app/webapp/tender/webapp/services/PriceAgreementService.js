@@ -38,31 +38,6 @@ sap.ui.define([
 
 		},
 		
-		//getting an empty Delivery
-		createEmptyBankGuarantee: function () {
-
-			//if its null we can not bind to it
-			var oPriceAgreement = {};
-			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oTender = oFastAppDataModel.getProperty("/Tender");
-
-			//push data for saving
-			oPriceAgreement = {
-                TenderID: oTender.TenderID,
-                CountryCode: oTender.CountryCode,
-                Reference: "",
-                IssueDate: null,
-                ClosingDate: null,
-                Status: "",
-                Type: "",
-                GuaranteedAmount: 0,
-                Currency: "",
-                Comment: "",
-            }
-
-			return oPriceAgreement;
-
-		}
 	});
 	return PriceAgreementService;
 });
