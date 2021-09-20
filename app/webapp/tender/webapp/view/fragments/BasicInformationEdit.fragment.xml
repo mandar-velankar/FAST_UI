@@ -15,8 +15,13 @@
 				<Input id="idNewTenderID" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" enabled="false" />
 				<Label text="{i18n>tenderref}" design="Bold" required="true"/>
 				<Input id="idTenderName" value="{fastData>TenderName}" />
-				<Label text="{i18n>clasficn}" design="Bold" required="true"/>
-				<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" change="onClassificationChange" >
+				<Label text="{i18n>clasficn}" design="Bold" required="true" /> 
+				<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" 
+					change="onClassificationChange" 
+					visible="{= 
+						${fastAppData>/Tender/CountryCode} !== 'IT'
+					}"
+				>
 					<items><!--RFQ/Tender/Budgetary Quote/Patient Access Programme-->
 						<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}" app:classificationId="{fastAppData>ID}"/>
 					</items>

@@ -120,6 +120,11 @@ sap.ui.define([
 
 			that._country = sCountry;
 
+			// Setting for Italy
+			if(sCountry === "IT"){
+				this.byId("idClassification") && this.byId("idClassification").setVisible(false);
+			}
+
 			// set the visible country
 			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
 
@@ -8802,6 +8807,8 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
 			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
+
+			this.byId("idClassification") && this.byId("idClassification").setVisible(false);
 		},
 
 		onClassificationChange: async function(oEvent){ 
