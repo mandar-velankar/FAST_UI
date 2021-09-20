@@ -6833,8 +6833,8 @@ sap.ui.define([
 			   oBankGuarantee.Type && 
 			   oBankGuarantee.GuaranteedAmount != 0 && 
 			   oBankGuarantee.Currency && 
-			   oBankGuarantee.IssueDate && 
-			   oBankGuarantee.ClosingDate){
+			   oBankGuarantee.IssueDate){
+			   //oBankGuarantee.ClosingDate
 					bValid = true;
 			}
 
@@ -6847,6 +6847,16 @@ sap.ui.define([
 			var that = this;
 
 			let promises = [];
+
+			//default closing date
+			let oNewToDate = new Date("9999-12-31")
+			oNewToDate.setHours(0,0,0,0);
+
+			// Convert to UTC time
+			const timeOffsetInMS = oNewToDate.getTimezoneOffset() * 60000;
+			oNewToDate.setTime(oNewToDate.getTime() - timeOffsetInMS);
+			oBankGuaranteeSaveInfo.ClosingDate = oNewToDate;
+
 			switch(oBankGuaranteeSaveInfo._sOperation){
 				case "POST":
 					delete oBankGuaranteeSaveInfo._sOperation;
