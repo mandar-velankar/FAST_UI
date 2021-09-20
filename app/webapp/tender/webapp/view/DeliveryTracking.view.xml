@@ -44,7 +44,7 @@
 					icon="sap-icon://excel-attachment"
 					press=".onExportDeliveriesToExcel"
 					enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"
-					visible="false"/>
+					visible="true"/>
         </actions>
 		<blocks>
 			<!-- <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.PurchaseOrder" type="XML"/>-->
