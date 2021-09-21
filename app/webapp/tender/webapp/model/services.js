@@ -3129,7 +3129,7 @@ sap.ui.define([
 					type: 'Error',
 					title: 'Mandatory fields.',
 					description: '- Tender Name \n' +
-						oBasicInfo.CountryCode === 'IT' ? '':'- Classification \n' +
+						(oBasicInfo.CountryCode === 'IT' ? '':'- Classification \n') +
 						'- Institute \n' +
 						'- Channel \n' +
 						'- Group Purchasing \n' +

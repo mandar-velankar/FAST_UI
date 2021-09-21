@@ -68,6 +68,10 @@
 				<!-- /Argentina only -->
 				<Label text="{i18n>insttyp}" design="Bold" required="true"/>
 				<Input value="{fastData>Institute/InstituteType}" enabled="false"/>
+				<!-- Italy onlye -->
+				<Label text="{i18n>region}" design="Bold" required="true"/>
+				<Input value="{fastData>Institute/InstituteType}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}" /> <!--TODO: binding nok -->
+				<!-- /Italy onlye -->
 				<Label text="{i18n>institnme}" design="Bold"  required="true"/>
 				<Input value="{fastData>Institute/InstituteName}" enabled="false"/>
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
@@ -87,7 +91,9 @@
 				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }">
 					<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 				</Select>
-
+				<!-- Italy only -->
+				<Label text="{i18n>CWID}" design="Bold" />
+				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}"/>
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 

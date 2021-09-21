@@ -3339,7 +3339,7 @@ sap.ui.define([
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT'){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
 			}else{
 				this.byId("idSelectTenderTypeEdit").setVisible(false);
@@ -8811,6 +8811,13 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
 			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
+
+			// only visible for Italy
+			if(this._country === 'IT'){
+				this.byId("idRegionEdit") && this.byId("idRegionEdit").setVisible(true);
+			}else{
+				this.byId("idRegionEdit") && this.byId("idRegionEdit").setVisible(false);
+			}
 		},
 
 		onClassificationChange: async function(oEvent){ 

@@ -84,7 +84,16 @@
 						<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
 					</items>
 				</Select>
-
+				<!-- Italy only -->
+				<Label text="{i18n>region}" design="Bold" required="true"/>
+				<Select id="idRegionEdit" 
+					selectedKey="{fastData>Institute/Region}"  
+					items="{ path: 'fastAppData>/CountryChannels'}" visible="true"> <!--TODO: binding nok -->
+					<items>
+						<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
+					</items>
+				</Select>
+				<!-- /Italy only -->
 				<Label text="{i18n>institnme}" design="Bold" required="true"/>
 
 				<Input xmlns="sap.m" id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4"
