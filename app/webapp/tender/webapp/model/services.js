@@ -3116,11 +3116,11 @@ sap.ui.define([
 
 			//check mandatory fields
 			if (
-				oBasicInfo.TenderName === "" ||
-				oBasicInfo.Classification === "" ||
-				oBasicInfo.InstituteID === "" || //IntituteType is property of institute
-				oBasicInfo.TenderChannel === "" ||
-				oBasicInfo.GroupPurchasing === "" ||
+				!oBasicInfo.TenderName ||
+				(oBasicInfo.CountryCode !== 'IT' && !oBasicInfo.Classification) || // for Italy the Classification shouldn't be considered
+				!oBasicInfo.InstituteID || //IntituteType is property of institute
+				!oBasicInfo.TenderChannel ||
+				!oBasicInfo.GroupPurchasing ||
 				!oBasicInfo.PublicationDate ||
 				!oBasicInfo.BidDueDate) {
 
@@ -3129,7 +3129,7 @@ sap.ui.define([
 					type: 'Error',
 					title: 'Mandatory fields.',
 					description: '- Tender Name \n' +
-						'- Classification \n' +
+						oBasicInfo.CountryCode === 'IT' ? '':'- Classification \n' +
 						'- Institute \n' +
 						'- Channel \n' +
 						'- Group Purchasing \n' +

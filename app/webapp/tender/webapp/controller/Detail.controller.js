@@ -120,10 +120,6 @@ sap.ui.define([
 
 			that._country = sCountry;
 
-			// Setting for Italy
-			if(sCountry === "IT"){
-				this.byId("idClassification") && this.byId("idClassification").setVisible(false);
-			}
 
 			// set the visible country
 			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
@@ -153,11 +149,11 @@ sap.ui.define([
 			//Services.loadCountryPermissions(sCountry);
 
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
-
+				// TODO:
 			});
 
 			$.when(Services.loadTenderPriceAgreement(sTenderID)).done(function (oData) {
-
+				// TODO:
 			});
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
@@ -316,6 +312,7 @@ sap.ui.define([
 			oDetailController.getView().byId("idClassification").setEnabled(true);
 			oDetailController.getView().byId("idInstituteType").setEnabled(true);
 			oDetailController.getView().byId("idInstituteName").setEnabled(true);
+
 			if(Services.getSelectedCountry() === 'CL'){
 				oDetailController.getView().byId("idTenderChannel").setSelectedKey("Direct");
 				oDetailController.getView().byId("idTenderChannel").setEnabled(false);
@@ -358,6 +355,12 @@ sap.ui.define([
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
 				oSalesType.setVisible(bShowSalesType);
+
+				// TODO: check why "idClassification" is set back to visible after  checkShowSalesType()
+				// Settings for Italy 
+				if(Services.getSelectedCountry() === 'IT'){
+					oDetailController.getView().byId("idClassification").setVisible(false);
+				}
 			});
 
 			//should tendertype be visible on the screen based on data back-end
@@ -8802,13 +8805,12 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idSpecifications") && this.byId("idSpecifications").setVisible(false);
+			this.byId("idClassification") && this.byId("idClassification").setVisible(false);
 
 			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").clearSelection();
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
 			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
-
-			this.byId("idClassification") && this.byId("idClassification").setVisible(false);
 		},
 
 		onClassificationChange: async function(oEvent){ 
