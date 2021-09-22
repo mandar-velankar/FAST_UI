@@ -68,12 +68,12 @@
 				<!-- /Argentina only -->
 				<Label text="{i18n>insttyp}" design="Bold" required="true"/>
 				<Input value="{fastData>Institute/InstituteType}" enabled="false"/>
+				<Label text="{i18n>institnme}" design="Bold"  required="true"/>
+				<Input value="{fastData>Institute/InstituteName}" enabled="false"/>
 				<!-- Italy onlye -->
 				<Label text="{i18n>region}" design="Bold" required="true"/>
 				<Input value="{fastData>Institute/InstituteType}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}" /> <!--TODO: binding nok -->
 				<!-- /Italy onlye -->
-				<Label text="{i18n>institnme}" design="Bold"  required="true"/>
-				<Input value="{fastData>Institute/InstituteName}" enabled="false"/>
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
 				<Input value="{fastData>TenderChannel}" enabled="false"/>
 				<Label text="{i18n>grpurchsng}" design="Bold" required="true"/>

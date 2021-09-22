@@ -84,21 +84,24 @@
 						<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
 					</items>
 				</Select>
-				<!-- Italy only -->
-				<Label text="{i18n>region}" design="Bold" required="true"/>
-				<Select id="idRegionEdit" 
-					selectedKey="{fastData>Institute/Region}"  
-					items="{ path: 'fastAppData>/CountryChannels'}" visible="false"> <!--TODO: binding nok -->
-					<items>
-						<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
-					</items>
-				</Select>
-				<!-- /Italy only -->
 				<Label text="{i18n>institnme}" design="Bold" required="true"/>
-
 				<Input xmlns="sap.m" id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4"
 					value="{fastData>Institute/InstituteName}" enabled="false"/>
-
+				<!-- Italy only -->
+				<Label text="{i18n>region}" design="Bold" required="true"/>
+				<MultiComboBox id="idRegionEdit" 
+					selectionChange="handleRegionSelectionChange"
+					selectionFinish="handleRegionSelectionFinish"
+					items="{ 
+						path: 'fastData>/CountryRegions',
+						sorter: { path: 'Name' }
+					}" 
+					visible="false">
+					<items>
+						<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
+					</items>
+				</MultiComboBox>
+				<!-- /Italy only -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
 				<Select id="idTenderChannel" selectedKey="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Direct' : ${fastData>TenderChannel} }" enabled="false" change="onTenderChannelChange">
 					<items>

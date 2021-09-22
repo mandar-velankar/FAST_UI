@@ -3359,9 +3359,10 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Region' && this._country === 'IT'){
+			if(selectedItem === 'Public Region(s)' && this._country === 'IT'){
 				this.byId("idRegionEdit").setVisible(true);
 			}else{
+				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
 				this.byId("idRegionEdit").setVisible(false);
 			}
 		},
@@ -6032,8 +6033,11 @@ sap.ui.define([
 			var sPath = "/PT_TMINST";
 			var data;
 			var aFilters = [];
+			const regionMCB = this.getView().byId("idRegionEdit");
+			const instituteType = this.byId("idInstituteType").getProperty("selectedKey");
+
 			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
-				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, this.byId("idInstituteType").getProperty("selectedKey"))
+				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
 			);
 			var that = this;
 			model_f4.read(sPath, {
@@ -6092,6 +6096,14 @@ sap.ui.define([
 
 					//should group purchasing be visible on the screen based on data back-end
 					var sCountry = Services.getSelectedCountry();
+
+					// for Italy only the Regions must be set
+					if(sCountry === 'IT' && instituteType === "Public Region(s)"){
+						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
+						setTenderRegion(regionId);
+					}
+
+
 					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) { 
 						if (bShowGroupPurchasing === false) {
 							//default no =  0
@@ -6118,6 +6130,11 @@ sap.ui.define([
 				}
 				oEvent.getSource().getBinding("items").filter([]);
 			};
+
+			
+			const setTenderRegion = function(regionId){
+				regionMCB && regionMCB.setSelectedKeys([regionId]);
+			}
 
 		},
 
