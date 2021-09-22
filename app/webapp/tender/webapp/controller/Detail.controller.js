@@ -470,6 +470,12 @@ sap.ui.define([
 			//oDetailController.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
 			oDetailController.getView().byId("editButtonId").setEnabled(false);
 			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
+
+			// for Italy the clone button is not visible
+			if(this._country === 'IT'){
+				oDetailController.getView().byId("cloneButtonId").setVisible(false);
+			}
+
 			oDetailController.getView().byId("deleteTenderButtonId").setEnabled(false);
 
 			// oDetailController.getView().byId("DetailPage").setShowAnchorBar(false);
@@ -699,7 +705,14 @@ sap.ui.define([
 				} else {
 					oDetailController.getView().byId("editButtonId").setEnabled(true);
 				}
-				oDetailController.getView().byId("cloneButtonId").setVisible(true);
+
+				// for Italy the clone button is not visible
+				if(oDetailController._country === 'IT'){
+					oDetailController.getView().byId("cloneButtonId").setVisible(false);
+				}else {
+					oDetailController.getView().byId("cloneButtonId").setVisible(true);
+				}
+				
 				oDetailController.getView().byId("cloneButtonId").setEnabled(true);
 				oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
 
