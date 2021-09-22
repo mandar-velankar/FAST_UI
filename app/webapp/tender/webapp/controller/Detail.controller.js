@@ -3357,6 +3357,13 @@ sap.ui.define([
 			}else{
 				this.byId("idSelectTenderTypeEdit").setVisible(false);
 			}
+
+			// hide/unhide the Region field
+			if(selectedItem === 'Region' && this._country === 'IT'){
+				this.byId("idRegionEdit").setVisible(true);
+			}else{
+				this.byId("idRegionEdit").setVisible(false);
+			}
 		},
 
 		//save basic information (tender info)
@@ -8825,12 +8832,6 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
 			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
 
-			// only visible for Italy
-			if(this._country === 'IT'){
-				this.byId("idRegionEdit") && this.byId("idRegionEdit").setVisible(true);
-			}else{
-				this.byId("idRegionEdit") && this.byId("idRegionEdit").setVisible(false);
-			}
 		},
 
 		onClassificationChange: async function(oEvent){ 

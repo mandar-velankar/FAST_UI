@@ -88,7 +88,7 @@
 				<Label text="{i18n>region}" design="Bold" required="true"/>
 				<Select id="idRegionEdit" 
 					selectedKey="{fastData>Institute/Region}"  
-					items="{ path: 'fastAppData>/CountryChannels'}" visible="true"> <!--TODO: binding nok -->
+					items="{ path: 'fastAppData>/CountryChannels'}" visible="false"> <!--TODO: binding nok -->
 					<items>
 						<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
 					</items>
