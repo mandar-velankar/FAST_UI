@@ -584,6 +584,7 @@ sap.ui.define([
 		_ExistingTenderMatched: function (oDetailController, sTab) {
 
 			//get selected Tender Path
+			var that = this;
 			var sTenderID = Services.getSelectedTenderID();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
@@ -643,6 +644,13 @@ sap.ui.define([
 
 				// this sets the Specifications dropdown
 				oDetailController.setTenderSpecificationsSelectedKeys(sTenderID);
+
+				
+				// Italy 
+				that.getTenderRegions(sTenderID).then(response => {
+					const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+					that.byId("idRegionView").setSelectedKeys(regionIDs);
+				});
 
 				//vanaf hier 
 
@@ -1911,6 +1919,14 @@ sap.ui.define([
 						that.getView().byId("idSelectSalesTypeEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderOriginEdit").setEnabled(false);
 						that.getView().byId("idSelectContractTypeEdit").setEnabled(false);
+
+
+						// Italy
+						that.getView().byId("idRegionEdit").setVisible(true);
+						that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
+							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							that.byId("idRegionEdit").setSelectedKeys(regionIDs);
+						});
 
 						//apply country filter on tender type
 						var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
@@ -3464,7 +3480,13 @@ sap.ui.define([
 					//convert Tender data for saving
 					var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
 
-					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(async function (oResult) {
+					/* Italy */
+					const tenderRegions = {
+						"TenderID": oTenderToSave.TenderID,
+						"RegionIDs": this.byId("idRegionEdit").getSelectedKeys()
+					};
+
+					that.updateBasicTenderInfo(oTenderToSave, path, oRefre, tenderRegions).then(async function (oResult) {
 
 						//after saving we reload tender info even if it is already loaded
 						var sTenderID = Services.getSelectedTenderID();
@@ -3486,6 +3508,14 @@ sap.ui.define([
 								console.error(err);
 							}
 						}
+
+						// Italy - Load regins again 
+						that.byId("idRegionView").setBusy(true);
+						that.getTenderRegions(sTenderID).then(response => {
+							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							that.byId("idRegionView").setSelectedKeys(regionIDs);
+							that.byId("idRegionView").setBusy(false);
+						});
 
 						//load tender data again so refresh is done
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3594,8 +3624,14 @@ sap.ui.define([
 
 				//convert Tender data for saving
 				var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
+				
+				/* Italy */
+				const tenderRegions = {
+					"TenderID": oTenderToSave.TenderID,
+					"RegionIDs": this.byId("idRegionEdit").getSelectedKeys()
+				};
 
-				that.createBasicTenderInfo(oTenderToSave).then(async function (oSaveResults) {
+				that.createBasicTenderInfo(oTenderToSave, tenderRegions).then(async function (oSaveResults) {
 
 					//if save is executed succesfully
 					// if (oSaveResults) {
@@ -3615,6 +3651,14 @@ sap.ui.define([
 								console.error(err);
 							}
 						}
+
+						// Italy - Load regins again 
+						that.byId("idRegionView").setBusy(true);
+						that.getTenderRegions(sTenderID).then(response => {
+							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							that.byId("idRegionView").setSelectedKeys(regionIDs);
+							that.byId("idRegionView").setBusy(false);
+						});
 
 						//load tender data so its in the FastAppData model in the same way as for an existing tender
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3712,8 +3756,33 @@ sap.ui.define([
 			return Promise.all(promises);
 		},
 
+		saveTenderRegions: function(tenderRegions){
+
+			const tenderID = tenderRegions.TenderID;
+			const regionIDs = tenderRegions.RegionIDs;
+
+			return Services.getService('Tender').saveTenderRegions(tenderID, regionIDs)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Saving of Regions");
+							throw new Error(oError);
+						});
+
+		},
+
+		getTenderRegions: function(tenderID){
+
+			return Services.getService('Tender').getTenderRegions(tenderID)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Fetching of Regions");
+							throw new Error(oError);
+						});
+
+		},
+
 		//submits changes in batch for the basic information tab
-		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh) {
+		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh, tenderRegions) {
 
 			//keep track of controller object
 			var that = this;
@@ -3735,6 +3804,11 @@ sap.ui.define([
 
 			//Award criteria should be saved as well
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+
+			//regions should be saved for Italy
+			if(this._country === 'IT' && tenderRegions){
+				promises.push(that.saveTenderRegions(tenderRegions));
+			}
 
 			//data awardcriteria model
 			var oAwDt = that.byId("idAwrdEdit").getModel("tabModel").getData();
@@ -3818,7 +3892,7 @@ sap.ui.define([
 		},
 
 		//Actual creation of the new tender TODO this should be in the service file
-		createBasicTenderInfo: function (oTenderToSave) {
+		createBasicTenderInfo: function (oTenderToSave, tenderRegions) {
 
 			//keep track of controller object
 			var that = this;
@@ -3834,6 +3908,11 @@ sap.ui.define([
 
 			//specification should be saved as well
 			promises.push(that.saveSpecifications(oTenderToSave, "create"));
+
+			//regions should be saved for Italy
+			if(this._country === 'IT' && tenderRegions){
+				promises.push(that.saveTenderRegions(tenderRegions));
+			}
 
 			//check if awardCriteria is valid
 			if (!Services.checkAwardCriteria(aAwardCriteria)) {
@@ -6134,6 +6213,7 @@ sap.ui.define([
 			
 			const setTenderRegion = function(regionId){
 				regionMCB && regionMCB.setSelectedKeys([regionId]);
+				regionMCB.getSelectedItems()[0].setEnabled(false);
 			}
 
 		},

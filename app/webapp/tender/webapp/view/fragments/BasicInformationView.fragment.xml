@@ -72,7 +72,17 @@
 				<Input value="{fastData>Institute/InstituteName}" enabled="false"/>
 				<!-- Italy onlye -->
 				<Label text="{i18n>region}" design="Bold" required="true"/>
-				<Input value="{fastData>Institute/InstituteType}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}" /> <!--TODO: binding nok -->
+				<MultiComboBox id="idRegionView" 
+					selectionChange="handleRegionSelectionChange"
+					selectionFinish="handleRegionSelectionFinish"
+					enabled="false"
+					items="{ 
+						path: 'fastData>/CountryRegions',
+						sorter: { path: 'Name' }
+					}" 
+					visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}">
+					<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
+				</MultiComboBox>
 				<!-- /Italy onlye -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
 				<Input value="{fastData>TenderChannel}" enabled="false"/>
