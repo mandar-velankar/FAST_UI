@@ -120,6 +120,7 @@ sap.ui.define([
 
 			that._country = sCountry;
 
+
 			// set the visible country
 			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
 
@@ -148,11 +149,11 @@ sap.ui.define([
 			//Services.loadCountryPermissions(sCountry);
 
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
-
+				// TODO:
 			});
 
 			$.when(Services.loadTenderPriceAgreement(sTenderID)).done(function (oData) {
-
+				// TODO:
 			});
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
@@ -311,6 +312,7 @@ sap.ui.define([
 			oDetailController.getView().byId("idClassification").setEnabled(true);
 			oDetailController.getView().byId("idInstituteType").setEnabled(true);
 			oDetailController.getView().byId("idInstituteName").setEnabled(true);
+
 			if(Services.getSelectedCountry() === 'CL'){
 				oDetailController.getView().byId("idTenderChannel").setSelectedKey("Direct");
 				oDetailController.getView().byId("idTenderChannel").setEnabled(false);
@@ -353,6 +355,13 @@ sap.ui.define([
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
 				oSalesType.setVisible(bShowSalesType);
+
+				// TODO: check why "idClassification" is set back to visible after  checkShowSalesType()
+				// Settings for Italy 
+				if(Services.getSelectedCountry() === 'IT'){
+					oDetailController.getView().byId("idClassification").setVisible(false);
+					oDetailController.getView().byId("idTenderChannel").setVisible(false);
+				}
 			});
 
 			//should tendertype be visible on the screen based on data back-end
@@ -462,6 +471,12 @@ sap.ui.define([
 			//oDetailController.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
 			oDetailController.getView().byId("editButtonId").setEnabled(false);
 			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
+
+			// for Italy the clone button is not visible
+			if(this._country === 'IT'){
+				oDetailController.getView().byId("cloneButtonId").setVisible(false);
+			}
+
 			oDetailController.getView().byId("deleteTenderButtonId").setEnabled(false);
 
 			// oDetailController.getView().byId("DetailPage").setShowAnchorBar(false);
@@ -570,6 +585,7 @@ sap.ui.define([
 		_ExistingTenderMatched: function (oDetailController, sTab) {
 
 			//get selected Tender Path
+			var that = this;
 			var sTenderID = Services.getSelectedTenderID();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
@@ -629,6 +645,14 @@ sap.ui.define([
 
 				// this sets the Specifications dropdown
 				oDetailController.setTenderSpecificationsSelectedKeys(sTenderID);
+
+				
+				// Italy 
+				that.getTenderRegions(sTenderID).then(response => {
+					const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+					that.byId("idRegionView").setSelectedKeys(regionIDs);
+					that.byId("idTenderChannel").setVisible(false);
+				});
 
 				//vanaf hier 
 
@@ -691,7 +715,14 @@ sap.ui.define([
 				} else {
 					oDetailController.getView().byId("editButtonId").setEnabled(true);
 				}
-				oDetailController.getView().byId("cloneButtonId").setVisible(true);
+
+				// for Italy the clone button is not visible
+				if(oDetailController._country === 'IT'){
+					oDetailController.getView().byId("cloneButtonId").setVisible(false);
+				}else {
+					oDetailController.getView().byId("cloneButtonId").setVisible(true);
+				}
+				
 				oDetailController.getView().byId("cloneButtonId").setEnabled(true);
 				oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
 
@@ -1890,6 +1921,15 @@ sap.ui.define([
 						that.getView().byId("idSelectSalesTypeEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderOriginEdit").setEnabled(false);
 						that.getView().byId("idSelectContractTypeEdit").setEnabled(false);
+
+
+						// Italy
+						that.getView().byId("idRegionEdit").setVisible(true);
+						that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
+							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							that.byId("idRegionEdit").setSelectedKeys(regionIDs);
+							that.byId("idTenderChannel").setVisible(false);
+						});
 
 						//apply country filter on tender type
 						var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
@@ -3331,10 +3371,18 @@ sap.ui.define([
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT'){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
 			}else{
 				this.byId("idSelectTenderTypeEdit").setVisible(false);
+			}
+
+			// hide/unhide the Region field
+			if(selectedItem === 'Public Region(s)' && this._country === 'IT'){
+				this.byId("idRegionEdit").setVisible(true);
+			}else{
+				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
+				this.byId("idRegionEdit").setVisible(false);
 			}
 		},
 
@@ -3435,7 +3483,13 @@ sap.ui.define([
 					//convert Tender data for saving
 					var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
 
-					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(async function (oResult) {
+					/* Italy */
+					const tenderRegions = {
+						"TenderID": oTenderToSave.TenderID,
+						"RegionIDs": this.byId("idRegionEdit").getSelectedKeys()
+					};
+
+					that.updateBasicTenderInfo(oTenderToSave, path, oRefre, tenderRegions).then(async function (oResult) {
 
 						//after saving we reload tender info even if it is already loaded
 						var sTenderID = Services.getSelectedTenderID();
@@ -3457,6 +3511,14 @@ sap.ui.define([
 								console.error(err);
 							}
 						}
+
+						// Italy - Load regins again 
+						that.byId("idRegionView").setBusy(true);
+						that.getTenderRegions(sTenderID).then(response => {
+							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							that.byId("idRegionView").setSelectedKeys(regionIDs);
+							that.byId("idRegionView").setBusy(false);
+						});
 
 						//load tender data again so refresh is done
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3522,7 +3584,7 @@ sap.ui.define([
 			// END Brazil only
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
-			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
+			oSaveBasicInfo.TenderChannel = this._country === 'IT' ? 'Direct' : this.byId("idTenderChannel").getSelectedItem().getText();
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
 			oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
@@ -3565,8 +3627,14 @@ sap.ui.define([
 
 				//convert Tender data for saving
 				var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
+				
+				/* Italy */
+				const tenderRegions = {
+					"TenderID": oTenderToSave.TenderID,
+					"RegionIDs": this.byId("idRegionEdit").getSelectedKeys()
+				};
 
-				that.createBasicTenderInfo(oTenderToSave).then(async function (oSaveResults) {
+				that.createBasicTenderInfo(oTenderToSave, tenderRegions).then(async function (oSaveResults) {
 
 					//if save is executed succesfully
 					// if (oSaveResults) {
@@ -3586,6 +3654,14 @@ sap.ui.define([
 								console.error(err);
 							}
 						}
+
+						// Italy - Load regins again 
+						that.byId("idRegionView").setBusy(true);
+						that.getTenderRegions(sTenderID).then(response => {
+							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							that.byId("idRegionView").setSelectedKeys(regionIDs);
+							that.byId("idRegionView").setBusy(false);
+						});
 
 						//load tender data so its in the FastAppData model in the same way as for an existing tender
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3683,8 +3759,33 @@ sap.ui.define([
 			return Promise.all(promises);
 		},
 
+		saveTenderRegions: function(tenderRegions){
+
+			const tenderID = tenderRegions.TenderID;
+			const regionIDs = tenderRegions.RegionIDs;
+
+			return Services.getService('Tender').saveTenderRegions(tenderID, regionIDs)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Saving of Regions");
+							throw new Error(oError);
+						});
+
+		},
+
+		getTenderRegions: function(tenderID){
+
+			return Services.getService('Tender').getTenderRegions(tenderID)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Fetching of Regions");
+							throw new Error(oError);
+						});
+
+		},
+
 		//submits changes in batch for the basic information tab
-		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh) {
+		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh, tenderRegions) {
 
 			//keep track of controller object
 			var that = this;
@@ -3706,6 +3807,11 @@ sap.ui.define([
 
 			//Award criteria should be saved as well
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+
+			//regions should be saved for Italy
+			if(this._country === 'IT' && tenderRegions){
+				promises.push(that.saveTenderRegions(tenderRegions));
+			}
 
 			//data awardcriteria model
 			var oAwDt = that.byId("idAwrdEdit").getModel("tabModel").getData();
@@ -3789,7 +3895,7 @@ sap.ui.define([
 		},
 
 		//Actual creation of the new tender TODO this should be in the service file
-		createBasicTenderInfo: function (oTenderToSave) {
+		createBasicTenderInfo: function (oTenderToSave, tenderRegions) {
 
 			//keep track of controller object
 			var that = this;
@@ -3805,6 +3911,11 @@ sap.ui.define([
 
 			//specification should be saved as well
 			promises.push(that.saveSpecifications(oTenderToSave, "create"));
+
+			//regions should be saved for Italy
+			if(this._country === 'IT' && tenderRegions){
+				promises.push(that.saveTenderRegions(tenderRegions));
+			}
 
 			//check if awardCriteria is valid
 			if (!Services.checkAwardCriteria(aAwardCriteria)) {
@@ -6004,8 +6115,11 @@ sap.ui.define([
 			var sPath = "/PT_TMINST";
 			var data;
 			var aFilters = [];
+			const regionMCB = this.getView().byId("idRegionEdit");
+			const instituteType = this.byId("idInstituteType").getProperty("selectedKey");
+
 			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
-				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, this.byId("idInstituteType").getProperty("selectedKey"))
+				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
 			);
 			var that = this;
 			model_f4.read(sPath, {
@@ -6064,6 +6178,14 @@ sap.ui.define([
 
 					//should group purchasing be visible on the screen based on data back-end
 					var sCountry = Services.getSelectedCountry();
+
+					// for Italy only the Regions must be set
+					if(sCountry === 'IT' && instituteType === "Public Region(s)"){
+						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
+						setTenderRegion(regionId);
+					}
+
+
 					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) { 
 						if (bShowGroupPurchasing === false) {
 							//default no =  0
@@ -6090,6 +6212,12 @@ sap.ui.define([
 				}
 				oEvent.getSource().getBinding("items").filter([]);
 			};
+
+			
+			const setTenderRegion = function(regionId){
+				regionMCB && regionMCB.setSelectedKeys([regionId]);
+				regionMCB.getSelectedItems()[0].setEnabled(false);
+			}
 
 		},
 
@@ -8797,11 +8925,13 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idSpecifications") && this.byId("idSpecifications").setVisible(false);
+			this.byId("idClassification") && this.byId("idClassification").setVisible(false);
 
 			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").clearSelection();
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
 			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
+
 		},
 
 		onClassificationChange: async function(oEvent){ 
