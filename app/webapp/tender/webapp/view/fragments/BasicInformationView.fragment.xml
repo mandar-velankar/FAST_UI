@@ -85,7 +85,7 @@
 				</MultiComboBox>
 				<!-- /Italy onlye -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-				<Input value="{fastData>TenderChannel}" enabled="false"/>
+				<Input value="{fastData>TenderChannel}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT'}"/>
 				<Label text="{i18n>grpurchsng}" design="Bold" required="true"/>
 				<Select id="idGroupPurchasing" selectedKey="{fastData>GroupPurchasing}" enabled="false">
 					<items>

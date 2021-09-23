@@ -360,6 +360,7 @@ sap.ui.define([
 				// Settings for Italy 
 				if(Services.getSelectedCountry() === 'IT'){
 					oDetailController.getView().byId("idClassification").setVisible(false);
+					oDetailController.getView().byId("idTenderChannel").setVisible(false);
 				}
 			});
 
@@ -650,6 +651,7 @@ sap.ui.define([
 				that.getTenderRegions(sTenderID).then(response => {
 					const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
 					that.byId("idRegionView").setSelectedKeys(regionIDs);
+					that.byId("idTenderChannel").setVisible(false);
 				});
 
 				//vanaf hier 
@@ -1926,6 +1928,7 @@ sap.ui.define([
 						that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
 							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
 							that.byId("idRegionEdit").setSelectedKeys(regionIDs);
+							that.byId("idTenderChannel").setVisible(false);
 						});
 
 						//apply country filter on tender type
@@ -3581,7 +3584,7 @@ sap.ui.define([
 			// END Brazil only
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
-			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
+			oSaveBasicInfo.TenderChannel = this._country === 'IT' ? 'Direct' : this.byId("idTenderChannel").getSelectedItem().getText();
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
 			oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
