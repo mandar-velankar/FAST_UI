@@ -38,6 +38,26 @@
       "source": "/createsalesopportunity/(.*)$",
       "target": "$1",
       "destination": "createSalesOppApp"
+    }, 	
+    {
+      "source": "/app/bankguarantees/(.*)$",
+      "target": "$1",
+      "destination": "bankGuaranteesApp"
+    },  
+    {
+      "source": "/bankguarantees/(.*)$",
+      "target": "$1",
+      "destination": "bankGuaranteesApp"
+    }, 
+    {
+      "source": "/app/priceagreements/(.*)$",
+      "target": "$1",
+      "destination": "priceAgreementsApp"
+    },  
+    {
+      "source": "/priceagreements/(.*)$",
+      "target": "$1",
+      "destination": "priceAgreementsApp"
     },  
     {
       "source": "^/app/index.html(.*)$",

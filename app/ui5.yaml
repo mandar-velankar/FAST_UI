@@ -24,6 +24,18 @@ server:
       removeETag: true
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
+    mountPath: /bankguarantees
+    configuration:
+      baseUri: "http://localhost:8085/"
+      removeETag: true
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
+    mountPath: /priceagreements
+    configuration:
+      baseUri: "http://localhost:8086/"
+      removeETag: true
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
     mountPath: /app
     configuration:
       baseUri: "http://localhost:8080/landingspage/webapp/"
@@ -147,30 +159,6 @@ builder:
               - com/bayer/tender/landingspage/epa/webapp/service/**
               - com/bayer/tender/landingspage/epa/webapp/state/**
               - com/bayer/tender/landingspage/epa/webapp/view/**
-            resolve: false
-            sort: true
-      bundleOptions:
-        optimize: true
-        usePredefineCalls: true
-    - bundleDefinition:
-        name: "com/bayer/tender/landingspage/landingspage/webapp/Component-preload.js"
-        defaultFileTypes:
-        - ".js"
-        - ".json"
-        - ".xml"
-        - ".html"
-        - ".library"
-        sections:
-          - mode: preload
-            filters:
-              - com/bayer/tender/landingspage/landingspage/webapp/Component.js
-              - com/bayer/tender/landingspage/landingspage/webapp/manifest.json
-              - com/bayer/tender/landingspage/landingspage/webapp/controller/**
-              - com/bayer/tender/landingspage/landingspage/webapp/i18n/**
-              - com/bayer/tender/landingspage/landingspage/webapp/model/**
-              - com/bayer/tender/landingspage/landingspage/webapp/service/**
-              - com/bayer/tender/landingspage/landingspage/webapp/state/**
-              - com/bayer/tender/landingspage/landingspage/webapp/view/**
             resolve: false
             sort: true
       bundleOptions:
