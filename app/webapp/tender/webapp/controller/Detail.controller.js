@@ -649,9 +649,9 @@ sap.ui.define([
 				
 				// Italy 
 				that.getTenderRegions(sTenderID).then(response => {
-					const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+					const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 					that.byId("idRegionView").setSelectedKeys(regionIDs);
-					that.byId("idTenderChannel").setVisible(false);
+					that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
 				});
 
 				//vanaf hier 
@@ -1926,7 +1926,7 @@ sap.ui.define([
 						// Italy
 						that.getView().byId("idRegionEdit").setVisible(true);
 						that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
-							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 							that.byId("idRegionEdit").setSelectedKeys(regionIDs);
 							that.byId("idTenderChannel").setVisible(false);
 						});
@@ -3515,7 +3515,7 @@ sap.ui.define([
 						// Italy - Load regins again 
 						that.byId("idRegionView").setBusy(true);
 						that.getTenderRegions(sTenderID).then(response => {
-							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 							that.byId("idRegionView").setSelectedKeys(regionIDs);
 							that.byId("idRegionView").setBusy(false);
 						});
@@ -3658,7 +3658,7 @@ sap.ui.define([
 						// Italy - Load regins again 
 						that.byId("idRegionView").setBusy(true);
 						that.getTenderRegions(sTenderID).then(response => {
-							const regionIDs = response.data.Regions.results.map(region => region.Region_ID);
+							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 							that.byId("idRegionView").setSelectedKeys(regionIDs);
 							that.byId("idRegionView").setBusy(false);
 						});

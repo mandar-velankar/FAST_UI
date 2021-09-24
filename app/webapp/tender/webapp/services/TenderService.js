@@ -265,8 +265,8 @@ sap.ui.define([
 
 			const regions = regionIDs.map(id => {
 				return {
-					"Tender_TenderID": tenderID,
-					"Region_ID": id
+					"TenderID": tenderID,
+					"RegionID": id
 				};
 			});
 
