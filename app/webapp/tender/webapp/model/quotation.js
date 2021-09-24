@@ -363,58 +363,6 @@ sap.ui.define([
 					return oDeferred.promise();	
 				},
 
-				//load offer validation  for offer
-				loadTenderBankGuarantee: function(sTenderId){
-					
-					//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
-					var oDeferred = $.Deferred();
-					
-					//get model for doing the calls to the back-end
-					var oFastDataCalls = Services.getDefaultModel();
-					var oFastAppDataModel = Services.getFastAppDataModel();
-					
-					var that = this;
-					
-					var sPath = "/BankGuarantees";
-					
-					var aFilters = [];
-					
-					if(sTenderId){
-						var oTenderIdFilter = new sap.ui.model.Filter("TenderID", sap.ui.model.FilterOperator.EQ, sTenderId);
-						aFilters.push(oTenderIdFilter);
-					}
-					
-					//Reading the back end data from the tender table
-					oFastDataCalls.read(sPath, {
-							filters: aFilters,
-							success: function(oData, oResponse) {
-								
-								//Offer validation data
-								var oBankGuarantee = oData.results[0];
-								
-								//data received is set to the award model
-								oFastAppDataModel.setProperty("/newBankGuarantee", oBankGuarantee);
-								
-								//let the callback be triggered
-								oDeferred.resolve(oData);
-							
-							},
-							error: function(oError) {
-						
-								//show error message
-								Services.showErrorMessage(oError, "Loading of bank guarantee");
-								
-								//let the callback be triggered
-								oDeferred.reject(oError);
-							
-							}
-					});						
-					
-
-					//return promise so the function can check if execution is done
-					return oDeferred.promise();	
-				},
-
 		//CHECKERS
 		//--------
 				//check if approvertype is a mandatory type

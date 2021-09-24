@@ -147,10 +147,6 @@ sap.ui.define([
 			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
 			//Services.loadCountryPermissions(sCountry);
 
-			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
-
-			});
-
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
 				that.getView().bindElement({
@@ -7398,11 +7394,6 @@ sap.ui.define([
 
 			});
 
-			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
-
-			});*/
-			
-
 			//set to fastappdata model for easy access on the view
 			oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
 			var oForm = that.byId("IdQuotationInfo");
@@ -7438,7 +7429,6 @@ sap.ui.define([
 			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(function (oData) {
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
-				var oBankGuarantee = oFastAppDataModel.getProperty("/BankGuarantee");
 
 				//enable or disable download button 
 				var enableDownload = false;
@@ -7449,7 +7439,7 @@ sap.ui.define([
 
 				//enable or disable submit button
 				var enableSubmit = false;
-				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
+				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1)) {
 					enableSubmit = true;
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7585,7 +7575,7 @@ sap.ui.define([
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							if (sStatus === "Offer Approved" && (oQuotation) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+							if (sStatus === "Offer Approved" && (oQuotation)) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
 							}
 							that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7606,145 +7596,6 @@ sap.ui.define([
 				}
 			});
 		},
-
-		
-		onCreateGuarantee: function (oEvent) {
-			var that = this;
-			let oFastAppDataModel = Services.getFastAppDataModel();
-			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
-			let oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
-
-			if(!oBankGuarantee){
-				oBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee();
-				oFastAppDataModel.setProperty("/newBankGuarantee/", oBankGuarantee);
-			}
-
-			//Open the dialog
-			if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
-				that._getCreateBankGuaranteeDialog().open();
-			} else {
-				$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
-					that._getCreateBankGuaranteeDialog().open();
-				});
-			}
-
-		},
-
-		onSaveNewBankGuarantee: function (oEvent){
-			BusyIndicator.show();
-			let oBankGuaranteeSaveInfo = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
-			let bUpdate = false;
-
-			if(!oBankGuaranteeSaveInfo.Status || oBankGuaranteeSaveInfo.Status === ''){
-				oBankGuaranteeSaveInfo.Status = "Preliminary";
-				oBankGuaranteeSaveInfo._sOperation = "POST";
-			} else {
-				oBankGuaranteeSaveInfo._sOperation = "PUT";
-				bUpdate = true;
-			}
-
-			if(Services.checkNewBankGuarantee(oBankGuaranteeSaveInfo)){
-				$.when(Services.saveBankGuarantee(oBankGuaranteeSaveInfo)).done(() => {
-					this._getCreateBankGuaranteeDialog().close();
-
-					if(bUpdate === false){
-						this.byId("btnCreateBankGuarantee").setText("Edit Bank Guarantee");
-
-						Services.getOfferCompositeMessages().push({
-							type: 'Success',
-							title: 'Bank Guarantee Created',
-							description: 'A new bank guarantee has been created for this tender.'
-						});
-					} else {
-						Services.getOfferCompositeMessages().push({
-							type: 'Success',
-							title: 'Bank Guarantee Update',
-							description: 'Bank guarantee for this tender has been updated succesfully.'
-					});}
-					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
-				});
-			} else {
-				sap.m.MessageBox.error("Please enter all mandatory fields.");
-			}
-
-			BusyIndicator.hide();
-		},
-
-		onCancelNewBankGuarantee: function (oEvent){
-			this._getCreateBankGuaranteeDialog().close();
-		},
-		
-		/**
-		 * New contracting dialog
-		 * @returns {dialog} - oDialog
-		 */
-		 _getCreateBankGuaranteeDialog: function () {
-
-			//create new dialog if not yet existing
-			if (!this._oAddNewBankGuaranteeDialog) {
-
-					//get dialog
-					this._oAddNewBankGuaranteeDialog = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.NewBankGuarantee", this);
-					this.getView().addDependent(this._oAddNewBankGuaranteeDialog);
-					
-			}
-
-			return this._oAddNewBankGuaranteeDialog;
-		},
-
-		onUpdateBankGuarantee: function(){
-			BusyIndicator.show();
-
-			let oFastAppDataModel = Services.getFastAppDataModel();
-			let oTenderResults = oFastAppDataModel.getProperty('/ResultsForTree');
-			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
-			let oBankGuaranteeSaveInfo = oFastAppDataModel.getProperty('/newBankGuarantee');
-			let that = this;
-
-			oTenderResults.forEach(function (oTenderResult, iIndex) {
-				if(oTenderResult.OUTCOME === "Won"){
-					//update the status
-					oBankGuaranteeSaveInfo.Status = "Confirmed";
-					oBankGuaranteeSaveInfo._sOperation = "PUT";
-
-					//Open the dialog
-					if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
-						that._getCreateBankGuaranteeDialog().open();
-					} else {
-						$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
-							that._getCreateBankGuaranteeDialog().open();
-						});
-					}
-				} else {
-					//Ask user if he's sure to cancel the bank guarantee
-					sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
-						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-						styleClass: "sapUiSizeCompact",
-						onClose: function (sAction) {
-							if (sAction === "YES") {
-								oBankGuaranteeSaveInfo.Status = "Cancelled";
-								oBankGuaranteeSaveInfo._sOperation = "PUT";
-								if(Services.checkNewBankGuarantee(oBankGuaranteeSaveInfo)){
-									$.when(Services.saveBankGuarantee(oBankGuaranteeSaveInfo)).done(() => {
-											Services.getOfferCompositeMessages().push({
-												type: 'Success',
-												title: 'Bank Guarantee Update',
-												description: 'Bank guarantee has been cancelled.'
-										});
-									});
-								}
-							} else {
-								return;
-							}
-						}
-					});
-				}
-			});
-
-
-			BusyIndicator.hide();
-		},
-
 		onSubmitQuotation: function (oEvent) {
 
 			//that is this

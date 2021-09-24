@@ -34,8 +34,8 @@
 			</m:Table>
 		</m:VBox>
 	</ObjectPageSubSection>
-
 	<!-- DELIVERIES SUB SECTION PAGE -->
+
 	<ObjectPageSubSection id="DelivTrackDeliveriesSubsection" title="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Purchase Orders' : 'Deliveries' }">
 		<actions>
 			<m:Button

@@ -49,14 +49,6 @@
                     press=".onDownloadQuotation"
                     enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
 
-                <!-- Bank Guarantee -->	
-                <m:Button
-                    id="btnCreateBankGuarantee"
-                    text="{= ${fastAppData>/newBankGuarantee/Status} ? ${i18n>EditGuarantee} : ${i18n>CreateGuarantee} }"
-                    icon="sap-icon://create-form"
-                    press=".onCreateGuarantee"
-                    enabled="{= ${fastAppData>/newBankGuarantee/Status} !== 'Confirmed' &amp;&amp; ${fastAppData>/newBankGuarantee/Status} !== 'Expired' ? true : false }"/>
-
                 <!-- Submit Quotation -->	
                 <m:Button
                     id="btnSubmitQuotation"
@@ -64,7 +56,6 @@
                     icon="sap-icon://sys-enter"
                     press=".onSubmitQuotation"
                     enabled="false"/>
-
             </actions>
             <l:BlockLayout background="Light">
                 <l:BlockLayoutRow>
