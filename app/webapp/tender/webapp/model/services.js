@@ -3116,11 +3116,11 @@ sap.ui.define([
 
 			//check mandatory fields
 			if (
-				oBasicInfo.TenderName === "" ||
-				oBasicInfo.Classification === "" ||
-				oBasicInfo.InstituteID === "" || //IntituteType is property of institute
-				oBasicInfo.TenderChannel === "" ||
-				oBasicInfo.GroupPurchasing === "" ||
+				!oBasicInfo.TenderName ||
+				(oBasicInfo.CountryCode !== 'IT' && !oBasicInfo.Classification) || // for Italy the Classification shouldn't be considered
+				!oBasicInfo.InstituteID || //IntituteType is property of institute
+				!oBasicInfo.TenderChannel ||
+				!oBasicInfo.GroupPurchasing ||
 				!oBasicInfo.PublicationDate ||
 				!oBasicInfo.BidDueDate) {
 
@@ -3129,7 +3129,7 @@ sap.ui.define([
 					type: 'Error',
 					title: 'Mandatory fields.',
 					description: '- Tender Name \n' +
-						'- Classification \n' +
+						(oBasicInfo.CountryCode === 'IT' ? '':'- Classification \n') +
 						'- Institute \n' +
 						'- Channel \n' +
 						'- Group Purchasing \n' +
@@ -6576,6 +6576,58 @@ sap.ui.define([
 
 		},
 
+		//load offer validation  for offer
+		loadTenderPriceAgreement: function(sTenderId){
+					
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+			
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+			
+			var that = this;
+			
+			var sPath = "/PriceAgreements";
+			
+			var aFilters = [];
+			
+			if(sTenderId){
+				var oTenderIdFilter = new sap.ui.model.Filter("TenderId", sap.ui.model.FilterOperator.EQ, sTenderId);
+				aFilters.push(oTenderIdFilter);
+			}
+			
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function(oData, oResponse) {
+						
+						//Offer validation data
+						var oPriceAgreement = oData.results[0];
+						
+						//data received is set to the award model
+						oFastAppDataModel.setProperty("/newPriceAgreement", oPriceAgreement);
+						
+						//let the callback be triggered
+						oDeferred.resolve(oData);
+					
+					},
+					error: function(oError) {
+				
+						//show error message
+						this.showErrorMessage(oError, "Loading of price agreement");
+						
+						//let the callback be triggered
+						oDeferred.reject(oError);
+					
+					}
+			});						
+			
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();	
+		},
+
 		//ADDING
 		//------
 
@@ -6833,8 +6885,8 @@ sap.ui.define([
 			   oBankGuarantee.Type && 
 			   oBankGuarantee.GuaranteedAmount != 0 && 
 			   oBankGuarantee.Currency && 
-			   oBankGuarantee.IssueDate && 
-			   oBankGuarantee.ClosingDate){
+			   oBankGuarantee.IssueDate){
+			   //oBankGuarantee.ClosingDate
 					bValid = true;
 			}
 
@@ -6847,6 +6899,16 @@ sap.ui.define([
 			var that = this;
 
 			let promises = [];
+
+			//default closing date
+			let oNewToDate = new Date("9999-12-31")
+			oNewToDate.setHours(0,0,0,0);
+
+			// Convert to UTC time
+			const timeOffsetInMS = oNewToDate.getTimezoneOffset() * 60000;
+			oNewToDate.setTime(oNewToDate.getTime() - timeOffsetInMS);
+			oBankGuaranteeSaveInfo.ClosingDate = oNewToDate;
+
 			switch(oBankGuaranteeSaveInfo._sOperation){
 				case "POST":
 					delete oBankGuaranteeSaveInfo._sOperation;
@@ -6865,6 +6927,34 @@ sap.ui.define([
 			}
 
 			oBankGuaranteeSaveInfo = {};
+
+		},
+
+		//save bank guarantee
+		savePriceAgreement: function(oPriceAgreementSaveInfo){
+			let oDeferred = $.Deferred();
+			var that = this;
+
+			let promises = [];
+
+			switch(oPriceAgreementSaveInfo._sOperation){
+				case "POST":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Create Price Agreement");
+						throw new Error(oError);
+					}));
+					break;
+				case "PUT":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Update Price Agreement");
+						throw new Error(oError);
+					}));
+					break;
+			}
+
+			oPriceAgreementSaveInfo = {};
 
 		},
 
