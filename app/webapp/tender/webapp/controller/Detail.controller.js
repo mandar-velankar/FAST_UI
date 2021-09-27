@@ -7889,6 +7889,7 @@ sap.ui.define([
 			let oTender = oFastAppDataModel.getProperty("/EditTender/");
 
 			oPriceAgreementSaveInfo.AwardedVolume = oTenderResult.AWARDEDQTY;
+			oPriceAgreementSaveInfo.DeliveredVolume = 150;
 			oPriceAgreementSaveInfo.ProductPackId = oTenderResult.PRODUCTCODE;
 			oPriceAgreementSaveInfo.TenderId = oTender.TenderID;
 			oPriceAgreementSaveInfo.Currency = oTenderResult.CURRENCY;
@@ -7896,6 +7897,10 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.Price = oTenderResult.AWARDEDPRICE;
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
+			oPriceAgreementSaveInfo.EffectiveDate = new Date();
+			oPriceAgreementSaveInfo.ListPrice = 5;
+			oPriceAgreementSaveInfo.RetailPrice = 10;
+			oPriceAgreementSaveInfo.Discount = 2;
 
 			return oPriceAgreementSaveInfo;
 		},
