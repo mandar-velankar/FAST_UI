@@ -7800,7 +7800,11 @@ sap.ui.define([
 				sap.m.MessageBox.error("Please enter all mandatory fields.");
 			}
 
-			BusyIndicator.hide();
+			$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
+				//reload the created or updated bank guarantee
+				BusyIndicator.hide();
+			});
+
 		},
 
 		onCancelNewBankGuarantee: function (oEvent){
