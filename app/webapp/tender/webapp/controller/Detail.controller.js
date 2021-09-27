@@ -7895,6 +7895,7 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.Currency = oTenderResult.CURRENCY;
 			oPriceAgreementSaveInfo.UoM = oTenderResult.UOM;
 			oPriceAgreementSaveInfo.Price = oTenderResult.AWARDEDPRICE;
+			oPriceAgreementSaveInfo.hasNewMaterials = false;
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
 			oPriceAgreementSaveInfo.EffectiveDate = new Date();
