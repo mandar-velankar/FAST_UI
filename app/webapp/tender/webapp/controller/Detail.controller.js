@@ -7570,7 +7570,7 @@ sap.ui.define([
 			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(function (oData) {
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
-				var oBankGuarantee = oFastAppDataModel.getProperty("/BankGuarantee");
+				var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
 
 				//enable or disable download button 
 				var enableDownload = false;
@@ -7581,7 +7581,7 @@ sap.ui.define([
 
 				//enable or disable submit button
 				var enableSubmit = false;
-				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
+				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
 					enableSubmit = true;
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7712,12 +7712,13 @@ sap.ui.define([
 						$.when(Quotation.loadQuotationForSelectedOffer(quotationFields.OfferDate)).done(function (oData) {
 
 							var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
+							var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
 
 							//get updated status
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							if (sStatus === "Offer Approved" && (oQuotation) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+							if (sStatus === "Offer Approved" && (oQuotation) && ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
 							}
 							that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
