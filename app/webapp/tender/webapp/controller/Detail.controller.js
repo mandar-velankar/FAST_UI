@@ -7795,6 +7795,7 @@ sap.ui.define([
 							description: 'Bank guarantee for this tender has been updated succesfully.'
 					});}
 					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
 				});
 			} else {
 				sap.m.MessageBox.error("Please enter all mandatory fields.");
