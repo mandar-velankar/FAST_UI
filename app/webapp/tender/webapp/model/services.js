@@ -5104,6 +5104,7 @@ sap.ui.define([
 		//--------
 		removeProductsSaveInfo: function (aProductsToRemove) {
 
+			var that = this;
 			var oFastAppDataModel = this.getFastAppDataModel();
 			var aProducts = this.getProductsSaveInfo();
 			if(aProducts.length === 0){
@@ -5128,6 +5129,11 @@ sap.ui.define([
 					case "POST":
 						// Product is not yet existing in the back-end tables
 						//this one will therefore no longer be pushed to achangeProducts (=just removed from front-end)
+						oProduct._sOperation = "DELETE";
+						aProducts.splice(indexCurrentProduct, aProducts.length)
+						that.getFastAppDataModel().refresh(true);
+						that.getDefaultModel().refresh(true);
+
 						break;
 					case "PUT":
 						// Product exists already in the back-end tables
