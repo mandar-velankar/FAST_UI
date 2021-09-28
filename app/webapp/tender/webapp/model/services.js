@@ -6934,21 +6934,66 @@ sap.ui.define([
 		savePriceAgreement: function(oPriceAgreementSaveInfo){
 			let oDeferred = $.Deferred();
 			var that = this;
+			var oFastAppDataModel = this.getFastAppDataModel();
 
 			let promises = [];
 
 			switch(oPriceAgreementSaveInfo._sOperation){
 				case "POST":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).catch(function (oError) {
-						that.showErrorMessage(oError, "Create Price Agreement");
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+						oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Success',
+							title: 'Price Agreement has been created',
+							description: 'Price Agreement has been created'
+						});
+						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+					})
+					.catch(function (oError) {
+						//that.showErrorMessage(oError, "Create Price Agreement");
+						oPriceAgreementSaveInfo = {};
+
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Error',
+							title: 'Error saving price agreement',
+							description: 'Error saving price agreement'
+						});
+						that.showMessageCompositeView("Error", that.getOfferCompositeMessages(), 'Error');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
 						throw new Error(oError);
 					}));
 					break;
 				case "PUT":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).catch(function (oError) {
-						that.showErrorMessage(oError, "Update Price Agreement");
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+						oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Success',
+							title: 'Price Agreement has been created',
+							description: 'Price Agreement has been created'
+						});
+						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+					})
+					.catch(function (oError) {
+						//that.showErrorMessage(oError, "Update Price Agreement");
+						oPriceAgreementSaveInfo = {};
+
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Error',
+							title: 'Error saving price agreement',
+							description: 'Error saving price agreement'
+						});
+						that.showMessageCompositeView("Error", that.getOfferCompositeMessages(), 'Error');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
 						throw new Error(oError);
 					}));
 					break;

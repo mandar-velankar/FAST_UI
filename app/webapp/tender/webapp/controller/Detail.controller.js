@@ -7986,9 +7986,9 @@ sap.ui.define([
 				}
 
 				$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
-					oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+					/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 					//message that you 
-					sap.m.MessageToast.show("Price Agreement has been created");
+					sap.m.MessageToast.show("Price Agreement has been created");*/
 					BusyIndicator.hide();
 				});
 
