@@ -648,11 +648,13 @@ sap.ui.define([
 
 				
 				// Italy 
+				if (Services.getSelectedCountry() === "IT"){
 				that.getTenderRegions(sTenderID).then(response => {
 					const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 					that.byId("idRegionView").setSelectedKeys(regionIDs);
 					that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
-				});
+				})}
+			
 
 				//vanaf hier 
 
@@ -1924,12 +1926,13 @@ sap.ui.define([
 
 
 						// Italy
+						if (Services.getSelectedCountry() === "IT"){
 						that.getView().byId("idRegionEdit").setVisible(true);
 						that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
 							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 							that.byId("idRegionEdit").setSelectedKeys(regionIDs);
 							that.byId("idTenderChannel").setVisible(false);
-						});
+						})}
 
 						//apply country filter on tender type
 						var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
@@ -3513,12 +3516,13 @@ sap.ui.define([
 						}
 
 						// Italy - Load regins again 
+						if (Services.getSelectedCountry() === "IT"){
 						that.byId("idRegionView").setBusy(true);
 						that.getTenderRegions(sTenderID).then(response => {
 							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 							that.byId("idRegionView").setSelectedKeys(regionIDs);
 							that.byId("idRegionView").setBusy(false);
-						});
+						})}
 
 						//load tender data again so refresh is done
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3656,12 +3660,13 @@ sap.ui.define([
 						}
 
 						// Italy - Load regins again 
+						if (Services.getSelectedCountry() === "IT"){
 						that.byId("idRegionView").setBusy(true);
 						that.getTenderRegions(sTenderID).then(response => {
 							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 							that.byId("idRegionView").setSelectedKeys(regionIDs);
 							that.byId("idRegionView").setBusy(false);
-						});
+						})}
 
 						//load tender data so its in the FastAppData model in the same way as for an existing tender
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
