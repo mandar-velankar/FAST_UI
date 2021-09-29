@@ -648,11 +648,14 @@ sap.ui.define([
 
 				
 				// Italy 
-				that.getTenderRegions(sTenderID).then(response => {
-					const regionIDs = response.data.Regions.results.map(region => region.RegionID);
-					that.byId("idRegionView").setSelectedKeys(regionIDs);
-					that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
-				});
+				if (Services.getSelectedCountry() === "IT"){
+					that.getTenderRegions(sTenderID).then(response => {
+						const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+						that.byId("idRegionView").setSelectedKeys(regionIDs);
+						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
+					})
+				}
+			
 
 				//vanaf hier 
 
@@ -1924,12 +1927,14 @@ sap.ui.define([
 
 
 						// Italy
+						if (Services.getSelectedCountry() === "IT"){
 						that.getView().byId("idRegionEdit").setVisible(true);
-						that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
-							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
-							that.byId("idRegionEdit").setSelectedKeys(regionIDs);
-							that.byId("idTenderChannel").setVisible(false);
-						});
+							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
+								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								that.byId("idRegionEdit").setSelectedKeys(regionIDs);
+								that.byId("idTenderChannel").setVisible(false);
+							})
+						}
 
 						//apply country filter on tender type
 						var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
@@ -3513,12 +3518,14 @@ sap.ui.define([
 						}
 
 						// Italy - Load regins again 
-						that.byId("idRegionView").setBusy(true);
-						that.getTenderRegions(sTenderID).then(response => {
-							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
-							that.byId("idRegionView").setSelectedKeys(regionIDs);
-							that.byId("idRegionView").setBusy(false);
-						});
+						if (Services.getSelectedCountry() === "IT"){
+							that.byId("idRegionView").setBusy(true);
+							that.getTenderRegions(sTenderID).then(response => {
+								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								that.byId("idRegionView").setSelectedKeys(regionIDs);
+								that.byId("idRegionView").setBusy(false);
+							})
+						}
 
 						//load tender data again so refresh is done
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -3656,12 +3663,14 @@ sap.ui.define([
 						}
 
 						// Italy - Load regins again 
-						that.byId("idRegionView").setBusy(true);
-						that.getTenderRegions(sTenderID).then(response => {
-							const regionIDs = response.data.Regions.results.map(region => region.RegionID);
-							that.byId("idRegionView").setSelectedKeys(regionIDs);
-							that.byId("idRegionView").setBusy(false);
-						});
+						if (Services.getSelectedCountry() === "IT"){
+							that.byId("idRegionView").setBusy(true);
+							that.getTenderRegions(sTenderID).then(response => {
+								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								that.byId("idRegionView").setSelectedKeys(regionIDs);
+								that.byId("idRegionView").setBusy(false);
+							})
+						}
 
 						//load tender data so its in the FastAppData model in the same way as for an existing tender
 						$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
@@ -7795,6 +7804,7 @@ sap.ui.define([
 							description: 'Bank guarantee for this tender has been updated succesfully.'
 					});}
 					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
 				});
 			} else {
 				sap.m.MessageBox.error("Please enter all mandatory fields.");
@@ -7976,9 +7986,9 @@ sap.ui.define([
 				}
 
 				$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
-					oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+					/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 					//message that you 
-					sap.m.MessageToast.show("Price Agreement has been created");
+					sap.m.MessageToast.show("Price Agreement has been created");*/
 					BusyIndicator.hide();
 				});
 
