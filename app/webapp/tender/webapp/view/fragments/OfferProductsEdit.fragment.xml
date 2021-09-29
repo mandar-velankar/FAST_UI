@@ -207,6 +207,37 @@
 										<Input value="{fastAppData>SKUCountry/ProductPack/ProductPackSKUs/results/SKUCode}" editable="false" maxLength="100"/>
 									</t:template>
 								</t:Column>
+
+								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/CodeNational/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/CodeNational/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/CodeNational/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKUCountry/GOV_CODE}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/AicCnd/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AicCnd/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/AicCnd/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKUCountry/CODE1}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AtcRdm/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKUCountry/CODE2}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
+
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}">
 									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Package/description',
 												   formatter: '.formatter.offerProductsColumnName' }"
