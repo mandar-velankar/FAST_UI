@@ -5400,6 +5400,11 @@ sap.ui.define([
 			this.byId("idDistributorName").setValue();
 			this.byId("idSellingCompany").setValue();
 			this.byId("idintrDueDte").setValue();
+
+			//if italy, default the internal due date to offer due date
+			if(Services.getSelectedCountry() === 'IT'){
+				this.byId("idintrDueDte").setValue(this.byId("idOrfDueDate").getValue());
+			}
 			this.byId("idWhleSle").setValue();
 
 			//at this point no product should be selected.
@@ -5477,6 +5482,7 @@ sap.ui.define([
 				this.byId("idintrDueDte").getValue() === "" ||
 				this.byId("idSellingCompany").getSelectedKey() === "" ||
 				this.byId("idWhleSle").getSelectedItem().getKey() === "" ||
+				this.byId("idProductOfferDivision").getSelectedItem().getKey() === "" ||
 				//new offer date only exists in continued or reviewed offer - but in this case it is a mandatory field
 				(
 					(Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed()) && (this.byId("idNewOfferDate").getValue() === "")
