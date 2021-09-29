@@ -2921,6 +2921,8 @@ sap.ui.define([
 			Services.clearDeliveriesForProduct();
 			Services.clearLettersForProduct();
 			Quotation.clearQuotationOfferProducts();
+			this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
+			this.byId("idRegionEdit").setVisible(false); // hide regions
 
 			//tender should no longer be selected
 			var oFastAppDataModel = Services.getFastAppDataModel();
