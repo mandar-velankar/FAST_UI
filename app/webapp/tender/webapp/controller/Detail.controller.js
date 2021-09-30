@@ -7931,7 +7931,7 @@ sap.ui.define([
 			
 			//check if a product is selected
 			if (oRowContext === null) {
-				sap.m.MessageToast.show("Select an awarded product to delete");
+				sap.m.MessageToast.show("Select an awarded product to create a price agreement");
 				return;
 			}
 
@@ -7995,7 +7995,9 @@ sap.ui.define([
 					/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 					//message that you 
 					sap.m.MessageToast.show("Price Agreement has been created");*/
-					BusyIndicator.hide();
+					$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
+						BusyIndicator.hide();
+					});
 				});
 
 			}
