@@ -174,12 +174,12 @@
 							</VBox>
 						</t:template>
 					</t:Column>
-					<t:Column width="3rem" visible="{fastAppData>/permissions/tables/editofferProductId/OfferType/visible}">
+					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/OfferType/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description',
 							                          		 formatter: '.formatter.offerProductsColumnName' }" 
 							   wrapping="true"/>
 						<t:template>
-							<Select selectedKey="{fastAppData>OfferType}">
+							<Select selectedKey="{fastAppData>OfferType}" enabled="false">
 								<items>
 									<core:Item text="" key=""/>
 									<core:Item text="Selling" key="Selling"/>
@@ -241,7 +241,7 @@
 						</t:template>
 					</t:Column>
 
-					<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/AicCnd/visible}">
+					<t:Column width="10rem" visible="{fastAppData>/permissions/tables/editofferProductId/AicCnd/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AicCnd/description',
 										formatter: '.formatter.offerProductsColumnName' }"
 								wrapping="true" />
@@ -250,7 +250,7 @@
 						</t:template>
 					</t:Column>
 
-					<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
+					<t:Column width="10rem" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AtcRdm/description',
 										formatter: '.formatter.offerProductsColumnName' }"
 								wrapping="true" />
