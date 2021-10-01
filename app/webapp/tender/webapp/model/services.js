@@ -3120,7 +3120,7 @@ sap.ui.define([
 				(oBasicInfo.CountryCode !== 'IT' && !oBasicInfo.Classification) || // for Italy the Classification shouldn't be considered
 				!oBasicInfo.InstituteID || //IntituteType is property of institute
 				!oBasicInfo.TenderChannel ||
-				!oBasicInfo.GroupPurchasing ||
+				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
 				!oBasicInfo.BidDueDate) {
 

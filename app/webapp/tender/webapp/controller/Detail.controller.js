@@ -5402,6 +5402,11 @@ sap.ui.define([
 			this.byId("idDistributorName").setValue();
 			this.byId("idSellingCompany").setValue();
 			this.byId("idintrDueDte").setValue();
+
+			//if italy, default the internal due date to offer due date
+			if(Services.getSelectedCountry() === 'IT'){
+				this.byId("idintrDueDte").setValue(this.byId("idOrfDueDate").getValue());
+			}
 			this.byId("idWhleSle").setValue();
 
 			//at this point no product should be selected.
@@ -5479,6 +5484,7 @@ sap.ui.define([
 				this.byId("idintrDueDte").getValue() === "" ||
 				this.byId("idSellingCompany").getSelectedKey() === "" ||
 				this.byId("idWhleSle").getSelectedItem().getKey() === "" ||
+				this.byId("idProductOfferDivision").getSelectedItem().getKey() === "" ||
 				//new offer date only exists in continued or reviewed offer - but in this case it is a mandatory field
 				(
 					(Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed()) && (this.byId("idNewOfferDate").getValue() === "")
@@ -7921,79 +7927,87 @@ sap.ui.define([
 		onCreatePriceAgreement: function (oEvent) {
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
-			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
-			
-			//check if a product is selected
-			if (oRowContext === null) {
-				sap.m.MessageToast.show("Select an awarded product to delete");
-				return;
-			}
-
-			var sPathSelectedRow = oRowContext.getPath();
-			let oSelectedTenderResult = oFastAppDataModel.getProperty(sPathSelectedRow);
-			var iRowIndexAwarded = sPathSelectedRow.split('/')[4];
-			var iRowIndexParent = sPathSelectedRow.split('/')[2];
-
-			var sPathResultsForTree = "/ResultsForTree";
-			var sPathResultsForTreeAwarded = "/ResultsForTree/" + iRowIndexParent + "/OutcomeLevel/";
-
-			//TODO in the future iLevel should just not be 0 so every line will be able to select the awarded product
-			if (sPathSelectedRow.includes("/OutcomeLevel")) {
-				//message that you should
-				sap.m.MessageToast.show("Select a Bayer specific product to create a price agreement");
-			} else if (oSelectedTenderResult.OUTCOME !== "Won"){
-				//message that you should
-				sap.m.MessageToast.show("The product you have selected has not been won");
+			var oLoadedPriceAgreement = oFastAppDataModel.getProperty("/newPriceAgreement");
+			if(oLoadedPriceAgreement){
+				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+				window.open("/app/#/priceagreements/" + oLoadedPriceAgreement.ID);
 			} else {
-				BusyIndicator.show();
-				var oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
-				var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
-				var bUpdate = false;
-
-				if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
-					BusyIndicator.hide();
-					sap.m.MessageBox.warning("Please confirm the bank guarantee first, before creating a price agreement.", {});
+				var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
+				var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+				
+				//check if a product is selected
+				if (oRowContext === null) {
+					sap.m.MessageToast.show("Select an awarded product to create a price agreement");
 					return;
-					/*re enable this part of code if this should be "integrated" in the process, unless message is sufficient
-					//Ask user if he's sure to cancel the bank guarantee
-					sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
-						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-						styleClass: "sapUiSizeCompact",
-						onClose: function (sAction) {
-							if (sAction === "YES") {
-								//Open the dialog
-								if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
-									that._getCreateBankGuaranteeDialog().open();
-								} else {
-									$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
-										that._getCreateBankGuaranteeDialog().open();
-									});
-								}
-							} else {
-								return;
-							}
-						}
-					});*/
-					
 				}
 
-				if(!oPriceAgreementSaveInfo){
-					oPriceAgreementSaveInfo = this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
-					oPriceAgreementSaveInfo._sOperation = "POST";
+				var sPathSelectedRow = oRowContext.getPath();
+				let oSelectedTenderResult = oFastAppDataModel.getProperty(sPathSelectedRow);
+				var iRowIndexAwarded = sPathSelectedRow.split('/')[4];
+				var iRowIndexParent = sPathSelectedRow.split('/')[2];
+
+				var sPathResultsForTree = "/ResultsForTree";
+				var sPathResultsForTreeAwarded = "/ResultsForTree/" + iRowIndexParent + "/OutcomeLevel/";
+
+				//TODO in the future iLevel should just not be 0 so every line will be able to select the awarded product
+				if (sPathSelectedRow.includes("/OutcomeLevel")) {
+					//message that you should
+					sap.m.MessageToast.show("Select a Bayer specific product to create a price agreement");
+				} else if (oSelectedTenderResult.OUTCOME !== "Won"){
+					//message that you should
+					sap.m.MessageToast.show("The product you have selected has not been won");
 				} else {
-					oPriceAgreementSaveInfo._sOperation = "PUT";
-					bUpdate = true;
+					BusyIndicator.show();
+					var oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
+					var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
+					var bUpdate = false;
+
+					if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
+						BusyIndicator.hide();
+						sap.m.MessageBox.warning("Please confirm the bank guarantee first, before creating a price agreement.", {});
+						return;
+						/*re enable this part of code if this should be "integrated" in the process, unless message is sufficient
+						//Ask user if he's sure to cancel the bank guarantee
+						sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
+							actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+							styleClass: "sapUiSizeCompact",
+							onClose: function (sAction) {
+								if (sAction === "YES") {
+									//Open the dialog
+									if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+										that._getCreateBankGuaranteeDialog().open();
+									} else {
+										$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
+											that._getCreateBankGuaranteeDialog().open();
+										});
+									}
+								} else {
+									return;
+								}
+							}
+						});*/
+						
+					}
+
+					if(!oPriceAgreementSaveInfo){
+						oPriceAgreementSaveInfo = this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
+						oPriceAgreementSaveInfo._sOperation = "POST";
+					} else {
+						oPriceAgreementSaveInfo._sOperation = "PUT";
+						bUpdate = true;
+					}
+
+					$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
+						/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						//message that you 
+						sap.m.MessageToast.show("Price Agreement has been created");*/
+						$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
+							BusyIndicator.hide();
+						});
+					});
+
 				}
-
-				$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
-					/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
-					//message that you 
-					sap.m.MessageToast.show("Price Agreement has been created");*/
-					BusyIndicator.hide();
-				});
-
 			}
 		},
 
