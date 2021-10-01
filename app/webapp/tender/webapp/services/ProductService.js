@@ -141,6 +141,7 @@ sap.ui.define([
 			oProductToSave.PricingPolicyCluster = oProductSaveInfo.PricingPolicyCluster;
 			oProductToSave.MinInvoiceAmount = oProductSaveInfo.MinInvoiceAmount ? Number(oProductSaveInfo.MinInvoiceAmount) : 0;
 			oProductToSave.DeliveryConditions = oProductSaveInfo.DeliveryConditions;
+			oProductToSave.OfferType = oProductSaveInfo.OfferType;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;

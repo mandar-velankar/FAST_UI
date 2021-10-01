@@ -142,15 +142,6 @@
                                                 <m:items>
                                                     <m:HBox>
                                                         <m:items>
-                                                            <!-- N° Invoice -->
-                                                            <m:VBox width="20%">
-                                                                <m:items>
-                                                                    <m:Label text="{i18n>InvoiceNo}" design="Bold"/>
-                                                                    <m:Text text="{fastAppData>/OfferValidation/OFFERID}"/>
-                                                                </m:items>
-                                                            </m:VBox>
-                                                            <m:VBox width="2%">
-                                                            </m:VBox>
                                                             <!-- Tender refrence -->
                                                             <m:VBox width="28%">
                                                                 <m:items>
@@ -158,48 +149,28 @@
                                                                     <m:Text text="{fastAppData>/OfferValidation/TENDER_REFERENCE}"/>
                                                                 </m:items>
                                                             </m:VBox>
-                                                            <m:VBox width="2%">
+                                                            <m:VBox width="10%">
                                                             </m:VBox>
                                                             <!-- Offer Date -->
-                                                            <m:VBox width="13%">
+                                                            <m:VBox width="20%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>OfferDate}" design="Bold"/>
                                                                     <!--<m:DatePicker id="idQofferDate" value="{path :'fastAppData>/OfferValidation/OFFERDATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
                                                                     <m:DatePicker id="idQofferDate" value="{path :'fastAppData>/OfferValidation/OFFERDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
                                                                 </m:items>
                                                             </m:VBox>
-                                                            <m:VBox width="2%">
+                                                            <m:VBox width="10%">
                                                             </m:VBox>
                                                             <!-- Offer Validity -->
-                                                            <m:VBox width="13%">
+                                                            <m:VBox width="20%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>OfferValidity}" design="Bold"/>
                                                                     <!--<m:DatePicker id="idQofferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
                                                                     <m:DatePicker id="idQofferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
                                                                 </m:items>
                                                             </m:VBox>
-                                                            <m:VBox width="2%">
+                                                            <m:VBox width="10%">
                                                             </m:VBox>
-                                                            <!--Selling Company-->
-                                                            <m:VBox width="18%" visible="true">
-                                                                <m:items>
-                                                                    <m:Label text="{i18n>selncmpny}" width="10rem" design="Bold"/>
-                                                                    <m:Text text="{fastAppData>/OfferValidation/SELLINGCOMPANY}"/>
-                                                                </m:items>
-                                                            </m:VBox>
-                                                        </m:items>
-                                                    </m:HBox>
-                                                    <m:Toolbar width="100%" height="1px"/>
-                                                    <m:HBox>
-                                                        <m:items>
-                                                            <!-- Shipment Terms-->
-                                                            <m:VBox width="50rem">
-                                                                <m:items>
-                                                                    <m:Label text="{i18n>qShipment}" design="Bold"/>
-                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/SHIPMENTTERMS}" class="sapMText"/>
-                                                                </m:items>
-                                                            </m:VBox>
-                                                            
                                                             <!-- Payment Terms -->
                                                             <m:VBox width="50rem">
                                                                 <m:items>
@@ -207,31 +178,25 @@
                                                                     <m:FormattedText htmlText="{fastAppData>/OfferValidation/PAYMENTTERMS}" class="sapMText"/>
                                                                 </m:items>
                                                             </m:VBox>
-                                                            
-                                                            <!-- Delivery Terms -->
-                                                            <m:VBox width="50rem">
-                                                                <m:items>
-                                                                    <m:Label text="{i18n>qDelivery}" design="Bold"/>
-                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/DELIVERYTERMS}" class="sapMText"/>
-                                                                </m:items>
-                                                            </m:VBox>
                                                         </m:items>
                                                     </m:HBox>
-                                                </m:items>
-                                            </m:VBox>
-                                            <m:VBox width="2%"/>
-                                            <m:VBox width="25%">
-                                                <m:items>
-                                                    <m:VBox>
-                                                        <m:items>
-                                                            <m:Label text="{i18n>Bank}" width="10rem" design="Bold" visible="true"/>
-                                                            <m:FormattedText htmlText="{fastAppData>/OfferValidation/SELLINGCOMPANYBANK}" class="sapMText" visible="true"/>
+                                                    <!-- <m:HBox>
+                                                        <m:items>                                                            
+                                                            Payment Terms 
+                                                            <m:VBox width="50rem">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>qPayment}" design="Bold"/>
+                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/PAYMENTTERMS}" class="sapMText"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            
                                                         </m:items>
-                                                    </m:VBox>
+                                                    </m:HBox>-->
                                                 </m:items>
                                             </m:VBox>
                                         </m:items>
                                     </m:HBox>
+                                                    <m:Toolbar width="100%" height="1px"/>
                                 </m:items>
                             </m:VBox>
                             
@@ -261,29 +226,9 @@
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
-                    <!-- Manufacturer Name -->
-                    <m:Column width="12%">
-                        <m:Text text="{i18n>ManufacturerName}" visible="true"/>
-                    </m:Column>
-
-                    <!-- Origin -->
-                    <m:Column width="10%">
-                        <m:Text text="{i18n>CountryOfOrigin}"/>
-                    </m:Column>
-
-                    <!-- Shelf Life -->
-                    <m:Column width="7%" visible="true">
-                        <m:Text text="{i18n>ShelfLife}"/>
-                    </m:Column>
-
                     <!-- Pack Factor -->
                     <m:Column width="5%">
                         <m:Text text="{i18n>PackFactor}"/>
-                    </m:Column>
-
-                    <!-- Presentation -->
-                    <m:Column width="6%">
-                        <m:Text text="{i18n>Presentation}" visible="true"/>
                     </m:Column>
 
                     <!-- Quantity -->
@@ -318,21 +263,9 @@
                             
                             <!-- Article Name -->
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
-                            
-                            <!-- Manufacturer Name -->
-                            <m:Text text="{path :'fastAppData>MANUFACTURER'}" visible="true"/>
-
-                            <!-- Origin -->
-                            <m:Text text="{path :'fastAppData>COUNTRYOFORIGIN'}"/>
-
-                            <!-- SHelf Life -->
-                            <m:Text text="{path :'fastAppData>SHELFLIFE'}"/>
 
                             <!-- Pack Factor -->
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
-
-                            <!-- Presentation -->
-                            <m:Text text="{path :'fastAppData>PRESENTATION'}" visible="true"/>
 
                             <!-- Quantity -->
                             <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
