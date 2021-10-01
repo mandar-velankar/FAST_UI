@@ -7463,6 +7463,13 @@ sap.ui.define([
 			return oDeferred.promise();
 		},
 
+		//get word templates
+		getWordTemplates: function (countryCode) {
+			return this.getService('Quotation').getWordTemplates(countryCode).then(function(response){
+				this.getFastAppDataModel().setProperty("/WordTemplates", response.data.results);
+				return response.data.results;
+			}.bind(this));
+		},
 		// HELPERS
 		/*sendMail: function(sRecipient, sSubject, sTemplate){
 			

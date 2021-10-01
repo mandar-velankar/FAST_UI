@@ -1,7 +1,9 @@
 sap.ui.define([
 	"FAST_NS0FAST0/services/BaseService",
-	"FAST_NS0FAST0/model/services"
-], function (BaseService, Services) {
+	"FAST_NS0FAST0/model/services",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseService, Services,Filter,FilterOperator) {
 	"use strict";
 
 	var QuotationService = BaseService.extend("FAST_NS0FAST0.services.QuotationService", {
@@ -42,6 +44,11 @@ sap.ui.define([
 			oQuotationToSave.SubmittedOn = moment.utc(oQuotationSaveInfo.SubmittedOn).toDate(); 
 			return oQuotationToSave;
 		
+		},
+
+		getWordTemplates:function(countryCode){
+			///v2/tender/WordTemplateCountry?$expand=WordTemplates&$filter=countryCode%20eq%20%27IT%27
+			return this.odata("/WordTemplateCountry").get({urlParameters:{"$expand":"WordTemplates"},filters:[new Filter({path:"countryCode",operator:FilterOperator.EQ,value1:countryCode})]});
 		}
 	});
 	return QuotationService;
