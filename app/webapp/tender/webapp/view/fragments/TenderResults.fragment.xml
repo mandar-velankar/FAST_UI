@@ -234,7 +234,7 @@
                             </t:Column>
 
                              <!--italy fields-->
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Extension Date"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>ExtensionDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
@@ -242,28 +242,28 @@
                                 </t:template>
                             </t:Column>
 
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Extension notes"/>
                                 <t:template>
                                     <m:Input value="{fastAppData>ExtensionNotes}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>
                             </t:Column>
 
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Award Letter No."/>
                                 <t:template>
                                     <m:Input value="{fastAppData>AwardLetterNo}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>
                             </t:Column>
 
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Award Delib. No."/>
                                 <t:template>
                                     <m:Input value="{fastAppData>AwardDelibNo}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>
                             </t:Column>
 
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Delivery Date"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>DeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
@@ -271,7 +271,7 @@
                                 </t:template>
                             </t:Column>
 
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Result Date"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>ResultDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
@@ -279,7 +279,7 @@
                                 </t:template>
                             </t:Column>
 
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Award Date"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>AwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
@@ -287,7 +287,7 @@
                                 </t:template>
                             </t:Column>
 
-                            <t:Column width="14rem">
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                 <m:Label text="Award Acting"/>
                                 <t:template>
                                     <m:Input value="{fastAppData>AwardActing}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
