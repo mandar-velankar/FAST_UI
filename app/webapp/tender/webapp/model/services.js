@@ -686,6 +686,13 @@ sap.ui.define([
 				Reason: "",
 				Comment: "",
 				AwardedTier: "",
+				ExtensionNotes: "",
+				AwardLetterNo: "",
+				AwardDelibNo: "",
+				DeliveryDate: null,
+				ResultDate: null,
+				AwardDate: null,
+				AwardActing: "",
 				_sOperation: "POST"
 			};
 
