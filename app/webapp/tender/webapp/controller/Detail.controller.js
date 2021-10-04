@@ -1353,19 +1353,19 @@ sap.ui.define([
 				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
 
 					//Tender Results - subsection
-					var oFinHistorySubSection = that.byId("TenderResOfferSubsection");
+					var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oFinHistorySubSection) {
 						oFinHistorySubSection.setVisible(false);
 					}
 
 					//Tender Results - awarded companies
-					var oFinHistorySubSection = that.byId("TenderResOfferAwardedComp");
+					var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferAwardedComp");
 					if (oFinHistorySubSection) {
 						oFinHistorySubSection.setVisible(true);
 					}
 
 					//Quotation offer: No offer subsection
-					var oFinNoOfferSubsection = that.byId("TenderResNoOfferSubsection");
+					var oFinNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oFinNoOfferSubsection) {
 						oFinNoOfferSubsection.setVisible(false);
 					}
@@ -1374,19 +1374,19 @@ sap.ui.define([
 				} else {
 
 					//Tender Results - subsection
-					var oTenderResOfferSubSection = that.byId("TenderResOfferSubsection");
+					var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oTenderResOfferSubSection) {
 						oTenderResOfferSubSection.setVisible(false);
 					}
 
 					//Tender Results - awarded companies
-					var oAwardedCompSubSection = that.byId("TenderResOfferAwardedComp");
+					var oAwardedCompSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferAwardedComp");
 					if (oAwardedCompSubSection) {
 						oAwardedCompSubSection.setVisible(false);
 					}
 
 					//Quotation offer: No offer subsection
-					var oTenderResNoOfferSubsection = that.byId("TenderResNoOfferSubsection");
+					var oTenderResNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oTenderResNoOfferSubsection) {
 						oTenderResNoOfferSubsection.setVisible(true);
 					}
@@ -7735,7 +7735,9 @@ sap.ui.define([
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							if (sStatus === "Offer Approved" && (oQuotation) && ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+							debugger;
+							if (sStatus === "Offer Approved" && (oQuotation) ){
+							//&& ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
 							}
 							that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7932,7 +7934,8 @@ sap.ui.define([
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 				window.open("/app/#/priceagreements/" + oLoadedPriceAgreement.ID);
 			} else {
-				var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 				var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 				
@@ -7960,10 +7963,9 @@ sap.ui.define([
 				} else {
 					BusyIndicator.show();
 					var oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
-					var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
-					var bUpdate = false;
-
-					if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
+					//var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
+					
+					/*if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
 						BusyIndicator.hide();
 						sap.m.MessageBox.warning("Please confirm the bank guarantee first, before creating a price agreement.", {});
 						return;
@@ -7986,16 +7988,14 @@ sap.ui.define([
 									return;
 								}
 							}
-						});*/
-						
-					}
+						});
+					}*/
 
 					if(!oPriceAgreementSaveInfo){
 						oPriceAgreementSaveInfo = this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
 						oPriceAgreementSaveInfo._sOperation = "POST";
 					} else {
 						oPriceAgreementSaveInfo._sOperation = "PUT";
-						bUpdate = true;
 					}
 
 					$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
@@ -8234,7 +8234,8 @@ sap.ui.define([
 			if (sSelectedOfferID && Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), Services.getTenderResultsPageSectionID())) {
 
 				//indicate that tree table is loading
-				var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 				oOutcomeTreeTable.setBusy(true);
 
 				//Product path
@@ -8461,13 +8462,15 @@ sap.ui.define([
 
 		//collapse hyrarchie of tree table
 		onCollapseOutcome: function () {
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			oOutcomeTreeTable.collapseAll();
 		},
 
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			oOutcomeTreeTable.expandToLevel(1);
 		},
 
@@ -8476,7 +8479,8 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
@@ -8578,7 +8582,8 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
