@@ -6955,7 +6955,7 @@ sap.ui.define([
 				case "POST":
 					delete oPriceAgreementSaveInfo._sOperation;
 					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
-						oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 						
 						//show message view
 						that.getOfferCompositeMessages().push({

@@ -8000,6 +8000,8 @@ sap.ui.define([
 						//message that you 
 						sap.m.MessageToast.show("Price Agreement has been created");*/
 						$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
+							//oFastAppDataModel.setProperty("/newPriceAgreement", oData.results[0]);
+							//oFastAppDataModel.setProperty("/test", oData.results[0]);
 							BusyIndicator.hide();
 						});
 					});
