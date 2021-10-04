@@ -68,8 +68,8 @@
                             <m:OverflowToolbar>
                                 <m:Button id="btnAddAwardProduct" text="Add awarded product" icon="sap-icon://add" press="onAddAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 <m:Button id="btnDeleteAwardProduct" text="Remove awarded product" icon="sap-icon://delete" press="onDeleteAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-                                <m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }"/>
-                                <m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>/newPriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}"/>
+                                <m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>
+                                <m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>/newPriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>
                                 <m:ToolbarSpacer/>
                                 <m:Button text="Collapse all" press="onCollapseOutcome"/>
                                 <m:Button text="Expand all" press="onExpandOutcome"/>
