@@ -686,6 +686,7 @@ sap.ui.define([
 				Reason: "",
 				Comment: "",
 				AwardedTier: "",
+				ExtensionNotes: null,
 				ExtensionNotes: "",
 				AwardLetterNo: "",
 				AwardDelibNo: "",

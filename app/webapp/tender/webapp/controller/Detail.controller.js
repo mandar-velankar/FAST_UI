@@ -2959,6 +2959,10 @@ sap.ui.define([
 				if(this._pageFragments.QuotationView_CL){
 					this._pageFragments.QuotationView_CL = null;
 				}
+
+				if(this._pageFragments.QuotationView_IT){
+					this._pageFragments.QuotationView_IT = null;
+				}
 			}
 
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
@@ -8368,14 +8372,6 @@ sap.ui.define([
 												CURRENCY: oCompetitorResult.CURRENCY,
 												LISTOUTCOMEREASONS: oCompetitorResult.ListOutcomeReasons,
 												CountryCompetitorProducts: aCountryCompetitorProducts,
-												//italy
-												ExtensionNotes: oCompetitorResult.ExtensionNotes,
-												AwardLetterNo: oCompetitorResult.AwardLetterNo,
-												AwardDelibNo: oCompetitorResult.AwardDelibNo,
-												DeliveryDate: oCompetitorResult.DeliveryDate,
-												ResultDate: oCompetitorResult.ResultDate,
-												AwardDate: oCompetitorResult.AwardDate,
-												AwardActing: oCompetitorResult.AwardActing,
 												_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
 											}
 											aCompetitorResult.push(oCompetitorResultForView);
@@ -8429,13 +8425,14 @@ sap.ui.define([
 										LISTOUTCOMEREASONS: oResult.ListOutcomeReasons,
 										OutcomeLevel: aCompetitorResult,
 										//italy
-										ExtensionNotes: oProduct.ExtensionNotes,
-										AwardLetterNo: oProduct.AwardLetterNo,
-										AwardDelibNo: oProduct.AwardDelibNo,
-										DeliveryDate: oProduct.DeliveryDate,
-										ResultDate: oProduct.ResultDate,
-										AwardDate: oProduct.AwardDate,
-										AwardActing: oProduct.AwardActing,
+										ExtensionDate: oResult.ExtensionDate,
+										ExtensionNotes: oResult.ExtensionNotes,
+										AwardLetterNo: oResult.AwardLetterNo,
+										AwardDelibNo: oResult.AwardDelibNo,
+										DeliveryDate: oResult.DeliveryDate,
+										ResultDate: oResult.ResultDate,
+										AwardDate: oResult.AwardDate,
+										AwardActing: oResult.AwardActing,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 
