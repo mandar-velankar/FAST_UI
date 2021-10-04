@@ -7733,7 +7733,9 @@ sap.ui.define([
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							if (sStatus === "Offer Approved" && (oQuotation) && ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+							debugger;
+							if (sStatus === "Offer Approved" && (oQuotation) ){
+							//&& ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
 							}
 							that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7959,10 +7961,9 @@ sap.ui.define([
 				} else {
 					BusyIndicator.show();
 					var oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
-					var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
-					var bUpdate = false;
-
-					if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
+					//var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
+					
+					/*if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
 						BusyIndicator.hide();
 						sap.m.MessageBox.warning("Please confirm the bank guarantee first, before creating a price agreement.", {});
 						return;
@@ -7985,16 +7986,14 @@ sap.ui.define([
 									return;
 								}
 							}
-						});*/
-						
-					}
+						});
+					}*/
 
 					if(!oPriceAgreementSaveInfo){
 						oPriceAgreementSaveInfo = this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
 						oPriceAgreementSaveInfo._sOperation = "POST";
 					} else {
 						oPriceAgreementSaveInfo._sOperation = "PUT";
-						bUpdate = true;
 					}
 
 					$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
