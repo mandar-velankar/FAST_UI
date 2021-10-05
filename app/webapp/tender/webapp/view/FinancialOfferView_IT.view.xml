@@ -1,0 +1,268 @@
+<mvc:View controllerName="FAST_NS0FAST0.controller.FinancialOffer_IT" xmlns="sap.m" xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:t="sap.ui.table" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:u="sap.uxap">
+
+	
+
+	<!-- TENDER OFFER SUBSECTION -->
+	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer">
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<VBox>
+						<FormattedText htmlText="Offer not available for financial offer..."/>
+					</VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+	<!-- TENDER OFFER SUBSECTION -->
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded">
+		<u:actions>
+			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
+			<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onTenderOverviewPress" visible="{= ${fastAppData>/Tender/CountryCode} === 'AR' }" />	
+			
+		</u:actions>
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<VBox>
+						
+						<!-- Form with selected offer data -->
+						<form:SimpleForm id="idCurrencyForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+							emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true" title="">
+							<Label text="{i18n>Currency}"/>
+							<Select id="idCurrency" enabled="false"></Select>
+							<Label text="{i18n>FOC}"/>
+							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
+								<items>
+									<core:Item key="FOC 2" text="In addition to requested volume" />
+									<core:Item key="FOC 1" text="Part of requested volume" />									
+								</items>
+							</Select>
+						</form:SimpleForm>
+						
+						<!-- Table with products -->
+						<Table id="idFinancialOfferViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto" updateFinished="onBindingItemsFinished">
+							<columns>
+								<Column>
+									<Text text="{i18n>Product}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>Volume}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>UoM}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>NetPrice}"/>
+								</Column>
+								<Column>
+									<Text text="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"/>
+								</Column>
+								<Column visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}">
+									<Text text="{i18n>COGS}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>GrossSales}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>NetSales}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>Profitability}"/>
+								</Column>
+							</columns>
+						</Table>
+						
+					</VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+	
+	<!-- PRICING OFFER SUBSECTION -->
+	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection">
+		<l:BlockLayout background="Light">
+
+			<!-- Selling -->
+			<l:BlockLayoutRow visible="true"> <!-- visible="{= ${offerType} === 'Selling'}" -->
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+					<l:HorizontalLayout>
+						<form:SimpleForm id="SimpleFormDisplay354"
+							editable="false"
+							layout="ResponsiveGridLayout"
+							labelSpanXL="3"
+							labelSpanL="3"
+							labelSpanM="3"
+							labelSpanS="12"
+							adjustLabelSpan="false"
+							emptySpanXL="4"
+							emptySpanL="4"
+							emptySpanM="4"
+							emptySpanS="0"
+							columnsXL="1"
+							columnsL="1"
+							columnsM="1"
+							singleContainerFullSize="false" >
+							<form:content>
+								<Label text="Warranty" />
+								<Text text="22.36 EUR" visible="{= ${Division} === 'Radiology'}"/>
+								<Label text="Status of device" />
+								<ComboBox
+									visible="{= ${Division} === 'Radiology'}"
+									items="{
+										path: '/DummyCollection',
+										sorter: { path: 'dummy' }
+									}">
+									<core:Item key="{key}" text="{text}" />
+								</ComboBox>
+								<Label text="Consumer Price (w/o VAT) per pack" />
+								<Text text="14.36 EUR" />
+								<Label text="Consumer Price (with VAT) per pack" />
+								<Text text="14.36 EUR" />
+								<Label text="Consumer Price (w/o VAT) per unit" />
+								<Text text="14.36 EUR" />
+								<Label text="Consumer Price (with VAT) per unit" />
+								<Text text="14.36 EUR" />
+								<Label text="Tax (VAT) per pack" />
+								<Text text="14.36 EUR" />
+								<Label text="Mandatory / Ex-factory discount" />
+								<Text text="14.36 EUR" />
+								<Label text="I° confidential discount" />
+								<Text text="14.36 EUR" />
+								<Label text="II° confidential discount" />
+								<Text text="14.36 EUR" />
+								<Label text="Total Discount" />
+								<Text text="14.36 EUR" />
+								<Label text="Max Price for NHS per pack w/o VAT" />
+								<Text text="14.36 EUR" />
+								<Label text="Max Price for NHS per unit w/o VAT" />
+								<Text text="14.36 EUR" />
+								<Label text="Additional Discount" />
+								<Text text="14.36 EUR" />
+								<Label text="Total Discount" />
+								<Text text="14.36 EUR" />
+								<Label text="Free goods same product" />
+								<Input  />
+								<Label text="Net Offer Price per pack" />
+								<Text text="14.36 EUR" />
+								<Label text="Net Offer Price per unit" />
+								<Text text="14.36 EUR" />
+								<Label text="Free goods for other product(s)" />
+								<Input  />
+							</form:content>
+						</form:SimpleForm>
+
+					</l:HorizontalLayout>
+				</l:BlockLayoutCell>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
+					<Table id="idProfitabilityTable" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<viz:VizFrame id="idListToNetChart" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
+						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+			
+			<!-- Rental -->
+			<l:BlockLayoutRow visible="true"> <!-- visible="{= ${offerType} === 'Rental'}" -->
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+					<l:HorizontalLayout>
+						<form:SimpleForm id="idRental" editable="true" maxContainerCols="3" layout="ResponsiveGridLayout" labelSpanL="1" labelSpanM="1"
+							emptySpanL="1" emptySpanM="1" columnsL="3" columnsM="3" class="editableForm" visible="true" title=""></form:SimpleForm>
+					</l:HorizontalLayout>
+				</l:BlockLayoutCell>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
+					<Table id="idProfitabilityTable2" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<viz:VizFrame id="idListToNetChart2" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
+						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+
+			<!-- Comodato -->
+			<l:BlockLayoutRow visible="true"> <!-- visible="{= ${offerType} === 'Comodato'}" -->
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+					<l:HorizontalLayout>
+						<form:SimpleForm id="idComodato" editable="true" maxContainerCols="3" layout="ResponsiveGridLayout" labelSpanL="1" labelSpanM="1"
+							emptySpanL="1" emptySpanM="1" columnsL="3" columnsM="3" class="editableForm" visible="true" title=""></form:SimpleForm>
+					</l:HorizontalLayout>
+				</l:BlockLayoutCell>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
+					<Table id="idProfitabilityTable3" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<viz:VizFrame id="idListToNetChart3" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
+						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+
+	
+	<!-- TENDER HISTORY SUBSECTION -->
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History">
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<Table id="tenderHistoryId" inset="false">
+						<headerToolbar>
+							<Toolbar>
+								<content>
+									<ToolbarSpacer/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck"
+											  visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false }"/>
+									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
+									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
+									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
+									<CheckBox id="lossCheckId" text="{i18n>Loss}" selected= "false" select=".onHistoryFilterCheck"/>
+								</content>
+							</Toolbar>
+						</headerToolbar>
+						<columns>
+							<Column>
+								<Text text="{i18n>TenderID}"/>
+							</Column>
+							<Column>
+								<Text text="{i18n>Tender}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>OfferID}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>OfferDate}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>InstituteName}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Product}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>UnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>PackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetUnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetPackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>UnitPack}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>FOC}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Status}"/>
+							</Column>
+						</columns>
+					</Table>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+</mvc:View>

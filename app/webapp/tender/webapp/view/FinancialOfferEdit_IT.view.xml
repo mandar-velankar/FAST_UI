@@ -1,6 +1,8 @@
-<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.OfferProducts" xmlns="sap.m" xmlns:core="sap.ui.core"
-	xmlns:form="sap.ui.layout.form" xmlns:t="sap.ui.table" xmlns:u="sap.uxap" xmlns:l="sap.ui.layout" xmlns:viz.data="sap.viz.ui5.data"
-	xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+<mvc:View controllerName="FAST_NS0FAST0.controller.FinancialOffer_IT" xmlns="sap.m" xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:t="sap.ui.table" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:u="sap.uxap">
+
+
 	<u:ObjectPageSubSection title="Tender Offer" mode="Expanded">
 		<u:actions>
 			<Button text="Scenario Planner" icon="sap-icon://customize" press=".onToggleScenarioPlanner"/>
@@ -9,14 +11,6 @@
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
 					<VBox>
-						<!--
-						<Toolbar>
-							<Title level="H3" text=""/>
-							<ToolbarSpacer/>
-							<Button text="Scenario Planner" icon="sap-icon://customize" press=".onToggleScenarioPlanner"/>
-						</Toolbar>
-						<Label/>
-						-->
 						<form:SimpleForm id="idEditCurrencyForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
 							emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="true" title="">
 							<Label text="{i18n>Currency}"/>
@@ -46,9 +40,9 @@
 									<Text text="{i18n>NetPrice}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>OfferPrice_BR}"/>
+									<Text text="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"/>
 								</Column>
-								<Column>
+								<Column visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}">
 									<Text text="{i18n>COGS}"/>
 								</Column>
 								<Column>
@@ -67,6 +61,7 @@
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
+
 	<u:ObjectPageSubSection id="idPricingOffer" title="Pricing Offer">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
@@ -77,18 +72,15 @@
 					</l:HorizontalLayout>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idEditProfitabilityTable"></Table>
+					<Table id="idEditProfitabilityTable" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
 					<viz:VizFrame id="idEditListToNetChart" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
 			</l:BlockLayoutRow>
-			<!--<l:BlockLayoutRow>-->
-			<!--	<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">-->
-					
-			<!--	</l:BlockLayoutCell>-->
-			<!--</l:BlockLayoutRow>-->
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
+
+	
 	<u:ObjectPageSubSection id="idScenarioPlanner" title="Scenario Planner" visible="false">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
@@ -117,6 +109,8 @@
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
+
+
 	<u:ObjectPageSubSection title="Tender History">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
@@ -126,7 +120,8 @@
 							<Toolbar>
 								<content>
 									<ToolbarSpacer/>
-									<CheckBox id="editCurrentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="false"/>
+									<CheckBox id="editCurrentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" 
+											  visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false }"/>
 									<CheckBox id="editCurrentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="editParentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
 									<CheckBox id="editWonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
@@ -180,75 +175,5 @@
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
-	<!--TEMP COMMENT
-	<u:ObjectPageSubSection title="Tier Based Pricing">
-		<l:BlockLayout background="Light">
-			<l:BlockLayoutRow>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-					<l:Grid hSpacing="2" defaultSpan="XL3 L3 M6 S12" class="sapUiSmallMargin">
-						<l:VerticalLayout>
-							<form:SimpleForm id="idEditPriceOfferTier1" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12"
-								labelSpanM="12" emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm" visible="false" title="Scenario 1"></form:SimpleForm>
-						</l:VerticalLayout>
-						<l:VerticalLayout>
-							<form:SimpleForm id="idEditPriceOfferTier2" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12"
-								labelSpanM="12" emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="false" title="Scenario 2"></form:SimpleForm>
-						</l:VerticalLayout>
-						<l:VerticalLayout>
-							<form:SimpleForm id="idEditPriceOfferTier3" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12"
-								labelSpanM="12" emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm" visible="false" title="Scenario 3"></form:SimpleForm>
-						</l:VerticalLayout>
-					</l:Grid>
-				</l:BlockLayoutCell>
-			</l:BlockLayoutRow>
-		</l:BlockLayout>
-	</u:ObjectPageSubSection>
-	<u:ObjectPageSubSection title="Tender History">
-		<l:BlockLayout background="Light">
-			<l:BlockLayoutRow>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-					<Table id="EdittenderHistoryId" inset="false">
-						<headerToolbar>
-							<Toolbar>
-								<content>
-									<ToolbarSpacer/>
-									<CheckBox id="EditcurrentInstituteCheckId" text="{i18n>CurrentInstitute}"/>
-									<CheckBox id="EditcurrentProductCheckId" text="{i18n>CurrentProduct}"/>
-									<CheckBox id="EditwonCheckId" text="{i18n>Won}"/>
-									<CheckBox id="EditlossCheckId" text="{i18n>Loss}"/>
-								</content>
-							</Toolbar>
-						</headerToolbar>
-						<columns>
-							<Column>
-								<Text text="{i18n>TenderID}"/>
-							</Column>
-							<Column>
-								<Text text="{i18n>Tender}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>OfferID}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>OfferDate}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>InstituteName}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>Product}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>BidPrice}"/>
-							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>Status}"/>
-							</Column>
-						</columns>
-					</Table>
-				</l:BlockLayoutCell>
-			</l:BlockLayoutRow>
-		</l:BlockLayout>
-	</u:ObjectPageSubSection>
-	-->
-</core:FragmentDefinition>
+
+</mvc:View>
