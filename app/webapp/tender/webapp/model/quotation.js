@@ -373,7 +373,6 @@ sap.ui.define([
 					var oFastDataCalls = Services.getDefaultModel();
 					var oFastAppDataModel = Services.getFastAppDataModel();
 					
-					var that = this;
 					
 					var sPath = "/BankGuarantees";
 					
@@ -387,13 +386,13 @@ sap.ui.define([
 					//Reading the back end data from the tender table
 					oFastDataCalls.read(sPath, {
 							filters: aFilters,
-							success: function(oData, oResponse) {
+							success: function(oData) {
 								
 								//Offer validation data
-								var oBankGuarantee = oData.results[0];
+								var oBankGuarantees = oData.results;
 								
 								//data received is set to the award model
-								oFastAppDataModel.setProperty("/newBankGuarantee", oBankGuarantee);
+								oFastAppDataModel.setProperty("/BankGuarantees", oBankGuarantees);
 								
 								//let the callback be triggered
 								oDeferred.resolve(oData);

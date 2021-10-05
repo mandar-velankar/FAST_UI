@@ -7727,13 +7727,13 @@ sap.ui.define([
 						$.when(Quotation.loadQuotationForSelectedOffer(quotationFields.OfferDate)).done(function (oData) {
 
 							var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
-							var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
+							//var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
 
 							//get updated status
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							debugger;
+							
 							if (sStatus === "Offer Approved" && (oQuotation) ){
 							//&& ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
@@ -7780,7 +7780,51 @@ sap.ui.define([
 
 		},
 
+		onBankGuarantee: function (oEvent){
+			let type = oEvent.getParameter("item").getText();
+
+			var that = this;
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
+			let oBankGuarantees = oFastAppDataModel.getProperty("/BankGuarantees");
+			let currentBankGuarantee ;
+
+			if(oBankGuarantees.length === 0){
+				currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+
+			} else {
+				currentBankGuarantee = oBankGuarantees.filter(bgr => bgr.Type === type)[0];
+
+				if(!currentBankGuarantee){
+					currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+				}
+
+
+			}
+
+			oFastAppDataModel.setProperty("/newBankGuarantee/", currentBankGuarantee);
+
+			
+
+			//Open the dialog
+			if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+				that._getCreateBankGuaranteeDialog().open();
+			} else {
+				$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
+					that._getCreateBankGuaranteeDialog().open();
+				});
+			}
+
+
+
+
+			
+
+
+		},
+
 		onSaveNewBankGuarantee: function (oEvent){
+			
 			BusyIndicator.show();
 			let oBankGuaranteeSaveInfo = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
 			let bUpdate = false;
@@ -7789,7 +7833,14 @@ sap.ui.define([
 				oBankGuaranteeSaveInfo.Status = "Preliminary";
 				oBankGuaranteeSaveInfo._sOperation = "POST";
 			} else {
-				oBankGuaranteeSaveInfo._sOperation = "PUT";
+				if(!oBankGuaranteeSaveInfo.ID){//if new bank guarantee => POST
+					oBankGuaranteeSaveInfo._sOperation = "POST";
+				} else {
+					oBankGuaranteeSaveInfo._sOperation = "PUT";
+				}
+
+
+				
 				bUpdate = true;
 			}
 
@@ -7798,7 +7849,7 @@ sap.ui.define([
 					this._getCreateBankGuaranteeDialog().close();
 
 					if(bUpdate === false){
-						this.byId("btnCreateBankGuarantee").setText("Edit Bank Guarantee");
+						//this.byId("btnCreateBankGuarantee").setText("Edit Bank Guarantee");
 
 						Services.getOfferCompositeMessages().push({
 							type: 'Success',
@@ -7810,7 +7861,8 @@ sap.ui.define([
 							type: 'Success',
 							title: 'Bank Guarantee Update',
 							description: 'Bank guarantee for this tender has been updated succesfully.'
-					});}
+					});
+					}
 					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
 					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
 				});
@@ -7826,6 +7878,16 @@ sap.ui.define([
 		},
 
 		onCancelNewBankGuarantee: function (oEvent){
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
+
+			if(!oBankGuarantee.ID){//only delete when bankguarantee was an empty one 
+				oFastAppDataModel.setProperty("/newBankGuarantee", undefined);
+			}
+
+			
+			
+
 			this._getCreateBankGuaranteeDialog().close();
 		},
 		
@@ -7847,20 +7909,49 @@ sap.ui.define([
 			return this._oAddNewBankGuaranteeDialog;
 		},
 
-		onUpdateBankGuarantee: function(){
+		onUpdateBankGuarantee: function(oEvent){
 			BusyIndicator.show();
 
+			let that = this;
+			let type = oEvent.getParameter("item").getText();
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTenderResults = oFastAppDataModel.getProperty('/ResultsForTree');
 			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
-			let oBankGuaranteeSaveInfo = oFastAppDataModel.getProperty('/newBankGuarantee');
-			let that = this;
+			let oBankGuarantees = oFastAppDataModel.getProperty("/BankGuarantees");
+			let currentBankGuarantee ;
 
-			oTenderResults.forEach(function (oTenderResult, iIndex) {
-				if(oTenderResult.OUTCOME === "Won"){
+			if(oBankGuarantees.length === 0){
+				currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+				
+
+			} else {
+				currentBankGuarantee = oBankGuarantees.filter(bgr => bgr.Type === type)[0];
+
+				if(!currentBankGuarantee){
+					currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+				}
+
+
+			}
+
+			
+			
+		
+
+			let wonProducts = oTenderResults.filter(res => res.OUTCOME === "Won")[0];
+
+				if(wonProducts){
 					//update the status
-					oBankGuaranteeSaveInfo.Status = "Confirmed";
-					oBankGuaranteeSaveInfo._sOperation = "PUT";
+					currentBankGuarantee.Status = "Confirmed";
+
+					if(!currentBankGuarantee){
+						currentBankGuarantee._sOperation = "POST";
+					} else {
+						currentBankGuarantee._sOperation = "PUT";
+					}
+					
+
+					oFastAppDataModel.setProperty("/newBankGuarantee/", currentBankGuarantee);
 
 					//Open the dialog
 					if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
@@ -7870,31 +7961,45 @@ sap.ui.define([
 							that._getCreateBankGuaranteeDialog().open();
 						});
 					}
-				} else {
-					//Ask user if he's sure to cancel the bank guarantee
-					sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
-						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-						styleClass: "sapUiSizeCompact",
-						onClose: function (sAction) {
-							if (sAction === "YES") {
-								oBankGuaranteeSaveInfo.Status = "Cancelled";
-								oBankGuaranteeSaveInfo._sOperation = "PUT";
-								if(Services.checkNewBankGuarantee(oBankGuaranteeSaveInfo)){
-									$.when(Services.saveBankGuarantee(oBankGuaranteeSaveInfo)).done(() => {
-											Services.getOfferCompositeMessages().push({
-												type: 'Success',
-												title: 'Bank Guarantee Update',
-												description: 'Bank guarantee has been cancelled.'
-										});
-									});
-								}
+				
+
+						} else if(!currentBankGuarantee.ID){
+
+
+								sap.m.MessageToast.show("No products are won!");
+
+
+
 							} else {
-								return;
+
+								//Ask user if he's sure to cancel the bank guarantee
+								sap.m.MessageBox.warning("There are no products won. Would you like to close the bank guarantee?", {
+									actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+									styleClass: "sapUiSizeCompact",
+									onClose: function (sAction) {
+										if (sAction === "YES") {
+											currentBankGuarantee.Status = "Cancelled";
+											currentBankGuarantee._sOperation = "PUT";
+											if(Services.checkNewBankGuarantee(currentBankGuarantee)){
+												$.when(Services.saveBankGuarantee(currentBankGuarantee)).done(() => {
+														Services.getOfferCompositeMessages().push({
+															type: 'Success',
+															title: 'Bank Guarantee Update',
+															description: 'Bank guarantee has been cancelled.'
+													});
+												});
+											}
+										} else {
+											return;
+										}
+									}
+								});
+
+
+
 							}
-						}
-					});
-				}
-			});
+
+
 
 
 			BusyIndicator.hide();

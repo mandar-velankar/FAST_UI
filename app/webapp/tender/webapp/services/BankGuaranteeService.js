@@ -39,7 +39,7 @@ sap.ui.define([
 		},
 		
 		//getting an empty Delivery
-		createEmptyBankGuarantee: function () {
+		createEmptyBankGuarantee: function (type) {
 
 			//if its null we can not bind to it
 			var oBankGuarantee = {};
@@ -54,7 +54,7 @@ sap.ui.define([
                 IssueDate: null,
                 ClosingDate: null,
                 Status: "",
-                Type: "",
+                Type: type,
                 GuaranteedAmount: 0,
                 Currency: "",
                 Comment: "",
