@@ -208,7 +208,7 @@
 			<ObjectPageSection id="financialOfferId_IT" title="{i18n>FinancialOffer}" showTitle="true" visible="{fastAppData>/permissions/tabs/financialOfferId_IT/visible}">
 				<subSections>
 					<ObjectPageSubSection id="financialOffer_IT_SubSectionId">
-						<mvc:XMLView id="financialOfferViewId_IT" viewName="FAST_NS0FAST0.view.FinancialOfferView_IT"/>
+						<mvc:XMLView id="financialOfferViewId_IT" viewName="FAST_NS0FAST0.view.FinancialOffer_IT"/>
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
