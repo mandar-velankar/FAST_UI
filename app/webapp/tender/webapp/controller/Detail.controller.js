@@ -120,6 +120,7 @@ sap.ui.define([
 
 			that._country = sCountry;
 
+
 			// set the visible country
 			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
 
@@ -148,7 +149,11 @@ sap.ui.define([
 			//Services.loadCountryPermissions(sCountry);
 
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
+				// TODO:
+			});
 
+			$.when(Services.loadTenderPriceAgreement(sTenderID)).done(function (oData) {
+				// TODO:
 			});
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
@@ -307,6 +312,7 @@ sap.ui.define([
 			oDetailController.getView().byId("idClassification").setEnabled(true);
 			oDetailController.getView().byId("idInstituteType").setEnabled(true);
 			oDetailController.getView().byId("idInstituteName").setEnabled(true);
+
 			if(Services.getSelectedCountry() === 'CL'){
 				oDetailController.getView().byId("idTenderChannel").setSelectedKey("Direct");
 				oDetailController.getView().byId("idTenderChannel").setEnabled(false);
@@ -349,6 +355,13 @@ sap.ui.define([
 			//should salestype be visible on the screen based on data back-end
 			$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
 				oSalesType.setVisible(bShowSalesType);
+
+				// TODO: check why "idClassification" is set back to visible after  checkShowSalesType()
+				// Settings for Italy 
+				if(Services.getSelectedCountry() === 'IT'){
+					oDetailController.getView().byId("idClassification").setVisible(false);
+					oDetailController.getView().byId("idTenderChannel").setVisible(false);
+				}
 			});
 
 			//should tendertype be visible on the screen based on data back-end
@@ -458,6 +471,12 @@ sap.ui.define([
 			//oDetailController.getView().byId("deleteButtonId").setVisible(false);//must be removed as button no longer exists
 			oDetailController.getView().byId("editButtonId").setEnabled(false);
 			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
+
+			// for Italy the clone button is not visible
+			if(this._country === 'IT'){
+				oDetailController.getView().byId("cloneButtonId").setVisible(false);
+			}
+
 			oDetailController.getView().byId("deleteTenderButtonId").setEnabled(false);
 
 			// oDetailController.getView().byId("DetailPage").setShowAnchorBar(false);
@@ -566,6 +585,7 @@ sap.ui.define([
 		_ExistingTenderMatched: function (oDetailController, sTab) {
 
 			//get selected Tender Path
+			var that = this;
 			var sTenderID = Services.getSelectedTenderID();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
@@ -625,6 +645,17 @@ sap.ui.define([
 
 				// this sets the Specifications dropdown
 				oDetailController.setTenderSpecificationsSelectedKeys(sTenderID);
+
+				
+				// Italy 
+				if (Services.getSelectedCountry() === "IT"){
+					that.getTenderRegions(sTenderID).then(response => {
+						const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+						that.byId("idRegionView").setSelectedKeys(regionIDs);
+						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
+					})
+				}
+			
 
 				//vanaf hier 
 
@@ -687,7 +718,14 @@ sap.ui.define([
 				} else {
 					oDetailController.getView().byId("editButtonId").setEnabled(true);
 				}
-				oDetailController.getView().byId("cloneButtonId").setVisible(true);
+
+				// for Italy the clone button is not visible
+				if(oDetailController._country === 'IT'){
+					oDetailController.getView().byId("cloneButtonId").setVisible(false);
+				}else {
+					oDetailController.getView().byId("cloneButtonId").setVisible(true);
+				}
+				
 				oDetailController.getView().byId("cloneButtonId").setEnabled(true);
 				oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
 
@@ -1315,19 +1353,19 @@ sap.ui.define([
 				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
 
 					//Tender Results - subsection
-					var oFinHistorySubSection = that.byId("TenderResOfferSubsection");
+					var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oFinHistorySubSection) {
 						oFinHistorySubSection.setVisible(false);
 					}
 
 					//Tender Results - awarded companies
-					var oFinHistorySubSection = that.byId("TenderResOfferAwardedComp");
+					var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferAwardedComp");
 					if (oFinHistorySubSection) {
 						oFinHistorySubSection.setVisible(true);
 					}
 
 					//Quotation offer: No offer subsection
-					var oFinNoOfferSubsection = that.byId("TenderResNoOfferSubsection");
+					var oFinNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oFinNoOfferSubsection) {
 						oFinNoOfferSubsection.setVisible(false);
 					}
@@ -1336,19 +1374,19 @@ sap.ui.define([
 				} else {
 
 					//Tender Results - subsection
-					var oTenderResOfferSubSection = that.byId("TenderResOfferSubsection");
+					var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oTenderResOfferSubSection) {
 						oTenderResOfferSubSection.setVisible(false);
 					}
 
 					//Tender Results - awarded companies
-					var oAwardedCompSubSection = that.byId("TenderResOfferAwardedComp");
+					var oAwardedCompSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferAwardedComp");
 					if (oAwardedCompSubSection) {
 						oAwardedCompSubSection.setVisible(false);
 					}
 
 					//Quotation offer: No offer subsection
-					var oTenderResNoOfferSubsection = that.byId("TenderResNoOfferSubsection");
+					var oTenderResNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oTenderResNoOfferSubsection) {
 						oTenderResNoOfferSubsection.setVisible(true);
 					}
@@ -1886,6 +1924,17 @@ sap.ui.define([
 						that.getView().byId("idSelectSalesTypeEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderOriginEdit").setEnabled(false);
 						that.getView().byId("idSelectContractTypeEdit").setEnabled(false);
+
+
+						// Italy
+						if (Services.getSelectedCountry() === "IT"){
+						that.getView().byId("idRegionEdit").setVisible(true);
+							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
+								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								that.byId("idRegionEdit").setSelectedKeys(regionIDs);
+								that.byId("idTenderChannel").setVisible(false);
+							})
+						}
 
 						//apply country filter on tender type
 						var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
@@ -2872,6 +2921,8 @@ sap.ui.define([
 			Services.clearDeliveriesForProduct();
 			Services.clearLettersForProduct();
 			Quotation.clearQuotationOfferProducts();
+			this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
+			this.byId("idRegionEdit").setVisible(false); // hide regions
 
 			//tender should no longer be selected
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -3327,10 +3378,18 @@ sap.ui.define([
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT'){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
 			}else{
 				this.byId("idSelectTenderTypeEdit").setVisible(false);
+			}
+
+			// hide/unhide the Region field
+			if(selectedItem === 'Public Region(s)' && this._country === 'IT'){
+				this.byId("idRegionEdit").setVisible(true);
+			}else{
+				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
+				this.byId("idRegionEdit").setVisible(false);
 			}
 		},
 
@@ -3431,7 +3490,13 @@ sap.ui.define([
 					//convert Tender data for saving
 					var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
 
-					that.updateBasicTenderInfo(oTenderToSave, path, oRefre).then(async function (oResult) {
+					/* Italy */
+					const tenderRegions = {
+						"TenderID": oTenderToSave.TenderID,
+						"RegionIDs": this.byId("idRegionEdit").getSelectedKeys()
+					};
+
+					that.updateBasicTenderInfo(oTenderToSave, path, oRefre, tenderRegions).then(async function (oResult) {
 
 						//after saving we reload tender info even if it is already loaded
 						var sTenderID = Services.getSelectedTenderID();
@@ -3452,6 +3517,16 @@ sap.ui.define([
 							} catch(err){
 								console.error(err);
 							}
+						}
+
+						// Italy - Load regins again 
+						if (Services.getSelectedCountry() === "IT"){
+							that.byId("idRegionView").setBusy(true);
+							that.getTenderRegions(sTenderID).then(response => {
+								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								that.byId("idRegionView").setSelectedKeys(regionIDs);
+								that.byId("idRegionView").setBusy(false);
+							})
 						}
 
 						//load tender data again so refresh is done
@@ -3518,7 +3593,7 @@ sap.ui.define([
 			// END Brazil only
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
-			oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
+			oSaveBasicInfo.TenderChannel = this._country === 'IT' ? 'Direct' : this.byId("idTenderChannel").getSelectedItem().getText();
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
 			oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
@@ -3561,8 +3636,14 @@ sap.ui.define([
 
 				//convert Tender data for saving
 				var oTenderToSave = Services.getService('Tender').getConvertTenderToSave(oSaveBasicInfo);
+				
+				/* Italy */
+				const tenderRegions = {
+					"TenderID": oTenderToSave.TenderID,
+					"RegionIDs": this.byId("idRegionEdit").getSelectedKeys()
+				};
 
-				that.createBasicTenderInfo(oTenderToSave).then(async function (oSaveResults) {
+				that.createBasicTenderInfo(oTenderToSave, tenderRegions).then(async function (oSaveResults) {
 
 					//if save is executed succesfully
 					// if (oSaveResults) {
@@ -3581,6 +3662,16 @@ sap.ui.define([
 							} catch(err){
 								console.error(err);
 							}
+						}
+
+						// Italy - Load regins again 
+						if (Services.getSelectedCountry() === "IT"){
+							that.byId("idRegionView").setBusy(true);
+							that.getTenderRegions(sTenderID).then(response => {
+								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								that.byId("idRegionView").setSelectedKeys(regionIDs);
+								that.byId("idRegionView").setBusy(false);
+							})
 						}
 
 						//load tender data so its in the FastAppData model in the same way as for an existing tender
@@ -3679,8 +3770,33 @@ sap.ui.define([
 			return Promise.all(promises);
 		},
 
+		saveTenderRegions: function(tenderRegions){
+
+			const tenderID = tenderRegions.TenderID;
+			const regionIDs = tenderRegions.RegionIDs;
+
+			return Services.getService('Tender').saveTenderRegions(tenderID, regionIDs)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Saving of Regions");
+							throw new Error(oError);
+						});
+
+		},
+
+		getTenderRegions: function(tenderID){
+
+			return Services.getService('Tender').getTenderRegions(tenderID)
+						.catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Fetching of Regions");
+							throw new Error(oError);
+						});
+
+		},
+
 		//submits changes in batch for the basic information tab
-		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh) {
+		updateBasicTenderInfo: function (oTenderToSave, sPath, oRefresh, tenderRegions) {
 
 			//keep track of controller object
 			var that = this;
@@ -3702,6 +3818,11 @@ sap.ui.define([
 
 			//Award criteria should be saved as well
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
+
+			//regions should be saved for Italy
+			if(this._country === 'IT' && tenderRegions){
+				promises.push(that.saveTenderRegions(tenderRegions));
+			}
 
 			//data awardcriteria model
 			var oAwDt = that.byId("idAwrdEdit").getModel("tabModel").getData();
@@ -3785,7 +3906,7 @@ sap.ui.define([
 		},
 
 		//Actual creation of the new tender TODO this should be in the service file
-		createBasicTenderInfo: function (oTenderToSave) {
+		createBasicTenderInfo: function (oTenderToSave, tenderRegions) {
 
 			//keep track of controller object
 			var that = this;
@@ -3801,6 +3922,11 @@ sap.ui.define([
 
 			//specification should be saved as well
 			promises.push(that.saveSpecifications(oTenderToSave, "create"));
+
+			//regions should be saved for Italy
+			if(this._country === 'IT' && tenderRegions){
+				promises.push(that.saveTenderRegions(tenderRegions));
+			}
 
 			//check if awardCriteria is valid
 			if (!Services.checkAwardCriteria(aAwardCriteria)) {
@@ -5276,6 +5402,11 @@ sap.ui.define([
 			this.byId("idDistributorName").setValue();
 			this.byId("idSellingCompany").setValue();
 			this.byId("idintrDueDte").setValue();
+
+			//if italy, default the internal due date to offer due date
+			if(Services.getSelectedCountry() === 'IT'){
+				this.byId("idintrDueDte").setValue(this.byId("idOrfDueDate").getValue());
+			}
 			this.byId("idWhleSle").setValue();
 
 			//at this point no product should be selected.
@@ -5353,6 +5484,7 @@ sap.ui.define([
 				this.byId("idintrDueDte").getValue() === "" ||
 				this.byId("idSellingCompany").getSelectedKey() === "" ||
 				this.byId("idWhleSle").getSelectedItem().getKey() === "" ||
+				this.byId("idProductOfferDivision").getSelectedItem().getKey() === "" ||
 				//new offer date only exists in continued or reviewed offer - but in this case it is a mandatory field
 				(
 					(Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed()) && (this.byId("idNewOfferDate").getValue() === "")
@@ -6000,8 +6132,11 @@ sap.ui.define([
 			var sPath = "/PT_TMINST";
 			var data;
 			var aFilters = [];
+			const regionMCB = this.getView().byId("idRegionEdit");
+			const instituteType = this.byId("idInstituteType").getProperty("selectedKey");
+
 			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
-				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, this.byId("idInstituteType").getProperty("selectedKey"))
+				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
 			);
 			var that = this;
 			model_f4.read(sPath, {
@@ -6060,6 +6195,14 @@ sap.ui.define([
 
 					//should group purchasing be visible on the screen based on data back-end
 					var sCountry = Services.getSelectedCountry();
+
+					// for Italy only the Regions must be set
+					if(sCountry === 'IT' && instituteType === "Public Region(s)"){
+						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
+						setTenderRegion(regionId);
+					}
+
+
 					$.when(Services.checkInstituteChilderen(sCountry, sSelectedInstituteID)).done(function (bShowGroupPurchasing) { 
 						if (bShowGroupPurchasing === false) {
 							//default no =  0
@@ -6086,6 +6229,12 @@ sap.ui.define([
 				}
 				oEvent.getSource().getBinding("items").filter([]);
 			};
+
+			
+			const setTenderRegion = function(regionId){
+				regionMCB && regionMCB.setSelectedKeys([regionId]);
+				regionMCB.getSelectedItems()[0].setEnabled(false);
+			}
 
 		},
 
@@ -7438,7 +7587,7 @@ sap.ui.define([
 			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(function (oData) {
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
-				var oBankGuarantee = oFastAppDataModel.getProperty("/BankGuarantee");
+				var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
 
 				//enable or disable download button 
 				var enableDownload = false;
@@ -7449,7 +7598,7 @@ sap.ui.define([
 
 				//enable or disable submit button
 				var enableSubmit = false;
-				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
+				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
 					enableSubmit = true;
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7580,12 +7729,15 @@ sap.ui.define([
 						$.when(Quotation.loadQuotationForSelectedOffer(quotationFields.OfferDate)).done(function (oData) {
 
 							var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
+							var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
 
 							//get updated status
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							if (sStatus === "Offer Approved" && (oQuotation) && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
+							debugger;
+							if (sStatus === "Offer Approved" && (oQuotation) ){
+							//&& ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
 							}
 							that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
@@ -7662,12 +7814,17 @@ sap.ui.define([
 							description: 'Bank guarantee for this tender has been updated succesfully.'
 					});}
 					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
 				});
 			} else {
 				sap.m.MessageBox.error("Please enter all mandatory fields.");
 			}
 
-			BusyIndicator.hide();
+			$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
+				//reload the created or updated bank guarantee
+				BusyIndicator.hide();
+			});
+
 		},
 
 		onCancelNewBankGuarantee: function (oEvent){
@@ -7743,6 +7900,115 @@ sap.ui.define([
 
 
 			BusyIndicator.hide();
+		},
+
+		preparePriceAgreementSaveInfo: function(oTenderResult){
+
+			let oPriceAgreementSaveInfo = {};
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let oTender = oFastAppDataModel.getProperty("/EditTender/");
+
+			oPriceAgreementSaveInfo.AwardedVolume = oTenderResult.AWARDEDQTY;
+			oPriceAgreementSaveInfo.DeliveredVolume = 150;
+			oPriceAgreementSaveInfo.ProductPackId = oTenderResult.PRODUCTCODE;
+			oPriceAgreementSaveInfo.TenderId = oTender.TenderID;
+			oPriceAgreementSaveInfo.Currency = oTenderResult.CURRENCY;
+			oPriceAgreementSaveInfo.UoM = oTenderResult.UOM;
+			oPriceAgreementSaveInfo.Price = oTenderResult.AWARDEDPRICE;
+			oPriceAgreementSaveInfo.hasNewMaterials = false;
+			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
+			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
+			oPriceAgreementSaveInfo.EffectiveDate = new Date();
+			oPriceAgreementSaveInfo.ListPrice = 5;
+			oPriceAgreementSaveInfo.RetailPrice = 10;
+			oPriceAgreementSaveInfo.Discount = 2;
+
+			return oPriceAgreementSaveInfo;
+		},
+
+		onCreatePriceAgreement: function (oEvent) {
+			//get model & selected row
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oLoadedPriceAgreement = oFastAppDataModel.getProperty("/newPriceAgreement");
+			if(oLoadedPriceAgreement){
+				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
+				window.open("/app/#/priceagreements/" + oLoadedPriceAgreement.ID);
+			} else {
+				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
+				var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+				
+				//check if a product is selected
+				if (oRowContext === null) {
+					sap.m.MessageToast.show("Select an awarded product to create a price agreement");
+					return;
+				}
+
+				var sPathSelectedRow = oRowContext.getPath();
+				let oSelectedTenderResult = oFastAppDataModel.getProperty(sPathSelectedRow);
+				var iRowIndexAwarded = sPathSelectedRow.split('/')[4];
+				var iRowIndexParent = sPathSelectedRow.split('/')[2];
+
+				var sPathResultsForTree = "/ResultsForTree";
+				var sPathResultsForTreeAwarded = "/ResultsForTree/" + iRowIndexParent + "/OutcomeLevel/";
+
+				//TODO in the future iLevel should just not be 0 so every line will be able to select the awarded product
+				if (sPathSelectedRow.includes("/OutcomeLevel")) {
+					//message that you should
+					sap.m.MessageToast.show("Select a Bayer specific product to create a price agreement");
+				} else if (oSelectedTenderResult.OUTCOME !== "Won"){
+					//message that you should
+					sap.m.MessageToast.show("The product you have selected has not been won");
+				} else {
+					BusyIndicator.show();
+					var oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
+					//var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
+					
+					/*if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
+						BusyIndicator.hide();
+						sap.m.MessageBox.warning("Please confirm the bank guarantee first, before creating a price agreement.", {});
+						return;
+						/*re enable this part of code if this should be "integrated" in the process, unless message is sufficient
+						//Ask user if he's sure to cancel the bank guarantee
+						sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
+							actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+							styleClass: "sapUiSizeCompact",
+							onClose: function (sAction) {
+								if (sAction === "YES") {
+									//Open the dialog
+									if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+										that._getCreateBankGuaranteeDialog().open();
+									} else {
+										$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
+											that._getCreateBankGuaranteeDialog().open();
+										});
+									}
+								} else {
+									return;
+								}
+							}
+						});
+					}*/
+
+					if(!oPriceAgreementSaveInfo){
+						oPriceAgreementSaveInfo = this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
+						oPriceAgreementSaveInfo._sOperation = "POST";
+					} else {
+						oPriceAgreementSaveInfo._sOperation = "PUT";
+					}
+
+					$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
+						/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						//message that you 
+						sap.m.MessageToast.show("Price Agreement has been created");*/
+						$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
+							BusyIndicator.hide();
+						});
+					});
+
+				}
+			}
 		},
 
 		onSubmitQuotation: function (oEvent) {
@@ -7968,7 +8234,8 @@ sap.ui.define([
 			if (sSelectedOfferID && Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), Services.getTenderResultsPageSectionID())) {
 
 				//indicate that tree table is loading
-				var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 				oOutcomeTreeTable.setBusy(true);
 
 				//Product path
@@ -8195,13 +8462,15 @@ sap.ui.define([
 
 		//collapse hyrarchie of tree table
 		onCollapseOutcome: function () {
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			oOutcomeTreeTable.collapseAll();
 		},
 
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			oOutcomeTreeTable.expandToLevel(1);
 		},
 
@@ -8210,7 +8479,8 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
@@ -8312,7 +8582,8 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
+			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
@@ -8696,11 +8967,13 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idSpecifications") && this.byId("idSpecifications").setVisible(false);
+			this.byId("idClassification") && this.byId("idClassification").setVisible(false);
 
 			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").clearSelection();
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
 			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
+
 		},
 
 		onClassificationChange: async function(oEvent){ 
