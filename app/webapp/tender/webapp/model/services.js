@@ -686,6 +686,14 @@ sap.ui.define([
 				Reason: "",
 				Comment: "",
 				AwardedTier: "",
+				ExtensionNotes: null,
+				ExtensionNotes: "",
+				AwardLetterNo: "",
+				AwardDelibNo: "",
+				DeliveryDate: null,
+				ResultDate: null,
+				AwardDate: null,
+				AwardActing: "",
 				_sOperation: "POST"
 			};
 
@@ -6948,7 +6956,7 @@ sap.ui.define([
 				case "POST":
 					delete oPriceAgreementSaveInfo._sOperation;
 					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
-						oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 						
 						//show message view
 						that.getOfferCompositeMessages().push({

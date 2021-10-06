@@ -2959,6 +2959,10 @@ sap.ui.define([
 				if(this._pageFragments.QuotationView_CL){
 					this._pageFragments.QuotationView_CL = null;
 				}
+
+				if(this._pageFragments.QuotationView_IT){
+					this._pageFragments.QuotationView_IT = null;
+				}
 			}
 
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
@@ -7932,8 +7936,7 @@ sap.ui.define([
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 				window.open("/app/#/priceagreements/" + oLoadedPriceAgreement.ID);
 			} else {
-				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+				var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 				var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 				
@@ -8001,6 +8004,8 @@ sap.ui.define([
 						//message that you 
 						sap.m.MessageToast.show("Price Agreement has been created");*/
 						$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
+							//oFastAppDataModel.setProperty("/newPriceAgreement", oData.results[0]);
+							//oFastAppDataModel.setProperty("/test", oData.results[0]);
 							BusyIndicator.hide();
 						});
 					});
@@ -8232,8 +8237,7 @@ sap.ui.define([
 			if (sSelectedOfferID && Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), Services.getTenderResultsPageSectionID())) {
 
 				//indicate that tree table is loading
-				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+				var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 				oOutcomeTreeTable.setBusy(true);
 
 				//Product path
@@ -8420,6 +8424,15 @@ sap.ui.define([
 										CURRENCY: oProduct.Offer.Currency,
 										LISTOUTCOMEREASONS: oResult.ListOutcomeReasons,
 										OutcomeLevel: aCompetitorResult,
+										//italy
+										ExtensionDate: oResult.ExtensionDate,
+										ExtensionNotes: oResult.ExtensionNotes,
+										AwardLetterNo: oResult.AwardLetterNo,
+										AwardDelibNo: oResult.AwardDelibNo,
+										DeliveryDate: oResult.DeliveryDate,
+										ResultDate: oResult.ResultDate,
+										AwardDate: oResult.AwardDate,
+										AwardActing: oResult.AwardActing,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 
@@ -8460,15 +8473,13 @@ sap.ui.define([
 
 		//collapse hyrarchie of tree table
 		onCollapseOutcome: function () {
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			oOutcomeTreeTable.collapseAll();
 		},
 
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			oOutcomeTreeTable.expandToLevel(1);
 		},
 
@@ -8477,8 +8488,7 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
@@ -8580,8 +8590,7 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
@@ -8790,7 +8799,16 @@ sap.ui.define([
 						UoM: oResultForTree.UOM,
 						Reason: oResultForTree.REASON,
 						Comment: oResultForTree.COMMENT,
-						AwardedTier: 0
+						AwardedTier: 0,
+						//italy fields
+						ExtensionDate: oResultForTree.ExtensionDate,
+						ExtensionNotes: oResultForTree.ExtensionNotes,
+						AwardLetterNo: oResultForTree.AwardLetterNo,
+						AwardDelibNo: oResultForTree.AwardDelibNo,
+						DeliveryDate: oResultForTree.DeliveryDate,
+						ResultDate: oResultForTree.ResultDate,
+						AwardDate: oResultForTree.AwardDate,
+						AwardActing: oResultForTree.AwardActing
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)

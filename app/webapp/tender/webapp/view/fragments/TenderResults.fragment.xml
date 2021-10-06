@@ -68,8 +68,8 @@
                             <m:OverflowToolbar>
                                 <m:Button id="btnAddAwardProduct" text="Add awarded product" icon="sap-icon://add" press="onAddAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 <m:Button id="btnDeleteAwardProduct" text="Remove awarded product" icon="sap-icon://delete" press="onDeleteAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
-                                <m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }"/>
-                                <m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>/newPriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}"/>
+                                <m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>
+                                <m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>/newPriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>
                                 <m:ToolbarSpacer/>
                                 <m:Button text="Collapse all" press="onCollapseOutcome"/>
                                 <m:Button text="Expand all" press="onExpandOutcome"/>
@@ -233,66 +233,66 @@
                                 </t:template>
                             </t:Column>
 
-                             <!--italy fields
+                             <!--italy fields-->
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Extension Date"/>
+                                <m:Label text="{i18n>ExtensionDate}"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>ExtensionDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-			                                      tooltip="{i18n>ExtensionDate}" enabled="false" placeholder="{i18n>Select_date}"/>
+			                                      tooltip="{i18n>ExtensionDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
                                 </t:template>
                             </t:Column>
 
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Extension notes"/>
+                                <m:Label text="{i18n>ExtensionNotes}"/>
                                 <t:template>
                                     <m:Input value="{fastAppData>ExtensionNotes}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>
                             </t:Column>
 
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Award Letter No."/>
+                                <m:Label text="{i18n>AwardLetterNo}"/>
                                 <t:template>
                                     <m:Input value="{fastAppData>AwardLetterNo}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>
                             </t:Column>
 
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Award Delib. No."/>
+                                <m:Label text="{i18n>AwardDelibNo}"/>
                                 <t:template>
                                     <m:Input value="{fastAppData>AwardDelibNo}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>
                             </t:Column>
 
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Delivery Date"/>
+                                <m:Label text="{i18n>DeliveryDate}"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>DeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-			                                      tooltip="{i18n>DeliveryDate}" enabled="false" placeholder="{i18n>Select_date}"/>
+			                                      tooltip="{i18n>DeliveryDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
                                 </t:template>
                             </t:Column>
 
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Result Date"/>
+                                <m:Label text="{i18n>ResultDate}"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>ResultDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-			                                      tooltip="{i18n>ResultDate}" enabled="false" placeholder="{i18n>Select_date}"/>
+			                                      tooltip="{i18n>ResultDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
                                 </t:template>
                             </t:Column>
 
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Award Date"/>
+                                <m:Label text="{i18n>AwardDate}"/>
                                 <t:template>
                                     <m:DatePicker value="{path :'fastAppData>AwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-			                                      tooltip="{i18n>AwardDate}" enabled="false" placeholder="{i18n>Select_date}"/>
+			                                      tooltip="{i18n>AwardDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
                                 </t:template>
                             </t:Column>
 
                             <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
-                                <m:Label text="Award Acting"/>
+                                <m:Label text="{i18n>AwardActing}"/>
                                 <t:template>
                                     <m:Input value="{fastAppData>AwardActing}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>
-                            </t:Column>-->
+                            </t:Column> 
                         </t:columns>
                     </t:TreeTable>
                 </m:VBox>
