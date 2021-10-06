@@ -2961,6 +2961,10 @@ sap.ui.define([
 				if(this._pageFragments.QuotationView_CL){
 					this._pageFragments.QuotationView_CL = null;
 				}
+
+				if(this._pageFragments.QuotationView_IT){
+					this._pageFragments.QuotationView_IT = null;
+				}
 			}
 
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
@@ -7729,13 +7733,13 @@ sap.ui.define([
 						$.when(Quotation.loadQuotationForSelectedOffer(quotationFields.OfferDate)).done(function (oData) {
 
 							var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
-							var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
+							//var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
 
 							//get updated status
 							var sStatus = oFastAppDataModel.getProperty("/EditOffer/OfferStatus/STATUS");
 
 							var enableSubmit = false;
-							debugger;
+							
 							if (sStatus === "Offer Approved" && (oQuotation) ){
 							//&& ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableSubmit = true;
@@ -7782,7 +7786,51 @@ sap.ui.define([
 
 		},
 
+		onBankGuarantee: function (oEvent){
+			let type = oEvent.getParameter("item").getText();
+
+			var that = this;
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
+			let oBankGuarantees = oFastAppDataModel.getProperty("/BankGuarantees");
+			let currentBankGuarantee ;
+
+			if(oBankGuarantees.length === 0){
+				currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+
+			} else {
+				currentBankGuarantee = oBankGuarantees.filter(bgr => bgr.Type === type)[0];
+
+				if(!currentBankGuarantee){
+					currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+				}
+
+
+			}
+
+			oFastAppDataModel.setProperty("/newBankGuarantee/", currentBankGuarantee);
+
+			
+
+			//Open the dialog
+			if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
+				that._getCreateBankGuaranteeDialog().open();
+			} else {
+				$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
+					that._getCreateBankGuaranteeDialog().open();
+				});
+			}
+
+
+
+
+			
+
+
+		},
+
 		onSaveNewBankGuarantee: function (oEvent){
+			
 			BusyIndicator.show();
 			let oBankGuaranteeSaveInfo = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
 			let bUpdate = false;
@@ -7791,7 +7839,14 @@ sap.ui.define([
 				oBankGuaranteeSaveInfo.Status = "Preliminary";
 				oBankGuaranteeSaveInfo._sOperation = "POST";
 			} else {
-				oBankGuaranteeSaveInfo._sOperation = "PUT";
+				if(!oBankGuaranteeSaveInfo.ID){//if new bank guarantee => POST
+					oBankGuaranteeSaveInfo._sOperation = "POST";
+				} else {
+					oBankGuaranteeSaveInfo._sOperation = "PUT";
+				}
+
+
+				
 				bUpdate = true;
 			}
 
@@ -7800,7 +7855,7 @@ sap.ui.define([
 					this._getCreateBankGuaranteeDialog().close();
 
 					if(bUpdate === false){
-						this.byId("btnCreateBankGuarantee").setText("Edit Bank Guarantee");
+						//this.byId("btnCreateBankGuarantee").setText("Edit Bank Guarantee");
 
 						Services.getOfferCompositeMessages().push({
 							type: 'Success',
@@ -7812,7 +7867,8 @@ sap.ui.define([
 							type: 'Success',
 							title: 'Bank Guarantee Update',
 							description: 'Bank guarantee for this tender has been updated succesfully.'
-					});}
+					});
+					}
 					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
 					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
 				});
@@ -7828,6 +7884,16 @@ sap.ui.define([
 		},
 
 		onCancelNewBankGuarantee: function (oEvent){
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
+
+			if(!oBankGuarantee.ID){//only delete when bankguarantee was an empty one 
+				oFastAppDataModel.setProperty("/newBankGuarantee", undefined);
+			}
+
+			
+			
+
 			this._getCreateBankGuaranteeDialog().close();
 		},
 		
@@ -7849,20 +7915,49 @@ sap.ui.define([
 			return this._oAddNewBankGuaranteeDialog;
 		},
 
-		onUpdateBankGuarantee: function(){
+		onUpdateBankGuarantee: function(oEvent){
 			BusyIndicator.show();
 
+			let that = this;
+			let type = oEvent.getParameter("item").getText();
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTenderResults = oFastAppDataModel.getProperty('/ResultsForTree');
 			let aCountryCurrencies = oFastAppDataModel.getProperty("/CountryCurrency");
-			let oBankGuaranteeSaveInfo = oFastAppDataModel.getProperty('/newBankGuarantee');
-			let that = this;
+			let oBankGuarantees = oFastAppDataModel.getProperty("/BankGuarantees");
+			let currentBankGuarantee ;
 
-			oTenderResults.forEach(function (oTenderResult, iIndex) {
-				if(oTenderResult.OUTCOME === "Won"){
+			if(oBankGuarantees.length === 0){
+				currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+				
+
+			} else {
+				currentBankGuarantee = oBankGuarantees.filter(bgr => bgr.Type === type)[0];
+
+				if(!currentBankGuarantee){
+					currentBankGuarantee = Services.getService('BankGuarantee').createEmptyBankGuarantee(type);
+				}
+
+
+			}
+
+			
+			
+		
+
+			let wonProducts = oTenderResults.filter(res => res.OUTCOME === "Won")[0];
+
+				if(wonProducts){
 					//update the status
-					oBankGuaranteeSaveInfo.Status = "Confirmed";
-					oBankGuaranteeSaveInfo._sOperation = "PUT";
+					currentBankGuarantee.Status = "Confirmed";
+
+					if(!currentBankGuarantee){
+						currentBankGuarantee._sOperation = "POST";
+					} else {
+						currentBankGuarantee._sOperation = "PUT";
+					}
+					
+
+					oFastAppDataModel.setProperty("/newBankGuarantee/", currentBankGuarantee);
 
 					//Open the dialog
 					if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
@@ -7872,31 +7967,45 @@ sap.ui.define([
 							that._getCreateBankGuaranteeDialog().open();
 						});
 					}
-				} else {
-					//Ask user if he's sure to cancel the bank guarantee
-					sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
-						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-						styleClass: "sapUiSizeCompact",
-						onClose: function (sAction) {
-							if (sAction === "YES") {
-								oBankGuaranteeSaveInfo.Status = "Cancelled";
-								oBankGuaranteeSaveInfo._sOperation = "PUT";
-								if(Services.checkNewBankGuarantee(oBankGuaranteeSaveInfo)){
-									$.when(Services.saveBankGuarantee(oBankGuaranteeSaveInfo)).done(() => {
-											Services.getOfferCompositeMessages().push({
-												type: 'Success',
-												title: 'Bank Guarantee Update',
-												description: 'Bank guarantee has been cancelled.'
-										});
-									});
-								}
+				
+
+						} else if(!currentBankGuarantee.ID){
+
+
+								sap.m.MessageToast.show("No products are won!");
+
+
+
 							} else {
-								return;
+
+								//Ask user if he's sure to cancel the bank guarantee
+								sap.m.MessageBox.warning("There are no products won. Would you like to close the bank guarantee?", {
+									actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+									styleClass: "sapUiSizeCompact",
+									onClose: function (sAction) {
+										if (sAction === "YES") {
+											currentBankGuarantee.Status = "Cancelled";
+											currentBankGuarantee._sOperation = "PUT";
+											if(Services.checkNewBankGuarantee(currentBankGuarantee)){
+												$.when(Services.saveBankGuarantee(currentBankGuarantee)).done(() => {
+														Services.getOfferCompositeMessages().push({
+															type: 'Success',
+															title: 'Bank Guarantee Update',
+															description: 'Bank guarantee has been cancelled.'
+													});
+												});
+											}
+										} else {
+											return;
+										}
+									}
+								});
+
+
+
 							}
-						}
-					});
-				}
-			});
+
+
 
 
 			BusyIndicator.hide();
@@ -7934,8 +8043,7 @@ sap.ui.define([
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 				window.open("/app/#/priceagreements/" + oLoadedPriceAgreement.ID);
 			} else {
-				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+				var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 				var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 				
@@ -8003,6 +8111,8 @@ sap.ui.define([
 						//message that you 
 						sap.m.MessageToast.show("Price Agreement has been created");*/
 						$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
+							//oFastAppDataModel.setProperty("/newPriceAgreement", oData.results[0]);
+							//oFastAppDataModel.setProperty("/test", oData.results[0]);
 							BusyIndicator.hide();
 						});
 					});
@@ -8234,8 +8344,7 @@ sap.ui.define([
 			if (sSelectedOfferID && Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), Services.getTenderResultsPageSectionID())) {
 
 				//indicate that tree table is loading
-				//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-				var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+				var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 				oOutcomeTreeTable.setBusy(true);
 
 				//Product path
@@ -8422,6 +8531,15 @@ sap.ui.define([
 										CURRENCY: oProduct.Offer.Currency,
 										LISTOUTCOMEREASONS: oResult.ListOutcomeReasons,
 										OutcomeLevel: aCompetitorResult,
+										//italy
+										ExtensionDate: oResult.ExtensionDate,
+										ExtensionNotes: oResult.ExtensionNotes,
+										AwardLetterNo: oResult.AwardLetterNo,
+										AwardDelibNo: oResult.AwardDelibNo,
+										DeliveryDate: oResult.DeliveryDate,
+										ResultDate: oResult.ResultDate,
+										AwardDate: oResult.AwardDate,
+										AwardActing: oResult.AwardActing,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 
@@ -8462,15 +8580,13 @@ sap.ui.define([
 
 		//collapse hyrarchie of tree table
 		onCollapseOutcome: function () {
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			oOutcomeTreeTable.collapseAll();
 		},
 
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			oOutcomeTreeTable.expandToLevel(1);
 		},
 
@@ -8479,8 +8595,7 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
@@ -8582,8 +8697,7 @@ sap.ui.define([
 
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			//var oOutcomeTreeTable = this.byId("idOutcomeTable");
-			var oOutcomeTreeTable = this.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--idOutcomeTable");
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
 			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 			
@@ -8792,7 +8906,16 @@ sap.ui.define([
 						UoM: oResultForTree.UOM,
 						Reason: oResultForTree.REASON,
 						Comment: oResultForTree.COMMENT,
-						AwardedTier: 0
+						AwardedTier: 0,
+						//italy fields
+						ExtensionDate: oResultForTree.ExtensionDate,
+						ExtensionNotes: oResultForTree.ExtensionNotes,
+						AwardLetterNo: oResultForTree.AwardLetterNo,
+						AwardDelibNo: oResultForTree.AwardDelibNo,
+						DeliveryDate: oResultForTree.DeliveryDate,
+						ResultDate: oResultForTree.ResultDate,
+						AwardDate: oResultForTree.AwardDate,
+						AwardActing: oResultForTree.AwardActing
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)

@@ -39,6 +39,8 @@
 
 				<!-- Type -->
 				<Label text="{i18n>type}"/>
+				<Text text="{fastAppData>/newBankGuarantee/Type}"/>
+				<!--
 				<Select id="idCountrynewBankGuarantee" 
 						selectedKey="{fastAppData>/newBankGuarantee/Type}"
 						change=".onChangeGuaranteeType"
@@ -47,7 +49,7 @@
 					<core:Item text="Impegno" key="Impegno"/>
                     <core:Item text="Provisoria" key="Provisoria"/>
 					<core:Item text="Definitiva" key="Definitiva"/>
-				</Select>
+				</Select>-->
 
 				<!-- Amount -->
 				<Label text="{i18n>amount}" required="true"/>
