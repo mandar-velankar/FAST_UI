@@ -19,14 +19,16 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
 	"sap/m/Token",
 	"sap/m/Tokenizer",
-	"FAST_NS0FAST0/libs/ranking/Ranking"
+	"FAST_NS0FAST0/libs/ranking/Ranking",
+	"sap/m/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
 	var bundle;
+	var URLHelper = mLib.URLHelper;
 
 	return Controller.extend("FAST_NS0FAST0.controller.Detail", {
 
@@ -146,8 +148,8 @@ sap.ui.define([
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
 			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
+			
 			//Services.loadCountryPermissions(sCountry);
-
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
 				// TODO:
 			});
@@ -359,6 +361,7 @@ sap.ui.define([
 				// TODO: check why "idClassification" is set back to visible after  checkShowSalesType()
 				// Settings for Italy 
 				if(Services.getSelectedCountry() === 'IT'){
+					Services.getWordTemplates(Services.getSelectedCountry());
 					oDetailController.getView().byId("idClassification").setVisible(false);
 					oDetailController.getView().byId("idTenderChannel").setVisible(false);
 				}
@@ -649,6 +652,7 @@ sap.ui.define([
 				
 				// Italy 
 				if (Services.getSelectedCountry() === "IT"){
+					Services.getWordTemplates(Services.getSelectedCountry());
 					that.getTenderRegions(sTenderID).then(response => {
 						const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 						that.byId("idRegionView").setSelectedKeys(regionIDs);
@@ -9264,7 +9268,11 @@ sap.ui.define([
 				oHighValueLabel.setVisible(false);
 			}
 		},
-
+		onDownloadWord:function(event){
+			// http://localhost:4004/v2/tender/WordAttachments(templateId=1,offerId='AE-16-100-1049-BPH-11')/content
+			const url = "/v2/tender/WordAttachments(templateId="+event.getSource().getBindingContext("fastAppData").getProperty("templateId")+",offerId='"+Services.getSelectedOfferID()+"')/content";
+			URLHelper.redirect(url,true);
+		}
 
 
 	});

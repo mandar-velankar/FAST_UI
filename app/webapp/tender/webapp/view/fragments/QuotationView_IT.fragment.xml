@@ -42,12 +42,20 @@
                     press=".onSaveDefaultQuotation"
                     enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>
                                             
-                <m:Button
+                <!-- <m:Button
                     id="btnDownloadQuotation"
                     text="{i18n>DownloadQuotation}"
                     icon="sap-icon://download"
                     press=".onDownloadQuotation"
-                    enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/> -->
+
+                <m:MenuButton text="Download Word" id="btnDownloadWordQuotation" visible="{= ${fastAppData>/WordTemplates}.length > 0 }">
+                    <m:menu>
+                        <m:Menu itemSelected="onMenuAction" items="{fastAppData>/WordTemplates}">
+                            <m:MenuItem text="{fastAppData>WordTemplates/name}" icon="sap-icon://download" press=".onDownloadWord"/>
+                        </m:Menu>
+                    </m:menu>
+                </m:MenuButton>
 
                 <!-- Bank Guarantee -->	
                 <!--<m:Button
