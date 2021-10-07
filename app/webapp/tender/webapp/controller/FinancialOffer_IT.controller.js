@@ -31,12 +31,17 @@ sap.ui.define([
 			this._oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this);
 			this._oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);
 
+
 		},
 
 		//Navigation between TenderMaster & Detail pages routing is matched
-		_onTenderMatched: function (oEvent) {
+		_onTenderMatched: async function (oEvent) {
 
-			// var sTab = oEvent.getParameter("arguments").tab || "";
+			 var sTab = oEvent.getParameter("arguments").tab || "";
+			 if(sTab.includes("financialOfferId_IT")){
+				 //load products
+				 let aProducts = await this.getFinancialProducts(Services.getSelectedTenderID());
+			 }
 			// let that = this;
 
 			// // check if we are on the delivery tab, otherwise don't run the code after the if statement
@@ -65,6 +70,19 @@ sap.ui.define([
 			// Services.setSelectedCountry(sCountry);
 			// Services.setSelectedOfferID(sOfferID);
 
+		},
+
+		/* GETTERS */
+		/**
+		 * Fetches a list of Tender products from the backend
+		 * @param {String} sTenderID - 
+		 * @returns {Array} - A list of Tender products
+		 */
+		 getFinancialProducts: async function(sTenderID) { 
+			if(sTenderID != ""){
+				var data = await Services.getFinancialProducts(sTenderID);
+			}
+			return data.results;
 		},
 
 	});

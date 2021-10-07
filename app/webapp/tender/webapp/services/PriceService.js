@@ -25,6 +25,14 @@ sap.ui.define([
 
 		},
 
+		createProductPrice: function(oProductPrice){
+			var that = this;
+			var sPath = "/ProductPricing";
+
+			//create
+			return that.odata(sPath).post(oProductPrice);
+		},
+
 		//create new product
 		updatePrice: function (oPriceToSave) {
 
@@ -45,6 +53,22 @@ sap.ui.define([
 			//Create
 			return that.odata(sPath).put(oPriceToSave);
 
+		},
+
+		updateProductPrice: function(oProductPrice){
+			var that = this;
+
+			//get model for calls
+			var oModel = Services.getDefaultModel();
+
+			var sPath = oModel.createKey("/ProductPricing", {
+				OfferID: oProductPrice.OfferID,
+				ProductCode: oProductPrice.ProductCode,
+				CountryCode: oProductPrice.CountryCode
+			});
+
+			//update
+			return that.odata(sPath).put(oProductPrice);
 		},
 		
 		//Convert Price info to save in the database. (View binding is an extended version)
