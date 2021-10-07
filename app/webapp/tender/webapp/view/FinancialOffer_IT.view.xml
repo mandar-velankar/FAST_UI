@@ -163,7 +163,7 @@
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<Table id="idProfitabilityTable" alternateRowColors="true" visible="false" ></Table>
 					<viz:VizFrame id="idListToNetChart" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -233,7 +233,7 @@
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable2" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<Table id="idProfitabilityTable2" alternateRowColors="true" visible="false" ></Table>
 					<viz:VizFrame id="idListToNetChart2" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -301,7 +301,7 @@
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable3" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<Table id="idProfitabilityTable3" alternateRowColors="true" visible="false" ></Table>
 					<viz:VizFrame id="idListToNetChart3" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>

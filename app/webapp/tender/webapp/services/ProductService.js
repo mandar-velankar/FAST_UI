@@ -40,6 +40,10 @@ sap.ui.define([
 
 			return this.odata(sPath).get(mParameters);
 		},
+
+		GetFinancialProducts: function(sTenderID){
+
+		},
 		
 		//create new product
 		createProduct: function (oProductToSave) {
