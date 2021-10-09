@@ -40,7 +40,13 @@ sap.ui.define([
 			 var sTab = oEvent.getParameter("arguments").tab || "";
 			 if(sTab.includes("financialOfferId_IT")){
 				 //load products
-				 let aProducts = await this.getFinancialProducts(Services.getSelectedTenderID());
+				// let aProducts = await this.getFinancialProducts(Services.getSelectedTenderID());
+				//get products that are loaded
+				var aProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
+
+				//set to fastappdata model for easy access on the view
+				var oFastAppDataModel = Services.getFastAppDataModel();
+				oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
 			 }
 			// let that = this;
 
