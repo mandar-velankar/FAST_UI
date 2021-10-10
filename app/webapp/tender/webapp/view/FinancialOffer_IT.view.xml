@@ -1,6 +1,15 @@
-<mvc:View controllerName="FAST_NS0FAST0.controller.FinancialOffer_IT" xmlns="sap.m" xmlns:f="sap.f"
-	xmlns:form="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:t="sap.ui.table" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
-	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" xmlns:u="sap.uxap">
+<mvc:View controllerName="FAST_NS0FAST0.controller.FinancialOffer_IT" 
+		  xmlns="sap.m" 
+		  xmlns:f="sap.f"
+		  xmlns:form="sap.ui.layout.form" 
+		  xmlns:mvc="sap.ui.core.mvc" 
+		  xmlns:t="sap.ui.table" 
+		  xmlns:core="sap.ui.core" 
+		  xmlns:l="sap.ui.layout"
+		  xmlns:viz.data="sap.viz.ui5.data" 
+		  xmlns:viz="sap.viz.ui5.controls" 
+		  xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" 
+		  xmlns:u="sap.uxap">
 
 	<!-- TENDER OFFER SUBSECTION -->
 	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer">
@@ -42,7 +51,10 @@
 						</form:SimpleForm>
 						
 						<!-- Table with products -->
-						<Table id="idFinancialOfferViewProduct" inset="false" class="sapFDynamicPageAlignContent" width="auto" updateFinished="onBindingItemsFinished">
+						<Table id="idFinancialOfferViewProduct" 
+							   items="{path : 'fastAppData>/ProductsForOffer/results', sorter: [{path: 'SORTER', descending: false}]}"
+							   inset="false" 
+							   class="sapFDynamicPageAlignContent" width="auto">
 							<columns>
 								<Column>
 									<Text text="{i18n>Product}"/>
@@ -72,6 +84,37 @@
 									<Text text="{i18n>Profitability}"/>
 								</Column>
 							</columns>
+							<items>
+								<ColumnListItem type="Navigation">
+									<cells>
+										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>RequestedVolume}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>UnitPerPack}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
 						</Table>
 						
 					</VBox>
@@ -163,7 +206,7 @@
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<Table id="idProfitabilityTable" alternateRowColors="true" visible="false" ></Table>
 					<viz:VizFrame id="idListToNetChart" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -233,7 +276,7 @@
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable2" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<Table id="idProfitabilityTable2" alternateRowColors="true" visible="false" ></Table>
 					<viz:VizFrame id="idListToNetChart2" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -301,7 +344,7 @@
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable3" alternateRowColors="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}" ></Table>
+					<Table id="idProfitabilityTable3" alternateRowColors="true" visible="false" ></Table>
 					<viz:VizFrame id="idListToNetChart3" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>

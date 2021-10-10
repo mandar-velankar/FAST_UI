@@ -5897,6 +5897,11 @@ sap.ui.define([
 			return this.getService('Product').getTenderProducts(sTenderID);
 		},
 
+		getFinancialProducts: function (sTenderID) {
+			let oProductService = this.getService('Product');
+			return oProductService.getFinancialProducts(sTenderID);
+		},
+
 		//soft delete Offer (=set inactive column to 0)
 		saveSoftDeleteOffer: function () {
 

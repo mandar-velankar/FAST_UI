@@ -40,6 +40,27 @@ sap.ui.define([
 
 			return this.odata(sPath).get(mParameters);
 		},
+
+		getFinancialProducts: function(sTenderID){
+			var sPath = "/OfferProductsItaly";
+
+			var oTenderIdFilter = new Filter({
+				path: 'TenderID',
+				operator: FilterOperator.EQ,
+				value1: sTenderID
+			});
+
+
+			var mParameters = {
+				filters: [oTenderIdFilter],
+				urlParameters: {
+					$expand: "SKU/Product"
+				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
 		
 		//create new product
 		createProduct: function (oProductToSave) {
