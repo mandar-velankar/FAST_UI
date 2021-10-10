@@ -37,16 +37,16 @@ sap.ui.define([
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: async function (oEvent) {
 
+			// this method should only be called in case of Italy
 			 var sTab = oEvent.getParameter("arguments").tab || "";
-			 if(sTab.includes("financialOfferId_IT")){
-				 //load products
-				// let aProducts = await this.getFinancialProducts(Services.getSelectedTenderID());
-				//get products that are loaded
-				var aProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
+			 if(sTab && sTab.includes("financialOfferId_IT")){
+
+				//load products
+				let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
 
 				//set to fastappdata model for easy access on the view
 				var oFastAppDataModel = Services.getFastAppDataModel();
-				oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
+				oFastAppDataModel.setProperty("/OfferProductsItaly", aProducts);
 			 }
 			// let that = this;
 
@@ -81,14 +81,15 @@ sap.ui.define([
 		/* GETTERS */
 		/**
 		 * Fetches a list of Tender products from the backend
-		 * @param {String} sTenderID - 
+		 * @param {String} offerID, 
+		 * @param {String} - productCode - 
 		 * @returns {Array} - A list of Tender products
 		 */
-		 getFinancialProducts: async function(sTenderID) { 
-			if(sTenderID != ""){
-				var data = await Services.getFinancialProducts(sTenderID);
+		 getFinancialProducts: async function(offerID) { 
+			if(offerID){
+				const response = await Services.getFinancialProducts(offerID);
+				return response.data.results;
 			}
-			return data.results;
 		},
 
 	});

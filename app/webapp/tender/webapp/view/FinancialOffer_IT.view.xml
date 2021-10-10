@@ -52,7 +52,7 @@
 						
 						<!-- Table with products -->
 						<Table id="idFinancialOfferViewProduct" 
-							   items="{path : 'fastAppData>/ProductsForOffer/results', sorter: [{path: 'SORTER', descending: false}]}"
+							   items="{path : 'fastAppData>/OfferProductsItaly'}"
 							   inset="false" 
 							   class="sapFDynamicPageAlignContent" width="auto">
 							<columns>
@@ -69,9 +69,9 @@
 									<Text text="{i18n>NetPrice}"/>
 								</Column>
 								<Column>
-									<Text text="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"/>
+									<Text text="${i18n>OfferPrice}"/>
 								</Column>
-								<Column visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}">
+								<Column>
 									<Text text="{i18n>COGS}"/>
 								</Column>
 								<Column>
@@ -87,7 +87,7 @@
 							<items>
 								<ColumnListItem type="Navigation">
 									<cells>
-										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+										<Text text="{fastAppData>ProductPackName}"/>
 									</cells>
 									<cells>
 										<Text text="{fastAppData>RequestedVolume}"/>
@@ -96,22 +96,22 @@
 										<Text text="{fastAppData>UnitPerPack}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+										<Text text="TBD"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+										<Text text="TBD"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+										<Text text="TBD"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+										<Text text="TBD"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+										<Text text="TBD"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>SKU/PRODUCTPACKNAME}"/>
+										<Text text="TBD"/>
 									</cells>
 								</ColumnListItem>
 							</items>
