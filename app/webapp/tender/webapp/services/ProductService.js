@@ -41,21 +41,25 @@ sap.ui.define([
 			return this.odata(sPath).get(mParameters);
 		},
 
-		getFinancialProducts: function(sTenderID){
+		getFinancialProducts: function(offerID){
 			var sPath = "/OfferProductsItaly";
 
-			var oTenderIdFilter = new Filter({
-				path: 'TenderID',
+			var oOfferIdFilter = new Filter({
+				path: 'OfferID',
 				operator: FilterOperator.EQ,
-				value1: sTenderID
+				value1: offerID
+			});
+
+
+			var oActiveFilter = new Filter({
+				path: 'Active',
+				operator: FilterOperator.EQ,
+				value1: 1
 			});
 
 
 			var mParameters = {
-				filters: [oTenderIdFilter],
-				urlParameters: {
-					$expand: "SKU/Product"
-				}
+				filters: [oOfferIdFilter, oActiveFilter]
 			};
 
 
