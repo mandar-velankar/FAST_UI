@@ -85,7 +85,7 @@
 								</Column>
 							</columns>
 							<items>
-								<ColumnListItem type="Navigation">
+								<ColumnListItem type="Navigation" press="onDetailPress" detailPress="onDetailPress">
 									<cells>
 										<Text text="{fastAppData>ProductPackName}"/>
 									</cells>
@@ -125,11 +125,11 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection">
+	<u:ObjectPageSubSection title="Pricing Offer" id="idFinPricingOfferSubsection">
 		<l:BlockLayout background="Light">
 
 			<!-- Selling -->
-			<l:BlockLayoutRow visible="true"> <!-- visible="{= ${offerType} === 'Selling'}" -->
+			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Selling'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
 					<form:SimpleForm id="idSelling"
 							editable="false"
@@ -213,7 +213,7 @@
 			</l:BlockLayoutRow>
 			
 			<!-- Rental -->
-			<l:BlockLayoutRow visible="true"> <!-- visible="{= ${offerType} === 'Rental'}" -->
+			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Rental'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
 					<form:SimpleForm id="idRental"
 							editable="false"
@@ -283,7 +283,7 @@
 			</l:BlockLayoutRow>
 
 			<!-- Comodato -->
-			<l:BlockLayoutRow visible="true"> <!-- visible="{= ${offerType} === 'Comodato'}" -->
+			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Comodato'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
 					<form:SimpleForm id="idComodato"
 							editable="false"
