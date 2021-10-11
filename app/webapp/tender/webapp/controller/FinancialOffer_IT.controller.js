@@ -82,7 +82,6 @@ sap.ui.define([
 		/**
 		 * Fetches a list of Tender products from the backend
 		 * @param {String} offerID, 
-		 * @param {String} - productCode - 
 		 * @returns {Array} - A list of Tender products
 		 */
 		 getFinancialProducts: async function(offerID) { 
@@ -91,6 +90,16 @@ sap.ui.define([
 				return response.data.results;
 			}
 		},
+
+		/**
+		 * Event handler for the OfferProductsItaly
+		 * @param {Object} event - An instance of event object
+		 */
+		onDetailPress: function(oEvent){
+
+			const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+			this.byId("idFinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+		}
 
 	});
 });
