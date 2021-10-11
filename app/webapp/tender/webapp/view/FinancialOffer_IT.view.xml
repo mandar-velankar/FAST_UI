@@ -96,22 +96,22 @@
 										<Text text="{fastAppData>UnitPerPack}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>UnitPerPack}"/>
+										<Text text="{fastAppData>NetPrice}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>UnitPerPack}"/>
+										<Text text="{fastAppData>OfferPrice}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>UnitPerPack}"/>
+										<Text text="{fastAppData>COGS}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>UnitPerPack}"/>
+										<Text text="{fastAppData>GrossSales}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>UnitPerPack}"/>
+										<Text text="{fastAppData>NetSales}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>UnitPerPack}"/>
+										<Text text="{fastAppData>Profitability}"/>
 									</cells>
 								</ColumnListItem>
 							</items>
