@@ -213,14 +213,9 @@
 								<Label text="Net Offer Price per unit" />
 								<Input value="{fastAppData>NetOfferPricePU}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="Free goods for other product(s)" />
-								<MultiInput
-									suggestionItems="{
-										path: '/FreeGoodsOther',
-										sorter: { path: 'ProductPackId' }
-									}"
-									valueHelpRequest="handleValueHelp">
-									<core:Item key="{ProductId}" text="{Name}" />
-								</MultiInput>
+								<MultiComboBox id="idCountryBrandList" items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish">
+									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
+								</MultiComboBox>
 							</form:content>
 						</form:SimpleForm>
 				</l:BlockLayoutCell>

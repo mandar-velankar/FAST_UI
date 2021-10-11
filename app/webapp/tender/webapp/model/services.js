@@ -5908,6 +5908,13 @@ sap.ui.define([
 			return oProductService.getFinancialProducts(offerID);
 		},
 
+		getCountryBrandProducts: function (countryCode) {
+			let oProductService = this.getService('Product');
+			return oProductService.getCountryBrandProducts(countryCode);
+		},
+
+
+
 		//soft delete Offer (=set inactive column to 0)
 		saveSoftDeleteOffer: function () {
 
