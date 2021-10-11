@@ -93,8 +93,26 @@
 										<Text text="{fastAppData>RequestedVolume}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>UnitPerPack}"/>
+										<Text text="{fastAppData>UOM}"/>
 									</cells>
+									<!--<cells>
+										<Text text="{fastAppData>NetPrice}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>OfferPrice}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>COGS}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>GrossSales}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>NetSales}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>Profitability}"/>
+									</cells>-->
 									<cells>
 										<Text text="TBD"/>
 									</cells>
@@ -113,6 +131,7 @@
 									<cells>
 										<Text text="TBD"/>
 									</cells>
+									
 								</ColumnListItem>
 							</items>
 						</Table>
@@ -150,7 +169,7 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
+								<Input value="{fastAppData>Warranty}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
 								<Label text="Status of device" /> <!-- visible="{= ${Division} === 'Radiology'}" -->
 								<ComboBox
 									visible="true" 
@@ -162,42 +181,42 @@
 									<core:Item key="{key}" text="{text}" />
 								</ComboBox>
 								<Label text="Consumer Price (w/o VAT) per pack" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceExclPP}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per pack" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceInclPP}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (w/o VAT) per unit" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceExclPU}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per unit" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceInclPU}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Tax (VAT) per pack" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>VatPerPack}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="Mandatory / Ex-factory discount" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>MandatoryDiscount}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="I° confidential discount" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConfidentialDiscount1}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="II° confidential discount" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConfidentialDiscount2}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="Total Discount" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>TotalDiscount}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="Max Price for NHS per pack w/o VAT" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>MaxPriceNhsPP}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Max Price for NHS per unit w/o VAT" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>MaxPriceNhsPU}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Additional Discount" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>AdditionalDiscount}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="Total Discount" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>TotalDiscount}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Free goods same product" />
-								<Input value="22.36" visible="true" enabled="true" fieldWidth="80%"/>
+								<Input value="{fastAppData>FreeGoodsSame}" visible="true" enabled="true" fieldWidth="80%"/>
 								<Label text="Net Offer Price per pack" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>NetOfferPricePP}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="Net Offer Price per unit" />
-								<Input value="22.36" visible="true" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>NetOfferPricePU}" visible="true" enabled="false" fieldWidth="80%"/>
 								<Label text="Free goods for other product(s)" />
 								<MultiInput
 									suggestionItems="{
-										path: '/ProductCollection',
-										sorter: { path: 'Name' }
+										path: '/FreeGoodsOther',
+										sorter: { path: 'ProductPackId' }
 									}"
 									valueHelpRequest="handleValueHelp">
 									<core:Item key="{ProductId}" text="{Name}" />
@@ -234,39 +253,39 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
+								<Input value="{fastAppData>Warranty}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
 								<Label text="Duration of agreement " />
-								<Input value="3" visible="true" description="months" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>AgreementDuration}" visible="true" description="months" enabled="false" fieldWidth="80%"/>
 								<Label text="Monthly rent" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>MonthlyRent}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Months per invoice" />
-								<Input value="4" visible="true" description="months" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>MonthsPerInvoice}" visible="true" description="months" enabled="false" fieldWidth="80%"/>
 								<Label text="Contract start date" />
 								<DatePicker 
 									value="{
-										path :'ctr>/currentContract/contractDate', 
+										path :'fastAppData>ContractStartDate', 
 										type: 'sap.ui.model.type.Date', 
 										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 									}" 
 									enabled="false"/>
 								<Label text="Value of devices" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ValueOfDevices}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Status of device" />
 								<ComboBox
 									visible="true" 
 									enabled="false"
 									items="{
-										path: '/DummyCollection',
+										path: 'fastAppData>StatusOfDevice',
 										sorter: { path: 'dummy' }
 									}">
 									<core:Item key="{key}" text="{text}" />
 								</ComboBox>
 								<Label text="free goods same product" />
-								<Input value="22.36" visible="true" enabled="true" fieldWidth="80%"/>
+								<Input value="{fastAppData>FreeGoodsSame}" visible="true" enabled="true" fieldWidth="80%"/>
 								<Label text="free goods for other product(s)" />
 								<MultiInput
 									suggestionItems="{
-										path: '/ProductCollection',
+										path: '{fastAppData>FreeGoodsOther}',
 										sorter: { path: 'Name' }
 									}"
 									valueHelpRequest="handleValueHelp">
@@ -304,7 +323,7 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
+								<Input value="{Warranty}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
 								<Label text="Duration of agreement " />
 								<Input value="3" visible="true" description="months" enabled="false" fieldWidth="80%"/>
 								<Label text="Minimum contractual commitment" />
@@ -320,7 +339,7 @@
 									}" 
 									enabled="false"/>
 								<Label text="Value of devices" />
-								<Input value="22.36" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{fastAppData>ValueOfDevices}" visible="true" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Status of device" />
 								<ComboBox
 									visible="true" 
