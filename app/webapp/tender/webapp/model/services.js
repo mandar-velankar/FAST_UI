@@ -67,6 +67,7 @@ sap.ui.define([
 		//different Page sections on detail page
 		_sBasicInformationPageSectionID: "---tenderManagementDetailId--basicInformationId",
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
+		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -156,6 +157,11 @@ sap.ui.define([
 
 		getFinancialOfferPageSectionID: function () {
 			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID;
+			return sPage;
+		},
+
+		getFinancialOfferPageSectionID_IT: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_IT;
 			return sPage;
 		},
 
@@ -932,7 +938,7 @@ sap.ui.define([
 						//No particular status checks are needed, as the offer should be shown for all statuses
 						bVisible = true;
 						break;
-					case this.getFinancialOfferPageSectionID():
+					case this.getFinancialOfferPageSectionID() || Services.getFinancialOfferPageSectionID_IT():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
 						//  - 'Offer Declined'

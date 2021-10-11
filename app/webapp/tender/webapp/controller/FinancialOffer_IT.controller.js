@@ -99,6 +99,10 @@ sap.ui.define([
 
 			const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
 			this.byId("idFinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+		},
+
+		onSaveFinancialOfferItaly: function(oEvent){
+			var oFastAppDataModel = Services.getFastAppDataModel();
 		}
 
 	});
