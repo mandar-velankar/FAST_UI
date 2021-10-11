@@ -1119,7 +1119,7 @@ sap.ui.define([
 				//only on master list, basic info, offer products it is possible that you don't have an offer selected.
 				//other tabs should always have an offer selected.
 				if (
-					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getQuotationPageSectionID() ||
+					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getQuotationPageSectionID() ||
 					sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
 				)
 				//edit button is disabled
@@ -1711,7 +1711,7 @@ sap.ui.define([
 					that._showSectionFragment("OfferProductsView", "offerProductsId");
 					//TODO reload of data needed?
 					break;
-				case Services.getFinancialOfferPageSectionID():
+				case Services.getFinancialOfferPageSectionID() || Services.getFinancialOfferPageSectionID_IT():
 					//FINANCIAL OFFER TAB
 					that._showSectionFragment("FinancialOfferView", "financialOfferId");
 
@@ -2608,7 +2608,7 @@ sap.ui.define([
 						Services.clearAllForOfferProductPage();
 
 						break;
-					case Services.getFinancialOfferPageSectionID():
+					case Services.getFinancialOfferPageSectionID() || Services.getFinancialOfferPageSectionID_IT():
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelFinancialOfferTableID").setExpanded(true);
 
@@ -2730,7 +2730,12 @@ sap.ui.define([
 				});
 				
 				break;
-
+			case Services.getFinancialOfferPageSectionID_IT():
+				that.getView().setBusy(true);
+				var oView = this.getView().byId("financialOfferViewId_IT");
+				var oFinOfferController = oView.getController();
+				oFinOfferController.onSaveFinancialOfferItaly();
+				break;
 			case Services.getQuotationPageSectionID():
 
 				//QUOTATION TAB
