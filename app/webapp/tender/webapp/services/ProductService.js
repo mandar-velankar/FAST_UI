@@ -42,7 +42,7 @@ sap.ui.define([
 		},
 
 		getFinancialProducts: function(offerID){
-			var sPath = "/OfferProductsItaly";
+			var sPath = "/ProductPricingView";
 
 			var oOfferIdFilter = new Filter({
 				path: 'OfferID',
@@ -50,16 +50,11 @@ sap.ui.define([
 				value1: offerID
 			});
 
-
-			var oActiveFilter = new Filter({
-				path: 'Active',
-				operator: FilterOperator.EQ,
-				value1: 1
-			});
-
-
 			var mParameters = {
-				filters: [oOfferIdFilter, oActiveFilter]
+				filters: [oOfferIdFilter],
+				urlParameters: {
+					$expand: "FreeGoodsOther"
+				}
 			};
 
 
