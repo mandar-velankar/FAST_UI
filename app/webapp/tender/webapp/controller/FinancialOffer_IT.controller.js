@@ -44,9 +44,14 @@ sap.ui.define([
 				//load products
 				let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
 
+				//load countryBrandProducts
+				let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+
+
 				//set to fastappdata model for easy access on the view
 				var oFastAppDataModel = Services.getFastAppDataModel();
 				oFastAppDataModel.setProperty("/OfferProductsItaly", aProducts);
+				oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
 			 }
 			// let that = this;
 
@@ -87,6 +92,13 @@ sap.ui.define([
 		 getFinancialProducts: async function(offerID) { 
 			if(offerID){
 				const response = await Services.getFinancialProducts(offerID);
+				return response.data.results;
+			}
+		},
+
+		getCountryBrandProducts: async function(countryCode) { 
+			if(countryCode){
+				const response = await Services.getCountryBrandProducts(countryCode);
 				return response.data.results;
 			}
 		},

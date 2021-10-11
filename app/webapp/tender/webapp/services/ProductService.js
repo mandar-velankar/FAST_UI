@@ -60,6 +60,23 @@ sap.ui.define([
 
 			return this.odata(sPath).get(mParameters);
 		},
+
+		getCountryBrandProducts: function(CountryCode){
+			var sPath = "/CountryBrandProducts";
+
+			var oCountryFilter = new Filter({
+				path: 'COUNTRY_CODE',
+				operator: FilterOperator.EQ,
+				value1: CountryCode
+			});
+
+			var mParameters = {
+				filters: [oCountryFilter]
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
 		
 		//create new product
 		createProduct: function (oProductToSave) {
