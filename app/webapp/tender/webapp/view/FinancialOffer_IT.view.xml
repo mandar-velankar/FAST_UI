@@ -71,7 +71,7 @@
 									<Text text="{i18n>NetPrice}"/>
 								</Column>
 								<Column>
-									<Text text="${i18n>OfferPrice}"/>
+									<Text text="{i18n>OfferPrice}"/>
 								</Column>
 								<Column>
 									<Text text="{i18n>COGS}"/>
