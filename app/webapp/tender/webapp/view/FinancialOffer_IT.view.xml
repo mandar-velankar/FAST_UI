@@ -37,12 +37,14 @@
 					<VBox>
 						
 						<!-- Form with selected offer data -->
-						<form:SimpleForm id="idCurrencyForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
-							emptySpanL="0" emptySpanM="0" columnsL="1" columnsM="1" class="editableForm"  title="">
+						<form:SimpleForm id="idCurrencyForm" editable="true"  layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+							 columnsL="1" class="editableForm"  title="">
 							<Label text="{i18n>Currency}"/>
-							<Select id="idCurrency" enabled="{fastAppData>/EditMode}">
-
-							</Select>
+								<Select id="idCurrency" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' }, filters: [
+									{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
+								] }" >					
+									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
+								</Select>
 							<Label text="{i18n>FOC}"/>
 							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}">
 								<items>
@@ -55,7 +57,7 @@
 						<!-- Table with products -->
 						<Table id="idFinancialOfferViewProduct" 
 							   items="{path : 'fastAppData>/OfferProductsItaly'}"
-							   inset="false" 
+							   
 							   class="sapFDynamicPageAlignContent" width="auto">
 							<columns>
 								<Column>
