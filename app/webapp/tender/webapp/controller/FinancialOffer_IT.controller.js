@@ -143,7 +143,7 @@ sap.ui.define([
 		 * @param {*} oEvent 
 		 */
 		onSaveFinancialOfferItaly: async function(oEvent){
-/*
+
 			//get selected product and the price values
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTender = Services.getLoadedTender();
@@ -235,7 +235,7 @@ sap.ui.define([
 				});
 
 			});
-*/
+
 		},
 
 		//for additional saving to PT_TMBDPR
