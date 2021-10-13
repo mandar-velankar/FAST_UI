@@ -166,13 +166,6 @@ sap.ui.define([
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
 			await Services.getService('Price').saveProductPrice(oProductPriceToSave);
 
-			//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
-			let iApprovalsSent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
-			Services.saveOfferApprovalSent(iApprovalsSent).catch(function (oError) {
-				//Error during save
-				Services.showErrorMessage(oError, "Background saving for approvals sent field");
-			});
-
 			//Update offer
 			var oOfferSaveInfo = {};
 			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
@@ -183,7 +176,7 @@ sap.ui.define([
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = 'ABS';//this.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
 			}
 
-			let sSetCurrency = oOfferSaveInfo.Currency;
+			//let sSetCurrency = oOfferSaveInfo.Currency;
 			
 			//update offer
 			await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
@@ -210,7 +203,7 @@ sap.ui.define([
 				Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 
 				//switch from edit to display
-				this.byId("idCurrency").setSelectedKey(sSetCurrency);
+				//this.byId("idCurrency").setSelectedKey(sSetCurrency);
 				this._DetailController.onEditToggleButtonPress();
 
 				//show success message
