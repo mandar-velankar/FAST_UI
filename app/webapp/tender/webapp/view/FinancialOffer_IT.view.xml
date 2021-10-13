@@ -170,12 +170,11 @@
 							columnsM="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" />
-								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
-								<Label text="Status of device" /> <!-- visible="{= ${Division} === 'Radiology'}" -->
-								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}">
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" />
+								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
 									<items>
-										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />									
 									</items>
 								</Select>
