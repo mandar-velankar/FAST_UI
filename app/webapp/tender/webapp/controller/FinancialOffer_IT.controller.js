@@ -146,7 +146,7 @@ sap.ui.define([
 
 			//get selected product and the price values
 			let oFastAppDataModel = Services.getFastAppDataModel();
-			let oTender = Services.getLoadedTender();
+			let that = this;
 			let sTenderID = Services.getSelectedTenderID();
 			let oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			let sOfferID = oOffer.OfferID;
@@ -204,7 +204,7 @@ sap.ui.define([
 
 				//switch from edit to display
 				//this.byId("idCurrency").setSelectedKey(sSetCurrency);
-				this._DetailController.onEditToggleButtonPress();
+				that._DetailController.onEditToggleButtonPress();
 
 				//show success message
 				Services.getOfferCompositeMessages().push({
