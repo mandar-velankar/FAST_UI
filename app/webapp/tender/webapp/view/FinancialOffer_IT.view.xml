@@ -247,8 +247,8 @@
 							columnsM="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" />
-								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
+								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " />
 								<Input value="{fastAppData>AgreementDuration}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Monthly rent" />
@@ -265,24 +265,18 @@
 									enabled="false"/>
 								<Label text="Value of devices" />
 								<Input value="{fastAppData>ValueOfDevices}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Status of device" /> <!-- visible="{= ${Division} === 'Radiology'}" -->
-								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}">
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"> 
 									<items>
-										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />									
 									</items>
 								</Select>
 								<Label text="free goods same product" />
 								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="free goods for other product(s)" />
-								<MultiInput
-									suggestionItems="{
-										path: '{fastAppData>FreeGoodsOther}',
-										sorter: { path: 'Name' }
-									}"
-									valueHelpRequest="handleValueHelp">
-									<core:Item key="{ProductId}" text="{Name}" />
-								</MultiInput>
+								<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
+									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
+								</MultiComboBox>
 							</form:content>
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
@@ -311,40 +305,35 @@
 							columnsL="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" />
-								<Input value="{Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
+								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " />
-								<Input value="3"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>AgreementDuration}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Minimum contractual commitment" />
-								<Input value="2"  description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>MinContractual}"  description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Minimum annual purchase amount" />
-								<Input value="66.36"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>MinAnnPurch}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Contract start date" />
 								<DatePicker 
 									value="{
-										path :'ctr>/currentContract/contractDate', 
+										path :'fastAppData>ContractStartDate', 
 										type: 'sap.ui.model.type.Date', 
 										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 									}" 
-									enabled="false"/>
+									enabled="{fastAppData>/EditMode}"/>
 								<Label text="Value of devices" />
 								<Input value="{fastAppData>ValueOfDevices}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Status of device" /> <!-- visible="{= ${Division} === 'Radiology'}" -->
-								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}">
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
 									<items>
-										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />									
 									</items>
 								</Select>
 								<Label text="free goods for other product(s)" />
-								<MultiInput
-									suggestionItems="{
-										path: '/ProductCollection',
-										sorter: { path: 'Name' }
-									}"
-									valueHelpRequest="handleValueHelp">
-									<core:Item key="{ProductId}" text="{Name}" />
-								</MultiInput>
+								<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
+									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
+								</MultiComboBox>
+								
 							</form:content>
 						</form:SimpleForm>
 				</l:BlockLayoutCell>

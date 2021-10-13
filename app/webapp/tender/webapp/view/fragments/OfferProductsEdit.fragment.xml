@@ -129,7 +129,7 @@
 												<core:Item text="" key=""/>
 												<core:Item text="Selling" key="Selling"/>
 												<core:Item text="Rental" key="Rental" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
-												<core:Item text="Comodati" key="Comodati" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
+												<core:Item text="Comodato" key="Comodato" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
 											</items>
 											<layoutData>
 												<l:GridData span="L6 M6 S6"/>
@@ -145,7 +145,7 @@
 										   required="{fastAppData>/permissions/tables/editofferProductId/Reference/required}"
 									/>
 									<t:template>
-										<Input type="Text" id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}" editable="true" maxLength="255"/>
+										<Input  id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}"  maxLength="255"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/visible}">
@@ -175,7 +175,7 @@
 										   required="{fastAppData>/permissions/tables/editofferProductId/Requested/required}"/>
 									<t:template>
 										<HBox>
-											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}"/>
+											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}"/>
 											<Button icon="sap-icon://edit" press="onPressEditRequestedVolume" visible="{= ${fastAppData>/Tender/GroupPurchasing} === 2 ? true : false}"/>
 										</HBox>
 									</t:template>
