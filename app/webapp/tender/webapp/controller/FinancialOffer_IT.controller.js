@@ -3,8 +3,9 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/formatter",
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/model/userinfo",
-	"FAST_NS0FAST0/libs/momentjs/moment.min"
-], function (Controller, formatter, Services, UserInfo, MomentJS) {
+	"FAST_NS0FAST0/libs/momentjs/moment.min",
+	"FAST_NS0FAST0/model/financial"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial) {
 	"use strict";
 
 	return Controller.extend("FAST_NS0FAST0.controller.FinancialOffer_IT", {
@@ -50,7 +51,7 @@ sap.ui.define([
 
 				//set to fastappdata model for easy access on the view
 				var oFastAppDataModel = Services.getFastAppDataModel();
-				oFastAppDataModel.setProperty("/OfferProductsItaly", aProducts);
+				oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 				oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
 			 }
 			// let that = this;
@@ -107,14 +108,196 @@ sap.ui.define([
 		 * Event handler for the OfferProductsItaly
 		 * @param {Object} event - An instance of event object
 		 */
-		onDetailPress: function(oEvent){
+		onFinancialProductPress: function(oEvent){
 
+			//get context of selected price product
+			let oFastAppDataModel = Services.getFastAppDataModel();
 			const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-			this.byId("idFinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+			this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+			this.selectedProductPricePath = bindingContext.sPath;
+
+			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+
+			//keep selected product ID
+			Services.setSelectedProductID(oProductPrice.ProductCode);
+
+			//Edit offer copy to move back to original values during cancel
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+
+			//check for approval enabled 
+			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+
+			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+				bEnableApproval = false;
+			}
+
+			//enable or disable approvalButton
+			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
 		},
 
-		onSaveFinancialOfferItaly: function(oEvent){
-			var oFastAppDataModel = Services.getFastAppDataModel();
+		/**
+		 * Save financial offer for Italy
+		 * @param {*} oEvent 
+		 */
+		onSaveFinancialOfferItaly: async function(oEvent){
+
+			//get selected product and the price values
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let that = this;
+			let sTenderID = Services.getSelectedTenderID();
+			let oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			let sOfferID = oOffer.OfferID;
+			let sOfferPath = Services.getSelectedOfferPath();
+			let sProductId = Services.getSelectedProductID();
+			let aProducts = Services.getLoadedProductsForOffer(sOfferID);
+			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId);
+			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+
+			//build old price object for additional saving to PT_TMBDPR
+			let oNewPriceInfo = this.getOldPriceObject(oOffer, oProduct, oProductPrice);
+
+			//convert old price to save & save
+			let oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
+			await Services.getService('Price').updatePrice(oPriceToSave);
+
+			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
+			await Services.getService('Price').saveProductPrice(oProductPriceToSave);
+
+			//Update offer
+			var oOfferSaveInfo = {};
+			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
+			oOfferSaveInfo.Currency = this.byId("idCurrency").getSelectedKey();
+			oOfferSaveInfo.FOCType = this.byId("idFOCType").getSelectedKey();
+			//default foc abolute or percentage is decided on first product price thats saved... so if empty, save
+			if (!oOffer.DEFAULT_FOC_ABS_PCT) {
+				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = 'ABS';//this.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+			}
+
+			//let sSetCurrency = oOfferSaveInfo.Currency;
+			
+			//update offer
+			await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+
+				//show error message
+				Services.showErrorMessage(oError, "Update of offer");
+
+				//promises must fail as well
+				throw new Error(oError);
+
+			});
+
+			//we will load tender again after save is done
+			var bLoadedCheck = false;
+
+			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+				//set selected offer ID
+				Services.setSelectedOfferID(sOfferID);
+				Services.setSelectedOfferPath(sOfferPath);
+
+				//Selected offer binding
+				var oOffer = Services.getLoadedOffer(sOfferID);
+				Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+
+				//switch from edit to display
+				//this.byId("idCurrency").setSelectedKey(sSetCurrency);
+				that._DetailController.onEditToggleButtonPress();
+
+				//show success message
+				Services.getOfferCompositeMessages().push({
+					type: 'Success',
+					title: 'Financial Offer Saved Successfully',
+					description: 'Financial Offer Saved Successfully'
+				});
+
+				Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+				Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
+				
+				//refresh tenders master table (left pane)
+				Services.refreshTendersMasterTable(sTenderID);
+
+				//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+				var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
+				Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+					//Error during save
+					Services.showErrorMessage(oError, "Background saving for approvals sent field");
+				});
+
+			});
+
+		},
+
+		//for additional saving to PT_TMBDPR
+		getOldPriceObject: function(oOffer, oProduct, oProductPrice){
+
+			//PT_TMBDPR
+			let oNewPriceInfo = {
+				TenderID: Services.getSelectedTenderID(),
+				OfferID: Services.getSelectedOfferID(),
+				CountryCode: Services.getSelectedCountry(),
+				ProductCode: oProductPrice.ProductCode,
+				SubmittedOn: moment().utc().toDate(),
+				SubmittedBy: UserInfo.getCWID(),
+				Active: 1,
+				Tier: 0,
+				VolumeFrom: 0,
+				VolumeTo: 0,
+				RegPrice: oProductPrice.ConsumerPriceExclPP,
+				FOC: oProductPrice.FreeGoodsSame,
+				/*(that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey() === "PCT") ? that.byId("idEditPriceOffer_idFoc").getValue() /
+					100 : that.byId("idEditPriceOffer_idFoc").getValue(),*/
+				FOCType: this.byId("idFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
+				Discount: 0,
+				OfferPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				StandardDiscount: oProductPrice.TotalDiscount / 100,
+				AdditionalDiscount: oProductPrice.AdditionalDiscount / 100,
+				Deductions: 0,
+				NetofferPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				BusinessCasePrice: 0,
+				WholesalePrice: "",
+				COGS: 0,
+				SpotRate: 1,
+				BudgetRate: 1,
+				Scenario: 0,
+				FOC_ABS_PCT: "ABS",
+				FOCProduct_Bundled_1: null, //FOC ADDITIONAL PRODUCT
+				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
+				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE
+				ActiveTier: 0,
+				NetPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				NetPrice_OfPaid: 0,
+				PRICE_UPDATE: 0
+			};
+
+			return oNewPriceInfo;
+		},
+
+		/**
+		 * Approval button on Finacial page
+		 * @param {*} oEvent 
+		 */
+		onApprovalsPress: function (oEvent) {
+			//approvals dialog will be shown
+			this._DetailController.onApprovalsPress(oEvent);
+		},
+
+
+		calculateTotalDiscount: function(oEvent){
+
+			const additionalDiscount = oEvent.getParameter("newValue");
+			const cunsumerPrice = oEvent.getSource().getParent().getBindingContext("fastAppData").getObject();
+			
+			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * ( 1 - additionalDiscount)) / cunsumerPrice.ConsumerPriceExclPP;
+			const netOfferPricePP = cunsumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
+			const netOfferPricePU = cunsumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);				
+
+			this.byId("idTotalDiscount").setValue(totalDiscount);
+			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
+			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
 		}
 
 	});
