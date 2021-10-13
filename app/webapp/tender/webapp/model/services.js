@@ -938,7 +938,7 @@ sap.ui.define([
 						//No particular status checks are needed, as the offer should be shown for all statuses
 						bVisible = true;
 						break;
-					case this.getFinancialOfferPageSectionID() || Services.getFinancialOfferPageSectionID_IT():
+					case this.getFinancialOfferPageSectionID() || this.getFinancialOfferPageSectionID_IT():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
 						//  - 'Offer Declined'
@@ -1012,6 +1012,10 @@ sap.ui.define([
 				}
 
 			}
+
+			//keep result also on fastApp data model
+			let oFastAppDataModel = this.getFastAppDataModel();
+			oFastAppDataModel.setProperty("/CheckOfferVisibleForTab", bVisible);
 
 			return bVisible;
 		},

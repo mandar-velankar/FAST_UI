@@ -12,7 +12,7 @@
 		  xmlns:u="sap.uxap">
 
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer">
+	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{=!fastAppData>/CheckOfferVisibleForTab}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -25,11 +25,9 @@
 	</u:ObjectPageSubSection>
 	
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded">
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab}">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="{fastAppData>/EditMode}"/>
-			<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onTenderOverviewPress" visible="{= ${fastAppData>/Tender/CountryCode} === 'AR' }" />	
-			
 		</u:actions>
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
@@ -40,7 +38,7 @@
 						<form:SimpleForm id="idCurrencyForm" editable="true"  layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
 							 columnsL="1" class="editableForm"  title="">
 							<Label text="{i18n>Currency}"/>
-								<Select id="idCurrency" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' }, filters: [
+								<Select id="idCurrency" selectedKey="{fastAppData>/EditOffer/Currency}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' }, filters: [
 									{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
 								] }" >					
 									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
@@ -56,7 +54,7 @@
 						
 						<!-- Table with products -->
 						<Table id="idFinancialOfferViewProduct" 
-							   items="{path : 'fastAppData>/OfferProductsItaly'}"
+							   items="{path : 'fastAppData>/ProductPricingView'}"
 							   
 							   class="sapFDynamicPageAlignContent" width="auto">
 							<columns>
@@ -89,7 +87,7 @@
 								</Column>
 							</columns>
 							<items>
-								<ColumnListItem type="Navigation" press="onDetailPress" detailPress="onDetailPress">
+								<ColumnListItem type="Navigation" press="onFinancialProductPress" detailPress="onDetailPress">
 									<cells>
 										<Text text="{fastAppData>ProductPackName}"/>
 									</cells>
@@ -148,7 +146,7 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer" id="idFinPricingOfferSubsection">
+	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab}">
 		<l:BlockLayout background="Light">
 
 			<!-- Selling -->
@@ -175,15 +173,12 @@
 								<Label text="Warranty" />
 								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> <!-- visible="{= ${Division} === 'Radiology'}" -->
 								<Label text="Status of device" /> <!-- visible="{= ${Division} === 'Radiology'}" -->
-								<ComboBox
-									 
-									enabled="{fastAppData>/EditMode}"
-									items="{
-										path: '/DummyCollection',
-										sorter: { path: 'dummy' }
-									}">
-									<core:Item key="{key}" text="{text}" />
-								</ComboBox>
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}">
+									<items>
+										<core:Item key="" text="" />
+										<core:Item key="New" text="New" />									
+									</items>
+								</Select>
 								<Label text="Consumer Price (w/o VAT) per pack" />
 								<Input value="{fastAppData>ConsumerPriceExclPP}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per pack" />
@@ -223,8 +218,8 @@
 							</form:content>
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable" alternateRowColors="true" visible="false" ></Table>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4" visible="false">
+					<Table id="idProfitabilityTable" alternateRowColors="true" ></Table>
 					<viz:VizFrame id="idListToNetChart" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -269,16 +264,13 @@
 									enabled="false"/>
 								<Label text="Value of devices" />
 								<Input value="{fastAppData>ValueOfDevices}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Status of device" />
-								<ComboBox
-									 
-									enabled="false"
-									items="{
-										path: 'fastAppData>StatusOfDevice',
-										sorter: { path: 'dummy' }
-									}">
-									<core:Item key="{key}" text="{text}" />
-								</ComboBox>
+								<Label text="Status of device" /> <!-- visible="{= ${Division} === 'Radiology'}" -->
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}">
+									<items>
+										<core:Item key="" text="" />
+										<core:Item key="New" text="New" />									
+									</items>
+								</Select>
 								<Label text="free goods same product" />
 								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="free goods for other product(s)" />
@@ -293,8 +285,8 @@
 							</form:content>
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable2" alternateRowColors="true" visible="false" ></Table>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4" visible="false">
+					<Table id="idProfitabilityTable2" alternateRowColors="true" ></Table>
 					<viz:VizFrame id="idListToNetChart2" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -336,16 +328,13 @@
 									enabled="false"/>
 								<Label text="Value of devices" />
 								<Input value="{fastAppData>ValueOfDevices}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Status of device" />
-								<ComboBox
-									
-									enabled="{fastAppData>/EditMode}"
-									items="{
-										path: '/DummyCollection',
-										sorter: { path: 'dummy' }
-									}">
-									<core:Item key="{key}" text="{text}" />
-								</ComboBox>
+								<Label text="Status of device" /> <!-- visible="{= ${Division} === 'Radiology'}" -->
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}">
+									<items>
+										<core:Item key="" text="" />
+										<core:Item key="New" text="New" />									
+									</items>
+								</Select>
 								<Label text="free goods for other product(s)" />
 								<MultiInput
 									suggestionItems="{
@@ -358,8 +347,8 @@
 							</form:content>
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4">
-					<Table id="idProfitabilityTable3" alternateRowColors="true" visible="false" ></Table>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4" visible="false">
+					<Table id="idProfitabilityTable3" alternateRowColors="true" ></Table>
 					<viz:VizFrame id="idListToNetChart3" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
 						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 				</l:BlockLayoutCell>
@@ -370,7 +359,7 @@
 
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History" visible="{fastAppData>/CheckOfferVisibleForTab}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -379,8 +368,7 @@
 							<Toolbar>
 								<content>
 									<ToolbarSpacer/>
-									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck"
-											  visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false }"/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="true"/>
 									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
 									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>

@@ -70,6 +70,34 @@ sap.ui.define([
 			//update
 			return that.odata(sPath).put(oProductPrice);
 		},
+
+		//Convert Price info to save in the database. (View binding is an extended version)
+		getConvertProductPriceToSave: function (oProductPriceSaveInfo) {
+
+			//Convert odata to structure that can be used to save
+			var oProductPriceToSave = {};
+
+    		//TODO FreeGoodsOther: Association to FreeGoodsOther;
+			
+			oProductPriceToSave.OfferID = oProductPriceSaveInfo.OfferID;
+			oProductPriceToSave.ProductCode = oProductPriceSaveInfo.ProductCode;
+			oProductPriceToSave.CountryCode = oProductPriceSaveInfo.CountryCode;
+			oProductPriceToSave.Warranty = (oProductPriceSaveInfo.Warranty === null) ? null : oProductPriceSaveInfo.Warranty.toString();
+			oProductPriceToSave.AgreementDuration = Number(oProductPriceSaveInfo.AgreementDuration);
+			oProductPriceToSave.MonthlyRent = (oProductPriceSaveInfo.MonthlyRent === null) ? null : oProductPriceSaveInfo.MonthlyRent.toString();
+			oProductPriceToSave.MonthsPerInvoice = Number(oProductPriceSaveInfo.MonthsPerInvoice);
+			oProductPriceToSave.ContractStartDate = moment().utc().toDate();
+			oProductPriceToSave.ValueOfDevices = (oProductPriceSaveInfo.ValueOfDevices === null) ? null : oProductPriceSaveInfo.ValueOfDevices.toString();
+			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
+			oProductPriceToSave.FreeGoodsSame = (oProductPriceSaveInfo.FreeGoodsSame === null) ? null : oProductPriceSaveInfo.FreeGoodsSame.toString();
+			oProductPriceToSave.FreeGoodsSame_ABS_PCT = oProductPriceSaveInfo.FreeGoodsSame_ABS_PCT;
+			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
+			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
+			oProductPriceToSave.AdditionalDiscount = (oProductPriceSaveInfo.AdditionalDiscount === null) ? null : oProductPriceSaveInfo.AdditionalDiscount.toString();
+
+			return oProductPriceToSave;
+
+		},
 		
 		//Convert Price info to save in the database. (View binding is an extended version)
 		getConvertPriceToSave: function (oPriceSaveInfo) {
