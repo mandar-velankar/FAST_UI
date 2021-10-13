@@ -261,7 +261,7 @@
 										type: 'sap.ui.model.type.Date', 
 										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 									}" 
-									enabled="false"/>
+									enabled="{fastAppData>/EditMode}"/>
 								<Label text="Value of devices" />
 								<Input value="{fastAppData>ValueOfDevices}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
