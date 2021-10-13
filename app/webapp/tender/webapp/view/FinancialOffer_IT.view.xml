@@ -1,0 +1,415 @@
+<mvc:View controllerName="FAST_NS0FAST0.controller.FinancialOffer_IT" 
+		  xmlns="sap.m" 
+		  xmlns:f="sap.f"
+		  xmlns:form="sap.ui.layout.form" 
+		  xmlns:mvc="sap.ui.core.mvc" 
+		  xmlns:t="sap.ui.table" 
+		  xmlns:core="sap.ui.core" 
+		  xmlns:l="sap.ui.layout"
+		  xmlns:viz.data="sap.viz.ui5.data" 
+		  xmlns:viz="sap.viz.ui5.controls" 
+		  xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" 
+		  xmlns:u="sap.uxap">
+
+	<!-- TENDER OFFER SUBSECTION -->
+	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{=!fastAppData>/CheckOfferVisibleForTab}">
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<VBox>
+						<FormattedText htmlText="Offer not available for financial offer..."/>
+					</VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+	<!-- TENDER OFFER SUBSECTION -->
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab}">
+		<u:actions>
+			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="{fastAppData>/EditMode}"/>
+		</u:actions>
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<VBox>
+						
+						<!-- Form with selected offer data -->
+						<form:SimpleForm id="idCurrencyForm" editable="true"  layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+							 columnsL="1" class="editableForm"  title="">
+							<Label text="{i18n>Currency}"/>
+								<Select id="idCurrency" selectedKey="{fastAppData>/EditOffer/Currency}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' }, filters: [
+									{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
+								] }" >					
+									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
+								</Select>
+							<Label text="{i18n>FOC}"/>
+							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}">
+								<items>
+									<core:Item key="FOC 2" text="In addition to requested volume" />
+									<core:Item key="FOC 1" text="Part of requested volume" />									
+								</items>
+							</Select>
+						</form:SimpleForm>
+						
+						<!-- Table with products -->
+						<Table id="idFinancialOfferViewProduct" 
+							   items="{path : 'fastAppData>/ProductPricingView'}"							   
+							   class="sapFDynamicPageAlignContent" width="auto">
+							<columns>
+								<Column>
+									<Text text="{i18n>Product}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>Volume}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>UoM}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>NetPrice}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>OfferPrice}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>COGS}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>GrossSales}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>NetSales}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>Profitability}"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem type="Navigation" press="onFinancialProductPress" detailPress="onDetailPress">
+									<cells>
+										<Text text="{fastAppData>ProductPackName}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>RequestedVolume}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>UOM}"/>
+									</cells>
+									<!--<cells>
+										<Text text="{fastAppData>NetPrice}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>OfferPrice}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>COGS}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>GrossSales}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>NetSales}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>Profitability}"/>
+									</cells>-->
+									<cells>
+										<Text text="TBD"/>
+									</cells>
+									<cells>
+										<Text text="TBD"/>
+									</cells>
+									<cells>
+										<Text text="TBD"/>
+									</cells>
+									<cells>
+										<Text text="TBD"/>
+									</cells>
+									<cells>
+										<Text text="TBD"/>
+									</cells>
+									<cells>
+										<Text text="TBD"/>
+									</cells>
+									
+								</ColumnListItem>
+							</items>
+						</Table>
+						
+					</VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+	
+	<!-- PRICING OFFER SUBSECTION -->
+	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab}">
+		<l:BlockLayout background="Light">
+
+			<!-- Selling -->
+			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Selling'}">
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+					<form:SimpleForm id="idSelling"
+							editable="false"
+							class="editableForm"
+							layout="ResponsiveGridLayout"
+							labelSpanXL="3"
+							labelSpanL="3"
+							labelSpanM="3"
+							labelSpanS="12"
+							adjustLabelSpan="false"
+							emptySpanXL="4"
+							emptySpanL="4"
+							emptySpanM="4"
+							emptySpanS="0"
+							columnsXL="1"
+							columnsL="1"
+							columnsM="1"
+							singleContainerFullSize="false" >
+							<form:content>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" />
+								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
+									<items>
+										<core:Item key="New" text="New" />									
+									</items>
+								</Select>
+								<Label text="Consumer Price (w/o VAT) per pack" />
+								<Input value="{fastAppData>ConsumerPriceExclPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="Consumer Price (with VAT) per pack" />
+								<Input value="{fastAppData>ConsumerPriceInclPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="Consumer Price (w/o VAT) per unit" />
+								<Input value="{fastAppData>ConsumerPriceExclPU}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="Consumer Price (with VAT) per unit" />
+								<Input value="{fastAppData>ConsumerPriceInclPU}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="Tax (VAT) per pack" />
+								<Input value="{fastAppData>VatPerPack}"  enabled="false" fieldWidth="80%"/>
+								<Label text="Mandatory / Ex-factory discount" />
+								<Input value="{fastAppData>MandatoryDiscount}"  enabled="false" fieldWidth="80%"/>
+								<Label text="Ex-factory Price w/o VAT" />
+								<Input value="{fastAppData>ExfPriceExclPP}"  enabled="false" fieldWidth="80%"/>
+								<Label text="I° confidential discount" />
+								<Input value="{fastAppData>ConfidentialDiscount1}"  enabled="false" fieldWidth="80%"/>
+								<Label text="II° confidential discount" />
+								<Input value="{fastAppData>ConfidentialDiscount2}"  enabled="false" fieldWidth="80%"/>
+								<Label text="Total Discount" />
+								<Input value="{fastAppData>TotalDiscount}"  enabled="false" fieldWidth="80%"/>
+								<Label text="Max Price for NHS per pack w/o VAT" />
+								<Input value="{fastAppData>MaxPriceNhsPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="Max Price for NHS per unit w/o VAT" />
+								<Input value="{fastAppData>MaxPriceNhsPU}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="Additional Discount" />
+								<Input value="{fastAppData>AdditionalDiscount}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
+								<Label text="Total Discount" />
+								<Input id="idTotalDiscount" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="Free goods same product" />
+								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Net Offer Price per pack" />
+								<Input id="idNetOfferPricePP" value="{fastAppData>NetOfferPricePP}"  enabled="false" fieldWidth="80%"/>
+								<Label text="Net Offer Price per unit" />
+								<Input id= "idNetOfferPricePU" value="{fastAppData>NetOfferPricePU}"  enabled="false" fieldWidth="80%"/>
+								<Label text="Free goods for other product(s)" />
+								<MultiComboBox id="idCountryBrandList" items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
+									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
+								</MultiComboBox>
+							</form:content>
+						</form:SimpleForm>
+				</l:BlockLayoutCell>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4" visible="false">
+					<Table id="idProfitabilityTable" alternateRowColors="true" ></Table>
+					<viz:VizFrame id="idListToNetChart" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
+						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+			
+			<!-- Rental -->
+			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Rental'}">
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+					<form:SimpleForm id="idRental"
+							editable="false"
+							class="editableForm"
+							layout="ResponsiveGridLayout"
+							labelSpanXL="3"
+							labelSpanL="3"
+							labelSpanM="3"
+							labelSpanS="12"
+							adjustLabelSpan="false"
+							emptySpanXL="4"
+							emptySpanL="4"
+							emptySpanM="4"
+							emptySpanS="0"
+							columnsXL="1"
+							columnsL="1"
+							columnsM="1"
+							singleContainerFullSize="false" >
+							<form:content>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
+								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Label text="Duration of agreement " />
+								<Input value="{fastAppData>AgreementDuration}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Monthly rent" />
+								<Input value="{fastAppData>MonthlyRent}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Months per invoice" />
+								<Input value="{fastAppData>MonthsPerInvoice}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Contract start date" />
+								<DatePicker 
+									value="{
+										path :'fastAppData>ContractStartDate', 
+										type: 'sap.ui.model.type.Date', 
+										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+									}" 
+									enabled="false"/>
+								<Label text="Value of devices" />
+								<Input value="{fastAppData>ValueOfDevices}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"> 
+									<items>
+										<core:Item key="New" text="New" />									
+									</items>
+								</Select>
+								<Label text="free goods same product" />
+								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="free goods for other product(s)" />
+								<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
+									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
+								</MultiComboBox>
+							</form:content>
+						</form:SimpleForm>
+				</l:BlockLayoutCell>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4" visible="false">
+					<Table id="idProfitabilityTable2" alternateRowColors="true" ></Table>
+					<viz:VizFrame id="idListToNetChart2" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
+						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+
+			<!-- Comodato -->
+			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Comodato'}">
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+					<form:SimpleForm id="idComodato"
+							editable="false"
+							class="editableForm"
+							layout="ResponsiveGridLayout"
+							labelSpanXL="3"
+							labelSpanL="3"
+							labelSpanM="3"
+							adjustLabelSpan="false"
+							emptySpanXL="4"
+							emptySpanL="4"
+							emptySpanM="4"
+							columnsXL="1"
+							columnsL="1"
+							singleContainerFullSize="false" >
+							<form:content>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
+								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Label text="Duration of agreement " />
+								<Input value="{fastAppData>AgreementDuration}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Minimum contractual commitment" />
+								<Input value="{fastAppData>MinContractual}"  description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Minimum annual purchase amount" />
+								<Input value="{fastAppData>MinAnnPurch}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Contract start date" />
+								<DatePicker 
+									value="{
+										path :'fastAppData>ContractStartDate', 
+										type: 'sap.ui.model.type.Date', 
+										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
+									}" 
+									enabled="{fastAppData>/EditMode}"/>
+								<Label text="Value of devices" />
+								<Input value="{fastAppData>ValueOfDevices}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
+									<items>
+										<core:Item key="New" text="New" />									
+									</items>
+								</Select>
+								<Label text="free goods for other product(s)" />
+								<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
+									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
+								</MultiComboBox>
+								
+							</form:content>
+						</form:SimpleForm>
+				</l:BlockLayoutCell>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4" visible="false">
+					<Table id="idProfitabilityTable3" alternateRowColors="true" ></Table>
+					<viz:VizFrame id="idListToNetChart3" uiConfig="{applicationSet:'fiori'}" height='20rem' width="100%" vizType='waterfall'
+						vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+
+	
+	<!-- TENDER HISTORY SUBSECTION -->
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History" visible="{fastAppData>/CheckOfferVisibleForTab}">
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<Table id="tenderHistoryId" inset="false">
+						<headerToolbar>
+							<Toolbar>
+								<content>
+									<ToolbarSpacer/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="true"/>
+									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
+									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
+									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
+									<CheckBox id="lossCheckId" text="{i18n>Loss}" selected= "false" select=".onHistoryFilterCheck"/>
+								</content>
+							</Toolbar>
+						</headerToolbar>
+						<columns>
+							<Column>
+								<Text text="{i18n>TenderID}"/>
+							</Column>
+							<Column>
+								<Text text="{i18n>Tender}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>OfferID}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>OfferDate}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>InstituteName}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Product}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>UnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>PackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetUnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetPackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>UnitPack}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>FOC}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Status}"/>
+							</Column>
+						</columns>
+					</Table>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+</mvc:View>
