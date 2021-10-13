@@ -2450,6 +2450,12 @@ sap.ui.define([
 			//check if selected offer was available in table
 			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable(true);
 
+			if(sSelectedSection === Services.getFinancialOfferPageSectionID_IT() && Services.getSelectedProductID() === ''){
+
+				sap.m.MessageBox.warning("First select an product to edit.", {});
+
+			} else {
+
 			if (sOfferID && bSelectedOfferAvailable) {
 				//ProductID should be selected on some tabs
 				if (
@@ -2471,6 +2477,8 @@ sap.ui.define([
 					this.onEditToggleButtonPress();
 				}
 			}
+
+		}
 
 		},
 
