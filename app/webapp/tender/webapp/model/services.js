@@ -67,6 +67,7 @@ sap.ui.define([
 		//different Page sections on detail page
 		_sBasicInformationPageSectionID: "---tenderManagementDetailId--basicInformationId",
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
+		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -156,6 +157,11 @@ sap.ui.define([
 
 		getFinancialOfferPageSectionID: function () {
 			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID;
+			return sPage;
+		},
+
+		getFinancialOfferPageSectionID_IT: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_IT;
 			return sPage;
 		},
 
@@ -940,7 +946,7 @@ sap.ui.define([
 						//No particular status checks are needed, as the offer should be shown for all statuses
 						bVisible = true;
 						break;
-					case this.getFinancialOfferPageSectionID():
+					case this.getFinancialOfferPageSectionID() || this.getFinancialOfferPageSectionID_IT():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
 						//  - 'Offer Declined'
@@ -1014,6 +1020,10 @@ sap.ui.define([
 				}
 
 			}
+
+			//keep result also on fastApp data model
+			let oFastAppDataModel = this.getFastAppDataModel();
+			oFastAppDataModel.setProperty("/CheckOfferVisibleForTab", bVisible);
 
 			return bVisible;
 		},
@@ -5904,6 +5914,18 @@ sap.ui.define([
 		getTenderProducts: function (sTenderID) {
 			return this.getService('Product').getTenderProducts(sTenderID);
 		},
+
+		getFinancialProducts: function (offerID) {
+			let oProductService = this.getService('Product');
+			return oProductService.getFinancialProducts(offerID);
+		},
+
+		getCountryBrandProducts: function (countryCode) {
+			let oProductService = this.getService('Product');
+			return oProductService.getCountryBrandProducts(countryCode);
+		},
+
+
 
 		//soft delete Offer (=set inactive column to 0)
 		saveSoftDeleteOffer: function () {
