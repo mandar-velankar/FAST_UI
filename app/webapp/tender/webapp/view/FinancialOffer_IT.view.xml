@@ -210,9 +210,9 @@
 								<Label text="Free goods same product" />
 								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Net Offer Price per pack" />
-								<Input value="{fastAppData>NetOfferPricePP}"  enabled="false" fieldWidth="80%"/>
+								<Input id="idNetOfferPricePP" value="{fastAppData>NetOfferPricePP}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Net Offer Price per unit" />
-								<Input value="{fastAppData>NetOfferPricePU}"  enabled="false" fieldWidth="80%"/>
+								<Input id= "idNetOfferPricePU" value="{fastAppData>NetOfferPricePU}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Free goods for other product(s)" />
 								<MultiComboBox id="idCountryBrandList" items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
 									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>

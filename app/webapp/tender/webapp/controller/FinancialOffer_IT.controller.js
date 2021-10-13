@@ -298,9 +298,13 @@ sap.ui.define([
 			const additionalDiscount = oEvent.getParameter("newValue");
 			const cunsumerPrice = oEvent.getSource().getParent().getBindingContext("fastAppData").getObject();
 			
-			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * ( 1 - additionalDiscount)) / cunsumerPrice.ConsumerPriceExclPP;					
+			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * ( 1 - additionalDiscount)) / cunsumerPrice.ConsumerPriceExclPP;
+			const netOfferPricePP = cunsumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
+			const netOfferPricePU = cunsumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);				
 
 			this.byId("idTotalDiscount").setValue(totalDiscount);
+			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
+			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
 		}
 
 	});
