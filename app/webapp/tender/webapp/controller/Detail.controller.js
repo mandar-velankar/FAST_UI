@@ -2787,6 +2787,7 @@ sap.ui.define([
 				var oView = this.getView().byId("financialOfferViewId_IT");
 				var oFinOfferController = oView.getController();
 				oFinOfferController.onSaveFinancialOfferItaly();
+				that.getView().setBusy(false);
 				break;
 				
 			case Services.getQuotationPageSectionID():

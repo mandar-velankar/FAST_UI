@@ -143,11 +143,11 @@ sap.ui.define([
 		 * @param {*} oEvent 
 		 */
 		onSaveFinancialOfferItaly: async function(oEvent){
-
+/*
 			//get selected product and the price values
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTender = Services.getLoadedTender();
-			let sTenderID = oTender.sTenderID;
+			let sTenderID = Services.getSelectedTenderID();
 			let oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			let sOfferID = oOffer.OfferID;
 			let sOfferPath = Services.getSelectedOfferPath();
@@ -197,21 +197,21 @@ sap.ui.define([
 			});
 
 			//we will load tender again after save is done
-			//var bLoadedCheck = false;
+			var bLoadedCheck = false;
 
-			//$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
 
 				//set selected offer ID
-				//Services.setSelectedOfferID(sOfferID);
-				//Services.setSelectedOfferPath(sOfferPath);
+				Services.setSelectedOfferID(sOfferID);
+				Services.setSelectedOfferPath(sOfferPath);
 
 				//Selected offer binding
-				//var oOffer = Services.getLoadedOffer(sOfferID);
-				//Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+				var oOffer = Services.getLoadedOffer(sOfferID);
+				Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 
 				//switch from edit to display
-				this._DetailController.onEditToggleButtonPress();
 				this.byId("idCurrency").setSelectedKey(sSetCurrency);
+				this._DetailController.onEditToggleButtonPress();
 
 				//show success message
 				Services.getOfferCompositeMessages().push({
@@ -225,7 +225,7 @@ sap.ui.define([
 
 				
 				//refresh tenders master table (left pane)
-				//TODO Services.refreshTendersMasterTable(sTenderID);
+				Services.refreshTendersMasterTable(sTenderID);
 
 				//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
 				var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
@@ -234,8 +234,8 @@ sap.ui.define([
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
 
-			//});
-
+			});
+*/
 		},
 
 		//for additional saving to PT_TMBDPR
