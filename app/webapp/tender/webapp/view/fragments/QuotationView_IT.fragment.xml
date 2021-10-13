@@ -40,22 +40,33 @@
                     text="{i18n>SaveQuotation}"
                     icon="sap-icon://save"
                     press=".onSaveDefaultQuotation"
-                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>
-                                            
-                <m:Button
-                    id="btnDownloadQuotation"
-                    text="{i18n>DownloadQuotation}"
-                    icon="sap-icon://download"
-                    press=".onDownloadQuotation"
-                    enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>                                       
+
+                <m:MenuButton text="Download Word" id="btnDownloadWordQuotation" visible="{= ${fastAppData>/WordTemplates}.length > 0 }">
+                    <m:menu>
+                        <m:Menu itemSelected="onMenuAction" items="{fastAppData>/WordTemplates}">
+                            <m:MenuItem text="{fastAppData>WordTemplates/name}" icon="sap-icon://download" press=".onDownloadWord"/>
+                        </m:Menu>
+                    </m:menu>
+                </m:MenuButton>
 
                 <!-- Bank Guarantee -->	
-                <m:Button
+                <!--<m:Button
                     id="btnCreateBankGuarantee"
                     text="{i18n>CreateGuarantee}"
                     icon="sap-icon://create-form"
                     press=".onCreateGuarantee"
-                    enabled="{= ${fastAppData>/newBankGuarantee/Status} !== 'Confirmed' &amp;&amp; ${fastAppData>/newBankGuarantee/Status} !== 'Expired' ? true : false }"/>
+                    enabled="{= ${fastAppData>/newBankGuarantee/Status} !== 'Confirmed' &amp;&amp; ${fastAppData>/newBankGuarantee/Status} !== 'Expired' ? true : false }"/>-->
+
+                      <m:MenuButton text="{i18n>BankGuarantee}">
+                        <m:menu>
+                            <m:Menu itemSelected="onBankGuarantee">
+                                <m:MenuItem text="Impegno" />
+                                <m:MenuItem text="Provisoria"  />
+                                <m:MenuItem text="Definitiva"  />
+                            </m:Menu>
+                        </m:menu>
+		            </m:MenuButton>
 
                 <!-- Submit Quotation -->	
                 <m:Button
@@ -382,7 +393,14 @@
                                     <!-- Creating additional space, so flickering of screen doesn't happen. This happens when content is almost fitting on the screen vs not -->
                                     <!-- these empty boxes solves this problem, since scrollbar is always shown -->
                                     <m:VBox fitContainer="true" height="500px">
-                                    </m:VBox>
+                                                    <!-- TODO: temp solution to not have btnDownloadQuotation missing in controllers for IT-->
+                                                    <m:Button
+                                                        id="btnDownloadQuotation"
+                                                        text="{i18n>DownloadQuotation}"
+                                                        icon="sap-icon://download"
+                                                        press=".onDownloadQuotation"
+                                                        enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/> 
+                                                    </m:VBox>
                                     
                                 </m:items>
                             </m:VBox>

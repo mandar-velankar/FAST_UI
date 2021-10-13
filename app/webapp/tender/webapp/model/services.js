@@ -67,6 +67,7 @@ sap.ui.define([
 		//different Page sections on detail page
 		_sBasicInformationPageSectionID: "---tenderManagementDetailId--basicInformationId",
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
+		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -156,6 +157,11 @@ sap.ui.define([
 
 		getFinancialOfferPageSectionID: function () {
 			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID;
+			return sPage;
+		},
+
+		getFinancialOfferPageSectionID_IT: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_IT;
 			return sPage;
 		},
 
@@ -686,6 +692,14 @@ sap.ui.define([
 				Reason: "",
 				Comment: "",
 				AwardedTier: "",
+				ExtensionNotes: null,
+				ExtensionNotes: "",
+				AwardLetterNo: "",
+				AwardDelibNo: "",
+				DeliveryDate: null,
+				ResultDate: null,
+				AwardDate: null,
+				AwardActing: "",
 				_sOperation: "POST"
 			};
 
@@ -932,7 +946,7 @@ sap.ui.define([
 						//No particular status checks are needed, as the offer should be shown for all statuses
 						bVisible = true;
 						break;
-					case this.getFinancialOfferPageSectionID():
+					case this.getFinancialOfferPageSectionID() || this.getFinancialOfferPageSectionID_IT():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
 						//  - 'Offer Declined'
@@ -1006,6 +1020,10 @@ sap.ui.define([
 				}
 
 			}
+
+			//keep result also on fastApp data model
+			let oFastAppDataModel = this.getFastAppDataModel();
+			oFastAppDataModel.setProperty("/CheckOfferVisibleForTab", bVisible);
 
 			return bVisible;
 		},
@@ -5897,6 +5915,18 @@ sap.ui.define([
 			return this.getService('Product').getTenderProducts(sTenderID);
 		},
 
+		getFinancialProducts: function (offerID) {
+			let oProductService = this.getService('Product');
+			return oProductService.getFinancialProducts(offerID);
+		},
+
+		getCountryBrandProducts: function (countryCode) {
+			let oProductService = this.getService('Product');
+			return oProductService.getCountryBrandProducts(countryCode);
+		},
+
+
+
 		//soft delete Offer (=set inactive column to 0)
 		saveSoftDeleteOffer: function () {
 
@@ -6948,7 +6978,7 @@ sap.ui.define([
 				case "POST":
 					delete oPriceAgreementSaveInfo._sOperation;
 					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
-						oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 						
 						//show message view
 						that.getOfferCompositeMessages().push({
@@ -7463,6 +7493,13 @@ sap.ui.define([
 			return oDeferred.promise();
 		},
 
+		//get word templates
+		getWordTemplates: function (countryCode) {
+			return this.getService('Quotation').getWordTemplates(countryCode).then(function(response){
+				this.getFastAppDataModel().setProperty("/WordTemplates", response.data.results);
+				return response.data.results;
+			}.bind(this));
+		},
 		// HELPERS
 		/*sendMail: function(sRecipient, sSubject, sTemplate){
 			
