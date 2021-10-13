@@ -180,37 +180,39 @@
 									</items>
 								</Select>
 								<Label text="Consumer Price (w/o VAT) per pack" />
-								<Input value="{fastAppData>ConsumerPriceExclPP}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceExclPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per pack" />
-								<Input value="{fastAppData>ConsumerPriceInclPP}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceInclPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (w/o VAT) per unit" />
-								<Input value="{fastAppData>ConsumerPriceExclPU}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceExclPU}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per unit" />
-								<Input value="{fastAppData>ConsumerPriceInclPU}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConsumerPriceInclPU}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Tax (VAT) per pack" />
-								<Input value="{fastAppData>VatPerPack}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>VatPerPack}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Mandatory / Ex-factory discount" />
-								<Input value="{fastAppData>MandatoryDiscount}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>MandatoryDiscount}"  enabled="false" fieldWidth="80%"/>
+								<Label text="Ex-factory Price w/o VAT" />
+								<Input value="{fastAppData>ExfPriceExclPP}"  enabled="false" fieldWidth="80%"/>
 								<Label text="I° confidential discount" />
-								<Input value="{fastAppData>ConfidentialDiscount1}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConfidentialDiscount1}"  enabled="false" fieldWidth="80%"/>
 								<Label text="II° confidential discount" />
-								<Input value="{fastAppData>ConfidentialDiscount2}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>ConfidentialDiscount2}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Total Discount" />
-								<Input value="{fastAppData>TotalDiscount}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>TotalDiscount}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Max Price for NHS per pack w/o VAT" />
-								<Input value="{fastAppData>MaxPriceNhsPP}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>MaxPriceNhsPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Max Price for NHS per unit w/o VAT" />
-								<Input value="{fastAppData>MaxPriceNhsPU}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>MaxPriceNhsPU}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Additional Discount" />
-								<Input value="{fastAppData>AdditionalDiscount}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>AdditionalDiscount}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
 								<Label text="Total Discount" />
-								<Input value="{fastAppData>TotalDiscount}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input id="idTotalDiscount" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Free goods same product" />
 								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Net Offer Price per pack" />
-								<Input value="{fastAppData>NetOfferPricePP}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>NetOfferPricePP}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Net Offer Price per unit" />
-								<Input value="{fastAppData>NetOfferPricePU}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>NetOfferPricePU}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Free goods for other product(s)" />
 								<MultiComboBox id="idCountryBrandList" items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
 									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
