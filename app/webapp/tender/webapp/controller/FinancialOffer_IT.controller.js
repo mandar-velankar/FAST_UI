@@ -290,6 +290,17 @@ sap.ui.define([
 		onApprovalsPress: function (oEvent) {
 			//approvals dialog will be shown
 			this._DetailController.onApprovalsPress(oEvent);
+		},
+
+
+		calculateTotalDiscount: function(oEvent){
+
+			const additionalDiscount = oEvent.getParameter("newValue");
+			const cunsumerPrice = oEvent.getSource().getParent().getBindingContext("fastAppData").getObject();
+			
+			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * ( 1 - additionalDiscount)) / cunsumerPrice.ConsumerPriceExclPP;					
+
+			this.byId("idTotalDiscount").setValue(totalDiscount);
 		}
 
 	});
