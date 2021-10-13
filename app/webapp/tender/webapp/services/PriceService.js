@@ -62,6 +62,7 @@ sap.ui.define([
 			var oModel = Services.getDefaultModel();
 
 			var sPath = oModel.createKey("/ProductPricing", {
+				ID: oProductPrice.ID,
 				OfferID: oProductPrice.OfferID,
 				ProductCode: oProductPrice.ProductCode,
 				CountryCode: oProductPrice.CountryCode

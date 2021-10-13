@@ -225,7 +225,7 @@ sap.ui.define([
 
 				
 				//refresh tenders master table (left pane)
-				Services.refreshTendersMasterTable(sTenderID);
+				//TODO Services.refreshTendersMasterTable(sTenderID);
 
 				//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
 				var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
