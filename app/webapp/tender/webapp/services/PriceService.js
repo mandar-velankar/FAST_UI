@@ -71,6 +71,26 @@ sap.ui.define([
 			return that.odata(sPath).put(oProductPrice);
 		},
 
+		/**
+		 * Save product price detirmines what needs to be done
+		 * @param {object} oProductPrice product price to save
+		 * @returns {object} returns 
+		 */
+		saveProductPrice: function(oProductPrice){
+
+			//is the ID filled (= already saved)
+			if(oProductPrice.ID){
+	
+				return this.updateProductPrice(oProductPrice);
+
+			}else{
+
+				return this.createProductPrice(oProductPrice);
+
+			}
+
+		},
+
 		//Convert Price info to save in the database. (View binding is an extended version)
 		getConvertProductPriceToSave: function (oProductPriceSaveInfo) {
 
@@ -78,7 +98,11 @@ sap.ui.define([
 			var oProductPriceToSave = {};
 
     		//TODO FreeGoodsOther: Association to FreeGoodsOther;
-			
+
+			//If ID is not existing do not store in object to create
+			if(oProductPriceSaveInfo.ID){
+				oProductPriceToSave.ID = oProductPriceSaveInfo.ID;
+			}
 			oProductPriceToSave.OfferID = oProductPriceSaveInfo.OfferID;
 			oProductPriceToSave.ProductCode = oProductPriceSaveInfo.ProductCode;
 			oProductPriceToSave.CountryCode = oProductPriceSaveInfo.CountryCode;

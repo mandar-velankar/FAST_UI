@@ -164,7 +164,7 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			await Services.getService('Price').updateProductPrice(oProductPriceToSave);
+			await Services.getService('Price').saveProductPrice(oProductPriceToSave);
 
 			//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
 			let iApprovalsSent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
@@ -210,7 +210,7 @@ sap.ui.define([
 				//Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 
 				//switch from edit to display
-				this.onEditToggleButtonPress();
+				this._DetailController.onEditToggleButtonPress();
 				this.byId("idCurrency").setSelectedKey(sSetCurrency);
 
 				//show success message
