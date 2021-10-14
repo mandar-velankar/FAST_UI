@@ -1791,7 +1791,8 @@ sap.ui.define([
 						oBtnSaveQuotation.setVisible(true);
 					}
 					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
-					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+					let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1 && Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation) {
 						that.getView().byId("btnDownloadQuotation").setVisible(true);
 					}
 					that.getView().byId("btnSubmitQuotation").setVisible(true);
@@ -2228,7 +2229,12 @@ sap.ui.define([
 						that.getView().byId("idDelayInSubmission").setVisible(false);
 						that.getView().byId("btnSaveQuotation").setVisible(false);
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
-						that.getView().byId("btnDownloadQuotation").setVisible(false);
+
+						let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+						if(Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation){
+							oBtnDownloadQuotation.setEnabled(false);
+						}
+
 						that.getView().byId("btnSubmitQuotation").setVisible(false);
 						break;
 					case Services.getTenderResultsPageSectionID():
@@ -7665,14 +7671,19 @@ sap.ui.define([
 				if (sOfferStatus !== "Offer Created" && (oQuotation && oQuotation.UPDATED === 1)) {
 					enableDownload = true;
 				}
-				if(Services.getSelectedCountry() !== 'IT'){
-					that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+				let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+				if(Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation){
+					oBtnDownloadQuotation.setEnabled(enableDownload);
 				}
 
 				//enable or disable submit button
 				var enableSubmit = false;
-				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
-					enableSubmit = true;
+				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) ) {
+					if( oBankGuarantee && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed')) ){
+						enableSubmit = true;
+					} else {
+						enableSubmit = true;
+					}
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 
@@ -7820,7 +7831,11 @@ sap.ui.define([
 							if (sStatus !== "Offer Created" && (oQuotation)) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableDownload = true;
 							}
-							that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+
+							let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+							if(Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation){
+								oBtnDownloadQuotation.setEnabled(enableDownload);
+							}
 
 							//refresh everything
 							that.onRefresh();
