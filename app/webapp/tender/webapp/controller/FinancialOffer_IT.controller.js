@@ -108,18 +108,25 @@ sap.ui.define([
 		 * Event handler for the OfferProductsItaly
 		 * @param {Object} event - An instance of event object
 		 */
-		onFinancialProductPress: function(oEvent){
+		onFinancialProductPress: function(oEvent, bBindingFinished){
 
 			//get context of selected price product
 			let oFastAppDataModel = Services.getFastAppDataModel();
-			const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-			this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
-			this.selectedProductPricePath = bindingContext.sPath;
+			if(!bBindingFinished){
+				const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+				this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+				this.selectedProductPricePath = bindingContext.sPath;
+			} else {
+				this.selectedProductPricePath = Services.getSelectedProductPath();
+				let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+				this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
+			}
 
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 
 			//keep selected product ID
 			Services.setSelectedProductID(oProductPrice.ProductCode);
+			Services.setSelectedProductName(oProductPrice.ProductPackName);
 
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
@@ -298,6 +305,23 @@ sap.ui.define([
 			this.byId("idTotalDiscount").setValue(totalDiscount);
 			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
 			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
+		},
+
+		onBindingItemsFinished: function (oEvent) {
+			let sSourceId = oEvent.oSource.sId
+			let oProductsTable = oEvent.getSource();
+			let that = this;
+
+			if(sSourceId.includes('financialOfferViewId_IT') && !$.isEmptyObject(oProductsTable)){
+				let aItems = oProductsTable.getItems();
+				if(aItems.length > 0){
+					oProductsTable.setSelectedItem(aItems[0], true);
+					aItems[0].setSelected(true);
+					Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+					
+					that.onFinancialProductPress(oEvent, true);
+				}
+			}
 		}
 
 	});
