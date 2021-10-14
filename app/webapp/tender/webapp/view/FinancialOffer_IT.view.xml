@@ -12,7 +12,7 @@
 		  xmlns:u="sap.uxap">
 
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{=!fastAppData>/CheckOfferVisibleForTab}">
+	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{= !${fastAppData>/CheckOfferVisibleForTab} }">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
