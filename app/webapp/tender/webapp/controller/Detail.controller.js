@@ -8110,7 +8110,7 @@ sap.ui.define([
 			var oLoadedPriceAgreement = oFastAppDataModel.getProperty("/newPriceAgreement");
 			if(oLoadedPriceAgreement){
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-				window.open("/app/#/priceagreements/" + oLoadedPriceAgreement.ID);
+				window.open("/app/#/priceagreements&/pa/PriceAgreements/" + oLoadedPriceAgreement.ID);
 			} else {
 				var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
