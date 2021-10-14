@@ -1963,7 +1963,7 @@ sap.ui.define([
 
 						// Italy
 						if (Services.getSelectedCountry() === "IT"){
-						that.getView().byId("idRegionEdit").setVisible(true);
+						//that.getView().byId("idRegionEdit").setVisible(true);
 							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
 								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 								that.byId("idRegionEdit").setSelectedKeys(regionIDs);
