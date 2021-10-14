@@ -280,6 +280,10 @@ sap.ui.define([
 				PRICE_UPDATE: 0
 			};
 
+			if(oProductPrice.ID !== null){
+				oNewPriceInfo.ID = oProductPrice.ID;
+			}
+
 			return oNewPriceInfo;
 		},
 

@@ -174,6 +174,10 @@ sap.ui.define([
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
 
+			if(oPriceSaveInfo.ID) {
+				oPriceToSave.ID = oPriceSaveInfo.ID;
+			}
+
 			return oPriceToSave;
 
 		}
