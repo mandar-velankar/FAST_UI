@@ -7679,11 +7679,7 @@ sap.ui.define([
 				//enable or disable submit button
 				var enableSubmit = false;
 				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) ) {
-					if( oBankGuarantee && (oBankGuarantee.Status && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed')) ){
 						enableSubmit = true;
-					} else {
-						enableSubmit = true;
-					}
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 
