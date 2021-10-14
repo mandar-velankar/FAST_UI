@@ -7665,7 +7665,9 @@ sap.ui.define([
 				if (sOfferStatus !== "Offer Created" && (oQuotation && oQuotation.UPDATED === 1)) {
 					enableDownload = true;
 				}
-				that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+				if(Services.getSelectedCountry() !== 'IT'){
+					that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+				}
 
 				//enable or disable submit button
 				var enableSubmit = false;

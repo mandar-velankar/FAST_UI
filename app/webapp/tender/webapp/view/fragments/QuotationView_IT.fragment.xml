@@ -392,15 +392,7 @@
                                     
                                     <!-- Creating additional space, so flickering of screen doesn't happen. This happens when content is almost fitting on the screen vs not -->
                                     <!-- these empty boxes solves this problem, since scrollbar is always shown -->
-                                    <m:VBox fitContainer="true" height="500px">
-                                                    <!-- TODO: temp solution to not have btnDownloadQuotation missing in controllers for IT-->
-                                                    <m:Button
-                                                        id="btnDownloadQuotation"
-                                                        text="{i18n>DownloadQuotation}"
-                                                        icon="sap-icon://download"
-                                                        press=".onDownloadQuotation"
-                                                        enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/> 
-                                                    </m:VBox>
+                                    <m:VBox fitContainer="true" height="500px" />
                                     
                                 </m:items>
                             </m:VBox>

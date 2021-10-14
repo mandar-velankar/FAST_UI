@@ -55,7 +55,7 @@
 						<!-- Table with products -->
 						<Table id="idFinancialOfferViewProduct" 
 							   items="{path : 'fastAppData>/ProductPricingView'}"							   
-							   class="sapFDynamicPageAlignContent" width="auto">
+							   class="sapFDynamicPageAlignContent" width="auto" updateFinished="onBindingItemsFinished">
 							<columns>
 								<Column>
 									<Text text="{i18n>Product}"/>
