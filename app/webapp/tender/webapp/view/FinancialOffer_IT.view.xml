@@ -12,7 +12,7 @@
 		  xmlns:u="sap.uxap">
 
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{=!fastAppData>/CheckOfferVisibleForTab}">
+	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{= !${fastAppData>/CheckOfferVisibleForTab} }">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -55,7 +55,7 @@
 						<!-- Table with products -->
 						<Table id="idFinancialOfferViewProduct" 
 							   items="{path : 'fastAppData>/ProductPricingView'}"							   
-							   class="sapFDynamicPageAlignContent" width="auto">
+							   class="sapFDynamicPageAlignContent" width="auto" updateFinished="onBindingItemsFinished">
 							<columns>
 								<Column>
 									<Text text="{i18n>Product}"/>
@@ -205,8 +205,16 @@
 								<Input value="{fastAppData>AdditionalDiscount}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
 								<Label text="Total Discount" />
 								<Input id="idTotalDiscount" description="EUR" enabled="false" fieldWidth="80%"/>
+								<Label text="FOC Absolute/Percentage" />
+								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
+									<items>
+										<core:Item key="" text="" />	
+										<core:Item key="ABS" text="Absolute" />
+										<core:Item key="PCT" text="Percentage" />									
+									</items>
+								</Select>
 								<Label text="Free goods same product" />
-								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="Net Offer Price per pack" />
 								<Input id="idNetOfferPricePP" value="{fastAppData>NetOfferPricePP}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Net Offer Price per unit" />
@@ -270,8 +278,16 @@
 										<core:Item key="New" text="New" />									
 									</items>
 								</Select>
+								<Label text="FOC Absolute/Percentage" />
+								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
+									<items>
+										<core:Item key="" text="" />	
+										<core:Item key="ABS" text="Absolute" />
+										<core:Item key="PCT" text="Percentage" />									
+									</items>
+								</Select>
 								<Label text="free goods same product" />
-								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="free goods for other product(s)" />
 								<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
 									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>

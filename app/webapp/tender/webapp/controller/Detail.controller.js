@@ -1791,7 +1791,8 @@ sap.ui.define([
 						oBtnSaveQuotation.setVisible(true);
 					}
 					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
-					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+					let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1 && oBtnDownloadQuotation) {
 						that.getView().byId("btnDownloadQuotation").setVisible(true);
 					}
 					that.getView().byId("btnSubmitQuotation").setVisible(true);
@@ -1963,7 +1964,7 @@ sap.ui.define([
 
 						// Italy
 						if (Services.getSelectedCountry() === "IT"){
-						that.getView().byId("idRegionEdit").setVisible(true);
+						//that.getView().byId("idRegionEdit").setVisible(true);
 							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
 								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
 								that.byId("idRegionEdit").setSelectedKeys(regionIDs);
@@ -2228,7 +2229,12 @@ sap.ui.define([
 						that.getView().byId("idDelayInSubmission").setVisible(false);
 						that.getView().byId("btnSaveQuotation").setVisible(false);
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
-						that.getView().byId("btnDownloadQuotation").setVisible(false);
+
+						let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+						if(oBtnDownloadQuotation){
+							oBtnDownloadQuotation.setEnabled(false);
+						}
+
 						that.getView().byId("btnSubmitQuotation").setVisible(false);
 						break;
 					case Services.getTenderResultsPageSectionID():
@@ -2984,8 +2990,12 @@ sap.ui.define([
 			Services.clearDeliveriesForProduct();
 			Services.clearLettersForProduct();
 			Quotation.clearQuotationOfferProducts();
-			this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
-			this.byId("idRegionEdit").setVisible(false); // hide regions
+
+			let oRegionEdit = this.byId("idRegionEdit");
+			if(oRegionEdit){
+				oRegionEdit.setSelectedKeys([]); // clear the region selected keys
+				oRegionEdit.setVisible(false); // hide regions
+			}
 
 			//tender should no longer be selected
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -7661,12 +7671,15 @@ sap.ui.define([
 				if (sOfferStatus !== "Offer Created" && (oQuotation && oQuotation.UPDATED === 1)) {
 					enableDownload = true;
 				}
-				that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+				let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+				if(oBtnDownloadQuotation){
+					oBtnDownloadQuotation.setEnabled(enableDownload);
+				}
 
 				//enable or disable submit button
 				var enableSubmit = false;
-				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) && ((oBankGuarantee && oBankGuarantee.Status) && (oBankGuarantee.Status === 'Preliminary' || oBankGuarantee.Status === 'Confirmed'))) {
-					enableSubmit = true;
+				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) ) {
+						enableSubmit = true;
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 
@@ -7814,7 +7827,11 @@ sap.ui.define([
 							if (sStatus !== "Offer Created" && (oQuotation)) { //&& oQuotation.UPDATED === 1)){ //Updated is in this case always 1 (thats what we are updating here) 
 								enableDownload = true;
 							}
-							that.byId("btnDownloadQuotation").setEnabled(enableDownload);
+
+							let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
+							if(oBtnDownloadQuotation){
+								oBtnDownloadQuotation.setEnabled(enableDownload);
+							}
 
 							//refresh everything
 							that.onRefresh();
@@ -8104,7 +8121,7 @@ sap.ui.define([
 			var oLoadedPriceAgreement = oFastAppDataModel.getProperty("/newPriceAgreement");
 			if(oLoadedPriceAgreement){
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
-				window.open("/app/#/priceagreements/" + oLoadedPriceAgreement.ID);
+				window.open("/app/#/priceagreements&/pa/PriceAgreements/" + oLoadedPriceAgreement.ID);
 			} else {
 				var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();

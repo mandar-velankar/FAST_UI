@@ -108,23 +108,31 @@ sap.ui.define([
 		 * Event handler for the OfferProductsItaly
 		 * @param {Object} event - An instance of event object
 		 */
-		onFinancialProductPress: function(oEvent){
+		onFinancialProductPress: function(oEvent, bBindingFinished){
 
 			//get context of selected price product
 			let oFastAppDataModel = Services.getFastAppDataModel();
-			const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-			this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
-			this.selectedProductPricePath = bindingContext.sPath;
+			if(!bBindingFinished){
+				const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+				this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+				this.selectedProductPricePath = bindingContext.sPath;
+			} else {
+				this.selectedProductPricePath = Services.getSelectedProductPath();
+				let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+				this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
+			}
 
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 
 			//keep selected product ID
 			Services.setSelectedProductID(oProductPrice.ProductCode);
+			Services.setSelectedProductName(oProductPrice.ProductPackName);
 
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
 			//check for approval enabled 
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
@@ -164,8 +172,10 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			await Services.getService('Price').saveProductPrice(oProductPriceToSave);
-
+			let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
+			if(oResult && oResult.data && oResult.data.ID){
+				oProductPrice.ID = oResult.data.ID;
+			}
 			//Update offer
 			var oOfferSaveInfo = {};
 			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
@@ -263,7 +273,7 @@ sap.ui.define([
 				SpotRate: 1,
 				BudgetRate: 1,
 				Scenario: 0,
-				FOC_ABS_PCT: "ABS",
+				FOC_ABS_PCT: oProductPrice.FOC_ABS_PCT,
 				FOCProduct_Bundled_1: null, //FOC ADDITIONAL PRODUCT
 				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
 				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE
@@ -272,6 +282,10 @@ sap.ui.define([
 				NetPrice_OfPaid: 0,
 				PRICE_UPDATE: 0
 			};
+
+			/*if(oProductPrice.ID !== null){
+				oNewPriceInfo.ID = oProductPrice.ID;
+			}*/
 
 			return oNewPriceInfo;
 		},
@@ -298,6 +312,23 @@ sap.ui.define([
 			this.byId("idTotalDiscount").setValue(totalDiscount);
 			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
 			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
+		},
+
+		onBindingItemsFinished: function (oEvent) {
+			let sSourceId = oEvent.oSource.sId
+			let oProductsTable = oEvent.getSource();
+			let that = this;
+
+			if(sSourceId.includes('financialOfferViewId_IT') && !$.isEmptyObject(oProductsTable)){
+				let aItems = oProductsTable.getItems();
+				if(aItems.length > 0){
+					oProductsTable.setSelectedItem(aItems[0], true);
+					aItems[0].setSelected(true);
+					Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+					
+					that.onFinancialProductPress(oEvent, true);
+				}
+			}
 		}
 
 	});
