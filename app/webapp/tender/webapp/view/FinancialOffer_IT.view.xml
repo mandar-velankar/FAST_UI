@@ -206,7 +206,7 @@
 								<Label text="Total Discount" />
 								<Input id="idTotalDiscount" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="FOC Absolute/Percentage" />
-								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}" fieldWidth="80%">
+								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
 									<items>
 										<core:Item key="" text="" />	
 										<core:Item key="ABS" text="Absolute" />
@@ -214,7 +214,7 @@
 									</items>
 								</Select>
 								<Label text="Free goods same product" />
-								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditOffer/UnitPerPack} : '' }"/>
+								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="Net Offer Price per pack" />
 								<Input id="idNetOfferPricePP" value="{fastAppData>NetOfferPricePP}"  enabled="false" fieldWidth="80%"/>
 								<Label text="Net Offer Price per unit" />
@@ -279,7 +279,7 @@
 									</items>
 								</Select>
 								<Label text="FOC Absolute/Percentage" />
-								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}" fieldWidth="80%">
+								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
 									<items>
 										<core:Item key="" text="" />	
 										<core:Item key="ABS" text="Absolute" />
@@ -287,7 +287,7 @@
 									</items>
 								</Select>
 								<Label text="free goods same product" />
-								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditOffer/UnitPerPack} : '' }"/>/>
+								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="free goods for other product(s)" />
 								<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
 									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>

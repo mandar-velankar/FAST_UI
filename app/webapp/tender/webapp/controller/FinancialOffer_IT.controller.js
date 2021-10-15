@@ -132,6 +132,7 @@ sap.ui.define([
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
 			//check for approval enabled 
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
