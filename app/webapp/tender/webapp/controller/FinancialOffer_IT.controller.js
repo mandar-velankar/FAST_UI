@@ -171,8 +171,10 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			await Services.getService('Price').saveProductPrice(oProductPriceToSave);
-
+			let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
+			if(oResult && oResult.data && oResult.data.ID){
+				oProductPrice.ID = oResult.data.ID;
+			}
 			//Update offer
 			var oOfferSaveInfo = {};
 			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
@@ -279,6 +281,10 @@ sap.ui.define([
 				NetPrice_OfPaid: 0,
 				PRICE_UPDATE: 0
 			};
+
+			/*if(oProductPrice.ID !== null){
+				oNewPriceInfo.ID = oProductPrice.ID;
+			}*/
 
 			return oNewPriceInfo;
 		},
