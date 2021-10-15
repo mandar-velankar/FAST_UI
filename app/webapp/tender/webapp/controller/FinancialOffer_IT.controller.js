@@ -4,8 +4,9 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/model/userinfo",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-	"FAST_NS0FAST0/model/financial"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial) {
+	"FAST_NS0FAST0/model/financial",
+	"sap/ui/core/Fragment"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment) {
 	"use strict";
 
 	return Controller.extend("FAST_NS0FAST0.controller.FinancialOffer_IT", {
@@ -298,7 +299,38 @@ sap.ui.define([
 			this.byId("idTotalDiscount").setValue(totalDiscount);
 			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
 			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
+		},
+
+		onOpenProducts: function () {
+
+			var oView = this.getView();
+
+			// create dialog lazily
+			if (!this.pDialog) {
+				this.pDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.OtherProducts_IT",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+			}
+
+			this.pDialog.then(function (oDialog) {
+				oDialog.open();
+			});
+
+
+		},
+
+		onCancelProducts: function () {
+			this.byId("OtherProducts").close();
+
+
 		}
+
 
 	});
 });

@@ -1,0 +1,44 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog id="OtherProducts" title="Products" >
+		<buttons>
+			<Button text="Save" press="" />
+			<Button text="Cancel" press="onCancelProducts" />
+		</buttons>
+
+        <Table items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME', group : true }}">
+            <columns>
+                <Column>
+                    <Text text="{i18n>Product}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>Percentage}"/>
+                </Column>
+                <Column>
+                    <Text text="FOC Quantity"/>
+                </Column>
+                
+            </columns>
+            <ColumnListItem>
+                <cells>
+                    <ObjectIdentifier
+						title="{fastAppData>PRODUCT_NAME}"
+						text="{fastAppData>PRODUCT_ID}"/>
+                        <Input type="Number" description="%" maxLength="3" />
+                        <Input />
+                    
+                    
+                </cells>
+            </ColumnListItem>
+
+
+
+
+        </Table>
+
+			
+
+   	</Dialog>	
+</core:FragmentDefinition>
