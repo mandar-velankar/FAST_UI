@@ -1792,7 +1792,7 @@ sap.ui.define([
 					}
 					//that.getView().byId("idLabelDelayInSubmission").setVisible(true);
 					let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
-					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1 && Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation) {
+					if (oOffer.Active === 1 && oOffer.ActiveOffer === 1 && oBtnDownloadQuotation) {
 						that.getView().byId("btnDownloadQuotation").setVisible(true);
 					}
 					that.getView().byId("btnSubmitQuotation").setVisible(true);
@@ -2231,7 +2231,7 @@ sap.ui.define([
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
 
 						let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
-						if(Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation){
+						if(oBtnDownloadQuotation){
 							oBtnDownloadQuotation.setEnabled(false);
 						}
 
@@ -7672,7 +7672,7 @@ sap.ui.define([
 					enableDownload = true;
 				}
 				let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
-				if(Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation){
+				if(oBtnDownloadQuotation){
 					oBtnDownloadQuotation.setEnabled(enableDownload);
 				}
 
@@ -7829,7 +7829,7 @@ sap.ui.define([
 							}
 
 							let oBtnDownloadQuotation = that.byId("btnDownloadQuotation");
-							if(Services.getSelectedCountry() !== 'IT' && oBtnDownloadQuotation){
+							if(oBtnDownloadQuotation){
 								oBtnDownloadQuotation.setEnabled(enableDownload);
 							}
 
