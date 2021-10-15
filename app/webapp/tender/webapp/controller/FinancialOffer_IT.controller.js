@@ -272,7 +272,7 @@ sap.ui.define([
 				SpotRate: 1,
 				BudgetRate: 1,
 				Scenario: 0,
-				FOC_ABS_PCT: "ABS",
+				FOC_ABS_PCT: oProductPrice.FOC_ABS_PCT,
 				FOCProduct_Bundled_1: null, //FOC ADDITIONAL PRODUCT
 				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
 				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE

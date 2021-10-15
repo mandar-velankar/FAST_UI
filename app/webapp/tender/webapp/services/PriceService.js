@@ -119,6 +119,7 @@ sap.ui.define([
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
 			oProductPriceToSave.AdditionalDiscount = (oProductPriceSaveInfo.AdditionalDiscount === null) ? null : oProductPriceSaveInfo.AdditionalDiscount.toString();
+			oProductPriceToSave.FOC_ABS_PCT = (oProductPriceSaveInfo.FOC_ABS_PCT === null) ? null : oProductPriceSaveInfo.FOC_ABS_PCT.toString();
 
 			return oProductPriceToSave;
 
