@@ -1612,6 +1612,9 @@ sap.ui.define([
 						//FINANCIAL OFFER for IT
 						//select offer again (TODO)
 						//that.onFinancialOfferItemPress();
+						var oView = that.getView().byId("financialOfferViewId_IT");
+						var oFinOfferController = oView.getController();
+						oFinOfferController.refreshFinancialTabIT();
 					}
 
 					if (that.getView().getContent()[0].getSelectedSection() == Services.getDeliveryTrackingPageSectionID() && Services.checkOfferVisibleForTab(

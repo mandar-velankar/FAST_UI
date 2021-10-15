@@ -93,6 +93,38 @@ sap.ui.define([
 
 		},
 
+		refreshFinancialTabIT: async function(){
+			//load products
+			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
+
+			//load countryBrandProducts
+			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+
+			aProducts.map(product => {
+				product.FreeGoodsOther.map(FreeGoodsOther => {
+					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+				return FreeGoodsOther; 
+				});
+				return product;
+			});
+
+			//set to fastappdata model for easy access on the view
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
+			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
+
+			//Edit offer copy to move back to original values during cancel
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			//Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
+
+			let sSelectedSection = Services.getFinancialOfferPageSectionID_IT();
+			Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection);
+
+		},
+
 		/* GETTERS */
 		/**
 		 * Fetches a list of Tender products from the backend
