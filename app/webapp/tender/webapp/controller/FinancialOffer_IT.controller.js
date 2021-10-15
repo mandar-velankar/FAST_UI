@@ -4,8 +4,9 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/model/userinfo",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-	"FAST_NS0FAST0/model/financial"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial) {
+	"FAST_NS0FAST0/model/financial",
+	"sap/ui/core/Fragment"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment) {
 	"use strict";
 
 	return Controller.extend("FAST_NS0FAST0.controller.FinancialOffer_IT", {
@@ -48,6 +49,14 @@ sap.ui.define([
 				//load countryBrandProducts
 				let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
+				aProducts.map(product => {
+					product.FreeGoodsOther.map(FreeGoodsOther => {
+						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+					  return FreeGoodsOther; 
+					});
+					return product;
+				});
 
 				//set to fastappdata model for easy access on the view
 				var oFastAppDataModel = Services.getFastAppDataModel();
@@ -93,7 +102,14 @@ sap.ui.define([
 		 getFinancialProducts: async function(offerID) { 
 			if(offerID){
 				const response = await Services.getFinancialProducts(offerID);
-				return response.data.results;
+				
+				return response.data.results.map(item => {
+					item.FreeGoodsOther = item.FreeGoodsOther.results.map(freeGoods => {
+						freeGoods.UOM = item.UOM;
+						return freeGoods;
+					});
+					return item;
+				});
 			}
 		},
 
@@ -329,7 +345,81 @@ sap.ui.define([
 					that.onFinancialProductPress(oEvent, true);
 				}
 			}
-		}
+		},
+		
+		onOpenProducts: function () {
 
+			var oView = this.getView();
+
+			// create dialog lazily
+			if (!this.pDialog) {
+				this.pDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.OtherProducts_IT",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					oDialog.setModel(Services.getFastAppDataModel(),"fastAppData");
+					return oDialog;
+				});
+			}
+
+			this.pDialog.then(function (oDialog) {
+				this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
+				oDialog.open();
+			}.bind(this));
+
+
+		},
+		onAddNewFreeGoods:function(event){
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let selectedProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther") ||[];
+			freeGoodsOther.unshift({
+				ProductPackId:"",
+				FreeGoodsOther:"",
+				FreeGoodsOther_ABS_PCT:"ABS",
+				UOM:selectedProductPrice.UOM
+			});
+			oFastAppDataModel.setProperty(this.selectedProductPricePath+"/FreeGoodsOther",freeGoodsOther);
+		},
+		onDeleteFreeGoodsOther:function(event){
+			const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther");
+            
+			oFastAppDataModel.setProperty(this.selectedProductPricePath+"/FreeGoodsOther",freeGoodsOther.filter(freeGoods=>freeGoods.ProductPackId!==productPackId));
+		},
+		onProductPackChange:function(event){
+			var validatedComboBox = event.getSource(),
+				selectedKey = validatedComboBox.getSelectedKey(),
+				value = validatedComboBox.getValue(),
+				path = event.getSource().getBindingContext("fastAppData").getPath();
+
+			if ((!selectedKey && value) || value === "") {
+				Services.getFastAppDataModel().setProperty(path+"/ProductPackIdValueState","Error");
+			} else {
+				Services.getFastAppDataModel().setProperty(path+"/ProductName",value);
+				Services.getFastAppDataModel().setProperty(path+"/ProductPackIdValueState","None");
+			}
+		},
+		oApplyProducts: function () {
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther") 
+			freeGoodsOther = freeGoodsOther.map(freeGoods => {
+				freeGoods.FreeGoodsOtherValueState = "None";
+				if(!freeGoods.ProductName || freeGoods.ProductName === ""){
+					freeGoods.ProductPackIdValueState = "Error";
+				}
+				if(!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === ""){
+					freeGoods.FreeGoodsOtherValueState = "Error";
+				}
+				return freeGoods;
+			});
+			oFastAppDataModel.setProperty(this.selectedProductPricePath+"/FreeGoodsOther",freeGoodsOther);
+			const foundError = freeGoodsOther.find(freeGoods => freeGoods.ProductPackIdValueState === "Error" || freeGoods.FreeGoodsOtherValueState === "Error");
+			if(!foundError)this.byId("OtherProducts").close();
+		}
 	});
 });
