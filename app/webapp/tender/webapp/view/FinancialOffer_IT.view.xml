@@ -152,7 +152,7 @@
 			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Selling'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
 					<form:SimpleForm id="idSelling"
-							editable="false"
+							editable="true"
 							class="editableForm"
 							layout="ResponsiveGridLayout"
 							labelSpanXL="3"
@@ -215,7 +215,12 @@
 								<!--<MultiComboBox id="idCountryBrandList" items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
 									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
 								</MultiComboBox>-->
-								<Button text="Select products" press="onOpenProducts" enabled="{fastAppData>/EditMode}" />
+								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
+									<tokens>
+										<Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
+									</tokens>
+								</MultiInput>
+								<!-- <Button text="Select products" press="onOpenProducts" enabled="{fastAppData>/EditMode}" /> -->
 
 							</form:content>
 						</form:SimpleForm>

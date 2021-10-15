@@ -10,7 +10,7 @@ sap.ui.define([
 		constructor: function (model) {
 			BaseService.call(this, model);
 		},
-		
+
 		//create new product
 		createPrice: function (oPriceToSave) {
 
@@ -25,7 +25,7 @@ sap.ui.define([
 
 		},
 
-		createProductPrice: function(oProductPrice){
+		createProductPrice: function (oProductPrice) {
 			var that = this;
 			var sPath = "/ProductPricing";
 
@@ -55,7 +55,7 @@ sap.ui.define([
 
 		},
 
-		updateProductPrice: function(oProductPrice){
+		updateProductPrice: function (oProductPrice) {
 			var that = this;
 
 			//get model for calls
@@ -77,14 +77,14 @@ sap.ui.define([
 		 * @param {object} oProductPrice product price to save
 		 * @returns {object} returns 
 		 */
-		saveProductPrice: function(oProductPrice){
+		saveProductPrice: function (oProductPrice) {
 
 			//is the ID filled (= already saved)
-			if(oProductPrice.ID){
-	
+			if (oProductPrice.ID) {
+
 				return this.updateProductPrice(oProductPrice);
 
-			}else{
+			} else {
 
 				return this.createProductPrice(oProductPrice);
 
@@ -98,10 +98,8 @@ sap.ui.define([
 			//Convert odata to structure that can be used to save
 			var oProductPriceToSave = {};
 
-    		//TODO FreeGoodsOther: Association to FreeGoodsOther;
-
 			//If ID is not existing do not store in object to create
-			if(oProductPriceSaveInfo.ID){
+			if (oProductPriceSaveInfo.ID) {
 				oProductPriceToSave.ID = oProductPriceSaveInfo.ID;
 			}
 			oProductPriceToSave.OfferID = oProductPriceSaveInfo.OfferID;
@@ -120,10 +118,16 @@ sap.ui.define([
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
 			oProductPriceToSave.AdditionalDiscount = (oProductPriceSaveInfo.AdditionalDiscount === null) ? null : oProductPriceSaveInfo.AdditionalDiscount.toString();
 
+			oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
+				ProductPackId: freeGoodsOther.ProductPackId, 
+				FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT, 
+				FreeGoodsOther: freeGoodsOther.FreeGoodsOther
+			}));
+
 			return oProductPriceToSave;
 
 		},
-		
+
 		//Convert Price info to save in the database. (View binding is an extended version)
 		getConvertPriceToSave: function (oPriceSaveInfo) {
 
@@ -139,7 +143,7 @@ sap.ui.define([
 			} else {
 				sOfferID = oPriceSaveInfo.OfferID;
 			}
-			
+
 			oPriceToSave.TenderID = oPriceSaveInfo.TenderID;
 			oPriceToSave.OfferID = sOfferID;
 			oPriceToSave.CountryCode = oPriceSaveInfo.CountryCode;
@@ -149,7 +153,7 @@ sap.ui.define([
 			oPriceToSave.Active = Number(oPriceSaveInfo.Active);
 			oPriceToSave.Tier = Number(oPriceSaveInfo.Tier);
 			oPriceToSave.VolumeFrom = Number(oPriceSaveInfo.VolumeFrom);
-			oPriceToSave.VolumeTo = Number(oPriceSaveInfo.VolumeTo);			
+			oPriceToSave.VolumeTo = Number(oPriceSaveInfo.VolumeTo);
 			oPriceToSave.RegPrice = (oPriceSaveInfo.RegPrice === null) ? null : oPriceSaveInfo.RegPrice.toString();
 			oPriceToSave.FOC = (oPriceSaveInfo.FOC === null) ? null : oPriceSaveInfo.FOC.toString();
 			oPriceToSave.FOCType = oPriceSaveInfo.FOCType;
