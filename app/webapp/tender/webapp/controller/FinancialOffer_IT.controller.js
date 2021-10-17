@@ -50,11 +50,13 @@ sap.ui.define([
 				let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
 				aProducts.map(product => {
-					product.FreeGoodsOther.map(FreeGoodsOther => {
-						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-					  return FreeGoodsOther; 
-					});
+					if(product.FreeGoodsOther){
+						product.FreeGoodsOther.map(FreeGoodsOther => {
+							var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+							FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+						return FreeGoodsOther; 
+						});
+					}
 					return product;
 				});
 
@@ -62,6 +64,9 @@ sap.ui.define([
 				var oFastAppDataModel = Services.getFastAppDataModel();
 				oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 				oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
+
+				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
+
 			 }
 			// let that = this;
 
@@ -101,11 +106,13 @@ sap.ui.define([
 			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
 			aProducts.map(product => {
-				product.FreeGoodsOther.map(FreeGoodsOther => {
-					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-				return FreeGoodsOther; 
-				});
+				if(product.FreeGoodsOther){
+					product.FreeGoodsOther.map(FreeGoodsOther => {
+						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+					return FreeGoodsOther; 
+					});
+				}
 				return product;
 			});
 
@@ -136,10 +143,12 @@ sap.ui.define([
 				const response = await Services.getFinancialProducts(offerID);
 				
 				return response.data.results.map(item => {
-					item.FreeGoodsOther = item.FreeGoodsOther.results.map(freeGoods => {
-						freeGoods.UOM = item.UOM;
-						return freeGoods;
-					});
+					if(item.FreeGoodsOther && item.FreeGoodsOther.results.length > 0){
+						item.FreeGoodsOther = item.FreeGoodsOther.results.map(freeGoods => {
+							freeGoods.UOM = item.UOM;
+							return freeGoods;
+						});
+					}
 					return item;
 				});
 			}
@@ -362,12 +371,18 @@ sap.ui.define([
 			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
 		},
 
-		onBindingItemsFinished: function (oEvent) {
-			let sSourceId = oEvent.oSource.sId
-			let oProductsTable = oEvent.getSource();
+		onBindingItemsFinished: function (oEvent, bInitLoad) {
+			if(oEvent && oEvent.oSource){
+				var sSourceId = oEvent.oSource.sId
+				var oProductsTable = oEvent.getSource();
+			}
+
+			if(!oProductsTable){
+				oProductsTable = this.byId("idFinancialOfferViewProduct");
+			}
 			let that = this;
 
-			if(sSourceId.includes('financialOfferViewId_IT') && !$.isEmptyObject(oProductsTable)){
+			if( ( bInitLoad || (sSourceId && sSourceId.includes('financialOfferViewId_IT')) ) && !$.isEmptyObject(oProductsTable)){
 				let aItems = oProductsTable.getItems();
 				if(aItems.length > 0){
 					oProductsTable.setSelectedItem(aItems[0], true);
