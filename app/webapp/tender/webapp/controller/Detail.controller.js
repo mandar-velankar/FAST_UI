@@ -2993,7 +2993,7 @@ sap.ui.define([
 			Services.clearDeliveriesForProduct();
 			Services.clearLettersForProduct();
 			Quotation.clearQuotationOfferProducts();
-
+			
 			let oRegionEdit = this.byId("idRegionEdit");
 			if(oRegionEdit){
 				oRegionEdit.setSelectedKeys([]); // clear the region selected keys
