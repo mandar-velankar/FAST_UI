@@ -1,0 +1,55 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog id="OtherProducts" title="Products" >
+		<buttons>
+			<Button text="Apply" press=".oApplyProducts" />
+		</buttons>
+
+        <Table id="FreeGoodsOtherTable" items="{path:'fastAppData>FreeGoodsOther'}">
+		<headerToolbar>
+			<OverflowToolbar>
+				<content>
+					<ToolbarSpacer />
+                    <Button icon="sap-icon://add" press=".onAddNewFreeGoods"></Button>
+				</content>
+			</OverflowToolbar>
+		</headerToolbar>
+            <columns>
+                <Column>
+                    <Text text="{i18n>product}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>type}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>FOCQuantity}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>UoM}"/>
+                </Column>    
+                <Column>
+                    <Text text="{i18n>Action}"/>
+                </Column>               
+            </columns>
+            <ColumnListItem>
+                <cells>
+                    <ComboBox items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" 
+                            showSecondaryValues="true" selectedKey="{fastAppData>ProductPackId}" change=".onProductPackChange"
+                            valueState="{fastAppData>ProductPackIdValueState}">
+                        <core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
+                    </ComboBox>
+                    <Select forceSelection="false" selectedKey="{fastAppData>FreeGoodsOther_ABS_PCT}">
+                        <core:Item key="ABS" text="Absolute" />
+                        <core:Item key="PCT" text="Percentage" />
+                    </Select>
+                    <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}"/>  
+                    <!-- <Input type="Number" value="{path:'fastAppData>FreeGoodsOther', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits:0, maxFractionDigits: 2,maxIntegerDigits: 9}}" valueState="{fastAppData>FreeGoodsOtherValueState}"/>   -->
+                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}"></Text>
+                    <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+   	</Dialog>	
+</core:FragmentDefinition>

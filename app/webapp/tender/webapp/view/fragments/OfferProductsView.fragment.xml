@@ -183,8 +183,8 @@
 								<items>
 									<core:Item text="" key=""/>
 									<core:Item text="Selling" key="Selling"/>
-									<core:Item text="Rental" key="Rental" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
-									<core:Item text="Comodati" key="Comodati" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
+									<core:Item text="Rental" key="Rental"/>
+									<core:Item text="Comodato" key="Comodato"/>
 								</items>
 								<layoutData>
 									<l:GridData span="L6 M6 S6"/>

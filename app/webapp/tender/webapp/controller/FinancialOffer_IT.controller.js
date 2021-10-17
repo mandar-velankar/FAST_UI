@@ -4,8 +4,9 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/model/userinfo",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-	"FAST_NS0FAST0/model/financial"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial) {
+	"FAST_NS0FAST0/model/financial",
+	"sap/ui/core/Fragment"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment) {
 	"use strict";
 
 	return Controller.extend("FAST_NS0FAST0.controller.FinancialOffer_IT", {
@@ -48,6 +49,14 @@ sap.ui.define([
 				//load countryBrandProducts
 				let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
+				aProducts.map(product => {
+					product.FreeGoodsOther.map(FreeGoodsOther => {
+						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+					  return FreeGoodsOther; 
+					});
+					return product;
+				});
 
 				//set to fastappdata model for easy access on the view
 				var oFastAppDataModel = Services.getFastAppDataModel();
@@ -84,6 +93,38 @@ sap.ui.define([
 
 		},
 
+		refreshFinancialTabIT: async function(){
+			//load products
+			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
+
+			//load countryBrandProducts
+			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+
+			aProducts.map(product => {
+				product.FreeGoodsOther.map(FreeGoodsOther => {
+					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+				return FreeGoodsOther; 
+				});
+				return product;
+			});
+
+			//set to fastappdata model for easy access on the view
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
+			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
+
+			//Edit offer copy to move back to original values during cancel
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			//Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
+
+			let sSelectedSection = Services.getFinancialOfferPageSectionID_IT();
+			Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection);
+
+		},
+
 		/* GETTERS */
 		/**
 		 * Fetches a list of Tender products from the backend
@@ -93,7 +134,14 @@ sap.ui.define([
 		 getFinancialProducts: async function(offerID) { 
 			if(offerID){
 				const response = await Services.getFinancialProducts(offerID);
-				return response.data.results;
+				
+				return response.data.results.map(item => {
+					item.FreeGoodsOther = item.FreeGoodsOther.results.map(freeGoods => {
+						freeGoods.UOM = item.UOM;
+						return freeGoods;
+					});
+					return item;
+				});
 			}
 		},
 
@@ -108,23 +156,31 @@ sap.ui.define([
 		 * Event handler for the OfferProductsItaly
 		 * @param {Object} event - An instance of event object
 		 */
-		onFinancialProductPress: function(oEvent){
+		onFinancialProductPress: function(oEvent, bBindingFinished){
 
 			//get context of selected price product
 			let oFastAppDataModel = Services.getFastAppDataModel();
-			const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-			this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
-			this.selectedProductPricePath = bindingContext.sPath;
+			if(!bBindingFinished){
+				const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+				this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+				this.selectedProductPricePath = bindingContext.sPath;
+			} else {
+				this.selectedProductPricePath = Services.getSelectedProductPath();
+				let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+				this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
+			}
 
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 
 			//keep selected product ID
 			Services.setSelectedProductID(oProductPrice.ProductCode);
+			Services.setSelectedProductName(oProductPrice.ProductPackName);
 
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
 			//check for approval enabled 
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
@@ -164,8 +220,10 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			await Services.getService('Price').saveProductPrice(oProductPriceToSave);
-
+			let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
+			if(oResult && oResult.data && oResult.data.ID){
+				oProductPrice.ID = oResult.data.ID;
+			}
 			//Update offer
 			var oOfferSaveInfo = {};
 			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
@@ -263,7 +321,7 @@ sap.ui.define([
 				SpotRate: 1,
 				BudgetRate: 1,
 				Scenario: 0,
-				FOC_ABS_PCT: "ABS",
+				FOC_ABS_PCT: oProductPrice.FOC_ABS_PCT,
 				FOCProduct_Bundled_1: null, //FOC ADDITIONAL PRODUCT
 				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
 				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE
@@ -272,6 +330,10 @@ sap.ui.define([
 				NetPrice_OfPaid: 0,
 				PRICE_UPDATE: 0
 			};
+
+			/*if(oProductPrice.ID !== null){
+				oNewPriceInfo.ID = oProductPrice.ID;
+			}*/
 
 			return oNewPriceInfo;
 		},
@@ -298,7 +360,98 @@ sap.ui.define([
 			this.byId("idTotalDiscount").setValue(totalDiscount);
 			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
 			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
-		}
+		},
 
+		onBindingItemsFinished: function (oEvent) {
+			let sSourceId = oEvent.oSource.sId
+			let oProductsTable = oEvent.getSource();
+			let that = this;
+
+			if(sSourceId.includes('financialOfferViewId_IT') && !$.isEmptyObject(oProductsTable)){
+				let aItems = oProductsTable.getItems();
+				if(aItems.length > 0){
+					oProductsTable.setSelectedItem(aItems[0], true);
+					aItems[0].setSelected(true);
+					Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+					
+					that.onFinancialProductPress(oEvent, true);
+				}
+			}
+		},
+		
+		onOpenProducts: function () {
+
+			var oView = this.getView();
+
+			// create dialog lazily
+			if (!this.pDialog) {
+				this.pDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.OtherProducts_IT",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					oDialog.setModel(Services.getFastAppDataModel(),"fastAppData");
+					return oDialog;
+				});
+			}
+
+			this.pDialog.then(function (oDialog) {
+				this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
+				oDialog.open();
+			}.bind(this));
+
+
+		},
+		onAddNewFreeGoods:function(event){
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let selectedProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther") ||[];
+			freeGoodsOther.unshift({
+				ProductPackId:"",
+				FreeGoodsOther:"",
+				FreeGoodsOther_ABS_PCT:"ABS",
+				UOM:selectedProductPrice.UOM
+			});
+			oFastAppDataModel.setProperty(this.selectedProductPricePath+"/FreeGoodsOther",freeGoodsOther);
+		},
+		onDeleteFreeGoodsOther:function(event){
+			const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther");
+            
+			oFastAppDataModel.setProperty(this.selectedProductPricePath+"/FreeGoodsOther",freeGoodsOther.filter(freeGoods=>freeGoods.ProductPackId!==productPackId));
+		},
+		onProductPackChange:function(event){
+			var validatedComboBox = event.getSource(),
+				selectedKey = validatedComboBox.getSelectedKey(),
+				value = validatedComboBox.getValue(),
+				path = event.getSource().getBindingContext("fastAppData").getPath();
+
+			if ((!selectedKey && value) || value === "") {
+				Services.getFastAppDataModel().setProperty(path+"/ProductPackIdValueState","Error");
+			} else {
+				Services.getFastAppDataModel().setProperty(path+"/ProductName",value);
+				Services.getFastAppDataModel().setProperty(path+"/ProductPackIdValueState","None");
+			}
+		},
+		oApplyProducts: function () {
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther") 
+			freeGoodsOther = freeGoodsOther.map(freeGoods => {
+				freeGoods.FreeGoodsOtherValueState = "None";
+				if(!freeGoods.ProductName || freeGoods.ProductName === ""){
+					freeGoods.ProductPackIdValueState = "Error";
+				}
+				if(!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === ""){
+					freeGoods.FreeGoodsOtherValueState = "Error";
+				}
+				return freeGoods;
+			});
+			oFastAppDataModel.setProperty(this.selectedProductPricePath+"/FreeGoodsOther",freeGoodsOther);
+			const foundError = freeGoodsOther.find(freeGoods => freeGoods.ProductPackIdValueState === "Error" || freeGoods.FreeGoodsOtherValueState === "Error");
+			if(!foundError)this.byId("OtherProducts").close();
+		}
 	});
 });
