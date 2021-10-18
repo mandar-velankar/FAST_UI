@@ -197,9 +197,14 @@ sap.ui.define([
 				bEnableApproval = false;
 			}
 
-			//enable or disable approvalButton
-			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+			//toggle editable fields 
+			let bEditMode = oFastAppDataModel.getProperty("/EditMode");
 
+			//enable or disable approvalButton
+			this.byId("ApprovalButtonId").setEnabled(bEnableApproval); //TODO: when this statement is executed, fastModel property "/EditMode" is set to TRUE??? WHY? 
+			
+			oFastAppDataModel.setProperty("/EditMode", bEditMode);
+			
 		},
 
 		/**
