@@ -120,7 +120,7 @@ sap.ui.define([
 			oProductPriceToSave.FOC_ABS_PCT = (oProductPriceSaveInfo.FOC_ABS_PCT === null) ? null : oProductPriceSaveInfo.FOC_ABS_PCT.toString();
 
 			if(oProductPriceToSave.FreeGoodsOther){
-				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.results.map(freeGoodsOther => ({
+				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
 					ProductPackId: freeGoodsOther.ProductPackId, 
 					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT, 
 					FreeGoodsOther: freeGoodsOther.FreeGoodsOther
