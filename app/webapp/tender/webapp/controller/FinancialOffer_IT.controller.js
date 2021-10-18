@@ -51,7 +51,7 @@ sap.ui.define([
 
 				aProducts.map(product => {
 					if(product.FreeGoodsOther){
-						product.FreeGoodsOther.map(FreeGoodsOther => {
+						product.FreeGoodsOther.results.map(FreeGoodsOther => {
 							var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
 							FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
 						return FreeGoodsOther; 
@@ -107,7 +107,7 @@ sap.ui.define([
 
 			aProducts.map(product => {
 				if(product.FreeGoodsOther){
-					product.FreeGoodsOther.map(FreeGoodsOther => {
+					product.FreeGoodsOther.results.map(FreeGoodsOther => {
 						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct=>countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
 						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
 					return FreeGoodsOther; 
@@ -453,8 +453,9 @@ sap.ui.define([
 		},
 		oApplyProducts: function () {
 			const oFastAppDataModel = Services.getFastAppDataModel();
-			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther") 
-			freeGoodsOther = freeGoodsOther.map(freeGoods => {
+			
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath+"/FreeGoodsOther");
+			freeGoodsOther = freeGoodsOther.results.map(freeGoods => {
 				freeGoods.FreeGoodsOtherValueState = "None";
 				if(!freeGoods.ProductName || freeGoods.ProductName === ""){
 					freeGoods.ProductPackIdValueState = "Error";
