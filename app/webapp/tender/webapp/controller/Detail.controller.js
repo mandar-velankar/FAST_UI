@@ -2624,6 +2624,7 @@ sap.ui.define([
 				Services.clearAllForDeliveryTrackingPage();
 				Services.clearSelectedOffer();
 				Services.clearSelectedProduct();
+				that.byId("idRegionEdit").setSelectedKeys([]);
 
 				//we go back to tender master screen
 				this.oRouter.navTo("master", {
