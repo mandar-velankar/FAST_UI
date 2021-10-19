@@ -946,7 +946,18 @@ sap.ui.define([
 						//No particular status checks are needed, as the offer should be shown for all statuses
 						bVisible = true;
 						break;
-					case this.getFinancialOfferPageSectionID() || this.getFinancialOfferPageSectionID_IT():
+					case this.getFinancialOfferPageSectionID():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+					case this.getFinancialOfferPageSectionID_IT():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
 						//  - 'Offer Declined'
