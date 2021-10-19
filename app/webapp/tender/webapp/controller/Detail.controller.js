@@ -3468,7 +3468,7 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Public Region(s)' && this._country === 'IT'){
+			if(selectedItem === 'Region(s)' && this._country === 'IT'){
 				this.byId("idRegionEdit").setVisible(true);
 			}else{
 				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
@@ -6280,7 +6280,7 @@ sap.ui.define([
 					var sCountry = Services.getSelectedCountry();
 
 					// for Italy only the Regions must be set
-					if(sCountry === 'IT' && instituteType === "Public Region(s)"){
+					if(sCountry === 'IT' && instituteType === "Region(s)"){
 						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 						setTenderRegion(regionId);
 					}
