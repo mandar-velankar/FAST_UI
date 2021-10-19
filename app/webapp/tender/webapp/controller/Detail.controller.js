@@ -1290,7 +1290,11 @@ sap.ui.define([
 			case Services.getFinancialOfferPageSectionID_IT():
 
 				//check if offer is valid for selection (within this method we store the result also on the fastappdatamodel/checkOfferVisibleForTab)
-				Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection);
+				if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)){
+					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_IT", true);
+				} else {
+					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_IT", false);
+				}
 				break;
 
 				//Quotation tab	

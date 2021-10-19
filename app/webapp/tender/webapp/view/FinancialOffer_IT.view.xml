@@ -12,7 +12,7 @@
 		  xmlns:u="sap.uxap">
 
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{= !${fastAppData>/CheckOfferVisibleForTab} }">
+	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{= !${fastAppData>/CheckOfferVisibleForTab_IT} }">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -25,7 +25,7 @@
 	</u:ObjectPageSubSection>
 	
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab}">
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="{fastAppData>/EditMode}"/>
 		</u:actions>
@@ -145,7 +145,7 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab}">
+	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<l:BlockLayout background="Light">
 
 			<!-- Selling -->
@@ -374,7 +374,7 @@
 
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History" visible="{fastAppData>/CheckOfferVisibleForTab}">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
