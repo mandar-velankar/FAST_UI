@@ -2229,7 +2229,10 @@ sap.ui.define([
 						if(oSelectCompanyStamp){
 							oSelectCompanyStamp.setEnabled(true);
 						}
-						that.getView().byId("idDelayInSubmission").setVisible(false);
+						let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
+						if(oDelayInSubmission){
+							oDelayInSubmission.setVisible(false);
+						}
 						that.getView().byId("btnSaveQuotation").setVisible(false);
 						//that.getView().byId("idLabelDelayInSubmission").setVisible(false);
 
@@ -2993,7 +2996,7 @@ sap.ui.define([
 			Services.clearDeliveriesForProduct();
 			Services.clearLettersForProduct();
 			Quotation.clearQuotationOfferProducts();
-			
+
 			let oRegionEdit = this.byId("idRegionEdit");
 			if(oRegionEdit){
 				oRegionEdit.setSelectedKeys([]); // clear the region selected keys
@@ -3465,7 +3468,7 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Public Region(s)' && this._country === 'IT'){
+			if(selectedItem === 'Region(s)' && this._country === 'IT'){
 				this.byId("idRegionEdit").setVisible(true);
 			}else{
 				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
@@ -6277,7 +6280,7 @@ sap.ui.define([
 					var sCountry = Services.getSelectedCountry();
 
 					// for Italy only the Regions must be set
-					if(sCountry === 'IT' && instituteType === "Public Region(s)"){
+					if(sCountry === 'IT' && instituteType === "Region(s)"){
 						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 						setTenderRegion(regionId);
 					}
@@ -7652,10 +7655,12 @@ sap.ui.define([
 			}
 			//bind offer of default model to data to switch
 			var oSwitch = that.byId("idDelayInSubmission");
-			oSwitch.bindElement({
-				path: sSelectedOfferPath,
-				model: "fastData"
-			});
+			if(oSwitch){
+				oSwitch.bindElement({
+					path: sSelectedOfferPath,
+					model: "fastData"
+				});
+			}
 
 			var sOfferStatus = oOffer.OfferStatus.STATUS;
 			var sOfferDate = "";
@@ -7779,7 +7784,10 @@ sap.ui.define([
 					sap.m.MessageBox.warning("Quotation cannot be saved, offer is in status Awating approval.", {});
 				} else {
 					//keep the latest state of switch delay in submission
-					var bDelayInSubmission = that.byId("idDelayInSubmission").getState();
+					let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
+					if(oDelayInSubmission){
+						var bDelayInSubmission = oDelayInSubmission.getState();
+					}
 
 					//keep delay in submission (needed when you don't click on the switch first)
 					if (bDelayInSubmission) {
@@ -8218,7 +8226,10 @@ sap.ui.define([
 					sap.m.MessageBox.warning("Quotation cannot be submitted, offer is awating approval.", {});
 				} else {
 					//keep the latest state of switch delay in submission
-					var bDelayInSubmission = that.byId("idDelayInSubmission").getState();
+					let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
+					if(oDelayInSubmission){
+						var bDelayInSubmission = oDelayInSubmission.getState();
+					}
 
 					//keep delay in submission (needed when you don't click on the switch first)
 					if (bDelayInSubmission) {
