@@ -180,7 +180,7 @@
 								<Label text="Consumer Price (w/o VAT) per pack" />
 								<Input value="{path:'fastAppData>ConsumerPriceExclPP'}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per pack" />
-								<Input value="{path:'fastAppData>ConsumerPriceInclPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>ConsumerPriceInclPP'}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (w/o VAT) per unit" />
 								<Input value="{path:'fastAppData>ConsumerPriceExclPU' }"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per unit" />
