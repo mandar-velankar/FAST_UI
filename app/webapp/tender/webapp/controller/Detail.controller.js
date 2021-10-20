@@ -8131,6 +8131,8 @@ sap.ui.define([
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var oLoadedPriceAgreement = oFastAppDataModel.getProperty("/newPriceAgreement");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
+
 			if(oLoadedPriceAgreement){
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 				window.open("/app/#/priceagreements&/pa/PriceAgreements/" + oLoadedPriceAgreement.ID);
@@ -8142,6 +8144,17 @@ sap.ui.define([
 				//check if a product is selected
 				if (oRowContext === null) {
 					sap.m.MessageToast.show("Select an awarded product to create a price agreement");
+					return;
+				}
+
+				const rowProductCode = oRowContext.getObject().PRODUCTCODE;
+				const offerProduct = offerProducts.find(prd => prd.ProductCode === rowProductCode);
+				const offerType = offerProduct.OfferType;
+
+				// Only selling type can be synchronised with SAP and 
+				// therefore only allow creating price agreements for selling offer type products! 
+				if(offerType !== "Selling"){
+					sap.m.MessageBox.error("Only products with OfferType 'Selling' are allowed.");
 					return;
 				}
 
