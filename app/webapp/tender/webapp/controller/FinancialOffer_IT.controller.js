@@ -369,13 +369,13 @@ sap.ui.define([
 			const additionalDiscount = oEvent.getParameter("newValue");
 			const cunsumerPrice = oEvent.getSource().getParent().getBindingContext("fastAppData").getObject();
 
-			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / cunsumerPrice.ConsumerPriceExclPP;
-			const netOfferPricePP = cunsumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
-			const netOfferPricePU = cunsumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);
+			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * (1 - (additionalDiscount/100))) / cunsumerPrice.ConsumerPriceExclPP;
+			const netOfferPricePP = cunsumerPrice.MaxPriceNhsPP * (1 - (additionalDiscount/100));
+			const netOfferPricePU = cunsumerPrice.MaxPriceNhsPU * (1 - (additionalDiscount/100));
 
-			this.byId("idTotalDiscount").setValue(totalDiscount.toFixed(2).replace(".",","));
-			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
-			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
+			this.byId("idTotalDiscount").setValue(totalDiscount.toFixed(2));
+			this.byId("idNetOfferPricePP").setValue(netOfferPricePP.toFixed(2));
+			this.byId("idNetOfferPricePU").setValue(netOfferPricePU.toFixed(5));
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {

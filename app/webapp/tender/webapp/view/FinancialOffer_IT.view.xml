@@ -170,7 +170,7 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" />
-								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Input value="{fastAppData>Warranty}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
 								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
 									<items>
@@ -178,19 +178,19 @@
 									</items>
 								</Select>
 								<Label text="Consumer Price (w/o VAT) per pack" />
-								<Input value="{path:'fastAppData>ConsumerPriceExclPP', formatter:'.formatter.amount'}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>ConsumerPriceExclPP'}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per pack" />
-								<Input value="{path:'fastAppData>ConsumerPriceInclPP, formatter:'.formatter.amount'}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>ConsumerPriceInclPP}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (w/o VAT) per unit" />
-								<Input value="{path:'fastAppData>ConsumerPriceExclPU' , formatter:'.formatter.amount'}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>ConsumerPriceExclPU' }"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per unit" />
-								<Input value="{path:'fastAppData>ConsumerPriceInclPU' , formatter:'.formatter.amount'}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>ConsumerPriceInclPU' }"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Tax (VAT) per pack" />
 								<Input value="{	path:'fastAppData>VatPerPack', formatter:'.formatter.percentageNoUnit'}" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="Mandatory / Ex-factory discount" />
 								<Input value="{	path:'fastAppData>MandatoryDiscount', formatter:'.formatter.percentageNoUnit' }" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="Ex-factory Price w/o VAT" />
-								<Input value="{{path:'fastAppData>ExfPriceExclPP', formatter:'.formatter.amount'}"  enabled="false" fieldWidth="80%"/>
+								<Input value="{{path:'fastAppData>ExfPriceExclPP'}" description="EUR"  enabled="false" fieldWidth="80%"/>
 								<Label text="I° confidential discount" />
 								<Input value="{	path:'fastAppData>ConfidentialDiscount1', formatter:'.formatter.percentageNoUnit'}" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="II° confidential discount" />
@@ -198,9 +198,9 @@
 								<Label text="Total Discount" />
 								<Input value="{	path:'fastAppData>TotalDiscount', formatter:'.formatter.percentageNoUnit'}" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="Max Price for NHS per pack w/o VAT" />
-								<Input value="{path:'fastAppData>MaxPriceNhsPP', formatter:'.formatter.amount'}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>MaxPriceNhsPP'}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Max Price for NHS per unit w/o VAT" />
-								<Input value="{path:'fastAppData>MaxPriceNhsPU', formatter:'.formatter.amount'}"  description="EUR" enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>MaxPriceNhsPU'}"  description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Additional Discount" />
 
 								<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%"   enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
@@ -218,9 +218,15 @@
 								<Label text="Free goods same product" />
 								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="Net Offer Price per pack" />
-								<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP', formatter:'.formatter.amount'}"  enabled="false" fieldWidth="80%"/>
+								<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP',type: 'sap.ui.model.type.Float',
+									formatOptions: {
+										maxFractionDigits: 2
+									}}"  enabled="false" fieldWidth="80%" description="EUR"/>
 								<Label text="Net Offer Price per unit" />
-								<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU', formatter:'.formatter.amount'}"  enabled="false" fieldWidth="80%"/>
+								<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU',type: 'sap.ui.model.type.Float',
+									formatOptions: {
+										maxFractionDigits: 5
+									}}"  enabled="false" fieldWidth="80%" description="EUR"/>
 								<Label text="Free goods for other product(s)" />
 								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
 									<tokens>
@@ -260,7 +266,7 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
-								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Input value="{fastAppData>Warranty}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " />
 								<Input value="{fastAppData>AgreementDuration}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Monthly rent" />
@@ -294,10 +300,11 @@
 								<Label text="free goods same product" />
 								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="free goods for other product(s)" />
-								<!--<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
-									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
-								</MultiComboBox>-->
-								<Button text="Select products" press="onOpenProducts" enabled="{fastAppData>/EditMode}" />
+								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
+									<tokens>
+										<Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
+									</tokens>
+								</MultiInput>
 							</form:content>
 						</form:SimpleForm>
 				</l:BlockLayoutCell>
@@ -327,7 +334,7 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
-								<Input value="{fastAppData>Warranty}"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Input value="{fastAppData>Warranty}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " />
 								<Input value="{fastAppData>AgreementDuration}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Minimum contractual commitment" />
@@ -351,10 +358,11 @@
 									</items>
 								</Select>
 								<Label text="free goods for other product(s)" />
-								<!--<MultiComboBox  items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" showSecondaryValues= "true" selectedKeys="" selectionFinish=".onCountryBrandsSelectionFinish" enabled="{fastAppData>/EditMode}">
-									<core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
-								</MultiComboBox>-->
-								<Button text="Select products" press="onOpenProducts" enabled="{fastAppData>/EditMode}" />
+								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
+									<tokens>
+										<Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
+									</tokens>
+								</MultiInput>
 
 								
 							</form:content>
