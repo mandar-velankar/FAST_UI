@@ -61,6 +61,47 @@ sap.ui.define([
 			return this.odata(sPath).get(mParameters);
 		},
 
+		getFinancialProduct: function(offerID, countryCode, productCode){
+			var sPath = "/ProductPricingView";
+			let aFilters = [];
+
+			var oOfferIdFilter = new Filter({
+				path: 'OfferID',
+				operator: FilterOperator.EQ,
+				value1: offerID
+			});
+
+			aFilters.push(oOfferIdFilter);
+
+			if(countryCode){
+				var oCountryCodeFilter = new Filter({
+					path: 'CountryCode',
+					operator: FilterOperator.EQ,
+					value1: countryCode
+				});
+				aFilters.push(oCountryCodeFilter);
+			}
+
+			if(productCode){
+				var oProductCodeFilter = new Filter({
+					path: 'ProductCode',
+					operator: FilterOperator.EQ,
+					value1: productCode
+				});
+				aFilters.push(oProductCodeFilter);
+			}
+
+			var mParameters = {
+				filters: aFilters,
+				urlParameters: {
+					$expand: "FreeGoodsOther"
+				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
+
 		getCountryBrandProducts: function(CountryCode){
 			var sPath = "/CountryBrandProducts";
 
