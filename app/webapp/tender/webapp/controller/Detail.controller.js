@@ -8118,7 +8118,7 @@ sap.ui.define([
 			} = await Services.getService("Product").getFinancialProduct(oTenderResult.OFFERID, Services.getSelectedCountry(), oTenderResult.PRODUCTCODE);
 
 			oPriceAgreementSaveInfo.AwardedVolume = oTenderResult.AWARDEDQTY;
-			oPriceAgreementSaveInfo.DeliveredVolume = ""; // When creating agreement, no deliveries, hence SUM(null)=0 (blank is good, too) 
+			oPriceAgreementSaveInfo.DeliveredVolume = 0; // When creating agreement, no deliveries, hence SUM(null)=0 (blank is good, too) 
 			oPriceAgreementSaveInfo.ProductPackId = oTenderResult.PRODUCTCODE;
 			oPriceAgreementSaveInfo.TenderId = oTender.TenderID;
 			oPriceAgreementSaveInfo.Currency = oTenderResult.CURRENCY;
