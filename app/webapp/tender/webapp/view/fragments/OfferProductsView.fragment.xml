@@ -118,9 +118,9 @@
 											<core:Item text="Yes" key="Yes"/>
 										</items>
 									</Select>
-									<Label text="{i18n>newOfferDate}" required="true" visible="{= (${fastAppData>RevisedOfferNo} === 0 &amp;&amp; ${fastAppData>ContinuationOfferNo} === 0) ? false : true }"/>
+									<Label text="{i18n>newOfferDate}" required="true" visible="{= ((${fastAppData>RevisedOfferNo} &amp;&amp; ${fastAppData>RevisedOfferNo} !== 0) || (${fastAppData>ContinuationOfferNo} &amp;&amp; ${fastAppData>ContinuationOfferNo} !== 0)) ? true : false }"/>
 									<!--<Text text="{path :'fastAppData>NewOfferDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" visible="{= (${fastAppData>RevisedOfferNo} === 0 &amp;&amp; ${fastAppData>ContinuationOfferNo} === 0) ? false : true }" />-->
-									<Text text="{path :'fastAppData>NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= (${fastAppData>RevisedOfferNo} === 0 &amp;&amp; ${fastAppData>ContinuationOfferNo} === 0) ? false : true }" />
+									<Text text="{path :'fastAppData>NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ((${fastAppData>RevisedOfferNo} &amp;&amp; ${fastAppData>RevisedOfferNo} !== 0) || (${fastAppData>ContinuationOfferNo} &amp;&amp; ${fastAppData>ContinuationOfferNo} !== 0)) ? true : false }" />
 									
 									<Label text="{i18n>Division}" required="true"/>
 									<Select selectedKey="{fastAppData>Division}" enabled="false" visible="true">

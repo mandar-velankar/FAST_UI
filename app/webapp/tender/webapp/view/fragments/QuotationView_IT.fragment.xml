@@ -24,16 +24,7 @@
         </ObjectPageSubSection>
         
         <ObjectPageSubSection id="QuotationOfferSubsection" title="{i18n>Quotation}">
-            <actions>
-                <!-- DelayInSubmission -->	
-                <m:Switch 
-                    id="idDelayInSubmission" 
-                    customTextOn="Yes" 
-                    customTextOff="No" 
-                    state="{= ${fastData>Quotation/DelayInSubmission} === 'Yes' ? true : false}" 
-                    enabled="{= ${fastAppData>/SelectedOfferID} !== '' &amp;&amp; ${fastData>OfferStatus/STATUS} === 'Quotation Submitted' ? true : false}"
-                    change="onSwitchDelayInSubmission" />
-                
+            <actions>               
                 <!-- Download Quotation -->	
                 <m:Button
                     id="btnSaveQuotation"

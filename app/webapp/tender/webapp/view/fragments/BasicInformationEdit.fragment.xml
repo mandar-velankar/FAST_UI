@@ -96,7 +96,7 @@
 						path: 'fastData>/CountryRegions',
 						sorter: { path: 'Name' }
 					}" 
-					visible="{= (${fastData>Institute/InstituteType} === 'Public Region(s)' || ${fastData>/newTender/instituteType}  === 'Public Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
 					<items>
 						<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
 					</items>
