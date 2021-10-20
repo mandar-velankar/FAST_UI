@@ -7932,7 +7932,7 @@ sap.ui.define([
 			let bUpdate = false;
 
 			if(!oBankGuaranteeSaveInfo.Status || oBankGuaranteeSaveInfo.Status === ''){
-				oBankGuaranteeSaveInfo.Status = "Preliminary";
+				oBankGuaranteeSaveInfo.Status = "Open";
 				oBankGuaranteeSaveInfo._sOperation = "POST";
 			} else {
 				if(!oBankGuaranteeSaveInfo.ID){//if new bank guarantee => POST
@@ -8044,7 +8044,7 @@ sap.ui.define([
 
 				if(wonProducts){
 					//update the status
-					currentBankGuarantee.Status = "Confirmed";
+					currentBankGuarantee.Status = "Open";
 
 					if(!currentBankGuarantee){
 						currentBankGuarantee._sOperation = "POST";
