@@ -8107,14 +8107,22 @@ sap.ui.define([
 			BusyIndicator.hide();
 		},
 
-		preparePriceAgreementSaveInfo: function(oTenderResult){
+		preparePriceAgreementSaveInfo: async function(oTenderResult){
 
 			let oPriceAgreementSaveInfo = {};
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTender = oFastAppDataModel.getProperty("/EditTender/");
 
+			const {
+					data: {
+						results: [
+							financialProduct
+						] = []
+					} = {}
+			} = await Services.getService("Product").getFinancialProduct(oTenderResult.OFFERID, Services.getSelectedCountry(), oTenderResult.PRODUCTCODE);
+
 			oPriceAgreementSaveInfo.AwardedVolume = oTenderResult.AWARDEDQTY;
-			oPriceAgreementSaveInfo.DeliveredVolume = 150;
+			oPriceAgreementSaveInfo.DeliveredVolume = 0; // When creating agreement, no deliveries, hence SUM(null)=0 (blank is good, too) 
 			oPriceAgreementSaveInfo.ProductPackId = oTenderResult.PRODUCTCODE;
 			oPriceAgreementSaveInfo.TenderId = oTender.TenderID;
 			oPriceAgreementSaveInfo.Currency = oTenderResult.CURRENCY;
@@ -8124,17 +8132,19 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
 			oPriceAgreementSaveInfo.EffectiveDate = new Date();
-			oPriceAgreementSaveInfo.ListPrice = 5;
-			oPriceAgreementSaveInfo.RetailPrice = 10;
-			oPriceAgreementSaveInfo.Discount = 2;
+			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
+			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
+			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
 
 			return oPriceAgreementSaveInfo;
 		},
 
-		onCreatePriceAgreement: function (oEvent) {
+		onCreatePriceAgreement: async function (oEvent) {
 			//get model & selected row
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var oLoadedPriceAgreement = oFastAppDataModel.getProperty("/newPriceAgreement");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
+
 			if(oLoadedPriceAgreement){
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 				window.open("/app/#/priceagreements&/pa/PriceAgreements/" + oLoadedPriceAgreement.ID);
@@ -8146,6 +8156,17 @@ sap.ui.define([
 				//check if a product is selected
 				if (oRowContext === null) {
 					sap.m.MessageToast.show("Select an awarded product to create a price agreement");
+					return;
+				}
+
+				const rowProductCode = oRowContext.getObject().PRODUCTCODE;
+				const offerProduct = offerProducts.find(prd => prd.ProductCode === rowProductCode);
+				const offerType = offerProduct.OfferType;
+
+				// Only selling type can be synchronised with SAP and 
+				// therefore only allow creating price agreements for selling offer type products! 
+				if(offerType !== "Selling"){
+					sap.m.MessageBox.error("Only products with OfferType 'Selling' are allowed to create a price agreement.");
 					return;
 				}
 
@@ -8196,22 +8217,28 @@ sap.ui.define([
 					}*/
 
 					if(!oPriceAgreementSaveInfo){
-						oPriceAgreementSaveInfo = this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
+						oPriceAgreementSaveInfo = await this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
 						oPriceAgreementSaveInfo._sOperation = "POST";
 					} else {
 						oPriceAgreementSaveInfo._sOperation = "PUT";
 					}
 
-					$.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
-						/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
-						//message that you 
-						sap.m.MessageToast.show("Price Agreement has been created");*/
-						$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
-							//oFastAppDataModel.setProperty("/newPriceAgreement", oData.results[0]);
-							//oFastAppDataModel.setProperty("/test", oData.results[0]);
-							BusyIndicator.hide();
-						});
-					});
+					await Services.savePriceAgreement(oPriceAgreementSaveInfo);
+
+					await Services.loadTenderPriceAgreement(Services.getSelectedTenderID());
+
+					BusyIndicator.hide();
+
+					// $.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
+					// 	/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+					// 	//message that you 
+					// 	sap.m.MessageToast.show("Price Agreement has been created");*/
+					// 	$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
+					// 		//oFastAppDataModel.setProperty("/newPriceAgreement", oData.results[0]);
+					// 		//oFastAppDataModel.setProperty("/test", oData.results[0]);
+					// 		BusyIndicator.hide();
+					// 	});
+					// });
 
 				}
 			}

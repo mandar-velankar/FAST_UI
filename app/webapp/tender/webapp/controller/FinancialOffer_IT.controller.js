@@ -5,14 +5,18 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/userinfo",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
 	"FAST_NS0FAST0/model/financial",
-	"sap/ui/core/Fragment"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment) {
+	"sap/ui/core/Fragment",
+	"FAST_NS0FAST0/model/datatypes/PercentageType",
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType) {
 	"use strict";
 
 	return Controller.extend("FAST_NS0FAST0.controller.FinancialOffer_IT", {
 
 		//Formatting functions
 		formatter: formatter,
+		types: {
+			percent: new PercentageType()
+		},
 
 		onInit: function (oEvent) {
 
@@ -32,6 +36,10 @@ sap.ui.define([
 			//attach the onTenderMatched method to handle routing between pages + load correct data
 			this._oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this);
 			this._oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);
+
+			var oInput = this.byId("addDiscount");
+			sap.ui.getCore().getMessageManager().registerObject(oInput, true);
+
 
 
 		},
@@ -366,13 +374,13 @@ sap.ui.define([
 			const additionalDiscount = oEvent.getParameter("newValue");
 			const cunsumerPrice = oEvent.getSource().getParent().getBindingContext("fastAppData").getObject();
 
-			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / cunsumerPrice.ConsumerPriceExclPP;
-			const netOfferPricePP = cunsumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
-			const netOfferPricePU = cunsumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);
+			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * (1 - (additionalDiscount/100))) / cunsumerPrice.ConsumerPriceExclPP;
+			const netOfferPricePP = cunsumerPrice.MaxPriceNhsPP * (1 - (additionalDiscount/100));
+			const netOfferPricePU = cunsumerPrice.MaxPriceNhsPU * (1 - (additionalDiscount/100));
 
-			this.byId("idTotalDiscount").setValue(totalDiscount);
-			this.byId("idNetOfferPricePP").setValue(netOfferPricePP);
-			this.byId("idNetOfferPricePU").setValue(netOfferPricePU);
+			this.byId("idTotalDiscount").setValue(totalDiscount.toFixed(2));
+			this.byId("idNetOfferPricePP").setValue(netOfferPricePP.toFixed(2));
+			this.byId("idNetOfferPricePU").setValue(netOfferPricePU.toFixed(5));
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
