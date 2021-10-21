@@ -212,8 +212,27 @@ sap.ui.define([
 			this.byId("ApprovalButtonId").setEnabled(bEnableApproval); //TODO: when this statement is executed, fastModel property "/EditMode" is set to TRUE??? WHY? 
 			
 			oFastAppDataModel.setProperty("/EditMode", bEditMode);
+
+			//dynamic message logic
+
+			this._checkTaxRate(oProductPrice);
 			
 		},
+
+		_checkTaxRate: function (oProductPrice){
+
+			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   (freeGoods.FreeGoodsOther/100).toString() !== oProductPrice.VatPerPack && freeGoods.FreeGoodsOther_ABS_PCT === "PCT"  );
+			var message;
+			if (differentRates.length === 0){
+				message = "Merce Sconto";
+			} else {
+				message = "Omaggio";
+			}
+
+			this.byId("dynMessage").setText(message);
+			
+		},
+
 
 		/**
 		 * Save financial offer for Italy
@@ -480,6 +499,13 @@ sap.ui.define([
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
 			const foundError = freeGoodsOther.find(freeGoods => freeGoods.ProductPackIdValueState === "Error" || freeGoods.FreeGoodsOtherValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
+
+
+
+			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			this._checkTaxRate(oProductPrice);
+
+
 		}
 	});
 });
