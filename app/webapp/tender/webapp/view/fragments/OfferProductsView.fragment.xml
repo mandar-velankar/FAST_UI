@@ -176,7 +176,7 @@
 					</t:Column>
 
 					<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}">
-						<Label id="idPackFactorLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PackFactor/description',
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PackFactor/description',
 															formatter: '.formatter.offerProductsColumnName' }" 
 														wrapping="true" />
 						<t:template>
