@@ -118,6 +118,19 @@
 										</VBox>
 									</t:template>
 								</t:Column>
+
+								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}">
+									<Label id="idPackFactorLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PackFactor/description',
+												  					   formatter: '.formatter.offerProductsColumnName' }" 
+												    		      wrapping="true" 
+															      required="{fastAppData>/permissions/tables/editofferProductId/PackFactor/required}"/>
+									<t:template>
+										<VBox>
+											<Input value="{fastAppData>SKU/PACKFACTOR}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}" />
+										</VBox>
+									</t:template>
+								</t:Column>
+
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferType/visible}">
 									<Label id="idOfferTypeLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description',
 												  					   formatter: '.formatter.offerProductsColumnName' }" 
