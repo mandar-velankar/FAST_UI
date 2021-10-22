@@ -221,7 +221,7 @@ sap.ui.define([
 
 		_checkTaxRate: function (oProductPrice){
 
-			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   (freeGoods.FreeGoodsOther/100).toString() !== oProductPrice.VatPerPack && freeGoods.FreeGoodsOther_ABS_PCT === "PCT"  );
+			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== (oProductPrice.VatPerPack*100).toString()   );
 			var message;
 			if (differentRates.length === 0){
 				message = "Merce Sconto";
@@ -473,13 +473,16 @@ sap.ui.define([
 			var validatedComboBox = event.getSource(),
 				selectedKey = validatedComboBox.getSelectedKey(),
 				value = validatedComboBox.getValue(),
-				path = event.getSource().getBindingContext("fastAppData").getPath();
+				path = event.getSource().getBindingContext("fastAppData").getPath(),
+				vat = validatedComboBox.getSelectedItem().getBindingContext('fastAppData').getProperty('VAT');
+
 
 			if ((!selectedKey && value) || value === "") {
 				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "Error");
 			} else {
 				Services.getFastAppDataModel().setProperty(path + "/ProductName", value);
 				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "None");
+				Services.getFastAppDataModel().setProperty(path + "/VAT", vat);
 			}
 		},
 		oApplyProducts: function () {
