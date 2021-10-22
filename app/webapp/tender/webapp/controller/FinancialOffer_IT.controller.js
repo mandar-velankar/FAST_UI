@@ -212,8 +212,27 @@ sap.ui.define([
 			this.byId("ApprovalButtonId").setEnabled(bEnableApproval); //TODO: when this statement is executed, fastModel property "/EditMode" is set to TRUE??? WHY? 
 			
 			oFastAppDataModel.setProperty("/EditMode", bEditMode);
+
+			//dynamic message logic
+
+			this._checkTaxRate(oProductPrice);
 			
 		},
+
+		_checkTaxRate: function (oProductPrice){
+
+			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== (oProductPrice.VatPerPack*100).toString()   );
+			var message;
+			if (differentRates.length === 0){
+				message = "Merce Sconto";
+			} else {
+				message = "Omaggio";
+			}
+
+			this.byId("dynMessage").setText(message);
+			
+		},
+
 
 		/**
 		 * Save financial offer for Italy
@@ -454,13 +473,16 @@ sap.ui.define([
 			var validatedComboBox = event.getSource(),
 				selectedKey = validatedComboBox.getSelectedKey(),
 				value = validatedComboBox.getValue(),
-				path = event.getSource().getBindingContext("fastAppData").getPath();
+				path = event.getSource().getBindingContext("fastAppData").getPath(),
+				vat = validatedComboBox.getSelectedItem().getBindingContext('fastAppData').getProperty('VAT');
+
 
 			if ((!selectedKey && value) || value === "") {
 				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "Error");
 			} else {
 				Services.getFastAppDataModel().setProperty(path + "/ProductName", value);
 				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "None");
+				Services.getFastAppDataModel().setProperty(path + "/VAT", vat);
 			}
 		},
 		oApplyProducts: function () {
@@ -480,6 +502,13 @@ sap.ui.define([
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
 			const foundError = freeGoodsOther.find(freeGoods => freeGoods.ProductPackIdValueState === "Error" || freeGoods.FreeGoodsOtherValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
+
+
+
+			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			this._checkTaxRate(oProductPrice);
+
+
 		}
 	});
 });

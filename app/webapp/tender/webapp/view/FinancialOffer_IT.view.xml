@@ -151,6 +151,7 @@
 			<!-- Selling -->
 			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Selling'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+				<MessageStrip id="dynMessage" />
 					<form:SimpleForm id="idSelling"
 							editable="true"
 							class="editableForm"

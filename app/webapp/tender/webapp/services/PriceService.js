@@ -119,11 +119,12 @@ sap.ui.define([
 			oProductPriceToSave.AdditionalDiscount = (oProductPriceSaveInfo.AdditionalDiscount === null) ? null : oProductPriceSaveInfo.AdditionalDiscount.toString();
 			oProductPriceToSave.FOC_ABS_PCT = (oProductPriceSaveInfo.FOC_ABS_PCT === null) ? null : oProductPriceSaveInfo.FOC_ABS_PCT.toString();
 
-			if(oProductPriceToSave.FreeGoodsOther){
+			if(oProductPriceSaveInfo.FreeGoodsOther){
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
 					ProductPackId: freeGoodsOther.ProductPackId, 
 					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT, 
-					FreeGoodsOther: freeGoodsOther.FreeGoodsOther
+					FreeGoodsOther: freeGoodsOther.FreeGoodsOther,
+					VAT: freeGoodsOther.VAT
 				}));
 			}
 
