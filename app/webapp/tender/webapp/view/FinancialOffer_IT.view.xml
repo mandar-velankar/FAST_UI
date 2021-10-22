@@ -151,7 +151,7 @@
 			<!-- Selling -->
 			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Selling'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
-				<MessageStrip id="dynMessage" />
+				<MessageStrip text="{fastAppData>dynMessage}" />
 					<form:SimpleForm id="idSelling"
 							editable="true"
 							class="editableForm"
@@ -191,7 +191,7 @@
 								<Label text="Mandatory / Ex-factory discount" />
 								<Input value="{	path:'fastAppData>MandatoryDiscount', formatter:'.formatter.percentageNoUnit' }" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="Ex-factory Price w/o VAT" />
-								<Input value="{{path:'fastAppData>ExfPriceExclPP'}" description="EUR"  enabled="false" fieldWidth="80%"/>
+								<Input value="{path:'fastAppData>ExfPriceExclPP'}" description="EUR"  enabled="false" fieldWidth="80%"/>
 								<Label text="I° confidential discount" />
 								<Input value="{	path:'fastAppData>ConfidentialDiscount1', formatter:'.formatter.percentageNoUnit'}" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="II° confidential discount" />
@@ -219,15 +219,9 @@
 								<Label text="Free goods same product" />
 								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="Net Offer Price per pack" />
-								<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP',type: 'sap.ui.model.type.Float',
-									formatOptions: {
-										maxFractionDigits: 2
-									}}"  enabled="false" fieldWidth="80%" description="EUR"/>
+								<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}"  enabled="false" fieldWidth="80%" description="EUR"/>
 								<Label text="Net Offer Price per unit" />
-								<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU',type: 'sap.ui.model.type.Float',
-									formatOptions: {
-										maxFractionDigits: 5
-									}}"  enabled="false" fieldWidth="80%" description="EUR"/>
+								<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}"  enabled="false" fieldWidth="80%" description="EUR"/>
 								<Label text="Free goods for other product(s)" />
 								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
 									<tokens>
@@ -248,6 +242,7 @@
 			<!-- Rental -->
 			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Rental'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+				<MessageStrip text="{fastAppData>dynMessage}" />
 					<form:SimpleForm id="idRental"
 							editable="false"
 							class="editableForm"
@@ -319,6 +314,7 @@
 			<!-- Comodato -->
 			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Comodato'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
+				<MessageStrip text="{fastAppData>dynMessage}" />
 					<form:SimpleForm id="idComodato"
 							editable="false"
 							class="editableForm"
