@@ -214,13 +214,14 @@ sap.ui.define([
 			oFastAppDataModel.setProperty("/EditMode", bEditMode);
 
 			//dynamic message logic
-
 			this._checkTaxRate(oProductPrice);
+
+			//calculate total discount at start
+			this.calculateTotalDiscount();
 			
 		},
 
 		_checkTaxRate: function (oProductPrice){
-
 			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== (oProductPrice.VatPerPack*100).toString()   );
 			var message;
 			if (differentRates.length === 0){
@@ -229,7 +230,8 @@ sap.ui.define([
 				message = "Omaggio";
 			}
 
-			this.byId("dynMessage").setText(message);
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/dynMessage", message);
 			
 		},
 
@@ -390,14 +392,19 @@ sap.ui.define([
 
 		calculateTotalDiscount: function (oEvent) {
 
-			const additionalDiscount = oEvent.getParameter("newValue");
-			const cunsumerPrice = oEvent.getSource().getParent().getBindingContext("fastAppData").getObject();
+			const consumerPrice = Services.getFastAppDataModel().getProperty(this.selectedProductPricePath);
+			var additionalDiscount;
+			if(oEvent){
+				additionalDiscount = oEvent.getParameter("newValue")/100;
+			} else {
+				additionalDiscount = consumerPrice.AdditionalDiscount;
+			}
+			
+			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
+			const netOfferPricePP = consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
+			const netOfferPricePU = consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);
 
-			const totalDiscount = (cunsumerPrice.ConsumerPriceExclPP - cunsumerPrice.MaxPriceNhsPP * (1 - (additionalDiscount/100))) / cunsumerPrice.ConsumerPriceExclPP;
-			const netOfferPricePP = cunsumerPrice.MaxPriceNhsPP * (1 - (additionalDiscount/100));
-			const netOfferPricePU = cunsumerPrice.MaxPriceNhsPU * (1 - (additionalDiscount/100));
-
-			this.byId("idTotalDiscount").setValue(totalDiscount.toFixed(2));
+			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
 			this.byId("idNetOfferPricePP").setValue(netOfferPricePP.toFixed(2));
 			this.byId("idNetOfferPricePU").setValue(netOfferPricePU.toFixed(5));
 		},
