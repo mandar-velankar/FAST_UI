@@ -216,8 +216,10 @@
 										<core:Item key="PCT" text="Percentage" />									
 									</items>
 								</Select>
-								<Label text="Free goods same product" />
-								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
+								<Label text="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" />
+								<Input value="{fastAppData>FreeGoodsSame}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
+								<Label text="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" />
+								<Input value="{path:'fastAppData>FreeGoodsSame',type: '.types.percent'}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
 								<Label text="Net Offer Price per pack" />
 								<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}"  enabled="false" fieldWidth="80%" description="EUR"/>
 								<Label text="Net Offer Price per unit" />
@@ -225,8 +227,11 @@
 								<Label text="Free goods for other product(s)" />
 								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
 									<tokens>
-										<Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
-									</tokens>
+										<Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'? ${fastAppData>FreeGoodsOther}: ${path:'fastAppData>FreeGoodsOther',type: '.types.percent'}} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
+									
+									
+									</tokens>										
+
 								</MultiInput>
 
 							</form:content>
