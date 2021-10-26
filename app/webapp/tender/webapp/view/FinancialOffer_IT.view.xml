@@ -176,7 +176,8 @@
 								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
 								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
 									<items>
-										<core:Item key="New" text="New" />									
+										<core:Item key="New" text="New" />	
+										<core:Item key="SecondHand" text="Second Hand" />								
 									</items>
 								</Select>
 								<Label text="Consumer Price (w/o VAT) per pack" />
@@ -283,7 +284,8 @@
 								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
 								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"> 
 									<items>
-										<core:Item key="New" text="New" />									
+										<core:Item key="New" text="New" />
+										<core:Item key="SecondHand" text="Second Hand" />									
 									</items>
 								</Select>
 								<Label text="FOC Absolute/Percentage" />
@@ -352,7 +354,8 @@
 								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
 								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
 									<items>
-										<core:Item key="New" text="New" />									
+										<core:Item key="New" text="New" />
+										<core:Item key="SecondHand" text="Second Hand" />									
 									</items>
 								</Select>
 								<Label text="free goods for other product(s)" />
