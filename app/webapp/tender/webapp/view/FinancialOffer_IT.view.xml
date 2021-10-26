@@ -146,7 +146,7 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer (for {fastAppData>OfferType})" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
+	<u:ObjectPageSubSection title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<l:BlockLayout background="Light">
 
 			<!-- Selling -->
@@ -188,7 +188,7 @@
 								<Input value="{path:'fastAppData>ConsumerPriceExclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 								<Label text="Consumer Price (with VAT) per unit" />
 								<Input value="{path:'fastAppData>ConsumerPriceInclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
-								<Label text="Tax (VAT) per pack" />
+								<Label text="Tax (VAT)" />
 								<Input value="{	path:'fastAppData>VatPerPack', formatter:'.formatter.percentageNoUnit'}" type="Number" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="Mandatory / Ex-factory discount" />
 								<Input value="{	path:'fastAppData>MandatoryDiscount', formatter:'.formatter.percentageNoUnit' }" type="Number" description="%"   enabled="false" fieldWidth="80%"/>
