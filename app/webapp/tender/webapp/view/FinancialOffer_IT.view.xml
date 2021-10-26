@@ -146,7 +146,7 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
+	<u:ObjectPageSubSection title="Pricing Offer (for {fastAppData>OfferType})" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<l:BlockLayout background="Light">
 
 			<!-- Selling -->
