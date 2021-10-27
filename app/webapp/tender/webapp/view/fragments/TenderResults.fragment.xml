@@ -95,7 +95,7 @@
                             </t:Column>
         
                             <t:Column width="13rem">
-                                <m:Label text="Awarded Company"/>
+                                <m:Label text="Awarded Company" required="true"/>
                                 <t:template>
                                     <m:VBox>
                                         <m:Input value="{fastAppData>AWARDEDCOMPANY}" 
@@ -123,7 +123,7 @@
                             </t:Column>
 
                             <t:Column width="16rem">
-                                <m:Label text="Product"/>
+                                <m:Label text="Product" required="true"/>
                                 <t:template>
                                     <m:VBox>
                                         <m:items>
