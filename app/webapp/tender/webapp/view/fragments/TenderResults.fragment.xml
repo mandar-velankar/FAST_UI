@@ -87,8 +87,8 @@
                             </m:OverflowToolbar>
                         </t:extension>
                         <t:columns>
-                            <t:Column width="13rem">
-                                <m:Label text="ContractNo"/>
+                            <t:Column width="13rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
+                                <m:Label text="ContractNo" />
                                 <t:template>
                                     <m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer'}"/>
                                 </t:template>
@@ -186,7 +186,7 @@
                                                                                 ], formatter: '.formatter.focQuotation'}" enabled="false"/>
                                 </t:template>
                             </t:Column>
-                            <t:Column width="7rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
+                            <t:Column width="7rem">
                                 <m:Label text="Awarded Qty"/>
                                 <t:template>
                                     <m:Input type="Number" id="resultsForTreeAwardedQty" value="{fastAppData>AWARDEDQTY}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" />
