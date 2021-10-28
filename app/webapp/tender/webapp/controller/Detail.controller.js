@@ -8978,24 +8978,43 @@ sap.ui.define([
 			//products of offer
 			var aResultsForProducts = oFastAppDataModel.getProperty("/ResultsForProducts");
 			var aResultsForTree = oFastAppDataModel.getProperty("/ResultsForTree");
+
+			const missingFields = new Set();
 			
 			aResultsForTree.forEach(function(oResultForTree, iIndex) {
+
+				missingFields.clear();
+				
 				//loop at competitors awarded results
 				if (oResultForTree.OutcomeLevel && oResultForTree.OutcomeLevel.length > 0) {
 					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
 						if(oResultForTree._sOperation !== "DELETE"){
-							if(!oOutcomeLevel.AWARDEDCOMPANY || !oOutcomeLevel.PRODUCT){
-								var oMessage = {
-									type: 'Error',
-									title: 'Please enter all mandatory fields.',
-								};
 
-								aMessages.push(oMessage);
-								bError = true;
+							if(!oOutcomeLevel.OTHERCOMPANY){
+								missingFields.add("Awarded Company");
 							}
+
+							if(!oOutcomeLevel.OTHERPRODUCT){
+								missingFields.add("Product");
+							}
+
 						}
 					});
 				}
+
+				if(missingFields.size > 0){
+					var oMessage = {
+						type: 'Error',
+						title: `Please enter all mandatory fields.`,
+						subtitle: oResultForTree.PRODUCT,
+						description: Array.from(missingFields).join("\n")
+					};
+
+					aMessages.push(oMessage);
+					bError = true;
+				}
+
+
 			});
 
 			if(bError){
