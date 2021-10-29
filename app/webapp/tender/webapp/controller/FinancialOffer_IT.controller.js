@@ -222,7 +222,7 @@ sap.ui.define([
 		},
 
 		_checkTaxRate: function (oProductPrice){
-			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== (oProductPrice.VatPerPack*100).toString()   );
+			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== oProductPrice.VatPerPack*100   );
 			var message;
 			if (differentRates.length === 0){
 				message = "Merce Sconto";
