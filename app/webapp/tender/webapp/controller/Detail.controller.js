@@ -360,16 +360,16 @@ sap.ui.define([
 
 				// TODO: check why "idClassification" is set back to visible after  checkShowSalesType()
 				// Settings for Italy 
-				if(Services.getSelectedCountry() === 'IT'){
+				/*if(Services.getSelectedCountry() === 'IT'){
 					Services.getWordTemplates(Services.getSelectedCountry());
 					oDetailController.getView().byId("idClassification").setVisible(false);
 					oDetailController.getView().byId("idTenderChannel").setVisible(false);
-				}
+				}*/
 			});
 
 			//should tendertype be visible on the screen based on data back-end
 			$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
-				oTenderType.setVisible(bShowTenderType);
+				oTenderType.setVisible(bShowTenderType);	
 				if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
 					oTenderType.setVisible(true);
 				}else{
@@ -9235,7 +9235,7 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idSpecifications") && this.byId("idSpecifications").setVisible(false);
-			this.byId("idClassification") && this.byId("idClassification").setVisible(false);
+			//this.byId("idClassification") && this.byId("idClassification").setVisible(false);
 
 			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").clearSelection();
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
