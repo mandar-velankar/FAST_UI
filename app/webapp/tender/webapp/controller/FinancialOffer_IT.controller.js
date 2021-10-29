@@ -198,6 +198,11 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
+			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			if(oSelectedProduct){
+				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
+			}
+
 			//check for approval enabled 
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
 
