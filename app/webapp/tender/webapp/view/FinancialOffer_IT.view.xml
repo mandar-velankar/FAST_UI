@@ -205,11 +205,9 @@
 								<Label text="Max Price for NHS per unit w/o VAT" />
 								<Input value="{path:'fastAppData>MaxPriceNhsPU'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
 								<Label text="Additional Discount" />
-
-								<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%"  type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
-
+								<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
 								<Label text="Total Discount" />
-								<Input id="idTotalDiscount" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
+								<Input id="idTotalDiscount" description="%"   enabled="false" fieldWidth="80%"/>
 								<Label text="FOC Absolute/Percentage" />
 								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
 									<items>
