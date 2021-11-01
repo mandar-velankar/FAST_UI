@@ -6244,6 +6244,7 @@ sap.ui.define([
 							path: "/results",
 							template: new sap.m.StandardListItem({
 								title: "{InstituteName}",
+								info:"{= ${CustomerID} && ${CustomerID}!=='0'?${CustomerID}:''}",
 								//description: "{InstituteID}",
 								//active: true,
 								//beceause we no longer have the selected instituteID visible, we keep it in the customData of the list item
