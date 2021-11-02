@@ -20,6 +20,13 @@ sap.ui.define([
 
 		onInit: function (oEvent) {
 
+			const oViewModel = new sap.ui.model.json.JSONModel({
+				delay: 0,
+				selectedProductUoM: "",
+			});
+
+			this.getView().setModel(oViewModel, "finOfferView");
+
 			//get resource bundle for translations or texts
 			this._oOwnerComponent = this.getOwnerComponent();
 			this._oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
@@ -187,6 +194,8 @@ sap.ui.define([
 			}
 
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+
+			this._setSelectedProductUoM(oProductPrice.UOM);
 
 			//keep selected product ID
 			Services.setSelectedProductID(oProductPrice.ProductCode);
@@ -521,6 +530,20 @@ sap.ui.define([
 			this._checkTaxRate(oProductPrice);
 
 
-		}
+		},
+
+		/**
+		 * Event handler for the UoM radioButtonGroup 
+		 * @param {Event} evt 
+		 */
+		onRbgUoMChange: function(evt){
+			const selectedIndex = evt.getParameter("selectedIndex");
+			const uom = selectedIndex === 0 ? "Pack" : "Unit";
+			this._setSelectedProductUoM(uom);
+		},
+
+		_setSelectedProductUoM(uom){
+			this.getView().getModel("finOfferView").setProperty("/selectedProductUoM", uom);
+		},
 	});
 });
