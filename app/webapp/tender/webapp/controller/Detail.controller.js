@@ -5865,6 +5865,14 @@ sap.ui.define([
 						PRODUCTPACKNAME: oProduct.PRODUCT_NAME,
 						MoleculeName: oProduct.MoleculeName
 					};
+
+					// To make this code work on the nodejs layer, we need to expand on SKUCountry in 'READ', 'InstituteDistributorBrandProduct'
+					oAddProduct.SKUCountry = {
+						GOV_CODE: undefined,
+						CODE1: undefined,
+						CODE2: undefined
+					};
+
 					if (aProducts && aProducts.length) {
 						oAddProduct.SORTER = aProducts.length; //added as last in the list
 					} else {
