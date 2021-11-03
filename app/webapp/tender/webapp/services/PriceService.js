@@ -132,6 +132,49 @@ sap.ui.define([
 
 		},
 
+		validateProductPriceToSave: function(sOfferType, oPriceSaveInfo){
+			let aInvalidFields = [];
+			
+			switch(sOfferType){
+				case 'Selling':
+					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields);
+				case 'Rental':
+					this.validateProductPriceRental(oPriceSaveInfo, aInvalidFields);
+				case 'Comodato':
+					this.validateProductPriceComodato(oPriceSaveInfo, aInvalidFields);
+			}
+
+			return aInvalidFields;
+		},
+
+		validateProductPriceSelling: function(oPriceSaveInfo, aInvalidFields){
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if((e === 'Warranty' ||  e === 'StatusOfDevice' || e === 'AdditionalDiscount' || e === 'FOC_ABS_PCT' ) 
+					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceRental: function(oPriceSaveInfo, aInvalidFields){
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if((e === 'Warranty' || e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice' || e === 'FreeGoodsSame' || e === 'FOC_ABS_PCT' ) 
+					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceComodato: function(oPriceSaveInfo, aInvalidFields){
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if((e ===  'Warranty' || e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice') 
+					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+
 		//Convert Price info to save in the database. (View binding is an extended version)
 		getConvertPriceToSave: function (oPriceSaveInfo) {
 

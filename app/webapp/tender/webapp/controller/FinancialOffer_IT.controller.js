@@ -258,6 +258,7 @@ sap.ui.define([
 			let aProducts = Services.getLoadedProductsForOffer(sOfferID);
 			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId);
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			let aMessages = [];
 
 			//build old price object for additional saving to PT_TMBDPR
 			let oNewPriceInfo = this.getOldPriceObject(oOffer, oProduct, oProductPrice);
@@ -267,73 +268,103 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
-			if (oResult && oResult.data && oResult.data.ID) {
-				oProductPrice.ID = oResult.data.ID;
-			}
-			//Update offer
-			var oOfferSaveInfo = {};
-			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
-			oOfferSaveInfo.Currency = this.byId("idCurrency").getSelectedKey();
-			oOfferSaveInfo.FOCType = this.byId("idFOCType").getSelectedKey();
-			//default foc abolute or percentage is decided on first product price thats saved... so if empty, save
-			if (!oOffer.DEFAULT_FOC_ABS_PCT) {
-				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = 'ABS';//this.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
-			}
+			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave);
+			
+			if(aMandatoryFieldsMissing.length > 0){
+				let sTitle = "Mandatory fields missing";
+				var sErroneousFields = "";
 
-			//let sSetCurrency = oOfferSaveInfo.Currency;
-
-			//update offer
-			await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
-
-				//show error message
-				Services.showErrorMessage(oError, "Update of offer");
-
-				//promises must fail as well
-				throw new Error(oError);
-
-			});
-
-			//we will load tender again after save is done
-			var bLoadedCheck = false;
-
-			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
-
-				//set selected offer ID
-				Services.setSelectedOfferID(sOfferID);
-				Services.setSelectedOfferPath(sOfferPath);
-
-				//Selected offer binding
-				var oOffer = Services.getLoadedOffer(sOfferID);
-				Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
-
-				//switch from edit to display
-				//this.byId("idCurrency").setSelectedKey(sSetCurrency);
-				that._DetailController.onEditToggleButtonPress();
-
-				//show success message
-				Services.getOfferCompositeMessages().push({
-					type: 'Success',
-					title: 'Financial Offer Saved Successfully',
-					description: 'Financial Offer Saved Successfully'
+				aMandatoryFieldsMissing.map((mandatoryField, index) => {
+					if (sErroneousFields === "") {
+						sErroneousFields = mandatoryField;
+					} else {
+						sErroneousFields = sErroneousFields + '\n' + mandatoryField;
+					}
 				});
 
-				Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
-				Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+				var oMessage = {
+					type: 'Error',
+					title: 'Mandatory fields missing',
+					description: sErroneousFields,
+					subtitle: ' Mandatory fields should be filled before saving.',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+				
 
+				//Show error messages
+				Services.showMessageCompositeView(sTitle, aMessages, 'Error');
+			}
 
-				//refresh tenders master table (left pane)
-				Services.refreshTendersMasterTable(sTenderID);
+			if(aMandatoryFieldsMissing.length === 0){
+				
+				let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
+				if (oResult && oResult.data && oResult.data.ID) {
+					oProductPrice.ID = oResult.data.ID;
+				}
+				//Update offer
+				var oOfferSaveInfo = {};
+				oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
+				oOfferSaveInfo.Currency = this.byId("idCurrency").getSelectedKey();
+				oOfferSaveInfo.FOCType = this.byId("idFOCType").getSelectedKey();
+				//default foc abolute or percentage is decided on first product price thats saved... so if empty, save
+				if (!oOffer.DEFAULT_FOC_ABS_PCT) {
+					oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = 'ABS';//this.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+				}
 
-				//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
-				var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
-				Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
-					//Error during save
-					Services.showErrorMessage(oError, "Background saving for approvals sent field");
+				//let sSetCurrency = oOfferSaveInfo.Currency;
+
+				//update offer
+				await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+
+					//show error message
+					Services.showErrorMessage(oError, "Update of offer");
+
+					//promises must fail as well
+					throw new Error(oError);
+
 				});
 
-			});
+				//we will load tender again after save is done
+				var bLoadedCheck = false;
 
+				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+					//set selected offer ID
+					Services.setSelectedOfferID(sOfferID);
+					Services.setSelectedOfferPath(sOfferPath);
+
+					//Selected offer binding
+					var oOffer = Services.getLoadedOffer(sOfferID);
+					Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+
+					//switch from edit to display
+					//this.byId("idCurrency").setSelectedKey(sSetCurrency);
+					that._DetailController.onEditToggleButtonPress();
+
+					//show success message
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Financial Offer Saved Successfully',
+						description: 'Financial Offer Saved Successfully'
+					});
+
+					Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
+
+					//refresh tenders master table (left pane)
+					Services.refreshTendersMasterTable(sTenderID);
+
+					//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+					var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
+					Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+						//Error during save
+						Services.showErrorMessage(oError, "Background saving for approvals sent field");
+					});
+
+				});
+			}
 		},
 
 		//for additional saving to PT_TMBDPR
