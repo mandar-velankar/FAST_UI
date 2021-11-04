@@ -2674,7 +2674,8 @@ sap.ui.define([
 						Services.clearAllForOfferProductPage();
 
 						break;
-					case Services.getFinancialOfferPageSectionID() || Services.getFinancialOfferPageSectionID_IT():
+					case Services.getFinancialOfferPageSectionID():
+					case Services.getFinancialOfferPageSectionID_IT():
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelFinancialOfferTableID").setExpanded(true);
 
@@ -2689,11 +2690,20 @@ sap.ui.define([
 						that.byId("ApprovalButtonId").setEnabled(bEnableApproval);
 
 						//Italy has its own products table
-						if(sSelectedSection===Services.getFinancialOfferPageSectionID()){
-							//select offer again
-							that.onFinancialOfferItemPress();
+						switch (sSelectedSection) {
+							case Services.getFinancialOfferPageSectionID():
+								//select offer again
+								that.onFinancialOfferItemPress();
+								break;
+							case Services.getFinancialOfferPageSectionID_IT():
+								//select offer again
+								var oView = that.getView().byId("financialOfferViewId_IT");
+								var oFinOfferController = oView.getController();
+								oFinOfferController.refreshFinancialTabIT();
+								break;
+							default:
+								break;
 						}
-
 						break;
 					case Services.getQuotationPageSectionID():
 						//show offer table content, so there is more space on the screen
@@ -6252,6 +6262,7 @@ sap.ui.define([
 							path: "/results",
 							template: new sap.m.StandardListItem({
 								title: "{InstituteName}",
+								info:"{= ${CustomerID} && ${CustomerID}!=='0'?${CustomerID}:''}",
 								//description: "{InstituteID}",
 								//active: true,
 								//beceause we no longer have the selected instituteID visible, we keep it in the customData of the list item

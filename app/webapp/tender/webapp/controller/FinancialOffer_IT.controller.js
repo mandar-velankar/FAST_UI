@@ -57,27 +57,7 @@ sap.ui.define([
 			// this method should only be called in case of Italy
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_IT")) {
-
-				//load products
-				let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
-
-				//load countryBrandProducts
-				let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
-
-				aProducts = aProducts.map(product => {
-					product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
-						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-						return FreeGoodsOther;
-					}) || [];
-					return product;
-				});
-
-				//set to fastappdata model for easy access on the view
-				var oFastAppDataModel = Services.getFastAppDataModel();
-				oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
-				oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
-
+				await this.getCountryBrandProductsCombined();
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
 			}
@@ -110,22 +90,19 @@ sap.ui.define([
 			// Services.setSelectedOfferID(sOfferID);
 
 		},
-
-		refreshFinancialTabIT: async function () {
+		getCountryBrandProductsCombined: async function(){
 			//load products
 			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
 
 			//load countryBrandProducts
 			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
-			aProducts.map(product => {
-				if (product.FreeGoodsOther) {
-					product.FreeGoodsOther.map(FreeGoodsOther => {
-						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-						return FreeGoodsOther;
-					});
-				}
+			aProducts = aProducts.map(product => {
+				product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
+					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+					return FreeGoodsOther;
+				}) || [];
 				return product;
 			});
 
@@ -133,7 +110,9 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
-
+			return aProducts;
+		},
+		setFinancialOffer:function(){
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
@@ -143,6 +122,10 @@ sap.ui.define([
 			let sSelectedSection = Services.getFinancialOfferPageSectionID_IT();
 			Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection);
 
+		},
+		refreshFinancialTabIT: async function () {
+			await this.getCountryBrandProductsCombined();
+			this.setFinancialOffer();
 		},
 
 		/* GETTERS */
