@@ -60,6 +60,7 @@ sap.ui.define([
 				await this.getCountryBrandProductsCombined();
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
+			
 			}
 			// let that = this;
 
@@ -218,6 +219,19 @@ sap.ui.define([
 			
 		},
 
+		_checkApprovalEnabled: function (){
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID);
+			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+
+			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+				bEnableApproval = false;
+			}
+
+			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+		},
+
 		_checkTaxRate: function (oProductPrice){
 			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== oProductPrice.VatPerPack*100   );
 			var message;
@@ -354,6 +368,8 @@ sap.ui.define([
 						//Error during save
 						Services.showErrorMessage(oError, "Background saving for approvals sent field");
 					});
+
+					that._checkApprovalEnabled(); // check for approval button
 
 				});
 			}
