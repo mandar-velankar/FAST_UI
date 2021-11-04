@@ -138,10 +138,13 @@ sap.ui.define([
 			switch(sOfferType){
 				case 'Selling':
 					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields);
+					break;
 				case 'Rental':
 					this.validateProductPriceRental(oPriceSaveInfo, aInvalidFields);
+					break;
 				case 'Comodato':
 					this.validateProductPriceComodato(oPriceSaveInfo, aInvalidFields);
+					break;
 			}
 
 			return aInvalidFields;
