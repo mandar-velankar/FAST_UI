@@ -152,7 +152,7 @@ sap.ui.define([
 
 		validateProductPriceSelling: function(oPriceSaveInfo, aInvalidFields){
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e === 'Warranty' ||  e === 'StatusOfDevice' || e === 'AdditionalDiscount' || e === 'FOC_ABS_PCT' ) 
+				if((e === 'Warranty' ||  e === 'StatusOfDevice' || e === 'FOC_ABS_PCT' ) 
 					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
 					aInvalidFields.push(e);
 				}

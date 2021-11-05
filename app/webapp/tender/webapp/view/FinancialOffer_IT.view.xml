@@ -266,7 +266,7 @@
 									</form:FormElement>
 									<form:FormElement>
 										<form:label>
-											<Label text="Additional Discount" required="true"/>
+											<Label text="Additional Discount"/>
 										</form:label>
 										<form:fields>
 											<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
