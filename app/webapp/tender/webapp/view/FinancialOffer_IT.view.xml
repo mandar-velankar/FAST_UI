@@ -179,12 +179,18 @@
 						<form:formContainers>
 							<form:FormContainer>
 								<form:formElements>
-									<form:FormElement label="Warranty" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
+									<form:FormElement visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}" required="true">
+										<form:label>
+											<Label text="Warranty" required="true"/>
+										</form:label>
 										<form:fields>
 											<Input value="{fastAppData>Warranty}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}"/> 
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Status of device" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
+									<form:FormElement visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
+										<form:label>
+											<Label text="Status of device" required="true"/>
+										</form:label>
 										<form:fields>
 											<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
 												<items>
@@ -195,7 +201,10 @@
 											</Select>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Consumer Price (w/o VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+										<form:label>
+											<Label text="Consumer Price (w/o VAT)"/>
+										</form:label>
 										<form:fields>
 											<Input value="{path:'fastAppData>ConsumerPriceExclPP'}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 										</form:fields>
@@ -255,7 +264,10 @@
 											<Input value="{path:'fastAppData>MaxPriceNhsPU'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Additional Discount">
+									<form:FormElement>
+										<form:label>
+											<Label text="Additional Discount" required="true"/>
+										</form:label>
 										<form:fields>
 											<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
 										</form:fields>
@@ -265,7 +277,10 @@
 											<Input id="idTotalDiscount" description="%"   enabled="false" fieldWidth="80%"/>
 										</form:fields>
 									</form:FormElement>			
-									<form:FormElement label="FOC Absolute/Percentage">
+									<form:FormElement>
+										<form:label>
+											<Label text="FOC Absolute/Percentage" required="true"/>
+										</form:label>
 										<form:fields>
 											<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
 												<items>
@@ -276,7 +291,10 @@
 											</Select>
 										</form:fields>
 									</form:FormElement>		
-									<form:FormElement label="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }">
+									<form:FormElement visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }">
+										<form:label>
+											<Label text="Free goods same product" required="true"/>
+										</form:label>
 										<form:fields>
 											<Input value="{fastAppData>FreeGoodsSame}" type="Number"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
