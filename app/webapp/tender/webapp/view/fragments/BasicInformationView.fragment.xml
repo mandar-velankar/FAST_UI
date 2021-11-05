@@ -12,11 +12,8 @@
 				<Label text="{i18n>tenderref}" design="Bold"  required="true"/>
 				<Input value="{fastData>TenderName}" enabled="false"/>
 				<Label text="{i18n>clasficn}" design="Bold" required="true"/>
-				<Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" 
-					visible="{= 
-						${fastAppData>/Tender/CountryCode} !== 'IT'
-					}"
-				/>
+				<Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" />
+
 				<!-- Argentina only -->
 				<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true" 
 					visible="{= 

@@ -20,6 +20,13 @@ sap.ui.define([
 
 		onInit: function (oEvent) {
 
+			const oViewModel = new sap.ui.model.json.JSONModel({
+				delay: 0,
+				selectedProductUoM: "",
+			});
+
+			this.getView().setModel(oViewModel, "finOfferView");
+
 			//get resource bundle for translations or texts
 			this._oOwnerComponent = this.getOwnerComponent();
 			this._oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
@@ -50,29 +57,10 @@ sap.ui.define([
 			// this method should only be called in case of Italy
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_IT")) {
-
-				//load products
-				let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
-
-				//load countryBrandProducts
-				let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
-
-				aProducts = aProducts.map(product => {
-					product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
-						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-						return FreeGoodsOther;
-					}) || [];
-					return product;
-				});
-
-				//set to fastappdata model for easy access on the view
-				var oFastAppDataModel = Services.getFastAppDataModel();
-				oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
-				oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
-
+				await this.getCountryBrandProductsCombined();
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
+			
 			}
 			// let that = this;
 
@@ -103,22 +91,19 @@ sap.ui.define([
 			// Services.setSelectedOfferID(sOfferID);
 
 		},
-
-		refreshFinancialTabIT: async function () {
+		getCountryBrandProductsCombined: async function(){
 			//load products
 			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
 
 			//load countryBrandProducts
 			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
-			aProducts.map(product => {
-				if (product.FreeGoodsOther) {
-					product.FreeGoodsOther.map(FreeGoodsOther => {
-						var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-						FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-						return FreeGoodsOther;
-					});
-				}
+			aProducts = aProducts.map(product => {
+				product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
+					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+					return FreeGoodsOther;
+				}) || [];
 				return product;
 			});
 
@@ -126,7 +111,9 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
-
+			return aProducts;
+		},
+		setFinancialOffer:function(){
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
@@ -136,6 +123,10 @@ sap.ui.define([
 			let sSelectedSection = Services.getFinancialOfferPageSectionID_IT();
 			Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection);
 
+		},
+		refreshFinancialTabIT: async function () {
+			await this.getCountryBrandProductsCombined();
+			this.setFinancialOffer();
 		},
 
 		/* GETTERS */
@@ -188,6 +179,8 @@ sap.ui.define([
 
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 
+			this._setSelectedProductUoM(oProductPrice.UOM);
+
 			//keep selected product ID
 			Services.setSelectedProductID(oProductPrice.ProductCode);
 			Services.setSelectedProductName(oProductPrice.ProductPackName);
@@ -197,6 +190,11 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
+
+			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			if(oSelectedProduct){
+				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
+			}
 
 			//check for approval enabled 
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
@@ -221,8 +219,21 @@ sap.ui.define([
 			
 		},
 
+		_checkApprovalEnabled: function (){
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID);
+			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+
+			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+				bEnableApproval = false;
+			}
+
+			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+		},
+
 		_checkTaxRate: function (oProductPrice){
-			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== (oProductPrice.VatPerPack*100).toString()   );
+			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== oProductPrice.VatPerPack*100   );
 			var message;
 			if (differentRates.length === 0){
 				message = "Merce Sconto";
@@ -253,6 +264,7 @@ sap.ui.define([
 			let aProducts = Services.getLoadedProductsForOffer(sOfferID);
 			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId);
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			let aMessages = [];
 
 			//build old price object for additional saving to PT_TMBDPR
 			let oNewPriceInfo = this.getOldPriceObject(oOffer, oProduct, oProductPrice);
@@ -262,73 +274,105 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
-			if (oResult && oResult.data && oResult.data.ID) {
-				oProductPrice.ID = oResult.data.ID;
-			}
-			//Update offer
-			var oOfferSaveInfo = {};
-			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
-			oOfferSaveInfo.Currency = this.byId("idCurrency").getSelectedKey();
-			oOfferSaveInfo.FOCType = this.byId("idFOCType").getSelectedKey();
-			//default foc abolute or percentage is decided on first product price thats saved... so if empty, save
-			if (!oOffer.DEFAULT_FOC_ABS_PCT) {
-				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = 'ABS';//this.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
-			}
+			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave);
+			
+			if(aMandatoryFieldsMissing.length > 0){
+				let sTitle = "Mandatory fields missing";
+				var sErroneousFields = "";
 
-			//let sSetCurrency = oOfferSaveInfo.Currency;
-
-			//update offer
-			await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
-
-				//show error message
-				Services.showErrorMessage(oError, "Update of offer");
-
-				//promises must fail as well
-				throw new Error(oError);
-
-			});
-
-			//we will load tender again after save is done
-			var bLoadedCheck = false;
-
-			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
-
-				//set selected offer ID
-				Services.setSelectedOfferID(sOfferID);
-				Services.setSelectedOfferPath(sOfferPath);
-
-				//Selected offer binding
-				var oOffer = Services.getLoadedOffer(sOfferID);
-				Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
-
-				//switch from edit to display
-				//this.byId("idCurrency").setSelectedKey(sSetCurrency);
-				that._DetailController.onEditToggleButtonPress();
-
-				//show success message
-				Services.getOfferCompositeMessages().push({
-					type: 'Success',
-					title: 'Financial Offer Saved Successfully',
-					description: 'Financial Offer Saved Successfully'
+				aMandatoryFieldsMissing.map((mandatoryField, index) => {
+					if (sErroneousFields === "") {
+						sErroneousFields = mandatoryField;
+					} else {
+						sErroneousFields = sErroneousFields + '\n' + mandatoryField;
+					}
 				});
 
-				Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
-				Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+				var oMessage = {
+					type: 'Error',
+					title: 'Mandatory fields missing',
+					description: sErroneousFields,
+					subtitle: ' Mandatory fields should be filled before saving.',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+				
 
+				//Show error messages
+				Services.showMessageCompositeView(sTitle, aMessages, 'Error');
+			}
 
-				//refresh tenders master table (left pane)
-				Services.refreshTendersMasterTable(sTenderID);
+			if(aMandatoryFieldsMissing.length === 0){
+				
+				let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
+				if (oResult && oResult.data && oResult.data.ID) {
+					oProductPrice.ID = oResult.data.ID;
+				}
+				//Update offer
+				var oOfferSaveInfo = {};
+				oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
+				oOfferSaveInfo.Currency = this.byId("idCurrency").getSelectedKey();
+				oOfferSaveInfo.FOCType = this.byId("idFOCType").getSelectedKey();
+				//default foc abolute or percentage is decided on first product price thats saved... so if empty, save
+				if (!oOffer.DEFAULT_FOC_ABS_PCT) {
+					oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = 'ABS';//this.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+				}
 
-				//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
-				var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
-				Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
-					//Error during save
-					Services.showErrorMessage(oError, "Background saving for approvals sent field");
+				//let sSetCurrency = oOfferSaveInfo.Currency;
+
+				//update offer
+				await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+
+					//show error message
+					Services.showErrorMessage(oError, "Update of offer");
+
+					//promises must fail as well
+					throw new Error(oError);
+
 				});
 
-			});
+				//we will load tender again after save is done
+				var bLoadedCheck = false;
 
+				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+					//set selected offer ID
+					Services.setSelectedOfferID(sOfferID);
+					Services.setSelectedOfferPath(sOfferPath);
+
+					//Selected offer binding
+					var oOffer = Services.getLoadedOffer(sOfferID);
+					Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+
+					//switch from edit to display
+					//this.byId("idCurrency").setSelectedKey(sSetCurrency);
+					that._DetailController.onEditToggleButtonPress();
+
+					//show success message
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Financial Offer Saved Successfully',
+						description: 'Financial Offer Saved Successfully'
+					});
+
+					Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+					Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
+
+					//refresh tenders master table (left pane)
+					Services.refreshTendersMasterTable(sTenderID);
+
+					//update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+					var iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
+					Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+						//Error during save
+						Services.showErrorMessage(oError, "Background saving for approvals sent field");
+					});
+
+					that._checkApprovalEnabled(); // check for approval button
+
+				});
+			}
 		},
 
 		//for additional saving to PT_TMBDPR
@@ -516,6 +560,20 @@ sap.ui.define([
 			this._checkTaxRate(oProductPrice);
 
 
-		}
+		},
+
+		/**
+		 * Event handler for the UoM radioButtonGroup 
+		 * @param {Event} evt 
+		 */
+		onRbgUoMChange: function(evt){
+			const selectedIndex = evt.getParameter("selectedIndex");
+			const uom = selectedIndex === 0 ? "Pack" : "Unit";
+			this._setSelectedProductUoM(uom);
+		},
+
+		_setSelectedProductUoM(uom){
+			this.getView().getModel("finOfferView").setProperty("/selectedProductUoM", uom);
+		},
 	});
 });

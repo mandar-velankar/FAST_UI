@@ -152,92 +152,184 @@
 			<!-- Selling -->
 			<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Selling'}">
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
-				<MessageStrip text="{fastAppData>dynMessage}" />
-					<form:SimpleForm id="idSelling"
-							editable="true"
-							class="editableForm"
-							layout="ResponsiveGridLayout"
-							labelSpanXL="3"
-							labelSpanL="3"
-							labelSpanM="3"
-							labelSpanS="12"
-							adjustLabelSpan="false"
-							emptySpanXL="4"
-							emptySpanL="4"
-							emptySpanM="4"
-							emptySpanS="0"
-							columnsXL="1"
-							columnsL="1"
-							columnsM="1"
-							singleContainerFullSize="false" >
-							<form:content>
-								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" />
-								<Input value="{fastAppData>Warranty}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
-								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
-								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
-									<items>
-										<core:Item key="New" text="New" />	
-										<core:Item key="SecondHand" text="Second Hand" />								
-									</items>
-								</Select>
-								<Label text="Consumer Price (w/o VAT) per pack" />
-								<Input value="{path:'fastAppData>ConsumerPriceExclPP'}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
-								<Label text="Consumer Price (with VAT) per pack" />
-								<Input value="{path:'fastAppData>ConsumerPriceInclPP'}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
-								<Label text="Consumer Price (w/o VAT) per unit" />
-								<Input value="{path:'fastAppData>ConsumerPriceExclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
-								<Label text="Consumer Price (with VAT) per unit" />
-								<Input value="{path:'fastAppData>ConsumerPriceInclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
-								<Label text="Tax (VAT)" />
-								<Input value="{	path:'fastAppData>VatPerPack', formatter:'.formatter.percentageNoUnit'}" type="Number" description="%"   enabled="false" fieldWidth="80%"/>
-								<Label text="Mandatory / Ex-factory discount" />
-								<Input value="{	path:'fastAppData>MandatoryDiscount', formatter:'.formatter.percentageNoUnit' }" type="Number" description="%"   enabled="false" fieldWidth="80%"/>
-								<Label text="Ex-factory Price w/o VAT" />
-								<Input value="{path:'fastAppData>ExfPriceExclPP'}" type="Number" description="EUR"  enabled="false" fieldWidth="80%"/>
-								<Label text="I° confidential discount" />
-								<Input value="{	path:'fastAppData>ConfidentialDiscount1', formatter:'.formatter.percentageNoUnit'}" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
-								<Label text="II° confidential discount" />
-								<Input value="{	path:'fastAppData>ConfidentialDiscount2', formatter:'.formatter.percentageNoUnit'}" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
-								<Label text="Total Discount" />
-								<Input value="{	path:'fastAppData>TotalDiscount', formatter:'.formatter.percentageNoUnit'}" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
-								<Label text="Max Price for NHS per pack w/o VAT" />
-								<Input value="{path:'fastAppData>MaxPriceNhsPP'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="Max Price for NHS per unit w/o VAT" />
-								<Input value="{path:'fastAppData>MaxPriceNhsPU'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="Additional Discount" />
-
-								<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%"  type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
-
-								<Label text="Total Discount" />
-								<Input id="idTotalDiscount" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
-								<Label text="FOC Absolute/Percentage" />
-								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
-									<items>
-										<core:Item key="" text="" />	
-										<core:Item key="ABS" text="Absolute" />
-										<core:Item key="PCT" text="Percentage" />									
-									</items>
-								</Select>
-								<Label text="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" />
-								<Input value="{fastAppData>FreeGoodsSame}" type="Number"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
-								<Label text="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" />
-								<Input value="{path:'fastAppData>FreeGoodsSame',type: '.types.percent'}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
-								<Label text="Net Offer Price per pack" />
-								<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}" type="Number" enabled="false" fieldWidth="80%" description="EUR"/>
-								<Label text="Net Offer Price per unit" />
-								<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}" type="Number" enabled="false" fieldWidth="80%" description="EUR"/>
-								<Label text="Free goods for other product(s)" />
-								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
-									<tokens>
-										<Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'? ${fastAppData>FreeGoodsOther}: ${path:'fastAppData>FreeGoodsOther',type: '.types.percent'}} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
-									
-									
-									</tokens>										
-
-								</MultiInput>
-
-							</form:content>
-						</form:SimpleForm>
+					<RadioButtonGroup id="rbgUoM" columns="2" selectedIndex="{= ${finOfferView>/selectedProductUoM} === 'Pack' ? 0 : 1}" select=".onRbgUoMChange">
+						<RadioButton id="rbgPack" text="Pack" />
+						<RadioButton id="rbgUnit" text="Unit" />
+					</RadioButtonGroup>
+					<MessageStrip text="{fastAppData>dynMessage}" />
+					<form:Form id="idSelling"
+						editable="true">
+						<form:layout>
+							<form:ResponsiveGridLayout
+								class="editableForm"
+								labelSpanXL="3"
+								labelSpanL="3"
+								labelSpanM="3"
+								labelSpanS="12"
+								adjustLabelSpan="false"
+								emptySpanXL="4"
+								emptySpanL="4"
+								emptySpanM="4"
+								emptySpanS="0"
+								columnsXL="1"
+								columnsL="1"
+								columnsM="1"
+								singleContainerFullSize="false" />
+						</form:layout>
+						<form:formContainers>
+							<form:FormContainer>
+								<form:formElements>
+									<form:FormElement visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}" required="true">
+										<form:label>
+											<Label text="Warranty" required="true"/>
+										</form:label>
+										<form:fields>
+											<Input value="{fastAppData>Warranty}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
+										<form:label>
+											<Label text="Status of device" required="true"/>
+										</form:label>
+										<form:fields>
+											<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
+												<items>
+													<core:Item key="" text="" />
+													<core:Item key="New" text="New" />	
+													<core:Item key="SecondHand" text="Second Hand" />								
+												</items>
+											</Select>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+										<form:label>
+											<Label text="Consumer Price (w/o VAT)"/>
+										</form:label>
+										<form:fields>
+											<Input value="{path:'fastAppData>ConsumerPriceExclPP'}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Consumer Price (with VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+										<form:fields>
+											<Input value="{path:'fastAppData>ConsumerPriceInclPP'}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Consumer Price (w/o VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+										<form:fields>
+											<Input value="{path:'fastAppData>ConsumerPriceExclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Consumer Price (with VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+										<form:fields>
+											<Input value="{path:'fastAppData>ConsumerPriceInclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Tax (VAT)">
+										<form:fields>
+											<Input value="{	path:'fastAppData>VatPerPack', formatter:'.formatter.percentageNoUnit'}" type="Number" description="%"   enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Mandatory / Ex-factory discount">
+										<form:fields>
+											<Input value="{	path:'fastAppData>MandatoryDiscount', formatter:'.formatter.percentageNoUnit' }" type="Number" description="%"   enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Ex-factory Price w/o VAT" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+										<form:fields>
+											<Input value="{path:'fastAppData>ExfPriceExclPP'}" type="Number" description="EUR"  enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="I° confidential discount">
+										<form:fields>
+											<Input value="{	path:'fastAppData>ConfidentialDiscount1', formatter:'.formatter.percentageNoUnit'}" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="II° confidential discount">
+										<form:fields>
+											<Input value="{	path:'fastAppData>ConfidentialDiscount2', formatter:'.formatter.percentageNoUnit'}" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Total Discount">
+										<form:fields>
+											<Input value="{	path:'fastAppData>TotalDiscount', formatter:'.formatter.percentageNoUnit'}" description="%" type="Number"  enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>	
+									<form:FormElement label="Max Price for NHS w/o VAT" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+										<form:fields>
+											<Input value="{path:'fastAppData>MaxPriceNhsPP'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Max Price for NHS w/o VAT" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+										<form:fields>
+											<Input value="{path:'fastAppData>MaxPriceNhsPU'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement>
+										<form:label>
+											<Label text="Additional Discount"/>
+										</form:label>
+										<form:fields>
+											<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
+										</form:fields>
+									</form:FormElement>	
+									<form:FormElement label="Final Discount">
+										<form:fields>
+											<Input id="idTotalDiscount" description="%"   enabled="false" fieldWidth="80%"/>
+										</form:fields>
+									</form:FormElement>			
+									<form:FormElement>
+										<form:label>
+											<Label text="FOC Absolute/Percentage" required="true"/>
+										</form:label>
+										<form:fields>
+											<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
+												<items>
+													<core:Item key="" text="" />	
+													<core:Item key="ABS" text="Absolute" />
+													<core:Item key="PCT" text="Percentage" />									
+												</items>
+											</Select>
+										</form:fields>
+									</form:FormElement>		
+									<form:FormElement visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }">
+										<form:label>
+											<Label text="Free goods same product" required="true"/>
+										</form:label>
+										<form:fields>
+											<Input value="{fastAppData>FreeGoodsSame}" type="Number"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
+										</form:fields>
+									</form:FormElement>		
+									<form:FormElement label="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }">
+										<form:fields>
+											<Input value="{path:'fastAppData>FreeGoodsSame',type: '.types.percent'}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
+										</form:fields>
+									</form:FormElement>		
+									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+										<form:fields>
+											<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}" type="Number" enabled="false" fieldWidth="80%" description="EUR"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+										<form:fields>
+											<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}" type="Number" enabled="false" fieldWidth="80%" description="EUR"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Free goods for other product(s)">
+										<form:fields>
+											<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
+												<tokens>
+													<Token key="{fastAppData>ProductPackId}" 
+														text="{fastAppData>ProductName} - {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'? ${fastAppData>FreeGoodsOther}: ${path:'fastAppData>FreeGoodsOther',type: '.types.percent'}} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" 
+														editable="false">
+													</Token>
+												</tokens>										
+											</MultiInput>
+										</form:fields>
+									</form:FormElement>						
+								</form:formElements>
+							</form:FormContainer>
+						</form:formContainers>
+					</form:Form>
 				</l:BlockLayoutCell>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="4" visible="false">
 					<Table id="idProfitabilityTable" alternateRowColors="true" ></Table>
@@ -268,15 +360,15 @@
 							columnsM="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
 								<Input value="{fastAppData>Warranty}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
-								<Label text="Duration of agreement " />
+								<Label text="Duration of agreement " required="true"/>
 								<Input value="{fastAppData>AgreementDuration}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Monthly rent" />
+								<Label text="Monthly rent" required="true"/>
 								<Input value="{fastAppData>MonthlyRent}" type="Number"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Months per invoice" />
+								<Label text="Months per invoice" required="true" />
 								<Input value="{fastAppData>MonthsPerInvoice}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Contract start date" />
+								<Label text="Contract start date" required="true"/>
 								<DatePicker 
 									value="{
 										path :'fastAppData>ContractStartDate', 
@@ -284,16 +376,17 @@
 										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 									}" 
 									enabled="{fastAppData>/EditMode}"/>
-								<Label text="Value of devices" />
+								<Label text="Value of devices" required="true"/>
 								<Input value="{fastAppData>ValueOfDevices}" type="Number"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/> 
 								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"> 
 									<items>
+										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />
 										<core:Item key="SecondHand" text="Second Hand" />									
 									</items>
 								</Select>
-								<Label text="FOC Absolute/Percentage" />
+								<Label text="FOC Absolute/Percentage" required="true"/>
 								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
 									<items>
 										<core:Item key="" text="" />	
@@ -301,7 +394,7 @@
 										<core:Item key="PCT" text="Percentage" />									
 									</items>
 								</Select>
-								<Label text="free goods same product" />
+								<Label text="free goods same product" required="true"/>
 								<Input value="{fastAppData>FreeGoodsSame}" type="Number"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" description="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? '%' : ${fastAppData>FOC_ABS_PCT} === 'ABS' ? ${fastAppData>/EditProduct/UOM} : '' }"/>
 								<Label text="free goods for other product(s)" />
 								<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
@@ -338,15 +431,15 @@
 							columnsL="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
 								<Input value="{fastAppData>Warranty}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
-								<Label text="Duration of agreement " />
+								<Label text="Duration of agreement " required="true"/>
 								<Input value="{fastAppData>AgreementDuration}" type="Number" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Minimum contractual commitment" />
+								<Label text="Minimum contractual commitment" required="true"/>
 								<Input value="{fastAppData>MinContractual}" type="Number" description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Minimum annual purchase amount" />
+								<Label text="Minimum annual purchase amount" required="true"/>
 								<Input value="{fastAppData>MinAnnPurch}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Contract start date" />
+								<Label text="Contract start date" required="true"/>
 								<DatePicker 
 									value="{
 										path :'fastAppData>ContractStartDate', 
@@ -354,11 +447,12 @@
 										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 									}" 
 									enabled="{fastAppData>/EditMode}"/>
-								<Label text="Value of devices" />
+								<Label text="Value of devices" required="true"/>
 								<Input value="{fastAppData>ValueOfDevices}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" /> 
+								<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/> 
 								<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
 									<items>
+										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />
 										<core:Item key="SecondHand" text="Second Hand" />									
 									</items>
