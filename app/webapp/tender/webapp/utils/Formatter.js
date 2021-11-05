@@ -91,4 +91,15 @@ FAST_NS0FAST0.utils.Formatter = {
 			var oValue = oNumberFormat.format(parseFloat(pct)*100);
 			return oValue;
 		},
+
+		bgrIcon: function(bankGuarantees){
+			var foundBankGuarantee = bankGuarantees.filter(bgr => bgr.Type === this.getText())[0];
+			if(foundBankGuarantee){
+				return "sap-icon://accept";
+			} else {
+				return "";
+			}
+			
+			
+		}
 };

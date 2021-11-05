@@ -44,8 +44,10 @@
                         <core:Item key="ABS" text="Absolute" />
                         <core:Item key="PCT" text="Percentage" />
                     </Select>
-                    <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}"/>  
-                    <!-- <Input type="Number" value="{path:'fastAppData>FreeGoodsOther', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits:0, maxFractionDigits: 2,maxIntegerDigits: 9}}" valueState="{fastAppData>FreeGoodsOtherValueState}"/>   -->
+                    <HBox>
+                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' ? true : false }"/> 
+                        <Input  value="{path:'fastAppData>FreeGoodsOther',type: '.types.percent'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'PCT' ? true : false }"/>
+                    </HBox>
                     <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}"></Text>
                     <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
                 </cells>

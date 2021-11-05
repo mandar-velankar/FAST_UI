@@ -18,9 +18,7 @@
 				<Label text="{i18n>clasficn}" design="Bold" required="true" /> 
 				<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" 
 					change="onClassificationChange" 
-					visible="{= 
-						${fastAppData>/Tender/CountryCode} !== 'IT'
-					}"
+					
 				>
 					<items><!--RFQ/Tender/Budgetary Quote/Patient Access Programme-->
 						<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}" app:classificationId="{fastAppData>ID}"/>
@@ -96,7 +94,7 @@
 						path: 'fastData>/CountryRegions',
 						sorter: { path: 'Name' }
 					}" 
-					visible="{= (${fastData>Institute/InstituteType} === 'Public Region(s)' || ${fastData>/newTender/instituteType}  === 'Public Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
 					<items>
 						<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
 					</items>

@@ -946,7 +946,18 @@ sap.ui.define([
 						//No particular status checks are needed, as the offer should be shown for all statuses
 						bVisible = true;
 						break;
-					case this.getFinancialOfferPageSectionID() || this.getFinancialOfferPageSectionID_IT():
+					case this.getFinancialOfferPageSectionID():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+					case this.getFinancialOfferPageSectionID_IT():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
 						//  - 'Offer Declined'
@@ -2302,7 +2313,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 
@@ -6612,58 +6623,6 @@ sap.ui.define([
 
 		},
 
-		//load offer validation  for offer
-		loadTenderPriceAgreement: function(sTenderId){
-					
-			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
-			var oDeferred = $.Deferred();
-			
-			//get model for doing the calls to the back-end
-			var oFastDataCalls = this.getDefaultModel();
-			var oFastAppDataModel = this.getFastAppDataModel();
-			
-			var that = this;
-			
-			var sPath = "/PriceAgreements";
-			
-			var aFilters = [];
-			
-			if(sTenderId){
-				var oTenderIdFilter = new sap.ui.model.Filter("TenderId", sap.ui.model.FilterOperator.EQ, sTenderId);
-				aFilters.push(oTenderIdFilter);
-			}
-			
-			//Reading the back end data from the tender table
-			oFastDataCalls.read(sPath, {
-					filters: aFilters,
-					success: function(oData, oResponse) {
-						
-						//Offer validation data
-						var oPriceAgreement = oData.results[0];
-						
-						//data received is set to the award model
-						oFastAppDataModel.setProperty("/newPriceAgreement", oPriceAgreement);
-						
-						//let the callback be triggered
-						oDeferred.resolve(oData);
-					
-					},
-					error: function(oError) {
-				
-						//show error message
-						this.showErrorMessage(oError, "Loading of price agreement");
-						
-						//let the callback be triggered
-						oDeferred.reject(oError);
-					
-					}
-			});						
-			
-
-			//return promise so the function can check if execution is done
-			return oDeferred.promise();	
-		},
-
 		//ADDING
 		//------
 
@@ -7007,7 +6966,7 @@ sap.ui.define([
 				case "PUT":
 					delete oPriceAgreementSaveInfo._sOperation;
 					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
-						oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 
 						//show message view
 						that.getOfferCompositeMessages().push({
