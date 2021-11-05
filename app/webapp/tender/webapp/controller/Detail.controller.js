@@ -154,10 +154,6 @@ sap.ui.define([
 				// TODO:
 			});
 
-			$.when(Services.loadTenderPriceAgreement(sTenderID)).done(function (oData) {
-				// TODO:
-			});
-
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
 				that.getView().bindElement({
@@ -8144,6 +8140,7 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.DeliveredVolume = 0; // When creating agreement, no deliveries, hence SUM(null)=0 (blank is good, too) 
 			oPriceAgreementSaveInfo.ProductPackId = oTenderResult.PRODUCTCODE;
 			oPriceAgreementSaveInfo.TenderId = oTender.TenderID;
+			oPriceAgreementSaveInfo.OfferId = oTenderResult.OFFERID;
 			oPriceAgreementSaveInfo.Currency = oTenderResult.CURRENCY;
 			oPriceAgreementSaveInfo.UoM = oTenderResult.UOM;
 			oPriceAgreementSaveInfo.Price = oTenderResult.AWARDEDPRICE;
@@ -8160,25 +8157,33 @@ sap.ui.define([
 
 		onCreatePriceAgreement: async function (oEvent) {
 			//get model & selected row
+			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			var oLoadedPriceAgreement = oFastAppDataModel.getProperty("/newPriceAgreement");
 			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
+			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+
+			const sPath = oEvent.oSource.getParent().oBindingContexts.fastAppData.sPath;
+
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
+			var iRowIndex = sPath.split('/')[2];
+			var oRowContext = tenderResults[iRowIndex];
+
+			//check if a product is selected
+			if (oRowContext === null) {
+				sap.m.MessageToast.show("Select an awarded product to create a price agreement");
+				return;
+			}
+
+			const oSelectedProduct = offerProducts[iRowIndex];
+			var oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
+		
 
 			if(oLoadedPriceAgreement){
 				// window.open("http://localhost:8080/landingspage/webapp/index.html#/tender&/t/detail/CL/" + oTender.tenderID + "//__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded");
 				window.open("/app/#/priceagreements&/pa/PriceAgreements/" + oLoadedPriceAgreement.ID);
 			} else {
-				var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
-				var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
-				var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
 				
-				//check if a product is selected
-				if (oRowContext === null) {
-					sap.m.MessageToast.show("Select an awarded product to create a price agreement");
-					return;
-				}
-
-				const rowProductCode = oRowContext.getObject().PRODUCTCODE;
+				const rowProductCode = oRowContext.PRODUCTCODE;
 				const offerProduct = offerProducts.find(prd => prd.ProductCode === rowProductCode);
 				const offerType = offerProduct.OfferType;
 
@@ -8189,54 +8194,18 @@ sap.ui.define([
 					return;
 				}
 
-				var sPathSelectedRow = oRowContext.getPath();
-				let oSelectedTenderResult = oFastAppDataModel.getProperty(sPathSelectedRow);
-				var iRowIndexAwarded = sPathSelectedRow.split('/')[4];
-				var iRowIndexParent = sPathSelectedRow.split('/')[2];
+				//var sPathSelectedRow = oRowContext.getPath();
+				let oSelectedTenderResult = oRowContext;
 
-				var sPathResultsForTree = "/ResultsForTree";
-				var sPathResultsForTreeAwarded = "/ResultsForTree/" + iRowIndexParent + "/OutcomeLevel/";
-
-				//TODO in the future iLevel should just not be 0 so every line will be able to select the awarded product
-				if (sPathSelectedRow.includes("/OutcomeLevel")) {
-					//message that you should
-					sap.m.MessageToast.show("Select a Bayer specific product to create a price agreement");
-				} else if (oSelectedTenderResult.OUTCOME !== "Won"){
+				if (oSelectedTenderResult.OUTCOME !== "Won"){
 					//message that you should
 					sap.m.MessageToast.show("The product you have selected has not been won");
 				} else {
 					BusyIndicator.show();
-					var oPriceAgreementSaveInfo = Services.getFastAppDataModel().getProperty('/newPriceAgreement');
-					//var oBankGuarantee = Services.getFastAppDataModel().getProperty('/newBankGuarantee');
-					
-					/*if(oBankGuarantee && oBankGuarantee.Status != 'Confirmed'){
-						BusyIndicator.hide();
-						sap.m.MessageBox.warning("Please confirm the bank guarantee first, before creating a price agreement.", {});
-						return;
-						/*re enable this part of code if this should be "integrated" in the process, unless message is sufficient
-						//Ask user if he's sure to cancel the bank guarantee
-						sap.m.MessageBox.warning("Are you sure you want to cancel the existing bank guarantee?", {
-							actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-							styleClass: "sapUiSizeCompact",
-							onClose: function (sAction) {
-								if (sAction === "YES") {
-									//Open the dialog
-									if(aCountryCurrencies !== undefined && aCountryCurrencies.length > 0){
-										that._getCreateBankGuaranteeDialog().open();
-									} else {
-										$.when(Services.loadCountryCurrency(Services.getSelectedCountry())).done(function (oTenderData) {
-											that._getCreateBankGuaranteeDialog().open();
-										});
-									}
-								} else {
-									return;
-								}
-							}
-						});
-					}*/
+					var oPriceAgreementSaveInfo = oSelectedProduct.PriceAgreement;
 
 					if(!oPriceAgreementSaveInfo){
-						oPriceAgreementSaveInfo = await this.preparePriceAgreementSaveInfo(oFastAppDataModel.getProperty(sPathSelectedRow));
+						oPriceAgreementSaveInfo = await this.preparePriceAgreementSaveInfo(oRowContext);
 						oPriceAgreementSaveInfo._sOperation = "POST";
 					} else {
 						oPriceAgreementSaveInfo._sOperation = "PUT";
@@ -8244,21 +8213,13 @@ sap.ui.define([
 
 					await Services.savePriceAgreement(oPriceAgreementSaveInfo);
 
-					await Services.loadTenderPriceAgreement(Services.getSelectedTenderID());
+					//reload offer data
+					await Services.loadProductDataForOffer(offerProduct.OfferID);
 
 					BusyIndicator.hide();
 
-					// $.when(Services.savePriceAgreement(oPriceAgreementSaveInfo)).done(() => {
-					// 	/*oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
-					// 	//message that you 
-					// 	sap.m.MessageToast.show("Price Agreement has been created");*/
-					// 	$.when(Services.loadTenderPriceAgreement(Services.getSelectedTenderID())).done(function (oData) {
-					// 		//oFastAppDataModel.setProperty("/newPriceAgreement", oData.results[0]);
-					// 		//oFastAppDataModel.setProperty("/test", oData.results[0]);
-					// 		BusyIndicator.hide();
-					// 	});
-					// });
-
+					//refresh everything
+					that.onRefresh();
 				}
 			}
 		},
@@ -8685,6 +8646,7 @@ sap.ui.define([
 										ResultDate: oResult.ResultDate,
 										AwardDate: oResult.AwardDate,
 										AwardActing: oResult.AwardActing,
+										PriceAgreement: oProduct.PriceAgreement,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 

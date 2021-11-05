@@ -79,7 +79,7 @@
                                         </m:Menu>
                                     </m:menu>
 		                        </m:MenuButton>
-                                <m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>/newPriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>
+                                <!--<m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>PriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
 
                                 <m:ToolbarSpacer/>
                                 <m:Button text="Collapse all" press="onCollapseOutcome"/>
@@ -87,6 +87,12 @@
                             </m:OverflowToolbar>
                         </t:extension>
                         <t:columns>
+                            <t:Column width="10rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="Price Agreement" />
+                                <t:template>
+                                     <m:Button id="btnCreatePriceAgreement" text="" icon="{= ${fastAppData>PriceAgreement} ? 'sap-icon://display' : 'sap-icon://create' }" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }"/>
+                                </t:template>
+                            </t:Column>
                             <t:Column width="13rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
                                 <m:Label text="ContractNo" />
                                 <t:template>
