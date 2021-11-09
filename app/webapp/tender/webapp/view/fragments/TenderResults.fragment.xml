@@ -73,9 +73,9 @@
                                 <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                     <m:menu>
                                         <m:Menu itemSelected="onUpdateBankGuarantee">
-                                            <m:MenuItem text="Impegno" />
-                                            <m:MenuItem text="Provisoria"  />
-                                            <m:MenuItem text="Definitiva"  />
+                                            <m:MenuItem text="Impegno" icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}"/>
+                                            <m:MenuItem text="Provisoria"  icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}"/>
+                                            <m:MenuItem text="Definitiva"  icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}"/>
                                         </m:Menu>
                                     </m:menu>
 		                        </m:MenuButton>
