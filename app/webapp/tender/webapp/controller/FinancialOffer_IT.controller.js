@@ -445,12 +445,39 @@ sap.ui.define([
 			}
 			
 			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
-			const netOfferPricePP = consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
-			const netOfferPricePU = consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);
+			//const netOfferPricePP = consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
+			//const netOfferPricePU = consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);
 
 			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
-			this.byId("idNetOfferPricePP").setValue(netOfferPricePP.toFixed(2));
-			this.byId("idNetOfferPricePU").setValue(netOfferPricePU.toFixed(5));
+			//this.byId("idNetOfferPricePP").setValue(netOfferPricePP.toFixed(2));
+			//this.byId("idNetOfferPricePU").setValue(netOfferPricePU.toFixed(5));
+		},
+
+		calculateAdditionalDiscount: function (oEvent) {
+
+			const consumerPrice = Services.getFastAppDataModel().getProperty(this.selectedProductPricePath);
+			const sSelectedRbtn = this.byId("rbgUoM").getSelectedIndex() === 1 ? 'Unit' : this.byId("rbgUoM").getSelectedIndex() === 0 ? 'Pack' : null;
+
+			if(oEvent){
+				var netOfferPrice = oEvent.getParameter("newValue");
+			} else {
+				if(sSelectedRbtn === 'Unit'){
+					netOfferPrice = consumerPrice.NetOfferPricePU;
+				} else if(sSelectedRbtn === 'Pack'){
+					netOfferPrice = consumerPrice.NetOfferPricePP;
+				}
+			}
+			
+			if(sSelectedRbtn === 'Unit'){
+				var additionalDiscount = ((consumerPrice.MaxPriceNhsPU / netOfferPrice) - 1);
+			} else if(sSelectedRbtn === 'Pack'){
+				additionalDiscount = ((consumerPrice.MaxPriceNhsPP / netOfferPrice) - 1);
+			}
+			
+			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
+
+			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
+			this.byId("addDiscount").setValue((additionalDiscount*100).toFixed(2));
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
