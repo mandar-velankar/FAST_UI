@@ -269,7 +269,7 @@
 											<Label text="Additional Discount"/>
 										</form:label>
 										<form:fields>
-											<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount',type: '.types.percent'}" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
+											<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount'}" description="%" enabled="false" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
 										</form:fields>
 									</form:FormElement>	
 									<form:FormElement label="Final Discount">
@@ -306,12 +306,12 @@
 									</form:FormElement>		
 									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
 										<form:fields>
-											<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}" type="Number" enabled="false" fieldWidth="80%" description="EUR"/>
+											<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
 										<form:fields>
-											<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}" type="Number" enabled="false" fieldWidth="80%" description="EUR"/>
+											<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Free goods for other product(s)">
