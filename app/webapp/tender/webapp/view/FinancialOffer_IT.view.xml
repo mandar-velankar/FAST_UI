@@ -184,7 +184,7 @@
 											<Label text="Warranty" required="true"/>
 										</form:label>
 										<form:fields>
-											<Input value="{fastAppData>Warranty}"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}"/> 
+											<Input value="{fastAppData>Warranty}"  description="months" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}"/> 
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
@@ -192,7 +192,7 @@
 											<Label text="Status of device" required="true"/>
 										</form:label>
 										<form:fields>
-											<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
+											<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}">
 												<items>
 													<core:Item key="" text="" />
 													<core:Item key="New" text="New" />	
@@ -282,7 +282,7 @@
 											<Label text="FOC Absolute/Percentage" required="true"/>
 										</form:label>
 										<form:fields>
-											<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
+											<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }">
 												<items>
 													<core:Item key="" text="" />	
 													<core:Item key="ABS" text="Absolute" />
@@ -296,12 +296,12 @@
 											<Label text="Free goods same product" required="true"/>
 										</form:label>
 										<form:fields>
-											<Input value="{fastAppData>FreeGoodsSame}" type="Number"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
+											<Input value="{fastAppData>FreeGoodsSame}" type="Number"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
 									</form:FormElement>		
 									<form:FormElement label="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }">
 										<form:fields>
-											<Input value="{path:'fastAppData>FreeGoodsSame',type: '.types.percent'}"  enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
+											<Input value="{path:'fastAppData>FreeGoodsSame',type: '.types.percent'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
 										</form:fields>
 									</form:FormElement>		
 									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
@@ -316,7 +316,7 @@
 									</form:FormElement>
 									<form:FormElement label="Free goods for other product(s)">
 										<form:fields>
-											<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
+											<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }">
 												<tokens>
 													<Token key="{fastAppData>ProductPackId}" 
 														text="{fastAppData>ProductName} - {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'? ${fastAppData>FreeGoodsOther}: ${path:'fastAppData>FreeGoodsOther',type: '.types.percent'}} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" 
