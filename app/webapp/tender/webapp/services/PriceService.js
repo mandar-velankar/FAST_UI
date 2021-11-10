@@ -112,12 +112,8 @@ sap.ui.define([
 			oProductPriceToSave.ContractStartDate = moment().utc().toDate();
 			oProductPriceToSave.ValueOfDevices = (oProductPriceSaveInfo.ValueOfDevices === null) ? null : oProductPriceSaveInfo.ValueOfDevices.toString();
 			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
-			oProductPriceToSave.FreeGoodsSame = (oProductPriceSaveInfo.FreeGoodsSame === null) ? null : oProductPriceSaveInfo.FreeGoodsSame.toString();
-			oProductPriceToSave.FreeGoodsSame_ABS_PCT = oProductPriceSaveInfo.FreeGoodsSame_ABS_PCT;
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
-			oProductPriceToSave.AdditionalDiscount = (oProductPriceSaveInfo.AdditionalDiscount === null) ? null : oProductPriceSaveInfo.AdditionalDiscount.toString();
-			oProductPriceToSave.FOC_ABS_PCT = (oProductPriceSaveInfo.FOC_ABS_PCT === null) ? null : oProductPriceSaveInfo.FOC_ABS_PCT.toString();
 
 			if(oProductPriceSaveInfo.FreeGoodsOther){
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
@@ -161,7 +157,7 @@ sap.ui.define([
 
 		validateProductPriceRental: function(oPriceSaveInfo, aInvalidFields){
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e === 'Warranty' || e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice' || e === 'FreeGoodsSame' || e === 'FOC_ABS_PCT' ) 
+				if((e === 'Warranty' || e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice' || e === 'FOC' || e === 'FOC_ABS_PCT' ) 
 					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
 					aInvalidFields.push(e);
 				}
