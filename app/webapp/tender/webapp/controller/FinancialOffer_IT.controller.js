@@ -15,7 +15,7 @@ sap.ui.define([
 		//Formatting functions
 		formatter: formatter,
 		types: {
-			percent: new PercentageType()
+			percent: PercentageType
 		},
 
 		onInit: function (oEvent) {
