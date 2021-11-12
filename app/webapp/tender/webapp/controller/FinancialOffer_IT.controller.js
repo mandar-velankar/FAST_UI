@@ -6,7 +6,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
 	"FAST_NS0FAST0/model/financial",
 	"sap/ui/core/Fragment",
-	"FAST_NS0FAST0/model/datatypes/PercentageType",
+	"com/bayer/tender/uilib/datatypes/PercentageType",
 ], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType) {
 	"use strict";
 
