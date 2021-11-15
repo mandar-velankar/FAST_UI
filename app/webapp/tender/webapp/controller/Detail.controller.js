@@ -6249,6 +6249,11 @@ sap.ui.define([
 
 					//sort on institute name
 					data.results = Services.sortByKeyAsc(data.results, "InstituteName");
+					//convert customer id to string to enable contains filter
+					data.results = data.results.map(item=>{
+						item.CustomerID = item.CustomerID.toString();
+						return item;
+					});
 
 					stateModel.setData(data);
 					that.valueHelpBasicInsSlctDialog = new sap.m.SelectDialog({
@@ -6270,8 +6275,11 @@ sap.ui.define([
 						},
 						liveChange: function (oEvent) {
 							var sValue = oEvent.getParameter("value");
-							var oFilter = new sap.ui.model.Filter("InstituteName", sap.ui.model.FilterOperator.Contains, sValue);
-							oEvent.getSource().getBinding("items").filter([oFilter]);
+							var oFilters = [new sap.ui.model.Filter([
+												new sap.ui.model.Filter("InstituteName", sap.ui.model.FilterOperator.Contains, sValue),
+												new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue)],
+											false)];
+							oEvent.getSource().getBinding("items").filter(oFilters);
 						},
 						confirm: handleCloseInstituteName,
 						cancel: handleCloseInstituteName
