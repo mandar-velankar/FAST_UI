@@ -80,7 +80,7 @@
 									<Text text="{i18n>GrossSales}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>Profitability}"/>
+									<Text text="{i18n>GrossProfit}"/>
 								</Column>
 								<Column>
 									<Text text="{i18n>GrossMargin}"/>
@@ -98,10 +98,10 @@
 										<Text text="{fastAppData>UOM}"/>
 									</cells>
 									<cells>
-										<Text text="{= ${fastAppData>UOM} === 'Unit' ? ${fastAppData>NetOfferPricePU} : ${fastAppData>NetOfferPricePP}  }"/>
+										<Text text="{fastAppData>NetOfferPrice}"/>
 									</cells>
-									<!--<cells>
-										<Text text="{fastAppData>OfferPrice}"/>
+									<cells>
+										<Text text="{fastAppData>NetPriceWithFOC}"/>
 									</cells>
 									<cells>
 										<Text text="{fastAppData>COGS}"/>
@@ -110,25 +110,10 @@
 										<Text text="{fastAppData>GrossSales}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetSales}"/>
+										<Text text="{fastAppData>GrossProfit}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>Profitability}"/>
-									</cells>-->
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
+										<Text text="{fastAppData>GrossMargin}"/>
 									</cells>
 									
 								</ColumnListItem>
