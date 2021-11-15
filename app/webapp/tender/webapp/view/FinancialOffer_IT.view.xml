@@ -279,7 +279,7 @@
 									</form:FormElement>			
 									<form:FormElement>
 										<form:label>
-											<Label text="FOC Absolute/Percentage" required="true"/>
+											<Label text="FOC Absolute/Percentage" />
 										</form:label>
 										<form:fields>
 											<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
@@ -386,7 +386,7 @@
 										<core:Item key="SecondHand" text="Second Hand" />									
 									</items>
 								</Select>
-								<Label text="FOC Absolute/Percentage" required="true"/>
+								<Label text="FOC Absolute/Percentage" />
 								<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{fastAppData>/EditMode}">
 									<items>
 										<core:Item key="" text="" />	
