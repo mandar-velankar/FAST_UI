@@ -68,10 +68,10 @@
 									<Text text="{i18n>UoM}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>NetPrice}"/>
+									<Text text="{i18n>NetOfferPrice}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>OfferPrice}"/>
+									<Text text="{i18n>NetPriceWithFOC}"/>
 								</Column>
 								<Column>
 									<Text text="{i18n>COGS}"/>
@@ -80,10 +80,10 @@
 									<Text text="{i18n>GrossSales}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>NetSales}"/>
+									<Text text="{i18n>Profitability}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>Profitability}"/>
+									<Text text="{i18n>GrossMargin}"/>
 								</Column>
 							</columns>
 							<items>
@@ -97,10 +97,10 @@
 									<cells>
 										<Text text="{fastAppData>UOM}"/>
 									</cells>
-									<!--<cells>
-										<Text text="{fastAppData>NetPrice}"/>
-									</cells>
 									<cells>
+										<Text text="{= ${fastAppData>UOM} === 'Unit' ? ${fastAppData>NetOfferPricePU} : ${fastAppData>NetOfferPricePP}  }"/>
+									</cells>
+									<!--<cells>
 										<Text text="{fastAppData>OfferPrice}"/>
 									</cells>
 									<cells>
@@ -115,9 +115,6 @@
 									<cells>
 										<Text text="{fastAppData>Profitability}"/>
 									</cells>-->
-									<cells>
-										<Text text="TBD"/>
-									</cells>
 									<cells>
 										<Text text="TBD"/>
 									</cells>
