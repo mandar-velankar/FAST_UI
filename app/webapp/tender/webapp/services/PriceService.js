@@ -115,10 +115,10 @@ sap.ui.define([
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
 
-			if(oProductPriceSaveInfo.FreeGoodsOther){
+			if (oProductPriceSaveInfo.FreeGoodsOther) {
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
-					ProductPackId: freeGoodsOther.ProductPackId, 
-					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT, 
+					ProductPackId: freeGoodsOther.ProductPackId,
+					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT,
 					FreeGoodsOther: freeGoodsOther.FreeGoodsOther,
 					VAT: freeGoodsOther.VAT
 				}));
@@ -128,12 +128,15 @@ sap.ui.define([
 
 		},
 
-		validateProductPriceToSave: function(sOfferType, oPriceSaveInfo){
+		validateProductPriceToSave: function (sOfferType, oPriceSaveInfo, sProductType) {
 			let aInvalidFields = [];
-			
-			switch(sOfferType){
+			var drug = false;
+			if (sProductType === "Drug") {
+				drug = true;
+			}
+			switch (sOfferType) {
 				case 'Selling':
-					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields);
+					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields, drug);
 					break;
 				case 'Rental':
 					this.validateProductPriceRental(oPriceSaveInfo, aInvalidFields);
@@ -141,33 +144,36 @@ sap.ui.define([
 				case 'Comodato':
 					this.validateProductPriceComodato(oPriceSaveInfo, aInvalidFields);
 					break;
+				default:
+					break;
 			}
 
 			return aInvalidFields;
 		},
 
-		validateProductPriceSelling: function(oPriceSaveInfo, aInvalidFields){
+		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e === 'Warranty' ||  e === 'StatusOfDevice' || e === 'FOC_ABS_PCT' ) 
-					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+				
+				if (((e === 'Warranty' || e === 'StatusOfDevice') && !drug)
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
 			});
 		},
 
-		validateProductPriceRental: function(oPriceSaveInfo, aInvalidFields){
+		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e === 'Warranty' || e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice' || e === 'FOC' || e === 'FOC_ABS_PCT' ) 
-					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+				if ((e === 'Warranty' || e === 'StatusOfDevice' ||  e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
 			});
 		},
 
-		validateProductPriceComodato: function(oPriceSaveInfo, aInvalidFields){
+		validateProductPriceComodato: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e ===  'Warranty' || e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice') 
-					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+				if ((e === 'Warranty' || e === 'StatusOfDevice'  ||  e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
 			});
@@ -224,7 +230,7 @@ sap.ui.define([
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
 
-			if(oPriceSaveInfo.ID) {
+			if (oPriceSaveInfo.ID) {
 				oPriceToSave.ID = oPriceSaveInfo.ID;
 			}
 
