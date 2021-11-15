@@ -395,6 +395,7 @@ sap.ui.define([
 				/*(that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey() === "PCT") ? that.byId("idEditPriceOffer_idFoc").getValue() /
 					100 : that.byId("idEditPriceOffer_idFoc").getValue(),*/
 				FOCType: this.byId("idFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
+				FOCStep: oProductPrice.FOCStep,
 				Discount: 0,
 				OfferPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
 				StandardDiscount: oProductPrice.TotalDiscount / 100,
