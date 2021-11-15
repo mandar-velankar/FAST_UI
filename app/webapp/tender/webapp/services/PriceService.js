@@ -208,6 +208,7 @@ sap.ui.define([
 			oPriceToSave.VolumeTo = Number(oPriceSaveInfo.VolumeTo);
 			oPriceToSave.RegPrice = (oPriceSaveInfo.RegPrice === null) ? null : oPriceSaveInfo.RegPrice.toString();
 			oPriceToSave.FOC = (oPriceSaveInfo.FOC === null) ? null : oPriceSaveInfo.FOC.toString();
+			oPriceToSave.FOCStep = (oPriceSaveInfo.FOCStep === null) ? null : oPriceSaveInfo.FOCStep.toString();
 			oPriceToSave.FOCType = oPriceSaveInfo.FOCType;
 			oPriceToSave.Discount = (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
 			oPriceToSave.OfferPrice = (oPriceSaveInfo.OfferPrice === null) ? null : oPriceSaveInfo.OfferPrice.toString();
