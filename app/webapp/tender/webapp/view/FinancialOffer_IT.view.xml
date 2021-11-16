@@ -292,7 +292,7 @@
 											</Select>
 										</form:fields>
 									</form:FormElement>		
-									<form:FormElement visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' ? true : false }">
+									<form:FormElement visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' || ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }">
 										<form:label>
 											<Label text="Free goods same product" required="true"/>
 										</form:label>
