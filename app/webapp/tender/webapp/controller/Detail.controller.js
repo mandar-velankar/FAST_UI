@@ -5546,15 +5546,13 @@ sap.ui.define([
 
 					//show message for active agreements
 					if(aProductsForBinding.some( product => product.OtherPriceAgreementsExist === 'Yes')){
+						var aProductsForBindingFilter = aProductsForBinding;
+
 						aMessages.push({
 							type: 'Warning',
 							title: 'Active agreements exist for products',
 							subtitle: '',
-							description: Array.from(aProductsForBinding.map(product => {
-														if(product.OtherPriceAgreementsExist === 'Yes'){
-															return product.SKU.PRODUCTPACKNAME;
-														}
-													})).join("\n")
+							description: Array.from(aProductsForBindingFilter.filter((product) => product.OtherPriceAgreementsExist === 'Yes').map((product) => { return product.SKU.PRODUCTPACKNAME})).join("\n")
 						});
 						Services.showMessageCompositeView('Warning', aMessages, 'Warning');
 					}
@@ -5777,7 +5775,7 @@ sap.ui.define([
 		},
 
 		//Add product to output list
-		onPressAddProductToOutputList: function (oEvent) {
+		onPressAddProductToOutputList: async function (oEvent) {
 
 			//get input & output list for products
 			var that = this;
@@ -5822,8 +5820,9 @@ sap.ui.define([
 			}
 
 			//loop over the selected products from input list
-			aContexts.forEach(async function (oContext, index) {
+			//aContexts.forEach(async function (oContext, index) {
 
+			for(const oContext of aContexts){
 				//first selected product
 				var oProduct = oFastAppDataModel.getProperty(oContext.sPath);
 
@@ -5918,7 +5917,7 @@ sap.ui.define([
 
 				}
 
-			});
+			};
 
 			//sort
 			aProducts = Services.sortByKeyAsc(aProducts, "ApproverTypeSection");
