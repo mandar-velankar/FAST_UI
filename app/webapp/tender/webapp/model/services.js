@@ -5935,8 +5935,8 @@ sap.ui.define([
 			return this.getService('Product').getTenderProducts(sTenderID);
 		},
 
-		getProductPriceAgreement: async function (sCountryCode, sProductPackId){
-			return await this.getService('Product').getProductPriceAgreement(sCountryCode, sProductPackId);
+		getProductPriceAgreement: function (sCountryCode, sProductPackId){
+			return this.getService('Product').getProductPriceAgreement(sCountryCode, sProductPackId);
 		},
 
 		getFinancialProducts: function (offerID) {

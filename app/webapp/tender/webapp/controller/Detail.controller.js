@@ -5545,11 +5545,11 @@ sap.ui.define([
 					oFastAppDataModel.setProperty(sPath, aProductsForBinding);
 
 					//show message for active agreements
-					if(aProductsForBinding[0].OtherPriceAgreementsExist === 'Yes'){
+					if(aProductsForBinding.some( product => product.OtherPriceAgreementsExist === 'Yes')){
 						aMessages.push({
 							type: 'Warning',
-							title: 'Active agreements exists for products',
-							subtitle: aProductsForBinding[0].SKU.PRODUCTPACKNAME,
+							title: 'Active agreements exist for products',
+							subtitle: '',
 							description: Array.from(aProductsForBinding.map(product => {
 														if(product.OtherPriceAgreementsExist === 'Yes'){
 															return product.SKU.PRODUCTPACKNAME;
@@ -5850,9 +5850,6 @@ sap.ui.define([
 
 				} else {
 
-					//get possible price agreement
-					let oPriceAgreement = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
-
 					//make an empty array to add the product
 					var oAddProduct = {};
 
@@ -5885,7 +5882,6 @@ sap.ui.define([
 					oAddProduct.PricingPolicyCluster = oProduct.COUNTRY_CODE === 'CL' ? "Without Comodatos" : "";
 					oAddProduct.MinInvoiceAmount = "";
 					oAddProduct.DeliveryConditions = "";
-					oAddProduct.OtherPriceAgreementsExist = oPriceAgreement.data && oPriceAgreement.data.results.length > 0 ? 'Yes' : 'No';
 					
 					oAddProduct.SKU = {
 						PRODUCTPACKNAME: oProduct.PRODUCT_NAME,
@@ -5906,6 +5902,10 @@ sap.ui.define([
 					}
 					oAddProduct.DEFAULT_COMMISSION_RATE = oProduct.COMMISSION_RATE; //default comission rate
 					oAddProduct._sOperation = 'POST';
+
+					//get possible price agreement
+					let oPriceAgreement = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
+					oAddProduct.OtherPriceAgreementsExist = oPriceAgreement.data && oPriceAgreement.data.results.length > 0 ? 'Yes' : 'No';
 
 					aProducts.push(oAddProduct);
 
