@@ -5526,6 +5526,7 @@ sap.ui.define([
 			//data declarations
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var that = this;
+			var aMessages = [];
 
 			//add productpack sku after product is added to the fastappdatamodel
 			//otherwise the structure of the object is not correct to use in the save
@@ -5542,6 +5543,19 @@ sap.ui.define([
 
 					//Bind the product objects (including the newly added & extended product)
 					oFastAppDataModel.setProperty(sPath, aProductsForBinding);
+
+					//show message for active agreements
+					if(aProductsForBinding.some( product => product.OtherPriceAgreementsExist === 'Yes')){
+						var aProductsForBindingFilter = aProductsForBinding;
+
+						aMessages.push({
+							type: 'Warning',
+							title: 'Active agreements exist for products',
+							subtitle: '',
+							description: Array.from(aProductsForBindingFilter.filter((product) => product.OtherPriceAgreementsExist === 'Yes').map((product) => { return product.SKU.PRODUCTPACKNAME})).join("\n")
+						});
+						Services.showMessageCompositeView('Warning', aMessages, 'Warning');
+					}
 
 					//close the dialog
 					that._oDialog.close();
@@ -5761,7 +5775,7 @@ sap.ui.define([
 		},
 
 		//Add product to output list
-		onPressAddProductToOutputList: function (oEvent) {
+		onPressAddProductToOutputList: async function (oEvent) {
 
 			//get input & output list for products
 			var that = this;
@@ -5806,8 +5820,9 @@ sap.ui.define([
 			}
 
 			//loop over the selected products from input list
-			aContexts.forEach(function (oContext, index) {
+			//aContexts.forEach(async function (oContext, index) {
 
+			for(const oContext of aContexts){
 				//first selected product
 				var oProduct = oFastAppDataModel.getProperty(oContext.sPath);
 
@@ -5887,6 +5902,10 @@ sap.ui.define([
 					oAddProduct.DEFAULT_COMMISSION_RATE = oProduct.COMMISSION_RATE; //default comission rate
 					oAddProduct._sOperation = 'POST';
 
+					//get possible price agreement
+					let oPriceAgreement = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
+					oAddProduct.OtherPriceAgreementsExist = oPriceAgreement.data && oPriceAgreement.data.results.length > 0 ? 'Yes' : 'No';
+
 					aProducts.push(oAddProduct);
 
 					//Adding the product to be saved later on + added to FastDataModel for binding
@@ -5898,7 +5917,7 @@ sap.ui.define([
 
 				}
 
-			});
+			};
 
 			//sort
 			aProducts = Services.sortByKeyAsc(aProducts, "ApproverTypeSection");

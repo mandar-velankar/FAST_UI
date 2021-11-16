@@ -399,6 +399,13 @@
 							<Text text="{fastAppData>PricingPolicyCluster}"/>
 						</t:template>
 					</t:Column>
+
+					<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+						<Label text="Price Agreement" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>OtherPriceAgreementsExist}"/>
+						</t:template>
+					</t:Column>
 				</t:columns>
 			</t:Table>
 		</u:blocks>
