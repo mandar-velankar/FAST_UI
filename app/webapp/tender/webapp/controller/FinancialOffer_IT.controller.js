@@ -274,7 +274,7 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType);
+			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType, oPriceToSave.FOC_ABS_PCT, oPriceToSave.NetofferPrice);
 			
 			if(aMandatoryFieldsMissing.length > 0){
 				let sTitle = "Mandatory fields missing";

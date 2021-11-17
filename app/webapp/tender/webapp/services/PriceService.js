@@ -128,7 +128,7 @@ sap.ui.define([
 
 		},
 
-		validateProductPriceToSave: function (sOfferType, oPriceSaveInfo, sProductType) {
+		validateProductPriceToSave: function (sOfferType, oPriceSaveInfo, sProductType, sFocAbsPct, sNetOfferPrice) {
 			let aInvalidFields = [];
 			var drug = false;
 			if (sProductType === "Drug") {
@@ -136,7 +136,7 @@ sap.ui.define([
 			}
 			switch (sOfferType) {
 				case 'Selling':
-					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields, drug);
+					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice);
 					break;
 				case 'Rental':
 					this.validateProductPriceRental(oPriceSaveInfo, aInvalidFields);
@@ -151,7 +151,7 @@ sap.ui.define([
 			return aInvalidFields;
 		},
 
-		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug) {
+		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
 				
 				if (((e === 'Warranty' || e === 'StatusOfDevice') && !drug)
@@ -159,6 +159,10 @@ sap.ui.define([
 					aInvalidFields.push(e);
 				}
 			});
+
+			if(sNetOfferPrice === null || sNetOfferPrice === ""){
+				aInvalidFields.push('NetOfferPrice');
+			}
 		},
 
 		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
