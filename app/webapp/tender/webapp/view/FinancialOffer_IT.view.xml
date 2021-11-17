@@ -310,12 +310,18 @@
 											<Input value="{path:'fastAppData>FOCStep'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
 									</form:FormElement>	
-									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+										<form:label>
+											<Label text="Net Offer Price" required="true"/>
+										</form:label>
 										<form:fields>
 											<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+										<form:label>
+											<Label text="Net Offer Price" required="true"/>
+										</form:label>
 										<form:fields>
 											<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
 										</form:fields>
