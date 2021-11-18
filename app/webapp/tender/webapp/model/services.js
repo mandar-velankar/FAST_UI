@@ -2333,7 +2333,7 @@ sap.ui.define([
 						// prepare and initialize the rank property
 						if (oDataProducts.results) {
 							var iSorter = Ranking.ranking.Initial;
-							oDataProducts.results.forEach(function (oProduct, iIndexProduct) {
+							oDataProducts.results.forEach(async function (oProduct, iIndexProduct) {
 
 								//give sequence again so products are back in correct order
 								oProduct.SORTER = iSorter;
@@ -2383,6 +2383,15 @@ sap.ui.define([
 
 									oProduct.SKUCountry.ProductPack.ProductPackSKUs.results = oProducts[oProducts.length - 1]; //get the last entry
 								}
+
+								//check if other price agreements exist, not associated to the given tender / offer
+								let oPriceAgreement = await that.getProductPriceAgreement(oProduct.CountryCode, oProduct.ProductCode);
+								if(oPriceAgreement.data && oPriceAgreement.data.results.length > 0){
+									oProduct.OtherPriceAgreementsExist = 'Yes';
+								} else {
+									oProduct.OtherPriceAgreementsExist = 'No';
+								}
+
 
 
 							});
@@ -5159,7 +5168,8 @@ sap.ui.define([
 						// Product is not yet existing in the back-end tables
 						//this one will therefore no longer be pushed to achangeProducts (=just removed from front-end)
 						oProduct._sOperation = "DELETE";
-						aProducts.splice(indexCurrentProduct, aProducts.length)
+						//aProducts.splice(indexCurrentProduct, aProducts.length)
+						delete aProducts[indexCurrentProduct];
 						that.getFastAppDataModel().refresh(true);
 						that.getDefaultModel().refresh(true);
 
@@ -5924,6 +5934,10 @@ sap.ui.define([
 
 		getTenderProducts: function (sTenderID) {
 			return this.getService('Product').getTenderProducts(sTenderID);
+		},
+
+		getProductPriceAgreement: function (sCountryCode, sProductPackId){
+			return this.getService('Product').getProductPriceAgreement(sCountryCode, sProductPackId);
 		},
 
 		getFinancialProducts: function (offerID) {

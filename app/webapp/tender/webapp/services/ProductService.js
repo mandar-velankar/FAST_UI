@@ -33,7 +33,34 @@ sap.ui.define([
 			var mParameters = {
 				filters: [oTenderIdFilter],
 				urlParameters: {
-					$expand: "SKU/Product"
+					$expand: "SKU/Product,PriceAgreement"
+				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		getProductPriceAgreement: function(sCountryCode, sProductPackId){
+			var sPath = "/PriceAgreements";
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'ProductPackId',
+				operator: FilterOperator.EQ,
+				value1: sProductPackId
+			}));
+
+			aFilters.push(new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			}));
+
+			var mParameters = {
+				filters: aFilters,
+				urlParameters: {
+					$expand: "OfferProduct"
 				}
 			};
 

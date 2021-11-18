@@ -112,17 +112,13 @@ sap.ui.define([
 			oProductPriceToSave.ContractStartDate = moment().utc().toDate();
 			oProductPriceToSave.ValueOfDevices = (oProductPriceSaveInfo.ValueOfDevices === null) ? null : oProductPriceSaveInfo.ValueOfDevices.toString();
 			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
-			oProductPriceToSave.FreeGoodsSame = (oProductPriceSaveInfo.FreeGoodsSame === null) ? null : oProductPriceSaveInfo.FreeGoodsSame.toString();
-			oProductPriceToSave.FreeGoodsSame_ABS_PCT = oProductPriceSaveInfo.FreeGoodsSame_ABS_PCT;
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
-			oProductPriceToSave.AdditionalDiscount = (oProductPriceSaveInfo.AdditionalDiscount === null) ? null : oProductPriceSaveInfo.AdditionalDiscount.toString();
-			oProductPriceToSave.FOC_ABS_PCT = (oProductPriceSaveInfo.FOC_ABS_PCT === null) ? null : oProductPriceSaveInfo.FOC_ABS_PCT.toString();
 
-			if(oProductPriceSaveInfo.FreeGoodsOther){
+			if (oProductPriceSaveInfo.FreeGoodsOther) {
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
-					ProductPackId: freeGoodsOther.ProductPackId, 
-					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT, 
+					ProductPackId: freeGoodsOther.ProductPackId,
+					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT,
 					FreeGoodsOther: freeGoodsOther.FreeGoodsOther,
 					VAT: freeGoodsOther.VAT
 				}));
@@ -132,12 +128,15 @@ sap.ui.define([
 
 		},
 
-		validateProductPriceToSave: function(sOfferType, oPriceSaveInfo){
+		validateProductPriceToSave: function (sOfferType, oPriceSaveInfo, sProductType, sFocAbsPct, sNetOfferPrice) {
 			let aInvalidFields = [];
-			
-			switch(sOfferType){
+			var drug = false;
+			if (sProductType === "Drug") {
+				drug = true;
+			}
+			switch (sOfferType) {
 				case 'Selling':
-					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields);
+					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice);
 					break;
 				case 'Rental':
 					this.validateProductPriceRental(oPriceSaveInfo, aInvalidFields);
@@ -145,33 +144,40 @@ sap.ui.define([
 				case 'Comodato':
 					this.validateProductPriceComodato(oPriceSaveInfo, aInvalidFields);
 					break;
+				default:
+					break;
 			}
 
 			return aInvalidFields;
 		},
 
-		validateProductPriceSelling: function(oPriceSaveInfo, aInvalidFields){
+		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e === 'Warranty' ||  e === 'StatusOfDevice' || e === 'FOC_ABS_PCT' ) 
-					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+				
+				if (((e === 'Warranty' || e === 'StatusOfDevice') && !drug)
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
+					aInvalidFields.push(e);
+				}
+			});
+
+			if(sNetOfferPrice === null || sNetOfferPrice === ""){
+				aInvalidFields.push('NetOfferPrice');
+			}
+		},
+
+		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if ((e === 'Warranty' || e === 'StatusOfDevice' ||  e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
 			});
 		},
 
-		validateProductPriceRental: function(oPriceSaveInfo, aInvalidFields){
+		validateProductPriceComodato: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e === 'Warranty' || e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice' || e === 'FreeGoodsSame' || e === 'FOC_ABS_PCT' ) 
-					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
-					aInvalidFields.push(e);
-				}
-			});
-		},
-
-		validateProductPriceComodato: function(oPriceSaveInfo, aInvalidFields){
-			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e ===  'Warranty' || e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice') 
-					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+				if ((e === 'Warranty' || e === 'StatusOfDevice'  ||  e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
 			});
@@ -206,6 +212,7 @@ sap.ui.define([
 			oPriceToSave.VolumeTo = Number(oPriceSaveInfo.VolumeTo);
 			oPriceToSave.RegPrice = (oPriceSaveInfo.RegPrice === null) ? null : oPriceSaveInfo.RegPrice.toString();
 			oPriceToSave.FOC = (oPriceSaveInfo.FOC === null) ? null : oPriceSaveInfo.FOC.toString();
+			oPriceToSave.FOCStep = (oPriceSaveInfo.FOCStep === null) ? null : oPriceSaveInfo.FOCStep.toString();
 			oPriceToSave.FOCType = oPriceSaveInfo.FOCType;
 			oPriceToSave.Discount = (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
 			oPriceToSave.OfferPrice = (oPriceSaveInfo.OfferPrice === null) ? null : oPriceSaveInfo.OfferPrice.toString();
@@ -228,7 +235,7 @@ sap.ui.define([
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
 
-			if(oPriceSaveInfo.ID) {
+			if (oPriceSaveInfo.ID) {
 				oPriceToSave.ID = oPriceSaveInfo.ID;
 			}
 
