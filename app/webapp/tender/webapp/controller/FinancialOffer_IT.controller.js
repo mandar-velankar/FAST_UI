@@ -491,14 +491,14 @@ sap.ui.define([
 
 			if ((bInitLoad || (sSourceId && sSourceId.includes('financialOfferViewId_IT'))) && !$.isEmptyObject(oProductsTable)) {
 				let aItems = oProductsTable.getItems();
-				if (this.selectedProductPricePath === undefined || this.selectedProductPricePath === '/ProductPricingView/0'){
+				
 					if (aItems.length > 0) {
-						oProductsTable.setSelectedItem(aItems[0], true);
-						aItems[0].setSelected(true);
-						Services.setSelectedProductPath(aItems[0].getBindingContextPath());
-
-						that.onFinancialProductPress(oEvent, true);
-					}
+						if (this.selectedProductPricePath === undefined || this.selectedProductPricePath === '/ProductPricingView/0'){
+							oProductsTable.setSelectedItem(aItems[0], true);
+							aItems[0].setSelected(true);
+							Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+						}
+							that.onFinancialProductPress(oEvent, true);
 				}
 			}
 		},
