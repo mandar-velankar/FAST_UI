@@ -356,11 +356,11 @@ sap.ui.define([
 
 				// TODO: check why "idClassification" is set back to visible after  checkShowSalesType()
 				// Settings for Italy 
-				/*if(Services.getSelectedCountry() === 'IT'){
+				if(Services.getSelectedCountry() === 'IT'){
 					Services.getWordTemplates(Services.getSelectedCountry());
-					oDetailController.getView().byId("idClassification").setVisible(false);
+					//oDetailController.getView().byId("idClassification").setVisible(false);
 					oDetailController.getView().byId("idTenderChannel").setVisible(false);
-				}*/
+				}
 			});
 
 			//should tendertype be visible on the screen based on data back-end
