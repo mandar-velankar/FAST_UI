@@ -274,7 +274,7 @@ sap.ui.define([
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType);
+			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType, oPriceToSave.FOC_ABS_PCT, oPriceToSave.NetofferPrice);
 			
 			if(aMandatoryFieldsMissing.length > 0){
 				let sTitle = "Mandatory fields missing";
@@ -398,6 +398,7 @@ sap.ui.define([
 				/*(that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey() === "PCT") ? that.byId("idEditPriceOffer_idFoc").getValue() /
 					100 : that.byId("idEditPriceOffer_idFoc").getValue(),*/
 				FOCType: this.byId("idFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
+				FOCStep: oProductPrice.FOCStep,
 				Discount: 0,
 				OfferPrice:  oProductPrice.NetofferPrice,
 				StandardDiscount: oProductPrice.TotalDiscount / 100,
