@@ -98,13 +98,13 @@
 										<Text text="{fastAppData>UOM}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetOfferPrice}"/>
+										<Text text="{fastAppData>NetofferPrice}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetPriceWithFOC}"/>
+										<Text text="{fastAppData>NetPriceFOC}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>COGS}"/>
+										<Text text="{fastAppData>cogsUoM}"/>
 									</cells>
 									<cells>
 										<Text text="{fastAppData>GrossSales}"/>
@@ -113,7 +113,7 @@
 										<Text text="{fastAppData>GrossProfit}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>GrossMargin}"/>
+										<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
 									</cells>
 									
 								</ColumnListItem>
@@ -266,7 +266,6 @@
 										<form:fields>
 											<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }">
 												<items>
-													<core:Item key="" text="" />	
 													<core:Item key="ABS" text="Absolute" />
 													<core:Item key="PCT" text="Percentage" />									
 												</items>
@@ -286,14 +285,9 @@
 											<Input value="{path:'fastAppData>FOC',type: '.types.percent'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
 										</form:fields>
 									</form:FormElement>		
-									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+									<form:FormElement label="Net Offer Price" >
 										<form:fields>
-											<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
-										</form:fields>
-									</form:FormElement>
-									<form:FormElement label="Net Offer Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
-										<form:fields>
-											<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
+											<Input value="{path:'fastAppData>NetofferPrice'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Free goods for other product(s)">

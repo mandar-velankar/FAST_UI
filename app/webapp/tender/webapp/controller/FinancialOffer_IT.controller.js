@@ -371,6 +371,9 @@ sap.ui.define([
 
 					that._checkApprovalEnabled(); // check for approval button
 
+					//refresh data (for table)
+					that.refreshFinancialTabIT();
+
 				});
 			}
 		},
@@ -396,11 +399,11 @@ sap.ui.define([
 					100 : that.byId("idEditPriceOffer_idFoc").getValue(),*/
 				FOCType: this.byId("idFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
 				Discount: 0,
-				OfferPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				OfferPrice:  oProductPrice.NetofferPrice,
 				StandardDiscount: oProductPrice.TotalDiscount / 100,
 				AdditionalDiscount: oProductPrice.AdditionalDiscount,
 				Deductions: 0,
-				NetofferPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				NetofferPrice: oProductPrice.NetofferPrice,
 				BusinessCasePrice: 0,
 				WholesalePrice: "",
 				COGS: 0,
@@ -412,7 +415,7 @@ sap.ui.define([
 				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
 				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE
 				ActiveTier: 0,
-				NetPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				NetPrice: oProductPrice.NetofferPrice,
 				NetPrice_OfPaid: 0,
 				PRICE_UPDATE: 0
 			};
@@ -445,12 +448,7 @@ sap.ui.define([
 			}
 			
 			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
-			//const netOfferPricePP = consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
-			//const netOfferPricePU = consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);
-
 			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
-			//this.byId("idNetOfferPricePP").setValue(netOfferPricePP.toFixed(2));
-			//this.byId("idNetOfferPricePU").setValue(netOfferPricePU.toFixed(5));
 		},
 
 		calculateAdditionalDiscount: function (oEvent) {
@@ -461,20 +459,19 @@ sap.ui.define([
 			if(oEvent){
 				var netOfferPrice = oEvent.getParameter("newValue");
 			} else {
-				if(sSelectedRbtn === 'Unit'){
-					netOfferPrice = consumerPrice.NetOfferPricePU;
-				} else if(sSelectedRbtn === 'Pack'){
-					netOfferPrice = consumerPrice.NetOfferPricePP;
-				}
+				netOfferPrice = consumerPrice.NetOfferPrice;
 			}
 			
 			if(sSelectedRbtn === 'Unit'){
 				var additionalDiscount = ((consumerPrice.MaxPriceNhsPU / netOfferPrice) - 1);
+				var totalDiscount = (consumerPrice.ConsumerPriceExclPU - consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPU;
+
 			} else if(sSelectedRbtn === 'Pack'){
 				additionalDiscount = ((consumerPrice.MaxPriceNhsPP / netOfferPrice) - 1);
+				totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
+
 			}
 			
-			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
 
 			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
 			this.byId("addDiscount").setValue((additionalDiscount*100).toFixed(2));
@@ -493,12 +490,14 @@ sap.ui.define([
 
 			if ((bInitLoad || (sSourceId && sSourceId.includes('financialOfferViewId_IT'))) && !$.isEmptyObject(oProductsTable)) {
 				let aItems = oProductsTable.getItems();
-				if (aItems.length > 0) {
-					oProductsTable.setSelectedItem(aItems[0], true);
-					aItems[0].setSelected(true);
-					Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+				if (this.selectedProductPricePath === undefined || this.selectedProductPricePath === '/ProductPricingView/0'){
+					if (aItems.length > 0) {
+						oProductsTable.setSelectedItem(aItems[0], true);
+						aItems[0].setSelected(true);
+						Services.setSelectedProductPath(aItems[0].getBindingContextPath());
 
-					that.onFinancialProductPress(oEvent, true);
+						that.onFinancialProductPress(oEvent, true);
+					}
 				}
 			}
 		},
