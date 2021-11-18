@@ -5168,7 +5168,8 @@ sap.ui.define([
 						// Product is not yet existing in the back-end tables
 						//this one will therefore no longer be pushed to achangeProducts (=just removed from front-end)
 						oProduct._sOperation = "DELETE";
-						aProducts.splice(indexCurrentProduct, aProducts.length)
+						//aProducts.splice(indexCurrentProduct, aProducts.length)
+						delete aProducts[indexCurrentProduct];
 						that.getFastAppDataModel().refresh(true);
 						that.getDefaultModel().refresh(true);
 
