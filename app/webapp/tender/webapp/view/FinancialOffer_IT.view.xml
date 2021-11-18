@@ -68,10 +68,10 @@
 									<Text text="{i18n>UoM}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>NetPrice}"/>
+									<Text text="{i18n>NetOfferPrice}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>OfferPrice}"/>
+									<Text text="{i18n>NetPriceWithFOC}"/>
 								</Column>
 								<Column>
 									<Text text="{i18n>COGS}"/>
@@ -80,10 +80,10 @@
 									<Text text="{i18n>GrossSales}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>NetSales}"/>
+									<Text text="{i18n>GrossProfit}"/>
 								</Column>
 								<Column>
-									<Text text="{i18n>Profitability}"/>
+									<Text text="{i18n>GrossMargin}"/>
 								</Column>
 							</columns>
 							<items>
@@ -97,41 +97,23 @@
 									<cells>
 										<Text text="{fastAppData>UOM}"/>
 									</cells>
-									<!--<cells>
-										<Text text="{fastAppData>NetPrice}"/>
+									<cells>
+										<Text text="{fastAppData>NetofferPrice}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>OfferPrice}"/>
+										<Text text="{fastAppData>NetPriceFOC}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>COGS}"/>
+										<Text text="{fastAppData>cogsUoM}"/>
 									</cells>
 									<cells>
 										<Text text="{fastAppData>GrossSales}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetSales}"/>
+										<Text text="{fastAppData>GrossProfit}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>Profitability}"/>
-									</cells>-->
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
-									</cells>
-									<cells>
-										<Text text="TBD"/>
+										<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
 									</cells>
 									
 								</ColumnListItem>
@@ -284,7 +266,6 @@
 										<form:fields>
 											<Select selectedKey="{fastAppData>FOC_ABS_PCT}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }">
 												<items>
-													<core:Item key="" text="" />	
 													<core:Item key="ABS" text="Absolute" />
 													<core:Item key="PCT" text="Percentage" />	
 													<core:Item key="STP" text="Step" />									
@@ -304,26 +285,18 @@
 										<form:fields>
 											<Input value="{path:'fastAppData>FOC',type: '.types.percent'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
 										</form:fields>
-									</form:FormElement>	
+									</form:FormElement>
 									<form:FormElement label="Step" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" required="true">
 										<form:fields>
 											<Input value="{path:'fastAppData>FOCStep'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
 									</form:FormElement>	
-									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
-										<form:label>
-											<Label text="Net Offer Price" required="true"/>
-										</form:label>
-										<form:fields>
-											<Input id="idNetOfferPricePP" value="{path:'fastAppData>NetOfferPricePP'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
-										</form:fields>
-									</form:FormElement>
 									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
 										<form:label>
 											<Label text="Net Offer Price" required="true"/>
 										</form:label>
 										<form:fields>
-											<Input id= "idNetOfferPricePU" value="{path:'fastAppData>NetOfferPricePU'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
+											<Input value="{path:'fastAppData>NetofferPrice'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Free goods for other product(s)">
