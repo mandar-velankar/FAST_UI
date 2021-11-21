@@ -120,6 +120,7 @@ sap.ui.define([
 					ProductPackId: freeGoodsOther.ProductPackId,
 					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT,
 					FreeGoodsOther: freeGoodsOther.FreeGoodsOther,
+					FreeGoodsOther_Step: freeGoodsOther.FreeGoodsOther_Step,
 					VAT: freeGoodsOther.VAT
 				}));
 			}

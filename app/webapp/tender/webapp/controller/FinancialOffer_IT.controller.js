@@ -536,6 +536,7 @@ sap.ui.define([
 				ProductPackId: "",
 				FreeGoodsOther: "",
 				FreeGoodsOther_ABS_PCT: "ABS",
+				FreeGoodsOther_Step: "",
 				UOM: selectedProductPrice.UOM
 			});
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
@@ -572,7 +573,8 @@ sap.ui.define([
 				if (!freeGoods.ProductName || freeGoods.ProductName === "") {
 					freeGoods.ProductPackIdValueState = "Error";
 				}
-				if (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "") {
+				if ( (freeGoods.FreeGoodsOther_ABS_PCT !== 'STP' && (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "")) || 
+					    (freeGoods.FreeGoodsOther_ABS_PCT === 'STP' && (!freeGoods.FreeGoodsOther_Step || freeGoods.FreeGoodsOther_Step === ""))) {
 					freeGoods.FreeGoodsOtherValueState = "Error";
 				}
 				return freeGoods;
