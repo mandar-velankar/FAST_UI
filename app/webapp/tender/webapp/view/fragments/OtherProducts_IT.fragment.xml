@@ -27,8 +27,11 @@
                     <Text text="{i18n>FOCQuantity}"/>
                 </Column>
                 <Column>
-                    <Text text="{i18n>UoM}"/>
+                    <Text text="{i18n>FOCStep}"/>
                 </Column>    
+                <Column>
+                    <Text text="{i18n>UoM}"/>
+                </Column>
                 <Column>
                     <Text text="{i18n>Action}"/>
                 </Column>               
@@ -46,11 +49,11 @@
                         <core:Item key="STP" text="Step" />
                     </Select>
                     <HBox>
-                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' ? true : false }"/> 
-                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther_Step'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
+                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
                         <Input  value="{path:'fastAppData>FreeGoodsOther',type: '.types.percent'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'PCT' ? true : false }"/> 
                     </HBox>
-                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP'?${fastAppData>UOM}:'%'}"></Text>
+                    <Input type="Number" value="{path:'fastAppData>FreeGoodsOther_Step'}" valueState="{fastAppData>FreeGoodsOtherStepValueState}" enabled="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
+                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP'?${fastAppData>UOM}:'%'}"></Text> 
                     <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
                 </cells>
             </ColumnListItem>
