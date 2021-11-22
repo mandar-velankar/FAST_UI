@@ -570,11 +570,17 @@ sap.ui.define([
 			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
 			freeGoodsOther = freeGoodsOther.map(freeGoods => {
 				freeGoods.FreeGoodsOtherValueState = "None";
+				freeGoods.FreeGoodsOtherStepValueState = "None";
+
 				if (!freeGoods.ProductName || freeGoods.ProductName === "") {
 					freeGoods.ProductPackIdValueState = "Error";
 				}
-				if ( (freeGoods.FreeGoodsOther_ABS_PCT !== 'STP' && (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "")) || 
-					    (freeGoods.FreeGoodsOther_ABS_PCT === 'STP' && (!freeGoods.FreeGoodsOther_Step || freeGoods.FreeGoodsOther_Step === ""))) {
+
+				if((freeGoods.FreeGoodsOther_ABS_PCT === 'STP' && (!freeGoods.FreeGoodsOther_Step || freeGoods.FreeGoodsOther_Step === ""))){
+					freeGoods.FreeGoodsOtherStepValueState = "Error";
+				}
+
+				if ( (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "")) {
 					freeGoods.FreeGoodsOtherValueState = "Error";
 				}
 				return freeGoods;
