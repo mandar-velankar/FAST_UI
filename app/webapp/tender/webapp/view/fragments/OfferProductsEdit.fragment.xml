@@ -449,6 +449,23 @@
 										</Select>
 									</t:template>
 								</t:Column>
+								<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+									<Label id="idPriceAgreementLabel" text="Price Agreement" 
+												    		     wrapping="true" 
+															     required="false"/>
+									<t:template>
+										<Select selectedKey="{fastAppData>OtherPriceAgreementsExist}" enabled="false">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Yes" key="Yes"/>
+												<core:Item text="No" key="No"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
 							</t:columns>
 						</t:Table>
 						

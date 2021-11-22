@@ -43,12 +43,14 @@
                     <Select forceSelection="false" selectedKey="{fastAppData>FreeGoodsOther_ABS_PCT}">
                         <core:Item key="ABS" text="Absolute" />
                         <core:Item key="PCT" text="Percentage" />
+                        <core:Item key="STP" text="Step" />
                     </Select>
                     <HBox>
                         <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' ? true : false }"/> 
-                        <Input  value="{path:'fastAppData>FreeGoodsOther',type: '.types.percent'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'PCT' ? true : false }"/>
+                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther_Step'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
+                        <Input  value="{path:'fastAppData>FreeGoodsOther',type: '.types.percent'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'PCT' ? true : false }"/> 
                     </HBox>
-                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}"></Text>
+                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP'?${fastAppData>UOM}:'%'}"></Text>
                     <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
                 </cells>
             </ColumnListItem>

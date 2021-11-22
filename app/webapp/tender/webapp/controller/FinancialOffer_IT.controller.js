@@ -267,14 +267,14 @@ sap.ui.define([
 			let aMessages = [];
 
 			//build old price object for additional saving to PT_TMBDPR
-			let oNewPriceInfo = this.getOldPriceObject(oOffer, oProduct, oProductPrice);
+			let oNewPriceInfo = this.getOfferProductPrices(oOffer, oProduct, oProductPrice);
 
 			//convert old price to save & save
 			let oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
 			await Services.getService('Price').updatePrice(oPriceToSave);
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
-			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType);
+			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType, oPriceToSave.FOC_ABS_PCT, oPriceToSave.NetofferPrice);
 			
 			if(aMandatoryFieldsMissing.length > 0){
 				let sTitle = "Mandatory fields missing";
@@ -371,12 +371,15 @@ sap.ui.define([
 
 					that._checkApprovalEnabled(); // check for approval button
 
+					//refresh data (for table)
+					that.refreshFinancialTabIT();
+
 				});
 			}
 		},
 
 		//for additional saving to PT_TMBDPR
-		getOldPriceObject: function (oOffer, oProduct, oProductPrice) {
+		getOfferProductPrices: function (oOffer, oProduct, oProductPrice) {
 
 			//PT_TMBDPR
 			let oNewPriceInfo = {
@@ -391,16 +394,17 @@ sap.ui.define([
 				VolumeFrom: 0,
 				VolumeTo: 0,
 				RegPrice: oProductPrice.ConsumerPriceExclPP,
-				FOC: oProductPrice.FreeGoodsSame,
+				FOC: oProductPrice.FOC,
 				/*(that.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey() === "PCT") ? that.byId("idEditPriceOffer_idFoc").getValue() /
 					100 : that.byId("idEditPriceOffer_idFoc").getValue(),*/
 				FOCType: this.byId("idFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
+				FOCStep: oProductPrice.FOCStep,
 				Discount: 0,
-				OfferPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				OfferPrice:  oProductPrice.NetofferPrice,
 				StandardDiscount: oProductPrice.TotalDiscount / 100,
-				AdditionalDiscount: oProductPrice.AdditionalDiscount / 100,
+				AdditionalDiscount: oProductPrice.AdditionalDiscount,
 				Deductions: 0,
-				NetofferPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				NetofferPrice: oProductPrice.NetofferPrice,
 				BusinessCasePrice: 0,
 				WholesalePrice: "",
 				COGS: 0,
@@ -412,7 +416,7 @@ sap.ui.define([
 				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
 				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE
 				ActiveTier: 0,
-				NetPrice: oProduct.UnitPerPack === "Unit" ? oProductPrice.NetOfferPricePU : oProductPrice.NetOfferPricePP,
+				NetPrice: oProductPrice.NetofferPrice,
 				NetPrice_OfPaid: 0,
 				PRICE_UPDATE: 0
 			};
@@ -445,12 +449,33 @@ sap.ui.define([
 			}
 			
 			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
-			const netOfferPricePP = consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount);
-			const netOfferPricePU = consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount);
+			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
+		},
+
+		calculateAdditionalDiscount: function (oEvent) {
+
+			const consumerPrice = Services.getFastAppDataModel().getProperty(this.selectedProductPricePath);
+			const sSelectedRbtn = this.byId("rbgUoM").getSelectedIndex() === 1 ? 'Unit' : this.byId("rbgUoM").getSelectedIndex() === 0 ? 'Pack' : null;
+
+			if(oEvent){
+				var netOfferPrice = oEvent.getParameter("newValue");
+			} else {
+				netOfferPrice = consumerPrice.NetOfferPrice;
+			}
+			
+			if(sSelectedRbtn === 'Unit'){
+				var additionalDiscount = ((consumerPrice.MaxPriceNhsPU / netOfferPrice) - 1);
+				var totalDiscount = (consumerPrice.ConsumerPriceExclPU - consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPU;
+
+			} else if(sSelectedRbtn === 'Pack'){
+				additionalDiscount = ((consumerPrice.MaxPriceNhsPP / netOfferPrice) - 1);
+				totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
+
+			}
+			
 
 			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
-			this.byId("idNetOfferPricePP").setValue(netOfferPricePP.toFixed(2));
-			this.byId("idNetOfferPricePU").setValue(netOfferPricePU.toFixed(5));
+			this.byId("addDiscount").setValue((additionalDiscount*100).toFixed(2));
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
@@ -466,12 +491,14 @@ sap.ui.define([
 
 			if ((bInitLoad || (sSourceId && sSourceId.includes('financialOfferViewId_IT'))) && !$.isEmptyObject(oProductsTable)) {
 				let aItems = oProductsTable.getItems();
-				if (aItems.length > 0) {
-					oProductsTable.setSelectedItem(aItems[0], true);
-					aItems[0].setSelected(true);
-					Services.setSelectedProductPath(aItems[0].getBindingContextPath());
-
-					that.onFinancialProductPress(oEvent, true);
+				
+					if (aItems.length > 0) {
+						if (this.selectedProductPricePath === undefined || this.selectedProductPricePath === '/ProductPricingView/0'){
+							oProductsTable.setSelectedItem(aItems[0], true);
+							aItems[0].setSelected(true);
+							Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+						}
+							that.onFinancialProductPress(oEvent, true);
 				}
 			}
 		},
@@ -509,6 +536,7 @@ sap.ui.define([
 				ProductPackId: "",
 				FreeGoodsOther: "",
 				FreeGoodsOther_ABS_PCT: "ABS",
+				FreeGoodsOther_Step: "",
 				UOM: selectedProductPrice.UOM
 			});
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
@@ -545,7 +573,8 @@ sap.ui.define([
 				if (!freeGoods.ProductName || freeGoods.ProductName === "") {
 					freeGoods.ProductPackIdValueState = "Error";
 				}
-				if (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "") {
+				if ( (freeGoods.FreeGoodsOther_ABS_PCT !== 'STP' && (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "")) || 
+					    (freeGoods.FreeGoodsOther_ABS_PCT === 'STP' && (!freeGoods.FreeGoodsOther_Step || freeGoods.FreeGoodsOther_Step === ""))) {
 					freeGoods.FreeGoodsOtherValueState = "Error";
 				}
 				return freeGoods;

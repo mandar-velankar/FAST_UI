@@ -112,18 +112,15 @@ sap.ui.define([
 			oProductPriceToSave.ContractStartDate = moment().utc().toDate();
 			oProductPriceToSave.ValueOfDevices = (oProductPriceSaveInfo.ValueOfDevices === null) ? null : oProductPriceSaveInfo.ValueOfDevices.toString();
 			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
-			oProductPriceToSave.FreeGoodsSame = (oProductPriceSaveInfo.FreeGoodsSame === null) ? null : oProductPriceSaveInfo.FreeGoodsSame.toString();
-			oProductPriceToSave.FreeGoodsSame_ABS_PCT = oProductPriceSaveInfo.FreeGoodsSame_ABS_PCT;
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
-			oProductPriceToSave.AdditionalDiscount = (oProductPriceSaveInfo.AdditionalDiscount === null) ? null : oProductPriceSaveInfo.AdditionalDiscount.toString();
-			oProductPriceToSave.FOC_ABS_PCT = (oProductPriceSaveInfo.FOC_ABS_PCT === null) ? null : oProductPriceSaveInfo.FOC_ABS_PCT.toString();
 
 			if (oProductPriceSaveInfo.FreeGoodsOther) {
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
 					ProductPackId: freeGoodsOther.ProductPackId,
 					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT,
 					FreeGoodsOther: freeGoodsOther.FreeGoodsOther,
+					FreeGoodsOther_Step: freeGoodsOther.FreeGoodsOther_Step,
 					VAT: freeGoodsOther.VAT
 				}));
 			}
@@ -132,7 +129,7 @@ sap.ui.define([
 
 		},
 
-		validateProductPriceToSave: function (sOfferType, oPriceSaveInfo, sProductType) {
+		validateProductPriceToSave: function (sOfferType, oPriceSaveInfo, sProductType, sFocAbsPct, sNetOfferPrice) {
 			let aInvalidFields = [];
 			var drug = false;
 			if (sProductType === "Drug") {
@@ -140,7 +137,7 @@ sap.ui.define([
 			}
 			switch (sOfferType) {
 				case 'Selling':
-					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields, drug);
+					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice);
 					break;
 				case 'Rental':
 					this.validateProductPriceRental(oPriceSaveInfo, aInvalidFields);
@@ -155,7 +152,7 @@ sap.ui.define([
 			return aInvalidFields;
 		},
 
-		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug) {
+		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
 				
 				if (((e === 'Warranty' || e === 'StatusOfDevice') && !drug)
@@ -163,12 +160,16 @@ sap.ui.define([
 					aInvalidFields.push(e);
 				}
 			});
+
+			if(sNetOfferPrice === null || sNetOfferPrice === ""){
+				aInvalidFields.push('NetOfferPrice');
+			}
 		},
 
 		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if((e === 'Warranty' || e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices' || e === 'StatusOfDevice' || e === 'FreeGoodsSame' ) 
-					&& ( oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "" )){
+				if ((e === 'Warranty' || e === 'StatusOfDevice' ||  e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
 			});
@@ -212,6 +213,7 @@ sap.ui.define([
 			oPriceToSave.VolumeTo = Number(oPriceSaveInfo.VolumeTo);
 			oPriceToSave.RegPrice = (oPriceSaveInfo.RegPrice === null) ? null : oPriceSaveInfo.RegPrice.toString();
 			oPriceToSave.FOC = (oPriceSaveInfo.FOC === null) ? null : oPriceSaveInfo.FOC.toString();
+			oPriceToSave.FOCStep = (oPriceSaveInfo.FOCStep === null) ? null : oPriceSaveInfo.FOCStep.toString();
 			oPriceToSave.FOCType = oPriceSaveInfo.FOCType;
 			oPriceToSave.Discount = (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
 			oPriceToSave.OfferPrice = (oPriceSaveInfo.OfferPrice === null) ? null : oPriceSaveInfo.OfferPrice.toString();
