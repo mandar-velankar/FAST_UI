@@ -109,7 +109,7 @@ sap.ui.define([
 
 			//set to fastappdata model for easy access on the view
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			aProducts.sort((a, b) => a.ProductPackName.localeCompare(b.ProductPackName));
+			aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
 			oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
 			return aProducts;
