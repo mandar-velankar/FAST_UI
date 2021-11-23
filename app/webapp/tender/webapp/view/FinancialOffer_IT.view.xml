@@ -291,7 +291,7 @@
 											<Input value="{path:'fastAppData>FOCStep'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
 									</form:FormElement>	
-									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === ${fastAppData>/EditSelectedProduct/UnitPerPack}}">
 										<form:label>
 											<Label text="Net Offer Price" required="true"/>
 										</form:label>
