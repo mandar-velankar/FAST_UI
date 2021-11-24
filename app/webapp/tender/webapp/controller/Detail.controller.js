@@ -7752,6 +7752,9 @@ sap.ui.define([
 			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
 
 			let oMail = {
+				"CountryCode": Services.getSelectedCountry(),
+				"TenderID": Services.getSelectedTenderID(),
+				"OfferID": Services.getSelectedOfferID(),
 				"Sender":sSenders[0].getProperty('text'),
 				"Recipients":sRecipients,
 				"Subject":sSubject,
