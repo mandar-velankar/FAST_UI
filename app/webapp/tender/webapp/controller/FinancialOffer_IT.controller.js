@@ -7,10 +7,15 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/financial",
 	"sap/ui/core/Fragment",
 	"FAST_NS0FAST0/model/datatypes/PercentageType",
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType) {
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator) {
 	"use strict";
+	
+	var bundle;
 
 	return Controller.extend("FAST_NS0FAST0.controller.FinancialOffer_IT", {
+
 
 		//Formatting functions
 		formatter: formatter,
@@ -34,6 +39,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this._oRouter = this._oOwnerComponent.getRouter();
 			this._oModel = this._oOwnerComponent.getModel();
+			bundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
 			this._DetailView = sap.ui.getCore().byId(this.getView().getId().split("---")[0] + "---tenderManagementDetailId");
 			this._DetailController = this._DetailView.getController();
@@ -128,6 +134,53 @@ sap.ui.define([
 		refreshFinancialTabIT: async function () {
 			await this.getCountryBrandProductsCombined();
 			this.setFinancialOffer();
+		},
+
+		handleValueHelp: function(oEvent){
+
+			var oView = this.getView();
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.SelectBrandProductList",
+					controller: this
+				}).then(function (oValueHelpDialog) {
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+
+			// open value help dialog
+			this._pValueHelpDialog.then(function (oValueHelpDialog) {
+				oValueHelpDialog.open();
+			});
+		},
+
+		_handleValueHelpSearch: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter(
+				"PRODUCT_NAME",
+				FilterOperator.Contains, sValue
+			);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+
+		_handleValueHelpClose: function (oEvent) {
+			var oFastAppData = Services.getFastAppDataModel();
+			var sPath = '/EditProduct/FreeGoodsOther/0';
+			var oFreeGoodsOther = oFastAppData.getProperty(sPath);
+
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oInputfield = this.byId('idOtherProducts');
+				oInputfield.setValue(oSelectedItem.getTitle());
+
+				oFreeGoodsOther.ProductPackId = parseInt(oSelectedItem.getDescription());
+				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
+				oFastAppData.setProperty(sPath, oFreeGoodsOther)
+			}
+			oEvent.getSource().getBinding("items").filter([]);
 		},
 
 		/* GETTERS */

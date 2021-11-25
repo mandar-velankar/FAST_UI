@@ -38,11 +38,8 @@
             </columns>
             <ColumnListItem>
                 <cells>
-                    <ComboBox items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" 
-                            showSecondaryValues="true" selectedKey="{fastAppData>ProductPackId}" change=".onProductPackChange"
-                            valueState="{fastAppData>ProductPackIdValueState}">
-                        <core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
-                    </ComboBox>
+                   
+                    <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true"/>
                     <Select forceSelection="false" selectedKey="{fastAppData>FreeGoodsOther_ABS_PCT}">
                         <core:Item key="ABS" text="Absolute" />
                         <core:Item key="PCT" text="Percentage" />
