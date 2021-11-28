@@ -27,30 +27,30 @@
                     <Text text="{i18n>FOCQuantity}"/>
                 </Column>
                 <Column>
-                    <Text text="{i18n>UoM}"/>
+                    <Text text="{i18n>FOCStep}"/>
                 </Column>    
+                <Column>
+                    <Text text="{i18n>UoM}"/>
+                </Column>
                 <Column>
                     <Text text="{i18n>Action}"/>
                 </Column>               
             </columns>
             <ColumnListItem>
                 <cells>
-                    <ComboBox items="{path:'fastAppData>/CountryBrandProducts', sorter: { path: 'BRAND_NAME' }}" 
-                            showSecondaryValues="true" selectedKey="{fastAppData>ProductPackId}" change=".onProductPackChange"
-                            valueState="{fastAppData>ProductPackIdValueState}">
-                        <core:ListItem text="{fastAppData>PRODUCT_NAME}" key="{fastAppData>PRODUCT_ID}" additionalText="{fastAppData>BRAND_NAME}"/>
-                    </ComboBox>
+                   
+                    <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true"/>
                     <Select forceSelection="false" selectedKey="{fastAppData>FreeGoodsOther_ABS_PCT}">
                         <core:Item key="ABS" text="Absolute" />
                         <core:Item key="PCT" text="Percentage" />
                         <core:Item key="STP" text="Step" />
                     </Select>
                     <HBox>
-                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' ? true : false }"/> 
-                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther_Step'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
+                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
                         <Input  value="{path:'fastAppData>FreeGoodsOther',type: '.types.percent'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'PCT' ? true : false }"/> 
                     </HBox>
-                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP'?${fastAppData>UOM}:'%'}"></Text>
+                    <Input type="Number" value="{path:'fastAppData>FreeGoodsOther_Step'}" valueState="{fastAppData>FreeGoodsOtherStepValueState}" enabled="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
+                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP'?${fastAppData>UOM}:'%'}"></Text> 
                     <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
                 </cells>
             </ColumnListItem>

@@ -291,14 +291,25 @@
 											<Input value="{path:'fastAppData>FOCStep'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
 									</form:FormElement>	
-									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} === ${fastAppData>/EditSelectedProduct/UnitPerPack}}" >
 										<form:label>
 											<Label text="Net Offer Price" required="true"/>
 										</form:label>
 										<form:fields>
-											<Input value="{path:'fastAppData>NetofferPrice'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>
+											<Input value="{path:'fastAppData>NetofferPrice'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>											
 										</form:fields>
 									</form:FormElement>
+
+									<form:FormElement visible="{= ${finOfferView>/selectedProductUoM} !== ${fastAppData>/EditSelectedProduct/UnitPerPack}}" >
+										<form:label>
+											<Label text="Net Offer Price" required="true"/>
+										</form:label>
+										<form:fields>											
+											<Input fieldWidth="80%" description="EUR" value="{= ${finOfferView>/selectedProductUoM} === 'Pack' ? (${fastAppData>NetofferPrice}/${fastAppData>PACKFACTOR}).toFixed(2)  : ${fastAppData>NetofferPrice}*${fastAppData>PACKFACTOR} }" enabled="false"/>
+										</form:fields>
+									</form:FormElement>
+
+
 									<form:FormElement label="Free goods for other product(s)">
 										<form:fields>
 											<MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }">
