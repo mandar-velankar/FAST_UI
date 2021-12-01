@@ -305,7 +305,7 @@
 											<Label text="Net Offer Price" required="true"/>
 										</form:label>
 										<form:fields>											
-											<Input fieldWidth="80%" description="EUR" value="{= ${finOfferView>/selectedProductUoM} === 'Pack' ? (${fastAppData>NetofferPrice}/${fastAppData>PACKFACTOR}).toFixed(2)  : ${fastAppData>NetofferPrice}*${fastAppData>PACKFACTOR} }" enabled="false"/>
+											<Input fieldWidth="80%" description="EUR" value="{= ${finOfferView>/selectedProductUoM} === 'Pack' ? (${fastAppData>NetofferPrice}*${fastAppData>PACKFACTOR}).toFixed(2)  : (${fastAppData>NetofferPrice}/${fastAppData>PACKFACTOR}).toFixed(2) }" enabled="false"/>
 										</form:fields>
 									</form:FormElement>
 
