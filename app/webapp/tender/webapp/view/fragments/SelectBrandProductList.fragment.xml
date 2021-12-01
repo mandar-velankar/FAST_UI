@@ -15,7 +15,8 @@
 		confirm="_handleValueHelpClose"
 		cancel="_handleValueHelpClose"
 		items="{
-			path: 'fastAppData>/CountryBrandProducts'
+			path: 'fastAppData>/CountryBrandProducts',
+			sorter: {path: 'PRODUCT_NAME'}
 		}">
 		<StandardListItem
 			title="{fastAppData>PRODUCT_NAME}"
