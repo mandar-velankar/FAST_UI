@@ -518,13 +518,12 @@ sap.ui.define([
 			}
 			
 			if(sSelectedRbtn === 'Unit'){
-				var additionalDiscount = ((consumerPrice.MaxPriceNhsPU / netOfferPrice) - 1);
-				var totalDiscount = (consumerPrice.ConsumerPriceExclPU - consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPU;
+				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPU);
+				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPU);
 
 			} else if(sSelectedRbtn === 'Pack'){
-				additionalDiscount = ((consumerPrice.MaxPriceNhsPP / netOfferPrice) - 1);
-				totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
-
+				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPP);
+				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPP);
 			}
 			
 
