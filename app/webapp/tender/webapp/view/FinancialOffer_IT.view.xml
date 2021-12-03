@@ -251,12 +251,12 @@
 											<Label text="Additional Discount"/>
 										</form:label>
 										<form:fields>
-											<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount'}" description="%" enabled="false" fieldWidth="80%" liveChange=".calculateTotalDiscount"/>
+											<Input id="addDiscount" value="{path:'fastAppData>AdditionalDiscount'}" description="%" enabled="false" fieldWidth="80%" />
 										</form:fields>
 									</form:FormElement>	
 									<form:FormElement label="Final Discount">
 										<form:fields>
-											<Input id="idTotalDiscount" description="%"   enabled="false" fieldWidth="80%"/>
+											<Input id="idFinalDiscount" description="%"   enabled="false" fieldWidth="80%"/>
 										</form:fields>
 									</form:FormElement>			
 									<form:FormElement>

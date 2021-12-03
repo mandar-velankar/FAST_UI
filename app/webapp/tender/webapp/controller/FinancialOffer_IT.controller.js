@@ -268,8 +268,8 @@ sap.ui.define([
 			//dynamic message logic
 			this._checkTaxRate(oProductPrice);
 
-			//calculate total discount at start
-			this.calculateTotalDiscount();
+			//calculate discounts at start
+			this.calculateAdditionalDiscount();
 			
 		},
 
@@ -491,21 +491,6 @@ sap.ui.define([
 			this._DetailController.onApprovalsPress(oEvent);
 		},
 
-
-		calculateTotalDiscount: function (oEvent) {
-
-			const consumerPrice = Services.getFastAppDataModel().getProperty(this.selectedProductPricePath);
-			var additionalDiscount;
-			if(oEvent){
-				additionalDiscount = oEvent.getParameter("newValue")/100;
-			} else {
-				additionalDiscount = consumerPrice.AdditionalDiscount;
-			}
-			
-			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
-			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
-		},
-
 		calculateAdditionalDiscount: function (oEvent) {
 
 			const consumerPrice = Services.getFastAppDataModel().getProperty(this.selectedProductPricePath);
@@ -514,7 +499,7 @@ sap.ui.define([
 			if(oEvent){
 				var netOfferPrice = oEvent.getParameter("newValue");
 			} else {
-				netOfferPrice = consumerPrice.NetOfferPrice;
+				netOfferPrice = consumerPrice.NetofferPrice;
 			}
 			
 			if(sSelectedRbtn === 'Unit'){
@@ -527,7 +512,7 @@ sap.ui.define([
 			}
 			
 
-			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
+			this.byId("idFinalDiscount").setValue((totalDiscount*100).toFixed(2));
 			this.byId("addDiscount").setValue((additionalDiscount*100).toFixed(2));
 		},
 
