@@ -724,9 +724,9 @@ sap.ui.define([
 					oDetailController.getView().byId("cloneButtonId").setVisible(false);
 				}else {
 					oDetailController.getView().byId("cloneButtonId").setVisible(true);
+					oDetailController.getView().byId("cloneButtonId").setEnabled(true);
 				}
 				
-				oDetailController.getView().byId("cloneButtonId").setEnabled(true);
 				oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
 
 				if (!sTab || sTab === Services.getBasicInformationPageSectionID()) {
@@ -2295,6 +2295,10 @@ sap.ui.define([
 				var updateButton = that.byId(updateButtonId);
 				updateButton.setEnabled(bCurrentShowFooterState);
 				updateButton.setVisible(true);
+
+				if(updateButtonId === 'cloneButtonId' && Services.getSelectedCountry() === 'IT'){
+				updateButton.setVisible(false);
+				}
 			});
 
 		},
@@ -8410,6 +8414,9 @@ sap.ui.define([
 			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
 
 			let oMail = {
+				"CountryCode": Services.getSelectedCountry(),
+				"TenderID": Services.getSelectedTenderID(),
+				"OfferID": Services.getSelectedOfferID(),
 				"Sender":sSenders[0].getProperty('text'),
 				"Recipients":sRecipients,
 				"Subject":sSubject,

@@ -7,10 +7,15 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/financial",
 	"sap/ui/core/Fragment",
 	"FAST_NS0FAST0/model/datatypes/PercentageType",
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType) {
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator) {
 	"use strict";
+	
+	var bundle;
 
 	return Controller.extend("FAST_NS0FAST0.controller.FinancialOffer_IT", {
+
 
 		//Formatting functions
 		formatter: formatter,
@@ -34,6 +39,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this._oRouter = this._oOwnerComponent.getRouter();
 			this._oModel = this._oOwnerComponent.getModel();
+			bundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
 			this._DetailView = sap.ui.getCore().byId(this.getView().getId().split("---")[0] + "---tenderManagementDetailId");
 			this._DetailController = this._DetailView.getController();
@@ -130,6 +136,53 @@ sap.ui.define([
 			this.setFinancialOffer();
 		},
 
+		handleValueHelp: function(oEvent){
+
+			var oView = this.getView();
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.SelectBrandProductList",
+					controller: this
+				}).then(function (oValueHelpDialog) {
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+
+			// open value help dialog
+			this._pValueHelpDialog.then(function (oValueHelpDialog) {
+				oValueHelpDialog.open();
+			});
+		},
+
+		_handleValueHelpSearch: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilter = new Filter(
+				"PRODUCT_NAME",
+				FilterOperator.Contains, sValue
+			);
+			oEvent.getSource().getBinding("items").filter([oFilter]);
+		},
+
+		_handleValueHelpClose: function (oEvent) {
+			var oFastAppData = Services.getFastAppDataModel();
+			var sPath = '/EditProduct/FreeGoodsOther/0';
+			var oFreeGoodsOther = oFastAppData.getProperty(sPath);
+
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oInputfield = this.byId('idOtherProducts');
+				oInputfield.setValue(oSelectedItem.getTitle());
+
+				oFreeGoodsOther.ProductPackId = parseInt(oSelectedItem.getDescription());
+				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
+				oFastAppData.setProperty(sPath, oFreeGoodsOther)
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		},
+
 		/* GETTERS */
 		/**
 		 * Fetches a list of Tender products from the backend
@@ -215,8 +268,8 @@ sap.ui.define([
 			//dynamic message logic
 			this._checkTaxRate(oProductPrice);
 
-			//calculate total discount at start
-			this.calculateTotalDiscount();
+			//calculate discounts at start
+			this.calculateAdditionalDiscount();
 			
 		},
 
@@ -438,21 +491,6 @@ sap.ui.define([
 			this._DetailController.onApprovalsPress(oEvent);
 		},
 
-
-		calculateTotalDiscount: function (oEvent) {
-
-			const consumerPrice = Services.getFastAppDataModel().getProperty(this.selectedProductPricePath);
-			var additionalDiscount;
-			if(oEvent){
-				additionalDiscount = oEvent.getParameter("newValue")/100;
-			} else {
-				additionalDiscount = consumerPrice.AdditionalDiscount;
-			}
-			
-			const totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
-			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
-		},
-
 		calculateAdditionalDiscount: function (oEvent) {
 
 			const consumerPrice = Services.getFastAppDataModel().getProperty(this.selectedProductPricePath);
@@ -461,21 +499,20 @@ sap.ui.define([
 			if(oEvent){
 				var netOfferPrice = oEvent.getParameter("newValue");
 			} else {
-				netOfferPrice = consumerPrice.NetOfferPrice;
+				netOfferPrice = consumerPrice.NetofferPrice;
 			}
 			
 			if(sSelectedRbtn === 'Unit'){
-				var additionalDiscount = ((consumerPrice.MaxPriceNhsPU / netOfferPrice) - 1);
-				var totalDiscount = (consumerPrice.ConsumerPriceExclPU - consumerPrice.MaxPriceNhsPU * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPU;
+				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPU);
+				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPU);
 
 			} else if(sSelectedRbtn === 'Pack'){
-				additionalDiscount = ((consumerPrice.MaxPriceNhsPP / netOfferPrice) - 1);
-				totalDiscount = (consumerPrice.ConsumerPriceExclPP - consumerPrice.MaxPriceNhsPP * (1 - additionalDiscount)) / consumerPrice.ConsumerPriceExclPP;
-
+				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPP);
+				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPP);
 			}
 			
 
-			this.byId("idTotalDiscount").setValue((totalDiscount*100).toFixed(2));
+			this.byId("idFinalDiscount").setValue((totalDiscount*100).toFixed(2));
 			this.byId("addDiscount").setValue((additionalDiscount*100).toFixed(2));
 		},
 
@@ -571,11 +608,17 @@ sap.ui.define([
 			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
 			freeGoodsOther = freeGoodsOther.map(freeGoods => {
 				freeGoods.FreeGoodsOtherValueState = "None";
+				freeGoods.FreeGoodsOtherStepValueState = "None";
+
 				if (!freeGoods.ProductName || freeGoods.ProductName === "") {
 					freeGoods.ProductPackIdValueState = "Error";
 				}
-				if ( (freeGoods.FreeGoodsOther_ABS_PCT !== 'STP' && (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "")) || 
-					    (freeGoods.FreeGoodsOther_ABS_PCT === 'STP' && (!freeGoods.FreeGoodsOther_Step || freeGoods.FreeGoodsOther_Step === ""))) {
+
+				if((freeGoods.FreeGoodsOther_ABS_PCT === 'STP' && (!freeGoods.FreeGoodsOther_Step || freeGoods.FreeGoodsOther_Step === ""))){
+					freeGoods.FreeGoodsOtherStepValueState = "Error";
+				}
+
+				if ( (!freeGoods.FreeGoodsOther || freeGoods.FreeGoodsOther === "")) {
 					freeGoods.FreeGoodsOtherValueState = "Error";
 				}
 				return freeGoods;

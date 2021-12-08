@@ -1,0 +1,29 @@
+<!-- Fragment for Add product - Product offer screen -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+
+    <SelectDialog
+		id="mySelectDialog"
+		noDataText="No Products Found"
+		title="Select Product"
+		search="_handleValueHelpSearch"
+		liveChange="_handleValueHelpSearch"
+		confirm="_handleValueHelpClose"
+		cancel="_handleValueHelpClose"
+		items="{
+			path: 'fastAppData>/CountryBrandProducts',
+			sorter: {path: 'PRODUCT_NAME'}
+		}">
+		<StandardListItem
+			title="{fastAppData>PRODUCT_NAME}"
+			description="{fastAppData>PRODUCT_ID}"
+			iconDensityAware="false"
+			iconInset="false"
+			type="Active" />
+	</SelectDialog>
+
+</core:FragmentDefinition>
