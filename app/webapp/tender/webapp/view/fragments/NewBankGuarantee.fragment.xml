@@ -60,7 +60,7 @@
 
 				<!-- Currency -->
 				<Label text="{i18n>Currency}" required="true" />
-				<Select id="idCurrencynewBankGuarantee" selectedKey="{fastAppData>/newBankGuarantee/Currency}" items="{ path: 'fastAppData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' } }">
+				<Select id="idCurrencynewBankGuarantee" selectedKey="{fastAppData>/newBankGuarantee/Currency}" items="{ path: 'fastAppData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' } }">
 					<core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>
 				</Select>
 
