@@ -169,7 +169,7 @@
                             <t:Column width="7rem">
                                 <m:Label text="Currency"/>
                                 <t:template>
-                                    <m:Select id="resultsForTreeCurrency" selectedKey="{fastAppData>CURRENCY}" items="{ path: 'fastAppData>/CountryCurrency/', templateShareable: false, sorter: { path: 'COUNTRY_CODE' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}">
+                                    <m:Select id="resultsForTreeCurrency" selectedKey="{fastAppData>CURRENCY}" items="{ path: 'fastAppData>/CountryCurrency', templateShareable: false, sorter: { path: 'COUNTRY_CODE' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}">
                                         <core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>
                                     </m:Select>
                                 </t:template>
