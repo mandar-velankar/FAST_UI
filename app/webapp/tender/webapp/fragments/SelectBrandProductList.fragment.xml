@@ -164,7 +164,7 @@
 																<cells>
 																	<VBox>
 																		<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="false" />
-																		<Text text="{fastAppData>SKU/ProductPackSKUs/results/0/SKUCode}" wrapping="false" />
+																		<Text text="{fastAppData>SKUS}" wrapping="false" />
 																		<!--<Text text="{fastAppData>SORTER}" wrapping="false" />-->
 																	</VBox>
 																	
