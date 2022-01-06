@@ -5885,6 +5885,7 @@ sap.ui.define([
 					oAddProduct.PricingPolicyCluster = oProduct.COUNTRY_CODE === 'CL' ? "Without Comodatos" : "";
 					oAddProduct.MinInvoiceAmount = "";
 					oAddProduct.DeliveryConditions = "";
+					oAddProduct.SKUS = oProduct.SKUS;
 					
 					oAddProduct.SKU = {
 						PRODUCTPACKNAME: oProduct.PRODUCT_NAME,
