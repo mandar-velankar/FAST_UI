@@ -21,7 +21,7 @@
                     <Text text="{i18n>product}"/>
                 </Column>
                 <Column>
-                    <Text text="{i18n>type}"/>
+                    <Text text="{i18n>focType}"/>
                 </Column>
                 <Column>
                     <Text text="{i18n>FOCQuantity}"/>
