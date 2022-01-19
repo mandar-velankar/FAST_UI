@@ -105,7 +105,7 @@ sap.ui.define([
 			oProductPriceToSave.OfferID = oProductPriceSaveInfo.OfferID;
 			oProductPriceToSave.ProductCode = oProductPriceSaveInfo.ProductCode;
 			oProductPriceToSave.CountryCode = oProductPriceSaveInfo.CountryCode;
-			oProductPriceToSave.Warranty = (oProductPriceSaveInfo.Warranty === null) ? null : oProductPriceSaveInfo.Warranty.toString();
+			oProductPriceToSave.Warranty = Number(oProductPriceSaveInfo.Warranty);
 			oProductPriceToSave.AgreementDuration = Number(oProductPriceSaveInfo.AgreementDuration);
 			oProductPriceToSave.MonthlyRent = (oProductPriceSaveInfo.MonthlyRent === null) ? null : oProductPriceSaveInfo.MonthlyRent.toString();
 			oProductPriceToSave.MonthsPerInvoice = Number(oProductPriceSaveInfo.MonthsPerInvoice);
@@ -152,6 +152,29 @@ sap.ui.define([
 			return aInvalidFields;
 		},
 
+		validateMonthlyFieldData: function (sOfferType, oPriceSaveInfo, sProductType){
+			let aInvalidFields = [];
+			var drug = false;
+			if (sProductType === "Drug") {
+				drug = true;
+			}
+			switch (sOfferType) {
+				case 'Selling':
+					this.validateProductPriceSellingMonths(oPriceSaveInfo, aInvalidFields, drug);
+					break;
+				case 'Rental':
+					this.validateProductPriceRentalMonths(oPriceSaveInfo, aInvalidFields);
+					break;
+				case 'Comodato':
+					this.validateProductPriceComodatoMonths(oPriceSaveInfo, aInvalidFields);
+					break;
+				default:
+					break;
+			}
+
+			return aInvalidFields;
+		},
+
 		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
 				
@@ -179,6 +202,31 @@ sap.ui.define([
 			Object.keys(oPriceSaveInfo).forEach(e => {
 				if ((e === 'Warranty' || e === 'StatusOfDevice'  ||  e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceSellingMonths: function (oPriceSaveInfo, aInvalidFields, drug) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				
+				if ((e === 'Warranty' && !drug && oPriceSaveInfo[e] !== null && oPriceSaveInfo[e] !== ""  && (oPriceSaveInfo[e] - Math.floor(oPriceSaveInfo[e])) !== 0)) {
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceRentalMonths: function (oPriceSaveInfo, aInvalidFields) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if ((e === 'AgreementDuration' || e === 'MonthsPerInvoice' || e === 'Warranty') && (oPriceSaveInfo[e] !== null && oPriceSaveInfo[e] !== "" && (oPriceSaveInfo[e] - Math.floor(oPriceSaveInfo[e])) !== 0)){
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceComodatoMonths: function (oPriceSaveInfo, aInvalidFields) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if ((e === 'Warranty' || e === 'AgreementDuration' || e === 'MinContractual' ) && (oPriceSaveInfo[e] !== null && oPriceSaveInfo[e] !== "" && (oPriceSaveInfo[e] - Math.floor(oPriceSaveInfo[e])) !== 0)){
 					aInvalidFields.push(e);
 				}
 			});
