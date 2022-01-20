@@ -75,16 +75,16 @@
 					}" 
 					enabled="true"/>
 
-				<!-- Contract Date
-				<Label text="{i18n>closingDate}" required="true"/>
+				<!-- Expected Expiry Date-->
+				<Label text="{i18n>expectedExpiryDate}" required="true"/>
 				<DatePicker 
-					id="idClosingDateNewBankGuarantee" 
+					id="idExpectedExpiryDateNewBankGuarantee" 
 					value="{
-						path :'fastAppData>/newBankGuarantee/ClosingDate', 
+						path :'fastAppData>/newBankGuarantee/ExpectedExpiryDate', 
 						type: 'sap.ui.model.type.Date', 
 						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 					}" 
-					enabled="true"/>-->
+					enabled="true"/>
 
                 <Label text="{i18n>comment}"/>
 				<TextArea value="{fastAppData>/newBankGuarantee/Comment}" 
