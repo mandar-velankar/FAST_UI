@@ -53,6 +53,7 @@ sap.ui.define([
                 Reference: "",
                 IssueDate: null,
                 ClosingDate: null,
+				ExpectedExpiryDate: null,
                 Status: "",
                 Type: type,
                 GuaranteedAmount: 0,
