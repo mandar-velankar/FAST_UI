@@ -6894,7 +6894,8 @@ sap.ui.define([
 			   oBankGuarantee.Type && 
 			   oBankGuarantee.GuaranteedAmount != 0 && 
 			   oBankGuarantee.Currency && 
-			   oBankGuarantee.IssueDate){
+			   oBankGuarantee.IssueDate &&
+			   oBankGuarantee.ExpectedExpiryDate){
 			   //oBankGuarantee.ClosingDate
 					bValid = true;
 			}
