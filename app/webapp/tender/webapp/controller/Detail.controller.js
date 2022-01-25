@@ -5349,6 +5349,7 @@ sap.ui.define([
 				this.byId("idintrDueDte").getValue() === "" ||
 				this.byId("idSellingCompany").getSelectedKey() === "" ||
 				this.byId("idWhleSle").getSelectedItem().getKey() === "" ||
+				this.byId("idProductOfferDivision").getSelectedItem().getKey() === "" ||
 				//new offer date only exists in continued or reviewed offer - but in this case it is a mandatory field
 				(
 					(Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed()) && (this.byId("idNewOfferDate").getValue() === "")
