@@ -6088,8 +6088,10 @@ sap.ui.define([
 								},
 								liveChange: function (oEvent) {
 									var sValue = oEvent.getParameter("value");
-									var oFilter = new sap.ui.model.Filter("BRAND_NAME", sap.ui.model.FilterOperator.Contains, sValue);
-									oEvent.getSource().getBinding("items").filter([oFilter]);
+									var oFilters = [];
+									oFilters.push(new sap.ui.model.Filter("BRAND_NAME", sap.ui.model.FilterOperator.Contains, sValue));
+									oFilters.push(new sap.ui.model.Filter("BRAND_ID", sap.ui.model.FilterOperator.Contains, sValue));
+									oEvent.getSource().getBinding("items").filter(new sap.ui.model.Filter(oFilters, false));
 								},
 								confirm: function (oEvent) {
 									that._handleCloseBrandNameList(oEvent);
