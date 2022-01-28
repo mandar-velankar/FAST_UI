@@ -38,7 +38,7 @@
 						<form:SimpleForm id="idCurrencyForm" editable="true"  layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
 							 columnsL="1" class="editableForm"  title="">
 							<Label text="{i18n>Currency}"/>
-								<Select id="idCurrency" selectedKey="{fastAppData>/EditOffer/Currency}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' }, filters: [
+								<Select id="idCurrency" selectedKey="{fastAppData>/EditOffer/Currency}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' }, filters: [
 									{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
 								] }" >					
 									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
@@ -357,13 +357,13 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
-								<Input value="{fastAppData>Warranty}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Input value="{fastAppData>Warranty}" liveChange="onValidateMonth" change="onValidateMonth" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " required="true"/>
-								<Input value="{fastAppData>AgreementDuration}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>AgreementDuration}" type="Number"  liveChange="onValidateMonth" change="onValidateMonth"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Monthly rent" required="true"/>
 								<Input value="{fastAppData>MonthlyRent}" type="Number"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Months per invoice" required="true" />
-								<Input value="{fastAppData>MonthsPerInvoice}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>MonthsPerInvoice}" type="Number"  liveChange="onValidateMonth" change="onValidateMonth" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Contract start date" required="true"/>
 								<DatePicker 
 									value="{
@@ -428,11 +428,11 @@
 							singleContainerFullSize="false" >
 							<form:content>
 								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
-								<Input value="{fastAppData>Warranty}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
+								<Input value="{fastAppData>Warranty}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " required="true"/>
-								<Input value="{fastAppData>AgreementDuration}" type="Number" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>AgreementDuration}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Minimum contractual commitment" required="true"/>
-								<Input value="{fastAppData>MinContractual}" type="Number" description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+								<Input value="{fastAppData>MinContractual}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number" description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Minimum annual purchase amount" required="true"/>
 								<Input value="{fastAppData>MinAnnPurch}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Contract start date" required="true"/>

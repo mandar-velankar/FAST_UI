@@ -159,7 +159,7 @@
 							<l:GridData span="L4 M4 S4"/>
 						</layoutData>
 					</Label>
-					<Select id="idCurrency" items="{ path: 'fastAppData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' } }" selectedKey="{fastAppData>/EditDelivery/Currency}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
+					<Select id="idCurrency" items="{ path: 'fastAppData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' } }" selectedKey="{fastAppData>/EditDelivery/Currency}" visible="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true }">
 					
 						<core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>
 						

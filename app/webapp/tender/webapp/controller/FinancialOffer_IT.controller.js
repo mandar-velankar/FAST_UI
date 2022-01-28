@@ -6,7 +6,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
 	"FAST_NS0FAST0/model/financial",
 	"sap/ui/core/Fragment",
-	"FAST_NS0FAST0/model/datatypes/PercentageType",
+	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 ], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator) {
@@ -20,7 +20,7 @@ sap.ui.define([
 		//Formatting functions
 		formatter: formatter,
 		types: {
-			percent: new PercentageType()
+			percent: PercentageType
 		},
 
 		onInit: function (oEvent) {
@@ -329,7 +329,8 @@ sap.ui.define([
 
 			let oProductPriceToSave = Services.getService('Price').getConvertProductPriceToSave(oProductPrice);
 			let aMandatoryFieldsMissing = Services.getService('Price').validateProductPriceToSave(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType, oPriceToSave.FOC_ABS_PCT, oPriceToSave.NetofferPrice);
-			
+			let aInvalidFieldData = Services.getService('Price').validateMonthlyFieldData(oProduct.OfferType, oProductPriceToSave, oProduct.SKU.ProductType);
+
 			if(aMandatoryFieldsMissing.length > 0){
 				let sTitle = "Mandatory fields missing";
 				var sErroneousFields = "";
@@ -350,13 +351,36 @@ sap.ui.define([
 					counter: 1
 				}
 				aMessages.push(oMessage);
-				
-
-				//Show error messages
-				Services.showMessageCompositeView(sTitle, aMessages, 'Error');
 			}
 
-			if(aMandatoryFieldsMissing.length === 0){
+			if(aInvalidFieldData.length > 0){
+				let sTitle = "Invalid field data";
+				var sErroneousFields = "";
+
+				aInvalidFieldData.map((invalidField, index) => {
+					if (sErroneousFields === "") {
+						sErroneousFields = invalidField;
+					} else {
+						sErroneousFields = sErroneousFields + '\n' + invalidField;
+					}
+				});
+
+				var oMessage = {
+					type: 'Error',
+					title: 'Invalid field data',
+					description: sErroneousFields,
+					subtitle: 'The value should be a whole number.',
+					counter: 1
+				}
+				aMessages.push(oMessage);
+			}
+
+			if(aMessages.length > 0){
+				//Show error messages
+				Services.showMessageCompositeView('Error', aMessages, 'Error');
+			}
+
+			if(aMandatoryFieldsMissing.length === 0 && aInvalidFieldData.length === 0){
 				
 				let oResult = await Services.getService('Price').saveProductPrice(oProductPriceToSave);
 				if (oResult && oResult.data && oResult.data.ID) {
@@ -648,5 +672,25 @@ sap.ui.define([
 		_setSelectedProductUoM(uom){
 			this.getView().getModel("finOfferView").setProperty("/selectedProductUoM", uom);
 		},
+
+		onValidateMonth: function(oEvent){
+			var oControl = oEvent.getSource();
+			this.validateMonthInput(oControl);
+		},
+
+		validateMonthInput: function(oControl){
+			var oBinding = oControl.getBinding("value");
+ 			var oValue = oControl.getValue();
+
+			try {
+				if((oValue - Math.floor(oValue)) !== 0){
+					oControl.setValueState(sap.ui.core.ValueState.Error);
+				} else {
+					oControl.setValueState(sap.ui.core.ValueState.None);
+				} 
+			} catch(exception){
+				oControl.setValueState(sap.ui.core.ValueState.Error);
+			}
+		}
 	});
 });

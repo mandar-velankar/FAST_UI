@@ -236,14 +236,16 @@ sap.ui.define([
 
 			//Deductions
 			oForm.addContent(new sap.m.Label({
-				text: "{i18n>Deductions}"
+				text: "{i18n>Deductions}",
+				visible: sCountryCode === "CL" ? false : true
 			}));
 			oForm.addContent(new sap.m.Input({
 				id: oDetailController.getView().createId(formId + "_idDeduction"),
 				value: formatter.percentageNoUnit(price.deductions),
 				description: "%",
 				enabled: (forEdit && !forScenario),
-				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
+				visible: sCountryCode === "CL" ? false : true
 			}));
 
 			//Net price
@@ -1436,7 +1438,7 @@ sap.ui.define([
 					new sap.m.ObjectNumber({
 						number: {
 							parts: [{
-								path: "UNIT_NET_PRICE",
+								path: "PACK_NET_PRICE",
 								model: "fastData"
 							}, {
 								path: "CURRENCY",

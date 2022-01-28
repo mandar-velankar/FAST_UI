@@ -21,10 +21,10 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Tender Management" 
 									press="onTileTenderManagementPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									appShortcut = "shortcut" systemInfo = "systeminfo"
 									visible="{tiles>/tender}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://request"/>
 									</TileContent>
 								</GenericTile>
 
@@ -32,11 +32,10 @@
 								<GenericTile 
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Pricing Management" 
-									press="onTileEpaManagementPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+									press="onTileEpaManagementPress"
 									visible="{tiles>/epa}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://business-one"/>
 									</TileContent>
 								</GenericTile>
 
@@ -45,10 +44,9 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Pricing Policy Management" 
 									press="onTilePpaManagementPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
 									visible="{tiles>/ppa}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://business-one"/>
 									</TileContent>
 								</GenericTile>
 
@@ -57,10 +55,9 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Contract Management" 
 									press="onTileContractManagementPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
 									visible="{tiles>/contract}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://batch-payments"/>
 									</TileContent>
 								</GenericTile>
 
@@ -69,10 +66,9 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Bank Guarantees" 
 									press="onTileBankGuaranteesPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
 									visible="{tiles>/bankguarantees}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://credit-card"/>
 									</TileContent>
 								</GenericTile>
 								
@@ -81,10 +77,9 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Price Agreements" 
 									press="onTilePriceAgreementsPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
 									visible="{tiles>/priceagreements}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://decision"/>
 									</TileContent>
 								</GenericTile>
 								
@@ -104,10 +99,9 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Sales Opportunity (Mercado Publico)" 
 									press="onTileSalesOpportunityPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
 									visible="{tiles>/salesopportunity}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://sales-notification"/>
 									</TileContent>
 								</GenericTile>
 
@@ -116,10 +110,9 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Create Sales Opportunity" 
 									press="onTileCreateSalesOpportunityPress" 
-									backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
 									visible="{tiles>/createsalesopportunity}">
-									<TileContent footer="Go to application...">
-										<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+									<TileContent>
+										<ImageContent src="sap-icon://sales-notification"/>
 									</TileContent>
 								</GenericTile>
 								
@@ -209,11 +202,10 @@
 							<GenericTile 
 										class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 										header="Admin app" 
-										press="onTileAdminPress" 
-										backgroundImage="{imageModel>/path}/Company-Logo-White.svg"
+										press="onTileAdminPress"
 										visible="{tiles>/masterdata}">
-										<TileContent footer="Go to application...">
-											<ImageContent src="{imageModel>/path}/FAST_Logo.jpg" class="sapUiLargeMarginBegin"/>
+										<TileContent>
+											<ImageContent src="sap-icon://key-user-settings"/>
 										</TileContent>
 							</GenericTile>
 							
