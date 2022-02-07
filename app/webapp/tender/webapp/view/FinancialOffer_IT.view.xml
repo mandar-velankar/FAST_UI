@@ -365,12 +365,8 @@
 								<Label text="Months per invoice" required="true" />
 								<Input value="{fastAppData>MonthsPerInvoice}" type="Number"  liveChange="onValidateMonth" change="onValidateMonth" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Contract start date" required="true"/>
-								<DatePicker 
-									value="{
-										path :'fastAppData>ContractStartDate', 
-										type: 'sap.ui.model.type.Date', 
-										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
-									}" 
+								<Input 
+									value="{fastAppData>ContractStartDate}" 
 									enabled="{fastAppData>/EditMode}"/>
 								<Label text="Value of devices" required="true"/>
 								<Input value="{fastAppData>ValueOfDevices}" type="Number"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
@@ -436,12 +432,8 @@
 								<Label text="Minimum annual purchase amount" required="true"/>
 								<Input value="{fastAppData>MinAnnPurch}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 								<Label text="Contract start date" required="true"/>
-								<DatePicker 
-									value="{
-										path :'fastAppData>ContractStartDate', 
-										type: 'sap.ui.model.type.Date', 
-										formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
-									}" 
+								<Input 
+									value="{fastAppData>ContractStartDate}" 
 									enabled="{fastAppData>/EditMode}"/>
 								<Label text="Value of devices" required="true"/>
 								<Input value="{fastAppData>ValueOfDevices}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
