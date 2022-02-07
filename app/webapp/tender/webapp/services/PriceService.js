@@ -109,7 +109,7 @@ sap.ui.define([
 			oProductPriceToSave.AgreementDuration = Number(oProductPriceSaveInfo.AgreementDuration);
 			oProductPriceToSave.MonthlyRent = (oProductPriceSaveInfo.MonthlyRent === null) ? null : oProductPriceSaveInfo.MonthlyRent.toString();
 			oProductPriceToSave.MonthsPerInvoice = Number(oProductPriceSaveInfo.MonthsPerInvoice);
-			oProductPriceToSave.ContractStartDate = moment().utc().toDate();
+			oProductPriceToSave.ContractStartDate = oProductPriceSaveInfo.ContractStartDate;
 			oProductPriceToSave.ValueOfDevices = (oProductPriceSaveInfo.ValueOfDevices === null) ? null : oProductPriceSaveInfo.ValueOfDevices.toString();
 			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
