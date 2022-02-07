@@ -138,6 +138,14 @@ sap.ui.define([
 
 		handleValueHelp: function(oEvent){
 
+			Services.getInstituteDistributorBrandProductsForItaly(Services.getInstituteIDofSelectedTender()).then((response) => {
+
+				var oFastAppDataModel = Services.getFastAppDataModel();
+				oFastAppDataModel.setProperty("/ItalyProducts", response.data.results);
+
+	
+			});
+
 			var oView = this.getView();
 			// create value help dialog
 			if (!this._pValueHelpDialog) {
@@ -155,16 +163,17 @@ sap.ui.define([
 			this._pValueHelpDialog.then(function (oValueHelpDialog) {
 				oValueHelpDialog.open();
 			});
+
 		},
 
-		_handleValueHelpSearch: function (oEvent) {
+		_handleValueHelpSearch: function(oEvent) {
 			var sValue = oEvent.getParameter("value");
-			var oFilter = new Filter(
-				"PRODUCT_NAME",
-				FilterOperator.Contains, sValue
-			);
-			oEvent.getSource().getBinding("items").filter([oFilter]);
+			var oFilters = [];
+			oFilters.push(new sap.ui.model.Filter("PRODUCT_NAME", sap.ui.model.FilterOperator.Contains, sValue));
+			oFilters.push(new sap.ui.model.Filter("SKUS", sap.ui.model.FilterOperator.Contains, sValue));
+			oEvent.getSource().getBinding("items").filter(new sap.ui.model.Filter(oFilters, false));
 		},
+
 
 		_handleValueHelpClose: function (oEvent) {
 			var oFastAppData = Services.getFastAppDataModel();
