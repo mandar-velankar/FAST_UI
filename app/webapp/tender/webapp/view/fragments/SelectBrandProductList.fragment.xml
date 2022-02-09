@@ -15,12 +15,12 @@
 		confirm="_handleValueHelpClose"
 		cancel="_handleValueHelpClose"
 		items="{
-			path: 'fastAppData>/CountryBrandProducts',
+			path: 'fastAppData>/ItalyProducts',
 			sorter: {path: 'PRODUCT_NAME'}
 		}">
 		<StandardListItem
 			title="{fastAppData>PRODUCT_NAME}"
-			description="{fastAppData>PRODUCT_ID}"
+			description="{fastAppData>SKUS}"
 			iconDensityAware="false"
 			iconInset="false"
 			type="Active" />
