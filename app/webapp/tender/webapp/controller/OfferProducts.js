@@ -1438,7 +1438,7 @@ sap.ui.define([
 					new sap.m.ObjectNumber({
 						number: {
 							parts: [{
-								path: "UNIT_NET_PRICE",
+								path: "PACK_NET_PRICE",
 								model: "fastData"
 							}, {
 								path: "CURRENCY",
