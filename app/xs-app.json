@@ -58,9 +58,9 @@
       "source": "/priceagreements/(.*)$",
       "target": "$1",
       "destination": "priceAgreementsApp"
-    },  
-    {
+    },{
       "source": "^/app/index.html(.*)$",
+      "target":"index.html$1",
       "localDir": "dist",
       "authenticationType": "xsuaa",
       "cacheControl": "no-cache, no-store, must-revalidate"

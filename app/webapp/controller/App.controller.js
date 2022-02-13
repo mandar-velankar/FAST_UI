@@ -24,7 +24,7 @@ sap.ui.define([
 						clearInterval(intervalId);
 						MessageBox.warning(this.getText("sessionEnd"), {
 							title: this.getText("information"),
-							actions: [this.getText("close")],
+							actions: [this.getText("reload")],
 							onClose: (sAction) => window.location.reload(true)
 						});
 					}
