@@ -7186,7 +7186,7 @@ sap.ui.define([
 									
 									if(oOffer.CountryCode === "AR"){
 										oOffer.Product.results.map((product) => {
-											if(product.Price.BusinessCasePrice !== "" && product.Price.BusinessCasePrice !== null){
+											if(product.Price !== null && product.Price.BusinessCasePrice !== null && product.Price.BusinessCasePrice !== ""){
 												bWarning = true;
 											}
 										});
