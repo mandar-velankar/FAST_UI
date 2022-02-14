@@ -40,7 +40,7 @@ sap.ui.define([
 				ppa:false,
 				contract:false,
 				salesopportunity:false,
-				createsalesopportunity:false,
+				createopportunity:false,
 				bankguarantees:false,
 				priceagreements:false,
 				masterdata:false
