@@ -386,19 +386,6 @@
                                             </m:VBox>																
                                             <m:VBox width="4%">
                                             </m:VBox>	
-                                            <!-- Company stamp -->
-                                            <m:VBox class="sapUiSmallMarginEnd" width="48%" alignItems="Start">
-                                                <m:items>
-                                                    <m:Label text="{i18n>qCompanyStamp}" design="Bold"/>
-                                                    <m:Select id="idSelectCompanyStamp" 
-                                                        showSecondaryValues="true"
-                                                        selectedKey="{fastAppData>/OfferValidation/SELLING_COMPANY_AS2}" 
-                                                        enabled="false" 
-                                                        items="{ path: 'fastAppData>/EditOffer/Signatories/results'}">
-                                                            <core:ListItem text="{fastAppData>NAME}" additionalText="{fastAppData>TITLE}" key="{fastAppData>AUTHORIZED_SIGNATORY}"/>
-                                                    </m:Select>
-                                                </m:items>
-                                            </m:VBox>
                                                     
                                         </m:items>
                                     </m:HBox>
