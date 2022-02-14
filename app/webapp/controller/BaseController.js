@@ -17,6 +17,9 @@ sap.ui.define([
 		getRouter : function () {
 			return UIComponent.getRouterFor(this);
 		},
+		getText: function (key, params) {
+			return this.getResourceBundle().getText(key, params);
+		},
 
 		/**
 		 * Convenience method for getting the view model by name.
