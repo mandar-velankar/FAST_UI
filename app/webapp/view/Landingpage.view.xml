@@ -110,7 +110,7 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Create Sales Opportunity" 
 									press="onTileCreateSalesOpportunityPress" 
-									visible="{tiles>/createsalesopportunity}">
+									visible="{tiles>/createopportunity}">
 									<TileContent>
 										<ImageContent src="sap-icon://sales-notification"/>
 									</TileContent>
@@ -208,7 +208,7 @@
 											<ImageContent src="sap-icon://key-user-settings"/>
 										</TileContent>
 							</GenericTile>
-							
+
 						</l:HorizontalLayout>
 					</l:VerticalLayout>
 				</Panel>
