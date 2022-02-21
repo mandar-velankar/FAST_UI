@@ -9442,7 +9442,7 @@ sap.ui.define([
 		 * @param {*} evt 
 		 */
 		onSendNotification: async function(evt){
-			const oDialog = await this._getSendNotificationDialog();
+			const oDialog = await this._getSendNotificationDialog();         
 			oDialog.open();
 		},
 
@@ -9451,6 +9451,8 @@ sap.ui.define([
 		 * New email dialog
 		 */
 		 _getSendNotificationDialog : async function () {
+
+            BusyIndicator.show();
 			
 			const oFastAppDataModel = Services.getFastAppDataModel();
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
@@ -9467,6 +9469,9 @@ sap.ui.define([
 				const template = await Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES", Services.getSelectedOfferID());
 			}
 			catch(error){
+                const errMsg = error.responseText && JSON.parse(error.responseText).error.message.value || error.message;
+                sap.m.MessageBox.error(errMsg);
+                BusyIndicator.hide();                
 				throw error;
 			}
 
