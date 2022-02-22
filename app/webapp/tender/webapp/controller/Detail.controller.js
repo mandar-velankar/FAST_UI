@@ -9452,11 +9452,10 @@ sap.ui.define([
 		 */
 		 _getSendNotificationDialog : async function () {
 
+             const oController = this;          
+
             BusyIndicator.show();
-			
-			const oFastAppDataModel = Services.getFastAppDataModel();
-			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
-			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
+		
 
 			if(this._sendNotificationDialog){
 				this._sendNotificationDialog.destroy();
@@ -9465,8 +9464,10 @@ sap.ui.define([
 			this._sendNotificationDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.NotificationMail", this);
 			this.getView().addDependent(this._sendNotificationDialog);
 
+            let template = undefined;
+            
 			try {
-				const template = await Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES", Services.getSelectedOfferID());
+				template = await Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES", Services.getSelectedOfferID());
 			}
 			catch(error){
                 const errMsg = error.responseText && JSON.parse(error.responseText).error.message.value || error.message;
@@ -9482,13 +9483,20 @@ sap.ui.define([
 			let oSender = sap.ui.getCore().byId("idFrom");
 			let sSender = UserInfo.getUserEmail();
 			let oEditor = sap.ui.getCore().byId("idEditor");
+
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
+			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
 			
 			oEditor.setValue(template.value);
 			oSubject.setValue(sSubject);
 
-			oRecipients.setTokens([
-				new Token({text: sRecipient, key: sRecipient}),
-			]);
+            if(sRecipient){
+                oRecipients.setTokens([
+                    new Token({text: sRecipient, key: sRecipient}),
+                ]);     
+            }
+
 
 			oSender.setTokens([
 				new Token({text: sSender, key: sSender}),
@@ -9498,6 +9506,18 @@ sap.ui.define([
 			let fnValidator = function(args){
 				let text = args.text;
 
+                const emailIsNotValid = oController.validateEmail(text);
+
+                if(emailIsNotValid){
+                    oRecipients.setValueStateText(emailIsNotValid)
+                    oRecipients.setValueState("Error");  
+                    oRecipients.openValueStateMessage();                 
+                    return;
+                }
+
+                oRecipients.setValueState("None"); 
+                oRecipients.closeValueStateMessage();
+                
 				return new Token({key: text, text: text});
 			};
 
@@ -9510,6 +9530,16 @@ sap.ui.define([
 			return this._sendNotificationDialog;
 
 		},
+
+
+        validateEmail: function (oValue) {
+            // The following Regex is only used for demonstration purposes and does not cover all variations of email addresses.
+            // It's always better to validate an address by simply sending an e-mail to it.
+            var rexMail = /^\w+[\w-+\.]*\@\w+([-\.]\w+)*\.[a-zA-Z]{2,}$/;
+            if (!oValue.match(rexMail)) {
+                return "'" + oValue + "' is not a valid e-mail address";
+            }
+        },
 
 
 		onSendNotificationMail: function(evt){
