@@ -1119,7 +1119,7 @@ sap.ui.define([
 				//only on master list, basic info, offer products it is possible that you don't have an offer selected.
 				//other tabs should always have an offer selected.
 				if (
-					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getQuotationPageSectionID() ||
+					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getQuotationPageSectionID() ||
 					sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
 				)
 				//edit button is disabled
@@ -1290,6 +1290,16 @@ sap.ui.define([
 					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_IT", true);
 				} else {
 					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_IT", false);
+				}
+				break;
+            
+            case Services.getFinancialOfferPageSectionID_ES():
+
+				//check if offer is valid for selection (within this method we store the result also on the fastappdatamodel/checkOfferVisibleForTab)
+				if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)){
+					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", true);
+				} else {
+					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
 				}
 				break;
 
@@ -1617,6 +1627,17 @@ sap.ui.define([
 						oFinOfferController.refreshFinancialTabIT();
 					}
 
+                    if (that.getView().getContent()[0].getSelectedSection() == Services.getFinancialOfferPageSectionID_ES() && Services.checkOfferVisibleForTab(
+						Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//FINANCIAL OFFER for IT
+						//select offer again (TODO)
+						//that.onFinancialOfferItemPress();
+						var oView = that.getView().byId("financialOfferViewId_ES");
+						var oFinOfferController = oView.getController();
+						oFinOfferController.refreshFinancialTabES();
+					}
+
 					if (that.getView().getContent()[0].getSelectedSection() == Services.getDeliveryTrackingPageSectionID() && Services.checkOfferVisibleForTab(
 							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
 
@@ -1764,6 +1785,22 @@ sap.ui.define([
 						}
 	
 						break;
+                case Services.getFinancialOfferPageSectionID_ES():
+						//FINANCIAL OFFER TAB
+						//that._showSectionFragment("FinancialOfferView", "financialOfferId");
+	
+						//check for approval enabled 
+						var sSelectedOfferID = Services.getSelectedOfferID();
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+	
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						if (bEnableApproval && sSelectedOfferID !== '' && oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+							that.byId("ApprovalButtonId").setEnabled(true);
+						} else {
+							that.byId("ApprovalButtonId").setEnabled(false);
+						}
+	
+						break;
 				case Services.getQuotationPageSectionID():
 							
 					//show fragment for TAB: Quotation
@@ -1854,6 +1891,7 @@ sap.ui.define([
 						Services.getOfferProductPageSectionID(),
 						Services.getFinancialOfferPageSectionID(),
 						Services.getFinancialOfferPageSectionID_IT(),
+						Services.getFinancialOfferPageSectionID_ES(),
 						Services.getQuotationPageSectionID(),
 						Services.getTenderResultsPageSectionID(),
 						Services.getDeliveryTrackingPageSectionID()
@@ -2207,6 +2245,12 @@ sap.ui.define([
 						var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 						break;
+                    case Services.getFinancialOfferPageSectionID_ES():
+						//FINANCIAL OFFER TAB for ES
+						//Edit offer copy to move back to original values during cancel
+						var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+						break;
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
@@ -2470,7 +2514,7 @@ sap.ui.define([
 			//check if selected offer was available in table
 			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable(true);
 
-			if(sSelectedSection === Services.getFinancialOfferPageSectionID_IT() && Services.getSelectedProductID() === ''){
+			if((sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES()) && Services.getSelectedProductID() === ''){
 
 				sap.m.MessageBox.warning("First select an product to edit.", {});
 
@@ -2705,6 +2749,36 @@ sap.ui.define([
 								break;
 						}
 						break;
+                    case Services.getFinancialOfferPageSectionID_ES():
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelFinancialOfferTableID").setExpanded(true);
+
+						//make sure selected offer & product is still shown
+						Services.setSelectedOfferID(sSelectedOfferID);
+						Services.setSelectedOfferPath(sSelectedOfferPath);
+
+						//check for approval enabled 
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						that.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+						//Italy has its own products table
+						switch (sSelectedSection) {
+							case Services.getFinancialOfferPageSectionID():
+								//select offer again
+								that.onFinancialOfferItemPress();
+								break;
+							case Services.getFinancialOfferPageSectionID_ES():
+								//select offer again
+								var oView = that.getView().byId("financialOfferViewId_ES");
+								var oFinOfferController = oView.getController();
+								oFinOfferController.refreshFinancialTabIT();
+								break;
+							default:
+								break;
+						}
+						break;
 					case Services.getQuotationPageSectionID():
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelQuotationOfferTableID").setExpanded(true);
@@ -2818,6 +2892,16 @@ sap.ui.define([
 				var oView = this.getView().byId("financialOfferViewId_IT");
 				var oFinOfferController = oView.getController();
 				oFinOfferController.onSaveFinancialOfferItaly();
+				that.getView().setBusy(false);
+				break;
+
+            case Services.getFinancialOfferPageSectionID_ES():
+
+				//FINANCIAL OFFER TAB spain specific
+				that.getView().setBusy(true);
+				var oView = this.getView().byId("financialOfferViewId_ES");
+				var oFinOfferController = oView.getController();
+				oFinOfferController.onSaveFinancialOfferSpain();
 				that.getView().setBusy(false);
 				break;
 				
