@@ -7529,7 +7529,7 @@ sap.ui.define([
 			var oDistributorFilter = new Filter({
 				path: 'DISTRIBUTOR_ID',
 				operator: FilterOperator.EQ,
-				value1: 100000062
+				value1: this.getSelectedDistributorID()
 			});
 
 			var oChannelFilter = new Filter({
