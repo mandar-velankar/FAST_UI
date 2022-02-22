@@ -92,7 +92,7 @@
 									
 									<ToolbarSpacer/>
 									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
-									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= (${fastAppData>/Tender/CountryCode} !== 'IT' || (${fastAppData>/Tender/CountryCode} === 'IT' &amp;&amp; ${fastAppData>/EditOffer/Division})) ? true : false }"/>
+									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= ${fastAppData>/EditOffer/Division} ? true : false }"/>
 									<Button text="{i18n>Deleteprod}" icon="sap-icon://delete" press="onDeleteProductForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
 								</Toolbar>
 							</t:toolbar>
