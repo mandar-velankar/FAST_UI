@@ -165,6 +165,11 @@ sap.ui.define([
 			return sPage;
 		},
 
+        getFinancialOfferPageSectionID_ES: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_ES;
+			return sPage;
+		},
+
 		getQuotationPageSectionID: function () {
 			var sPage = this.getComponentID() + this._sQuotationPageSectionID;
 			return sPage;
@@ -958,6 +963,17 @@ sap.ui.define([
 						}
 						break;
 					case this.getFinancialOfferPageSectionID_IT():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+                    case this.getFinancialOfferPageSectionID_ES():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
 						//  - 'Offer Declined'
