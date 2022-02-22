@@ -9433,7 +9433,156 @@ sap.ui.define([
 			// http://localhost:4004/v2/tender/WordAttachments(templateId=1,offerId='AE-16-100-1049-BPH-11')/content
 			const url = "/v2/tender/WordAttachments(templateId="+event.getSource().getBindingContext("fastAppData").getProperty("templateId")+",offerId='"+Services.getSelectedOfferID()+"')/content";
 			URLHelper.redirect(url,true);
-		}
+		},
+
+		/**
+		 * Button on the Offer Products page that will allow FAST user to notify business 
+		 * team they can proceed with financial offer.
+		 * Only applicable for Spain Tenders
+		 * @param {*} evt 
+		 */
+		onSendNotification: async function(evt){
+			const oDialog = await this._getSendNotificationDialog();         
+			oDialog.open();
+		},
+
+
+		/**
+		 * New email dialog
+		 */
+		 _getSendNotificationDialog : async function () {
+
+             const oController = this;          
+
+            BusyIndicator.show();
+		
+
+			if(this._sendNotificationDialog){
+				this._sendNotificationDialog.destroy();
+			}
+
+			this._sendNotificationDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.NotificationMail", this);
+			this.getView().addDependent(this._sendNotificationDialog);
+
+            let template = undefined;
+            
+			try {
+				template = await Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES", Services.getSelectedOfferID());
+			}
+			catch(error){
+                const errMsg = error.responseText && JSON.parse(error.responseText).error.message.value || error.message;
+                sap.m.MessageBox.error(errMsg);
+                BusyIndicator.hide();                
+				throw error;
+			}
+
+			
+			//get screen elements
+			let oRecipients = sap.ui.getCore().byId("idTo");
+			let oSubject = sap.ui.getCore().byId("idSubject");
+			let oSender = sap.ui.getCore().byId("idFrom");
+			let sSender = UserInfo.getUserEmail();
+			let oEditor = sap.ui.getCore().byId("idEditor");
+
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
+			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
+			
+			oEditor.setValue(template.value);
+			oSubject.setValue(sSubject);
+
+            if(sRecipient){
+                oRecipients.setTokens([
+                    new Token({text: sRecipient, key: sRecipient}),
+                ]);     
+            }
+
+
+			oSender.setTokens([
+				new Token({text: sSender, key: sSender}),
+			]);
+
+			// add validator
+			let fnValidator = function(args){
+				let text = args.text;
+
+                const emailIsNotValid = oController.validateEmail(text);
+
+                if(emailIsNotValid){
+                    oRecipients.setValueStateText(emailIsNotValid)
+                    oRecipients.setValueState("Error");  
+                    oRecipients.openValueStateMessage();                 
+                    return;
+                }
+
+                oRecipients.setValueState("None"); 
+                oRecipients.closeValueStateMessage();
+                
+				return new Token({key: text, text: text});
+			};
+
+			oRecipients.addValidator(fnValidator);
+			oSender.addValidator(fnValidator);
+
+			BusyIndicator.hide();
+			
+
+			return this._sendNotificationDialog;
+
+		},
+
+
+        validateEmail: function (oValue) {
+            // The following Regex is only used for demonstration purposes and does not cover all variations of email addresses.
+            // It's always better to validate an address by simply sending an e-mail to it.
+            var rexMail = /^\w+[\w-+\.]*\@\w+([-\.]\w+)*\.[a-zA-Z]{2,}$/;
+            if (!oValue.match(rexMail)) {
+                return "'" + oValue + "' is not a valid e-mail address";
+            }
+        },
+
+
+		onSendNotificationMail: function(evt){
+
+			let sRecipients = "";
+			let sSubject = sap.ui.getCore().byId('idSubject').getValue();
+			let sMailBody = sap.ui.getCore().byId('idEditor').getValue();
+			let aRecipients = sap.ui.getCore().byId('idTo').getTokens();
+			let sSenders = sap.ui.getCore().byId('idFrom').getTokens();
+			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
+
+			let oMail = {
+				"CountryCode": Services.getSelectedCountry(),
+				"TenderID": Services.getSelectedTenderID(),
+				"OfferID": Services.getSelectedOfferID(),
+				"Sender":sSenders[0].getProperty('text'),
+				"Recipients":sRecipients,
+				"Subject":sSubject,
+				"MailBody":sMailBody,
+				"Sent":false,
+			}
+
+			Services.sendMail(oMail)
+				.then(() => {
+					this._sendNotificationDialog.destroy();
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Mail sent successfully',
+						description: 'Mail sent successfully'
+					});
+					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+				})
+				.catch(function (oError) {
+					//show error message
+					Services.showErrorMessage(oError, "Sending mail");
+				});
+
+		},
+
+
+		onCancelNotificationMail: function(evt){
+			this._sendNotificationDialog.destroy();
+		},
 
 
 	});
