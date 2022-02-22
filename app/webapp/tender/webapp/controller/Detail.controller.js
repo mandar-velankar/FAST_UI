@@ -2769,7 +2769,7 @@ sap.ui.define([
 								//select offer again
 								that.onFinancialOfferItemPress();
 								break;
-							case Services.getFinancialOfferPageSectionID_IT():
+							case Services.getFinancialOfferPageSectionID_ES():
 								//select offer again
 								var oView = that.getView().byId("financialOfferViewId_ES");
 								var oFinOfferController = oView.getController();
