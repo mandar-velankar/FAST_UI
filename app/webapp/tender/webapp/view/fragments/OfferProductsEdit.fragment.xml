@@ -37,7 +37,7 @@
 								</Select>
 								<core:Title/>
 								
-								<Label text="{i18n>intrnlduedte}" required="true"/>
+								<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 								<!--<DatePicker id="idintrDueDte" value="{path :'fastAppData>/EditOffer/InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
 								<DatePicker id="idintrDueDte" minDate="{dateModel>/minDate}" value="{path :'fastAppData>/EditOffer/InternalBidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 								
@@ -59,13 +59,23 @@
 								<DatePicker id="idNewOfferDate" minDate="{dateModel>/minDate}" required="true" value="{path :'fastAppData>/EditOffer/NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= (${fastAppData>/NewOfferPressed} === false &amp;&amp; ((${fastAppData>/ReviewedOfferPressed} === true || ${fastAppData>/ContinuedOfferPressed} === true) || ( (${fastAppData>/ReviewedOfferPressed} === false &amp;&amp; ${fastAppData>/ContinuedOfferPressed} === false) &amp;&amp; (${fastAppData>/EditOffer/RevisedOfferNo} !== 0 || ${fastAppData>/EditOffer/ContinuationOfferNo} !== 0)))) ? true : false }"/>
 
 								<Label text="{i18n>Division}" required="true"/>
-								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="true" change="onChangeDivision">
+								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? false : true}" change="onChangeDivision">
 										<items>
 											<core:Item text="" key=""/>
 											<core:Item text="Pharma" key="Pharma"/>
 											<core:Item text="Radiology" key="Radiology"/>
 										</items>
-								</Select>			
+								</Select>	
+                                <!-- Spain only --> <!-- TODO: this is not a scalable solution. We should consider using a service to get the item values for Division -->
+                                <Label text="{i18n>Division}" required="true"/>
+                                <Select id="idProductOfferDivisionES" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}" change="onChangeDivision">
+                                    <items>
+                                        <core:Item text="" key=""/>
+                                        <core:Item text="Pharma" key="Pharma"/>
+                                        <core:Item text="Radiology" key="Radiology"/>
+                                        <core:Item text="Consumer Health" key="Consumer Health"/>
+                                    </items>
+                                </Select>		
 								<!-- <Text id="idDistID" text="{fastAppData>/EditOffer/Distributor/DistributorID}" visible="false"/> -->
 								
 							</form:content>

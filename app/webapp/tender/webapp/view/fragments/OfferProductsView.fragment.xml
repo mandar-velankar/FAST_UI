@@ -103,7 +103,7 @@
 									<Label text="{i18n>selncmpny}"  required="true"/>
 									<Text text="{fastAppData>SellingCompanyDetails/LegalEntityName}"/>
 									<core:Title/>
-									<Label text="{i18n>intrnlduedte}" required="true"/>
+									<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 									<!--<Text text="{path :'fastAppData>InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>-->
 									<Text text="{path :'fastAppData>InternalBidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 									
@@ -124,11 +124,21 @@
 									<Text text="{path :'fastAppData>NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ((${fastAppData>RevisedOfferNo} &amp;&amp; ${fastAppData>RevisedOfferNo} !== 0) || (${fastAppData>ContinuationOfferNo} &amp;&amp; ${fastAppData>ContinuationOfferNo} !== 0)) ? true : false }" />
 									
 									<Label text="{i18n>Division}" required="true"/>
-									<Select selectedKey="{fastAppData>Division}" enabled="false" visible="true">
+									<Select selectedKey="{fastAppData>Division}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? false : true}">
 										<items>
 											<core:Item text="" key=""/>
 											<core:Item text="Pharma" key="Pharma"/>
 											<core:Item text="Radiology" key="Radiology"/>
+										</items>
+									</Select>
+                                    <!-- Spain only -->
+                                    <Label text="{i18n>Division}" required="true"/>
+                                    <Select selectedKey="{fastAppData>Division}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}">
+										<items>
+											<core:Item text="" key=""/>
+											<core:Item text="Pharma" key="Pharma"/>
+											<core:Item text="Radiology" key="Radiology"/>
+                                            <core:Item text="Consumer Health" key="Consumer Health"/>
 										</items>
 									</Select>
 							</form:content>
