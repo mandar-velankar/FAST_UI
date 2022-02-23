@@ -102,6 +102,10 @@
 									<Text id="idDist" text="{fastAppData>Distributor/DistributorName}" visible="{= ${fastAppData>Distributor/DistributorName} === 'No Distributor' ? false : true}"/>
 									<Label text="{i18n>selncmpny}"  required="true"/>
 									<Text text="{fastAppData>SellingCompanyDetails/LegalEntityName}"/>
+                                    <Label text="{i18n>bu}"  required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
+									<Text text="{fastAppData>BU}"/>
+                                    <Label text="{i18n>offerNumber}"  required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
+									<Text text="{fastAppData>OfferNumber}"/>
 									<core:Title/>
 									<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 									<!--<Text text="{path :'fastAppData>InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>-->
@@ -415,6 +419,27 @@
 						<Label text="Price Agreement" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>OtherPriceAgreementsExist}"/>
+						</t:template>
+					</t:Column>
+
+                    <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+						<Label text="DiscountCondition" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>DiscountCondition}"/>
+						</t:template>
+					</t:Column>
+
+                    <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+						<Label text="Anticipated or Requested" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>AnticipatedRequestedQuantity}"/>
+						</t:template>
+					</t:Column>
+
+                    <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+						<Label text="Active PriceAgreement" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>ActivePriceAgreement}"/>
 						</t:template>
 					</t:Column>
 				</t:columns>
