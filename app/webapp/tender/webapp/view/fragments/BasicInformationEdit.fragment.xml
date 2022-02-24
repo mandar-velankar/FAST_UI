@@ -92,7 +92,12 @@
 					selectionFinish="handleRegionSelectionFinish"
 					items="{ 
 						path: 'fastData>/CountryRegions',
-						sorter: { path: 'Name' }
+						sorter: { path: 'Name' },
+                        filters: [{                                     
+                                    path : 'CountryCode',
+                                    operator : 'EQ',
+                                    value1 : 'IT'
+                            }]                     
 					}" 
 					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
 					<items>

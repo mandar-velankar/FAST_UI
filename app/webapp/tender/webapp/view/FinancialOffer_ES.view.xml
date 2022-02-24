@@ -1,0 +1,203 @@
+<mvc:View controllerName="FAST_NS0FAST0.controller.FinancialOffer_ES" 
+		  xmlns="sap.m" 
+		  xmlns:f="sap.f"
+		  xmlns:form="sap.ui.layout.form" 
+		  xmlns:mvc="sap.ui.core.mvc" 
+		  xmlns:t="sap.ui.table" 
+		  xmlns:core="sap.ui.core" 
+		  xmlns:l="sap.ui.layout"
+		  xmlns:viz.data="sap.viz.ui5.data" 
+		  xmlns:viz="sap.viz.ui5.controls" 
+		  xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" 
+		  xmlns:u="sap.uxap">
+
+	<!-- TENDER OFFER SUBSECTION -->
+	<u:ObjectPageSubSection id="FinNoOfferSubsection" title="Financial Offer" visible="{= !${fastAppData>/CheckOfferVisibleForTab_ES} }">
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<VBox>
+						<FormattedText htmlText="Offer not available for financial offer ES..."/>
+					</VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+	<!-- TENDER OFFER SUBSECTION -->
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+		<u:actions>
+			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
+		</u:actions>
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<VBox>
+						
+						<!-- Form with selected offer data -->
+						<form:SimpleForm id="idCurrencyForm" editable="true"  layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+							 columnsL="1" class="editableForm"  title="">
+							<Label text="{i18n>Currency}"/>
+								<Select id="idCurrency" selectedKey="{fastAppData>/EditOffer/Currency}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' }, filters: [
+									{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
+								] }" >					
+									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
+								</Select>
+							<Label text="{i18n>FOC}"/>
+							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}">
+								<items>
+									<core:Item key="FOC 2" text="In addition to requested volume" />
+									<core:Item key="FOC 1" text="Part of requested volume" />									
+								</items>
+							</Select>
+						</form:SimpleForm>
+						
+						<!-- Table with products -->
+						<Table id="idFinancialOfferViewProduct" 
+							   items="{path : 'fastAppData>/ProductPricingView'}"							   
+							   class="sapFDynamicPageAlignContent" width="auto" updateFinished="onBindingItemsFinished"
+							   visible="{= !${fastAppData>/EditMode}}">
+							<columns>
+								<Column>
+									<Text text="{i18n>Product}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>Volume}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>UoM}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>NetOfferPrice}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>NetPriceWithFOC}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>COGS}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>GrossSales}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>GrossProfit}"/>
+								</Column>
+								<Column>
+									<Text text="{i18n>GrossMargin}"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem type="Navigation" press="onFinancialProductPress" detailPress="onDetailPress">
+									<cells>
+										<Text text="{fastAppData>ProductPackName}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>RequestedVolume}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>UOM}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>NetofferPrice}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>NetPriceFOC}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>cogsUoM}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>GrossSales}"/>
+									</cells>
+									<cells>
+										<Text text="{fastAppData>GrossProfit}"/>
+									</cells>
+									<cells>
+										<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
+									</cells>
+									
+								</ColumnListItem>
+							</items>
+						</Table>
+						
+					</VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+	
+	<!-- PRICING OFFER SUBSECTION -->
+	<u:ObjectPageSubSection title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+		<l:BlockLayout background="Light">
+
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+
+	
+	<!-- TENDER HISTORY SUBSECTION -->
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+		<l:BlockLayout background="Light">
+			<l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+					<Table id="tenderHistoryId" inset="false">
+						<headerToolbar>
+							<Toolbar>
+								<content>
+									<ToolbarSpacer/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="true"/>
+									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
+									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
+									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
+									<CheckBox id="lossCheckId" text="{i18n>Loss}" selected= "false" select=".onHistoryFilterCheck"/>
+								</content>
+							</Toolbar>
+						</headerToolbar>
+						<columns>
+							<Column>
+								<Text text="{i18n>TenderID}"/>
+							</Column>
+							<Column>
+								<Text text="{i18n>Tender}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>OfferID}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>OfferDate}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>InstituteName}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Product}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>UnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>PackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetUnitPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>NetPackPrice}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>UnitPack}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>FOC}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<Text text="{i18n>Status}"/>
+							</Column>
+						</columns>
+					</Table>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
+		</l:BlockLayout>
+	</u:ObjectPageSubSection>
+	
+</mvc:View>
