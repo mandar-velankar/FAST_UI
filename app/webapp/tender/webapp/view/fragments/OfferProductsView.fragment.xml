@@ -104,8 +104,8 @@
 									<Text text="{fastAppData>SellingCompanyDetails/LegalEntityName}"/>
                                     <Label text="{i18n>bu}"  required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
 									<Text text="{fastAppData>BU}"/>
-                                    <Label text="{i18n>offerNumber}"  required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
-									<Text text="{fastAppData>OfferNumber}"/>
+                                    <Label text="{i18n>offerNumber}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
+									<Text text="{fastAppData>/SelectedOfferID}"/>
 									<core:Title/>
 									<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 									<!--<Text text="{path :'fastAppData>InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>-->
@@ -415,7 +415,7 @@
 						</t:template>
 					</t:Column>
 
-					<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}">
 						<Label text="Price Agreement" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>OtherPriceAgreementsExist}"/>
@@ -423,27 +423,15 @@
 					</t:Column>
 
                     <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
-						<Label text="DiscountCondition" wrapping="true"/>
-						<t:template>
-							<Text text="{fastAppData>DiscountCondition}"/>
-						</t:template>
-					</t:Column>
-
-                    <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
 						<Label text="Anticipated or Requested" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>AnticipatedRequestedQuantity}"/>
-						</t:template>
-					</t:Column>
-
-                    <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
-						<Label text="Active PriceAgreement" wrapping="true"/>
-						<t:template>
-							<Text text="{fastAppData>ActivePriceAgreement}"/>
+							<Text text="{fastAppData>SKUCountry/AnticipatedRequestedQuantity}"/>
 						</t:template>
 					</t:Column>
 				</t:columns>
 			</t:Table>
 		</u:blocks>
 	</u:ObjectPageSubSection>
+
+    
 </core:FragmentDefinition>
