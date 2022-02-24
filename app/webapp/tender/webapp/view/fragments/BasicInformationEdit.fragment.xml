@@ -29,7 +29,7 @@
 				<Select id="idBiddingTypeLevel1" 
 					selectedKey="{fastData>BiddingTypeLevel1}"  
 					visible="{= 
-						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
+						(${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'ES') &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel1'}" 
@@ -42,7 +42,7 @@
 				<Select id="idBiddingTypeLevel2" 
 					selectedKey="{fastData>BiddingTypeLevel2}" 
 					visible="{= 
-						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
+						(${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'ES') &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel2} &amp;&amp; ${fastData>BiddingTypeLevel1} &amp;&amp; ${fastAppData>CountryBiddingTypeLevel2}.length > 0? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel2'}" 
