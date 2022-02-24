@@ -212,7 +212,16 @@
 					</ObjectPageSubSection>
 				</subSections>
 			</ObjectPageSection>
-			
+
+			<!-- FINANCIAL OFFER SPAIN TAB -->
+			<ObjectPageSection id="financialOfferId_ES" title="{i18n>FinancialOffer}" showTitle="true" visible="{fastAppData>/permissions/tabs/financialOfferId_ES/visible}">
+				<subSections>
+					<ObjectPageSubSection id="financialOffer_ES_SubSectionId">
+						<mvc:XMLView id="financialOfferViewId_ES" viewName="FAST_NS0FAST0.view.FinancialOffer_ES"/>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+
 			<!-- QUOTATION TAB -->
 			<ObjectPageSection id="quotationId" title="{i18n>Quotation}" visible="{fastAppData>/permissions/tabs/quotationId/visible}">
 				<subSections>
