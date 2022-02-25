@@ -260,6 +260,55 @@ sap.ui.define([
 
 		},
 
+
+		saveTenderRegions: function(tenderID, regionIDs){
+
+			const regions = regionIDs.map(id => {
+				return {
+					"TenderID": tenderID,
+					"RegionID": id
+				};
+			});
+
+			const data = {
+				"TenderID": tenderID,
+				"Regions": regions
+			}
+
+			if(tenderID){
+				const sKey = this.model.createKey("/TenderRegions", {
+					TenderID: tenderID
+				});
+	
+				return this.odata(sKey).put(data);
+			}
+
+		},
+
+		getTenderRegions: function(tenderID){
+
+			var sPath = "/TenderRegions";
+
+			const sKey = this.model.createKey("/TenderRegions", {
+				TenderID: tenderID
+			});
+
+			var oFilter = new Filter({
+				path: 'TenderID',
+				operator: FilterOperator.EQ,
+				value1: tenderID
+			});
+
+			var mParameters = {
+				urlParameters:{
+					$expand:"Regions/Region"
+				}
+			};
+
+			return this.odata(sKey).get(mParameters);	
+
+		},
+
 	});
 	
 	return TenderService;

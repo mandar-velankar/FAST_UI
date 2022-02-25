@@ -1,0 +1,59 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog id="OtherProducts" title="Products" >
+		<buttons>
+			<Button text="Apply" press=".oApplyProducts" />
+		</buttons>
+
+        <Table id="FreeGoodsOtherTable" items="{path:'fastAppData>FreeGoodsOther'}">
+		<headerToolbar>
+			<OverflowToolbar>
+				<content>
+					<ToolbarSpacer />
+                    <Button icon="sap-icon://add" press=".onAddNewFreeGoods"></Button>
+				</content>
+			</OverflowToolbar>
+		</headerToolbar>
+            <columns>
+                <Column>
+                    <Text text="{i18n>product}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>focType}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>FOCQuantity}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>FOCStep}"/>
+                </Column>    
+                <Column>
+                    <Text text="{i18n>UoM}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>Action}"/>
+                </Column>               
+            </columns>
+            <ColumnListItem>
+                <cells>
+                   
+                    <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true"/>
+                    <Select forceSelection="false" selectedKey="{fastAppData>FreeGoodsOther_ABS_PCT}">
+                        <core:Item key="ABS" text="Absolute" />
+                        <core:Item key="PCT" text="Percentage" />
+                        <core:Item key="STP" text="Step" />
+                    </Select>
+                    <HBox>
+                        <Input type="Number" value="{path:'fastAppData>FreeGoodsOther'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
+                        <Input  value="{path:'fastAppData>FreeGoodsOther',type: '.types.percent'}" valueState="{fastAppData>FreeGoodsOtherValueState}" visible="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'PCT' ? true : false }"/> 
+                    </HBox>
+                    <Input type="Number" value="{path:'fastAppData>FreeGoodsOther_Step'}" valueState="{fastAppData>FreeGoodsOtherStepValueState}" enabled="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP' ? true : false }"/>
+                    <Text text="{= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS' || ${fastAppData>FreeGoodsOther_ABS_PCT} === 'STP'?${fastAppData>UOM}:'%'}"></Text> 
+                    <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+   	</Dialog>	
+</core:FragmentDefinition>

@@ -33,8 +33,113 @@ sap.ui.define([
 			var mParameters = {
 				filters: [oTenderIdFilter],
 				urlParameters: {
-					$expand: "SKU/Product"
+					$expand: "SKU/Product,PriceAgreement"
 				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		getProductPriceAgreement: function(sCountryCode, sProductPackId){
+			var sPath = "/PriceAgreements";
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'ProductPackId',
+				operator: FilterOperator.EQ,
+				value1: sProductPackId
+			}));
+
+			aFilters.push(new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			}));
+
+			var mParameters = {
+				filters: aFilters,
+				urlParameters: {
+					$expand: "OfferProduct"
+				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		getFinancialProducts: function(offerID){
+			var sPath = "/ProductPricingView";
+
+			var oOfferIdFilter = new Filter({
+				path: 'OfferID',
+				operator: FilterOperator.EQ,
+				value1: offerID
+			});
+
+			var mParameters = {
+				filters: [oOfferIdFilter],
+				urlParameters: {
+					$expand: "FreeGoodsOther"
+				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		getFinancialProduct: function(offerID, countryCode, productCode){
+			var sPath = "/ProductPricingView";
+			let aFilters = [];
+
+			var oOfferIdFilter = new Filter({
+				path: 'OfferID',
+				operator: FilterOperator.EQ,
+				value1: offerID
+			});
+
+			aFilters.push(oOfferIdFilter);
+
+			if(countryCode){
+				var oCountryCodeFilter = new Filter({
+					path: 'CountryCode',
+					operator: FilterOperator.EQ,
+					value1: countryCode
+				});
+				aFilters.push(oCountryCodeFilter);
+			}
+
+			if(productCode){
+				var oProductCodeFilter = new Filter({
+					path: 'ProductCode',
+					operator: FilterOperator.EQ,
+					value1: productCode
+				});
+				aFilters.push(oProductCodeFilter);
+			}
+
+			var mParameters = {
+				filters: aFilters,
+				urlParameters: {
+					$expand: "FreeGoodsOther"
+				}
+			};
+
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+		getCountryBrandProducts: function(CountryCode){
+			var sPath = "/CountryBrandProducts";
+
+			var oCountryFilter = new Filter({
+				path: 'COUNTRY_CODE',
+				operator: FilterOperator.EQ,
+				value1: CountryCode
+			});
+
+			var mParameters = {
+				filters: [oCountryFilter]
 			};
 
 
@@ -141,6 +246,7 @@ sap.ui.define([
 			oProductToSave.PricingPolicyCluster = oProductSaveInfo.PricingPolicyCluster;
 			oProductToSave.MinInvoiceAmount = oProductSaveInfo.MinInvoiceAmount ? Number(oProductSaveInfo.MinInvoiceAmount) : 0;
 			oProductToSave.DeliveryConditions = oProductSaveInfo.DeliveryConditions;
+			oProductToSave.OfferType = oProductSaveInfo.OfferType;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;

@@ -15,8 +15,11 @@
 				<Input id="idNewTenderID" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" enabled="false" />
 				<Label text="{i18n>tenderref}" design="Bold" required="true"/>
 				<Input id="idTenderName" value="{fastData>TenderName}" />
-				<Label text="{i18n>clasficn}" design="Bold" required="true"/>
-				<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" change="onClassificationChange" >
+				<Label text="{i18n>clasficn}" design="Bold" required="true" /> 
+				<Select id="idClassification" selectedKey="{fastData>Classification}" enabled="false" items="{ path: 'fastAppData>/CountryClassifications'}" 
+					change="onClassificationChange" 
+					
+				>
 					<items><!--RFQ/Tender/Budgetary Quote/Patient Access Programme-->
 						<core:Item text="{fastAppData>CLASSIFICATION}" key="{fastAppData>CLASSIFICATION}" app:classificationId="{fastAppData>ID}"/>
 					</items>
@@ -79,12 +82,29 @@
 						<core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}"/>
 					</items>
 				</Select>
-
 				<Label text="{i18n>institnme}" design="Bold" required="true"/>
-
 				<Input xmlns="sap.m" id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4"
 					value="{fastData>Institute/InstituteName}" enabled="false"/>
-
+				<!-- Italy only -->
+				<Label text="{i18n>region}" design="Bold" required="true"/>
+				<MultiComboBox id="idRegionEdit" 
+					selectionChange="handleRegionSelectionChange"
+					selectionFinish="handleRegionSelectionFinish"
+					items="{ 
+						path: 'fastData>/CountryRegions',
+						sorter: { path: 'Name' },
+                        filters: [{                                     
+                                    path : 'CountryCode',
+                                    operator : 'EQ',
+                                    value1 : 'IT'
+                            }]                     
+					}" 
+					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					<items>
+						<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
+					</items>
+				</MultiComboBox>
+				<!-- /Italy only -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
 				<Select id="idTenderChannel" selectedKey="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Direct' : ${fastData>TenderChannel} }" enabled="false" change="onTenderChannelChange">
 					<items>

@@ -10,7 +10,7 @@ sap.ui.define([
 		constructor: function (model) {
 			BaseService.call(this, model);
 		},
-		
+
 		//create new product
 		createPrice: function (oPriceToSave) {
 
@@ -23,6 +23,14 @@ sap.ui.define([
 			//Create
 			return that.odata(sPath).post(oPriceToSave);
 
+		},
+
+		createProductPrice: function (oProductPrice) {
+			var that = this;
+			var sPath = "/ProductPricing";
+
+			//create
+			return that.odata(sPath).post(oProductPrice);
 		},
 
 		//create new product
@@ -46,7 +54,185 @@ sap.ui.define([
 			return that.odata(sPath).put(oPriceToSave);
 
 		},
-		
+
+		updateProductPrice: function (oProductPrice) {
+			var that = this;
+
+			//get model for calls
+			var oModel = Services.getDefaultModel();
+
+			var sPath = oModel.createKey("/ProductPricing", {
+				ID: oProductPrice.ID,
+				OfferID: oProductPrice.OfferID,
+				ProductCode: oProductPrice.ProductCode,
+				CountryCode: oProductPrice.CountryCode
+			});
+
+			//update
+			return that.odata(sPath).put(oProductPrice);
+		},
+
+		/**
+		 * Save product price detirmines what needs to be done
+		 * @param {object} oProductPrice product price to save
+		 * @returns {object} returns 
+		 */
+		saveProductPrice: function (oProductPrice) {
+
+			//is the ID filled (= already saved)
+			if (oProductPrice.ID) {
+
+				return this.updateProductPrice(oProductPrice);
+
+			} else {
+
+				return this.createProductPrice(oProductPrice);
+
+			}
+
+		},
+
+		//Convert Price info to save in the database. (View binding is an extended version)
+		getConvertProductPriceToSave: function (oProductPriceSaveInfo) {
+
+			//Convert odata to structure that can be used to save
+			var oProductPriceToSave = {};
+
+			//If ID is not existing do not store in object to create
+			if (oProductPriceSaveInfo.ID) {
+				oProductPriceToSave.ID = oProductPriceSaveInfo.ID;
+			}
+			oProductPriceToSave.OfferID = oProductPriceSaveInfo.OfferID;
+			oProductPriceToSave.ProductCode = oProductPriceSaveInfo.ProductCode;
+			oProductPriceToSave.CountryCode = oProductPriceSaveInfo.CountryCode;
+			oProductPriceToSave.Warranty = Number(oProductPriceSaveInfo.Warranty);
+			oProductPriceToSave.AgreementDuration = Number(oProductPriceSaveInfo.AgreementDuration);
+			oProductPriceToSave.MonthlyRent = (oProductPriceSaveInfo.MonthlyRent === null) ? null : oProductPriceSaveInfo.MonthlyRent.toString();
+			oProductPriceToSave.MonthsPerInvoice = Number(oProductPriceSaveInfo.MonthsPerInvoice);
+			oProductPriceToSave.ContractStartDate = oProductPriceSaveInfo.ContractStartDate;
+			oProductPriceToSave.ValueOfDevices = (oProductPriceSaveInfo.ValueOfDevices === null) ? null : oProductPriceSaveInfo.ValueOfDevices.toString();
+			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
+			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
+			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
+
+			if (oProductPriceSaveInfo.FreeGoodsOther) {
+				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
+					ProductPackId: freeGoodsOther.ProductPackId,
+					FreeGoodsOther_ABS_PCT: freeGoodsOther.FreeGoodsOther_ABS_PCT,
+					FreeGoodsOther: freeGoodsOther.FreeGoodsOther,
+					FreeGoodsOther_Step: freeGoodsOther.FreeGoodsOther_Step,
+					VAT: freeGoodsOther.VAT
+				}));
+			}
+
+			return oProductPriceToSave;
+
+		},
+
+		validateProductPriceToSave: function (sOfferType, oPriceSaveInfo, sProductType, sFocAbsPct, sNetOfferPrice) {
+			let aInvalidFields = [];
+			var drug = false;
+			if (sProductType === "Drug") {
+				drug = true;
+			}
+			switch (sOfferType) {
+				case 'Selling':
+					this.validateProductPriceSelling(oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice);
+					break;
+				case 'Rental':
+					this.validateProductPriceRental(oPriceSaveInfo, aInvalidFields);
+					break;
+				case 'Comodato':
+					this.validateProductPriceComodato(oPriceSaveInfo, aInvalidFields);
+					break;
+				default:
+					break;
+			}
+
+			return aInvalidFields;
+		},
+
+		validateMonthlyFieldData: function (sOfferType, oPriceSaveInfo, sProductType){
+			let aInvalidFields = [];
+			var drug = false;
+			if (sProductType === "Drug") {
+				drug = true;
+			}
+			switch (sOfferType) {
+				case 'Selling':
+					this.validateProductPriceSellingMonths(oPriceSaveInfo, aInvalidFields, drug);
+					break;
+				case 'Rental':
+					this.validateProductPriceRentalMonths(oPriceSaveInfo, aInvalidFields);
+					break;
+				case 'Comodato':
+					this.validateProductPriceComodatoMonths(oPriceSaveInfo, aInvalidFields);
+					break;
+				default:
+					break;
+			}
+
+			return aInvalidFields;
+		},
+
+		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				
+				if (((e === 'Warranty' || e === 'StatusOfDevice') && !drug)
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
+					aInvalidFields.push(e);
+				}
+			});
+
+			if(sNetOfferPrice === null || sNetOfferPrice === ""){
+				aInvalidFields.push('NetOfferPrice');
+			}
+		},
+
+		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if ((e === 'Warranty' || e === 'StatusOfDevice' ||  e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceComodato: function (oPriceSaveInfo, aInvalidFields) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if ((e === 'Warranty' || e === 'StatusOfDevice'  ||  e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
+					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceSellingMonths: function (oPriceSaveInfo, aInvalidFields, drug) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				
+				if ((e === 'Warranty' && !drug && oPriceSaveInfo[e] !== null && oPriceSaveInfo[e] !== ""  && (oPriceSaveInfo[e] - Math.floor(oPriceSaveInfo[e])) !== 0)) {
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceRentalMonths: function (oPriceSaveInfo, aInvalidFields) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if ((e === 'AgreementDuration' || e === 'MonthsPerInvoice' || e === 'Warranty') && (oPriceSaveInfo[e] !== null && oPriceSaveInfo[e] !== "" && (oPriceSaveInfo[e] - Math.floor(oPriceSaveInfo[e])) !== 0)){
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+		validateProductPriceComodatoMonths: function (oPriceSaveInfo, aInvalidFields) {
+			Object.keys(oPriceSaveInfo).forEach(e => {
+				if ((e === 'Warranty' || e === 'AgreementDuration' || e === 'MinContractual' ) && (oPriceSaveInfo[e] !== null && oPriceSaveInfo[e] !== "" && (oPriceSaveInfo[e] - Math.floor(oPriceSaveInfo[e])) !== 0)){
+					aInvalidFields.push(e);
+				}
+			});
+		},
+
+
 		//Convert Price info to save in the database. (View binding is an extended version)
 		getConvertPriceToSave: function (oPriceSaveInfo) {
 
@@ -62,7 +248,7 @@ sap.ui.define([
 			} else {
 				sOfferID = oPriceSaveInfo.OfferID;
 			}
-			
+
 			oPriceToSave.TenderID = oPriceSaveInfo.TenderID;
 			oPriceToSave.OfferID = sOfferID;
 			oPriceToSave.CountryCode = oPriceSaveInfo.CountryCode;
@@ -72,9 +258,10 @@ sap.ui.define([
 			oPriceToSave.Active = Number(oPriceSaveInfo.Active);
 			oPriceToSave.Tier = Number(oPriceSaveInfo.Tier);
 			oPriceToSave.VolumeFrom = Number(oPriceSaveInfo.VolumeFrom);
-			oPriceToSave.VolumeTo = Number(oPriceSaveInfo.VolumeTo);			
+			oPriceToSave.VolumeTo = Number(oPriceSaveInfo.VolumeTo);
 			oPriceToSave.RegPrice = (oPriceSaveInfo.RegPrice === null) ? null : oPriceSaveInfo.RegPrice.toString();
 			oPriceToSave.FOC = (oPriceSaveInfo.FOC === null) ? null : oPriceSaveInfo.FOC.toString();
+			oPriceToSave.FOCStep = (oPriceSaveInfo.FOCStep === undefined || oPriceSaveInfo.FOCStep === null) ? null : oPriceSaveInfo.FOCStep.toString();
 			oPriceToSave.FOCType = oPriceSaveInfo.FOCType;
 			oPriceToSave.Discount = (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
 			oPriceToSave.OfferPrice = (oPriceSaveInfo.OfferPrice === null) ? null : oPriceSaveInfo.OfferPrice.toString();
@@ -96,6 +283,10 @@ sap.ui.define([
 			oPriceToSave.NetPrice = (oPriceSaveInfo.NetPrice === null) ? null : oPriceSaveInfo.NetPrice.toString();
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
+
+			if (oPriceSaveInfo.ID) {
+				oPriceToSave.ID = oPriceSaveInfo.ID;
+			}
 
 			return oPriceToSave;
 

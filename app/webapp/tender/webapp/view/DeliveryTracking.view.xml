@@ -69,7 +69,7 @@
 							enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>Penalty} === 'Yes' ? true : false}"
 							visible="{= ${fastAppData>Penalty} === 'Yes' ? true : false}"/>
 						<m:Select id="idDeliveryDetailPenaltyCurrency" selectedKey="{fastAppData>Currency}"
-							items="{ path: 'fastAppData>/CountryCurrency/', sorter: { path: 'COUNTRY_CODE' } }"
+							items="{ path: 'fastAppData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' } }"
 							enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>Penalty} === 'Yes' ? true : false}"
 							visible="{= ${fastAppData>Penalty} === 'Yes' ? true : false}">
 							<core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>

@@ -20,7 +20,8 @@
 			<Button text="New Offer" icon="sap-icon://add" press="onCreateProductOffer"/>
 			<Button text="Revised Offer" icon="sap-icon://add" press="onReviewProductOffer" enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>
 			<Button text="Continued Offer" icon="sap-icon://add" press="onContinuedProductOffer" enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>	
-			<Button text="Duplicate Offer" icon="sap-icon://duplicate" press="onDuplicateOffer" enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'AR' }" />	
+			<Button text="Duplicate Offer" icon="sap-icon://duplicate" press="onDuplicateOffer" enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'AR' }" />
+			<Button text="Send Notification" icon="sap-icon://email" press=".onSendNotification"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }" />	<!-- TODO: Change this to ES -->
 		</u:actions>
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
@@ -112,15 +113,15 @@
 									
 									<core:Title/>
 									<Label text="{i18n>whlseofr}" required="true"/>
-									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true}">
+									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' || ${fastAppData>/Tender/CountryCode} === 'IT'? false : true}">
 										<items>
 											<core:Item text="No" key="No"/>
 											<core:Item text="Yes" key="Yes"/>
 										</items>
 									</Select>
-									<Label text="{i18n>newOfferDate}" required="true" visible="{= (${fastAppData>RevisedOfferNo} === 0 &amp;&amp; ${fastAppData>ContinuationOfferNo} === 0) ? false : true }"/>
+									<Label text="{i18n>newOfferDate}" required="true" visible="{= ((${fastAppData>RevisedOfferNo} &amp;&amp; ${fastAppData>RevisedOfferNo} !== 0) || (${fastAppData>ContinuationOfferNo} &amp;&amp; ${fastAppData>ContinuationOfferNo} !== 0)) ? true : false }"/>
 									<!--<Text text="{path :'fastAppData>NewOfferDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" visible="{= (${fastAppData>RevisedOfferNo} === 0 &amp;&amp; ${fastAppData>ContinuationOfferNo} === 0) ? false : true }" />-->
-									<Text text="{path :'fastAppData>NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= (${fastAppData>RevisedOfferNo} === 0 &amp;&amp; ${fastAppData>ContinuationOfferNo} === 0) ? false : true }" />
+									<Text text="{path :'fastAppData>NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ((${fastAppData>RevisedOfferNo} &amp;&amp; ${fastAppData>RevisedOfferNo} !== 0) || (${fastAppData>ContinuationOfferNo} &amp;&amp; ${fastAppData>ContinuationOfferNo} !== 0)) ? true : false }" />
 									
 									<Label text="{i18n>Division}" required="true"/>
 									<Select selectedKey="{fastAppData>Division}" enabled="false" visible="true">
@@ -174,6 +175,36 @@
 							</VBox>
 						</t:template>
 					</t:Column>
+
+					<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PackFactor/description',
+															formatter: '.formatter.offerProductsColumnName' }" 
+														wrapping="true" />
+						<t:template>
+							<VBox>
+								<Input value="{fastAppData>SKU/PACKFACTOR}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}" />
+							</VBox>
+						</t:template>
+					</t:Column>
+
+					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/OfferType/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description',
+							                          		 formatter: '.formatter.offerProductsColumnName' }" 
+							   wrapping="true"/>
+						<t:template>
+							<Select selectedKey="{fastAppData>OfferType}" enabled="false">
+								<items>
+									<core:Item text="" key=""/>
+									<core:Item text="Selling" key="Selling"/>
+									<core:Item text="Rental" key="Rental"/>
+									<core:Item text="Comodato" key="Comodato"/>
+								</items>
+								<layoutData>
+									<l:GridData span="L6 M6 S6"/>
+								</layoutData>
+							</Select>
+						</t:template>
+					</t:Column>
 					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Reference/description',
 									   formatter: '.formatter.offerProductsColumnName' }"
@@ -213,6 +244,34 @@
 							<Text text="{fastAppData>SKUCountry/ProductPack/ProductPackSKUs/results/SKUCode}" wrapping="true" />
 						</t:template>
 					</t:Column>
+
+					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/CodeNational/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/CodeNational/description',
+										formatter: '.formatter.offerProductsColumnName' }"
+								wrapping="true"  />
+						<t:template>
+							<Text text="{fastAppData>SKUCountry/GOV_CODE}" wrapping="true" />
+						</t:template>
+					</t:Column>
+
+					<t:Column width="10rem" visible="{fastAppData>/permissions/tables/editofferProductId/AicCnd/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AicCnd/description',
+										formatter: '.formatter.offerProductsColumnName' }"
+								wrapping="true" />
+						<t:template>
+							<Text text="{fastAppData>SKUCountry/CODE1}" wrapping="true"/>
+						</t:template>
+					</t:Column>
+
+					<t:Column width="10rem" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AtcRdm/description',
+										formatter: '.formatter.offerProductsColumnName' }"
+								wrapping="true" />
+						<t:template>
+							<Text text="{fastAppData>SKUCountry/CODE2}" wrapping="true"/>
+						</t:template>
+					</t:Column>
+
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}" >
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Package/description',
 									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
@@ -339,6 +398,13 @@
 							   wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>PricingPolicyCluster}"/>
+						</t:template>
+					</t:Column>
+
+					<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+						<Label text="Price Agreement" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>OtherPriceAgreementsExist}"/>
 						</t:template>
 					</t:Column>
 				</t:columns>

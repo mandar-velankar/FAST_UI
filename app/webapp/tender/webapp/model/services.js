@@ -67,6 +67,7 @@ sap.ui.define([
 		//different Page sections on detail page
 		_sBasicInformationPageSectionID: "---tenderManagementDetailId--basicInformationId",
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
+		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -156,6 +157,16 @@ sap.ui.define([
 
 		getFinancialOfferPageSectionID: function () {
 			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID;
+			return sPage;
+		},
+
+		getFinancialOfferPageSectionID_IT: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_IT;
+			return sPage;
+		},
+
+        getFinancialOfferPageSectionID_ES: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_ES;
 			return sPage;
 		},
 
@@ -686,6 +697,14 @@ sap.ui.define([
 				Reason: "",
 				Comment: "",
 				AwardedTier: "",
+				ExtensionNotes: null,
+				ExtensionNotes: "",
+				AwardLetterNo: "",
+				AwardDelibNo: "",
+				DeliveryDate: null,
+				ResultDate: null,
+				AwardDate: null,
+				AwardActing: "",
 				_sOperation: "POST"
 			};
 
@@ -943,6 +962,28 @@ sap.ui.define([
 							bVisible = false;
 						}
 						break;
+					case this.getFinancialOfferPageSectionID_IT():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+                    case this.getFinancialOfferPageSectionID_ES():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
 					case this.getQuotationPageSectionID():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
@@ -1006,6 +1047,10 @@ sap.ui.define([
 				}
 
 			}
+
+			//keep result also on fastApp data model
+			let oFastAppDataModel = this.getFastAppDataModel();
+			oFastAppDataModel.setProperty("/CheckOfferVisibleForTab", bVisible);
 
 			return bVisible;
 		},
@@ -2284,7 +2329,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 
@@ -2304,7 +2349,7 @@ sap.ui.define([
 						// prepare and initialize the rank property
 						if (oDataProducts.results) {
 							var iSorter = Ranking.ranking.Initial;
-							oDataProducts.results.forEach(function (oProduct, iIndexProduct) {
+							oDataProducts.results.forEach(async function (oProduct, iIndexProduct) {
 
 								//give sequence again so products are back in correct order
 								oProduct.SORTER = iSorter;
@@ -2354,6 +2399,15 @@ sap.ui.define([
 
 									oProduct.SKUCountry.ProductPack.ProductPackSKUs.results = oProducts[oProducts.length - 1]; //get the last entry
 								}
+
+								//check if other price agreements exist, not associated to the given tender / offer
+								let oPriceAgreement = await that.getProductPriceAgreement(oProduct.CountryCode, oProduct.ProductCode);
+								if(oPriceAgreement.data && oPriceAgreement.data.results.length > 0){
+									oProduct.OtherPriceAgreementsExist = 'Yes';
+								} else {
+									oProduct.OtherPriceAgreementsExist = 'No';
+								}
+
 
 
 							});
@@ -3116,11 +3170,11 @@ sap.ui.define([
 
 			//check mandatory fields
 			if (
-				oBasicInfo.TenderName === "" ||
-				oBasicInfo.Classification === "" ||
-				oBasicInfo.InstituteID === "" || //IntituteType is property of institute
-				oBasicInfo.TenderChannel === "" ||
-				oBasicInfo.GroupPurchasing === "" ||
+				!oBasicInfo.TenderName ||
+				(oBasicInfo.CountryCode !== 'IT' && !oBasicInfo.Classification) || // for Italy the Classification shouldn't be considered
+				!oBasicInfo.InstituteID || //IntituteType is property of institute
+				!oBasicInfo.TenderChannel ||
+				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
 				!oBasicInfo.BidDueDate) {
 
@@ -3129,7 +3183,7 @@ sap.ui.define([
 					type: 'Error',
 					title: 'Mandatory fields.',
 					description: '- Tender Name \n' +
-						'- Classification \n' +
+						(oBasicInfo.CountryCode === 'IT' ? '':'- Classification \n') +
 						'- Institute \n' +
 						'- Channel \n' +
 						'- Group Purchasing \n' +
@@ -5104,6 +5158,7 @@ sap.ui.define([
 		//--------
 		removeProductsSaveInfo: function (aProductsToRemove) {
 
+			var that = this;
 			var oFastAppDataModel = this.getFastAppDataModel();
 			var aProducts = this.getProductsSaveInfo();
 			if(aProducts.length === 0){
@@ -5128,6 +5183,12 @@ sap.ui.define([
 					case "POST":
 						// Product is not yet existing in the back-end tables
 						//this one will therefore no longer be pushed to achangeProducts (=just removed from front-end)
+						oProduct._sOperation = "DELETE";
+						//aProducts.splice(indexCurrentProduct, aProducts.length)
+						delete aProducts[indexCurrentProduct];
+						that.getFastAppDataModel().refresh(true);
+						that.getDefaultModel().refresh(true);
+
 						break;
 					case "PUT":
 						// Product exists already in the back-end tables
@@ -5890,6 +5951,22 @@ sap.ui.define([
 		getTenderProducts: function (sTenderID) {
 			return this.getService('Product').getTenderProducts(sTenderID);
 		},
+
+		getProductPriceAgreement: function (sCountryCode, sProductPackId){
+			return this.getService('Product').getProductPriceAgreement(sCountryCode, sProductPackId);
+		},
+
+		getFinancialProducts: function (offerID) {
+			let oProductService = this.getService('Product');
+			return oProductService.getFinancialProducts(offerID);
+		},
+
+		getCountryBrandProducts: function (countryCode) {
+			let oProductService = this.getService('Product');
+			return oProductService.getCountryBrandProducts(countryCode);
+		},
+
+
 
 		//soft delete Offer (=set inactive column to 0)
 		saveSoftDeleteOffer: function () {
@@ -6825,6 +6902,133 @@ sap.ui.define([
 
 		},
 
+		//check new bank guarantee
+		checkNewBankGuarantee: function(oBankGuarantee){
+			let bValid = false;
+			
+			if(oBankGuarantee.Reference && 
+			   oBankGuarantee.Type && 
+			   oBankGuarantee.GuaranteedAmount != 0 && 
+			   oBankGuarantee.Currency && 
+			   oBankGuarantee.IssueDate &&
+			   oBankGuarantee.ExpectedExpiryDate){
+			   //oBankGuarantee.ClosingDate
+					bValid = true;
+			}
+
+			return bValid;
+		},
+
+		//save bank guarantee
+		saveBankGuarantee: function(oBankGuaranteeSaveInfo){
+			let oDeferred = $.Deferred();
+			var that = this;
+
+			let promises = [];
+
+			//default closing date
+			let oNewToDate = new Date("9999-12-31")
+			oNewToDate.setHours(0,0,0,0);
+
+			// Convert to UTC time
+			const timeOffsetInMS = oNewToDate.getTimezoneOffset() * 60000;
+			oNewToDate.setTime(oNewToDate.getTime() - timeOffsetInMS);
+			oBankGuaranteeSaveInfo.ClosingDate = oNewToDate;
+
+			switch(oBankGuaranteeSaveInfo._sOperation){
+				case "POST":
+					delete oBankGuaranteeSaveInfo._sOperation;
+					promises.push(that.getService('BankGuarantee').createBankGuarantee(oBankGuaranteeSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Create Bank Guarantee");
+						throw new Error(oError);
+					}));
+					break;
+				case "PUT":
+					delete oBankGuaranteeSaveInfo._sOperation;
+					promises.push(that.getService('BankGuarantee').updateBankGuarantee(oBankGuaranteeSaveInfo).catch(function (oError) {
+						that.showErrorMessage(oError, "Update Bank Guarantee");
+						throw new Error(oError);
+					}));
+					break;
+			}
+
+			oBankGuaranteeSaveInfo = {};
+
+		},
+
+		//save bank guarantee
+		savePriceAgreement: function(oPriceAgreementSaveInfo){
+			let oDeferred = $.Deferred();
+			var that = this;
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			let promises = [];
+
+			switch(oPriceAgreementSaveInfo._sOperation){
+				case "POST":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+						
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Success',
+							title: 'Price Agreement has been created',
+							description: 'Price Agreement has been created'
+						});
+						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+					})
+					.catch(function (oError) {
+						//that.showErrorMessage(oError, "Create Price Agreement");
+						oPriceAgreementSaveInfo = {};
+
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Error',
+							title: 'Error saving price agreement',
+							description: 'Error saving price agreement'
+						});
+						that.showMessageCompositeView("Error", that.getOfferCompositeMessages(), 'Error');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+						throw new Error(oError);
+					}));
+					break;
+				case "PUT":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
+
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Success',
+							title: 'Price Agreement has been created',
+							description: 'Price Agreement has been created'
+						});
+						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+					})
+					.catch(function (oError) {
+						//that.showErrorMessage(oError, "Update Price Agreement");
+						oPriceAgreementSaveInfo = {};
+
+						//show message view
+						that.getOfferCompositeMessages().push({
+							type: 'Error',
+							title: 'Error saving price agreement',
+							description: 'Error saving price agreement'
+						});
+						that.showMessageCompositeView("Error", that.getOfferCompositeMessages(), 'Error');
+						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+						throw new Error(oError);
+					}));
+					break;
+			}
+
+			oPriceAgreementSaveInfo = {};
+
+		},
+
 		//save the deliveries
 		saveDeliveries: function () {
 
@@ -7279,6 +7483,13 @@ sap.ui.define([
 			return oDeferred.promise();
 		},
 
+		//get word templates
+		getWordTemplates: function (countryCode) {
+			return this.getService('Quotation').getWordTemplates(countryCode).then(function(response){
+				this.getFastAppDataModel().setProperty("/WordTemplates", response.data.results);
+				return response.data.results;
+			}.bind(this));
+		},
 		// HELPERS
 		/*sendMail: function(sRecipient, sSubject, sTemplate){
 			
@@ -7312,6 +7523,46 @@ sap.ui.define([
 			return oDeferred.promise();
 
 		}*/
+
+		// for italy, get products
+
+		getInstituteDistributorBrandProductsForItaly: function (sInstitute) {
+
+			var oCountryCodeFilter = new Filter({
+				path: 'COUNTRY_CODE',
+				operator: FilterOperator.EQ,
+				value1: 'IT'
+			});
+
+
+			var oInstituteFilter = new Filter({
+				path: 'INSTITUTE_ID',
+				operator: FilterOperator.EQ,
+				value1: sInstitute
+			});
+
+
+			var oDistributorFilter = new Filter({
+				path: 'DISTRIBUTOR_ID',
+				operator: FilterOperator.EQ,
+				value1: this.getSelectedDistributorID()
+			});
+
+			var oChannelFilter = new Filter({
+				path: 'CHANNEL',
+				operator: FilterOperator.EQ,
+				value1: "Direct"
+			});
+
+
+			
+
+			var mParameters = {
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter]
+			};
+
+			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
+		},
 
 	});
 

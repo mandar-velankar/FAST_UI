@@ -48,7 +48,7 @@
 								<core:Title/>
 								
 								<Label text="{i18n>whlseofr}" required="true"/>
-								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' ? false : true}">
+								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL'  || ${fastAppData>/Tender/CountryCode} === 'IT' ? false : true}">
 									<items>
 										<core:Item text="No" key="No"/>
 										<core:Item text="Yes" key="Yes"/>
@@ -92,7 +92,7 @@
 									
 									<ToolbarSpacer/>
 									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
-									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer"/>
+									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= ${fastAppData>/EditOffer/Division} ? true : false }"/>
 									<Button text="{i18n>Deleteprod}" icon="sap-icon://delete" press="onDeleteProductForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
 								</Toolbar>
 							</t:toolbar>
@@ -118,6 +118,38 @@
 										</VBox>
 									</t:template>
 								</t:Column>
+
+								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}">
+									<Label id="idPackFactorLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PackFactor/description',
+												  					   formatter: '.formatter.offerProductsColumnName' }" 
+												    		      wrapping="true" 
+															      required="{fastAppData>/permissions/tables/editofferProductId/PackFactor/required}"/>
+									<t:template>
+										<VBox>
+											<Input value="{fastAppData>SKU/PACKFACTOR}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}" />
+										</VBox>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferType/visible}">
+									<Label id="idOfferTypeLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description',
+												  					   formatter: '.formatter.offerProductsColumnName' }" 
+												    		     wrapping="true" 
+															     required="{fastAppData>/permissions/tables/editofferProductId/OfferType/required}"/>
+									<t:template>
+										<Select selectedKey="{fastAppData>OfferType}">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Selling" key="Selling"/>
+												<core:Item text="Rental" key="Rental" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
+												<core:Item text="Comodato" key="Comodato" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">
 									<Label id="idReferenceLabel" 
 									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Reference/description',
@@ -126,7 +158,7 @@
 										   required="{fastAppData>/permissions/tables/editofferProductId/Reference/required}"
 									/>
 									<t:template>
-										<Input type="Text" id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}" editable="true" maxLength="255"/>
+										<Input  id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}"  maxLength="255"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/visible}">
@@ -156,7 +188,7 @@
 										   required="{fastAppData>/permissions/tables/editofferProductId/Requested/required}"/>
 									<t:template>
 										<HBox>
-											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}"/>
+											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}"/>
 											<Button icon="sap-icon://edit" press="onPressEditRequestedVolume" visible="{= ${fastAppData>/Tender/GroupPurchasing} === 2 ? true : false}"/>
 										</HBox>
 									</t:template>
@@ -188,6 +220,37 @@
 										<Input value="{fastAppData>SKUCountry/ProductPack/ProductPackSKUs/results/SKUCode}" editable="false" maxLength="100"/>
 									</t:template>
 								</t:Column>
+
+								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/CodeNational/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/CodeNational/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/CodeNational/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKUCountry/GOV_CODE}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/AicCnd/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AicCnd/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/AicCnd/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKUCountry/CODE1}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AtcRdm/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/required}"/>
+									<t:template>
+										<Input value="{fastAppData>SKUCountry/CODE2}" editable="false" maxLength="100"/>
+									</t:template>
+								</t:Column>
+
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/Package/visible}">
 									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Package/description',
 												   formatter: '.formatter.offerProductsColumnName' }"
@@ -379,6 +442,23 @@
 												<core:Item text="Without Comodatos" key="Without Comodatos"/>
 												<core:Item text="With Comodatos (Stellant DX y Spectris Solaris)" key="With Comodatos (Stellant DX y Spectris Solaris)"/>
 												<core:Item text="With Comodatos (Con inyectores Stellant SX o Salient)" key="With Comodatos (Con inyectores Stellant SX o Salient)"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+								<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+									<Label id="idPriceAgreementLabel" text="Price Agreement" 
+												    		     wrapping="true" 
+															     required="false"/>
+									<t:template>
+										<Select selectedKey="{fastAppData>OtherPriceAgreementsExist}" enabled="false">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Yes" key="Yes"/>
+												<core:Item text="No" key="No"/>
 											</items>
 											<layoutData>
 												<l:GridData span="L6 M6 S6"/>

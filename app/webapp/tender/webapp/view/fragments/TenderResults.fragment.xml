@@ -1,0 +1,318 @@
+<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.Detail" 
+    xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+    <!-- QUOTATION TAB -->        
+        <ObjectPageSubSection id="TenderResNoOfferSubsection" title="{i18n>TenderResults}">
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow>
+                    <l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                        <m:VBox>
+                            <m:FormattedText htmlText="Offer not available for tender results..."/>
+                        </m:VBox>
+                    </l:BlockLayoutCell>
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+
+        <!-- TENDER OFFER SUB SECTION PAGE -->
+        <ObjectPageSubSection id="TenderResOfferSubsection" title="Tender Offer" visible="false">
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow>
+                    <l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                        <m:VBox>
+
+                            <m:Label/>
+
+                        </m:VBox>
+                    </l:BlockLayoutCell>
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+
+        <ObjectPageSubSection id="TenderResOfferAwardedComp" title="Tender Results">
+            <!-- outcome awarded companies -->
+        
+            <blocks>
+                <!-- REMARK! As described here (https://github.com/SAP/openui5/issues/1822)
+                    filter has no effect when 
+                    sorter: [{path: 'SORTER', descending: false}],
+                    filters: [ 
+                        { path : 'Active', operator : 'EQ', value1 : '1'},   
+                        { path : 'ActiveProduct', operator : 'NE', value1 : '2'}, 
+                        { path : '_sOperation', operator : 'NE', value1 : 'DELETE'}
+                    ]}" 
+                -->
+                <m:VBox>
+                    <m:Title text="Outcome Awarded Companies" />
+
+                    <t:TreeTable
+                        id="idOutcomeTable"
+                        rows="{
+                            path : 'fastAppData>/ResultsForTree/',
+                            parameters: {
+                                arrayNames:['OutcomeLevel'],
+                                numberOfExpandedLevels: 1 }
+                            }" 
+                        selectionMode="Single"
+                        enableSelectAll="false"
+                        ariaLabelledBy="title">
+                        <t:extension>
+                            <m:OverflowToolbar>
+                                <m:Button id="btnAddAwardProduct" text="Add awarded product" icon="sap-icon://add" press="onAddAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+                                <m:Button id="btnDeleteAwardProduct" text="Remove awarded product" icon="sap-icon://delete" press="onDeleteAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+
+                                <!--<m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
+                                <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                    <m:menu>
+                                        <m:Menu itemSelected="onUpdateBankGuarantee">
+                                            <m:MenuItem text="Impegno" icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}"/>
+                                            <m:MenuItem text="Provisoria"  icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}"/>
+                                            <m:MenuItem text="Definitiva"  icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}"/>
+                                        </m:Menu>
+                                    </m:menu>
+		                        </m:MenuButton>
+                                <!--<m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>PriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
+
+                                <m:ToolbarSpacer/>
+                                <m:Button text="Collapse all" press="onCollapseOutcome"/>
+                                <m:Button text="Expand all" press="onExpandOutcome"/>
+                            </m:OverflowToolbar>
+                        </t:extension>
+                        <t:columns>
+                            <t:Column width="10rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="Price Agreement" />
+                                <t:template>
+                                     <m:Button id="btnCreatePriceAgreement" text="" icon="{= ${fastAppData>PriceAgreement} ? 'sap-icon://display' : 'sap-icon://create' }" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }"/>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="13rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
+                                <m:Label text="ContractNo" />
+                                <t:template>
+                                    <m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer'}"/>
+                                </t:template>
+                            </t:Column>
+        
+                            <t:Column width="13rem">
+                                <m:Label text="Awarded Company" required="true"/>
+                                <t:template>
+                                    <m:VBox>
+                                        <m:Input value="{fastAppData>AWARDEDCOMPANY}" 
+                                                    enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                    visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
+
+                                        <m:Select selectedKey="{fastAppData>AWARDEDCOMPANYCOMP}" 
+                                                    enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                    items="{
+                                                        path: 'fastAppData>/CountryCompetitorCompanies/', templateShareable:false
+                                                    }"
+                                                    visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
+                                                    change="onChangeAwardedCompanyCompetitor">
+                                            <m:items>
+                                                <core:Item text="{fastAppData>CompetitorCompany}" key="{fastAppData>CompetitorCompany}"/>
+                                            </m:items>
+                                        </m:Select>
+
+                                        <m:Input 
+                                                    value="{fastAppData>OTHERCOMPANY}" 
+                                                    enabled="{= ${fastAppData>/EditMode} === true &amp;&amp;  ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false }"
+                                                    visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true &amp;&amp; ${fastAppData>AWARDEDCOMPANYCOMP} === 'Other' }"/>
+                                    </m:VBox>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="16rem">
+                                <m:Label text="Product" required="true"/>
+                                <t:template>
+                                    <m:VBox>
+                                        <m:items>
+                                            <m:Input 
+                                                    value="{fastAppData>PRODUCT}" 
+                                                    enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                    visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
+
+                                                <m:Select 
+                                                    id="idSelectCompetitorProduct"
+                                                    selectedKey="{fastAppData>PRODUCTCOMP}" 
+                                                    enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                    items="{ path: 'fastAppData>CountryCompetitorProducts/', templateShareable:false}"
+                                                    visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
+                                                    change="onChangeAwardedProductCompetitor">
+                                                <m:items>
+                                                    <core:Item text="{fastAppData>CompetitorProduct}" key="{fastAppData>CompetitorProduct}"/>
+                                                </m:items>
+                                            </m:Select>
+
+                                            <m:Input 
+                                                    value="{fastAppData>OTHERPRODUCT}" 
+                                                    enabled="{= ${fastAppData>/EditMode} === true &amp;&amp;  ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false }"
+                                                    visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true &amp;&amp; ${fastAppData>PRODUCTCOMP} === 'Other' }"/>
+                                        </m:items>
+                                    </m:VBox>
+                                </t:template>
+
+                            </t:Column>
+        
+                            <t:Column width="9rem">
+                                <m:Label text="Awarded Price"/>
+                                <t:template>
+                                    <m:Input type="Number" id="resultsForTreeAwardedPrice" value="{fastAppData>AWARDEDPRICE}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}" liveChange="onAwardedQtyLiveChange" change="onAwardedQtyChange"/>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="7rem">
+                                <m:Label text="Currency"/>
+                                <t:template>
+                                    <m:Select id="resultsForTreeCurrency" selectedKey="{fastAppData>CURRENCY}" items="{ path: 'fastAppData>/CountryCurrency', templateShareable: false, sorter: { path: 'COUNTRY_CODE' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}">
+                                        <core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>
+                                    </m:Select>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="9rem">
+                                <m:Label text="Requested Volume"/>
+                                <t:template>
+                                    <m:Input type="Number" id="resultsForTreeRequestedVol" value="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? ${fastAppData>REQUESTEDVOLUME} : ''  }" enabled="false"/>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="9rem">
+                                <m:Label text="FOC"/>
+                                <t:template>
+                                    <m:Input id="resultsForTreeFoc" value="{ parts:[ 
+                                                                                { path: 'fastAppData>AWARDEDCOMPANY'}, 
+                                                                                { path: 'fastAppData>FOC'}, 
+                                                                                { path: 'fastAppData>FOC_ABS_PCT'},
+                                                                                { path: 'fastAppData>FOCTYPE'}, 
+                                                                                { path: 'fastAppData>UNITPERPACK'} 
+                                                                                ], formatter: '.formatter.focQuotation'}" enabled="false"/>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="7rem">
+                                <m:Label text="Awarded Qty"/>
+                                <t:template>
+                                    <m:Input type="Number" id="resultsForTreeAwardedQty" value="{fastAppData>AWARDEDQTY}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="6rem">
+                                <m:Label text="UoM"/>
+                                <t:template>
+                                    <m:Select id="resultsForTreeUom" selectedKey="{fastAppData>UOM}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
+                                        <m:items>
+                                            <core:Item text="Unit" key="Unit"/>
+                                            <core:Item text="Pack" key="Pack"/>
+                                        </m:items>
+                                    </m:Select>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="7rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
+                                <m:Label text="Subm. Error"/>
+                                <t:template>
+                                    <!--<m:Input value="{fastAppData>ERRORINSUBMISSION}" editable="false"/>-->
+                                    <m:Select id="resultsForTreeError" selectedKey="{fastAppData>ERRORINSUBMISSION}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}">
+                                        <m:items>
+                                            <core:Item text="" key=""/>
+                                            <core:Item text="No" key="No"/>
+                                            <core:Item text="Yes" key="Yes"/>
+                                        </m:items>
+                                    </m:Select>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="9rem">
+                                <m:Label text="Outcome"/>
+                                <t:template>
+                                    <!--<m:Input value="{fastAppData>OUTCOME}" editable="false"/>-->
+                                    <m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
+                                                                            enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
+                                                                            change="onChangeOutcome" 
+                                                                            items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' }, templateShareable:false }"
+                                                                            width="20rem">
+                                        <core:Item key="{fastAppData>Outcome}" text="{fastAppData>Outcome}"/>
+                                    </m:Select>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="14rem">
+                                <m:Label text="Reason"/>
+                                <t:template>
+                                    <m:Select id="resultsForTreeReason" selectedKey="{fastAppData>REASON}" items="{ path: 'fastAppData>LISTOUTCOMEREASONS/', templateShareable: false, sorter: { path: 'TenderOutcomeReasons' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; (${fastAppData>OUTCOME} === 'Won' || ${fastAppData>OUTCOME} === 'Lost') ? true : false}">
+                                            <core:Item key="{fastAppData>TenderOutcomeReasons}" text="{fastAppData>TenderOutcomeReasons}"/>
+                                    </m:Select>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="14rem">
+                                <m:Label text="Comment"/>
+                                <t:template>
+                                    <m:Input id="resultsForTreeComment" value="{fastAppData>COMMENT}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+                                </t:template>
+                            </t:Column>
+
+                             <!--italy fields-->
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>ExtensionDate}"/>
+                                <t:template>
+                                    <m:DatePicker value="{path :'fastAppData>ExtensionDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+			                                      tooltip="{i18n>ExtensionDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>ExtensionNotes}"/>
+                                <t:template>
+                                    <m:Input value="{fastAppData>ExtensionNotes}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>AwardLetterNo}"/>
+                                <t:template>
+                                    <m:Input value="{fastAppData>AwardLetterNo}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>AwardDelibNo}"/>
+                                <t:template>
+                                    <m:Input value="{fastAppData>AwardDelibNo}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>DeliveryDate}"/>
+                                <t:template>
+                                    <m:DatePicker value="{path :'fastAppData>DeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+			                                      tooltip="{i18n>DeliveryDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>ResultDate}"/>
+                                <t:template>
+                                    <m:DatePicker value="{path :'fastAppData>ResultDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+			                                      tooltip="{i18n>ResultDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>AwardDate}"/>
+                                <t:template>
+                                    <m:DatePicker value="{path :'fastAppData>AwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+			                                      tooltip="{i18n>AwardDate}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" placeholder="{i18n>Select_date}"/>
+                                </t:template>
+                            </t:Column>
+
+                            <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                <m:Label text="{i18n>AwardActing}"/>
+                                <t:template>
+                                    <m:Input value="{fastAppData>AwardActing}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
+                                </t:template>
+                            </t:Column> 
+                        </t:columns>
+                    </t:TreeTable>
+                </m:VBox>
+            </blocks>
+        </ObjectPageSubSection>
+</core:FragmentDefinition>

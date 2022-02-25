@@ -79,7 +79,7 @@
 																<cells>
 																	<VBox>
 																		<Text text="{fastAppData>PRODUCT_NAME}" wrapping="false" />
-																		<Text text="{fastAppData>PRODUCT_ID}" wrapping="false" />
+																		<Text text="{fastAppData>SKUS}" wrapping="false" />
 																	</VBox>
 																	
 																</cells>
@@ -164,7 +164,7 @@
 																<cells>
 																	<VBox>
 																		<Text text="{fastAppData>SKU/PRODUCTPACKNAME}" wrapping="false" />
-																		<Text text="{fastAppData>ProductCode}" wrapping="false" />
+																		<Text text="{fastAppData>SKUS}" wrapping="false" />
 																		<!--<Text text="{fastAppData>SORTER}" wrapping="false" />-->
 																	</VBox>
 																	

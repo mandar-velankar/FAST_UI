@@ -3,15 +3,16 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"../model/formatter",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator"
-], function (BaseController, JSONModel, formatter, Filter, FilterOperator) {
+	"sap/ui/model/FilterOperator",
+	'sap/ui/core/BusyIndicator'
+], function (BaseController, JSONModel, formatter, Filter, FilterOperator,BusyIndicator) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.landingspage.controller.Landingpage", {
 		onInit: function () {
 			//store the component in this controller
 			this.oOwnerComponent = this.getOwnerComponent();
-
+			this.loadingTiles = [];
 			//attach method to on route match
 			this.oRouter = this.getOwnerComponent().getRouter();
 			this.oRouter.attachRoutePatternMatched(this.fnHandleRoutePatternMatched, this);
@@ -19,12 +20,13 @@ sap.ui.define([
 
 		//on route match
 		fnHandleRoutePatternMatched: function (oEvent) {
+			BusyIndicator.hide();
 			var oParameters = oEvent.getParameters();
 			// if (oParameters.name !== "launch") {
 			// 	//following code should only be performed when tiles are to be shown (main.view is called) 
 			// 	return;
 			// }
-
+			this.loadingTiles.forEach(function(tile){tile.setBusy(false);})
 			//build image model to show images on the view (binding the source)
 			var oRootPath = jQuery.sap.getModulePath("com.bayer.tender.landingspage.images");
 			var oImageModel = new JSONModel({
@@ -38,7 +40,9 @@ sap.ui.define([
 				ppa:false,
 				contract:false,
 				salesopportunity:false,
-				createsalesopportunity:false,
+				createopportunity:false,
+				bankguarantees:false,
+				priceagreements:false,
 				masterdata:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
@@ -59,8 +63,8 @@ sap.ui.define([
 
 		//Tile tender management
 		onTileTenderManagementPress: function (evt) {
-
 			var that = this;
+			BusyIndicator.show(0);
 
 			// // instantiate loading dialog
 			// var oLoadingTenderMasterDialog = Services.getLoadingTenderMasterDialog();
@@ -90,51 +94,51 @@ sap.ui.define([
 
 		},
 		onTileEpaManagementPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("epa");
 		},
 
 		onTilePpaManagementPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("ppa");
 		},
 
 		onTileContractManagementPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("contract");
 		},
 		onTileAdminPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("admin");
 		},
 		onTileBankGuaranteesPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("bankguarantees");
 		},
 		onTilePriceAgreementsPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("priceagreements");
 		},
 		onTileSalesOpportunityPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("salesopportunity");
 		},
 		onTileCreateSalesOpportunityPress: function (event) {
-
+			BusyIndicator.show(0);
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("createsalesopportunity");

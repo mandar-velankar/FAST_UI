@@ -13,6 +13,7 @@
 				<Input value="{fastData>TenderName}" enabled="false"/>
 				<Label text="{i18n>clasficn}" design="Bold" required="true"/>
 				<Input id="idClassificationDisplay" value="{fastData>Classification}" enabled="false" />
+
 				<!-- Argentina only -->
 				<Label text="{i18n>BiddingTypeLevel1}" design="Bold" required="true" 
 					visible="{= 
@@ -66,8 +67,27 @@
 				<Input value="{fastData>Institute/InstituteType}" enabled="false"/>
 				<Label text="{i18n>institnme}" design="Bold"  required="true"/>
 				<Input value="{fastData>Institute/InstituteName}" enabled="false"/>
+				<!-- Italy onlye -->
+				<Label text="{i18n>region}" design="Bold" required="true"/>
+				<MultiComboBox id="idRegionView" 
+					selectionChange="handleRegionSelectionChange"
+					selectionFinish="handleRegionSelectionFinish"
+					enabled="false"
+					items="{ 
+						path: 'fastData>/CountryRegions',
+						sorter: { path: 'Name' },
+                        filters: [{                                     
+                                    path : 'CountryCode',
+                                    operator : 'EQ',
+                                    value1 : 'IT'
+                            } ] 
+					}" 
+					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
+				</MultiComboBox>
+				<!-- /Italy onlye -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-				<Input value="{fastData>TenderChannel}" enabled="false"/>
+				<Input value="{fastData>TenderChannel}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT'}"/>
 				<Label text="{i18n>grpurchsng}" design="Bold" required="true"/>
 				<Select id="idGroupPurchasing" selectedKey="{fastData>GroupPurchasing}" enabled="false">
 					<items>
@@ -83,7 +103,9 @@
 				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }">
 					<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 				</Select>
-
+				<!-- Italy only -->
+				<Label text="{i18n>CWID}" design="Bold" />
+				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}"/>
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
