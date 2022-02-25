@@ -485,7 +485,7 @@
 												    		   wrapping="true" 
 															   required="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/required}"/>
 									<t:template>
-                                        <Select selectedKey="{fastAppData>SKUCountry/AnticipatedRequestedQuantity}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+                                        <Select selectedKey="{fastAppData>AnticipatedRequestedQuantity}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
 											<items>
 												<core:Item text="" key=""/>
 												<core:Item text="Anticipated" key="Anticipated"/>
@@ -502,7 +502,7 @@
 												    		   wrapping="true" 
 															   required="{fastAppData>/permissions/tables/editofferProductId/BU/required}"/>
 									<t:template>
-                                        <Input value="{fastAppData>SKUCountry/BU}" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}"/>
+                                        <Input value="{fastAppData>SKUCountry/BU}" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}" enabled="false"/>
 									</t:template>
 								</t:Column>
 							</t:columns>

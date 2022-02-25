@@ -6188,17 +6188,17 @@ sap.ui.define([
 
 							//Create Product (push pending to promises as well)
 							return that.getService('Product').updateProduct(oProductToSave, sOperation)
-                            .then(function(reponse){
+                            // .then(function(reponse){
 
-                                // for Spain only.
-                                if(oProductToSave.CountryCode === "ES"){
-                                    that.getService('Product').updateCountryProductPack(oProductSaveInfo.SKUCountry)
-                                    .catch(function (oError) {
-                                        that.showErrorMessage(oError, "Update of Country product pack");
-                                        throw oError;
-                                    });
-                                }
-                            })
+                            //     // for Spain only.
+                            //     if(oProductToSave.CountryCode === "ES"){
+                            //         that.getService('Product').updateCountryProductPack(oProductSaveInfo.SKUCountry)
+                            //         .catch(function (oError) {
+                            //             that.showErrorMessage(oError, "Update of Country product pack");
+                            //             throw oError;
+                            //         });
+                            //     }
+                            // })
                             .catch(function (oError) {
 								that.showErrorMessage(oError, "Update of product");
 								throw new Error(oError);

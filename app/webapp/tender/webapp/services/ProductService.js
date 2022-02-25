@@ -273,6 +273,7 @@ sap.ui.define([
 			oProductToSave.MinInvoiceAmount = oProductSaveInfo.MinInvoiceAmount ? Number(oProductSaveInfo.MinInvoiceAmount) : 0;
 			oProductToSave.DeliveryConditions = oProductSaveInfo.DeliveryConditions;
 			oProductToSave.OfferType = oProductSaveInfo.OfferType;
+            oProductToSave.AnticipatedRequestedQuantity = oProductSaveInfo.AnticipatedRequestedQuantity;
 
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 

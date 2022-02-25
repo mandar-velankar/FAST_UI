@@ -423,7 +423,7 @@
                     <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
 						<Label text="Anticipated or Requested" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>SKUCountry/AnticipatedRequestedQuantity}"/>
+							<Text text="{fastAppData>AnticipatedRequestedQuantity}"/>
 						</t:template>
 					</t:Column>
 
