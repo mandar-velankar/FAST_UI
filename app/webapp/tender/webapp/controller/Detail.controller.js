@@ -1119,7 +1119,7 @@ sap.ui.define([
 				//only on master list, basic info, offer products it is possible that you don't have an offer selected.
 				//other tabs should always have an offer selected.
 				if (
-					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getQuotationPageSectionID() ||
+					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getQuotationPageSectionID() ||
 					sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
 				)
 				//edit button is disabled
@@ -1290,6 +1290,16 @@ sap.ui.define([
 					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_IT", true);
 				} else {
 					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_IT", false);
+				}
+				break;
+            
+            case Services.getFinancialOfferPageSectionID_ES():
+
+				//check if offer is valid for selection (within this method we store the result also on the fastappdatamodel/checkOfferVisibleForTab)
+				if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)){
+					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", true);
+				} else {
+					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
 				}
 				break;
 
@@ -1617,6 +1627,17 @@ sap.ui.define([
 						oFinOfferController.refreshFinancialTabIT();
 					}
 
+                    if (that.getView().getContent()[0].getSelectedSection() == Services.getFinancialOfferPageSectionID_ES() && Services.checkOfferVisibleForTab(
+						Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//FINANCIAL OFFER for IT
+						//select offer again (TODO)
+						//that.onFinancialOfferItemPress();
+						var oView = that.getView().byId("financialOfferViewId_ES");
+						var oFinOfferController = oView.getController();
+						oFinOfferController.refreshFinancialTabES();
+					}
+
 					if (that.getView().getContent()[0].getSelectedSection() == Services.getDeliveryTrackingPageSectionID() && Services.checkOfferVisibleForTab(
 							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
 
@@ -1764,6 +1785,22 @@ sap.ui.define([
 						}
 	
 						break;
+                case Services.getFinancialOfferPageSectionID_ES():
+						//FINANCIAL OFFER TAB
+						//that._showSectionFragment("FinancialOfferView", "financialOfferId");
+	
+						//check for approval enabled 
+						var sSelectedOfferID = Services.getSelectedOfferID();
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+	
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						if (bEnableApproval && sSelectedOfferID !== '' && oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+							that.byId("ApprovalButtonId").setEnabled(true);
+						} else {
+							that.byId("ApprovalButtonId").setEnabled(false);
+						}
+	
+						break;
 				case Services.getQuotationPageSectionID():
 							
 					//show fragment for TAB: Quotation
@@ -1854,6 +1891,7 @@ sap.ui.define([
 						Services.getOfferProductPageSectionID(),
 						Services.getFinancialOfferPageSectionID(),
 						Services.getFinancialOfferPageSectionID_IT(),
+						Services.getFinancialOfferPageSectionID_ES(),
 						Services.getQuotationPageSectionID(),
 						Services.getTenderResultsPageSectionID(),
 						Services.getDeliveryTrackingPageSectionID()
@@ -2207,6 +2245,12 @@ sap.ui.define([
 						var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 						break;
+                    case Services.getFinancialOfferPageSectionID_ES():
+						//FINANCIAL OFFER TAB for ES
+						//Edit offer copy to move back to original values during cancel
+						var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+						break;
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
@@ -2470,7 +2514,7 @@ sap.ui.define([
 			//check if selected offer was available in table
 			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable(true);
 
-			if(sSelectedSection === Services.getFinancialOfferPageSectionID_IT() && Services.getSelectedProductID() === ''){
+			if((sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES()) && Services.getSelectedProductID() === ''){
 
 				sap.m.MessageBox.warning("First select an product to edit.", {});
 
@@ -2705,6 +2749,36 @@ sap.ui.define([
 								break;
 						}
 						break;
+                    case Services.getFinancialOfferPageSectionID_ES():
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelFinancialOfferTableID").setExpanded(true);
+
+						//make sure selected offer & product is still shown
+						Services.setSelectedOfferID(sSelectedOfferID);
+						Services.setSelectedOfferPath(sSelectedOfferPath);
+
+						//check for approval enabled 
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						that.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+						//Italy has its own products table
+						switch (sSelectedSection) {
+							case Services.getFinancialOfferPageSectionID():
+								//select offer again
+								that.onFinancialOfferItemPress();
+								break;
+							case Services.getFinancialOfferPageSectionID_ES():
+								//select offer again
+								var oView = that.getView().byId("financialOfferViewId_ES");
+								var oFinOfferController = oView.getController();
+								oFinOfferController.refreshFinancialTabIT();
+								break;
+							default:
+								break;
+						}
+						break;
 					case Services.getQuotationPageSectionID():
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelQuotationOfferTableID").setExpanded(true);
@@ -2818,6 +2892,16 @@ sap.ui.define([
 				var oView = this.getView().byId("financialOfferViewId_IT");
 				var oFinOfferController = oView.getController();
 				oFinOfferController.onSaveFinancialOfferItaly();
+				that.getView().setBusy(false);
+				break;
+
+            case Services.getFinancialOfferPageSectionID_ES():
+
+				//FINANCIAL OFFER TAB spain specific
+				that.getView().setBusy(true);
+				var oView = this.getView().byId("financialOfferViewId_ES");
+				var oFinOfferController = oView.getController();
+				oFinOfferController.onSaveFinancialOfferSpain();
 				that.getView().setBusy(false);
 				break;
 				
@@ -9433,7 +9517,156 @@ sap.ui.define([
 			// http://localhost:4004/v2/tender/WordAttachments(templateId=1,offerId='AE-16-100-1049-BPH-11')/content
 			const url = "/v2/tender/WordAttachments(templateId="+event.getSource().getBindingContext("fastAppData").getProperty("templateId")+",offerId='"+Services.getSelectedOfferID()+"')/content";
 			URLHelper.redirect(url,true);
-		}
+		},
+
+		/**
+		 * Button on the Offer Products page that will allow FAST user to notify business 
+		 * team they can proceed with financial offer.
+		 * Only applicable for Spain Tenders
+		 * @param {*} evt 
+		 */
+		onSendNotification: async function(evt){
+			const oDialog = await this._getSendNotificationDialog();         
+			oDialog.open();
+		},
+
+
+		/**
+		 * New email dialog
+		 */
+		 _getSendNotificationDialog : async function () {
+
+             const oController = this;          
+
+            BusyIndicator.show();
+		
+
+			if(this._sendNotificationDialog){
+				this._sendNotificationDialog.destroy();
+			}
+
+			this._sendNotificationDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.NotificationMail", this);
+			this.getView().addDependent(this._sendNotificationDialog);
+
+            let template = undefined;
+            
+			try {
+				template = await Services.getMailTemplate(Services.getCountryCodeofSelectedTender(), "ES", Services.getSelectedOfferID());
+			}
+			catch(error){
+                const errMsg = error.responseText && JSON.parse(error.responseText).error.message.value || error.message;
+                sap.m.MessageBox.error(errMsg);
+                BusyIndicator.hide();                
+				throw error;
+			}
+
+			
+			//get screen elements
+			let oRecipients = sap.ui.getCore().byId("idTo");
+			let oSubject = sap.ui.getCore().byId("idSubject");
+			let oSender = sap.ui.getCore().byId("idFrom");
+			let sSender = UserInfo.getUserEmail();
+			let oEditor = sap.ui.getCore().byId("idEditor");
+
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
+			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
+			
+			oEditor.setValue(template.value);
+			oSubject.setValue(sSubject);
+
+            if(sRecipient){
+                oRecipients.setTokens([
+                    new Token({text: sRecipient, key: sRecipient}),
+                ]);     
+            }
+
+
+			oSender.setTokens([
+				new Token({text: sSender, key: sSender}),
+			]);
+
+			// add validator
+			let fnValidator = function(args){
+				let text = args.text;
+
+                const emailIsNotValid = oController.validateEmail(text);
+
+                if(emailIsNotValid){
+                    oRecipients.setValueStateText(emailIsNotValid)
+                    oRecipients.setValueState("Error");  
+                    oRecipients.openValueStateMessage();                 
+                    return;
+                }
+
+                oRecipients.setValueState("None"); 
+                oRecipients.closeValueStateMessage();
+                
+				return new Token({key: text, text: text});
+			};
+
+			oRecipients.addValidator(fnValidator);
+			oSender.addValidator(fnValidator);
+
+			BusyIndicator.hide();
+			
+
+			return this._sendNotificationDialog;
+
+		},
+
+
+        validateEmail: function (oValue) {
+            // The following Regex is only used for demonstration purposes and does not cover all variations of email addresses.
+            // It's always better to validate an address by simply sending an e-mail to it.
+            var rexMail = /^\w+[\w-+\.]*\@\w+([-\.]\w+)*\.[a-zA-Z]{2,}$/;
+            if (!oValue.match(rexMail)) {
+                return "'" + oValue + "' is not a valid e-mail address";
+            }
+        },
+
+
+		onSendNotificationMail: function(evt){
+
+			let sRecipients = "";
+			let sSubject = sap.ui.getCore().byId('idSubject').getValue();
+			let sMailBody = sap.ui.getCore().byId('idEditor').getValue();
+			let aRecipients = sap.ui.getCore().byId('idTo').getTokens();
+			let sSenders = sap.ui.getCore().byId('idFrom').getTokens();
+			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
+
+			let oMail = {
+				"CountryCode": Services.getSelectedCountry(),
+				"TenderID": Services.getSelectedTenderID(),
+				"OfferID": Services.getSelectedOfferID(),
+				"Sender":sSenders[0].getProperty('text'),
+				"Recipients":sRecipients,
+				"Subject":sSubject,
+				"MailBody":sMailBody,
+				"Sent":false,
+			}
+
+			Services.sendMail(oMail)
+				.then(() => {
+					this._sendNotificationDialog.destroy();
+					Services.getOfferCompositeMessages().push({
+						type: 'Success',
+						title: 'Mail sent successfully',
+						description: 'Mail sent successfully'
+					});
+					Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+				})
+				.catch(function (oError) {
+					//show error message
+					Services.showErrorMessage(oError, "Sending mail");
+				});
+
+		},
+
+
+		onCancelNotificationMail: function(evt){
+			this._sendNotificationDialog.destroy();
+		},
 
 
 	});
