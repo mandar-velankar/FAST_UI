@@ -102,10 +102,8 @@
 									<Text id="idDist" text="{fastAppData>Distributor/DistributorName}" visible="{= ${fastAppData>Distributor/DistributorName} === 'No Distributor' ? false : true}"/>
 									<Label text="{i18n>selncmpny}"  required="true"/>
 									<Text text="{fastAppData>SellingCompanyDetails/LegalEntityName}"/>
-                                    <Label text="{i18n>bu}"  required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
-									<Text text="{fastAppData>BU}"/>
                                     <Label text="{i18n>offerNumber}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
-									<Text text="{fastAppData>/SelectedOfferID}"/>
+									<Text text="{fastAppData>/SelectedOfferID}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
 									<core:Title/>
 									<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 									<!--<Text text="{path :'fastAppData>InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>-->
@@ -426,6 +424,13 @@
 						<Label text="Anticipated or Requested" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SKUCountry/AnticipatedRequestedQuantity}"/>
+						</t:template>
+					</t:Column>
+
+                    <t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+						<Label text="{i18n>bu}" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>SKUCountry/BU}"/>
 						</t:template>
 					</t:Column>
 				</t:columns>

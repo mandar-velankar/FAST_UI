@@ -36,11 +36,8 @@
 									<core:Item text="{fastData>LegalEntityName}" key="{fastData>LegalEntityCode}"/>
 								</Select>
 
-                                <Label text="{i18n>bu}" design="Bold" required="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
-                                <Input value="{fastAppData>/EditOffer/BU}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
-
-                                <Label text="{i18n>offerNumber}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
-								<Input value="{fastAppData>/SelectedOfferID}" enabled="false"/>
+                                <Label text="{i18n>offerNumber}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
+								<Input value="{fastAppData>/SelectedOfferID}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
                                 
 								<core:Title/>
 								
@@ -498,6 +495,14 @@
 												<l:GridData span="L6 M6 S6"/>
 											</layoutData>
 										</Select>
+									</t:template>
+								</t:Column>
+                                <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/BU/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/BU/required}"/>
+									<t:template>
+                                        <Input value="{fastAppData>SKUCountry/BU}" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}"/>
 									</t:template>
 								</t:Column>
 							</t:columns>
