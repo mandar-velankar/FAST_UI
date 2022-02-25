@@ -2202,7 +2202,7 @@ sap.ui.define([
 						Services.setPrevSelectedSellingCompanyID(sSellingCompanyID);
 
 						//keep default selected division
-						var sDivisionID = that.getView().byId("idProductOfferDivision").getSelectedKey();
+						var sDivisionID = that._country === "ES" ? that.getView().byId("idProductOfferDivisionES").getSelectedKey() : that.getView().byId("idProductOfferDivision").getSelectedKey();
 						Services.setSelectedDivisionID(sDivisionID);
 						Services.setPrevSelectedDivisionID(sDivisionID);
 
@@ -5671,6 +5671,7 @@ sap.ui.define([
 			//get fast app data model
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+            let Division = this._country === "ES" ? this.getView().byId("idProductOfferDivisionES").getSelectedItem().getKey() : this.getView().byId("idProductOfferDivision").getSelectedItem().getKey();
 
 			//check on mandatory fields
 			if (
@@ -5680,7 +5681,7 @@ sap.ui.define([
 				this.byId("idintrDueDte").getValue() === "" ||
 				this.byId("idSellingCompany").getSelectedKey() === "" ||
 				this.byId("idWhleSle").getSelectedItem().getKey() === "" ||
-				this.byId("idProductOfferDivision").getSelectedItem().getKey() === "" ||
+				Division === "" ||
 				//new offer date only exists in continued or reviewed offer - but in this case it is a mandatory field
 				(
 					(Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed()) && (this.byId("idNewOfferDate").getValue() === "")
@@ -5787,7 +5788,7 @@ sap.ui.define([
 			oOfferSaveInfo.APPROVALS_SENT = 0;
 
 			/* 01/08/2021 - Division */
-			oOfferSaveInfo.Division = that.byId("idProductOfferDivision").getSelectedKey();
+			oOfferSaveInfo.Division = that._country === "ES" ? that.getView().byId("idProductOfferDivisionES").getSelectedKey() : that.getView().byId("idProductOfferDivision").getSelectedKey();
 
 			/* 13/02/2020 - Offer products check on internal due date */
 			if (oFastAppDataModel.oData.Tender.BidDueDate != null) {
@@ -6490,11 +6491,12 @@ sap.ui.define([
 
 		//ProductOfferEdit fragment: Value help for Division
 		onChangeDivision: function (oEvent) {
+            
 			var oFastAppDataModel = Services.getFastAppDataModel();
+            var that = this;
+            let oDivisionSelect = that._country === "ES" ? that.getView().byId("idProductOfferDivisionES") : that.getView().byId("idProductOfferDivision");
 
 			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
-				var that = this;
-
 				sap.m.MessageBox.warning("Are you sure you want to change the Division? Existing products will be removed.", {
 					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
 					styleClass: "sapUiSizeCompact",
@@ -6503,16 +6505,16 @@ sap.ui.define([
 							var oTableProducts = that.byId("editofferProductId");
 							oTableProducts.selectAll();
 							that.onDeleteProductForOffer();
-							Services.setSelectedDivisionID(that.getView().byId("idProductOfferDivision").getSelectedKey());
+							Services.setSelectedDivisionID(oDivisionSelect.getSelectedKey());
 							Services.setPrevSelectedDivisionID(Services.getSelectedDivisionID());
-							that.getView().byId("idProductOfferDivision").setSelectedKey(Services.getSelectedDivisionID());
+							oDivisionSelect.setSelectedKey(Services.getSelectedDivisionID());
 						} else {
-							that.getView().byId("idProductOfferDivision").setSelectedKey(Services.getPrevSelectedDivisionID());
+							oDivisionSelect.setSelectedKey(Services.getPrevSelectedDivisionID());
 						}
 					}
 				});
 			} else {
-				Services.setSelectedDivisionID(this.getView().byId("idProductOfferDivision").getSelectedKey());
+				Services.setSelectedDivisionID(oDivisionSelect.getSelectedKey());
 				Services.setPrevSelectedDivisionID(Services.getSelectedDivisionID());
 			}
 		},
