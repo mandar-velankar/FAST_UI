@@ -35,9 +35,13 @@
 										change="onChangeSellingCompany">
 									<core:Item text="{fastData>LegalEntityName}" key="{fastData>LegalEntityCode}"/>
 								</Select>
+
+                                <Label text="{i18n>offerNumber}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
+								<Input value="{fastAppData>/SelectedOfferID}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
+                                
 								<core:Title/>
 								
-								<Label text="{i18n>intrnlduedte}" required="true"/>
+								<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 								<!--<DatePicker id="idintrDueDte" value="{path :'fastAppData>/EditOffer/InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
 								<DatePicker id="idintrDueDte" minDate="{dateModel>/minDate}" value="{path :'fastAppData>/EditOffer/InternalBidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
 								
@@ -59,13 +63,23 @@
 								<DatePicker id="idNewOfferDate" minDate="{dateModel>/minDate}" required="true" value="{path :'fastAppData>/EditOffer/NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= (${fastAppData>/NewOfferPressed} === false &amp;&amp; ((${fastAppData>/ReviewedOfferPressed} === true || ${fastAppData>/ContinuedOfferPressed} === true) || ( (${fastAppData>/ReviewedOfferPressed} === false &amp;&amp; ${fastAppData>/ContinuedOfferPressed} === false) &amp;&amp; (${fastAppData>/EditOffer/RevisedOfferNo} !== 0 || ${fastAppData>/EditOffer/ContinuationOfferNo} !== 0)))) ? true : false }"/>
 
 								<Label text="{i18n>Division}" required="true"/>
-								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="true" change="onChangeDivision">
+								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? false : true}" change="onChangeDivision">
 										<items>
 											<core:Item text="" key=""/>
 											<core:Item text="Pharma" key="Pharma"/>
 											<core:Item text="Radiology" key="Radiology"/>
 										</items>
-								</Select>			
+								</Select>	
+                                <!-- Spain only --> <!-- TODO: this is not a scalable solution. We should consider using a service to get the item values for Division -->
+                                <Label text="{i18n>Division}" required="true"/>
+                                <Select id="idProductOfferDivisionES" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}" change="onChangeDivision">
+                                    <items>
+                                        <core:Item text="" key=""/>
+                                        <core:Item text="Pharma" key="Pharma"/>
+                                        <core:Item text="Radiology" key="Radiology"/>
+                                        <core:Item text="Consumer Health" key="Consumer Health"/>
+                                    </items>
+                                </Select>		
 								<!-- <Text id="idDistID" text="{fastAppData>/EditOffer/Distributor/DistributorID}" visible="false"/> -->
 								
 							</form:content>
@@ -449,7 +463,7 @@
 										</Select>
 									</t:template>
 								</t:Column>
-								<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+								<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}">
 									<Label id="idPriceAgreementLabel" text="Price Agreement" 
 												    		     wrapping="true" 
 															     required="false"/>
@@ -464,6 +478,31 @@
 												<l:GridData span="L6 M6 S6"/>
 											</layoutData>
 										</Select>
+									</t:template>
+								</t:Column>
+                                <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+									<Label id="idAnticipatedRequestedQuantity" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/required}"/>
+									<t:template>
+                                        <Select selectedKey="{fastAppData>AnticipatedRequestedQuantity}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Anticipated" key="Anticipated"/>
+												<core:Item text="Requested" key="Requested"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+                                <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/BU/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/BU/required}"/>
+									<t:template>
+                                        <Input value="{fastAppData>SKUCountry/BU}" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}" enabled="false"/>
 									</t:template>
 								</t:Column>
 							</t:columns>
