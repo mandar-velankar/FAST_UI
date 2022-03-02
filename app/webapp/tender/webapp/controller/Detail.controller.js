@@ -325,6 +325,14 @@ sap.ui.define([
 			var oSalesType = this.getView().byId("idSelectSalesTypeEdit");
 			var oTenderOrigin = this.getView().byId("idSelectTenderOriginEdit");
 			var oTenderType = this.getView().byId("idSelectTenderTypeEdit");
+			var oTenderType2 = this.getView().byId("idSelectTenderType2Edit");
+            var oContentEdit = this.getView().byId("idContentEdit");
+            var oPortalEdit = this.getView().byId("idPortalEdit");
+            var oInstCode = this.getView().byId("idInstituteCode");
+            var oInstProvince = this.getView().byId("idInstituteProvince");
+            var oInstPoblacion = this.getView().byId("idInstitutePoblacion");
+            var oInstCifCode = this.getView().byId("idInstituteCifCode");
+            var oRegHealthSystem = this.getView().byId("idRegionalHealthSystem");
 			var oContractType = this.getView().byId("idSelectContractTypeEdit");
 			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
@@ -373,6 +381,22 @@ sap.ui.define([
 				}
 			});
 
+            //should tendertype2 be visible on the screen based on data back-end
+			$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
+				oTenderType2.setVisible(bShowTenderType);
+			});
+
+            //should contentEdit be visible on the screen based on data back-end
+			if(Services.getSelectedCountry() === 'ES'){
+				oContentEdit.setVisible(true);
+                oPortalEdit.setVisible(true);
+                oInstCode.setVisible(true);
+                oInstPoblacion.setVisible(true);
+                oInstProvince.setVisible(true);
+                oInstCifCode.setVisible(true);
+                oRegHealthSystem.setVisible(true);
+			};
+
 			//should tenderorigin be visible on the screen based on data back-end
 			$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
 				oTenderOrigin.setVisible(bShowTenderOrigin);
@@ -396,6 +420,9 @@ sap.ui.define([
 
 			
 			oTenderType.setEnabled(true);
+            oTenderType2.setEnabled(true);
+            oContentEdit.setEnabled(true);
+            oPortalEdit.setEnabled(true);
 
 			//Mexico
 			oSalesType.setEnabled(true);
@@ -509,6 +536,23 @@ sap.ui.define([
 				});
 			}
 
+            //apply country filter on tender type 2
+			var oTenderType = this.getView().byId("idSelectTenderType2Edit") || this.getView().byId("idSelectTenderType2");
+
+			if(oTenderType){
+				oTenderType.bindItems({
+					path: "fastData>/CountryTenderType2",
+					filters: aFilter,
+					parameters: {
+						"expand": "TenderType"
+					},
+					template: new sap.ui.core.Item({
+						text: "{fastData>TenderType/NAME}",
+						key: "{fastData>TenderType/ID}"
+					})
+				});
+			}
+
 			//Mexico changes
 			//apply country filter on sales type
 			var oSalesType = this.getView().byId("idSelectSalesTypeEdit") || this.getView().byId("idSelectSalesType");
@@ -611,6 +655,11 @@ sap.ui.define([
 					}else{
 						oDetailController.getView().byId("idSelectTenderType").setVisible(bShowTenderType);
 					}
+				});
+
+                //should tendertype be visible on the basic info screen?
+				$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
+					oDetailController.getView().byId("idSelectTenderType2").setVisible(bShowTenderType);
 				});
 
 				/* Mexico */
@@ -1698,6 +1747,15 @@ sap.ui.define([
 					that.getView().byId("idTenderChannel").setEnabled(false);
 					that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
 					that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
+					//spain
+                    that.getView().byId("idSelectTenderType2Edit").setEnabled(false);
+                    that.getView().byId("idContentEdit").setEnabled(false);
+                    that.getView().byId("idPortalEdit").setEnabled(false);
+                    that.getView().byId("idInstituteCode").setEnabled(false);
+                    that.getView().byId("idInstituteProvince").setEnabled(false);
+                    that.getView().byId("idInstitutePoblacion").setEnabled(false);
+                    that.getView().byId("idInstituteCifCode").setEnabled(false);
+                    that.getView().byId("idRegionalHealthSystem").setEnabled(false);
 					//Mexico
 					that.getView().byId("idSelectSalesTypeEdit").setEnabled(false);
 					that.getView().byId("idSelectTenderOriginEdit").setEnabled(false);
@@ -1712,6 +1770,11 @@ sap.ui.define([
 						}else{
 							that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
 						}
+					});
+
+                    //should tendertype2 be visible on the basic info screen?
+					$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
+						that.getView().byId("idSelectTenderType2Edit").setVisible(bShowTenderType);
 					});
 
 					/* Mexico */
@@ -1998,6 +2061,14 @@ sap.ui.define([
 						that.getView().byId("idTenderChannel").setEnabled(false);
 						that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
+						that.getView().byId("idSelectTenderType2Edit").setEnabled(false);
+                        that.getView().byId("idContentEdit").setEnabled(false);
+                        that.getView().byId("idPortalEdit").setEnabled(false);
+                        that.getView().byId("idInstituteCode").setEnabled(false);
+                        that.getView().byId("idInstituteProvince").setEnabled(false);
+                        that.getView().byId("idInstitutePoblacion").setEnabled(false);
+                        that.getView().byId("idInstituteCifCode").setEnabled(false);
+                        that.getView().byId("idRegionalHealthSystem").setEnabled(false);
 						that.getView().byId("idSelectSalesTypeEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderOriginEdit").setEnabled(false);
 						that.getView().byId("idSelectContractTypeEdit").setEnabled(false);
@@ -2035,6 +2106,25 @@ sap.ui.define([
 							}else{
 								oTenderType.setVisible(bShowTenderType);
 							}
+						});
+
+                        //apply country filter on tender type 2
+						var oTenderType2 = that.getView().byId("idSelectTenderType2Edit");
+						oTenderType2.bindItems({
+							path: "fastData>/CountryTenderType2",
+							filters: aFilter,
+							parameters: {
+								"expand": "TenderType"
+							},
+							template: new sap.ui.core.Item({
+								text: "{fastData>TenderType/NAME}",
+								key: "{fastData>TenderType/ID}"
+							})
+						});
+
+						//should tendertype be visible on the screen?
+						$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
+							oTenderType2.setVisible(bShowTenderType);
 						});
 
 						//should group purchasing be visible on the screen based on data back-end
@@ -3560,14 +3650,18 @@ sap.ui.define([
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast' || this._country === 'IT'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT' || this._country === 'ES'){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
-			}else{
+                if(this._country === 'ES'){
+                    this.byId("idSelectTenderType2Edit").setVisible(true);                    
+                }                
+            }else{
 				this.byId("idSelectTenderTypeEdit").setVisible(false);
+                this.byId("idSelectTenderType2Edit").setVisible(false);
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Region(s)' && this._country === 'IT'){
+			if(selectedItem === 'Region(s)' && this._country === 'IT'  || this._country === 'ES'){
 				this.byId("idRegionEdit").setVisible(true);
 			}else{
 				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
@@ -3623,6 +3717,9 @@ sap.ui.define([
 				// END Brazil only
 
 				oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
+                oSaveBasicInfo.TENDER_TYPE_2_ID = this.byId("idSelectTenderType2Edit").getSelectedKey();
+                oSaveBasicInfo.PORTAL = this.byId("idPortalEdit").getValue();
+                oSaveBasicInfo.CONTENT = this.byId("idContentEdit").getValue();
 				oSaveBasicInfo.TenderChannel = this.byId("idTenderChannel").getSelectedItem().getText();
 				oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
@@ -3775,6 +3872,9 @@ sap.ui.define([
 			// END Brazil only
 
 			oSaveBasicInfo.TENDER_TYPE_ID = this.byId("idSelectTenderTypeEdit").getSelectedKey();
+            oSaveBasicInfo.TENDER_TYPE_2_ID = this.byId("idSelectTenderType2Edit").getSelectedKey();
+            oSaveBasicInfo.PORTAL = this.byId("idPortalEdit").getValue();
+            oSaveBasicInfo.CONTENT = this.byId("idContentEdit").getValue();
 			oSaveBasicInfo.TenderChannel = this._country === 'IT' ? 'Direct' : this.byId("idTenderChannel").getSelectedItem().getText();
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
