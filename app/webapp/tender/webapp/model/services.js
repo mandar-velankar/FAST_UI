@@ -6045,6 +6045,15 @@ sap.ui.define([
 			return this.getService('Product').getProductPriceAgreement(sCountryCode, sProductPackId);
 		},
 
+        getProductPriceCondition: function (sCountryCode, sOfferId, sProductCode){
+            let filter = {
+                "CountryCode": sCountryCode,
+                "OfferID": sOfferId,
+                "ProductCode": sProductCode
+            };
+			return this.getService('PriceCondition').getProductPriceAgreement(filter);
+		},
+
 		getFinancialProducts: function (offerID) {
 			let oProductService = this.getService('Product');
 			return oProductService.getFinancialProducts(offerID);
