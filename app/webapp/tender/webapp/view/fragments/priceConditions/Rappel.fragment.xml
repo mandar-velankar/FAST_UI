@@ -1,63 +1,49 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
 	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 
-    <!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsectionAdditionalRappel" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
-		<l:BlockLayout background="Light">
-
-			<!-- Rental -->
-			<l:BlockLayoutRow>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
-				<MessageStrip text="{fastAppData>dynMessage}" />
-					<form:SimpleForm id="idRental"
-							editable="false"
-							class="editableForm"
-							layout="ResponsiveGridLayout"
-							labelSpanXL="3"
-							labelSpanL="3"
-							labelSpanM="3"
-							labelSpanS="12"
-							adjustLabelSpan="false"
-							emptySpanXL="4"
-							emptySpanL="4"
-							emptySpanM="4"
-							emptySpanS="0"
-							columnsXL="1"
-							columnsL="1"
-							columnsM="1"
-							singleContainerFullSize="false" >
-							<form:content>
-								<Label text="{i18n>PVL}" required="true"/>
-								<Input value="{fastAppData>PVL}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/><Label text="{i18n>RoyalDecree}" required="true"/> 
-								<Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}"> 
-									<items>
-										<core:Item key="" text="" />
-										<core:Item key="Yes" text="Yes" />
-										<core:Item key="No" text="No" />									
-									</items>
-								</Select>
-								<Label text="{i18n>Liquidation}" required="true"/>
-								<Input value="{fastAppData>Liquidation}" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="{i18n>VolTreshold}" required="true"/>
-								<Input value="{fastAppData>/VolumeTresholds}" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="{i18n>Discount}" required="true"/>
-								<Input value="{fastAppData>Discount}" type="Number" enabled="false" fieldWidth="80%"/>
-                                
-								<Label text="{i18n>NetPriceWOtax}" required="true"/>
-								<Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="{i18n>Tax}" required="true"/>
-								<Input value="{fastAppData>Tax}" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="{i18n>NetPriceWtax}" required="true"/>
-								<Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="{i18n>PaymentBackDate}" required="true"/>
-								<Input value="{fastAppData>RefundDate}" type="Number" enabled="false" fieldWidth="80%"/>
-							</form:content>
-						</form:SimpleForm>
-				</l:BlockLayoutCell>
-			</l:BlockLayoutRow>
-
-			
-		</l:BlockLayout>
-	</u:ObjectPageSubSection>
-
+    <MessageStrip text="{fastAppData>dynMessage}" />
+    <form:SimpleForm
+            editable="false"
+            class="editableForm"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="3"
+            labelSpanL="3"
+            labelSpanM="3"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="4"
+            emptySpanL="4"
+            emptySpanM="4"
+            emptySpanS="0"
+            columnsXL="1"
+            columnsL="1"
+            columnsM="1"
+            singleContainerFullSize="false" >
+            <form:content>
+                <Label text="{i18n>PVL}" required="true"/>
+                <Input value="{fastAppData>PVL}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/><Label text="{i18n>RoyalDecree}" required="true"/> 
+                <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}"> 
+                    <items>
+                        <core:Item key="" text="" />
+                        <core:Item key="Yes" text="Yes" />
+                        <core:Item key="No" text="No" />									
+                    </items>
+                </Select>
+                <Label text="{i18n>Liquidation}" required="true"/>
+                <Input value="{fastAppData>Liquidation}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>VolTreshold}" required="true"/>
+                <Input value="{fastAppData>/VolumeTresholds}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>Discount}" required="true"/>
+                <Input value="{fastAppData>Discount}" type="Number" enabled="false" fieldWidth="80%"/>
+                
+                <Label text="{i18n>NetPriceWOtax}" required="true"/>
+                <Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>Tax}" required="true"/>
+                <Input value="{fastAppData>Tax}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>NetPriceWtax}" required="true"/>
+                <Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>PaymentBackDate}" required="true"/>
+                <Input value="{fastAppData>RefundDate}" type="Number" enabled="false" fieldWidth="80%"/>
+            </form:content>
+        </form:SimpleForm>
 </core:FragmentDefinition>
