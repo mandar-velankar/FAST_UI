@@ -61,9 +61,26 @@ sap.ui.define([
 				await this.getCountryBrandProductsCombined();
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
-			
+
+                const oFastAppDataModel = Services.getFastAppDataModel();
+                const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+
+                // fetch and set PricingConditionClassification info 
+                const filter = {
+                    "CountryCode": offer.CountryCode,
+                    "Classification": offer.Tender.Classification,
+                    "Division": offer.Division,
+                    "isMain": true
+                };
+    
+                const pricingConditionClassifications = await this.getPricingConditionClassification(filter);
+                oFastAppDataModel.setProperty("/PricingConditionClassification", pricingConditionClassifications);
+
+
 			}
+
 		},
+
 		getCountryBrandProductsCombined: async function(){
 			//load products
 			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
@@ -134,6 +151,11 @@ sap.ui.define([
 			}
 		},
 
+        getPricingConditionClassification: async function(filter){
+            const pricingConditionClassificationResponse = await Services.getService('PriceCondition').getPricingConditionClassification(filter);
+            return pricingConditionClassificationResponse.data && pricingConditionClassificationResponse.data.results;
+        },
+
 		_checkApprovalEnabled: function (){
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID);
@@ -168,5 +190,20 @@ sap.ui.define([
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
 			
 		},
+
+        onFinancialProductPress: async function(oEvent){
+
+
+            //get price conditions
+            const priceConditionResponse = await Services.getService('PriceCondition').getPriceCondition({
+                "CountryCode": Services.getSelectedCountry(),
+                "OfferID": Services.getSelectedOfferID(),
+                "ProductCode": Services.getSelectedProductID()
+            });
+
+            const aPriceConditions = priceConditionResponse.data && priceConditionResponse.data.results;
+
+        },
+
 	});
 });
