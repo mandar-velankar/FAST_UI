@@ -42,7 +42,7 @@ sap.ui.define([
 			var mParameters = {
 				filters: aFilters,
 				urlParameters: {
-					$expand: "DiscountCondition,PricingConditionClassification"
+					$expand: "DiscountCondition,PriceConditionClassification"
 				}
 			};
 
@@ -64,7 +64,7 @@ sap.ui.define([
 		},
 
 
-        getPricingConditionClassification: function(filter){
+        getPriceConditionClassification: function(filter){
             
 			let aFilters = [];
 
@@ -99,7 +99,7 @@ sap.ui.define([
 			};
 
 
-			return this.odata("/PricingConditionClassification").get(mParameters);
+			return this.odata("/PriceConditionClassification").get(mParameters);
 		},
 		
 	});

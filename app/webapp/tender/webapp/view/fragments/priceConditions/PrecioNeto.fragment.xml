@@ -2,14 +2,14 @@
 	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 
     <!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection title="Pricing Offer" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<l:BlockLayout background="Light">
 
 			<!-- Rental -->
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
 				<MessageStrip text="{fastAppData>dynMessage}" />
-					<form:SimpleForm id="idRental"
+					<form:SimpleForm
 							editable="false"
 							class="editableForm"
 							layout="ResponsiveGridLayout"
