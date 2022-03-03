@@ -1,50 +1,37 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
 	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
         
-    <!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="Pricing Offer" id="FinPricingOfferSubsectionAdditionalFOC" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
-		<l:BlockLayout background="Light">
-
-			<!-- Rental -->
-			<l:BlockLayoutRow>
-				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
-				<MessageStrip text="{fastAppData>dynMessage}" />
-					<form:SimpleForm id="idRental"
-							editable="false"
-							class="editableForm"
-							layout="ResponsiveGridLayout"
-							labelSpanXL="3"
-							labelSpanL="3"
-							labelSpanM="3"
-							labelSpanS="12"
-							adjustLabelSpan="false"
-							emptySpanXL="4"
-							emptySpanL="4"
-							emptySpanM="4"
-							emptySpanS="0"
-							columnsXL="1"
-							columnsL="1"
-							columnsM="1"
-							singleContainerFullSize="false" >
-							<form:content>
-								<Label text="{i18n>PVL}" required="true"/>
-								<Input value="{fastAppData>PVL}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-								<Label text="{i18n>Discount}" required="true"/>
-								<Input value="{fastAppData>Discount}" type="Number" enabled="false" fieldWidth="80%"/>
-								<Label text="{i18n>NetPriceWOtax}" required="true"/>
-								<Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${fastAppData>NetPriceWithoutTax} : 0" type="Number" enabled="true" fieldWidth="80%"/>
-                                <MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
-									<tokens>
-										<Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
-									</tokens>
-								</MultiInput>
-							</form:content>
-						</form:SimpleForm>
-				</l:BlockLayoutCell>
-			</l:BlockLayoutRow>
-
-			
-		</l:BlockLayout>
-	</u:ObjectPageSubSection>
+    <MessageStrip text="{fastAppData>dynMessage}" />
+    <form:SimpleForm
+            editable="false"
+            class="editableForm"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="3"
+            labelSpanL="3"
+            labelSpanM="3"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="4"
+            emptySpanL="4"
+            emptySpanM="4"
+            emptySpanS="0"
+            columnsXL="1"
+            columnsL="1"
+            columnsM="1"
+            singleContainerFullSize="false" >
+            <form:content>
+                <Label text="{i18n>PVL}" required="true"/>
+                <Input value="{fastAppData>PVL}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Label text="{i18n>Discount}" required="true"/>
+                <Input value="{fastAppData>Discount}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>NetPriceWOtax}" required="true"/>
+                <Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${fastAppData>NetPriceWithoutTax} : 0" type="Number" enabled="true" fieldWidth="80%"/>
+                <MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
+                    <tokens>
+                        <Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
+                    </tokens>
+                </MultiInput>
+            </form:content>
+        </form:SimpleForm>
     
 </core:FragmentDefinition>
