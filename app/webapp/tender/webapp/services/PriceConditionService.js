@@ -2,8 +2,10 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/BaseService",
 	"FAST_NS0FAST0/model/services",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
-	"FAST_NS0FAST0/model/userinfo"
-], function (BaseService, Services, MomentJS, UserInfo) {
+	"FAST_NS0FAST0/model/userinfo",
+    "sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseService, Services, MomentJS, UserInfo, Filter, FilterOperator) {
 	"use strict";
 
 	return BaseService.extend("FAST_NS0FAST0.services.PriceConditionService", {
