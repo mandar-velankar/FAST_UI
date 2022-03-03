@@ -130,7 +130,27 @@
 	<!-- PRICING OFFER SUBSECTION -->
 	<u:ObjectPageSubSection title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<l:BlockLayout background="Light">
-
+            <l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                    <VBox>
+                        <HBox alignItems="Center">
+                            <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
+                            <Select
+                                forceSelection="false"
+                                change=".onPriceConditionChange"
+                                items="{
+                                    path: 'fastAppData>/PriceConditionClassification',
+                                    sorter: { path: 'ConditionType' }
+                                }">
+                                <core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
+                            </Select>
+                        </HBox>
+                        <HBox alignItems="Center" id="idPriceConditionFragmentPlaceholder">
+                            <!-- Fragments of price conditions are added dynamically from the controller -->
+                        </HBox>
+                    </VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
 

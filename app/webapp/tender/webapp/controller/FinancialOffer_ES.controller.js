@@ -65,7 +65,7 @@ sap.ui.define([
                 const oFastAppDataModel = Services.getFastAppDataModel();
                 const offer = oFastAppDataModel.getProperty("/SelectedOffer");
 
-                // fetch and set PricingConditionClassification info 
+                // fetch and set PriceConditionClassification info 
                 const filter = {
                     "CountryCode": offer.CountryCode,
                     "Classification": offer.Tender.Classification,
@@ -73,8 +73,8 @@ sap.ui.define([
                     "isMain": true
                 };
     
-                const pricingConditionClassifications = await this.getPricingConditionClassification(filter);
-                oFastAppDataModel.setProperty("/PricingConditionClassification", pricingConditionClassifications);
+                const priceConditionClassification = await this.getPriceConditionClassification(filter);
+                oFastAppDataModel.setProperty("/PriceConditionClassification", priceConditionClassification);
 
 
 			}
@@ -151,9 +151,9 @@ sap.ui.define([
 			}
 		},
 
-        getPricingConditionClassification: async function(filter){
-            const pricingConditionClassificationResponse = await Services.getService('PriceCondition').getPricingConditionClassification(filter);
-            return pricingConditionClassificationResponse.data && pricingConditionClassificationResponse.data.results;
+        getPriceConditionClassification: async function(filter){
+            const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
+            return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
         },
 
 		_checkApprovalEnabled: function (){
@@ -202,6 +202,26 @@ sap.ui.define([
             });
 
             const aPriceConditions = priceConditionResponse.data && priceConditionResponse.data.results;
+
+        },
+
+        onPriceConditionChange: function(oEvent){
+
+            const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
+            let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
+
+            Fragment.load({
+                id: this.getView().getId(),
+                name: sFragmentPath.concat(".",sFragmentName),
+                controller: this
+            }).then(function (oDialog) {
+
+                debugger; 
+                
+                this.getView().addDependent(oDialog);
+                oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+                oDialog.open(sDialogTab);
+            }.bind(this));
 
         },
 
