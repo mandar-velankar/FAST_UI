@@ -207,6 +207,9 @@ sap.ui.define([
 
         onPriceConditionChange: function(oEvent){
 
+            const vBox = this.byId("idPriceConditionVbox");
+            vBox.removeAllItems();
+
             const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
             let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
 
@@ -214,13 +217,8 @@ sap.ui.define([
                 id: this.getView().getId(),
                 name: sFragmentPath.concat(".",sFragmentName),
                 controller: this
-            }).then(function (oDialog) {
-
-                debugger; 
-                
-                this.getView().addDependent(oDialog);
-                oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
-                oDialog.open(sDialogTab);
+            }).then(function (oFragment) {
+                oFragment.forEach(item => vBox.addItem(item));
             }.bind(this));
 
         },
