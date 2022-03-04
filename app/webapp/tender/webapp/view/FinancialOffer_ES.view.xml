@@ -145,9 +145,16 @@
                                 <core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
                             </Select>
                         </HBox>
-                        <HBox alignItems="Center" id="idPriceConditionFragmentPlaceholder">
-                            <!-- Fragments of price conditions are added dynamically from the controller -->
-                        </HBox>
+                    </VBox>
+                    <VBox id="idPriceConditionVbox">
+                        <!-- Fragments of price conditions are added dynamically from the controller. see 'onPriceConditionChange' method-->
+                    </VBox>
+                    <VBox visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract'}">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />
+                    </VBox>
+                    <VBox visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract' &amp;&amp; 
+                                    (${fastAppData>//SelectedOffer/Division} === 'Pharma' || ${fastAppData>//SelectedOffer/Division} === 'Radiology') }">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.FOC" type="XML" />
                     </VBox>
 				</l:BlockLayoutCell>
 			</l:BlockLayoutRow>
