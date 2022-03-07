@@ -68,6 +68,7 @@ sap.ui.define([
 		_sBasicInformationPageSectionID: "---tenderManagementDetailId--basicInformationId",
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
 		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
+        _sFinancialOfferPageSectionID_ES: "---tenderManagementDetailId--financialOfferId_ES",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
