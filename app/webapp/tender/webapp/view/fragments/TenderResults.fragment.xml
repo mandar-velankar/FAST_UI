@@ -199,6 +199,18 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="6rem">
+                                <m:Label text="Information Needed"/>
+                                <t:template>
+                                    <m:Select id="resultsForTreeInfoNeeded" selectedKey="{fastAppData>InfoNeeded}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
+                                        <m:items>
+                                            <core:Item text="" key=""/>
+                                            <core:Item text="Yes" key="Yes"/>
+                                            <core:Item text="No" key="No"/>
+                                        </m:items>
+                                    </m:Select>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="6rem">
                                 <m:Label text="UoM"/>
                                 <t:template>
                                     <m:Select id="resultsForTreeUom" selectedKey="{fastAppData>UOM}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
@@ -218,6 +230,21 @@
                                             <core:Item text="" key=""/>
                                             <core:Item text="No" key="No"/>
                                             <core:Item text="Yes" key="Yes"/>
+                                        </m:items>
+                                    </m:Select>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="9rem">
+                                <m:Label text="Appeal"/>
+                                <t:template>
+                                    <m:Select id="appealDropdown" selectedKey="{fastAppData>Appeal}" 
+                                                                  enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
+                                                                  change="onChangeOutcome"
+                                                                  width="20rem">
+                                        <m:items>
+                                            <core:Item text="No" key="No"/>
+                                            <core:Item text="Appeal in Progress" key="Appeal in Progress"/>
+                                            <core:Item text="Appealed final results" key="Appealed final results"/>
                                         </m:items>
                                     </m:Select>
                                 </t:template>
