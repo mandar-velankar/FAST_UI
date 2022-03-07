@@ -154,7 +154,7 @@
                           visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 				<!-- Italy only -->
 				<Label text="{i18n>CWID}" design="Bold" />
-				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}"/>
+				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
