@@ -297,6 +297,8 @@ sap.ui.define([
 				AWARDEDPRICE: null,
 				CURRENCY: null,
 				OutcomeLevel: null,
+                APPEAL: null,
+                INFONEEDED: null,                                                
 				_sOperation: "POST"
 			};
 
