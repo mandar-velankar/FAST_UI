@@ -198,10 +198,10 @@
                                     <m:Input type="Number" id="resultsForTreeAwardedQty" value="{fastAppData>AWARDEDQTY}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" />
                                 </t:template>
                             </t:Column>
-                            <t:Column width="6rem">
+                            <t:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES' }">
                                 <m:Label text="Information Needed"/>
                                 <t:template>
-                                    <m:Select id="resultsForTreeInfoNeeded" selectedKey="{fastAppData>InfoNeeded}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
+                                    <m:Select id="resultsForTreeInfoNeeded" selectedKey="{fastAppData>INFONEEDED}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}">
                                         <m:items>
                                             <core:Item text="" key=""/>
                                             <core:Item text="Yes" key="Yes"/>
@@ -235,11 +235,11 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="9rem">
-                                <m:Label text="Appeal"/>
+                                <m:Label text="Appeal" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES' }"/>
                                 <t:template>
-                                    <m:Select id="appealDropdown" selectedKey="{fastAppData>Appeal}" 
-                                                                  enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
-                                                                  change="onChangeOutcome"
+                                    <m:Select id="appealDropdown" selectedKey="{fastAppData>APPEAL}" 
+                                                                  enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"
+                                                                  change="onChangeAppeal"
                                                                   width="20rem">
                                         <m:items>
                                             <core:Item text="No" key="No"/>
