@@ -3661,7 +3661,7 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Region(s)' && this._country === 'IT'  || this._country === 'ES'){
+			if(selectedItem === 'Region(s)' && this._country === 'IT'){
 				this.byId("idRegionEdit").setVisible(true);
 			}else{
 				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
