@@ -55,6 +55,11 @@ sap.ui.define([
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: async function (oEvent) {
 
+            // This code should only for Spain
+            if(Services.getSelectedCountry() !== "ES"){
+                return;
+            }
+
 			// this method should only be called in case of Spain
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_ES")) {
@@ -156,6 +161,18 @@ sap.ui.define([
             return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
         },
 
+        getPriceConditions: async function(productCode){
+
+            const filter = {
+                "CountryCode": Services.getSelectedCountry(),
+                "OfferID": Services.getSelectedOfferID(),
+                "ProductCode": productCode
+            };
+
+            const priceConditionResponse = await Services.getService('PriceCondition').getPriceCondition(filter);
+            return priceConditionResponse.data && priceConditionResponse.data.results;
+        },
+
 		_checkApprovalEnabled: function (){
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID);
@@ -175,7 +192,7 @@ sap.ui.define([
 		 * @param {*} oEvent 
 		 */
 		onSaveFinancialOfferSpain: async function (oEvent) {
-
+            debugger;
 		},
 
 		/**
@@ -188,20 +205,59 @@ sap.ui.define([
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
-			
+			// This code should only for Spain. TODO: check why this method is also being run for Spain. This is a side effect.
+            if(Services.getSelectedCountry() !== "ES"){
+                return;
+            }
+
+
+			if (oEvent && oEvent.oSource) {
+				var sSourceId = oEvent.oSource.sId
+				var oProductsTable = oEvent.getSource();
+			}
+
+			if (!oProductsTable) {
+				oProductsTable = this.byId("idFinancialOfferViewProduct");
+			}
+			let that = this;
+
+			if ((bInitLoad || (sSourceId && sSourceId.includes('financialOfferViewId_ES'))) && !$.isEmptyObject(oProductsTable)) {
+				let aItems = oProductsTable.getItems();
+				
+					if (aItems.length > 0) {
+						if (this.selectedProductPricePath === undefined || this.selectedProductPricePath === '/ProductPricingView/0'){
+
+							oProductsTable.setSelectedItem(aItems[0], true);
+							aItems[0].setSelected(true);
+
+                            // set selected product
+                            let prdObj = aItems[0].getBindingContext("fastAppData").getObject();
+							Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+                            Services.setSelectedProductName(prdObj.ProductPackName);
+                            Services.setSelectedProductID(prdObj.ProductCode);
+
+
+                            let selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
+                            Services.getFastAppDataModel().setProperty("/SelectedOffer/SelectedProduct",selectedProduct);
+
+
+                            this.getPriceConditions(Services.getSelectedProductID()).then(response => {
+                                alert("Loaded");
+                                debugger;
+
+                            });
+                            
+                            
+						}
+				}
+			}
 		},
 
         onFinancialProductPress: async function(oEvent){
 
-
             //get price conditions
-            const priceConditionResponse = await Services.getService('PriceCondition').getPriceCondition({
-                "CountryCode": Services.getSelectedCountry(),
-                "OfferID": Services.getSelectedOfferID(),
-                "ProductCode": Services.getSelectedProductID()
-            });
 
-            const aPriceConditions = priceConditionResponse.data && priceConditionResponse.data.results;
+            const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
 
         },
 
