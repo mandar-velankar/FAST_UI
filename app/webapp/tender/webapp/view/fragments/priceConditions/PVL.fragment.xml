@@ -21,7 +21,7 @@
         singleContainerFullSize="false" >
         <form:content>
             <Label text="{i18n>PVL}" required="true"/>
-            <Input value="{fastAppData>SelectedOffer/Product/RegisteredPrice/REGISTERED_PRICE}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> 
+            <Input value="{fastAppData>PVL}" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> 
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

@@ -63,7 +63,10 @@ sap.ui.define([
 			// this method should only be called in case of Spain
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_ES")) {
-				await this.getCountryBrandProductsCombined();
+
+
+                await this.getPriceConditionView();
+
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
 
@@ -86,29 +89,40 @@ sap.ui.define([
 
 		},
 
-		getCountryBrandProductsCombined: async function(){
-			//load products
-			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
+		getPriceConditionView: async function(){
+
+            const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+
+
+            const filter = {
+                "CountryCode": offer.CountryCode,
+                "Classification": offer.Tender.Classification,
+                "Division": offer.Division,
+                "OfferID": offer.OfferID
+            };
+
+			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
 
 			//load countryBrandProducts
-			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+			// let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
-			aProducts = aProducts.map(product => {
-				product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
-					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-					return FreeGoodsOther;
-				}) || [];
-				return product;
-			});
+			// aProducts = aProducts.map(product => {
+			// 	product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
+			// 		var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+			// 		FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+			// 		return FreeGoodsOther;
+			// 	}) || [];
+			// 	return product;
+			// });
 
-			//set to fastappdata model for easy access on the view
-			var oFastAppDataModel = Services.getFastAppDataModel();
-			aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-			oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
-			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
-			return aProducts;
+			// //set to fastappdata model for easy access on the view
+			// var oFastAppDataModel = Services.getFastAppDataModel();
+			// aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+			Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews.data.results);
+			// oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
+			return priceConditionViews.data.results;
 		},
+        
 		setFinancialOffer:function(){
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
@@ -132,22 +146,22 @@ sap.ui.define([
 		 * @param {String} offerID, 
 		 * @returns {Array} - A list of Tender products
 		 */
-		getFinancialProducts: async function (offerID) {
-			if (offerID) {
-				const response = await Services.getFinancialProducts(offerID);
+		// getFinancialProducts: async function (offerID) {
+		// 	if (offerID) {
+		// 		const response = await Services.getFinancialProducts(offerID);
 
-				return response.data && response.data.results.map(item => {
+		// 		return response.data && response.data.results.map(item => {
 					
-					item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
-						freeGoods.UOM = item.UOM;
-						return freeGoods;
-					}) || [];
+		// 			item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
+		// 				freeGoods.UOM = item.UOM;
+		// 				return freeGoods;
+		// 			}) || [];
 					
-					return item;
-				}) || [];
-			}
-			return [];
-		},
+		// 			return item;
+		// 		}) || [];
+		// 	}
+		// 	return [];
+		// },
 
 		getCountryBrandProducts: async function (countryCode) {
 			if (countryCode) {
@@ -239,13 +253,6 @@ sap.ui.define([
 
                             let selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
                             Services.getFastAppDataModel().setProperty("/SelectedOffer/SelectedProduct",selectedProduct);
-
-
-                            this.getPriceConditions(Services.getSelectedProductID()).then(response => {
-                                alert("Loaded");
-                                debugger;
-
-                            });
                             
                             
 						}
@@ -263,6 +270,11 @@ sap.ui.define([
 
         onPriceConditionChange: function(oEvent){
 
+            const sConditionType = oEvent.getSource().getSelectedItem().getText();
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
+            const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
+
             const vBox = this.byId("idPriceConditionVbox");
             vBox.removeAllItems();
 
@@ -275,6 +287,7 @@ sap.ui.define([
                 controller: this
             }).then(function (oFragment) {
                 oFragment.forEach(item => vBox.addItem(item));
+                vBox.bindElement({ path: bindingPath, model: "fastAppData" });
             }.bind(this));
 
         },
