@@ -3661,7 +3661,7 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Region(s)' && this._country === 'IT'  || this._country === 'ES'){
+			if(selectedItem === 'Region(s)' && this._country === 'IT'){
 				this.byId("idRegionEdit").setVisible(true);
 			}else{
 				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
@@ -8870,6 +8870,8 @@ sap.ui.define([
 										AwardDate: oResult.AwardDate,
 										AwardActing: oResult.AwardActing,
 										PriceAgreement: oProduct.PriceAgreement,
+                                        APPEAL: oResult.Appeal,
+                                        INFONEEDED: oResult.InfoNeeded,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 
@@ -9264,7 +9266,9 @@ sap.ui.define([
 						DeliveryDate: oResultForTree.DeliveryDate,
 						ResultDate: oResultForTree.ResultDate,
 						AwardDate: oResultForTree.AwardDate,
-						AwardActing: oResultForTree.AwardActing
+						AwardActing: oResultForTree.AwardActing,
+                        Appeal: oResultForTree.APPEAL,
+                        InfoNeeded: oResultForTree.INFONEEDED                        
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)

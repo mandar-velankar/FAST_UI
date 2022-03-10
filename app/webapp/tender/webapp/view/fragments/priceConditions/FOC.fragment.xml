@@ -20,12 +20,6 @@
             columnsM="1"
             singleContainerFullSize="false" >
             <form:content>
-                <Label text="{i18n>PVL}" required="true"/>
-                <Input value="{fastAppData>PVL}" type="Number"  description="{fastAppData>Currency}" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-                <Label text="{i18n>Discount}" required="true"/>
-                <Input value="{fastAppData>Discount}" type="Number" enabled="false" fieldWidth="80%"/>
-                <Label text="{i18n>NetPriceWOtax}" required="true"/>
-                <Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${fastAppData>NetPriceWithoutTax} : 0" type="Number" enabled="true" fieldWidth="80%"/>
                 <MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
                     <tokens>
                         <Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
