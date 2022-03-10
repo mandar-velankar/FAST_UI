@@ -3,6 +3,7 @@
 
     <MessageStrip text="{fastAppData>dynMessage}" />
         <form:SimpleForm
+                title="Descuento Comercial"
                 editable="false"
                 class="editableForm"
                 layout="ResponsiveGridLayout"
@@ -23,7 +24,7 @@
                     <Label text="{i18n>PVL}" required="true"/>
                     <Input value="{fastAppData>PVL}" type="Number"  description="{fastAppData>Currency}" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
                     <Label text="{i18n>Discount}" required="true"/>
-                    <Input value="{fastAppData>Discount}" type="Number" enabled="false" fieldWidth="80%"/>
+                    <Input value="{fastAppData>Discount}" type="Number" enabled="{fastAppData>/EditMode}" description="%" fieldWidth="80%" liveChange=".calculateNetPricesDescuentoComercial"/>
                     <Label text="{i18n>RoyalDecree}" required="true"/> 
                     <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}"> 
                         <items>

@@ -306,7 +306,7 @@ sap.ui.define([
 
         },
 
-        calculateDiscountsAndNetPrices: function(oEvent){
+        calculateDiscountsAndNetPricesPrecioNeto: function(oEvent){
 
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
@@ -338,6 +338,27 @@ sap.ui.define([
 
             bindingContext.getModel().updateBindings();
             
+        },
+
+        calculateNetPricesDescuentoComercial: function (oEvent){
+
+            const discount = Number(oEvent.getSource().getValue());
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const priceConditionViewObj = bindingContext.getObject();
+
+            let newNetPriceWithoutTax = "";
+
+            if(priceConditionViewObj.RoyalDecree === "Yes"){
+                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount);
+            }else {
+                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount);
+            }
+
+            // set the calcualted field and update the bindings
+            priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
+            priceConditionViewObj.NetPriceWithTax = newNetPriceWithoutTax * (1 + priceConditionViewObj.VAT)
+
+            bindingContext.getModel().updateBindings();
         },
 
         validateMaximumPrice: function(oEvent){

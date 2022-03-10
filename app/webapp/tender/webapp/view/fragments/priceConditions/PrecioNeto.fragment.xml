@@ -3,6 +3,7 @@
 
     <MessageStrip text="{fastAppData>dynMessage}" />
     <form:SimpleForm
+            title="Precio Neto"
             editable="false"
             class="editableForm"
             layout="ResponsiveGridLayout"
@@ -36,7 +37,7 @@
                 <Label text="{i18n>AdditionalDiscount}" required="true"/>
                 <Input value="{= ${fastAppData>AdditionalDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>NetPriceBeforeRC}" required="true"/>
-                <Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateDiscountsAndNetPrices"/>
+                <Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateDiscountsAndNetPricesPrecioNeto"/>
                 <Label text="{i18n>NetPriceAfterRC}" required="true"/>
                 <Input value="{fastAppData>NetPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>MaximumPrice}" required="true"/>
