@@ -33,7 +33,7 @@ sap.ui.define([
 			var mParameters = {
 				filters: [oTenderIdFilter],
 				urlParameters: {
-					$expand: "SKU/Product,PriceAgreement"
+					$expand: "SKU/Product,PriceAgreement,PriceCondition"
 				}
 			};
 

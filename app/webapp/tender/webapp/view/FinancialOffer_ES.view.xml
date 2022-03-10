@@ -128,7 +128,7 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection id="FinPricingOfferSubsection" title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}"  visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<l:BlockLayout background="Light">
             <l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -147,7 +147,7 @@
                         </HBox>
                     </VBox>
                     <VBox id="idPriceConditionVbox">
-                        <!-- Fragments of price conditions are added dynamically from the controller. see 'onPriceConditionChange' method-->
+                        <!-- Fragments of price conditions and its binding context are added/set dynamically from the controller. see 'onPriceConditionChange' method-->
                     </VBox>
                     <VBox visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract'}">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />

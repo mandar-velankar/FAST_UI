@@ -55,26 +55,28 @@ sap.ui.define([
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: async function (oEvent) {
 
+            // This code should only for Spain
+            if(Services.getSelectedCountry() !== "ES"){
+                return;
+            }
+
 			// this method should only be called in case of Spain
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_ES")) {
-				await this.getCountryBrandProductsCombined();
+
+
+                await this.getCountryBrandProductsCombined();
+
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
+                // get price conditions
+                const priceConditionViews = await this.getPriceConditionView();
+                Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
-                const oFastAppDataModel = Services.getFastAppDataModel();
-                const offer = oFastAppDataModel.getProperty("/SelectedOffer");
-
-                // fetch and set PriceConditionClassification info 
-                const filter = {
-                    "CountryCode": offer.CountryCode,
-                    "Classification": offer.Tender.Classification,
-                    "Division": offer.Division,
-                    "isMain": true
-                };
-    
-                const priceConditionClassification = await this.getPriceConditionClassification(filter);
-                oFastAppDataModel.setProperty("/PriceConditionClassification", priceConditionClassification);
+                
+                // get PriceConditionClassification
+                const priceConditionClassification = await this.getPriceConditionClassification();
+                Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
 
 			}
@@ -82,7 +84,8 @@ sap.ui.define([
 		},
 
 		getCountryBrandProductsCombined: async function(){
-			//load products
+
+            //load products
 			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
 
 			//load countryBrandProducts
@@ -100,10 +103,30 @@ sap.ui.define([
 			//set to fastappdata model for easy access on the view
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-			oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
+            oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
+
 			return aProducts;
 		},
+
+        getPriceConditionView: async function(){
+
+            const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+
+            const filter = {
+                "CountryCode": offer.CountryCode,
+                "Classification": offer.Tender.Classification,
+                "Division": offer.Division,
+                "OfferID": offer.OfferID
+            };
+
+			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
+            
+
+            return priceConditionViews.data.results;
+
+        },
+        
 		setFinancialOffer:function(){
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
@@ -151,9 +174,31 @@ sap.ui.define([
 			}
 		},
 
-        getPriceConditionClassification: async function(filter){
+        getPriceConditionClassification: async function(){
+
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+            const filter = {
+                "CountryCode": offer.CountryCode,
+                "Classification": offer.Tender.Classification,
+                "Division": offer.Division,
+                "isMain": true
+            };
+
             const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
             return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
+        },
+
+        getPriceConditions: async function(productCode){
+
+            const filter = {
+                "CountryCode": Services.getSelectedCountry(),
+                "OfferID": Services.getSelectedOfferID(),
+                "ProductCode": productCode
+            };
+
+            const priceConditionResponse = await Services.getService('PriceCondition').getPriceCondition(filter);
+            return priceConditionResponse.data && priceConditionResponse.data.results;
         },
 
 		_checkApprovalEnabled: function (){
@@ -175,7 +220,7 @@ sap.ui.define([
 		 * @param {*} oEvent 
 		 */
 		onSaveFinancialOfferSpain: async function (oEvent) {
-
+            debugger;
 		},
 
 		/**
@@ -188,24 +233,61 @@ sap.ui.define([
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
-			
+			// This code should only for Spain. TODO: check why this method is also being run for Spain. This is a side effect.
+            if(Services.getSelectedCountry() !== "ES"){
+                return;
+            }
+
+
+			if (oEvent && oEvent.oSource) {
+				var sSourceId = oEvent.oSource.sId
+				var oProductsTable = oEvent.getSource();
+			}
+
+			if (!oProductsTable) {
+				oProductsTable = this.byId("idFinancialOfferViewProduct");
+			}
+			let that = this;
+
+			if ((bInitLoad || (sSourceId && sSourceId.includes('financialOfferViewId_ES'))) && !$.isEmptyObject(oProductsTable)) {
+				let aItems = oProductsTable.getItems();
+				
+					if (aItems.length > 0) {
+						if (this.selectedProductPricePath === undefined || this.selectedProductPricePath === '/ProductPricingView/0'){
+
+							oProductsTable.setSelectedItem(aItems[0], true);
+							aItems[0].setSelected(true);
+
+                            // set selected product
+                            let prdObj = aItems[0].getBindingContext("fastAppData").getObject();
+							Services.setSelectedProductPath(aItems[0].getBindingContextPath());
+                            Services.setSelectedProductName(prdObj.ProductPackName);
+                            Services.setSelectedProductID(prdObj.ProductCode);
+
+
+                            let selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
+                            Services.getFastAppDataModel().setProperty("/SelectedOffer/SelectedProduct",selectedProduct);
+                            
+                            
+						}
+				}
+			}
 		},
 
         onFinancialProductPress: async function(oEvent){
 
-
             //get price conditions
-            const priceConditionResponse = await Services.getService('PriceCondition').getPriceCondition({
-                "CountryCode": Services.getSelectedCountry(),
-                "OfferID": Services.getSelectedOfferID(),
-                "ProductCode": Services.getSelectedProductID()
-            });
 
-            const aPriceConditions = priceConditionResponse.data && priceConditionResponse.data.results;
+            const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
 
         },
 
         onPriceConditionChange: function(oEvent){
+
+            const sConditionType = oEvent.getSource().getSelectedItem().getText();
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
+            const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
 
             const vBox = this.byId("idPriceConditionVbox");
             vBox.removeAllItems();
@@ -219,6 +301,7 @@ sap.ui.define([
                 controller: this
             }).then(function (oFragment) {
                 oFragment.forEach(item => vBox.addItem(item));
+                vBox.bindElement({ path: bindingPath, model: "fastAppData" });
             }.bind(this));
 
         },
