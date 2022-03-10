@@ -65,34 +65,53 @@ sap.ui.define([
 			if (sTab && sTab.includes("financialOfferId_ES")) {
 
 
-                await this.getPriceConditionView();
+                await this.getCountryBrandProductsCombined();
 
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
+                // get price conditions
+                const priceConditionViews = await this.getPriceConditionView();
+                Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
-                const oFastAppDataModel = Services.getFastAppDataModel();
-                const offer = oFastAppDataModel.getProperty("/SelectedOffer");
-
-                // fetch and set PriceConditionClassification info 
-                const filter = {
-                    "CountryCode": offer.CountryCode,
-                    "Classification": offer.Tender.Classification,
-                    "Division": offer.Division,
-                    "isMain": true
-                };
-    
-                const priceConditionClassification = await this.getPriceConditionClassification(filter);
-                oFastAppDataModel.setProperty("/PriceConditionClassification", priceConditionClassification);
+                
+                // get PriceConditionClassification
+                const priceConditionClassification = await this.getPriceConditionClassification();
+                Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
 
 			}
 
 		},
 
-		getPriceConditionView: async function(){
+		getCountryBrandProductsCombined: async function(){
+
+            //load products
+			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
+
+			//load countryBrandProducts
+			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+
+			aProducts = aProducts.map(product => {
+				product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
+					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
+					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
+					return FreeGoodsOther;
+				}) || [];
+				return product;
+			});
+
+			//set to fastappdata model for easy access on the view
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+            oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
+			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
+
+			return aProducts;
+		},
+
+        getPriceConditionView: async function(){
 
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
-
 
             const filter = {
                 "CountryCode": offer.CountryCode,
@@ -102,26 +121,11 @@ sap.ui.define([
             };
 
 			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
+            
 
-			//load countryBrandProducts
-			// let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+            return priceConditionViews.data.results;
 
-			// aProducts = aProducts.map(product => {
-			// 	product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
-			// 		var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-			// 		FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-			// 		return FreeGoodsOther;
-			// 	}) || [];
-			// 	return product;
-			// });
-
-			// //set to fastappdata model for easy access on the view
-			// var oFastAppDataModel = Services.getFastAppDataModel();
-			// aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-			Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews.data.results);
-			// oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
-			return priceConditionViews.data.results;
-		},
+        },
         
 		setFinancialOffer:function(){
 			//Edit offer copy to move back to original values during cancel
@@ -146,22 +150,22 @@ sap.ui.define([
 		 * @param {String} offerID, 
 		 * @returns {Array} - A list of Tender products
 		 */
-		// getFinancialProducts: async function (offerID) {
-		// 	if (offerID) {
-		// 		const response = await Services.getFinancialProducts(offerID);
+		getFinancialProducts: async function (offerID) {
+			if (offerID) {
+				const response = await Services.getFinancialProducts(offerID);
 
-		// 		return response.data && response.data.results.map(item => {
+				return response.data && response.data.results.map(item => {
 					
-		// 			item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
-		// 				freeGoods.UOM = item.UOM;
-		// 				return freeGoods;
-		// 			}) || [];
+					item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
+						freeGoods.UOM = item.UOM;
+						return freeGoods;
+					}) || [];
 					
-		// 			return item;
-		// 		}) || [];
-		// 	}
-		// 	return [];
-		// },
+					return item;
+				}) || [];
+			}
+			return [];
+		},
 
 		getCountryBrandProducts: async function (countryCode) {
 			if (countryCode) {
@@ -170,7 +174,17 @@ sap.ui.define([
 			}
 		},
 
-        getPriceConditionClassification: async function(filter){
+        getPriceConditionClassification: async function(){
+
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+            const filter = {
+                "CountryCode": offer.CountryCode,
+                "Classification": offer.Tender.Classification,
+                "Division": offer.Division,
+                "isMain": true
+            };
+
             const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
             return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
         },
