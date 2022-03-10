@@ -313,7 +313,7 @@ sap.ui.define([
 
             const newNetPriceWithoutTaxBeforeDeductionRD = Number(oEvent.getSource().getValue());
             const standardPrice = Number(bindingContext.getProperty("StandardPrice"));
-            const additionalDiscount =  (standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice;
+            const additionalDiscount =  ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2);
 
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
