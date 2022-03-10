@@ -26,7 +26,8 @@
                 <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}"> 
                     <items>
                         <core:Item key="" text="" />
-                        <core:Item key="Yes" text="Yes" />
+                        <core:Item key="IncludeInPrecioNeto" text="Yes, (include in precio neto)" />
+                        <core:Item key="ExcludeInPrecioNeto" text="Yes, (exclude in precio neto)" />
                         <core:Item key="No" text="No" />									
                     </items>
                 </Select>
@@ -35,15 +36,15 @@
                 <Label text="{i18n>AdditionalDiscount}" required="true"/>
                 <Input value="{fastAppData>AdditionalDiscount}" type="Number" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>NetPriceBeforeRC}" required="true"/>
-                <Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".calculateDiscountsAndNetPrices"/>
                 <Label text="{i18n>NetPriceAfterRC}" required="true"/>
-                <Input value="{fastAppData>NetPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Input value="{fastAppData>NetPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>MaximumPrice}" required="true"/>
-                <Input value="{fastAppData>MaximumPrice}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Input value="{fastAppData>MaximumPrice}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%" liveChange=".validateMaximumPrice"/>
                 <Label text="{i18n>Tax}" required="true"/>
                 <Input value="{fastAppData>Tax}" type="Number" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>NetPriceWtax}" required="true"/>
-                <Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Input value="{fastAppData>NetPriceWithTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/>
             </form:content>
         </form:SimpleForm>
 

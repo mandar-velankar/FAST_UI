@@ -306,5 +306,57 @@ sap.ui.define([
 
         },
 
+        calculateDiscountsAndNetPrices: function(oEvent){
+
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const priceConditionViewObj = bindingContext.getObject();
+
+            const newNetPriceWithoutTaxBeforeDeductionRD = Number(oEvent.getSource().getValue());
+            const standardPrice = Number(bindingContext.getProperty("StandardPrice"));
+            const additionalDiscount =  (standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice;
+
+            let newNetPriceWithoutTaxAfterDeductionRD = "";
+            let newNetPriceWithTaxAfterDeductionRD =  "";
+
+            if(priceConditionViewObj.RoyalDecree === "IncludeInPrecioNeto"){
+                newNetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxBeforeDeductionRD * ( 1 - priceConditionViewObj.RoyalDecreePercentage);
+            }else {
+                newNetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxBeforeDeductionRD;
+            }
+
+            if(priceConditionViewObj.RoyalDecree === "ExcludeInPrecioNeto"){
+                newNetPriceWithTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD * ( 1 + priceConditionViewObj.Tax) * ( 1 - priceConditionViewObj.RoyalDecreePercentage);
+            }else {
+                newNetPriceWithTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD * ( 1 + priceConditionViewObj.Tax);
+            }
+
+
+            // set the calcualted field and update the bindings
+            priceConditionViewObj.AdditionalDiscount = additionalDiscount;
+            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD;
+            priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = newNetPriceWithTaxAfterDeductionRD;
+
+            bindingContext.getModel().updateBindings();
+            
+        },
+
+        validateMaximumPrice: function(oEvent){
+
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const priceConditionViewObj = bindingContext.getObject();
+            const newMaximumPrice = Number(oEvent.getSource().getValue());
+
+            // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
+            if(priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD > newMaximumPrice){
+                oEvent.getSource().setValueState("Error");
+                oEvent.getSource().setValueStateText("Maximum price must be higher than the net price w/o tax incl royal decree.");
+                oEvent.getSource().openValueStateMessage();
+            }else{
+                oEvent.getSource().setValueState("None");
+                oEvent.getSource().setValueStateText("");
+                oEvent.getSource().closeValueStateMessage();
+            }
+        },
+
 	});
 });

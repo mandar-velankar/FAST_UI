@@ -136,6 +136,7 @@
                         <HBox alignItems="Center">
                             <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
                             <Select
+                                enabled="{fastAppData>/EditMode}"
                                 forceSelection="false"
                                 change=".onPriceConditionChange"
                                 items="{
