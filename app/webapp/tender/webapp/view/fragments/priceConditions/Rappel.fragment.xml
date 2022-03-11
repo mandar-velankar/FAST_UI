@@ -31,20 +31,30 @@
                     </items>
                 </Select>
                 <Label text="{i18n>Liquidation}" required="true"/>
-                <Input value="{fastAppData>Liquidation}" type="Number" enabled="false" fieldWidth="80%"/>
-                <Label text="{i18n>VolTreshold}" required="true"/>
-                <Input value="{fastAppData>/VolumeTresholds}" type="Number" enabled="false" fieldWidth="80%"/>
-                <Label text="{i18n>Discount}" required="true"/>
-                <Input value="{fastAppData>Discount}" type="Number" enabled="false" fieldWidth="80%"/>
-                
-                <Label text="{i18n>NetPriceWOtax}" required="true"/>
-                <Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>
-                <Label text="{i18n>Tax}" required="true"/>
-                <Input value="{fastAppData>Tax}" type="Number" enabled="false" fieldWidth="80%"/>
-                <Label text="{i18n>NetPriceWtax}" required="true"/>
-                <Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/>
+                <Select selectedKey="{fastAppData>Liquidation}" enabled="{fastAppData>/EditMode}"> 
+                    <items>
+                        <core:Item key="" text="" />
+                        <core:Item key="Monthly" text="Monthly" />
+                        <core:Item key="Quarterly" text="Quarterly" />
+                        <core:Item key="Annually" text="Annually" />									
+                    </items>
+                </Select>
                 <Label text="{i18n>PaymentBackDate}" required="true"/>
-                <Input value="{fastAppData>RefundDate}" type="Number" enabled="false" fieldWidth="80%"/>
+                <DatePicker
+                        id="DP1"
+                        value="{fastAppData>RefundDate}" 
+                        valueFormat="yyyy-MM-dd" 
+                        displayFormat="long"
+                        placeholder="Enter Date"
+                        change="handleChange"
+                        enabled="{fastAppData>/EditMode}"
+                        class="sapUiSmallMarginBottom"/>
+                <Label text="{i18n>VolTreshold}" required="true"/>
+                <MultiInput valueHelpOnly="true" valueHelpRequest=".onVolumeTreshhold" tokens="{fastAppData>DiscountConditions}" enabled="{fastAppData>/EditMode}">
+                    <tokens>
+                        <Token key="{fastAppData>Volume}" text="{fastAppData>Volume}" editable="false"></Token>
+                    </tokens>
+                </MultiInput>
             </form:content>
         </form:SimpleForm>
 </core:FragmentDefinition>

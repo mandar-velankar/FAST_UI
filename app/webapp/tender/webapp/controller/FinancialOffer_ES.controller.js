@@ -73,6 +73,9 @@ sap.ui.define([
                 const priceConditionViews = await this.getPriceConditionView();
                 Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
+                //bind Rappel and FOC fragments 
+                this.bindRappelFragment();
+
                 
                 // get PriceConditionClassification
                 const priceConditionClassification = await this.getPriceConditionClassification();
@@ -82,6 +85,17 @@ sap.ui.define([
 			}
 
 		},
+
+        /**
+         * This method  sets the element binding of the Rappel fragment
+         */
+        bindRappelFragment: function(){
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const rappelIndex = priceConditions.findIndex(item => item.ConditionType === "Rappel");
+            const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
+            const rappelvBox = this.byId("idRappelVbox");
+            rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
+        },
 
 		getCountryBrandProductsCombined: async function(){
 
@@ -377,6 +391,102 @@ sap.ui.define([
                 oEvent.getSource().setValueStateText("");
                 oEvent.getSource().closeValueStateMessage();
             }
+        },
+
+        onVolumeTreshhold: function(oEvent){
+
+            var oView = this.getView();
+
+			// create dialog lazily
+			if (!this.pDialog) {
+				this.pDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.priceConditions.VolumeTreshhold_ES",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					oDialog.setModel(Services.getFastAppDataModel(), "fastAppData");
+					return oDialog;
+				});
+			}
+
+			this.pDialog.then(function (oDialog) {
+                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const rappelIndex = priceConditions.findIndex(item => item.ConditionType === "Rappel");
+                const bindingPath = "/PriceConditionView/".concat(rappelIndex);
+                const oTable = this.byId("idVolumeTreshold");
+                oTable.bindElement({ path: bindingPath, model: "fastAppData" });
+				oDialog.open();
+			}.bind(this));
+
+        },
+
+        onAddNewDiscountCondition: function(oEvent){
+
+            const bindingPath = this.byId("idVolumeTreshold").getElementBinding("fastAppData").sPath;
+            const priceConditions = Services.getFastAppDataModel().getProperty(bindingPath);
+            const discountConditions = Services.getFastAppDataModel().getProperty(bindingPath.concat("/DiscountConditions")) || [];
+
+            
+            discountConditions.push({
+				ID: "",
+				Volume: "",
+				Discount: "",
+                Tax: priceConditions.Tax,
+				NetPriceWithoutTax: "",
+				NetPriceWithTax: "",
+			});
+
+
+
+			Services.getFastAppDataModel().setProperty(bindingPath.concat("/DiscountConditions"), discountConditions);
+
+        },
+
+        onDeleteDiscountCondition: function(oEvent){
+
+            const path = oEvent.getSource().getParent().getBindingContext("fastAppData").getPath();
+            const bindingPath = path.slice(0, path.length - 2);
+            const objIndex = path.slice(path.length - 1);
+            const priceConditionViewObj = Services.getFastAppDataModel().getProperty(bindingPath);
+            priceConditionViewObj.splice(objIndex, 1);
+
+            Services.getFastAppDataModel().updateBindings();
+
+        },
+
+
+        calculateNetPricesRappel: function(oEvent){
+
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const rappelIndex = priceConditions.findIndex(item => item.ConditionType === "Rappel");
+            const bindingPath = "/PriceConditionView/".concat(rappelIndex);
+            const priceConditionViewObj = Services.getFastAppDataModel().getProperty(bindingPath);
+
+            const discount = Number(oEvent.getSource().getValue());
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const discountConditionObj = bindingContext.getObject();
+
+            let netPriceWithoutTax = "";
+
+            if(priceConditionViewObj.RoyalDecree === "Yes"){
+                netPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
+            }else {
+                netPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount / 100)
+            }
+
+
+            // set the calcualted field and update the bindings
+            discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
+            discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);
+
+            bindingContext.getModel().updateBindings();
+
+        },
+
+        onApplyDiscountCondition: function(){
+            if(this.pDialog) this.pDialog.then(dialog => dialog.close())
         },
 
 	});
