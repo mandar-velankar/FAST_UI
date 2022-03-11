@@ -1,0 +1,58 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog id="OtherProducts" title="Products" >
+		<buttons>
+			<Button text="Apply" press=".oApplyProducts" />
+		</buttons>
+
+        <Table id="FreeGoodsOtherTable" items="{path:'fastAppData>FreeGoodsOther'}">
+		<headerToolbar>
+			<OverflowToolbar>
+				<content>
+					<ToolbarSpacer />
+                    <Button icon="sap-icon://add" press=".onAddNewFreeGoods"></Button>
+				</content>
+			</OverflowToolbar>
+		</headerToolbar>
+            <columns>
+                <Column>
+                    <Text text="{i18n>product}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>RoyalDecree}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>FocMinAmount}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>FocBonus}"/>
+                </Column>    
+                <Column>
+                    <Text text="{i18n>PotSavingsGen}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>Action}"/>
+                </Column>               
+            </columns>
+            <ColumnListItem>
+                <cells>
+                    <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true"/>
+                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}">
+                        <core:Item key="" text="" />
+                        <core:Item key="Yes" text="Yes" />
+                        <core:Item key="No" text="No" />
+                    </Select>
+                    <HBox>
+                        <Input type="Number" value="{path:'fastAppData>FOCMinAmount'}" valueState="{fastAppData>FOCMinAmountValueState}" visible="true"/>
+                    </HBox>
+                    <Input type="Number" value="{path:'fastAppData>FOCBonus'}" enabled="false"/>
+                    <Input type="Number" value="{path:'fastAppData>PotentialGeneratedSavings'}" enabled="false"/>
+                    
+                    <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+   	</Dialog>	
+</core:FragmentDefinition>

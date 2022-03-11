@@ -2863,7 +2863,7 @@ sap.ui.define([
 								//select offer again
 								var oView = that.getView().byId("financialOfferViewId_ES");
 								var oFinOfferController = oView.getController();
-								oFinOfferController.refreshFinancialTabIT();
+								oFinOfferController.refreshFinancialTabES();
 								break;
 							default:
 								break;

@@ -278,7 +278,13 @@ sap.ui.define([
 
             //get price conditions
 
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+			let oFastAppDataModel = Services.getFastAppDataModel();
+            
             const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
+            
+            this.selectedProductPricePath = bindingContext.sPath;
+            let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 
         },
 
@@ -306,5 +312,148 @@ sap.ui.define([
 
         },
 
+        /** Free goods other event handlers */
+        onOpenProducts: function () {
+
+			var oView = this.getView();
+
+			// create dialog lazily
+			if (!this.pDialog) {
+				this.pDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.OtherProducts_ES",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					oDialog.setModel(Services.getFastAppDataModel(), "fastAppData");
+					return oDialog;
+				});
+			}
+
+			this.pDialog.then(function (oDialog) {
+				this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
+				oDialog.open();
+			}.bind(this));
+
+
+		},
+        
+		onAddNewFreeGoods: function (event) {
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let selectedProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther") || [];
+			freeGoodsOther.unshift({
+				ProductPackId: "",
+				FreeGoodsOther: "",
+				FreeGoodsOther_ABS_PCT: "ABS",
+				FreeGoodsOther_Step: "",
+                RoyalDecree: "",
+                FOCMinAmount: 0,
+                FOCBonus: 0,
+                PotentialGeneratedSavings: 0,
+                UOM: selectedProductPrice.UOM
+			});
+			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
+		},
+        
+		onDeleteFreeGoodsOther: function (event) {
+			const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
+
+			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
+		},
+
+		onProductPackChange: function (event) {
+			var validatedComboBox = event.getSource(),
+				selectedKey = validatedComboBox.getSelectedKey(),
+				value = validatedComboBox.getValue(),
+				path = event.getSource().getBindingContext("fastAppData").getPath(),
+				vat = validatedComboBox.getSelectedItem().getBindingContext('fastAppData').getProperty('VAT');
+
+
+			if ((!selectedKey && value) || value === "") {
+				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "Error");
+			} else {
+				Services.getFastAppDataModel().setProperty(path + "/ProductName", value);
+				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "None");
+				Services.getFastAppDataModel().setProperty(path + "/VAT", vat);
+			}
+		},
+        
+		oApplyProducts: function () {
+			const oFastAppDataModel = Services.getFastAppDataModel();
+
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
+			freeGoodsOther = freeGoodsOther.map(freeGoods => {
+				freeGoods.FreeGoodsOtherFOCMinAmountValueState = "None";
+
+				if (!freeGoods.FOCMinAmount || freeGoods.FOCMinAmount === "") {
+					freeGoods.ProductPackIdValueState = "Error";
+				}
+
+				return freeGoods;
+			});
+			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
+			const foundError = freeGoodsOther.find(freeGoods => freeGoods.ProductPackIdValueState === "Error" || freeGoods.FreeGoodsOtherValueState === "Error");
+			if (!foundError) this.byId("OtherProducts").close();
+		},
+
+        handleValueHelp: function(oEvent){ //TODO: change to spain
+
+			Services.getInstituteDistributorBrandProductsForItaly(Services.getInstituteIDofSelectedTender()).then((response) => {
+
+				var oFastAppDataModel = Services.getFastAppDataModel();
+				oFastAppDataModel.setProperty("/ItalyProducts", response.data.results);
+
+	
+			});
+
+			var oView = this.getView();
+			// create value help dialog
+			if (!this._pValueHelpDialog) {
+				this._pValueHelpDialog = sap.ui.core.Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.SelectBrandProductList",
+					controller: this
+				}).then(function (oValueHelpDialog) {
+					oView.addDependent(oValueHelpDialog);
+					return oValueHelpDialog;
+				});
+			}
+
+			// open value help dialog
+			this._pValueHelpDialog.then(function (oValueHelpDialog) {
+				oValueHelpDialog.open();
+			});
+
+		},
+
+		_handleValueHelpSearch: function(oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var oFilters = [];
+			oFilters.push(new sap.ui.model.Filter("PRODUCT_NAME", sap.ui.model.FilterOperator.Contains, sValue));
+			oFilters.push(new sap.ui.model.Filter("SKUS", sap.ui.model.FilterOperator.Contains, sValue));
+			oEvent.getSource().getBinding("items").filter(new sap.ui.model.Filter(oFilters, false));
+		},
+
+
+		_handleValueHelpClose: function (oEvent) {
+			var oFastAppData = Services.getFastAppDataModel();
+			var sPath = '/EditProduct/FreeGoodsOther/0';
+			var oFreeGoodsOther = oFastAppData.getProperty(sPath);
+
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			if (oSelectedItem) {
+				var oInputfield = this.byId('idOtherProducts');
+				oInputfield.setValue(oSelectedItem.getTitle());
+
+				oFreeGoodsOther.ProductPackId = parseInt(oSelectedItem.getDescription());
+				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
+				oFastAppData.setProperty(sPath, oFreeGoodsOther)
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		},
 	});
 });
