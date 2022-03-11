@@ -27,7 +27,7 @@
                         <form:fields>            
                             <MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
                                 <tokens>
-                                    <Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
+                                    <Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName}" editable="false"></Token>
                                 </tokens>
                             </MultiInput>
                         </form:fields>

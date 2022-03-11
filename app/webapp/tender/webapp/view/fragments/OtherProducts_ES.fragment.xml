@@ -38,8 +38,8 @@
             </columns>
             <ColumnListItem>
                 <cells>
-                    <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true"/>
-                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}">
+                    <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true" visible="true"/>
+                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}" visible="true">
                         <core:Item key="" text="" />
                         <core:Item key="Yes" text="Yes" />
                         <core:Item key="No" text="No" />
@@ -47,10 +47,10 @@
                     <HBox>
                         <Input type="Number" value="{path:'fastAppData>FOCMinAmount'}" valueState="{fastAppData>FOCMinAmountValueState}" visible="true"/>
                     </HBox>
-                    <Input type="Number" value="{path:'fastAppData>FOCBonus'}" enabled="false"/>
-                    <Input type="Number" value="{path:'fastAppData>PotentialGeneratedSavings'}" enabled="false"/>
+                    <Input type="Number" value="{path:'fastAppData>FOCBonus'}" valueState="{fastAppData>FOCBonusValueState}" enabled="true" visible="true" liveChange=".calculatePotentialSavings"/>
+                    <Input type="Number" value="{path:'fastAppData>PotentialGeneratedSavings'}" enabled="false" visible="true"/>
                     
-                    <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther"/>
+                    <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther" visible="true"/>
                 </cells>
             </ColumnListItem>
         </Table>

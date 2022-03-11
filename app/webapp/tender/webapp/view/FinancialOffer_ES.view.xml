@@ -152,7 +152,7 @@
                     <VBox visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract'}">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />
                     </VBox>
-                    <VBox visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract' &amp;&amp; 
+                    <VBox id="idFOCVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract' &amp;&amp; 
                                     (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.FOC" type="XML" />
                     </VBox>

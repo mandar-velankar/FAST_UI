@@ -355,6 +355,13 @@ sap.ui.define([
                 UOM: selectedProductPrice.UOM
 			});
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
+            
+            const oFreeGoodsOtherTable = this.byId("FreeGoodsOtherTable");
+            const vBox = this.byId("idFOCVbox");
+            oFreeGoodsOtherTable.bindElement({ path: this.selectedProductPricePath, model: "fastAppData" });
+            vBox.bindElement({ path: this.selectedProductPricePath, model: "fastAppData" });
+            
+            oFastAppDataModel.updateBindings();            
 		},
         
 		onDeleteFreeGoodsOther: function (event) {
@@ -388,24 +395,28 @@ sap.ui.define([
 			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
 			freeGoodsOther = freeGoodsOther.map(freeGoods => {
 				freeGoods.FreeGoodsOtherFOCMinAmountValueState = "None";
+                freeGoods.FOCBonusValueState = "None";
 
-				if (!freeGoods.FOCMinAmount || freeGoods.FOCMinAmount === "") {
+				if (!freeGoods.FOCMinAmount || freeGoods.FOCMinAmount === "" || freeGoods.FOCMinAmount === 0) {
+					freeGoods.ProductPackIdValueState = "Error";
+				}
+
+                if (!freeGoods.FOCBonus || freeGoods.FOCBonus === "" || freeGoods.FOCBonus === 0) {
 					freeGoods.ProductPackIdValueState = "Error";
 				}
 
 				return freeGoods;
 			});
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
-			const foundError = freeGoodsOther.find(freeGoods => freeGoods.ProductPackIdValueState === "Error" || freeGoods.FreeGoodsOtherValueState === "Error");
+			const foundError = freeGoodsOther.find(freeGoods => freeGoods.FreeGoodsOtherFOCMinAmountValueState === "Error" || freeGoods.FOCBonusValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
 		},
 
         handleValueHelp: function(oEvent){ //TODO: change to spain
 
-			Services.getInstituteDistributorBrandProductsForItaly(Services.getInstituteIDofSelectedTender()).then((response) => {
-
+			Services.getInstituteDistributorBrandProductsForSpain(Services.getInstituteIDofSelectedTender()).then((response) => {
 				var oFastAppDataModel = Services.getFastAppDataModel();
-				oFastAppDataModel.setProperty("/ItalyProducts", response.data.results);
+				oFastAppDataModel.setProperty("/SpainProducts", response.data.results);
 
 	
 			});
@@ -415,7 +426,7 @@ sap.ui.define([
 			if (!this._pValueHelpDialog) {
 				this._pValueHelpDialog = sap.ui.core.Fragment.load({
 					id: oView.getId(),
-					name: "FAST_NS0FAST0.view.fragments.SelectBrandProductList",
+					name: "FAST_NS0FAST0.view.fragments.SelectBrandProductListSpain",
 					controller: this
 				}).then(function (oValueHelpDialog) {
 					oView.addDependent(oValueHelpDialog);
@@ -441,7 +452,7 @@ sap.ui.define([
 
 		_handleValueHelpClose: function (oEvent) {
 			var oFastAppData = Services.getFastAppDataModel();
-			var sPath = '/EditProduct/FreeGoodsOther/0';
+			var sPath = this.selectedProductPricePath + "/FreeGoodsOther/0"
 			var oFreeGoodsOther = oFastAppData.getProperty(sPath);
 
 			var oSelectedItem = oEvent.getParameter("selectedItem");
@@ -455,5 +466,28 @@ sap.ui.define([
 			}
 			oEvent.getSource().getBinding("items").filter([]);
 		},
-	});
+
+        /*Calculations*/
+        calculatePotentialSavings: function(oEvent){
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            const priceConditionViewObject = Services.getFastAppDataModel().getProperty(bindingPath);
+
+            const bonusAmount = Number(oEvent.getSource().getValue());
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const freeGoodsObject = bindingContext.getObject();
+            
+            let potentialSaving = "";
+
+            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
+                potentialSaving = bonusAmount * priceConditionViewObject.PVL * (1 - freeGoodsObject.RoyalDecreePercentage);                
+            } else {
+                potentialSaving = bonusAmount * priceConditionViewObject.PVL;
+            }
+
+            freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
+            bindingContext.getModel().updateBindings();           
+        }    
+    });
 });
