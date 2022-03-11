@@ -136,6 +136,7 @@
                         <HBox alignItems="Center">
                             <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
                             <Select
+                                enabled="{fastAppData>/EditMode}"
                                 forceSelection="false"
                                 change=".onPriceConditionChange"
                                 items="{
@@ -149,11 +150,11 @@
                     <VBox id="idPriceConditionVbox">
                         <!-- Fragments of price conditions and its binding context are added/set dynamically from the controller. see 'onPriceConditionChange' method-->
                     </VBox>
-                    <VBox visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract'}">
+                    <VBox id="idRappelVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract'}">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />
                     </VBox>
                     <VBox visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract' &amp;&amp; 
-                                    (${fastAppData>//SelectedOffer/Division} === 'Pharma' || ${fastAppData>//SelectedOffer/Division} === 'Radiology') }">
+                                    ${fastAppData>//SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology' }">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.FOC" type="XML" />
                     </VBox>
 				</l:BlockLayoutCell>

@@ -3,6 +3,7 @@
 
     <MessageStrip text="{fastAppData>dynMessage}" />
     <form:SimpleForm
+        title="PVL"
         editable="false"
         class="editableForm"
         layout="ResponsiveGridLayout"

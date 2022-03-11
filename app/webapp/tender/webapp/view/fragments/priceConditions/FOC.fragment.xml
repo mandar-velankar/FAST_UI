@@ -3,6 +3,7 @@
         
     <MessageStrip text="{fastAppData>dynMessage}" />
     <form:SimpleForm
+            title="FOC"
             editable="false"
             class="editableForm"
             layout="ResponsiveGridLayout"
