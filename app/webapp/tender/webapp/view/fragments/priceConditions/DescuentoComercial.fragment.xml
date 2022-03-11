@@ -34,9 +34,9 @@
                         </items>
                     </Select>
                     <Label text="{i18n>NetPriceWOtax}" required="true"/>
-                    <Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>
+                    <Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>    
                     <Label text="{i18n>Tax}" required="true"/>
-                    <Input value="{fastAppData>Tax}" type="Number" enabled="false" fieldWidth="80%"/>
+                    <Input value="{fastAppData>Tax}" type="Number" description="%" enabled="false" fieldWidth="80%"/>
                     <Label text="{i18n>NetPriceWtax}" required="true"/>
                     <Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/>
                 </form:content>

@@ -349,14 +349,14 @@ sap.ui.define([
             let newNetPriceWithoutTax = "";
 
             if(priceConditionViewObj.RoyalDecree === "Yes"){
-                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount);
+                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
             }else {
-                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount);
+                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount / 100);
             }
 
             // set the calcualted field and update the bindings
             priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
-            priceConditionViewObj.NetPriceWithTax = newNetPriceWithoutTax * (1 + priceConditionViewObj.VAT)
+            priceConditionViewObj.NetPriceWithTax = newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)
 
             bindingContext.getModel().updateBindings();
         },
