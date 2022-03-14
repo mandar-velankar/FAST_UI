@@ -7666,6 +7666,41 @@ sap.ui.define([
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
 		},
 
+        getInstituteDistributorBrandProductsForSpain: function (sInstitute) {
+
+			var oCountryCodeFilter = new Filter({
+				path: 'COUNTRY_CODE',
+				operator: FilterOperator.EQ,
+				value1: 'ES'
+			});
+
+
+			var oInstituteFilter = new Filter({
+				path: 'INSTITUTE_ID',
+				operator: FilterOperator.EQ,
+				value1: sInstitute
+			});
+
+
+			var oDistributorFilter = new Filter({
+				path: 'DISTRIBUTOR_ID',
+				operator: FilterOperator.EQ,
+				value1: this.getFastAppDataModel().oData.EditOffer.DistributorID
+			});
+
+			var oChannelFilter = new Filter({
+				path: 'CHANNEL',
+				operator: FilterOperator.EQ,
+				value1: "Direct"
+			});
+
+			var mParameters = {
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter]
+			};
+
+			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
+		},
+
 	});
 
 	return new Service();

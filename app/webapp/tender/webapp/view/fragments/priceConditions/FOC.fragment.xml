@@ -2,31 +2,38 @@
 	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
         
     <MessageStrip text="{fastAppData>dynMessage}" />
-    <form:SimpleForm
-            title="FOC"
-            editable="false"
-            class="editableForm"
-            layout="ResponsiveGridLayout"
-            labelSpanXL="3"
-            labelSpanL="3"
-            labelSpanM="3"
-            labelSpanS="12"
-            adjustLabelSpan="false"
-            emptySpanXL="4"
-            emptySpanL="4"
-            emptySpanM="4"
-            emptySpanS="0"
-            columnsXL="1"
-            columnsL="1"
-            columnsM="1"
-            singleContainerFullSize="false" >
-            <form:content>
-                <MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
-                    <tokens>
-                        <Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName} - {fastAppData>FreeGoodsOther} {= ${fastAppData>FreeGoodsOther_ABS_PCT} === 'ABS'?${fastAppData>UOM}:'%'}" editable="false"></Token>
-                    </tokens>
-                </MultiInput>
-            </form:content>
-        </form:SimpleForm>
-    
+    <form:Form  editable="true">
+        <form:layout>
+            <form:ResponsiveGridLayout
+                class="editableForm"
+                labelSpanXL="3"
+                labelSpanL="3"
+                labelSpanM="3"
+                labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="4"
+                emptySpanL="4"
+                emptySpanM="4"
+                emptySpanS="0"
+                columnsXL="1"
+                columnsL="1"
+                columnsM="1"
+                singleContainerFullSize="false" />
+        </form:layout>
+        <form:formContainers>
+            <form:FormContainer>
+                <form:formElements>
+                    <form:FormElement label="Free goods for other product(s)">
+                        <form:fields>            
+                            <MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{fastAppData>/EditMode}">
+                                <tokens>
+                                    <Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName}" editable="false"></Token>
+                                </tokens>
+                            </MultiInput>
+                        </form:fields>
+                    </form:FormElement>						
+                </form:formElements>
+            </form:FormContainer>
+        </form:formContainers>            
+    </form:Form>    
 </core:FragmentDefinition>
