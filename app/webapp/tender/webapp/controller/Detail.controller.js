@@ -650,9 +650,15 @@ sap.ui.define([
 				if (Services.getSelectedCountry() === "IT"){
 					Services.getWordTemplates(Services.getSelectedCountry());
 					that.getTenderRegions(sTenderID).then(response => {
-						const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+
+                        const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                        let regionIDs = [];
+                        if(tenderArray.length !== 0){
+                            regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                        }
 						that.byId("idRegionView").setSelectedKeys(regionIDs);
 						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
+
 					})
 				}
 			
@@ -2007,10 +2013,18 @@ sap.ui.define([
 						if (Services.getSelectedCountry() === "IT"){
 						//that.getView().byId("idRegionEdit").setVisible(true);
 							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
-								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                                let regionIDs = [];
+                                if(tenderArray.length !== 0){
+                                    regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                                }
 								that.byId("idRegionEdit").setSelectedKeys(regionIDs);
 								that.byId("idTenderChannel").setVisible(false);
 							})
+                            
+                            
+
+
 						}
 
 						//apply country filter on tender type
@@ -3705,7 +3719,11 @@ sap.ui.define([
 						if (Services.getSelectedCountry() === "IT"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
-								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                                let regionIDs = [];
+                                if(tenderArray.length !== 0){
+                                    regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                                }
 								that.byId("idRegionView").setSelectedKeys(regionIDs);
 								that.byId("idRegionView").setBusy(false);
 							})
@@ -3850,7 +3868,11 @@ sap.ui.define([
 						if (Services.getSelectedCountry() === "IT"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
-								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                                let regionIDs = [];
+                                if(tenderArray.length !== 0){
+                                    regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                                }
 								that.byId("idRegionView").setSelectedKeys(regionIDs);
 								that.byId("idRegionView").setBusy(false);
 							})
