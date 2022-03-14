@@ -68,6 +68,7 @@ sap.ui.define([
 		_sBasicInformationPageSectionID: "---tenderManagementDetailId--basicInformationId",
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
 		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
+        _sFinancialOfferPageSectionID_ES: "---tenderManagementDetailId--financialOfferId_ES",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -2329,7 +2330,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 
@@ -3551,6 +3552,95 @@ sap.ui.define([
 						// at later point in time the dropdown will set this to true
 						const country = that.getSelectedCountry();
 						if(country === 'CL'){
+							bShowTenderType = false;
+						}
+
+						//let the callback be triggered
+						oDeferred.resolve(bShowTenderType);
+
+					},
+					error: function (oError) {
+
+						// CLOSE loading dialog
+						if (that._LoadingDialog) {
+							that._LoadingDialog.close();
+						}
+
+						//Error
+						that.showErrorMessage(oError, "Checking to show tender type");
+
+						//let the callback be triggered
+						oDeferred.reject(oError);
+
+					}
+				});
+			}
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
+        		//check if tender type needs to be shown (if only 1 tendertype it is not shown)
+		checkShowTenderType2: function () {
+
+			var that = this;
+
+			//lets work with callbacks: 
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+
+			//path for reading
+			var sPath = "/CountryTenderType2";
+
+			//filters
+			var aFilters = [];
+
+			//filter country
+			var sCountryCode = that.getSelectedCountry();
+
+			var oFilter = new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, sCountryCode);
+			//Add to filter array
+			aFilters.push(oFilter);
+
+			// instantiate loading dialog
+			if (!that._LoadingDialog) {
+				that._LoadingDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.Loading", that);
+			}
+
+			// open loading dialog
+			that._LoadingDialog.open();
+
+			if (sPath) {
+
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						//show tender type
+						var bShowTenderType = false;
+
+						//check length
+						if (oData.results) {
+							if (oData.results.length > 1) {
+								//als er meer dan 1 tendertypes gevonden worden
+								bShowTenderType = true;
+							}
+						}
+
+						// CLOSE loading dialog
+						if (that._LoadingDialog) {
+							that._LoadingDialog.close();
+						}
+
+						// for Chile the TenderType is only shown when InstituteType == 'Cenabast'
+						// because of this requirement we default the bShowTenderType to false
+						// at later point in time the dropdown will set this to true
+						const country = that.getSelectedCountry();
+						if(country !== 'ES'){
 							bShowTenderType = false;
 						}
 
@@ -6187,7 +6277,19 @@ sap.ui.define([
 							}
 
 							//Create Product (push pending to promises as well)
-							return that.getService('Product').updateProduct(oProductToSave, sOperation).catch(function (oError) {
+							return that.getService('Product').updateProduct(oProductToSave, sOperation)
+                            // .then(function(reponse){
+
+                            //     // for Spain only.
+                            //     if(oProductToSave.CountryCode === "ES"){
+                            //         that.getService('Product').updateCountryProductPack(oProductSaveInfo.SKUCountry)
+                            //         .catch(function (oError) {
+                            //             that.showErrorMessage(oError, "Update of Country product pack");
+                            //             throw oError;
+                            //         });
+                            //     }
+                            // })
+                            .catch(function (oError) {
 								that.showErrorMessage(oError, "Update of product");
 								throw new Error(oError);
 							});
@@ -7556,6 +7658,41 @@ sap.ui.define([
 
 
 			
+
+			var mParameters = {
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter]
+			};
+
+			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
+		},
+
+        getInstituteDistributorBrandProductsForSpain: function (sInstitute) {
+
+			var oCountryCodeFilter = new Filter({
+				path: 'COUNTRY_CODE',
+				operator: FilterOperator.EQ,
+				value1: 'ES'
+			});
+
+
+			var oInstituteFilter = new Filter({
+				path: 'INSTITUTE_ID',
+				operator: FilterOperator.EQ,
+				value1: sInstitute
+			});
+
+
+			var oDistributorFilter = new Filter({
+				path: 'DISTRIBUTOR_ID',
+				operator: FilterOperator.EQ,
+				value1: this.getFastAppDataModel().oData.EditOffer.DistributorID
+			});
+
+			var oChannelFilter = new Filter({
+				path: 'CHANNEL',
+				operator: FilterOperator.EQ,
+				value1: "Direct"
+			});
 
 			var mParameters = {
 				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter]

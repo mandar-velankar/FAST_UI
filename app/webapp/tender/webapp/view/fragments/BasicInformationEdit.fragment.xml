@@ -29,7 +29,7 @@
 				<Select id="idBiddingTypeLevel1" 
 					selectedKey="{fastData>BiddingTypeLevel1}"  
 					visible="{= 
-						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
+						(${fastAppData>/Tender/CountryCode} === 'AR') &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel1'}" 
@@ -42,7 +42,7 @@
 				<Select id="idBiddingTypeLevel2" 
 					selectedKey="{fastData>BiddingTypeLevel2}" 
 					visible="{= 
-						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
+						(${fastAppData>/Tender/CountryCode} === 'AR') &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel2} &amp;&amp; ${fastData>BiddingTypeLevel1} &amp;&amp; ${fastAppData>CountryBiddingTypeLevel2}.length > 0? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel2'}" 
@@ -85,6 +85,25 @@
 				<Label text="{i18n>institnme}" design="Bold" required="true"/>
 				<Input xmlns="sap.m" id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4"
 					value="{fastData>Institute/InstituteName}" enabled="false"/>
+
+                <Label text="{i18n>institCode}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idInstituteCode" value="{fastData>Institute/CustomerID}" enabled="false" visible="false"/>
+
+                <Label text="{i18n>institProvince}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idInstituteProvince" value="{fastData>Institute/Province/Name}" enabled="false" visible="false"/>
+                
+				<Label text="{i18n>institRegion}" design="Bold"  required="false"/>
+				<Input value="{fastData>Institute/Region/Name}" id="idInstituteRegion" enabled="false" visible="false"/>
+
+                <Label text="{i18n>institPoblacion}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idInstitutePoblacion" value="{fastData>Institute/City}" enabled="false" visible="false"/>
+
+                <Label text="{i18n>institcifcode}" design="Bold" required="false" />
+				<Input xmlns="sap.m" id="idInstituteCifCode" value="{fastData>Institute/CifCode}" enabled="false" visible="false"/>
+
+                <Label text="{i18n>regionalhealthsystem}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idRegionalHealthSystem" value="{fastData>Institute/RegionalHealthSystem}" enabled="false" visible="false"/>
+                
 				<!-- Italy only -->
 				<Label text="{i18n>region}" design="Bold" required="true"/>
 				<MultiComboBox id="idRegionEdit" 
@@ -128,6 +147,39 @@
 						items="{ path: '', sorter: { path: '' } }">
 					<core:Item text="" key=""/>
 				</Select>
+
+                <Label id="idLabelTenderType2Edit" text="{i18n>tendertype2}" design="Bold" required="true" visible="true"/>
+				<!-- TenderType: BeAware: binding is overwritten by controller logic -->
+				<Select id="idSelectTenderType2Edit"
+						selectedKey="{fastData>TENDER_TYPE_2_ID}" 
+						enabled="false" 
+						items="{ path: '', sorter: { path: '' } }">
+					<core:Item text="" key=""/>
+				</Select>
+
+                <Label text="{i18n>Content}" design="Bold"/>
+                <TextArea id="idContentEdit" 
+                          value="{fastData>CONTENT}" 
+						  showExceededText="true" 
+						  maxLength="500" 
+						  width="100%" 
+						  valueState="{= ${fastAppData>CONTENT}.length > 500 ? 'Warning' : 'None' }" 
+						  valueLiveUpdate="false" 
+						  liveChange="handleLiveChange" 
+						  enabled="false"
+                          visible="false"/>
+
+                <Label text="{i18n>Portal}" design="Bold"/>
+                <TextArea id="idPortalEdit" 
+                          value="{fastData>PORTAL}" 
+						  showExceededText="true" 
+						  maxLength="500" 
+						  width="100%" 
+                          valueState="{= ${fastAppData>PORTAL}.length > 500 ? 'Warning' : 'None' }" 
+						  valueLiveUpdate="false" 
+						  liveChange="handleLiveChange" 
+						  enabled="false"
+                          visible="false"/>
 				<!-- Block - Timeline -->
 
 				<!-- Argentina only -->

@@ -93,12 +93,16 @@ FAST_NS0FAST0.utils.Formatter = {
 		},
 
 		bgrIcon: function(bankGuarantees){
-			var foundBankGuarantee = bankGuarantees.filter(bgr => bgr.Type === this.getText())[0];
-			if(foundBankGuarantee){
-				return "sap-icon://accept";
-			} else {
-				return "";
-			}
+            if(bankGuarantees){
+                var foundBankGuarantee = bankGuarantees.filter(bgr => bgr.Type === this.getText())[0];
+                if(foundBankGuarantee){
+                    return "sap-icon://accept";
+                } else {
+                    return "";
+                }
+            } else {
+                return "";
+            }
 			
 			
 		}
