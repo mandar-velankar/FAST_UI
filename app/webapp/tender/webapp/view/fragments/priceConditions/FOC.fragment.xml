@@ -35,6 +35,5 @@
                 </form:formElements>
             </form:FormContainer>
         </form:formContainers>            
-    </form:Form>
-    
+    </form:Form>    
 </core:FragmentDefinition>
