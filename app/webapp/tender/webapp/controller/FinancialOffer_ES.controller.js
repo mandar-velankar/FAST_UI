@@ -278,6 +278,7 @@ sap.ui.define([
                             
                             
 						}
+                        that.onFinancialProductPress(oEvent, true);
 				}
 			}
 		},
