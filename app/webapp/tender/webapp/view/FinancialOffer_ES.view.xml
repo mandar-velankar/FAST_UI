@@ -128,9 +128,37 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection id="FinPricingOfferSubsection" title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}"  visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<l:BlockLayout background="Light">
-
+            <l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                    <VBox>
+                        <HBox alignItems="Center">
+                            <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
+                            <Select
+                                enabled="{fastAppData>/EditMode}"
+                                forceSelection="false"
+                                change=".onPriceConditionChange"
+                                items="{
+                                    path: 'fastAppData>/PriceConditionClassification',
+                                    sorter: { path: 'ConditionType' }
+                                }">
+                                <core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
+                            </Select>
+                        </HBox>
+                    </VBox>
+                    <VBox id="idPriceConditionVbox">
+                        <!-- Fragments of price conditions and its binding context are added/set dynamically from the controller. see 'onPriceConditionChange' method-->
+                    </VBox>
+                    <VBox id="idRappelVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract'}">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />
+                    </VBox>
+                    <VBox id="idFOCVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Contract' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.FOC" type="XML" />
+                    </VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
 

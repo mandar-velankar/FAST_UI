@@ -106,7 +106,7 @@
 				</MultiComboBox>
 				<!-- /Italy onlye -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-				<Input value="{fastData>TenderChannel}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT'}"/>
+				<Input value="{fastData>TenderChannel}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'ES'}"/>
 				<Label text="{i18n>grpurchsng}" design="Bold" required="true"/>
 				<Select id="idGroupPurchasing" selectedKey="{fastData>GroupPurchasing}" enabled="false">
 					<items>
@@ -154,7 +154,7 @@
                           visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 				<!-- Italy only -->
 				<Label text="{i18n>CWID}" design="Bold" />
-				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}"/>
+				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 

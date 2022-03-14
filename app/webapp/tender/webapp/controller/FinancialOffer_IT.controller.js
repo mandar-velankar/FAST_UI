@@ -60,6 +60,11 @@ sap.ui.define([
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: async function (oEvent) {
 
+            // This code should only for Italy
+            if(Services.getSelectedCountry() !== "IT"){
+                return;
+            }
+
 			// this method should only be called in case of Italy
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_IT")) {
@@ -550,6 +555,13 @@ sap.ui.define([
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
+
+            // This code should only for Italy. TODO: check why this method is also being run for Spain. This is a side effect.
+            if(Services.getSelectedCountry() !== "IT"){
+                return;
+            }
+
+
 			if (oEvent && oEvent.oSource) {
 				var sSourceId = oEvent.oSource.sId
 				var oProductsTable = oEvent.getSource();
