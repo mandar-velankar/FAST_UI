@@ -311,7 +311,7 @@ sap.ui.define([
 			oDetailController.getView().byId("idInstituteType").setEnabled(true);
 			oDetailController.getView().byId("idInstituteName").setEnabled(true);
 
-			if(Services.getSelectedCountry() === 'CL'){
+			if(Services.getSelectedCountry() === 'CL' || Services.getSelectedCountry() === 'ES'){
 				oDetailController.getView().byId("idTenderChannel").setSelectedKey("Direct");
 				oDetailController.getView().byId("idTenderChannel").setEnabled(false);
 			} else {
@@ -364,7 +364,7 @@ sap.ui.define([
 
 				// TODO: check why "idClassification" is set back to visible after  checkShowSalesType()
 				// Settings for Italy 
-				if(Services.getSelectedCountry() === 'IT'){
+				if(Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES'){
 					Services.getWordTemplates(Services.getSelectedCountry());
 					//oDetailController.getView().byId("idClassification").setVisible(false);
 					oDetailController.getView().byId("idTenderChannel").setVisible(false);
@@ -704,6 +704,10 @@ sap.ui.define([
 						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
 					})
 				}
+
+                if (Services.getSelectedCountry() === "ES"){
+                    that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
+                }
 			
 
 				//vanaf hier 
@@ -2084,6 +2088,10 @@ sap.ui.define([
 							})
 						}
 
+                        if (Services.getSelectedCountry() === "ES"){
+                            that.byId("idTenderChannel").setVisible(false);                            
+                        }
+
 						//apply country filter on tender type
 						var oTenderType = that.getView().byId("idSelectTenderTypeEdit");
 						oTenderType.bindItems({
@@ -2863,7 +2871,7 @@ sap.ui.define([
 								//select offer again
 								var oView = that.getView().byId("financialOfferViewId_ES");
 								var oFinOfferController = oView.getController();
-								oFinOfferController.refreshFinancialTabIT();
+								oFinOfferController.refreshFinancialTabES();
 								break;
 							default:
 								break;
@@ -3661,7 +3669,7 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Region(s)' && this._country === 'IT'  || this._country === 'ES'){
+			if(selectedItem === 'Region(s)' && this._country === 'IT'){
 				this.byId("idRegionEdit").setVisible(true);
 			}else{
 				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
@@ -3875,7 +3883,7 @@ sap.ui.define([
             oSaveBasicInfo.TENDER_TYPE_2_ID = this.byId("idSelectTenderType2Edit").getSelectedKey();
             oSaveBasicInfo.PORTAL = this.byId("idPortalEdit").getValue();
             oSaveBasicInfo.CONTENT = this.byId("idContentEdit").getValue();
-			oSaveBasicInfo.TenderChannel = this._country === 'IT' ? 'Direct' : this.byId("idTenderChannel").getSelectedItem().getText();
+			oSaveBasicInfo.TenderChannel = this._country === 'IT' || this._country === 'ES' ? 'Direct' : this.byId("idTenderChannel").getSelectedItem().getText();
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
 			oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
@@ -8870,6 +8878,8 @@ sap.ui.define([
 										AwardDate: oResult.AwardDate,
 										AwardActing: oResult.AwardActing,
 										PriceAgreement: oProduct.PriceAgreement,
+                                        APPEAL: oResult.Appeal,
+                                        INFONEEDED: oResult.InfoNeeded,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 
@@ -9264,7 +9274,9 @@ sap.ui.define([
 						DeliveryDate: oResultForTree.DeliveryDate,
 						ResultDate: oResultForTree.ResultDate,
 						AwardDate: oResultForTree.AwardDate,
-						AwardActing: oResultForTree.AwardActing
+						AwardActing: oResultForTree.AwardActing,
+                        Appeal: oResultForTree.APPEAL,
+                        InfoNeeded: oResultForTree.INFONEEDED                        
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)

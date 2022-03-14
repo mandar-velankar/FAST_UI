@@ -1,0 +1,60 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
+	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+
+    <MessageStrip text="{fastAppData>dynMessage}" />
+    <form:SimpleForm
+            title="Rappel"
+            editable="false"
+            class="editableForm"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="3"
+            labelSpanL="3"
+            labelSpanM="3"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="4"
+            emptySpanL="4"
+            emptySpanM="4"
+            emptySpanS="0"
+            columnsXL="1"
+            columnsL="1"
+            columnsM="1"
+            singleContainerFullSize="false" >
+            <form:content>
+                <Label text="{i18n>PVL}" required="true"/>
+                <Input value="{fastAppData>PVL}" type="Number"  description="{fastAppData>Currency}" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/><Label text="{i18n>RoyalDecree}" required="true"/> 
+                <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}"> 
+                    <items>
+                        <core:Item key="" text="" />
+                        <core:Item key="Yes" text="Yes" />
+                        <core:Item key="No" text="No" />									
+                    </items>
+                </Select>
+                <Label text="{i18n>Liquidation}" required="true"/>
+                <Select selectedKey="{fastAppData>Liquidation}" enabled="{fastAppData>/EditMode}"> 
+                    <items>
+                        <core:Item key="" text="" />
+                        <core:Item key="Monthly" text="Monthly" />
+                        <core:Item key="Quarterly" text="Quarterly" />
+                        <core:Item key="Annually" text="Annually" />									
+                    </items>
+                </Select>
+                <Label text="{i18n>PaymentBackDate}" required="true"/>
+                <DatePicker
+                        id="DP1"
+                        value="{fastAppData>RefundDate}" 
+                        valueFormat="yyyy-MM-dd" 
+                        displayFormat="long"
+                        placeholder="Enter Date"
+                        change="handleChange"
+                        enabled="{fastAppData>/EditMode}"
+                        class="sapUiSmallMarginBottom"/>
+                <Label text="{i18n>VolTreshold}" required="true"/>
+                <MultiInput valueHelpOnly="true" valueHelpRequest=".onVolumeTreshhold" tokens="{fastAppData>DiscountConditions}" enabled="{fastAppData>/EditMode}">
+                    <tokens>
+                        <Token key="{fastAppData>Volume}" text="{fastAppData>Volume}" editable="false"></Token>
+                    </tokens>
+                </MultiInput>
+            </form:content>
+        </form:SimpleForm>
+</core:FragmentDefinition>

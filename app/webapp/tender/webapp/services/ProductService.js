@@ -33,7 +33,7 @@ sap.ui.define([
 			var mParameters = {
 				filters: [oTenderIdFilter],
 				urlParameters: {
-					$expand: "SKU/Product,PriceAgreement"
+					$expand: "SKU/Product,PriceAgreement,PriceCondition"
 				}
 			};
 
@@ -297,6 +297,8 @@ sap.ui.define([
 				AWARDEDPRICE: null,
 				CURRENCY: null,
 				OutcomeLevel: null,
+                APPEAL: null,
+                INFONEEDED: null,                                                
 				_sOperation: "POST"
 			};
 
