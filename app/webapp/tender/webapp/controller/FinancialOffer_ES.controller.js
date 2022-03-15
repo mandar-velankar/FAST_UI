@@ -72,19 +72,28 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
                 //bind Rappel and FOC fragments 
-                this.bindRappelFragment();
+                const rappelBindingPath = this.bindRappelFragment();
+
+                // add DiscountCondition
+                await this.addDiscountConditions(rappelBindingPath);
                 
 
                 // get PriceConditionClassification
                 const priceConditionClassification = await this.getPriceConditionClassification();
                 Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
+                // set selected key on idPriceConditionSelect
+                const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
+                existingMainPriceCondition && this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
+
+                this.loadMainPriceConditionFragment(existingMainPriceCondition.ConditionType);
 			}
 
 		},
 
         /**
          * This method  sets the element binding of the Rappel fragment
+         * @returns {String} - Binding path of the Rappel price condition
          */
         bindRappelFragment: function(){
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
@@ -92,6 +101,18 @@ sap.ui.define([
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
+
+            return rappelBindingPath;
+        },
+
+        addDiscountConditions: async function(rappelBindingPath){
+            const rappelPriceCondition = Services.getFastAppDataModel().getProperty(rappelBindingPath);
+
+            const discountConditions = (await Services.getService("PriceCondition").getDiscountConditions({
+                PriceConditionID: rappelPriceCondition.ExistingPriceConditionID
+            })).data.results;
+
+            Services.getFastAppDataModel().setProperty(rappelBindingPath.concat("/DiscountConditions"), discountConditions);
         },
 
 		getCountryBrandProductsCombined: async function(){
@@ -192,8 +213,8 @@ sap.ui.define([
             const filter = {
                 "CountryCode": offer.CountryCode,
                 "Classification": offer.Tender.Classification,
-                "Division": offer.Division,
-                "isMain": true
+                "Division": offer.Division
+                // "isMain": true
             };
 
             const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
@@ -230,8 +251,112 @@ sap.ui.define([
 		 * @param {*} oEvent 
 		 */
 		onSaveFinancialOfferSpain: async function (oEvent) {
-            debugger;
+            
+            const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
+
+            const savePriceConditionPromises = selectedPriceConditionViewObjects.map(priceConditionViewObj => {
+                const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj);
+                return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+            });
+
+            await Promise.all(savePriceConditionPromises);
+
+            //switch from edit to display
+            this._DetailController.onEditToggleButtonPress();
+
+            //show success message
+            Services.getOfferCompositeMessages().push({
+                type: 'Success',
+                title: 'Financial Offer Saved Successfully',
+                description: 'Financial Offer Saved Successfully'
+            });
+
+            Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+            Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
+
+            //refresh tenders master table (left pane)
+            const sTenderID = selectedPriceConditionViewObjects[0].TenderID;
+            Services.refreshTendersMasterTable(sTenderID);
+
+            //update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+            let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID);
+            const iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
+            Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+                //Error during save
+                Services.showErrorMessage(oError, "Background saving for approvals sent field");
+            });
+
+            this._checkApprovalEnabled(); // check for approval button
+
+            //refresh data (for table)
+            this.refreshFinancialTabES();
+
 		},
+
+
+        /**
+         * @returns {Array:Objects} - A list of price condition view objects that the user has interacted with in the UI
+         */
+        getSelectedPriceConditionViewObjects: function(){
+            const selectedPriceConditionTypes = this.getSelectedPriceConditionTypes();
+            const allPriceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const filteredPriceConditions = allPriceConditionViews.filter(priceCondition => {
+                let conditionType = selectedPriceConditionTypes.find(ct => ct === priceCondition.ConditionType);
+                if(conditionType) return conditionType;
+            });
+
+            const enhancedPriceConditions = filteredPriceConditions.map(priceCondition => {
+                return priceCondition = {
+                    "PriceConditionClassification_ID": this.getPriceConditionClassificationID(priceCondition.ConditionType).ID,
+                    ...priceCondition
+                }
+            });
+
+            return enhancedPriceConditions;
+        },
+
+
+        /**
+         * Gets the ID of a PriceConditionClassification 
+         * @param {String} sConditionType 
+         * @returns {String} - UUID of the given PriceConditionClassification
+         */
+        getPriceConditionClassificationID: function(sConditionType){
+            const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
+            return priceConditionClassification.find(item => item.ConditionType === sConditionType);
+        },
+
+        /**
+         * @returns {Array:String} - A list of condition types relevant for processing
+         */
+        getSelectedPriceConditionTypes: function(){
+
+            const selectedPriceConditions = [];
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");
+            const division = Services.getFastAppDataModel().getProperty("/SelectedOffer/Division");
+
+            const oSelectPriceCondition = this.byId("idPriceConditionSelect");
+
+            if(oSelectPriceCondition.getSelectedItem()){
+                selectedPriceConditions.push(oSelectPriceCondition.getSelectedItem().getText());
+            }
+
+            if(classification === "Commercial Contract"){
+                selectedPriceConditions.push("Rappel");
+            }
+
+            if(classification === "Commercial Contract" && division === "Pharma" || division === "Radiology"){
+                selectedPriceConditions.push("FOC");
+            }
+
+            return selectedPriceConditions;
+        },
+
+        checkSaveFinancialOfferSpain: function (oEvent){
+            
+        },
 
 		/**
 		 * Approval button on Finacial page
@@ -300,6 +425,14 @@ sap.ui.define([
         onPriceConditionChange: function(oEvent){
 
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
+            // let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
+            
+            this.loadMainPriceConditionFragment(sConditionType);
+
+        },
+
+        loadMainPriceConditionFragment: function(sConditionType){
+
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
             const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
@@ -308,14 +441,18 @@ sap.ui.define([
             vBox.removeAllItems();
 
             const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
-            let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
+            let sFragmentName = sConditionType.split(" ").join("");
 
             Fragment.load({
                 id: this.getView().getId(),
                 name: sFragmentPath.concat(".",sFragmentName),
                 controller: this
             }).then(function (oFragment) {
-                oFragment.forEach(item => vBox.addItem(item));
+                if(Array.isArray(oFragment)){                
+                    oFragment.forEach(item => vBox.addItem(item));
+                } else {
+                    vBox.addItem(oFragment);
+                }
                 vBox.bindElement({ path: bindingPath, model: "fastAppData" });
             }.bind(this));
 
@@ -328,7 +465,7 @@ sap.ui.define([
 
             const newNetPriceWithoutTaxBeforeDeductionRD = Number(oEvent.getSource().getValue());
             const standardPrice = Number(bindingContext.getProperty("StandardPrice"));
-            const additionalDiscount =  ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2);
+            const additionalDiscount =  standardPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2) : 0;
 
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
@@ -430,7 +567,6 @@ sap.ui.define([
 
             
             discountConditions.push({
-                ID: "",
                 Volume: "",
                 Discount: "",
                 Tax: priceConditions.Tax,
@@ -492,22 +628,28 @@ sap.ui.define([
 			var oView = this.getView();
 
 			// create dialog lazily
-			if (!this.pDialog) {
-				this.pDialog = Fragment.load({
+			if (!this.pDialogFoc) {
+				this.pDialogFoc = Fragment.load({
 					id: oView.getId(),
 					name: "FAST_NS0FAST0.view.fragments.OtherProducts_ES",
 					controller: this
-				}).then(function (oDialog) {
+				}).then(function (oDialogFoc) {
 					// connect dialog to the root view of this component (models, lifecycle)
-					oView.addDependent(oDialog);
-					oDialog.setModel(Services.getFastAppDataModel(), "fastAppData");
-					return oDialog;
+					oView.addDependent(oDialogFoc);
+					oDialogFoc.setModel(Services.getFastAppDataModel(), "fastAppData");
+					return oDialogFoc;
 				});
 			}
 
-			this.pDialog.then(function (oDialog) {
-				this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
-				oDialog.open();
+			this.pDialogFoc.then(function (oDialogFoc) {
+                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+                const bindingPath = "/PriceConditionView/".concat(focIndex);
+                const oTable = this.byId("FreeGoodsOtherTable");
+                
+                oTable.bindElement({ path: bindingPath, model: "fastAppData"});
+				//this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
+				oDialogFoc.open();
 			}.bind(this));
 
 
@@ -539,9 +681,15 @@ sap.ui.define([
 		},
         
 		onDeleteFreeGoodsOther: function (event) {
-			const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
+            const path = oEvent.getSource().getParent().getBindingContext("fastAppData").getPath();
+            const bindingPath = path.slice(0, path.length - 2);
+            const objIndex = path.slice(path.length - 1);
+            const priceConditionViewObj = Services.getFastAppDataModel().getProperty(bindingPath);
+            priceConditionViewObj.splice(objIndex, 1);
+            
+			/*const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
 			const oFastAppDataModel = Services.getFastAppDataModel();
-			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");*/
 
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
 		},

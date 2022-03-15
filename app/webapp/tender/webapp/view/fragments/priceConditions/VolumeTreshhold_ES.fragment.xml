@@ -39,9 +39,9 @@
             <ColumnListItem>
                 <cells>
                     <Input value="{fastAppData>Volume}" type="Number" fieldWidth="80%"/>
-                    <Input value="{fastAppData>Discount}" type="Number" fieldWidth="80%" liveChange=".calculateNetPricesRappel"/>
-                    <Input value="{fastAppData>Tax}" type="Number" enabled="false" fieldWidth="80%"/>
-                    <Input value="{fastAppData>NetPriceWithoutTax}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
+                    <Input value="{fastAppData>Discount}" type="Number" description="%" fieldWidth="80%" liveChange=".calculateNetPricesRappel"/>
+                    <Input value="{fastAppData>Tax}" type="Number"  description="%" enabled="false" fieldWidth="80%"/>
+                    <Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>
                     <Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/>
                     <Button icon="sap-icon://delete" press=".onDeleteDiscountCondition"/>
                 </cells>
