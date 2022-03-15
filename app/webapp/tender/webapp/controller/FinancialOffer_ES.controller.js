@@ -514,7 +514,13 @@ sap.ui.define([
 			}
 
 			this.pDialogFoc.then(function (oDialogFoc) {
-				this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
+                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+                const bindingPath = "/PriceConditionView/".concat(focIndex);
+                const oTable = this.byId("FreeGoodsOtherTable");
+                
+                oTable.bindElement({ path: bindingPath, model: "fastAppData"});
+				//this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
 				oDialogFoc.open();
 			}.bind(this));
 
@@ -547,9 +553,15 @@ sap.ui.define([
 		},
         
 		onDeleteFreeGoodsOther: function (event) {
-			const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
+            const path = oEvent.getSource().getParent().getBindingContext("fastAppData").getPath();
+            const bindingPath = path.slice(0, path.length - 2);
+            const objIndex = path.slice(path.length - 1);
+            const priceConditionViewObj = Services.getFastAppDataModel().getProperty(bindingPath);
+            priceConditionViewObj.splice(objIndex, 1);
+            
+			/*const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
 			const oFastAppDataModel = Services.getFastAppDataModel();
-			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");*/
 
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
 		},
