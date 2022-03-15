@@ -233,6 +233,10 @@ sap.ui.define([
             debugger;
 		},
 
+        checkSaveFinancialOfferSpain: function (oEvent){
+            
+        },
+        
 		/**
 		 * Approval button on Finacial page
 		 * @param {*} oEvent 
@@ -492,22 +496,22 @@ sap.ui.define([
 			var oView = this.getView();
 
 			// create dialog lazily
-			if (!this.pDialog) {
-				this.pDialog = Fragment.load({
+			if (!this.pDialogFoc) {
+				this.pDialogFoc = Fragment.load({
 					id: oView.getId(),
 					name: "FAST_NS0FAST0.view.fragments.OtherProducts_ES",
 					controller: this
-				}).then(function (oDialog) {
+				}).then(function (oDialogFoc) {
 					// connect dialog to the root view of this component (models, lifecycle)
-					oView.addDependent(oDialog);
-					oDialog.setModel(Services.getFastAppDataModel(), "fastAppData");
-					return oDialog;
+					oView.addDependent(oDialogFoc);
+					oDialogFoc.setModel(Services.getFastAppDataModel(), "fastAppData");
+					return oDialogFoc;
 				});
 			}
 
-			this.pDialog.then(function (oDialog) {
+			this.pDialogFoc.then(function (oDialogFoc) {
 				this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
-				oDialog.open();
+				oDialogFoc.open();
 			}.bind(this));
 
 
