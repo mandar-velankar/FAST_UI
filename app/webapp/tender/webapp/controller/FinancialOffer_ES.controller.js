@@ -79,6 +79,11 @@ sap.ui.define([
                 const priceConditionClassification = await this.getPriceConditionClassification();
                 Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
+                // set selected key on idPriceConditionSelect
+                const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
+                existingMainPriceCondition && this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
+
+                this.loadMainPriceConditionFragment(existingMainPriceCondition.ConditionType);
 			}
 
 		},
@@ -399,6 +404,14 @@ sap.ui.define([
         onPriceConditionChange: function(oEvent){
 
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
+            // let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
+            
+            this.loadMainPriceConditionFragment(sConditionType);
+
+        },
+
+        loadMainPriceConditionFragment: function(sConditionType){
+
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
             const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
@@ -407,7 +420,7 @@ sap.ui.define([
             vBox.removeAllItems();
 
             const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
-            let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
+            let sFragmentName = sConditionType.split(" ").join("");
 
             Fragment.load({
                 id: this.getView().getId(),
