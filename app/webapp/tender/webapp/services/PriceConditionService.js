@@ -63,6 +63,65 @@ sap.ui.define([
 			return this.odata(sPath).put(oPriceCondition);
 		},
 
+        upsertPriceCondition: function(oPriceCondition){
+
+            if(oPriceCondition.ID){
+                return this.updatePriceCondition(oPriceCondition);
+            }
+
+            return this.createPriceCondition(oPriceCondition);
+
+        },
+
+        convertToSaveObject: function(oPriceConditionViewObject){
+
+            let obj = {
+                "CountryCode": oPriceConditionViewObject.CountryCode,
+                "OfferID": oPriceConditionViewObject.OfferID,
+                "ProductCode": oPriceConditionViewObject.ProductCode,
+                "PVL": oPriceConditionViewObject.PVL,
+                "Discount": oPriceConditionViewObject.Discount,
+                "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
+                "StandardDiscount": oPriceConditionViewObject.StandardDiscount,
+                "AdditionalDiscount": oPriceConditionViewObject.AdditionalDiscount,
+                "NetPriceWithoutTaxBeforeDeductionRD": oPriceConditionViewObject.NetPriceWithoutTaxBeforeDeductionRD,
+                "NetPriceWithoutTaxAfterDeductionRD": oPriceConditionViewObject.NetPriceWithoutTaxAfterDeductionRD,
+                "NetPriceWithTaxAfterDeductionRD": oPriceConditionViewObject.NetPriceWithTaxAfterDeductionRD,
+                "NetPriceWithoutTax": oPriceConditionViewObject.NetPriceWithoutTax,
+                "NetPriceWithTax": oPriceConditionViewObject.NetPriceWithTax,
+                "MaximumPrice": oPriceConditionViewObject.MaximumPrice,
+                "Tax": oPriceConditionViewObject.Tax,
+                "Liquidation": oPriceConditionViewObject.Liquidation,
+                "RefundDate": oPriceConditionViewObject.RefundDate,
+                "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
+                // "FreeGoodsOther": oPriceConditionViewObject.FreeGoodsOther,
+            }
+
+            // add the ID if it exists
+            if(oPriceConditionViewObject.ExistingPriceConditionID){
+                obj = {
+                    "ID": oPriceConditionViewObject.ExistingPriceConditionID,
+                    ...obj
+                }
+            }
+
+            return obj;
+
+        },
+
+        convertToDiscountConditions: function(aDiscountCondition){
+
+            if(aDiscountCondition){
+                return aDiscountCondition.map(condition => {
+                    delete condition['Tax'];
+                    return condition;
+                });
+            }
+
+            return null;
+
+        },
+
 
         getPriceConditionClassification: function(filter){
             

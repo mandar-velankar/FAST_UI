@@ -230,8 +230,90 @@ sap.ui.define([
 		 * @param {*} oEvent 
 		 */
 		onSaveFinancialOfferSpain: async function (oEvent) {
-            debugger;
+            
+            const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
+
+            const savePriceConditionPromises = selectedPriceConditionViewObjects.map(priceConditionViewObj => {
+                const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj);
+                return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+            });
+
+            await Promise.all(savePriceConditionPromises);
+
+            //switch from edit to display
+            this._DetailController.onEditToggleButtonPress();
+
+            //show success message
+            Services.getOfferCompositeMessages().push({
+                type: 'Success',
+                title: 'Financial Offer Saved Successfully',
+                description: 'Financial Offer Saved Successfully'
+            });
+
+            Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+            Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
+
+            //refresh tenders master table (left pane)
+            const sTenderID = selectedPriceConditionViewObjects[0].TenderID;
+            Services.refreshTendersMasterTable(sTenderID);
+
+            //update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+            let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID);
+            const iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
+            Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+                //Error during save
+                Services.showErrorMessage(oError, "Background saving for approvals sent field");
+            });
+
+            this._checkApprovalEnabled(); // check for approval button
+
+            //refresh data (for table)
+            this.refreshFinancialTabES();
+
 		},
+
+
+        /**
+         * @returns {Array:Objects} - A list of price condition view objects that the user has interacted with in the UI
+         */
+        getSelectedPriceConditionViewObjects: function(){
+            const selectedPriceConditionTypes = this.getSelectedPriceConditionTypes();
+            const allPriceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const filteredPriceConditions = allPriceConditionViews.filter(item => {
+                const conditionType = selectedPriceConditionTypes.find(ct => ct === item.ConditionType);
+                if(conditionType) return conditionType;
+            });
+
+            return filteredPriceConditions;
+        },
+
+        /**
+         * @returns {Array:String} - A list of condition types relevant for processing
+         */
+        getSelectedPriceConditionTypes: function(){
+
+            const selectedPriceConditions = [];
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");
+            const division = Services.getFastAppDataModel().getProperty("/SelectedOffer/Division");
+
+            const oSelectPriceCondition = this.byId("idPriceConditionSelect");
+
+            if(oSelectPriceCondition.getSelectedItem()){
+                selectedPriceConditions.push(oSelectPriceCondition.getSelectedItem().getText());
+            }
+
+            if(classification === "Commercial Contract"){
+                selectedPriceConditions.push("Rappel");
+            }
+
+            if(classification === "Commercial Contract" && division === "Pharma" || division === "Radiology"){
+                selectedPriceConditions.push("FOC");
+            }
+
+            return selectedPriceConditions;
+        },
 
 		/**
 		 * Approval button on Finacial page
@@ -327,7 +409,7 @@ sap.ui.define([
 
             const newNetPriceWithoutTaxBeforeDeductionRD = Number(oEvent.getSource().getValue());
             const standardPrice = Number(bindingContext.getProperty("StandardPrice"));
-            const additionalDiscount =  ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2);
+            const additionalDiscount =  standardPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2) : 0;
 
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
@@ -429,7 +511,6 @@ sap.ui.define([
 
             
             discountConditions.push({
-                ID: "",
                 Volume: "",
                 Discount: "",
                 Tax: priceConditions.Tax,
