@@ -233,6 +233,10 @@ sap.ui.define([
             debugger;
 		},
 
+        checkSaveFinancialOfferSpain: function (oEvent){
+            
+        },
+        
 		/**
 		 * Approval button on Finacial page
 		 * @param {*} oEvent 
@@ -315,7 +319,11 @@ sap.ui.define([
                 name: sFragmentPath.concat(".",sFragmentName),
                 controller: this
             }).then(function (oFragment) {
-                oFragment.forEach(item => vBox.addItem(item));
+                if(Array.isArray(oFragment)){                
+                    oFragment.forEach(item => vBox.addItem(item));
+                } else {
+                    vBox.addItem(oFragment);
+                }
                 vBox.bindElement({ path: bindingPath, model: "fastAppData" });
             }.bind(this));
 
@@ -492,22 +500,28 @@ sap.ui.define([
 			var oView = this.getView();
 
 			// create dialog lazily
-			if (!this.pDialog) {
-				this.pDialog = Fragment.load({
+			if (!this.pDialogFoc) {
+				this.pDialogFoc = Fragment.load({
 					id: oView.getId(),
 					name: "FAST_NS0FAST0.view.fragments.OtherProducts_ES",
 					controller: this
-				}).then(function (oDialog) {
+				}).then(function (oDialogFoc) {
 					// connect dialog to the root view of this component (models, lifecycle)
-					oView.addDependent(oDialog);
-					oDialog.setModel(Services.getFastAppDataModel(), "fastAppData");
-					return oDialog;
+					oView.addDependent(oDialogFoc);
+					oDialogFoc.setModel(Services.getFastAppDataModel(), "fastAppData");
+					return oDialogFoc;
 				});
 			}
 
-			this.pDialog.then(function (oDialog) {
-				this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
-				oDialog.open();
+			this.pDialogFoc.then(function (oDialogFoc) {
+                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+                const bindingPath = "/PriceConditionView/".concat(focIndex);
+                const oTable = this.byId("FreeGoodsOtherTable");
+                
+                oTable.bindElement({ path: bindingPath, model: "fastAppData"});
+				//this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
+				oDialogFoc.open();
 			}.bind(this));
 
 
@@ -539,9 +553,15 @@ sap.ui.define([
 		},
         
 		onDeleteFreeGoodsOther: function (event) {
-			const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
+            const path = oEvent.getSource().getParent().getBindingContext("fastAppData").getPath();
+            const bindingPath = path.slice(0, path.length - 2);
+            const objIndex = path.slice(path.length - 1);
+            const priceConditionViewObj = Services.getFastAppDataModel().getProperty(bindingPath);
+            priceConditionViewObj.splice(objIndex, 1);
+            
+			/*const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
 			const oFastAppDataModel = Services.getFastAppDataModel();
-			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
+			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");*/
 
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
 		},
