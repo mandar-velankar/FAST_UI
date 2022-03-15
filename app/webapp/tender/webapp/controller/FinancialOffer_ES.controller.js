@@ -319,7 +319,11 @@ sap.ui.define([
                 name: sFragmentPath.concat(".",sFragmentName),
                 controller: this
             }).then(function (oFragment) {
-                oFragment.forEach(item => vBox.addItem(item));
+                if(Array.isArray(oFragment)){                
+                    oFragment.forEach(item => vBox.addItem(item));
+                } else {
+                    vBox.addItem(oFragment);
+                }
                 vBox.bindElement({ path: bindingPath, model: "fastAppData" });
             }.bind(this));
 
