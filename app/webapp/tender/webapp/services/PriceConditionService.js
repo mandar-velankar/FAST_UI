@@ -93,6 +93,7 @@ sap.ui.define([
                 "Tax": oPriceConditionViewObject.Tax,
                 "Liquidation": oPriceConditionViewObject.Liquidation,
                 "RefundDate": oPriceConditionViewObject.RefundDate,
+                "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
                 // "FreeGoodsOther": oPriceConditionViewObject.FreeGoodsOther,
             }
@@ -145,12 +146,13 @@ sap.ui.define([
 				value1: filter.Division
 			}));
 
-            aFilters.push(new Filter({
-				path: 'isMain',
-				operator: FilterOperator.EQ,
-				value1: filter.isMain
-			}));
-
+            if(filter.isMain){
+                aFilters.push(new Filter({
+                    path: 'isMain',
+                    operator: FilterOperator.EQ,
+                    value1: filter.isMain
+                }));
+            }
             
 
 			var mParameters = {

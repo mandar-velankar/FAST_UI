@@ -192,8 +192,8 @@ sap.ui.define([
             const filter = {
                 "CountryCode": offer.CountryCode,
                 "Classification": offer.Tender.Classification,
-                "Division": offer.Division,
-                "isMain": true
+                "Division": offer.Division
+                // "isMain": true
             };
 
             const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
@@ -281,12 +281,30 @@ sap.ui.define([
         getSelectedPriceConditionViewObjects: function(){
             const selectedPriceConditionTypes = this.getSelectedPriceConditionTypes();
             const allPriceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const filteredPriceConditions = allPriceConditionViews.filter(item => {
-                const conditionType = selectedPriceConditionTypes.find(ct => ct === item.ConditionType);
+            const filteredPriceConditions = allPriceConditionViews.filter(priceCondition => {
+                let conditionType = selectedPriceConditionTypes.find(ct => ct === priceCondition.ConditionType);
                 if(conditionType) return conditionType;
             });
 
-            return filteredPriceConditions;
+            const enhancedPriceConditions = filteredPriceConditions.map(priceCondition => {
+                return priceCondition = {
+                    "PriceConditionClassification_ID": this.getPriceConditionClassificationID(priceCondition.ConditionType).ID,
+                    ...priceCondition
+                }
+            });
+
+            return enhancedPriceConditions;
+        },
+
+
+        /**
+         * Gets the ID of a PriceConditionClassification 
+         * @param {String} sConditionType 
+         * @returns {String} - UUID of the given PriceConditionClassification
+         */
+        getPriceConditionClassificationID: function(sConditionType){
+            const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
+            return priceConditionClassification.find(item => item.ConditionType === sConditionType);
         },
 
         /**

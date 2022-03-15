@@ -142,7 +142,10 @@
                                 change=".onPriceConditionChange"
                                 items="{
                                     path: 'fastAppData>/PriceConditionClassification',
-                                    sorter: { path: 'ConditionType' }
+                                    sorter: { path: 'ConditionType' },
+                                    filters : [
+                                        { path : 'isMain', operator : 'EQ', value1 : true}
+                                    ]
                                 }">
                                 <core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
                             </Select>
