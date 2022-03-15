@@ -208,6 +208,27 @@ sap.ui.define([
 
 			return this.odata("/PriceConditionView").get(mParameters);
 		},
+
+
+        getDiscountConditions: function(filter){
+            
+			let aFilters = [];
+
+            if(filter.OfferID){
+                aFilters.push(new Filter({
+                    path: 'PriceCondition_ID',
+                    operator: FilterOperator.EQ,
+                    value1: filter.PriceConditionID
+                }));
+            }
+
+			var mParameters = {
+				filters: aFilters
+			};
+
+
+			return this.odata("/DiscountCondition").get(mParameters);
+		},
 		
 	});
 });

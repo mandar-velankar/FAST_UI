@@ -72,7 +72,10 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
                 //bind Rappel and FOC fragments 
-                this.bindRappelFragment();
+                const rappelBindingPath = this.bindRappelFragment();
+
+                // add DiscountCondition
+                await this.addDiscountConditions(rappelBindingPath);
                 
 
                 // get PriceConditionClassification
@@ -90,6 +93,7 @@ sap.ui.define([
 
         /**
          * This method  sets the element binding of the Rappel fragment
+         * @returns {String} - Binding path of the Rappel price condition
          */
         bindRappelFragment: function(){
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
@@ -97,6 +101,18 @@ sap.ui.define([
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
+
+            return rappelBindingPath;
+        },
+
+        addDiscountConditions: async function(rappelBindingPath){
+            const rappelPriceCondition = Services.getFastAppDataModel().getProperty(rappelBindingPath);
+
+            const discountConditions = (await Services.getService("PriceCondition").getDiscountConditions({
+                PriceConditionID: rappelPriceCondition.ExistingPriceConditionID
+            })).data.results;
+
+            Services.getFastAppDataModel().setProperty(rappelBindingPath.concat("/DiscountConditions"), discountConditions);
         },
 
 		getCountryBrandProductsCombined: async function(){
