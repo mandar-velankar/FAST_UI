@@ -80,6 +80,12 @@ sap.ui.define([
                 
                 // get PriceConditionClassification
                 const priceConditionClassification = await this.getPriceConditionClassification();
+                // add empty item
+                priceConditionClassification.push({
+                    "ID": "99999999-9999-9999-9999-999999999999",
+                    "ConditionType": "",
+                    "isMain": true
+                });
                 Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
                 // set selected key on idPriceConditionSelect
@@ -392,11 +398,11 @@ sap.ui.define([
                 selectedPriceConditions.push(oSelectPriceCondition.getSelectedItem().getText());
             }
 
-            if(classification === "Commercial Contract"){
+            if(classification === "Commercial Agreement"){
                 selectedPriceConditions.push("Rappel");
             }
 
-            if(classification === "Commercial Contract" && division === "Pharma" || division === "Radiology"){
+            if(classification === "Commercial Agreement" && division === "Pharma" || division === "Radiology"){
                 selectedPriceConditions.push("FOC");
             }
 
@@ -474,38 +480,36 @@ sap.ui.define([
         },
 
         onPriceConditionChange: function(oEvent){
-
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
-            // let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
-            
             this.loadMainPriceConditionFragment(sConditionType);
-
         },
 
         loadMainPriceConditionFragment: function(sConditionType){
 
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
-            const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
-
+            // clear the VBox first
             const vBox = this.byId("idPriceConditionVbox");
             vBox.removeAllItems();
 
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
             const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
-            let sFragmentName = sConditionType.split(" ").join("");
 
-            Fragment.load({
-                id: this.getView().getId(),
-                name: sFragmentPath.concat(".",sFragmentName),
-                controller: this
-            }).then(function (oFragment) {
-                if(Array.isArray(oFragment)){                
-                    oFragment.forEach(item => vBox.addItem(item));
-                } else {
-                    vBox.addItem(oFragment);
-                }
-                vBox.bindElement({ path: bindingPath, model: "fastAppData" });
-            }.bind(this));
+            if(selectedPriceConditionsIndex > -1) {
+                const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
+                let sFragmentName = sConditionType.split(" ").join("");
+                Fragment.load({
+                    id: this.getView().getId(),
+                    name: sFragmentPath.concat(".",sFragmentName),
+                    controller: this
+                }).then(function (oFragment) {
+                    if(Array.isArray(oFragment)){                
+                        oFragment.forEach(item => vBox.addItem(item));
+                    } else {
+                        vBox.addItem(oFragment);
+                    }
+                    vBox.bindElement({ path: bindingPath, model: "fastAppData" });
+                }.bind(this));
+            }
 
         },
 
