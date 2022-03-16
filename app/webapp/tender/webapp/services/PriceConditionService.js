@@ -229,7 +229,7 @@ sap.ui.define([
             
 			let aFilters = [];
 
-            if(filter.OfferID){
+            if(filter.PriceConditionID){
                 aFilters.push(new Filter({
                     path: 'PriceCondition_ID',
                     operator: FilterOperator.EQ,
