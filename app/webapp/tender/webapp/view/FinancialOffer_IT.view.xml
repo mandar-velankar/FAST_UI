@@ -161,7 +161,7 @@
 						<form:formContainers>
 							<form:FormContainer>
 								<form:formElements>
-									<form:FormElement visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}" required="true">
+									<form:FormElement visible="{= ${fastAppData>/EditSelectedProduct/SKU/ProductType} === 'Device'}" >
 										<form:label>
 											<Label text="Warranty" required="true"/>
 										</form:label>
@@ -281,12 +281,12 @@
 											<Input value="{fastAppData>FOC}" type="Number"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'ABS' || ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
 									</form:FormElement>		
-									<form:FormElement label="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" required="true">
+									<form:FormElement label="Free goods same product" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" >
 										<form:fields>
 											<Input value="{path:'fastAppData>FOC',type: '.types.percent'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'PCT' ? true : false }" description="%"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Step" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" required="true">
+									<form:FormElement label="Step" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" >
 										<form:fields>
 											<Input value="{path:'fastAppData>FOCStep'}"  enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }" fieldWidth="80%" visible="{= ${fastAppData>FOC_ABS_PCT} === 'STP' ? true : false }" description="{fastAppData>/EditProduct/UOM}"/>
 										</form:fields>
