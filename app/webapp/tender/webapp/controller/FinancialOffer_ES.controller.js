@@ -312,46 +312,52 @@ sap.ui.define([
 		onSaveFinancialOfferSpain: async function (oEvent) {
             
             const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
+            const aErroneousConditions = this.checkSaveFinancialOfferSpain(selectedPriceConditionViewObjects);   
+            if(aErroneousConditions && (aErroneousConditions.length > 0)) {
+				sap.m.MessageBox.error(`You must fill in all the mandatory fields for the following condition(s): \n\n ${aErroneousConditions.join()}`);
+                return;
+            } 
 
-            const savePriceConditionPromises = selectedPriceConditionViewObjects.map(priceConditionViewObj => {
-                const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj);
-                return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
-            });
+            else {            
+                const savePriceConditionPromises = selectedPriceConditionViewObjects.map(priceConditionViewObj => {
+                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj);
+                    return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+                });
 
-            await Promise.all(savePriceConditionPromises);
+                await Promise.all(savePriceConditionPromises);
 
-            //switch from edit to display
-            this._DetailController.onEditToggleButtonPress();
+                //switch from edit to display
+                this._DetailController.onEditToggleButtonPress();
 
-            //show success message
-            Services.getOfferCompositeMessages().push({
-                type: 'Success',
-                title: 'Financial Offer Saved Successfully',
-                description: 'Financial Offer Saved Successfully'
-            });
+                //show success message
+                Services.getOfferCompositeMessages().push({
+                    type: 'Success',
+                    title: 'Financial Offer Saved Successfully',
+                    description: 'Financial Offer Saved Successfully'
+                });
 
-            Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
-            Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+                Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+                Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
 
 
-            //refresh tenders master table (left pane)
-            const sTenderID = selectedPriceConditionViewObjects[0].TenderID;
-            Services.refreshTendersMasterTable(sTenderID);
+                //refresh tenders master table (left pane)
+                const sTenderID = selectedPriceConditionViewObjects[0].TenderID;
+                Services.refreshTendersMasterTable(sTenderID);
 
-            //update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
-            let sOfferID = Services.getSelectedOfferID();
-			var oOffer = Services.getLoadedOffer(sOfferID);
-            const iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
-            Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
-                //Error during save
-                Services.showErrorMessage(oError, "Background saving for approvals sent field");
-            });
+                //update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
+                let sOfferID = Services.getSelectedOfferID();
+                var oOffer = Services.getLoadedOffer(sOfferID);
+                const iApprovals_sent = oOffer.APPROVALS_SENT; //offerInfo.APPROVALS_SENT;
+                Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+                    //Error during save
+                    Services.showErrorMessage(oError, "Background saving for approvals sent field");
+                });
 
-            this._checkApprovalEnabled(); // check for approval button
+                this._checkApprovalEnabled(); // check for approval button
 
-            //refresh data (for table)
-            this.refreshFinancialTabES();
-
+                //refresh data (for table)
+                this.refreshFinancialTabES();
+            } 
 		},
 
 
@@ -413,8 +419,30 @@ sap.ui.define([
             return selectedPriceConditions;
         },
 
-        checkSaveFinancialOfferSpain: function (oEvent){
-            
+        checkSaveFinancialOfferSpain: function (oPriceConditions){
+            var aErroneousCondition = [];            
+
+            for(let i = 0; i < oPriceConditions.length; i++){            
+                if(oPriceConditions[i].ConditionType === "Precio Neto" || oPriceConditions[i].ConditionType === "Precio Neto Inyectores") {
+                    if(oPriceConditions[i].RoyalDecree !== "" || oPriceConditions[i].RoyalDecree !== null || oPriceConditions[i].AdditionalDiscount !== "" || oPriceConditions[i].AdditionalDiscount !== null || oPriceConditions[i].MaximumPrice !== "" || oPriceConditions[i].MaximumPrice !== null){
+                        aErroneousCondition.push(oPriceConditions[i].ConditionType);
+                    }
+                } else if(oPriceConditions[i].ConditionType === "Descuento Comercial"){
+                    if(oPriceConditions[i].RoyalDecree !== "" || oPriceConditions[i].RoyalDecree !== null){
+                        aErroneousCondition.push(oPriceConditions[i].ConditionType);
+                    }
+                } else if(oPriceConditions[i].ConditionType === "Descuento Especial"){
+                    //no explicit checks needed
+                } else if(oPriceConditions[i].ConditionType === "Rappel"){
+                    if(oPriceConditions[i].RoyalDecree !== "" || oPriceConditions[i].RoyalDecree !== null || oPriceConditions[i].Liquidation !== "" || oPriceConditions[i].Liquidation !== null || oPriceConditions[i].onVolumeTreshhold !== "" || oPriceConditions[i].onVolumeTreshhold !== null || oPriceConditions[i].Discount !== "" && oPriceConditions[i].Discount !== null || oPriceConditions[i].ReturnDate !== ""){
+                        aErroneousCondition.push(oPriceConditions[i].ConditionType);
+                    }
+                } else if(oPriceConditions[i].ConditionType === "FOC"){
+                    //no explicit checks needed
+                }
+            }            
+
+            return aErroneousCondition;
         },
 
 		/**
