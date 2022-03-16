@@ -64,7 +64,6 @@ sap.ui.define([
 			if (sTab && sTab.includes("financialOfferId_ES")) {
 
                 await this.getCountryBrandProductsCombined();
-
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
 
                 // get price conditions
@@ -73,11 +72,12 @@ sap.ui.define([
 
                 //bind Rappel and FOC fragments 
                 const rappelBindingPath = this.bindRappelFragment();
+                const focBindingPath = this.bindFocFragment();
 
                 // add DiscountCondition
                 await this.addDiscountConditions(rappelBindingPath);
+                await this.addFOCs(focBindingPath);
                 
-
                 // get PriceConditionClassification
                 const priceConditionClassification = await this.getPriceConditionClassification();
                 Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
@@ -86,7 +86,9 @@ sap.ui.define([
                 const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
                 existingMainPriceCondition && this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
 
-                this.loadMainPriceConditionFragment(existingMainPriceCondition.ConditionType);
+                if(existingMainPriceCondition && existingMainPriceCondition.ConditionType){
+                    this.loadMainPriceConditionFragment(existingMainPriceCondition.ConditionType);
+                }
 			}
 
 		},
@@ -105,6 +107,20 @@ sap.ui.define([
             return rappelBindingPath;
         },
 
+        /**
+         * This method  sets the element binding of the FOC fragment
+         * @returns {String} - Binding path of the Rappel price condition
+         */
+        bindFocFragment: function(){
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const focBindingPath = "/PriceConditionView/".concat(focIndex);
+            const focVbox = this.byId("idFOCVbox");
+            focVbox.bindElement({ path: focBindingPath, model: "fastAppData" });
+
+            return focBindingPath;
+        },
+
         addDiscountConditions: async function(rappelBindingPath){
             const rappelPriceCondition = Services.getFastAppDataModel().getProperty(rappelBindingPath);
 
@@ -115,10 +131,20 @@ sap.ui.define([
             Services.getFastAppDataModel().setProperty(rappelBindingPath.concat("/DiscountConditions"), discountConditions);
         },
 
+        addFOCs: async function(focBindingPath){
+            const focPriceCondition = Services.getFastAppDataModel().getProperty(focBindingPath);
+
+            const focs = (await Services.getService("PriceCondition").getFocs({
+                PriceConditionID: focPriceCondition.ExistingPriceConditionID
+            })).data.results;
+
+            Services.getFastAppDataModel().setProperty(focBindingPath.concat("/FreeGoodsOther"), focs);
+        },
+
 		getCountryBrandProductsCombined: async function(){
 
             //load products
-			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
+		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
 
 			//load countryBrandProducts
 			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
@@ -134,11 +160,34 @@ sap.ui.define([
 
 			//set to fastappdata model for easy access on the view
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+            aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
 
 			return aProducts;
+		},
+
+        getCountryBrandFOCsCombined: async function(){
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const focBindingPath = "/PriceConditionView/".concat(focIndex) + '/FreeGoodsOther';
+            let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
+
+			//load countryBrandProducts
+			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+
+			aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
+                var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+                freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                return freegood;
+			});
+
+			//set to fastappdata model for easy access on the view
+			aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+            oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
+
+			return aFreeGoodsOther;
 		},
 
         getPriceConditionView: async function(){
@@ -403,7 +452,7 @@ sap.ui.define([
                             
                             
 						}
-                        that.onFinancialProductPress(oEvent, true);
+                        //that.onFinancialProductPress(oEvent, true);
 				}
 			}
 		},
@@ -419,6 +468,8 @@ sap.ui.define([
             
             this.selectedProductPricePath = bindingContext.sPath;
             let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+
+            await this.getCountryBrandFOCsCombined();            
 
         },
 
@@ -656,42 +707,44 @@ sap.ui.define([
 		},
         
 		onAddNewFreeGoods: function (event) {
-			const oFastAppDataModel = Services.getFastAppDataModel();
-			let selectedProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
-			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther") || [];
-			freeGoodsOther.unshift({
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            
+			let selectedProductPrice = oFastAppDataModel.getProperty(bindingPath);
+			let freeGoodsOther = oFastAppDataModel.getProperty(bindingPath + "/FreeGoodsOther") || [];
+			freeGoodsOther.push({
 				ProductPackId: "",
 				FreeGoodsOther: "",
-				FreeGoodsOther_ABS_PCT: "ABS",
+				FreeGoodsOther_ABS_PCT: "",
 				FreeGoodsOther_Step: "",
                 RoyalDecree: "",
                 FOCMinAmount: 0,
                 FOCBonus: 0,
-                PotentialGeneratedSavings: 0,
-                UOM: selectedProductPrice.UOM
+                PotentialGeneratedSavings: 0
 			});
-			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
+			oFastAppDataModel.setProperty(bindingPath + "/FreeGoodsOther", freeGoodsOther);
             
             const oFreeGoodsOtherTable = this.byId("FreeGoodsOtherTable");
             const vBox = this.byId("idFOCVbox");
-            oFreeGoodsOtherTable.bindElement({ path: this.selectedProductPricePath, model: "fastAppData" });
-            vBox.bindElement({ path: this.selectedProductPricePath, model: "fastAppData" });
+            oFreeGoodsOtherTable.bindElement({ path: bindingPath, model: "fastAppData" });
+            vBox.bindElement({ path: bindingPath, model: "fastAppData" });
             
             oFastAppDataModel.updateBindings();            
 		},
         
 		onDeleteFreeGoodsOther: function (event) {
-            const path = oEvent.getSource().getParent().getBindingContext("fastAppData").getPath();
-            const bindingPath = path.slice(0, path.length - 2);
-            const objIndex = path.slice(path.length - 1);
-            const priceConditionViewObj = Services.getFastAppDataModel().getProperty(bindingPath);
-            priceConditionViewObj.splice(objIndex, 1);
-            
-			/*const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
-			const oFastAppDataModel = Services.getFastAppDataModel();
-			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");*/
+           
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const focBindingPath = "/PriceConditionView/".concat(focIndex) + '/FreeGoodsOther';
+            const productPackId = event.getSource().getBindingContext("fastAppData").getProperty("ProductPackId");
 
-			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
+            let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
+
+			oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
 		},
 
 		onProductPackChange: function (event) {
@@ -713,8 +766,11 @@ sap.ui.define([
         
 		oApplyProducts: function () {
 			const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
 
-			let freeGoodsOther = oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther");
+			let freeGoodsOther = oFastAppDataModel.getProperty(sPath);
 			freeGoodsOther = freeGoodsOther.map(freeGoods => {
 				freeGoods.FreeGoodsOtherFOCMinAmountValueState = "None";
                 freeGoods.FOCBonusValueState = "None";
@@ -729,12 +785,14 @@ sap.ui.define([
 
 				return freeGoods;
 			});
-			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther);
+			oFastAppDataModel.setProperty(sPath, freeGoodsOther);
 			const foundError = freeGoodsOther.find(freeGoods => freeGoods.FreeGoodsOtherFOCMinAmountValueState === "Error" || freeGoods.FOCBonusValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
 		},
 
-        handleValueHelp: function(oEvent){ //TODO: change to spain
+        handleValueHelp: function(oEvent){ 
+
+            this._focIndex = (oEvent.getSource().getId()).split("-").pop();
 
 			Services.getInstituteDistributorBrandProductsForSpain(Services.getInstituteIDofSelectedTender()).then((response) => {
 				var oFastAppDataModel = Services.getFastAppDataModel();
@@ -773,9 +831,12 @@ sap.ui.define([
 
 
 		_handleValueHelpClose: function (oEvent) {
-			var oFastAppData = Services.getFastAppDataModel();
-			var sPath = this.selectedProductPricePath + "/FreeGoodsOther/0"
-			var oFreeGoodsOther = oFastAppData.getProperty(sPath);
+			const oFastAppData = Services.getFastAppDataModel();
+			const priceConditions = oFastAppData.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
+            
+			var oFreeGoodsOther = oFastAppData.getProperty(sPath + "/" + this._focIndex);
 
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
@@ -784,7 +845,7 @@ sap.ui.define([
 
 				oFreeGoodsOther.ProductPackId = parseInt(oSelectedItem.getDescription());
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
-				oFastAppData.setProperty(sPath, oFreeGoodsOther)
+				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath))
 			}
 			oEvent.getSource().getBinding("items").filter([]);
 		},
