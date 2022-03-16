@@ -80,15 +80,25 @@ sap.ui.define([
                 
                 // get PriceConditionClassification
                 const priceConditionClassification = await this.getPriceConditionClassification();
+                // add empty item
+                priceConditionClassification.push({
+                    "ID": "99999999-9999-9999-9999-999999999999",
+                    "ConditionType": "",
+                    "isMain": true
+                });
                 Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
                 // set selected key on idPriceConditionSelect
                 const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
-                existingMainPriceCondition && this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
-
-                if(existingMainPriceCondition && existingMainPriceCondition.ConditionType){
-                    this.loadMainPriceConditionFragment(existingMainPriceCondition.ConditionType);
+                if(existingMainPriceCondition){
+                    this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
+                    
+                }else{
+                    this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
                 }
+
+                // load main fragment if main condition already exists
+                this.loadMainPriceConditionFragment(existingMainPriceCondition.ConditionType);
 			}
 
 		},
@@ -98,8 +108,8 @@ sap.ui.define([
          * @returns {String} - Binding path of the Rappel price condition
          */
         bindRappelFragment: function(){
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const rappelIndex = priceConditions.findIndex(item => item.ConditionType === "Rappel");
+            const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
@@ -123,22 +133,22 @@ sap.ui.define([
 
         addDiscountConditions: async function(rappelBindingPath){
             const rappelPriceCondition = Services.getFastAppDataModel().getProperty(rappelBindingPath);
-
-            const discountConditions = (await Services.getService("PriceCondition").getDiscountConditions({
-                PriceConditionID: rappelPriceCondition.ExistingPriceConditionID
-            })).data.results;
-
-            Services.getFastAppDataModel().setProperty(rappelBindingPath.concat("/DiscountConditions"), discountConditions);
+            if(rappelPriceCondition && rappelPriceCondition.ExistingPriceConditionID){
+                const discountConditions = (await Services.getService("PriceCondition").getDiscountConditions({
+                    PriceConditionID: rappelPriceCondition.ExistingPriceConditionID
+                })).data.results;
+                Services.getFastAppDataModel().setProperty(rappelBindingPath.concat("/DiscountConditions"), discountConditions);
+            }
         },
 
         addFOCs: async function(focBindingPath){
             const focPriceCondition = Services.getFastAppDataModel().getProperty(focBindingPath);
-
-            const focs = (await Services.getService("PriceCondition").getFocs({
-                PriceConditionID: focPriceCondition.ExistingPriceConditionID
-            })).data.results;
-
-            Services.getFastAppDataModel().setProperty(focBindingPath.concat("/FreeGoodsOther"), focs);
+            if(focPriceCondition && focPriceCondition.ExistingPriceConditionID){
+                const focs = (await Services.getService("PriceCondition").getFocs({
+                    PriceConditionID: focPriceCondition.ExistingPriceConditionID
+                })).data.results;
+                Services.getFastAppDataModel().setProperty(focBindingPath.concat("/FreeGoodsOther"), focs);
+            }   
         },
 
 		getCountryBrandProductsCombined: async function(){
@@ -392,11 +402,11 @@ sap.ui.define([
                 selectedPriceConditions.push(oSelectPriceCondition.getSelectedItem().getText());
             }
 
-            if(classification === "Commercial Contract"){
+            if(classification === "Commercial Agreement"){
                 selectedPriceConditions.push("Rappel");
             }
 
-            if(classification === "Commercial Contract" && division === "Pharma" || division === "Radiology"){
+            if(classification === "Commercial Agreement" && division === "Pharma" || division === "Radiology"){
                 selectedPriceConditions.push("FOC");
             }
 
@@ -474,38 +484,36 @@ sap.ui.define([
         },
 
         onPriceConditionChange: function(oEvent){
-
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
-            // let sFragmentName = oEvent.getParameter("selectedItem").getText().split(" ").join("");
-            
             this.loadMainPriceConditionFragment(sConditionType);
-
         },
 
         loadMainPriceConditionFragment: function(sConditionType){
 
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
-            const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
-
+            // clear the VBox first
             const vBox = this.byId("idPriceConditionVbox");
             vBox.removeAllItems();
 
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
             const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
-            let sFragmentName = sConditionType.split(" ").join("");
 
-            Fragment.load({
-                id: this.getView().getId(),
-                name: sFragmentPath.concat(".",sFragmentName),
-                controller: this
-            }).then(function (oFragment) {
-                if(Array.isArray(oFragment)){                
-                    oFragment.forEach(item => vBox.addItem(item));
-                } else {
-                    vBox.addItem(oFragment);
-                }
-                vBox.bindElement({ path: bindingPath, model: "fastAppData" });
-            }.bind(this));
+            if(selectedPriceConditionsIndex > -1) {
+                const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
+                let sFragmentName = sConditionType.split(" ").join("");
+                Fragment.load({
+                    id: this.getView().getId(),
+                    name: sFragmentPath.concat(".",sFragmentName),
+                    controller: this
+                }).then(function (oFragment) {
+                    if(Array.isArray(oFragment)){                
+                        oFragment.forEach(item => vBox.addItem(item));
+                    } else {
+                        vBox.addItem(oFragment);
+                    }
+                    vBox.bindElement({ path: bindingPath, model: "fastAppData" });
+                }.bind(this));
+            }
 
         },
 
@@ -600,8 +608,8 @@ sap.ui.define([
             }
 
             this.pDialog.then(function (oDialog) {
-                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-                const rappelIndex = priceConditions.findIndex(item => item.ConditionType === "Rappel");
+                const priceConditionView = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const rappelIndex = priceConditionView.findIndex(item => item.ConditionType === "Rappel");
                 const bindingPath = "/PriceConditionView/".concat(rappelIndex);
                 const oTable = this.byId("idVolumeTreshold");
                 oTable.bindElement({ path: bindingPath, model: "fastAppData" });
