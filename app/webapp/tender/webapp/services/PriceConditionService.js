@@ -95,9 +95,9 @@ sap.ui.define([
                 "RefundDate": oPriceConditionViewObject.RefundDate,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
-                // "FreeGoodsOther": oPriceConditionViewObject.FreeGoodsOther,
+                "FreeGoodsOther": this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther)
             }
-
+            
             // add the ID if it exists
             if(oPriceConditionViewObject.ExistingPriceConditionID){
                 obj = {
@@ -116,6 +116,21 @@ sap.ui.define([
                 return aDiscountCondition.map(condition => {
                     delete condition['Tax'];
                     return condition;
+                });
+            }
+
+            return null;
+
+        },
+
+        convertToFreeGood: function(aFreeGoodsOther){
+
+            if(aFreeGoodsOther){
+                return aFreeGoodsOther.map(freegood => {
+                    delete freegood['FOCBonusValueState'];
+                    delete freegood['FreeGoodsOtherFOCMinAmountValueState'];
+                    delete freegood['ProductName'];
+                    return freegood;
                 });
             }
 
@@ -228,6 +243,26 @@ sap.ui.define([
 
 
 			return this.odata("/DiscountCondition").get(mParameters);
+		},
+
+        getFocs: function(filter){
+            
+			let aFilters = [];
+
+            if(filter.PriceConditionID){
+                aFilters.push(new Filter({
+                    path: 'PriceCondition_ID',
+                    operator: FilterOperator.EQ,
+                    value1: filter.PriceConditionID
+                }));
+            }
+
+			var mParameters = {
+				filters: aFilters
+			};
+
+
+			return this.odata("/FreeGoodsOther").get(mParameters);
 		},
 		
 	});
