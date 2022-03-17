@@ -292,18 +292,18 @@ sap.ui.define([
             return priceConditionResponse.data && priceConditionResponse.data.results;
         },
 
-		_checkApprovalEnabled: function (){
-			let sOfferID = Services.getSelectedOfferID();
-			var oOffer = Services.getLoadedOffer(sOfferID);
-			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+		// _checkApprovalEnabled: function (){
+		// 	let sOfferID = Services.getSelectedOfferID();
+		// 	var oOffer = Services.getLoadedOffer(sOfferID);
+		// 	var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
 
-			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
-				bEnableApproval = false;
-			}
+		// 	if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+		// 		bEnableApproval = false;
+		// 	}
 
-			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+		// 	this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
 
-		},
+		// },
 
 		/**
 		 * Save financial offer for Italy
@@ -314,7 +314,8 @@ sap.ui.define([
             const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
             const aErroneousConditions = this.checkSaveFinancialOfferSpain(selectedPriceConditionViewObjects);   
             if(aErroneousConditions && (aErroneousConditions.length > 0)) {
-				sap.m.MessageBox.error(`You must fill in all the mandatory fields for the following condition(s): \n\n ${aErroneousConditions.join()}`);
+                this.byId("ApprovalButtonId").setEnabled(false);
+                sap.m.MessageBox.error(`You must fill in all the mandatory fields for the following condition(s): \n\n ${aErroneousConditions.join()}`);
                 return;
             } 
 
@@ -325,6 +326,10 @@ sap.ui.define([
                 });
 
                 await Promise.all(savePriceConditionPromises);
+
+                                // Additional saving to PT_TMBDPR. The tender flow should keep working. 
+                // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
+                await this.savePricesToTMBDPR();
 
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
@@ -353,12 +358,100 @@ sap.ui.define([
                     Services.showErrorMessage(oError, "Background saving for approvals sent field");
                 });
 
-                this._checkApprovalEnabled(); // check for approval button
+                // enable approval button
+                this.byId("ApprovalButtonId").setEnabled(true);
 
                 //refresh data (for table)
                 this.refreshFinancialTabES();
             } 
 		},
+
+        savePricesToTMBDPR: async function(){
+
+            //get selected product and the price values
+			let oFastAppDataModel = Services.getFastAppDataModel();
+			let sTenderID = Services.getSelectedTenderID();
+			let oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			let sOfferID = oOffer.OfferID;
+			let sOfferPath = Services.getSelectedOfferPath();
+			let sProductId = Services.getSelectedProductID();
+			let aProducts = Services.getLoadedProductsForOffer(sOfferID);
+			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId);
+			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+			// let aMessages = [];
+
+			//build old price object for additional saving to PT_TMBDPR
+			let oNewPriceInfo = this.getOfferProductPrices(oOffer, oProduct, oProductPrice);
+
+			//convert old price to save & save
+			let oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
+			await Services.getService('Price').updatePrice(oPriceToSave);
+
+            //Update offer
+            var oOfferSaveInfo = {};
+            oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
+            oOfferSaveInfo.Currency = this.byId("idCurrency").getSelectedKey();
+            oOfferSaveInfo.FOCType = this.byId("idFOCType").getSelectedKey();
+            //default foc abolute or percentage is decided on first product price thats saved... so if empty, save
+            if (!oOffer.DEFAULT_FOC_ABS_PCT) {
+                oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = 'ABS';//this.byId("idEditPriceOffer_idFocAbsPct").getSelectedKey();
+            }
+
+            //update offer
+            await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+
+                //show error message
+                Services.showErrorMessage(oError, "Update of offer");
+
+                //promises must fail as well
+                throw new Error(oError);
+
+            });
+        },
+
+        //for additional saving to PT_TMBDPR
+		getOfferProductPrices: function (oOffer, oProduct, oProductPrice) {
+
+			//PT_TMBDPR structure
+			let oNewPriceInfo = {
+				TenderID: Services.getSelectedTenderID(),
+				OfferID: Services.getSelectedOfferID(),
+				CountryCode: Services.getSelectedCountry(),
+				ProductCode: oProductPrice.ProductCode,
+				SubmittedOn: moment().utc().toDate(),
+				SubmittedBy: UserInfo.getCWID(),
+				Active: 1,
+				Tier: 0,
+				VolumeFrom: 0,
+				VolumeTo: 0,
+				RegPrice: oProductPrice.ConsumerPriceExclPP,
+				FOC: oProductPrice.FOC,
+				FOCType: this.byId("idFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
+				FOCStep: oProductPrice.FOCStep,
+				Discount: 0,
+				OfferPrice:  oProductPrice.NetofferPrice,
+				StandardDiscount: oProductPrice.TotalDiscount / 100,
+				AdditionalDiscount: oProductPrice.AdditionalDiscount,
+				Deductions: 0,
+				NetofferPrice: oProductPrice.NetofferPrice,
+				BusinessCasePrice: 0,
+				WholesalePrice: "",
+				COGS: 0,
+				SpotRate: 1,
+				BudgetRate: 1,
+				Scenario: 0,
+				FOC_ABS_PCT: oProductPrice.FOC_ABS_PCT,
+				FOCProduct_Bundled_1: null, //FOC ADDITIONAL PRODUCT
+				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
+				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE
+				ActiveTier: 0,
+				NetPrice: oProductPrice.NetofferPrice,
+				NetPrice_OfPaid: 0,
+				PRICE_UPDATE: 0
+			};
+
+			return oNewPriceInfo;
+		},        
 
 
         /**
@@ -424,19 +517,19 @@ sap.ui.define([
 
             for(let i = 0; i < oPriceConditions.length; i++){            
                 if(oPriceConditions[i].ConditionType === "Precio Neto" || oPriceConditions[i].ConditionType === "Precio Neto Inyectores") {
-                    if(oPriceConditions[i].RoyalDecree !== "" || oPriceConditions[i].RoyalDecree !== null || oPriceConditions[i].AdditionalDiscount !== "" || oPriceConditions[i].AdditionalDiscount !== null || oPriceConditions[i].MaximumPrice !== "" || oPriceConditions[i].MaximumPrice !== null){
+                    if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].AdditionalDiscount || !oPriceConditions[i].MaximumPrice){
                         aErroneousCondition.push(oPriceConditions[i].ConditionType);
                     }
                 } else if(oPriceConditions[i].ConditionType === "Descuento Comercial"){
-                    if(oPriceConditions[i].RoyalDecree !== "" || oPriceConditions[i].RoyalDecree !== null){
+                    if(!oPriceConditions[i].RoyalDecree){
                         aErroneousCondition.push(oPriceConditions[i].ConditionType);
                     }
                 } else if(oPriceConditions[i].ConditionType === "Descuento Especial"){
                     //no explicit checks needed
                 } else if(oPriceConditions[i].ConditionType === "Rappel"){
-                    if(oPriceConditions[i].RoyalDecree !== "" || oPriceConditions[i].RoyalDecree !== null || oPriceConditions[i].Liquidation !== "" || oPriceConditions[i].Liquidation !== null || oPriceConditions[i].onVolumeTreshhold !== "" || oPriceConditions[i].onVolumeTreshhold !== null || oPriceConditions[i].Discount !== "" && oPriceConditions[i].Discount !== null || oPriceConditions[i].ReturnDate !== ""){
-                        aErroneousCondition.push(oPriceConditions[i].ConditionType);
-                    }
+                    // if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].Liquidation || !oPriceConditions[i].onVolumeTreshhold || !oPriceConditions[i].Discount || !oPriceConditions[i].ReturnDate){
+                    //     aErroneousCondition.push(oPriceConditions[i].ConditionType);
+                    // }
                 } else if(oPriceConditions[i].ConditionType === "FOC"){
                     //no explicit checks needed
                 }
@@ -491,6 +584,7 @@ sap.ui.define([
                             
 						}
                         //that.onFinancialProductPress(oEvent, true);
+                        this.selectedProductPricePath = Services.getSelectedProductPath();
 				}
 			}
 		},
@@ -907,6 +1001,8 @@ sap.ui.define([
 
             freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
             bindingContext.getModel().updateBindings();           
-        }    
+        },
+
+        
     });
 });
