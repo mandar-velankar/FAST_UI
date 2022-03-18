@@ -380,8 +380,12 @@ sap.ui.define([
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 			// let aMessages = [];
 
+
+            const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
+            const oMainPriceCondition = selectedPriceConditionViewObjects.find(item => item.isMain);
+
 			//build old price object for additional saving to PT_TMBDPR
-			let oNewPriceInfo = this.getOfferProductPrices(oOffer, oProduct, oProductPrice);
+			let oNewPriceInfo = this.getOfferProductPrices(oOffer, oProduct, oProductPrice, oMainPriceCondition);
 
 			//convert old price to save & save
 			let oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
@@ -410,7 +414,7 @@ sap.ui.define([
         },
 
         //for additional saving to PT_TMBDPR
-		getOfferProductPrices: function (oOffer, oProduct, oProductPrice) {
+		getOfferProductPrices: function (oOffer, oProduct, oProductPrice, oMainPriceCondition) {
 
 			//PT_TMBDPR structure
 			let oNewPriceInfo = {
@@ -424,16 +428,16 @@ sap.ui.define([
 				Tier: 0,
 				VolumeFrom: 0,
 				VolumeTo: 0,
-				RegPrice: oProductPrice.ConsumerPriceExclPP,
-				FOC: oProductPrice.FOC,
-				FOCType: this.byId("idFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
-				FOCStep: oProductPrice.FOCStep,
-				Discount: 0,
-				OfferPrice:  oProductPrice.NetofferPrice,
-				StandardDiscount: oProductPrice.TotalDiscount / 100,
-				AdditionalDiscount: oProductPrice.AdditionalDiscount,
+				RegPrice: oMainPriceCondition.PVL,
+				FOC: null,
+				FOCType: null,
+				FOCStep: null,
+				Discount: oMainPriceCondition.Discount,
+				OfferPrice:  oMainPriceCondition.NetPriceWithoutTaxAfterDeductionRD || oMainPriceCondition.NetPriceWithoutTax,
+				StandardDiscount: oMainPriceCondition.StandardDiscount,
+				AdditionalDiscount: oMainPriceCondition.AdditionalDiscount,
 				Deductions: 0,
-				NetofferPrice: oProductPrice.NetofferPrice,
+				NetofferPrice: oMainPriceCondition.NetPriceWithoutTaxAfterDeductionRD || oMainPriceCondition.NetPriceWithoutTax,
 				BusinessCasePrice: 0,
 				WholesalePrice: "",
 				COGS: 0,
@@ -441,11 +445,11 @@ sap.ui.define([
 				BudgetRate: 1,
 				Scenario: 0,
 				FOC_ABS_PCT: oProductPrice.FOC_ABS_PCT,
-				FOCProduct_Bundled_1: null, //FOC ADDITIONAL PRODUCT
-				FOC_ABS_PCT_Bundled_1: null, //FOC ADDITIONAL PROD ABSOLUTE or PERCENTAGE
-				FOC_Bundled_1: null, //FOC ADDITIONAL PROD VALUE
+				FOCProduct_Bundled_1: null, 
+				FOC_ABS_PCT_Bundled_1: null,
+				FOC_Bundled_1: null,
 				ActiveTier: 0,
-				NetPrice: oProductPrice.NetofferPrice,
+				NetPrice: oMainPriceCondition.NetPriceWithoutTaxAfterDeductionRD || oMainPriceCondition.NetPriceWithoutTax,
 				NetPrice_OfPaid: 0,
 				PRICE_UPDATE: 0
 			};
