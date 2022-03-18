@@ -9,7 +9,8 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator) {
+    "sap/ui/core/BusyIndicator",
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator) {
 	"use strict";
 	
 	var bundle;
@@ -63,8 +64,21 @@ sap.ui.define([
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_ES")) {
 
+                BusyIndicator.show();
+                // this.getView().setBusyIndicatorDelay(0);
+
                 await this.getCountryBrandProductsCombined();
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
+
+                // get PriceConditionClassification
+                const priceConditionClassification = await this.getPriceConditionClassification();
+                // add empty item
+                priceConditionClassification.push({
+                    "ID": "99999999-9999-9999-9999-999999999999",
+                    "ConditionType": "",
+                    "isMain": true
+                });
+                Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
                 // get price conditions
                 const priceConditionViews = await this.getPriceConditionView();
@@ -77,28 +91,20 @@ sap.ui.define([
                 // add DiscountCondition
                 await this.addDiscountConditions(rappelBindingPath);
                 await this.addFOCs(focBindingPath);
-                
-                // get PriceConditionClassification
-                const priceConditionClassification = await this.getPriceConditionClassification();
-                // add empty item
-                priceConditionClassification.push({
-                    "ID": "99999999-9999-9999-9999-999999999999",
-                    "ConditionType": "",
-                    "isMain": true
-                });
-                Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
 
                 // set selected key on idPriceConditionSelect
                 const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
                 if(existingMainPriceCondition){
                     this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
-                    
                 }else{
                     this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
                 }
 
                 // load main fragment if main condition already exists
-                this.loadMainPriceConditionFragment(existingMainPriceCondition.ConditionType);
+                const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : "";
+                this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+
+                BusyIndicator.hide();
 			}
 
 		},
@@ -310,6 +316,8 @@ sap.ui.define([
 		 * @param {*} oEvent 
 		 */
 		onSaveFinancialOfferSpain: async function (oEvent) {
+
+            BusyIndicator.show();
             
             const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
             const aErroneousConditions = this.checkSaveFinancialOfferSpain(selectedPriceConditionViewObjects);   
@@ -363,6 +371,8 @@ sap.ui.define([
 
                 //refresh data (for table)
                 this.refreshFinancialTabES();
+
+                BusyIndicator.hide();
             } 
 		},
 
@@ -520,8 +530,8 @@ sap.ui.define([
             var aErroneousCondition = [];            
 
             for(let i = 0; i < oPriceConditions.length; i++){            
-                if(oPriceConditions[i].ConditionType === "Precio Neto" || oPriceConditions[i].ConditionType === "Precio Neto Inyectores") {
-                    if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].AdditionalDiscount || !oPriceConditions[i].MaximumPrice){
+                if(oPriceConditions[i].ConditionType === "Precio Neto") {
+                    if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].NetPriceWithoutTaxAfterDeductionRD || !oPriceConditions[i].MaximumPrice){
                         aErroneousCondition.push(oPriceConditions[i].ConditionType);
                     }
                 } else if(oPriceConditions[i].ConditionType === "Descuento Comercial"){
@@ -533,11 +543,16 @@ sap.ui.define([
                 } else if(oPriceConditions[i].ConditionType === "Rappel"){
                     // if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].Liquidation || !oPriceConditions[i].onVolumeTreshhold || !oPriceConditions[i].Discount || !oPriceConditions[i].ReturnDate){
                     //     aErroneousCondition.push(oPriceConditions[i].ConditionType);
-                    // }
+                    // } // TODO: check the requirements 
                 } else if(oPriceConditions[i].ConditionType === "FOC"){
                     //no explicit checks needed
                 }
-            }            
+            }      
+            
+            // the main price condition should be mandatory
+            const mainPriceCondition = oPriceConditions.find(i => i.isMain);
+
+            if(!mainPriceCondition) aErroneousCondition.push("No main price condition selected.");
 
             return aErroneousCondition;
         },
