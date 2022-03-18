@@ -1734,7 +1734,12 @@ sap.ui.define([
 			}
 			
 			//Checking that offer price is lower than registered one - saving is not allowed if not
-			if (Math.round(10000*sRegPrice) !== 0 && Math.round(10000*sOfferPrice) > Math.round(10000*sRegPrice)) {
+			//SA-20-1075-3-R1 fix starts: converting the strings back to number before comparison by ETIEF on 24-02-2022
+			var sRegPriceNumber = typeof sRegPrice === "string" ? parseFloat(sRegPrice.replace(/,/g, '')) : parseFloat(sRegPrice); // type checking is done
+			var sOfferPriceNumber = typeof sOfferPrice === "string" ? parseFloat(sOfferPrice.replace(/,/g, '')): parseFloat(sOfferPrice); //type checking is done 
+			//if (Math.round(10000*sRegPrice) !== 0 && Math.round(10000*sOfferPrice) > Math.round(10000*sRegPrice)) {
+			if (Math.round(10000*sRegPriceNumber) !== 0 && Math.round(10000*sOfferPriceNumber) > Math.round(10000*sRegPriceNumber)) {	
+			//SA-20-1075-3-R1 fix ends
 				//offer price can not be higher then the registerd price
 				bValid = false;
 			}else{
