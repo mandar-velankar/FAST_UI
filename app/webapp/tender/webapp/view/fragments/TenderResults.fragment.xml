@@ -87,10 +87,21 @@
                             </m:OverflowToolbar>
                         </t:extension>
                         <t:columns>
-                            <t:Column width="10rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                            <t:Column width="10rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}">
                                 <m:Label text="Price Agreement" />
                                 <t:template>
-                                     <m:Button id="btnCreatePriceAgreement" text="" icon="{= ${fastAppData>PriceAgreement} ? 'sap-icon://display' : 'sap-icon://create' }" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }"/>
+                                     <m:Button 
+                                        id="btnCreatePriceAgreement" 
+                                        text="" 
+                                        icon="{= ${fastAppData>PriceAgreement} ? 'sap-icon://display' : 'sap-icon://create' }" 
+                                        press="onCreatePriceAgreement" 
+                                        enabled="{= ${fastAppData>/EditMode} === true ? false : true}" 
+                                        visible="{= 
+                                            ${fastAppData>/Tender/CountryCode} === 'IT' ||
+                                            ${fastAppData>/Tender/CountryCode} === 'ES'
+                                            &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' 
+                                        }"
+                                    />
                                 </t:template>
                             </t:Column>
                             <t:Column width="13rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
