@@ -8380,6 +8380,16 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
 
+
+			// Spain only 
+			if(Services.getSelectedCountry() === "ES"){
+				// This information is already present in the PriceConditions entity for Spain
+				oPriceAgreementSaveInfo.ListPrice = null;
+				oPriceAgreementSaveInfo.RetailPrice = null;
+				oPriceAgreementSaveInfo.Discount = null;
+			}
+
+
 			return oPriceAgreementSaveInfo;
 		},
 
@@ -8439,15 +8449,27 @@ sap.ui.define([
 						oPriceAgreementSaveInfo._sOperation = "PUT";
 					}
 
-					await Services.savePriceAgreement(oPriceAgreementSaveInfo);
+					const priceAgreement = await Services.savePriceAgreement(oPriceAgreementSaveInfo);
+					const priceAgreementID = priceAgreement[0].ID;
+
+					// add PriceAgreementID to PriceCondtions
+					if(priceAgreementID){
+						const priceConditions = offerProduct.PriceCondition.results
+						const savePriceConditionPromises = priceConditions.map(condition => {
+							condition.PriceAgreement_ID = priceAgreementID;
+							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+							return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+						});
+						await Promise.all(savePriceConditionPromises);
+					}
 
 					//reload offer data
 					await Services.loadProductDataForOffer(offerProduct.OfferID);
 
-					BusyIndicator.hide();
-
 					//refresh everything
 					that.onRefresh();
+
+					BusyIndicator.hide();
 				}
 			}
 		},
