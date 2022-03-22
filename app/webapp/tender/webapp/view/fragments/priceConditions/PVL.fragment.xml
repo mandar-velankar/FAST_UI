@@ -1,7 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
 	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 
-    <MessageStrip text="{fastAppData>dynMessage}" />
     <form:SimpleForm
         title="PVL"
         editable="false"
@@ -22,7 +21,7 @@
         singleContainerFullSize="false" >
         <form:content>
             <Label text="{i18n>PVL}" required="true"/>
-            <Input value="{fastAppData>PVL}" type="Number"  description="{fastAppData>Currency}" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> 
+            <Input value="{fastAppData>PVL}" type="Number"  description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/> 
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

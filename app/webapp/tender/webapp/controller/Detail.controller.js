@@ -699,9 +699,15 @@ sap.ui.define([
 				if (Services.getSelectedCountry() === "IT"){
 					Services.getWordTemplates(Services.getSelectedCountry());
 					that.getTenderRegions(sTenderID).then(response => {
-						const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+
+                        const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                        let regionIDs = [];
+                        if(tenderArray.length !== 0){
+                            regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                        }
 						that.byId("idRegionView").setSelectedKeys(regionIDs);
 						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
+
 					})
 				}
 
@@ -2082,10 +2088,18 @@ sap.ui.define([
 						if (Services.getSelectedCountry() === "IT"){
 						//that.getView().byId("idRegionEdit").setVisible(true);
 							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
-								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                                let regionIDs = [];
+                                if(tenderArray.length !== 0){
+                                    regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                                }
 								that.byId("idRegionEdit").setSelectedKeys(regionIDs);
 								that.byId("idTenderChannel").setVisible(false);
 							})
+                            
+                            
+
+
 						}
 
                         if (Services.getSelectedCountry() === "ES"){
@@ -3810,7 +3824,11 @@ sap.ui.define([
 						if (Services.getSelectedCountry() === "IT"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
-								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                                let regionIDs = [];
+                                if(tenderArray.length !== 0){
+                                    regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                                }
 								that.byId("idRegionView").setSelectedKeys(regionIDs);
 								that.byId("idRegionView").setBusy(false);
 							})
@@ -3958,7 +3976,11 @@ sap.ui.define([
 						if (Services.getSelectedCountry() === "IT"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
-								const regionIDs = response.data.Regions.results.map(region => region.RegionID);
+								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
+                                let regionIDs = [];
+                                if(tenderArray.length !== 0){
+                                    regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
+                                }
 								that.byId("idRegionView").setSelectedKeys(regionIDs);
 								that.byId("idRegionView").setBusy(false);
 							})
@@ -8380,6 +8402,16 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
 
+
+			// Spain only 
+			if(Services.getSelectedCountry() === "ES"){
+				// This information is already present in the PriceConditions entity for Spain
+				oPriceAgreementSaveInfo.ListPrice = null;
+				oPriceAgreementSaveInfo.RetailPrice = null;
+				oPriceAgreementSaveInfo.Discount = null;
+			}
+
+
 			return oPriceAgreementSaveInfo;
 		},
 
@@ -8439,15 +8471,27 @@ sap.ui.define([
 						oPriceAgreementSaveInfo._sOperation = "PUT";
 					}
 
-					await Services.savePriceAgreement(oPriceAgreementSaveInfo);
+					const priceAgreement = await Services.savePriceAgreement(oPriceAgreementSaveInfo);
+					const priceAgreementID = priceAgreement[0].ID;
+
+					// add PriceAgreementID to PriceCondtions
+					if(priceAgreementID){
+						const priceConditions = offerProduct.PriceCondition.results
+						const savePriceConditionPromises = priceConditions.map(condition => {
+							condition.PriceAgreement_ID = priceAgreementID;
+							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+							return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+						});
+						await Promise.all(savePriceConditionPromises);
+					}
 
 					//reload offer data
 					await Services.loadProductDataForOffer(offerProduct.OfferID);
 
-					BusyIndicator.hide();
-
 					//refresh everything
 					that.onRefresh();
+
+					BusyIndicator.hide();
 				}
 			}
 		},

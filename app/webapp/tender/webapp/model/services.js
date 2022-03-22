@@ -7069,7 +7069,7 @@ sap.ui.define([
 			switch(oPriceAgreementSaveInfo._sOperation){
 				case "POST":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
 						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 						
 						//show message view
@@ -7080,6 +7080,8 @@ sap.ui.define([
 						});
 						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
 						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+
+						return response && response.data;
 					})
 					.catch(function (oError) {
 						//that.showErrorMessage(oError, "Create Price Agreement");
@@ -7098,7 +7100,7 @@ sap.ui.define([
 					break;
 				case "PUT":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
 						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 
 						//show message view
@@ -7109,6 +7111,8 @@ sap.ui.define([
 						});
 						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
 						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+
+						return response && response.data;
 					})
 					.catch(function (oError) {
 						//that.showErrorMessage(oError, "Update Price Agreement");
@@ -7127,7 +7131,8 @@ sap.ui.define([
 					break;
 			}
 
-			oPriceAgreementSaveInfo = {};
+			// oPriceAgreementSaveInfo = {};
+			return Promise.all(promises);
 
 		},
 

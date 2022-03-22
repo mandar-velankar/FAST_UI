@@ -294,11 +294,7 @@ sap.ui.define([
 
 		getTenderRegions: function(tenderID){
 
-			var sPath = "/TenderRegions";
-
-			const sKey = this.model.createKey("/TenderRegions", {
-				TenderID: tenderID
-			});
+            var sPath = "/TenderRegions";
 
 			var oFilter = new Filter({
 				path: 'TenderID',
@@ -308,11 +304,12 @@ sap.ui.define([
 
 			var mParameters = {
 				urlParameters:{
+                    filters: [oFilter],
 					$expand:"Regions/Region"
 				}
 			};
 
-			return this.odata(sKey).get(mParameters);	
+			return this.odata(sPath).get(mParameters);
 
 		},
 
