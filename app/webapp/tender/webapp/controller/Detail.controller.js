@@ -8452,10 +8452,11 @@ sap.ui.define([
 					const priceAgreement = await Services.savePriceAgreement(oPriceAgreementSaveInfo);
 					const priceAgreementID = priceAgreement[0].ID;
 
-					// update PriceCondtions with PriceAgreementID
+					// add PriceAgreementID to PriceCondtions
 					if(priceAgreementID){
 						const priceConditions = offerProduct.PriceCondition.results
 						const savePriceConditionPromises = priceConditions.map(condition => {
+							condition.PriceAgreement_ID = priceAgreementID;
 							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition);
 							return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
 						});
