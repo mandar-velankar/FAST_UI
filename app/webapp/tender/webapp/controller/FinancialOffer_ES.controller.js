@@ -552,7 +552,10 @@ sap.ui.define([
             // the main price condition should be mandatory
             const mainPriceCondition = oPriceConditions.find(i => i.isMain);
 
-            if(!mainPriceCondition) aErroneousCondition.push("No main price condition selected.");
+            if(!mainPriceCondition){
+                aErroneousCondition.push("No main price condition selected.");
+                BusyIndicator.hide();
+            }
 
             return aErroneousCondition;
         },
