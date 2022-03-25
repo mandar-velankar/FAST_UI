@@ -3493,7 +3493,7 @@ sap.ui.define([
 		},
 
 		//check if tender type needs to be shown (if only 1 tendertype it is not shown)
-		checkShowTenderType: function () {
+		checkShowTenderType: function (sClassification) {
 
 			var that = this;
 
@@ -3553,7 +3553,9 @@ sap.ui.define([
 						const country = that.getSelectedCountry();
 						if(country === 'CL'){
 							bShowTenderType = false;
-						}
+						} else if(country ==='ES' && sClassification !== 'Tender'){
+                            bShowTenderType = false;                                                                                    
+                        }
 
 						//let the callback be triggered
 						oDeferred.resolve(bShowTenderType);
@@ -3582,7 +3584,7 @@ sap.ui.define([
 		},
 
         		//check if tender type needs to be shown (if only 1 tendertype it is not shown)
-		checkShowTenderType2: function () {
+		checkShowTenderType2: function (sClassification) {
 
 			var that = this;
 
@@ -3640,7 +3642,7 @@ sap.ui.define([
 						// because of this requirement we default the bShowTenderType to false
 						// at later point in time the dropdown will set this to true
 						const country = that.getSelectedCountry();
-						if(country !== 'ES'){
+						if(country !== 'ES' || country === 'ES' && sClassification !== 'Tender'){
 							bShowTenderType = false;
 						}
 
@@ -7069,7 +7071,7 @@ sap.ui.define([
 			switch(oPriceAgreementSaveInfo._sOperation){
 				case "POST":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
 						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 						
 						//show message view
@@ -7080,6 +7082,8 @@ sap.ui.define([
 						});
 						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
 						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+
+						return response && response.data;
 					})
 					.catch(function (oError) {
 						//that.showErrorMessage(oError, "Create Price Agreement");
@@ -7098,7 +7102,7 @@ sap.ui.define([
 					break;
 				case "PUT":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
 						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 
 						//show message view
@@ -7109,6 +7113,8 @@ sap.ui.define([
 						});
 						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
 						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+
+						return response && response.data;
 					})
 					.catch(function (oError) {
 						//that.showErrorMessage(oError, "Update Price Agreement");
@@ -7127,7 +7133,8 @@ sap.ui.define([
 					break;
 			}
 
-			oPriceAgreementSaveInfo = {};
+			// oPriceAgreementSaveInfo = {};
+			return Promise.all(promises);
 
 		},
 

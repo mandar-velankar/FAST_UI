@@ -94,11 +94,21 @@ sap.ui.define([
                 "Liquidation": oPriceConditionViewObject.Liquidation,
                 "RefundDate": oPriceConditionViewObject.RefundDate,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
+                "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
                 "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
                 "FreeGoodsOther": this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther)
             }
             
             // add the ID if it exists
+            // depending on the use case, the ID or the ExistingPriceConditionID will exist in the oPriceConditionViewObject
+            // here we make sure to use that ID
+            if(oPriceConditionViewObject.ID){
+                obj = {
+                    "ID": oPriceConditionViewObject.ID,
+                    ...obj
+                }
+            }
+
             if(oPriceConditionViewObject.ExistingPriceConditionID){
                 obj = {
                     "ID": oPriceConditionViewObject.ExistingPriceConditionID,
@@ -112,7 +122,7 @@ sap.ui.define([
 
         convertToDiscountConditions: function(aDiscountCondition){
 
-            if(aDiscountCondition){
+            if(aDiscountCondition && Array.isArray(aDiscountCondition)){
                 return aDiscountCondition.map(condition => {
                     delete condition['Tax'];
                     return condition;
@@ -125,7 +135,7 @@ sap.ui.define([
 
         convertToFreeGood: function(aFreeGoodsOther){
 
-            if(aFreeGoodsOther){
+            if(aFreeGoodsOther && Array.isArray(aFreeGoodsOther)){
                 return aFreeGoodsOther.map(freegood => {
                     delete freegood['FOCBonusValueState'];
                     delete freegood['FreeGoodsOtherFOCMinAmountValueState'];
