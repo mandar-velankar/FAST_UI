@@ -1735,7 +1735,7 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
-            var sClassification = that.getView().byId("idClassification").getSelectedItem().getKey();
+            var sClassification = that.getView().byId("idClassification") ? that.getView().byId("idClassification").getSelectedItem().getKey() : oFastAppDataModel.getProperty('/Tender/Classification');
 
 			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
 			if (bCurrentShowFooterState === true) {
