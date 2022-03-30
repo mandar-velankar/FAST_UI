@@ -8417,6 +8417,7 @@ sap.ui.define([
 		},
 
 		onCreatePriceAgreement: async function (oEvent) {
+
 			//get model & selected row
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -8450,7 +8451,7 @@ sap.ui.define([
 
 				// Only selling type can be synchronised with SAP and 
 				// therefore only allow creating price agreements for selling offer type products! 
-				if(offerType !== "Selling"){
+				if(offerType !== "Selling" && Services.getSelectedCountry() !== 'ES'){
 					sap.m.MessageBox.error("Only products with OfferType 'Selling' are allowed to create a price agreement.");
 					return;
 				}
