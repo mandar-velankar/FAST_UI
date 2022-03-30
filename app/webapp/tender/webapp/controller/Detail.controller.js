@@ -336,7 +336,7 @@ sap.ui.define([
 			var oContractType = this.getView().byId("idSelectContractTypeEdit");
 			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
-
+            
 			var sCountryCode = Services.getSelectedCountry();
 			var aFilter = [];
 			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
@@ -372,18 +372,18 @@ sap.ui.define([
 			});
 
 			//should tendertype be visible on the screen based on data back-end
-			$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+			$.when(Services.checkShowTenderType(oTenderNew.Classification)).done(function (bShowTenderType) {
 				oTenderType.setVisible(bShowTenderType);	
 				if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
-					oTenderType.setVisible(true);
+					oTenderType.setVisible(true);                
 				}else{
 					oTenderType.setVisible(bShowTenderType);
 				}
 			});
 
             //should tendertype2 be visible on the screen based on data back-end
-			$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
-				oTenderType2.setVisible(bShowTenderType);
+			$.when(Services.checkShowTenderType2(oTenderNew.Classification)).done(function (bShowTenderType) {             
+				    oTenderType2.setVisible(bShowTenderType);
 			});
 
             //should contentEdit be visible on the screen based on data back-end
@@ -649,7 +649,7 @@ sap.ui.define([
 				oFastAppDataModel.setProperty("/EditTender/", oTender);
 
 				//should tendertype be visible on the basic info screen?
-				$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+				$.when(Services.checkShowTenderType(oTender.Classification)).done(function (bShowTenderType) {
 					if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
 						oDetailController.getView().byId("idSelectTenderType").setVisible(true);
 					}else{
@@ -658,7 +658,7 @@ sap.ui.define([
 				});
 
                 //should tendertype be visible on the basic info screen?
-				$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
+				$.when(Services.checkShowTenderType2(oTender.Classification)).done(function (bShowTenderType) {
 					oDetailController.getView().byId("idSelectTenderType2").setVisible(bShowTenderType);
 				});
 
@@ -1735,6 +1735,7 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
+            var sClassification = that.getView().byId("idClassification") ? that.getView().byId("idClassification").getSelectedItem().getKey() : oFastAppDataModel.getProperty('/Tender/Classification');
 
 			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
 			if (bCurrentShowFooterState === true) {
@@ -1773,7 +1774,7 @@ sap.ui.define([
 					//End of mexico
 
 					//should tendertype be visible on the basic info screen?
-					$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+					$.when(Services.checkShowTenderType(sClassification)).done(function (bShowTenderType) {
 						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
 						if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
 							that.getView().byId("idSelectTenderTypeEdit").setVisible(true);
@@ -1783,7 +1784,7 @@ sap.ui.define([
 					});
 
                     //should tendertype2 be visible on the basic info screen?
-					$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
+					$.when(Services.checkShowTenderType2(sClassification)).done(function (bShowTenderType) {
 						that.getView().byId("idSelectTenderType2Edit").setVisible(bShowTenderType);
 					});
 
@@ -2121,7 +2122,7 @@ sap.ui.define([
 						});
 
 						//should tendertype be visible on the screen?
-						$.when(Services.checkShowTenderType()).done(function (bShowTenderType) {
+						$.when(Services.checkShowTenderType(that.getView().byId("idClassification").getSelectedKey())).done(function (bShowTenderType) {
 							oTenderType.setVisible(bShowTenderType);
 							if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
 								oTenderType.setVisible(true);
@@ -2145,7 +2146,7 @@ sap.ui.define([
 						});
 
 						//should tendertype be visible on the screen?
-						$.when(Services.checkShowTenderType2()).done(function (bShowTenderType) {
+						$.when(Services.checkShowTenderType2(that.getView().byId("idClassification").getSelectedKey())).done(function (bShowTenderType) {
 							oTenderType2.setVisible(bShowTenderType);
 						});
 
@@ -8416,6 +8417,7 @@ sap.ui.define([
 		},
 
 		onCreatePriceAgreement: async function (oEvent) {
+
 			//get model & selected row
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -8449,7 +8451,7 @@ sap.ui.define([
 
 				// Only selling type can be synchronised with SAP and 
 				// therefore only allow creating price agreements for selling offer type products! 
-				if(offerType !== "Selling"){
+				if(offerType !== "Selling" && Services.getSelectedCountry() !== 'ES'){
 					sap.m.MessageBox.error("Only products with OfferType 'Selling' are allowed to create a price agreement.");
 					return;
 				}
@@ -9248,11 +9250,11 @@ sap.ui.define([
 					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
 						if(oResultForTree._sOperation !== "DELETE"){
 
-							if(!oOutcomeLevel.OTHERCOMPANY){
+							if(oOutcomeLevel.AWARDEDCOMPANY === "Other" && !oOutcomeLevel.OTHERCOMPANY){
 								missingFields.add("Awarded Company");
 							}
 
-							if(!oOutcomeLevel.OTHERPRODUCT){
+							if(oOutcomeLevel.PRODUCT === "Other" && !oOutcomeLevel.OTHERPRODUCT){
 								missingFields.add("Product");
 							}
 
@@ -9495,12 +9497,17 @@ sap.ui.define([
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").setVisible(false);
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").setVisible(false);
 			this.byId("idSpecifications") && this.byId("idSpecifications").setVisible(false);
+            this.byId("idSelectTenderTypeEdit") && this.byId("idSelectTenderTypeEdit").setVisible(false);
+            this.byId("idSelectTenderType2Edit") && this.byId("idSelectTenderType2Edit").setVisible(false);
+                        
 			//this.byId("idClassification") && this.byId("idClassification").setVisible(false);
 
 			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").clearSelection();
 			this.byId("idBiddingTypeLevel2") && this.byId("idBiddingTypeLevel2").clearSelection();
 			this.byId("idBiddingTypeLevel3") && this.byId("idBiddingTypeLevel3").clearSelection();
 			this.byId("idSpecifications") && this.byId("idSpecifications").clearSelection();
+            this.byId("idSelectTenderTypeEdit") && this.byId("idSelectTenderTypeEdit").clearSelection();
+            this.byId("idSelectTenderType2Edit") && this.byId("idSelectTenderType2Edit").clearSelection();
 
 		},
 
@@ -9511,11 +9518,11 @@ sap.ui.define([
 
 			let sCountry = this._country;
 			let sClassificationId = oEvent.getSource().getSelectedItem().data("classificationId");
+            let sKey =  oEvent.getSource().getSelectedItem().getKey();
 
 			this._initializeCountrySpecificFields();
 			
-			if(sClassificationId){ 
-
+			if(sClassificationId){                 
 				try {
 
 					oForm.setBusy(true);
@@ -9531,7 +9538,14 @@ sap.ui.define([
 					if(aSpecifications.length > 0){
 						this.byId("idSpecifications").setVisible(true);
 					}
-					
+
+                    if(sCountry === 'ES' && sKey === 'Tender'){
+                        this.byId("idSelectTenderTypeEdit").setVisible(true);
+                        this.byId("idSelectTenderType2Edit").setVisible(true);                        
+                    } else if(sCountry === 'ES' && sKey !== 'Tender'){
+                        this.byId("idSelectTenderTypeEdit").setVisible(false);
+                        this.byId("idSelectTenderType2Edit").setVisible(false);                        
+                    }                       					
 
 				} catch(err) {
 					console.log(err);

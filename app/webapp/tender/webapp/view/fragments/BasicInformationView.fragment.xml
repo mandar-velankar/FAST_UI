@@ -115,19 +115,22 @@
 						<core:Item text="Yes, Requested Quantity - Delivery Tracking" key="2"/>
 					</items>
 				</Select>
-				<Label id="idLabelTenderType" text="{i18n>tendertype}" design="Bold" required="true" visible="true"/>
+				<Label id="idLabelTenderType" text="{i18n>tendertype}" design="Bold" required="true"/>
 				<Select id="idSelectTenderType" 
 				selectedKey="{fastData>TENDER_TYPE_ID}" 
 				enabled="false" 
-				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }">
+				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }"
+                visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
+
 					<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 				</Select>
 
-                <Label id="idLabelTenderType2" text="{i18n>tendertype2}" design="Bold" required="true" visible="true"/>
+                <Label id="idLabelTenderType2" text="{i18n>tendertype2}" design="Bold" required="true"/>
 				<Select id="idSelectTenderType2" 
 				selectedKey="{fastData>TENDER_TYPE_2_ID}" 
 				enabled="false" 
-				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }">
+				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }"
+                visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
 					<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 				</Select>
 
