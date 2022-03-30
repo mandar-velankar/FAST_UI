@@ -9250,11 +9250,11 @@ sap.ui.define([
 					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
 						if(oResultForTree._sOperation !== "DELETE"){
 
-							if(!oOutcomeLevel.OTHERCOMPANY){
+							if(oOutcomeLevel.AWARDEDCOMPANY === "Other" && !oOutcomeLevel.OTHERCOMPANY){
 								missingFields.add("Awarded Company");
 							}
 
-							if(!oOutcomeLevel.OTHERPRODUCT){
+							if(oOutcomeLevel.PRODUCT === "Other" && !oOutcomeLevel.OTHERPRODUCT){
 								missingFields.add("Product");
 							}
 
