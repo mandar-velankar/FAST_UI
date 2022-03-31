@@ -640,9 +640,11 @@ sap.ui.define([
 			if (!oSeeInactive) {
 				andFilters.push(new sap.ui.model.Filter("ACTIVE_OFFER", "EQ", 1));
 			}
-			// if (oBrand !== "All_Brands"){
-			// 	andFilters.push(new sap.ui.model.Filter("BRAND", "Contains", oBrand));
-			// }
+			if (oBrand === "All_Brands"){
+                this.oProductsTable.setGrowingThreshold(15);
+			} else {
+                this.oProductsTable.setGrowingThreshold(1000000);
+            }
 			if (oStatus !== "All") {
 				andFilters.push(new sap.ui.model.Filter("STATUS", "EQ", oStatus));
 			}

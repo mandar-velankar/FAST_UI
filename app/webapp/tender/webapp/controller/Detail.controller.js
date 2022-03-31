@@ -1735,7 +1735,7 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
-            var sClassification = that.getView().byId("idClassification").getSelectedItem().getKey();
+            var sClassification = that.getView().byId("idClassification") ? that.getView().byId("idClassification").getSelectedItem().getKey() : oFastAppDataModel.getProperty('/Tender/Classification');
 
 			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
 			if (bCurrentShowFooterState === true) {
@@ -8417,6 +8417,7 @@ sap.ui.define([
 		},
 
 		onCreatePriceAgreement: async function (oEvent) {
+
 			//get model & selected row
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -8450,7 +8451,7 @@ sap.ui.define([
 
 				// Only selling type can be synchronised with SAP and 
 				// therefore only allow creating price agreements for selling offer type products! 
-				if(offerType !== "Selling"){
+				if(offerType !== "Selling" && Services.getSelectedCountry() !== 'ES'){
 					sap.m.MessageBox.error("Only products with OfferType 'Selling' are allowed to create a price agreement.");
 					return;
 				}
@@ -9249,11 +9250,11 @@ sap.ui.define([
 					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
 						if(oResultForTree._sOperation !== "DELETE"){
 
-							if(!oOutcomeLevel.OTHERCOMPANY){
+							if(oOutcomeLevel.AWARDEDCOMPANY === "Other" && !oOutcomeLevel.OTHERCOMPANY){
 								missingFields.add("Awarded Company");
 							}
 
-							if(!oOutcomeLevel.OTHERPRODUCT){
+							if(oOutcomeLevel.PRODUCT === "Other" && !oOutcomeLevel.OTHERPRODUCT){
 								missingFields.add("Product");
 							}
 

@@ -193,17 +193,21 @@ sap.ui.define([
 			//load countryBrandProducts
 			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
 
-			aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
-                var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
-                return freegood;
-			});
+            if(aFreeGoodsOther.length > 0){
+                aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
+                    var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+                    freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                    return freegood;
+                });
 
-			//set to fastappdata model for easy access on the view
-			aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-            oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
+                //set to fastappdata model for easy access on the view
+                aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+                oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
 
-			return aFreeGoodsOther;
+                return aFreeGoodsOther;
+            } else {
+                return null;
+            }
 		},
 
         getPriceConditionView: async function(){
@@ -322,6 +326,7 @@ sap.ui.define([
             const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
             const aErroneousConditions = this.checkSaveFinancialOfferSpain(selectedPriceConditionViewObjects);   
             if(aErroneousConditions && (aErroneousConditions.length > 0)) {
+                BusyIndicator.hide();                
                 this.byId("ApprovalButtonId").setEnabled(false);
                 sap.m.MessageBox.error(`You must fill in all the mandatory fields for the following condition(s): \n\n ${aErroneousConditions.join()}`);
                 return;
