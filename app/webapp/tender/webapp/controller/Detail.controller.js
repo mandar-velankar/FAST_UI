@@ -695,26 +695,31 @@ sap.ui.define([
 				oDetailController.setTenderSpecificationsSelectedKeys(sTenderID);
 
 				
-				// Italy 
-				if (Services.getSelectedCountry() === "IT"){
+				// Italy  & spain
+				if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 					Services.getWordTemplates(Services.getSelectedCountry());
 					that.getTenderRegions(sTenderID).then(response => {
+
+                        const oRegionView = that.byId("idRegionView");
+                        let sFilterValue = Services.getSelectedCountry();
+                        let oBinding = oRegionView.getBinding("items");
+                        let aFilters = [];
+
+                        if (sFilterValue){
+                            aFilters.push( new Filter("CountryCode", 'EQ', sFilterValue) );
+                        }
+                        oBinding.filter(aFilters);
 
                         const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
                         let regionIDs = [];
                         if(tenderArray.length !== 0){
                             regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
                         }
-						that.byId("idRegionView").setSelectedKeys(regionIDs);
+						oRegionView.setSelectedKeys(regionIDs);
 						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
 
 					})
-				}
-
-                if (Services.getSelectedCountry() === "ES"){
-                    that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
-                }
-			
+				}			
 
 				//vanaf hier 
 
@@ -1735,7 +1740,7 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
-            var sClassification = that.getView().byId("idClassification").getSelectedItem().getKey();
+            var sClassification = that.getView().byId("idClassification") && that.getView().byId("idClassification").getSelectedItem().getKey();
 
 			//if footerstate = true, meaning we are in edit mode??? TODO this should be based on a method + private var in service file (future footer could include other buttons that are not only for edit mode)
 			if (bCurrentShowFooterState === true) {
@@ -2086,7 +2091,7 @@ sap.ui.define([
 
 
 						// Italy
-						if (Services.getSelectedCountry() === "IT"){
+						if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 						//that.getView().byId("idRegionEdit").setVisible(true);
 							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
 								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
@@ -3670,10 +3675,12 @@ sap.ui.define([
 
 		//Reset institute name
 		resetInstituteName: function (oEvent) {
+            const oRegionEdit = this.byId("idRegionEdit");
+            
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast' || this._country === 'IT' || this._country === 'ES'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT'){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
                 if(this._country === 'ES'){
                     this.byId("idSelectTenderType2Edit").setVisible(true);                    
@@ -3684,11 +3691,20 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Region(s)' && this._country === 'IT'){
-				this.byId("idRegionEdit").setVisible(true);
+            if(selectedItem === 'Region(s)' && (this._country === 'IT' || this._country === 'ES') ){
+                let sFilterValue = this._country;
+                let oBinding = oRegionEdit.getBinding("items");
+                let aFilters = [];
+
+                if (sFilterValue){
+                    aFilters.push( new Filter("CountryCode", 'EQ', sFilterValue) );
+                }
+                oBinding.filter(aFilters);
+				oRegionEdit.setVisible(true);
+                
 			}else{
-				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
-				this.byId("idRegionEdit").setVisible(false);
+				oRegionEdit.setSelectedKeys([]); // clear the region selected keys
+				oRegionEdit.setVisible(false);
 			}
 		},
 
@@ -3821,8 +3837,8 @@ sap.ui.define([
 							}
 						}
 
-						// Italy - Load regins again 
-						if (Services.getSelectedCountry() === "IT"){
+						// Italy & Spain - Load regins again 
+						if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
 								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
@@ -3974,7 +3990,7 @@ sap.ui.define([
 						}
 
 						// Italy - Load regins again 
-						if (Services.getSelectedCountry() === "IT"){
+						if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
 								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
@@ -4133,7 +4149,7 @@ sap.ui.define([
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
 
 			//regions should be saved for Italy
-			if(this._country === 'IT' && tenderRegions){
+			if((this._country === 'IT' || this._country === 'ES') && tenderRegions){
 				promises.push(that.saveTenderRegions(tenderRegions));
 			}
 
@@ -4237,7 +4253,7 @@ sap.ui.define([
 			promises.push(that.saveSpecifications(oTenderToSave, "create"));
 
 			//regions should be saved for Italy
-			if(this._country === 'IT' && tenderRegions){
+			if((this._country === 'IT' || this._country === 'ES') && tenderRegions){
 				promises.push(that.saveTenderRegions(tenderRegions));
 			}
 
@@ -6550,7 +6566,7 @@ sap.ui.define([
 					var sCountry = Services.getSelectedCountry();
 
 					// for Italy only the Regions must be set
-					if(sCountry === 'IT' && instituteType === "Region(s)"){
+					if((sCountry === 'IT' || sCountry === 'ES') && instituteType === "Region(s)"){
 						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 						setTenderRegion(regionId);
 					}
