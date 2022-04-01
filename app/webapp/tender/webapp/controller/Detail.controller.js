@@ -5733,7 +5733,7 @@ sap.ui.define([
 			this.byId("idintrDueDte").setValue();
 
 			//if italy, default the internal due date to offer due date
-			if(Services.getSelectedCountry() === 'IT'){
+			if(Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES'){
 				this.byId("idintrDueDte").setValue(this.byId("idOrfDueDate").getValue());
 			}
 			this.byId("idWhleSle").setValue();
