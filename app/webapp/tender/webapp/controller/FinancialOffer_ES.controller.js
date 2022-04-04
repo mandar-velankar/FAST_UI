@@ -192,7 +192,7 @@ sap.ui.define([
 
 			//load countryBrandProducts
 			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
-            if(aFreeGoodsOther.length > 0){
+            if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
                 aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                     var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
                     freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
