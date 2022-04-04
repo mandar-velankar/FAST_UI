@@ -279,12 +279,19 @@ sap.ui.define([
 
             const oFastAppDataModel = Services.getFastAppDataModel();
             const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+            const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
+            const productType = selectedProduct?.SKU?.ProductType;
             const filter = {
                 "CountryCode": offer.CountryCode,
                 "Classification": offer.Tender.Classification,
-                "Division": offer.Division
+                "Division": offer.Division,
+                "ProductTypes": ["All"]
                 // "isMain": true
             };
+
+            if(productType === "Injector"){
+                filter.ProductTypes.push(productType);
+            }
 
             const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
             return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
@@ -649,6 +656,11 @@ sap.ui.define([
             if(selectedPriceConditionsIndex > -1) {
                 const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
                 let sFragmentName = sConditionType.split(" ").join("");
+                
+                // add RequestedVolume from selected product to the PriceConditionView entity.
+                const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
+                Services.getFastAppDataModel().setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
+
                 Fragment.load({
                     id: this.getView().getId(),
                     name: sFragmentPath.concat(".",sFragmentName),
