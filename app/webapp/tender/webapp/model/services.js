@@ -6916,6 +6916,7 @@ sap.ui.define([
 			   	(this.getSelectedCountry() === 'ES' && 
 				   oBankGuarantee.BankRequestDate &&
 				   oBankGuarantee.BankName &&
+				   oBankGuarantee.BankStatus &&
 				   oBankGuarantee.ShippingDate))){
 			   //oBankGuarantee.ClosingDate
 					bValid = true;

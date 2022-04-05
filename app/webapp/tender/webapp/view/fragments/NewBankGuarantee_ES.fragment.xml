@@ -101,10 +101,11 @@
 					}" 
 					enabled="true"/>
 
-				<!-- Status
-				<Label text="{i18n>status}"/>
-				<Input value="{fastAppData>/newBankGuarantee/Status}"
-					   required="true"/> -->
+				<!-- Status -->
+				<Label text="{i18n>Status}"/>
+				<Input value="{fastAppData>/newBankGuarantee/BankStatus}"
+					   required="true"/>
+
 				<!-- Expected Expiry Date-->
 				<!-- <Label text="{i18n>expectedExpiryDate}" required="true"/> -->
 				<Label text="{i18n>cancelationDate}" required="true"/>
