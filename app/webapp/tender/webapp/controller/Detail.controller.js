@@ -8155,7 +8155,7 @@ sap.ui.define([
 		 _getCreateBankGuaranteeDialog: function () {
 			var selectedCountry = Services.getSelectedCountry();
 			var dialogVersion = "";
-			if(selectedCountry === 'IT'){
+			if(selectedCountry === 'ES'){
 				dialogVersion = '_ES';
 			}
 			//create new dialog if not yet existing
