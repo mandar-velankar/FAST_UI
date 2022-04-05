@@ -184,6 +184,7 @@ sap.ui.define([
 		},
 
         getCountryBrandFOCsCombined: async function(){
+            
             const oFastAppDataModel = Services.getFastAppDataModel();
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
@@ -199,20 +200,21 @@ sap.ui.define([
                     return freegood;
                 });
 
-            if(aFreeGoodsOther.length > 0){
-                aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
-                    var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                    freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
-                    return freegood;
-                });
+                if(aFreeGoodsOther.length > 0){
+                    aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
+                        var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+                        freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                        return freegood;
+                    });
 
-                //set to fastappdata model for easy access on the view
-                aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-                oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
+                    //set to fastappdata model for easy access on the view
+                    aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+                    oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
 
-                return aFreeGoodsOther;
-            } else {
-                return null;
+                    return aFreeGoodsOther;
+                } else {
+                    return null;
+                }
             }
 		},
 
