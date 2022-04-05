@@ -8453,7 +8453,15 @@ sap.ui.define([
 			}
 
 			const oSelectedProduct = offerProducts[iRowIndex];
+			const selectedProductType = oSelectedProduct.SKU.ProductType;
 			var oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
+
+			
+			// TODO: check if this only applies to Spain
+			if (oSelectedProduct.CountryCode === "ES" && selectedProductType === "Injector"){
+				sap.m.MessageToast.show("No price agreement can be created for Rental");
+				return;
+			}
 		
 
 			if(oLoadedPriceAgreement){

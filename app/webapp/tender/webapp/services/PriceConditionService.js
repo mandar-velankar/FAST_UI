@@ -111,6 +111,8 @@ sap.ui.define([
                 "Liquidation": oPriceConditionViewObject.Liquidation,
                 "RefundDate": oPriceConditionViewObject.RefundDate,
                 "PriceConditionCode": oPriceConditionViewObject.PriceConditionCode,
+                "MonthlyRentPerUnit":oPriceConditionViewObject.MonthlyRentPerUnit,
+                "AnnualValue": oPriceConditionViewObject.AnnualValue,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
                 "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
@@ -188,7 +190,12 @@ sap.ui.define([
 				operator: FilterOperator.EQ,
 				value1: filter.Division
 			}));
-
+            
+            if(filter.ProductTypes && Array.isArray(filter.ProductTypes)){
+                const orFilters = filter.ProductTypes.map(type => new Filter("ProductType", sap.ui.model.FilterOperator.EQ, type));
+                aFilters.push(new Filter(orFilters, false));
+            }
+            
             if(filter.isMain){
                 aFilters.push(new Filter({
                     path: 'isMain',
