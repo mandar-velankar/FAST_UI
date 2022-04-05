@@ -115,7 +115,7 @@
 									
 									<core:Title/>
 									<Label text="{i18n>whlseofr}" required="true"/>
-									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' || ${fastAppData>/Tender/CountryCode} === 'IT'? false : true}">
+									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' || ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}">
 										<items>
 											<core:Item text="No" key="No"/>
 											<core:Item text="Yes" key="Yes"/>
