@@ -111,6 +111,8 @@ sap.ui.define([
                 "Liquidation": oPriceConditionViewObject.Liquidation,
                 "RefundDate": oPriceConditionViewObject.RefundDate,
                 "PriceConditionCode": oPriceConditionViewObject.PriceConditionCode,
+                "MonthlyRentPerUnit":oPriceConditionViewObject.MonthlyRentPerUnit,
+                "AnnualValue": oPriceConditionViewObject.AnnualValue,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
                 "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),

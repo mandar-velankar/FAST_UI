@@ -21,9 +21,10 @@
         singleContainerFullSize="false" >
         <form:content>
             <Label text="{i18n>Requested Volume}"/>
+            <!-- RequestedVolume is set from the Controller.loadMainPriceConditionFragment -->
             <Input value="{fastAppData>RequestedVolume}" type="Number" enabled="false" fieldWidth="80%"/> 
             <Label text="{i18n>Monthly Rent per Unit}" required="true"/>
-            <Input value="{fastAppData>MonthlyRentPerUnit}" type="Number"  description="{fastAppData>Currency}" enabled="true" fieldWidth="80%"/> 
+            <Input value="{fastAppData>MonthlyRentPerUnit}" type="Number"  description="{fastAppData>Currency}" liveChange=".onMonthlyRentPerUnitChange" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> 
             <Label text="{i18n>Annual Value}" />
             <Input value="{fastAppData>AnnualValue}" type="Number"  description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/> 
         </form:content>

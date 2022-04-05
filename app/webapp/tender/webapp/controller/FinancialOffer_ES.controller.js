@@ -656,10 +656,12 @@ sap.ui.define([
             if(selectedPriceConditionsIndex > -1) {
                 const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
                 let sFragmentName = sConditionType.split(" ").join("");
-                
-                // add RequestedVolume from selected product to the PriceConditionView entity.
+
+                // add RequestedVolume from the selected product to the PriceConditionView entity.
                 const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
                 Services.getFastAppDataModel().setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
+                
+                Services.setSelectedPriceConditionPath(bindingPath);
 
                 Fragment.load({
                     id: this.getView().getId(),
@@ -1040,6 +1042,20 @@ sap.ui.define([
             freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
             bindingContext.getModel().updateBindings();           
         },
+
+        onMonthlyRentPerUnitChange: function(oEvent){
+            this.calculateAnnualValue(oEvent);
+        },
+
+        calculateAnnualValue: function(oEvent){
+            const monthlyRent = oEvent.getParameter("newValue");
+            const selectedPriceCondition = Services.getFastAppDataModel().getProperty(Services.getSelectedPriceConditionPath());
+            const reqestedVolume = selectedPriceCondition.RequestedVolume;
+            // Annual Values = (Monthly Rent x 12) x (RequestedVolume)
+            selectedPriceCondition.AnnualValue = (monthlyRent * 12) * reqestedVolume;
+            Services.getFastAppDataModel().updateBindings();
+        },
+
 
         
     });
