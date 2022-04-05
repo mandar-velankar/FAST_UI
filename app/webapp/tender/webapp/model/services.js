@@ -6911,7 +6911,12 @@ sap.ui.define([
 			   oBankGuarantee.GuaranteedAmount != 0 && 
 			   oBankGuarantee.Currency && 
 			   oBankGuarantee.IssueDate &&
-			   oBankGuarantee.ExpectedExpiryDate){
+			   oBankGuarantee.ExpectedExpiryDate && 
+			   (this.getSelectedCountry() !== 'IT' || 
+			   	(this.getSelectedCountry() === 'IT' && 
+				   oBankGuarantee.BankRequestDate &&
+				   oBankGuarantee.BankName &&
+				   oBankGuarantee.ShippingDate))){
 			   //oBankGuarantee.ClosingDate
 					bValid = true;
 			}
