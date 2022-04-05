@@ -74,7 +74,24 @@ sap.ui.define([
         },
 
         convertToSaveObject: function(oPriceConditionViewObject){
+            let priceConditionCode;         
+            
+            switch(oPriceConditionViewObject.RoyalDecree) {
+                case "IncludeInPrecioNeto":
+                priceConditionCode = "YLTP";
+                  break;
+                case "ExcludeInPrecioNeto":
+                priceConditionCode = "YLTF";
+                  break;
+                case "No":
+                priceConditionCode = "YLTF";
+                  break;
+                default:
+                priceConditionCode = "";
+              }
 
+              oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
+                      
             let obj = {
                 "CountryCode": oPriceConditionViewObject.CountryCode,
                 "OfferID": oPriceConditionViewObject.OfferID,
@@ -93,6 +110,7 @@ sap.ui.define([
                 "Tax": oPriceConditionViewObject.Tax,
                 "Liquidation": oPriceConditionViewObject.Liquidation,
                 "RefundDate": oPriceConditionViewObject.RefundDate,
+                "PriceConditionCode": oPriceConditionViewObject.PriceConditionCode,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
                 "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),

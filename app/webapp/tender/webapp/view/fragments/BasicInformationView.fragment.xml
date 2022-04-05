@@ -94,14 +94,9 @@
 					enabled="false"
 					items="{ 
 						path: 'fastData>/CountryRegions',
-						sorter: { path: 'Name' },
-                        filters: [{                                     
-                                    path : 'CountryCode',
-                                    operator : 'EQ',
-                                    value1 : 'IT'
-                            } ] 
+						sorter: { path: 'Name' }
 					}" 
-					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; (${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES') }">
 					<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
 				</MultiComboBox>
 				<!-- /Italy onlye -->
