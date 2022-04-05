@@ -51,6 +51,7 @@ sap.ui.define([
 		_sSelectedProductID: "",
 		_sSelectedProductName: "",
 		_sSelectedProductPath: "",
+		_sSelectedPriceConditionPath: "",
 		_sSelectedTab: "",
 		_defaultModel: "",
 		//_connectionString: "/v2/tender/",
@@ -260,6 +261,11 @@ sap.ui.define([
 		//get current selected productPath
 		getSelectedProductPath: function () {
 			return this._sSelectedProductPath;
+		},
+
+		//get current selected priceConditionPath
+		getSelectedPriceConditionPath: function () {
+			return this._sSelectedPriceConditionPath;
 		},
 
 		//get instituteID of selected ProductID
@@ -640,6 +646,11 @@ sap.ui.define([
 			this._sSelectedProductPath = sProductPath;
 		},
 
+		//get current selected PriceCondition TODO clear on switching between tabs!!
+		setSelectedPriceConditionPath: function (sPriceConditionPath) {
+			this._sSelectedPriceConditionPath = sPriceConditionPath;
+		},
+		
 		//get current quotation table template
 		setSelectedQuotationTemplate: function (oTemplate) {
 			this._oSelectedQuotationTemplate = oTemplate;
