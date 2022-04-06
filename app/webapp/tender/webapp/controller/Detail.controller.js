@@ -8280,17 +8280,21 @@ sap.ui.define([
 		 * @returns {dialog} - oDialog
 		 */
 		 _getCreateBankGuaranteeDialog: function () {
-
+			var selectedCountry = Services.getSelectedCountry();
+			var dialogVersion = "";
+			if(selectedCountry === 'ES'){
+				dialogVersion = '_ES';
+			}
 			//create new dialog if not yet existing
-			if (!this._oAddNewBankGuaranteeDialog) {
+			if (!this["_oAddNewBankGuaranteeDialog"+dialogVersion]) {
 
 					//get dialog
-					this._oAddNewBankGuaranteeDialog = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.NewBankGuarantee", this);
-					this.getView().addDependent(this._oAddNewBankGuaranteeDialog);
+					this["_oAddNewBankGuaranteeDialog"+dialogVersion] = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.NewBankGuarantee"+dialogVersion, this);
+					this.getView().addDependent(this["_oAddNewBankGuaranteeDialog"+dialogVersion]);
 					
 			}
 
-			return this._oAddNewBankGuaranteeDialog;
+			return this["_oAddNewBankGuaranteeDialog"+dialogVersion];
 		},
 
 		onUpdateBankGuarantee: function(oEvent){
@@ -8453,7 +8457,15 @@ sap.ui.define([
 			}
 
 			const oSelectedProduct = offerProducts[iRowIndex];
+			const selectedProductType = oSelectedProduct.SKU.ProductType;
 			var oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
+
+			
+			// TODO: check if this only applies to Spain
+			if (oSelectedProduct.CountryCode === "ES" && selectedProductType === "Injector"){
+				sap.m.MessageToast.show("No price agreement can be created for Rental");
+				return;
+			}
 		
 
 			if(oLoadedPriceAgreement){
