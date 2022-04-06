@@ -7020,16 +7020,22 @@ sap.ui.define([
 		//check new bank guarantee
 		checkNewBankGuarantee: function(oBankGuarantee){
 			let bValid = false;
-			
 			if(oBankGuarantee.Reference && 
-			   oBankGuarantee.Type && 
-			   oBankGuarantee.GuaranteedAmount != 0 && 
-			   oBankGuarantee.Currency && 
-			   oBankGuarantee.IssueDate &&
-			   oBankGuarantee.ExpectedExpiryDate){
-			   //oBankGuarantee.ClosingDate
-					bValid = true;
-			}
+				oBankGuarantee.Type && 
+				oBankGuarantee.GuaranteedAmount != 0 && 
+				oBankGuarantee.Currency && 
+				oBankGuarantee.IssueDate &&
+				oBankGuarantee.ExpectedExpiryDate && 
+				(this.getSelectedCountry() !== 'ES' || 
+					(this.getSelectedCountry() === 'ES' && 
+					oBankGuarantee.BankRequestDate &&
+					oBankGuarantee.BankName &&
+					oBankGuarantee.BankStatus &&
+					oBankGuarantee.ShippingDate))){
+				//oBankGuarantee.ClosingDate
+					 bValid = true;
+			 }
+ 
 
 			return bValid;
 		},
