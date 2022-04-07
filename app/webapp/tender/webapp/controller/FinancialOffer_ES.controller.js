@@ -84,6 +84,14 @@ sap.ui.define([
                 const priceConditionViews = await this.getPriceConditionView();
                 Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
+                // Manage financial offer when existing agreement in place
+                const applicableTenderCondition = await this.getApplicableTenderCondition();
+
+                if(applicableTenderCondition){
+                    // TODO: implement the rest of the logic from the ticket
+                }
+                
+
                 //bind Rappel and FOC fragments 
                 const rappelBindingPath = this.bindRappelFragment();
                 const focBindingPath = this.bindFocFragment();
@@ -108,6 +116,40 @@ sap.ui.define([
 			}
 
 		},
+
+
+        /**
+         * Check if the current Institute is a candidate/customer in the existing PriceAgreement
+         * @returns {Object|null} - returns the main price condition if candidate/customer or null 
+         */
+         getApplicableTenderCondition: async function(){
+            const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+            const existingPriceAgreement = await this.getExistingPriceAgreement();
+            const isCustomer = existingPriceAgreement?.Candidates?.results.some(candidate => candidate.CandidateID === currentInstituteId);
+            if(isCustomer){
+                const mainCondition = existingPriceAgreement.PriceConditions.results.find(priceCondition => priceCondition.PriceConditionClassification.isMain);
+                return mainCondition;
+            }
+            return null;
+         },
+
+
+         /**
+         * Get the existing price agreement related to a Tender classification "Tender"
+         * which is not expiring before tomorrow for the same product
+         */
+        getExistingPriceAgreement: async function(){
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const filter = {
+                CountryCode: Services.getSelectedCountry(),
+                ProductCode: Services.getSelectedProductID(),
+                TenderClassification: "Tender",
+                notExpiringBeforeDate: tomorrow
+            };
+            return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results[0];
+        },
 
         /**
          * This method  sets the element binding of the Rappel fragment
