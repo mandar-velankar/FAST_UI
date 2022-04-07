@@ -693,9 +693,26 @@ sap.ui.define([
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
 
-            const newNetPriceWithoutTaxBeforeDeductionRD = Number(oEvent.getSource().getValue());
-            const standardPrice = Number(bindingContext.getProperty("StandardPrice"));
-            const additionalDiscount =  standardPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2) : 0;
+            let newNetP;
+            if (oEvent.getId() === "change"){
+                newNetP = Number(priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);
+            } else {
+                 newNetP = Number(oEvent.getSource().getValue());
+
+            }
+
+            const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
+
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let correctPrice;
+            if(instType === "Private Account"){
+                correctPrice = priceConditionViewObj.PVL;
+            } else {
+                correctPrice = priceConditionViewObj.YLAP;
+            }
+
+            const standardPrice = correctPrice * (1 - priceConditionViewObj.StandardDiscount);
+            const additionalDiscount =  correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2) : 0;
 
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
@@ -714,8 +731,8 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
-            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD;
-            priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = newNetPriceWithTaxAfterDeductionRD;
+            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(2));
+            priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(2));
 
             bindingContext.getModel().updateBindings();
             
@@ -723,21 +740,39 @@ sap.ui.define([
 
         calculateNetPricesDescuentoComercial: function (oEvent){
 
-            const discount = Number(oEvent.getSource().getValue());
+            
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
-
+           
             let newNetPriceWithoutTax = "";
 
+            let newDiscount;
+            if (oEvent.getId() === "change"){
+               newDiscount = Number(priceConditionViewObj.Discount);
+            } else {
+               newDiscount = Number(oEvent.getSource().getValue());
+
+            }
+            const discount = newDiscount;
+            
+
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let correctPrice;
+            if(instType === "Private Account"){
+                correctPrice = priceConditionViewObj.PVL;
+            } else {
+                correctPrice = priceConditionViewObj.YLAP;
+            }
+
             if(priceConditionViewObj.RoyalDecree === "Yes"){
-                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
+                newNetPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
             }else {
-                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount / 100);
+                newNetPriceWithoutTax = correctPrice * (1 - discount / 100);
             }
 
             // set the calcualted field and update the bindings
             priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
-            priceConditionViewObj.NetPriceWithTax = newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)
+            priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2))
 
             bindingContext.getModel().updateBindings();
         },
@@ -833,10 +868,18 @@ sap.ui.define([
 
             let netPriceWithoutTax = "";
 
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let correctPrice;
+            if(instType === "Private Account"){
+                correctPrice = priceConditionViewObj.PVL;
+            } else {
+                correctPrice = priceConditionViewObj.YLAP;
+            }
+
             if(priceConditionViewObj.RoyalDecree === "Yes"){
-                netPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
+                netPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
             }else {
-                netPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount / 100)
+                netPriceWithoutTax = correctPrice * (1 - discount / 100)
             }
 
             // set the calcualted field and update the bindings
@@ -1042,10 +1085,18 @@ sap.ui.define([
             
             let potentialSaving = "";
 
-            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
-                potentialSaving = bonusAmount * priceConditionViewObject.PVL * (1 - freeGoodsObject.RoyalDecreePercentage);                
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let correctPrice;
+            if(instType === "Private Account"){
+                correctPrice = priceConditionViewObject.PVL;
             } else {
-                potentialSaving = bonusAmount * priceConditionViewObject.PVL;
+                correctPrice = priceConditionViewObject.YLAP;
+            }
+
+            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
+                potentialSaving = bonusAmount * correctPrice * (1 - freeGoodsObject.RoyalDecreePercentage);                
+            } else {
+                potentialSaving = bonusAmount * correctPrice;
             }
 
             freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
