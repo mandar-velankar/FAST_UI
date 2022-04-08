@@ -31,6 +31,7 @@ sap.ui.define([
 			});
 
 			this.getView().setModel(oViewModel, "finOfferView");
+            Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
 
 			//get resource bundle for translations or texts
 			this._oOwnerComponent = this.getOwnerComponent();
@@ -84,11 +85,15 @@ sap.ui.define([
                 const priceConditionViews = await this.getPriceConditionView();
                 Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
-                // Manage financial offer when existing agreement in place
+                // Manage financial offer when existing agreement is in place
                 const applicableTenderCondition = await this.getApplicableTenderCondition();
-
                 if(applicableTenderCondition){
-                    // TODO: implement the rest of the logic from the ticket
+                    const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
+                    const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
+                    this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
+                    Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
+                }else{
+                    Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
                 }
                 
 
@@ -117,9 +122,37 @@ sap.ui.define([
 
 		},
 
+        /**
+         * Copy the existing condition to the main price condition and update the model
+         */
+        copyAndSetApplicableTenderConditionValues: function(applicableTenderCondition, applicablePriceConditionView){
+            applicablePriceConditionView.AdditionalDiscount = applicableTenderCondition.AdditionalDiscount;
+            applicablePriceConditionView.AnnualValue = applicableTenderCondition.AnnualValue;
+            applicablePriceConditionView.CountryCode = applicableTenderCondition.CountryCode;
+            applicablePriceConditionView.Discount = applicableTenderCondition.Discount;
+            applicablePriceConditionView.Liquidation = applicableTenderCondition.Liquidation;
+            applicablePriceConditionView.MaximumPrice = applicableTenderCondition.MaximumPrice;
+            applicablePriceConditionView.MonthlyRentPerUnit = applicableTenderCondition.MonthlyRentPerUnit;
+            applicablePriceConditionView.NetPriceWithTax = applicableTenderCondition.NetPriceWithTax;
+            applicablePriceConditionView.NetPriceWithTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithTaxAfterDeductionRD;
+            applicablePriceConditionView.NetPriceWithoutTax = applicableTenderCondition.NetPriceWithoutTax;
+            applicablePriceConditionView.NetPriceWithoutTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithoutTaxAfterDeductionRD;
+            applicablePriceConditionView.NetPriceWithoutTaxBeforeDeductionRD = applicableTenderCondition.NetPriceWithoutTaxBeforeDeductionRD;
+            applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
+            applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
+            applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
+            applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
+            applicablePriceConditionView.StandardDiscount = applicableTenderCondition.StandardDiscount;
+            applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
+            const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
+            applicablePriceConditionView.PriceConditionClassificationID = classification.ID;
+            applicablePriceConditionView.ExistingPriceConditionID = "99999999-9999-9999-9999-999999999999";
+        },
+
 
         /**
-         * Check if the current Institute is a candidate/customer in the existing PriceAgreement
+         * Get the existing price agreement related to a Tender classification "Tender" and 
+         * check if the current Institute is a candidate/customer in the existing PriceAgreement
          * @returns {Object|null} - returns the main price condition if candidate/customer or null 
          */
          getApplicableTenderCondition: async function(){
@@ -142,11 +175,13 @@ sap.ui.define([
             const today = new Date();
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0,0,0,0); // we only take the date into account
             const filter = {
                 CountryCode: Services.getSelectedCountry(),
                 ProductCode: Services.getSelectedProductID(),
                 TenderClassification: "Tender",
-                notExpiringBeforeDate: tomorrow
+                notExpiringBeforeDate: tomorrow,
+                notEqualTenderId: Services.getSelectedTenderID() // exclude current Tender from the list
             };
             return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results[0];
         },

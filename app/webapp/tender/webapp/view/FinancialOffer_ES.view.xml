@@ -137,7 +137,7 @@
                             <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
                             <Select
                                 id="idPriceConditionSelect"
-                                enabled="{fastAppData>/EditMode}"
+                                enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
                                 forceSelection="false"
                                 change=".onPriceConditionChange"
                                 items="{
@@ -149,6 +149,14 @@
                                 }">
                                 <core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
                             </Select>
+							<MessageStrip
+								text="Existing agreement in place"
+								type="Warning"
+								showIcon="false"
+								showCloseButton="false"
+								class="sapUiMediumMarginBegin" 
+								visible="{fastAppData>/ExistingAgreementInPlace}">
+							</MessageStrip>
                         </HBox>
                     </VBox>
                     <VBox id="idPriceConditionVbox">

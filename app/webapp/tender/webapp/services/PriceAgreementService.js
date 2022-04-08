@@ -71,8 +71,16 @@ sap.ui.define([
 			if(filter.notExpiringBeforeDate){
                 aFilters.push(new Filter({
                     path: 'ExpiryDate',
-                    operator: FilterOperator.LE,
+                    operator: FilterOperator.GE,
                     value1: filter.notExpiringBeforeDate
+                }));
+            }
+			
+			if(filter.notEqualTenderId){
+                aFilters.push(new Filter({
+                    path: 'TenderId',
+                    operator: FilterOperator.NE,
+                    value1: filter.notEqualTenderId
                 }));
             }
 
