@@ -133,6 +133,16 @@
             <l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
                     <VBox>
+                        <MessageStrip
+							text="Existing agreement in place"
+							type="Warning"
+							showIcon="false"
+							showCloseButton="false"
+							class="sapUiSmallMarginBottom" 
+							visible="{fastAppData>/ExistingAgreementInPlace}">
+						</MessageStrip>
+                    </VBox>
+                    <VBox>
                         <HBox alignItems="Center">
                             <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
                             <Select
@@ -149,14 +159,6 @@
                                 }">
                                 <core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
                             </Select>
-							<MessageStrip
-								text="Existing agreement in place"
-								type="Warning"
-								showIcon="false"
-								showCloseButton="false"
-								class="sapUiMediumMarginBegin" 
-								visible="{fastAppData>/ExistingAgreementInPlace}">
-							</MessageStrip>
                         </HBox>
                     </VBox>
                     <VBox id="idPriceConditionVbox">
