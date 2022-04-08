@@ -109,6 +109,8 @@ sap.ui.define([
                 const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
                 if(existingMainPriceCondition){
                     this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
+                    // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
+                    existingMainPriceCondition.ExistingPriceConditionID = null; 
                 }else{
                     this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
                 }
@@ -146,7 +148,7 @@ sap.ui.define([
             applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
             const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
             applicablePriceConditionView.PriceConditionClassificationID = classification.ID;
-            applicablePriceConditionView.ExistingPriceConditionID = "99999999-9999-9999-9999-999999999999";
+            applicablePriceConditionView.ExistingPriceConditionID = "99999999-9999-9999-9999-999999999999"; // set dummy reference needed for the UI flow
         },
 
 
