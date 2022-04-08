@@ -31,6 +31,9 @@
 			<form:content>
 			<core:Title/>
 
+				<!-- Type -->
+				<Label text="{i18n>type}"/>
+				<Text text="{fastAppData>/newBankGuarantee/Type}"/>
 				<!-- Reference -->
 				<Label text="{i18n>bankRequestDate}" required="true"/>
 				<DatePicker 
@@ -46,9 +49,6 @@
 				<Input value="{fastAppData>/newBankGuarantee/BankName}"
 					   required="true"/>
 
-				<!-- Type -->
-				<Label text="{i18n>type}"/>
-				<Text text="{fastAppData>/newBankGuarantee/Type}"/>
 				<!--
 				<Select id="idCountrynewBankGuarantee" 
 						selectedKey="{fastAppData>/newBankGuarantee/Type}"
@@ -108,7 +108,7 @@
 
 				<!-- Expected Expiry Date-->
 				<!-- <Label text="{i18n>expectedExpiryDate}" required="true"/> -->
-				<Label text="{i18n>cancelationDate}" required="true"/>
+				<Label text="{i18n>cancellationDate}" required="true"/>
 				<DatePicker 
 					id="idExpectedExpiryDateNewBankGuaranteeES" 
 					value="{
