@@ -21,9 +21,11 @@
         singleContainerFullSize="false" >
         <form:content>
             <Label text="{i18n>PVL}" required="true"/>
-            <Input value="{fastAppData>PVL}" type="Number"  description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
+            <Input value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>PVL}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>PVL} }"
+            type="Number"  description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
             <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
-                <Input value="{fastAppData>YLAP}" type="Number"  visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
+            <Input value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>YLAP}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>YLAP} }"
+            type="Number"  visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>   
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

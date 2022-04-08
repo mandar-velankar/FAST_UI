@@ -50,12 +50,22 @@
                     enabled="{= ${fastAppData>/SelectedOfferID} === '' ? false : true}"/>
 
                 <!-- Bank Guarantee -->	
-                <m:Button
+                <!-- <m:Button
                     id="btnCreateBankGuarantee"
                     text="{i18n>CreateGuarantee}"
                     icon="sap-icon://create-form"
                     press=".onCreateGuarantee"
-                    enabled="{= ${fastAppData>/newBankGuarantee/Status} !== 'Open' &amp;&amp; ${fastAppData>/newBankGuarantee/Status} !== 'Expired' ? true : false }"/>
+                    enabled="{= ${fastAppData>/newBankGuarantee/Status} !== 'Open' &amp;&amp; ${fastAppData>/newBankGuarantee/Status} !== 'Expired' ? true : false }"/> -->
+                    
+                <m:MenuButton text="{i18n>BankGuarantee}">
+                    <m:menu>
+                        <m:Menu itemSelected="onBankGuarantee">
+                            <m:MenuItem text="Final"    icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}" />
+                            <m:MenuItem text="Additional" icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}" />
+                        </m:Menu>
+                    </m:menu>
+                </m:MenuButton>
+
 
                 <!-- Submit Quotation -->	
                 <m:Button

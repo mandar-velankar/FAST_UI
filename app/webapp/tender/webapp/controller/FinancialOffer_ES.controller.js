@@ -446,6 +446,24 @@ sap.ui.define([
         //for additional saving to PT_TMBDPR
 		getOfferProductPrices: function (oOffer, oProduct, oProductPrice, oMainPriceCondition) {
 
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let correctPrice;
+            if(instType === "Private Account"){
+                if(UOM === "Unit"){
+                    correctPrice = oMainPriceCondition.PVL / packFactor;
+                } else {
+                    correctPrice = oMainPriceCondition.PVL;
+                }
+            } else {
+                if(UOM === "Unit"){
+                    correctPrice = oMainPriceCondition.YLAP / packFactor;
+                } else {
+                    correctPrice = oMainPriceCondition.YLAP;
+                }
+            }
+
 			//PT_TMBDPR structure
 			let oNewPriceInfo = {
 				TenderID: Services.getSelectedTenderID(),
@@ -458,7 +476,7 @@ sap.ui.define([
 				Tier: 0,
 				VolumeFrom: 0,
 				VolumeTo: 0,
-				RegPrice: oMainPriceCondition.PVL,
+				RegPrice: correctPrice,
 				FOC: null,
 				FOCType: null,
 				FOCStep: null,
@@ -704,11 +722,21 @@ sap.ui.define([
             const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
             let correctPrice;
             if(instType === "Private Account"){
-                correctPrice = priceConditionViewObj.PVL;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.PVL;
+                }
             } else {
-                correctPrice = priceConditionViewObj.YLAP;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.YLAP;
+                }
             }
 
             const standardPrice = correctPrice * (1 - priceConditionViewObj.StandardDiscount);
@@ -757,11 +785,21 @@ sap.ui.define([
             
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
             let correctPrice;
             if(instType === "Private Account"){
-                correctPrice = priceConditionViewObj.PVL;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.PVL;
+                }
             } else {
-                correctPrice = priceConditionViewObj.YLAP;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.YLAP;
+                }
             }
 
             if(priceConditionViewObj.RoyalDecree === "Yes"){
@@ -869,11 +907,21 @@ sap.ui.define([
             let netPriceWithoutTax = "";
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
             let correctPrice;
             if(instType === "Private Account"){
-                correctPrice = priceConditionViewObj.PVL;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.PVL;
+                }
             } else {
-                correctPrice = priceConditionViewObj.YLAP;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.YLAP;
+                }
             }
 
             if(priceConditionViewObj.RoyalDecree === "Yes"){
@@ -1086,11 +1134,21 @@ sap.ui.define([
             let potentialSaving = "";
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
             let correctPrice;
             if(instType === "Private Account"){
-                correctPrice = priceConditionViewObject.PVL;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.PVL;
+                }
             } else {
-                correctPrice = priceConditionViewObject.YLAP;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.YLAP;
+                }
             }
 
             if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){

@@ -75,16 +75,34 @@ sap.ui.define([
 
         convertToSaveObject: function(oPriceConditionViewObject){
             let priceConditionCode;         
-            
-            switch(oPriceConditionViewObject.RoyalDecree) {
-                case "IncludeInPrecioNeto":
-                priceConditionCode = "YLTP";
+
+            switch(oPriceConditionViewObject.ConditionType) {
+                case "Precio Neto":
+                    switch(oPriceConditionViewObject.RoyalDecree) {
+                        case "IncludeInPrecioNeto":
+                        priceConditionCode = "YLTP";
+                          break;
+                        case "ExcludeInPrecioNeto":
+                        priceConditionCode = "YLTF";
+                          break;
+                        case "No":
+                        priceConditionCode = "YLTF";
+                          break;
+                        default:
+                        priceConditionCode = "";
+                      }
                   break;
-                case "ExcludeInPrecioNeto":
-                priceConditionCode = "YLTF";
+                case "Descuento Comercial":
+                priceConditionCode = "YL60";
                   break;
-                case "No":
-                priceConditionCode = "YLTF";
+                case "Descuento Especial":
+                priceConditionCode = "YDC0";
+                  break;
+                case "Rappel":
+                priceConditionCode = "YAW1";
+                  break;
+                case "FOC":
+                priceConditionCode = "YA01";
                   break;
                 default:
                 priceConditionCode = "";
