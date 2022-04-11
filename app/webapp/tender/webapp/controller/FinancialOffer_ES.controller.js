@@ -252,6 +252,7 @@ sap.ui.define([
 		refreshFinancialTabES: async function () {
 			await this.getCountryBrandProductsCombined();
 			this.setFinancialOffer();
+            this.calculateProductProfitability();
 		},
 
 		
