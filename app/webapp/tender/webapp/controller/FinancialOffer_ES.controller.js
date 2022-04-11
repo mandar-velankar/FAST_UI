@@ -1218,15 +1218,15 @@ sap.ui.define([
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                    correctPrice = priceConditionViewObject.PVL / packFactor;
                 } else {
-                    correctPrice = priceConditionViewObj.PVL;
+                    correctPrice = priceConditionViewObject.PVL;
                 }
             } else {
                 if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                    correctPrice = priceConditionViewObject.YLAP / packFactor;
                 } else {
-                    correctPrice = priceConditionViewObj.YLAP;
+                    correctPrice = priceConditionViewObject.YLAP;
                 }
             }
 
