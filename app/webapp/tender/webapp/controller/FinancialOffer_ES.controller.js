@@ -784,7 +784,7 @@ sap.ui.define([
 
                             sFOCType = oPriceCondition.FOCType;
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.NetPriceWithoutTax;
+                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD;
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs.COGS;
@@ -794,21 +794,20 @@ sap.ui.define([
                         let grossSales = netPrice * dPaidVolume;
                         let netPriceWithFoc = grossSales / dTotalVolume;
                         let grossProfit = grossSales - (cogs * dTotalVolume);
-                        let grossMargin = grossProfit / grossSales;
+                        let grossMargin = grossSales ? (grossProfit / grossSales) : 0;
 
-                        return {
-                            Cogs: cogs,
-                            GrossSales: grossSales,
-                            NetPriceWithFOC: netPriceWithFoc,
-                            GrossProfit: grossProfit,
-                            GrossMargin: grossMargin
-                        };
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.GrossProfit = grossProfit;
+                        oPriceCondition.GrossMargin = grossMargin;
+
                     } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental'){
                         /* Calculation B
                             Only applies for all RENTAL price conditions, and offer division equals Radiology */
                         let oPriceCondition; 
                         if(aProductPricingView && aProductPricingView.length > 0){
-                            oPriceCondition = aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID);
+                            oPriceCondition = aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
                         }   
 
                         if(oPriceCondition){
@@ -843,20 +842,18 @@ sap.ui.define([
                         }
                     
                         let netOfferPrice = dMonthlyRentPerUnit;
-                        let netOfferPriceWithFOC = dMonthlyRentPerUnit;
+                        let netPriceWithFoc = dMonthlyRentPerUnit;
                         let grossSales = dAnnualValue;
                         let grossProfit = dSales_NPV - dCost_NPV;
                         let grossMargin = grossProfit / dSales_NPV;
 
-                        return {
-                            NetOfferPrice: netOfferPrice,
-                            NetOfferPRiceWithFOC: netOfferPriceWithFOC,
-                            Cogs: cogs,
-                            GrossSales: grossSales,
-                            NetPriceWithFOC: netPriceWithFoc,
-                            GrossProfit: grossProfit,
-                            GrossMargin: grossMargin
-                        };
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.NetOfferPrice = netOfferPrice;
+                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.GrossProfit = grossProfit;
+                        oPriceCondition.GrossMargin = grossMargin;
+
                     } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental') {
                     
                         /* Calculation C
@@ -865,7 +862,7 @@ sap.ui.define([
                         let netPrice = 0;
                         let dAnnualValue = 0;
                         if(aProductPricingView && aProductPricingView.length > 0){
-                            oPriceCondition = aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID);
+                            oPriceCondition = aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
                         }   
 
                         if(oPriceCondition){
@@ -899,25 +896,22 @@ sap.ui.define([
                             dSales_NPV = dSales_NPV + dSales_Y[i] / ((1 + dDiscountRate )^i); 
                         }
 
-                        let netOfferPrice = oProductPricing[0].MonthlyRentPerUnit;
-                        let netOfferPriceWithFOC = oProductPricing[0].MonthlyRentPerUnit;
+                        let netOfferPrice = oProductPricing.MonthlyRentPerUnit;
+                        let netPriceWithFoc = oProductPricing.MonthlyRentPerUnit;
                         let grossSales = dAnnualValue;
                         let grossProfit = dSales_NPV - dCost_NPV;
                         let grossMargin = grossProfit / dSales_NPV;
 
-                        return {
-                            NetOfferPrice: netOfferPrice,
-                            NetOfferPRiceWithFOC: netOfferPriceWithFOC,
-                            Cogs: cogs,
-                            GrossSales: grossSales,
-                            NetPriceWithFOC: netPriceWithFoc,
-                            GrossProfit: grossProfit,
-                            GrossMargin: grossMargin
-                        };
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.NetOfferPrice = netOfferPrice;
+                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.GrossProfit = grossProfit;
+                        oPriceCondition.GrossMargin = grossMargin;
                     }
                 });
 
-                return productProfitabilityData;
+                Services.getFastAppDataModel().updateBindings();
             }
         },
 
