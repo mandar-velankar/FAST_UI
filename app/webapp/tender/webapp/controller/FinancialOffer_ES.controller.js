@@ -53,6 +53,7 @@ sap.ui.define([
 
 		},
 
+
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: async function (oEvent) {
 
@@ -70,7 +71,10 @@ sap.ui.define([
 
                 await this.getCountryBrandProductsCombined();
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
-
+                
+                // initialize ConsolidatedProfitability
+                Services.initializeConsolidatedProfitability();
+                
                 // get PriceConditionClassification
                 const priceConditionClassification = await this.getPriceConditionClassification();
                 // add empty item
