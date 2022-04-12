@@ -124,6 +124,7 @@ sap.ui.define([
                 this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
                 this.calculateProductProfitability();
+                this.calculateConsolidatedProfitability();
 
                 BusyIndicator.hide();
 			}
@@ -336,6 +337,7 @@ sap.ui.define([
 			await this.getCountryBrandProductsCombined();
 			this.setFinancialOffer();
             this.calculateProductProfitability();
+            this.calculateConsolidatedProfitability();
 		},
 
 		
@@ -958,6 +960,8 @@ sap.ui.define([
                         oPriceCondition.NetPriceFOC = netPriceWithFoc;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
+                        oPriceCondition.Sales_NPV = 0;
+                        oPriceCondition.Cost_NPV = 0;
 
                     } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental'){
                         /* Calculation B
@@ -1007,6 +1011,8 @@ sap.ui.define([
                         oPriceCondition.NetPriceFOC = netPriceWithFoc;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
+                        oPriceCondition.Sales_NPV = dSales_NPV;
+                        oPriceCondition.Cost_NPV = dCost_NPV;
 
                     } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') {
                     
@@ -1057,10 +1063,89 @@ sap.ui.define([
                         oPriceCondition.NetPriceFOC = netPriceWithFoc;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
+                        oPriceCondition.Sales_NPV = dSales_NPV;
+                        oPriceCondition.Cost_NPV = dCost_NPV;
                     }
                 });
 
                 Services.getFastAppDataModel().updateBindings();
+            }
+        },
+
+        calculateConsolidatedProfitability: function(){
+            const oFastAppDataModel          = Services.getFastAppDataModel();
+            const aOfferProducts             = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
+            const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
+            const oConsolidatedProfitability = oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
+            var oCalculatedResultTotals = { GrossMargin: 0,
+                                            NetSales: 0,
+                                            COGS: 0,
+                                            Profitability: 0
+                                          }
+
+            oConsolidatedProfitability.map(consolidatedEntry => {
+                let oCalculatedResult = {};
+
+                if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
+                    //calculate contract agents, consumables & injectors
+                    let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType);
+                    oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
+                    //calculate any other product type
+                    let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agents' && product.SKU.ProductType !== 'Injectors' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumables'));
+                    oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                } else if(consolidatedEntry.ProductType === 'Total'){
+                    //calculate totals
+                    oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
+                    oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
+                    oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
+                    oCalculatedResult.Profitability = oCalculatedResultTotals.Profitability;
+                }
+
+                if(consolidatedEntry.ProductType !== 'Total'){
+                    //keep track of actual totals
+                    oCalculatedResultTotals.GrossMargin = oCalculatedResultTotals.GrossMargin + oCalculatedResult.GrossMargin;
+                    oCalculatedResultTotals.NetSales = oCalculatedResultTotals.NetSales + oCalculatedResult.NetSales;
+                    oCalculatedResultTotals.COGS = oCalculatedResultTotals.COGS + oCalculatedResult.COGS;
+                    oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                }
+
+                consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
+                consolidatedEntry.NetSales = oCalculatedResult.NetSales;
+                consolidatedEntry.COGS = oCalculatedResult.COGS;
+                consolidatedEntry.Profitability = oCalculatedResult.Profitability;
+            });
+
+            Services.getFastAppDataModel().updateBindings();
+
+        },
+
+        getCalculatedProfitability: function(aProductsPerType, aProductPricingView){
+            //let oConsolidatedProfitability = {};
+
+            let npv_grossmargin = 0;
+            let npv_netsales = 0;
+            let npv_cogs = 0;
+            let profitability = 0;
+
+            aProductsPerType.map(product => {
+                let oProductPricing; 
+                if(aProductPricingView && aProductPricingView.length > 0){
+                    oProductPricing = aProductPricingView.filter(productPricing => productPricing.ProductCode === product.SKU.PRODUCTPACKID)[0];
+
+                    npv_grossmargin = npv_grossmargin + oProductPricing.GrossMargin;
+                    npv_netsales = npv_netsales + oProductPricing.Sales_NPV;
+                    npv_cogs = npv_cogs + oProductPricing.Cost_NPV;
+                }
+
+                profitability = npv_netsales ? npv_cogs / npv_netsales : 0;
+            });
+
+            return {
+                GrossMargin: Number((npv_grossmargin).toFixed(2)),
+                NetSales: Number((npv_netsales).toFixed(2)),
+                COGS: Number((npv_cogs).toFixed(2)),
+                Profitability: Number((profitability).toFixed(2))
             }
         },
 
