@@ -252,11 +252,6 @@
                         <m:Text text="{i18n>MonthlyRent}" visible="true"/>
                     </m:Column>
 
-                    <!-- Value of Devices -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>ValueOfDevices}" visible="true"/>
-                    </m:Column>
-
                     <!-- Total -->
                     <m:Column width="12%">
                         <m:Text text="{i18n>Total}"/>
@@ -297,16 +292,11 @@
                             />
 
                             <!-- Monthly Rent -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>MONTHLYRENT'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                                 visible="{= ${fastAppData>OFFER_TYPE} === 'Rental' || ${fastAppData>OFFER_TYPE'} === 'Comodato'}"
                             />
 
-                            <!-- Value of Devices -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>VALUEOFDEVICES'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                                visible="{= ${fastAppData>OFFER_TYPE} === 'Comodato'}"
-                            />
 
                             <!-- Total -->
                             <m:Text text="{parts: [
@@ -338,7 +328,6 @@
                                                         {path: 'fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS'}, 
                                                         {path: 'fastAppData>/OfferValidation/CURRENCY'}
                                                     ], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd"/>	
-                                                    <m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS})" visible="true"/>
                                                 </m:items>
                                             </m:VBox>
 
