@@ -134,7 +134,8 @@ sap.ui.define([
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
                 "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
-                "FreeGoodsOther": this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther)
+                "FreeGoodsOther": this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
+                "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement
             }
             
             // add the ID if it exists

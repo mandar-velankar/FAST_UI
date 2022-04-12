@@ -121,6 +121,9 @@
 						</Table>
 						
 					</VBox>
+					<VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ConsolidatedProfitability" type="XML" />
+                    </VBox>
 				</l:BlockLayoutCell>
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
@@ -133,11 +136,21 @@
             <l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
                     <VBox>
+                        <MessageStrip
+							text="Existing agreement in place"
+							type="Warning"
+							showIcon="false"
+							showCloseButton="false"
+							class="sapUiSmallMarginBottom" 
+							visible="{fastAppData>/ExistingAgreementInPlace}">
+						</MessageStrip>
+                    </VBox>
+                    <VBox>
                         <HBox alignItems="Center">
                             <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
                             <Select
                                 id="idPriceConditionSelect"
-                                enabled="{fastAppData>/EditMode}"
+                                enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
                                 forceSelection="false"
                                 change=".onPriceConditionChange"
                                 items="{
