@@ -7725,6 +7725,51 @@ sap.ui.define([
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
 		},
 
+		initializeConsolidatedProfitability: function(){
+
+			const table = [
+                {
+                    ProductType: "Contrast Agents",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Consumables",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Injectors",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Other",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Total",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+            ];
+
+
+			this.getFastAppDataModel().setProperty("/SelectedOffer/ConsolidatedProfitability", table);
+
+		},
+
 	});
 
 	return new Service();
