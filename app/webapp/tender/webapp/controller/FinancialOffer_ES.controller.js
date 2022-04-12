@@ -906,18 +906,18 @@ sap.ui.define([
             let oBindingContext = oProductsTable.getBindingContext('fastAppData');
             let oFastAppDataModel = Services.getFastAppDataModel();
             let productProfitabilityData = [];
-            let oProductConditionView = [];
+            let oProductConditionView = null;
 
             const aOfferProducts = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
             let aPriceConditionViews = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
-                aPriceConditionViews = aPriceConditionViews && aPriceConditionViews.filter(priceCondition => priceCondition.ExistingPriceConditionID != null); // we only need the active ones
+                //aPriceConditionViews = aPriceConditionViews && aPriceConditionViews.filter(priceCondition => priceCondition.ExistingPriceConditionID != null); // we only need the active ones
             let aProductPricingView = oFastAppDataModel.getProperty('/ProductPricingView');
             const oSelectedOffer = oFastAppDataModel.getProperty('/SelectedOffer'); //get selected offer
 
             if (aOfferProducts && aOfferProducts.length > 0){
                 productProfitabilityData = aOfferProducts.map(product => {
                     if(aPriceConditionViews && aPriceConditionViews.length > 0){
-                        oProductConditionView = aPriceConditionViews.filter(priceConditionView => priceConditionView.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                        oProductConditionView = aPriceConditionViews[(Services.getSelectedPriceConditionPath()).split("/").pop()];
                     }
 
                     if(oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental'){
