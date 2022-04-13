@@ -32,10 +32,6 @@ sap.ui.define([
 
 			this.getView().setModel(oViewModel, "finOfferView");
             Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
-            Services.getFastAppDataModel().setProperty("/RappelRequired", false);
-            Services.getFastAppDataModel().setProperty("/RappelExpanded", false);
-            Services.getFastAppDataModel().setProperty("/FOCRequired", false);
-            Services.getFastAppDataModel().setProperty("/FOCExpanded", false);
 
 			//get resource bundle for translations or texts
 			this._oOwnerComponent = this.getOwnerComponent();
@@ -71,6 +67,12 @@ sap.ui.define([
 			if (sTab && sTab.includes("financialOfferId_ES")) {
 
                 BusyIndicator.show();
+
+                Services.getFastAppDataModel().setProperty("/RappelRequired", false);
+                Services.getFastAppDataModel().setProperty("/RappelExpanded", false);
+                Services.getFastAppDataModel().setProperty("/FOCRequired", false);
+                Services.getFastAppDataModel().setProperty("/FOCExpanded", false);
+
                 // this.getView().setBusyIndicatorDelay(0);
 
                 await this.getCountryBrandProductsCombined();
