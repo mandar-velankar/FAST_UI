@@ -111,16 +111,19 @@ sap.ui.define([
 
                 // set selected key on idPriceConditionSelect
                 const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
+                const PVLPriceCondition = priceConditionClassification.find( pcc => pcc.ConditionType === 'PVL' );
                 if(existingMainPriceCondition){
                     this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
                     // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
                     existingMainPriceCondition.ExistingPriceConditionID = null; 
+                }else if(PVLPriceCondition){
+                    this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
                 }else{
                     this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
                 }
 
                 // load main fragment if main condition already exists
-                const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : "";
+                const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
                 this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
                 this.calculateProductProfitability();
