@@ -32,6 +32,10 @@ sap.ui.define([
 
 			this.getView().setModel(oViewModel, "finOfferView");
             Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
+            Services.getFastAppDataModel().setProperty("/RappelRequired", false);
+            Services.getFastAppDataModel().setProperty("/RappelExpanded", false);
+            Services.getFastAppDataModel().setProperty("/FOCRequired", false);
+            Services.getFastAppDataModel().setProperty("/FOCExpanded", false);
 
 			//get resource bundle for translations or texts
 			this._oOwnerComponent = this.getOwnerComponent();
@@ -656,6 +660,8 @@ sap.ui.define([
         },
 
         checkSaveFinancialOfferSpain: function (oPriceConditions){
+            const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
+            const focRequired = Services.getFastAppDataModel().getProperty("/FOCRequired");
             var aErroneousCondition = [];            
 
             for(let i = 0; i < oPriceConditions.length; i++){            
@@ -670,11 +676,20 @@ sap.ui.define([
                 } else if(oPriceConditions[i].ConditionType === "Descuento Especial"){
                     //no explicit checks needed
                 } else if(oPriceConditions[i].ConditionType === "Rappel"){
-                    // if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].Liquidation || !oPriceConditions[i].onVolumeTreshhold || !oPriceConditions[i].Discount || !oPriceConditions[i].ReturnDate){
-                    //     aErroneousCondition.push(oPriceConditions[i].ConditionType);
-                    // } // TODO: check the requirements 
+                    if(rappelRequired && 
+                        ( !oPriceConditions[i].RoyalDecree || 
+                            !oPriceConditions[i].Liquidation || 
+                            // !oPriceConditions[i].onVolumeTreshhold || 
+                            // !oPriceConditions[i].Discount || 
+                            !oPriceConditions[i].DiscountConditions || 
+                            !oPriceConditions[i].RefundDate)){
+                        aErroneousCondition.push(oPriceConditions[i].ConditionType);
+                    } // TODO: check the requirements 
                 } else if(oPriceConditions[i].ConditionType === "FOC"){
                     //no explicit checks needed
+                    //Dear future developer, user "focRequired" if you add a check for required fields of FOC
+                    //example: if(focRequired && (!oPriceConditions[i].fieldX ||... ))
+                    //May the force be with you !
                 }
             }      
             
@@ -1378,7 +1393,7 @@ sap.ui.define([
             const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
 
 			let freeGoodsOther = oFastAppDataModel.getProperty(sPath);
-			freeGoodsOther = freeGoodsOther.map(freeGoods => {
+			freeGoodsOther = (freeGoodsOther && freeGoodsOther.map(freeGoods => {
 				freeGoods.FreeGoodsOtherFOCMinAmountValueState = "None";
                 freeGoods.FOCBonusValueState = "None";
 
@@ -1391,7 +1406,7 @@ sap.ui.define([
 				}
 
 				return freeGoods;
-			});
+			}))||[];
 			oFastAppDataModel.setProperty(sPath, freeGoodsOther);
 			const foundError = freeGoodsOther.find(freeGoods => freeGoods.FreeGoodsOtherFOCMinAmountValueState === "Error" || freeGoods.FOCBonusValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
@@ -1510,7 +1525,20 @@ sap.ui.define([
             selectedPriceCondition.AnnualValue = (monthlyRent * 12) * reqestedVolume;
             Services.getFastAppDataModel().updateBindings();
         },
-
+        onSwitchChanged:function(event,switchName){
+            const rappelIndex = Services.getFastAppDataModel().getProperty("/PriceConditionView").findIndex(item => item.ConditionType === switchName);
+            const isRequired = Services.getFastAppDataModel().getProperty(`/${switchName}Required`);
+            Services.getFastAppDataModel().setProperty(`/${switchName}Expanded`, isRequired);
+            if(!isRequired && switchName === 'Rappel'){
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RoyalDecree`,"");
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Liquidation`,"");
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RefundDate`,null);
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
+            }
+            if(!isRequired && switchName === 'FOC'){
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/FreeGoodsOther`,[]);
+            }
+        }
 
         
     });

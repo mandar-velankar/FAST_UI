@@ -1,8 +1,15 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
 	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-    <Panel expandable="true" headerText="Rappel">
+    <Panel expandable="true" expanded="{fastAppData>/RappelExpanded}">
+		<headerToolbar>
+			<OverflowToolbar>
+				<Title text="Rappel"/>
+				<ToolbarSpacer />
+				<Switch state="{fastAppData>/RappelRequired}" visible="{fastAppData>/EditMode}" change=".onSwitchChanged($event,'Rappel')"/>
+			</OverflowToolbar>
+		</headerToolbar>
         <form:SimpleForm
-            editable="false"
+            editable="true"
             class="editableForm"
             layout="ResponsiveGridLayout"
             labelSpanXL="3"
@@ -26,7 +33,7 @@
                <Input value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>YLAP}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>YLAP} }"
                 type="Number"  visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>  
                 <Label text="{i18n>RoyalDecree}" required="true"/>
-                <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}"> 
+                <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"> 
                     <items>
                         <core:Item key="" text="" />
                         <core:Item key="Yes" text="Yes" />
@@ -34,7 +41,7 @@
                     </items>
                 </Select>
                 <Label text="{i18n>Liquidation}" required="true"/>
-                <Select selectedKey="{fastAppData>Liquidation}" enabled="{fastAppData>/EditMode}"> 
+                <Select selectedKey="{fastAppData>Liquidation}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"> 
                     <items>
                         <core:Item key="" text="" />
                         <core:Item key="Monthly" text="Monthly" />
@@ -50,10 +57,10 @@
                         displayFormat="long"
                         placeholder="Enter Date"
                         change="handleChange"
-                        enabled="{fastAppData>/EditMode}"
+                        enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"
                         class="sapUiSmallMarginBottom"/>
                 <Label text="{i18n>VolTreshold}" required="true"/>
-                <MultiInput valueHelpOnly="true" valueHelpRequest=".onVolumeTreshhold" tokens="{fastAppData>DiscountConditions}" enabled="{fastAppData>/EditMode}">
+                <MultiInput valueHelpOnly="true" valueHelpRequest=".onVolumeTreshhold" tokens="{fastAppData>DiscountConditions}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }">
                     <tokens>
                         <Token key="{fastAppData>Volume}" text="{fastAppData>Volume}" editable="false"></Token>
                     </tokens>
