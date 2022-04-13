@@ -67,6 +67,12 @@ sap.ui.define([
 			if (sTab && sTab.includes("financialOfferId_ES")) {
 
                 BusyIndicator.show();
+
+                Services.getFastAppDataModel().setProperty("/RappelRequired", false);
+                Services.getFastAppDataModel().setProperty("/RappelExpanded", false);
+                Services.getFastAppDataModel().setProperty("/FOCRequired", false);
+                Services.getFastAppDataModel().setProperty("/FOCExpanded", false);
+
                 // this.getView().setBusyIndicatorDelay(0);
 
                 await this.getCountryBrandProductsCombined();
@@ -111,16 +117,19 @@ sap.ui.define([
 
                 // set selected key on idPriceConditionSelect
                 const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
+                const PVLPriceCondition = priceConditionClassification.find( pcc => pcc.ConditionType === 'PVL' );
                 if(existingMainPriceCondition){
                     this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
                     // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
                     existingMainPriceCondition.ExistingPriceConditionID = null; 
+                }else if(PVLPriceCondition){
+                    this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
                 }else{
                     this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
                 }
 
                 // load main fragment if main condition already exists
-                const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : "";
+                const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
                 this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
                 this.calculateProductProfitability();
@@ -653,6 +662,8 @@ sap.ui.define([
         },
 
         checkSaveFinancialOfferSpain: function (oPriceConditions){
+            const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
+            const focRequired = Services.getFastAppDataModel().getProperty("/FOCRequired");
             var aErroneousCondition = [];            
 
             for(let i = 0; i < oPriceConditions.length; i++){            
@@ -667,11 +678,20 @@ sap.ui.define([
                 } else if(oPriceConditions[i].ConditionType === "Descuento Especial"){
                     //no explicit checks needed
                 } else if(oPriceConditions[i].ConditionType === "Rappel"){
-                    // if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].Liquidation || !oPriceConditions[i].onVolumeTreshhold || !oPriceConditions[i].Discount || !oPriceConditions[i].ReturnDate){
-                    //     aErroneousCondition.push(oPriceConditions[i].ConditionType);
-                    // } // TODO: check the requirements 
+                    if(rappelRequired && 
+                        ( !oPriceConditions[i].RoyalDecree || 
+                            !oPriceConditions[i].Liquidation || 
+                            // !oPriceConditions[i].onVolumeTreshhold || 
+                            // !oPriceConditions[i].Discount || 
+                            !oPriceConditions[i].DiscountConditions || 
+                            !oPriceConditions[i].RefundDate)){
+                        aErroneousCondition.push(oPriceConditions[i].ConditionType);
+                    } // TODO: check the requirements 
                 } else if(oPriceConditions[i].ConditionType === "FOC"){
                     //no explicit checks needed
+                    //Dear future developer, user "focRequired" if you add a check for required fields of FOC
+                    //example: if(focRequired && (!oPriceConditions[i].fieldX ||... ))
+                    //May the force be with you !
                 }
             }      
             
@@ -1375,7 +1395,7 @@ sap.ui.define([
             const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
 
 			let freeGoodsOther = oFastAppDataModel.getProperty(sPath);
-			freeGoodsOther = freeGoodsOther.map(freeGoods => {
+			freeGoodsOther = (freeGoodsOther && freeGoodsOther.map(freeGoods => {
 				freeGoods.FreeGoodsOtherFOCMinAmountValueState = "None";
                 freeGoods.FOCBonusValueState = "None";
 
@@ -1388,7 +1408,7 @@ sap.ui.define([
 				}
 
 				return freeGoods;
-			});
+			}))||[];
 			oFastAppDataModel.setProperty(sPath, freeGoodsOther);
 			const foundError = freeGoodsOther.find(freeGoods => freeGoods.FreeGoodsOtherFOCMinAmountValueState === "Error" || freeGoods.FOCBonusValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
@@ -1507,7 +1527,20 @@ sap.ui.define([
             selectedPriceCondition.AnnualValue = (monthlyRent * 12) * reqestedVolume;
             Services.getFastAppDataModel().updateBindings();
         },
-
+        onSwitchChanged:function(event,switchName){
+            const rappelIndex = Services.getFastAppDataModel().getProperty("/PriceConditionView").findIndex(item => item.ConditionType === switchName);
+            const isRequired = Services.getFastAppDataModel().getProperty(`/${switchName}Required`);
+            Services.getFastAppDataModel().setProperty(`/${switchName}Expanded`, isRequired);
+            if(!isRequired && switchName === 'Rappel'){
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RoyalDecree`,"");
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Liquidation`,"");
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RefundDate`,null);
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
+            }
+            if(!isRequired && switchName === 'FOC'){
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/FreeGoodsOther`,[]);
+            }
+        }
 
         
     });
