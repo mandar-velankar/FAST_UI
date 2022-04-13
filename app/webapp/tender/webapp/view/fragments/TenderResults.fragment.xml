@@ -95,7 +95,13 @@
                                         text="" 
                                         icon="{= ${fastAppData>PriceAgreement} ? 'sap-icon://display' : 'sap-icon://create' }" 
                                         press="onCreatePriceAgreement" 
-                                        enabled="{= ${fastAppData>/EditMode} === true ? false : true}" 
+                                        enabled="{
+                                            parts: [
+                                                {path: 'fastAppData>OUTCOME'}, 
+                                                {path: 'fastAppData>/SelectedOffer/SelectedProduct/PriceCondition'}
+                                            ],
+                                            formatter:'.checkBtnCreatePriceAgreementEnabled'
+                                        }" 
                                         visible="{= 
                                             ${fastAppData>/Tender/CountryCode} === 'IT' ||
                                             ${fastAppData>/Tender/CountryCode} === 'ES'
@@ -169,6 +175,20 @@
                                     </m:VBox>
                                 </t:template>
 
+                            </t:Column>
+
+                            <t:Column width="9rem">
+                                <m:Label text="Outcome"/>
+                                <t:template>
+                                    <!--<m:Input value="{fastAppData>OUTCOME}" editable="false"/>-->
+                                    <m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
+                                                                            enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
+                                                                            change="onChangeOutcome" 
+                                                                            items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' }, templateShareable:false }"
+                                                                            width="20rem">
+                                        <core:Item key="{fastAppData>Outcome}" text="{fastAppData>Outcome}"/>
+                                    </m:Select>
+                                </t:template>
                             </t:Column>
         
                             <t:Column width="9rem">
@@ -257,19 +277,6 @@
                                             <core:Item text="Appeal in Progress" key="Appeal in Progress"/>
                                             <core:Item text="Appealed final results" key="Appealed final results"/>
                                         </m:items>
-                                    </m:Select>
-                                </t:template>
-                            </t:Column>
-                            <t:Column width="9rem">
-                                <m:Label text="Outcome"/>
-                                <t:template>
-                                    <!--<m:Input value="{fastAppData>OUTCOME}" editable="false"/>-->
-                                    <m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
-                                                                            enabled="{= ${fastAppData>/EditMode} === true ? true : false}" 
-                                                                            change="onChangeOutcome" 
-                                                                            items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' }, templateShareable:false }"
-                                                                            width="20rem">
-                                        <core:Item key="{fastAppData>Outcome}" text="{fastAppData>Outcome}"/>
                                     </m:Select>
                                 </t:template>
                             </t:Column>
