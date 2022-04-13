@@ -946,7 +946,7 @@ sap.ui.define([
                             netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD;
                         }
                         let requestedVolume = product.RequestedVolume;
-                        let cogs = product.Cogs.COGS;
+                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
 
                         let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
                         let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
@@ -977,7 +977,7 @@ sap.ui.define([
                         let dDiscountRate = 0.05;
                         let dMaintenanceCost = 1200;
                         let dDurationAgreementYears = 5;
-                        let cogs = product.Cogs.COGS;
+                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
 
                         let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
                         let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
@@ -994,7 +994,7 @@ sap.ui.define([
                         let dCost_NPV = dCost_Y1;
                         let dSales_NPV = dSales_Y1;
                         
-                        for(let i = 2; i <= (dDurationAgreementYears + 1); i++){
+                        for(let i = 2; i <= (dDurationAgreementYears); i++){
                             dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate)**i);
                             dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate)**i);
                         }
@@ -1007,7 +1007,7 @@ sap.ui.define([
 
                         oPriceCondition.cogsUoM = cogs;
                         oPriceCondition.GrossSales = grossSales;
-                        oPriceCondition.NetOfferPrice = netOfferPrice;
+                        oPriceCondition.NetofferPrice = netOfferPrice;
                         oPriceCondition.NetPriceFOC = netPriceWithFoc;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
@@ -1023,9 +1023,9 @@ sap.ui.define([
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                         let netPrice = oProductConditionView ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : 0;
-                        let dAnnualValue = oProductConditionView ? oProductConditionView.AnnualValue : 0;
                         let dAnnualUnits = product.RequestedVolume;
-                        let cogs = product.Cogs.COGS;
+                        let dAnnualValue = dAnnualUnits * netPrice;
+                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
                         
                         let dStartMonth = 1;
                         let dDiscountRate = 0.05;
@@ -1051,16 +1051,14 @@ sap.ui.define([
                             dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate )**i); 
                         }
 
-                        let netOfferPrice = oProductConditionView ? oProductConditionView.MonthlyRentPerUnit : 0;
-                        let netPriceWithFoc = oProductConditionView ? oProductConditionView.MonthlyRentPerUnit : 0;
                         let grossSales = dAnnualValue;
                         let grossProfit = dSales_NPV - dCost_NPV;
                         let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
 
                         oPriceCondition.cogsUoM = cogs;
                         oPriceCondition.GrossSales = grossSales;
-                        oPriceCondition.NetOfferPrice = netOfferPrice;
-                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.NetofferPrice = netPrice;
+                        oPriceCondition.NetPriceFOC = netPrice;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = dSales_NPV;
@@ -1083,40 +1081,42 @@ sap.ui.define([
                                             Profitability: 0
                                           }
 
-            oConsolidatedProfitability.map(consolidatedEntry => {
-                let oCalculatedResult = {};
+            if(oConsolidatedProfitability && oConsolidatedProfitability.length > 0){
+                oConsolidatedProfitability.map(consolidatedEntry => {
+                    let oCalculatedResult = {};
 
-                if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
-                    //calculate contract agents, consumables & injectors
-                    let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType);
-                    oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
-                } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
-                    //calculate any other product type
-                    let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agents' && product.SKU.ProductType !== 'Injectors' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumables'));
-                    oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
-                } else if(consolidatedEntry.ProductType === 'Total'){
-                    //calculate totals
-                    oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
-                    oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
-                    oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
-                    oCalculatedResult.Profitability = oCalculatedResultTotals.Profitability;
-                }
+                    if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
+                        //calculate contract agents, consumables & injectors
+                        let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1));
+                        oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                    } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
+                        //calculate any other product type
+                        let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable'));
+                        oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                    } else if(consolidatedEntry.ProductType === 'Total'){
+                        //calculate totals
+                        oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
+                        oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
+                        oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
+                        oCalculatedResult.Profitability = oCalculatedResultTotals.Profitability;
+                    }
 
-                if(consolidatedEntry.ProductType !== 'Total'){
-                    //keep track of actual totals
-                    oCalculatedResultTotals.GrossMargin = oCalculatedResultTotals.GrossMargin + oCalculatedResult.GrossMargin;
-                    oCalculatedResultTotals.NetSales = oCalculatedResultTotals.NetSales + oCalculatedResult.NetSales;
-                    oCalculatedResultTotals.COGS = oCalculatedResultTotals.COGS + oCalculatedResult.COGS;
-                    oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
-                }
+                    if(consolidatedEntry.ProductType !== 'Total'){
+                        //keep track of actual totals
+                        oCalculatedResultTotals.GrossMargin = oCalculatedResultTotals.GrossMargin + oCalculatedResult.GrossMargin;
+                        oCalculatedResultTotals.NetSales = oCalculatedResultTotals.NetSales + oCalculatedResult.NetSales;
+                        oCalculatedResultTotals.COGS = oCalculatedResultTotals.COGS + oCalculatedResult.COGS;
+                        oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                    }
 
-                consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
-                consolidatedEntry.NetSales = oCalculatedResult.NetSales;
-                consolidatedEntry.COGS = oCalculatedResult.COGS;
-                consolidatedEntry.Profitability = oCalculatedResult.Profitability;
-            });
+                    consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
+                    consolidatedEntry.NetSales = oCalculatedResult.NetSales;
+                    consolidatedEntry.COGS = oCalculatedResult.COGS;
+                    consolidatedEntry.Profitability = oCalculatedResult.Profitability;
+                });
 
-            Services.getFastAppDataModel().updateBindings();
+                Services.getFastAppDataModel().updateBindings();
+            }
 
         },
 
