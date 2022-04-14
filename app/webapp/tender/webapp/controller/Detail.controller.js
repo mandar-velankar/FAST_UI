@@ -9868,6 +9868,18 @@ sap.ui.define([
 			this._sendNotificationDialog.destroy();
 		},
 
+		checkBtnCreatePriceAgreementEnabled: function(outcome, priceConditions){
+			if(!outcome || !priceConditions) return false;
+			let bEnabled = false;
+			const mainCondition = priceConditions?.results?.find(condition => condition?.PriceConditionClassification?.isMain);
+			const referencePriceAgreement = mainCondition?.ReferencePriceAgreement ? true : false;
+			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
+			const hadAdditionalPriceConditions = priceConditions.results.length > 1;
+			bEnabled = isOutcomeWon;
+			if(isOutcomeWon && referencePriceAgreement) bEnabled = hadAdditionalPriceConditions;
+			return bEnabled;
+		},
+
 
 	});
 });
