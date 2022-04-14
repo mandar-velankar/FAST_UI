@@ -6069,9 +6069,9 @@ sap.ui.define([
 			return oProductService.getCountryBrandProducts(countryCode);
 		},
 
-        getProductTypeProfitability: function (offerID) {
-			let oProductService = this.getService('Offer');
-			return oProductService.getProductTypeProfitability(offerID);
+        getProductTypeProfitability: function (sOfferId, sCountryCode) {
+			let oOfferService = this.getService('Offer');
+			return oOfferService.getProductTypeProfitability(sOfferId, sCountryCode);
 		},
 
 

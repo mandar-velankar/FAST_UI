@@ -377,7 +377,7 @@ sap.ui.define([
 
             if (sOfferId, sCountryCode) {
 				const response = await Services.getProductTypeProfitability(sOfferId, sCountryCode);
-                oFastAppDataModel.setProperty("/ProductTypeProfitability");
+                oFastAppDataModel.setProperty("/ProductTypeProfitability", response.data.results);
 				return response.data.results;
 			}
         },
@@ -489,7 +489,7 @@ sap.ui.define([
                 this.byId("ApprovalButtonId").setEnabled(true);
 
                 //refresh data (for table)
-                this.refreshFinancialTabES();
+                await this.refreshFinancialTabES();
 
                 let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
                 const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
@@ -1103,6 +1103,7 @@ sap.ui.define([
             const aOfferProducts             = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
             const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
             const oConsolidatedProfitability = oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
+            const oProductTypeProfitability  = oFastAppDataModel.getProperty('/ProductTypeProfitability');
             var oCalculatedResultTotals = { GrossMargin: 0,
                                             NetSales: 0,
                                             COGS: 0,
@@ -1137,6 +1138,9 @@ sap.ui.define([
                         oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
                     }
 
+                    if(oProductTypeProfitability && oProductTypeProfitability.length > 0){
+                        consolidatedEntry.ID = oProductTypeProfitability.filter(dbProfitability => dbProfitability.ProductType === consolidatedEntry.ProductType)[0].ID; //get the effective ID from the db entity.
+                    }
                     consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
                     consolidatedEntry.NetSales = oCalculatedResult.NetSales;
                     consolidatedEntry.COGS = oCalculatedResult.COGS;
