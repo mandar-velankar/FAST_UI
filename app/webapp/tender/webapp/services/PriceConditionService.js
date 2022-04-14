@@ -109,12 +109,32 @@ sap.ui.define([
               }
 
               oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
+
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let convertedPVL;
+            let convertedConfPrice;
+
+            if(UOM === "Unit"){
+                convertedPVL = oPriceConditionViewObject.PVL / packFactor;
+                convertedConfPrice = oPriceConditionViewObject.YLAP / packFactor;
+            } else {
+                convertedPVL = oPriceConditionViewObject.PVL;
+                convertedConfPrice = oPriceConditionViewObject.YLAP;
+            }
+
+            if(instType === "Private Account"){
+                convertedConfPrice = null;
+                
+            } 
                       
             let obj = {
                 "CountryCode": oPriceConditionViewObject.CountryCode,
                 "OfferID": oPriceConditionViewObject.OfferID,
                 "ProductCode": oPriceConditionViewObject.ProductCode,
-                "PVL": oPriceConditionViewObject.PVL,
+                "PVL": convertedPVL,
+                "ConfidentialPrice":  convertedConfPrice,
                 "Discount": oPriceConditionViewObject.Discount,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "StandardDiscount": oPriceConditionViewObject.StandardDiscount,
