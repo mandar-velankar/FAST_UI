@@ -6069,6 +6069,10 @@ sap.ui.define([
 			return oProductService.getCountryBrandProducts(countryCode);
 		},
 
+        getProductTypeProfitability: function (offerID) {
+			let oProductService = this.getService('Offer');
+			return oProductService.getProductTypeProfitability(offerID);
+		},
 
 
 		//soft delete Offer (=set inactive column to 0)

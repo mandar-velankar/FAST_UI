@@ -70,6 +70,8 @@ sap.ui.define([
                 // this.getView().setBusyIndicatorDelay(0);
 
                 await this.getCountryBrandProductsCombined();
+                await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
+
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
                 
                 // initialize ConsolidatedProfitability
@@ -123,8 +125,7 @@ sap.ui.define([
                 const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : "";
                 this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
-                this.calculateProductProfitability();
-                this.calculateConsolidatedProfitability();
+                this.calculateProfitability();
 
                 BusyIndicator.hide();
 			}
@@ -335,9 +336,9 @@ sap.ui.define([
 		},
 		refreshFinancialTabES: async function () {
 			await this.getCountryBrandProductsCombined();
+            await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
-            this.calculateProductProfitability();
-            this.calculateConsolidatedProfitability();
+            this.calculateProfitability();
 		},
 
 		
@@ -370,6 +371,16 @@ sap.ui.define([
 				return response.data.results;
 			}
 		},
+
+        getProductTypeProfitability: async function (sOfferId, sCountryCode){
+            const oFastAppDataModel = Services.getFastAppDataModel();
+
+            if (sOfferId, sCountryCode) {
+				const response = await Services.getProductTypeProfitability(sOfferId, sCountryCode);
+                oFastAppDataModel.setProperty("/ProductTypeProfitability");
+				return response.data.results;
+			}
+        },
 
         getPriceConditionClassification: async function(){
 
@@ -479,6 +490,13 @@ sap.ui.define([
 
                 //refresh data (for table)
                 this.refreshFinancialTabES();
+
+                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
+                const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
+                    return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
+                });
+
+                await Promise.all(saveProductProfitabilityPromises);
 
                 BusyIndicator.hide();
             } 
@@ -650,6 +668,11 @@ sap.ui.define([
             }
 
             return selectedPriceConditions;
+        },
+
+        getConsolidatedProfitability: function(){  
+            let oFastAppDataModel = Services.getFastAppDataModel();
+            return oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
         },
 
         checkSaveFinancialOfferSpain: function (oPriceConditions){
@@ -901,6 +924,11 @@ sap.ui.define([
             priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2))
 
             bindingContext.getModel().updateBindings();
+        },
+
+        calculateProfitability: function(){
+            this.calculateProductProfitability();
+            this.calculateConsolidatedProfitability();
         },
 
         calculateProductProfitability: function (){
