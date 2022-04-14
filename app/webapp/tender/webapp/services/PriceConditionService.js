@@ -110,9 +110,9 @@ sap.ui.define([
 
               oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
 
-            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
+            let packFactor =  Services.getFastAppDataModel().getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = Services.getFastAppDataModel().getData().ProductPricingView[0].UOM;
             let convertedPVL;
             let convertedConfPrice;
 
