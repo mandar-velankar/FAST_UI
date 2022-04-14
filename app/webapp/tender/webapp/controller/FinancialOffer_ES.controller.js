@@ -70,6 +70,8 @@ sap.ui.define([
                 // this.getView().setBusyIndicatorDelay(0);
 
                 await this.getCountryBrandProductsCombined();
+                await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
+
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
                 
                 // initialize ConsolidatedProfitability
@@ -123,8 +125,7 @@ sap.ui.define([
                 const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : "";
                 this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
-                this.calculateProductProfitability();
-                this.calculateConsolidatedProfitability();
+                this.calculateProfitability();
 
                 BusyIndicator.hide();
 			}
@@ -335,9 +336,9 @@ sap.ui.define([
 		},
 		refreshFinancialTabES: async function () {
 			await this.getCountryBrandProductsCombined();
+            await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
-            this.calculateProductProfitability();
-            this.calculateConsolidatedProfitability();
+            this.calculateProfitability();
 		},
 
 		
@@ -370,6 +371,16 @@ sap.ui.define([
 				return response.data.results;
 			}
 		},
+
+        getProductTypeProfitability: async function (sOfferId, sCountryCode){
+            const oFastAppDataModel = Services.getFastAppDataModel();
+
+            if (sOfferId, sCountryCode) {
+				const response = await Services.getProductTypeProfitability(sOfferId, sCountryCode);
+                oFastAppDataModel.setProperty("/ProductTypeProfitability", response.data.results);
+				return response.data.results;
+			}
+        },
 
         getPriceConditionClassification: async function(){
 
@@ -478,7 +489,14 @@ sap.ui.define([
                 this.byId("ApprovalButtonId").setEnabled(true);
 
                 //refresh data (for table)
-                this.refreshFinancialTabES();
+                await this.refreshFinancialTabES();
+
+                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
+                const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
+                    return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
+                });
+
+                await Promise.all(saveProductProfitabilityPromises);
 
                 BusyIndicator.hide();
             } 
@@ -650,6 +668,11 @@ sap.ui.define([
             }
 
             return selectedPriceConditions;
+        },
+
+        getConsolidatedProfitability: function(){  
+            let oFastAppDataModel = Services.getFastAppDataModel();
+            return oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
         },
 
         checkSaveFinancialOfferSpain: function (oPriceConditions){
@@ -903,6 +926,11 @@ sap.ui.define([
             bindingContext.getModel().updateBindings();
         },
 
+        calculateProfitability: function(){
+            this.calculateProductProfitability();
+            this.calculateConsolidatedProfitability();
+        },
+
         calculateProductProfitability: function (){
             let oProductsTable = this.byId("idFinancialOfferViewProduct");
             let oBindingContext = oProductsTable.getBindingContext('fastAppData');
@@ -1075,6 +1103,7 @@ sap.ui.define([
             const aOfferProducts             = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
             const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
             const oConsolidatedProfitability = oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
+            const oProductTypeProfitability  = oFastAppDataModel.getProperty('/ProductTypeProfitability');
             var oCalculatedResultTotals = { GrossMargin: 0,
                                             NetSales: 0,
                                             COGS: 0,
@@ -1109,6 +1138,9 @@ sap.ui.define([
                         oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
                     }
 
+                    if(oProductTypeProfitability && oProductTypeProfitability.length > 0){
+                        consolidatedEntry.ID = oProductTypeProfitability.filter(dbProfitability => dbProfitability.ProductType === consolidatedEntry.ProductType)[0].ID; //get the effective ID from the db entity.
+                    }
                     consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
                     consolidatedEntry.NetSales = oCalculatedResult.NetSales;
                     consolidatedEntry.COGS = oCalculatedResult.COGS;
