@@ -175,6 +175,25 @@
 										<Input  id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}"  maxLength="255"/>
 									</t:template>
 								</t:Column>
+
+                                <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+									<Label id="idAnticipatedRequestedQuantity" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/required}"/>
+									<t:template>
+                                        <Select selectedKey="{fastAppData>AnticipatedRequestedQuantity}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Anticipated" key="Anticipated"/>
+												<core:Item text="Requested" key="Requested"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+                                
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/visible}">
 									<Label id="idAlternateOfferLabel" 
 									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/description',
@@ -480,23 +499,7 @@
 										</Select>
 									</t:template>
 								</t:Column>
-                                <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
-									<Label id="idAnticipatedRequestedQuantity" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/description'}" 
-												    		   wrapping="true" 
-															   required="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/required}"/>
-									<t:template>
-                                        <Select selectedKey="{fastAppData>AnticipatedRequestedQuantity}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
-											<items>
-												<core:Item text="" key=""/>
-												<core:Item text="Anticipated" key="Anticipated"/>
-												<core:Item text="Requested" key="Requested"/>
-											</items>
-											<layoutData>
-												<l:GridData span="L6 M6 S6"/>
-											</layoutData>
-										</Select>
-									</t:template>
-								</t:Column>
+                                
                                 <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}">
 									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/BU/description'}" 
 												    		   wrapping="true" 
