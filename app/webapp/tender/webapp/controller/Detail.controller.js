@@ -3261,6 +3261,10 @@ sap.ui.define([
 				if(this._pageFragments.QuotationView_IT){
 					this._pageFragments.QuotationView_IT = null;
 				}
+
+                if(this._pageFragments.QuotationView_ES){
+					this._pageFragments.QuotationView_ES = null;
+				}
 			}
 
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');

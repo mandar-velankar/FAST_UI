@@ -71,7 +71,22 @@ sap.ui.define([
 
             return this.createPriceCondition(oPriceCondition);
 
+            // let sPath = "/PriceCondition";
+            // if(oPriceCondition.ID){
+            //     sPath = oModel.createKey("/PriceCondition", {
+            //         ID: oPriceCondition.ID
+            //     });
+            // }
+			// return this.odata(sPath).put(oPriceCondition);
         },
+
+        deletePriceCondition: function (oPriceCondition) {
+            const oModel = Services.getDefaultModel();
+			const sPath = oModel.createKey("/PriceCondition", {
+				ID: oPriceCondition.ID
+			});
+			return this.odata(sPath).delete();
+		},
 
         convertToSaveObject: function(oPriceConditionViewObject,tab){
             let priceConditionCode;         
