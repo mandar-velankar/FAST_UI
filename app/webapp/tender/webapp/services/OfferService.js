@@ -189,7 +189,72 @@ sap.ui.define([
 
 			return oOfferStatusSaveInfo;
 
-		}
+		},
+
+        getProductTypeProfitability:function(sOfferId, sCountryCode){
+			
+			var sPath = "/ProductTypeProfitability";
+
+			var oOfferIdFilter = new Filter({
+				path: 'OfferId',
+				operator: FilterOperator.EQ,
+				value1: sOfferId
+			});
+
+			var oCountryCodeFilter = new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+			var mParameters = {
+				filters: [oOfferIdFilter, oCountryCodeFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+        createProductTypeProfitability: function (oProductTypeProfitability) {
+			return this.odata("/ProductTypeProfitability").post(oProductTypeProfitability);
+		},
+
+		updateProductTypeProfitability: function (oProductTypeProfitability) {
+			const oModel = Services.getDefaultModel();
+			const sPath = oModel.createKey("/ProductTypeProfitability", {
+				ID: oProductTypeProfitability.ID
+			});
+
+			return this.odata(sPath).put(oProductTypeProfitability);
+		},
+
+        upsertProductTypeProfitability: function(oProductTypeProfitability){
+
+            if(oProductTypeProfitability.ID){
+                return this.updateProductTypeProfitability(this.getConvertProductTypeProfitabilityToSave(oProductTypeProfitability));
+            }
+
+            return this.createProductTypeProfitability(this.getConvertProductTypeProfitabilityToSave(oProductTypeProfitability));
+
+        },
+
+        getConvertProductTypeProfitabilityToSave: function (oProfitabilitySaveInfo) {
+
+			let oConvertedSaveInfo = {
+                OfferId: Services.getSelectedOfferID(),
+                CountryCode: Services.getSelectedCountry(),
+                ProductType: oProfitabilitySaveInfo.ProductType,
+                NPV_GrossMargin: oProfitabilitySaveInfo.GrossMargin,
+                NPV_NetSales: oProfitabilitySaveInfo.NetSales,
+                NPV_Cogs: oProfitabilitySaveInfo.COGS,
+                Profitability: oProfitabilitySaveInfo.Profitability
+            };
+
+            if(oProfitabilitySaveInfo.ID){
+                oConvertedSaveInfo.ID = oProfitabilitySaveInfo.ID
+            }
+
+            return oConvertedSaveInfo;
+		},
 	});
 	return OfferService;
 });
