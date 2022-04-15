@@ -217,7 +217,7 @@ sap.ui.define([
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditionViews[rappelIndex].ExistingPriceConditionID;
+            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;
             if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/RappelRequired", true);
             return rappelBindingPath;
         },
@@ -232,7 +232,7 @@ sap.ui.define([
             const focBindingPath = "/PriceConditionView/".concat(focIndex);
             const focVbox = this.byId("idFOCVbox");
             focVbox.bindElement({ path: focBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditions[focIndex].ExistingPriceConditionID;
+            const existingPriceCondition = !!priceConditions[focIndex]?.ExistingPriceConditionID;
             if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/FOCRequired", true);
             return focBindingPath;
         },
