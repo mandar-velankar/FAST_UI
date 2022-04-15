@@ -115,7 +115,7 @@
 									
 									<core:Title/>
 									<Label text="{i18n>whlseofr}" required="true"/>
-									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' || ${fastAppData>/Tender/CountryCode} === 'IT'? false : true}">
+									<Select selectedKey="{fastAppData>WholesaleOffer}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL' || ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}">
 										<items>
 											<core:Item text="No" key="No"/>
 											<core:Item text="Yes" key="Yes"/>
@@ -225,6 +225,15 @@
 							<Text text="{fastAppData>Reference}" wrapping="true"/>
 						</t:template>
 					</t:Column>
+
+                    <t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/description',
+                                       formatter: '.formatter.offerProductsColumnName'}" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>AnticipatedRequestedQuantity}"/>
+						</t:template>
+					</t:Column>
+
 					<t:Column width="8rem" visible="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/description',
 									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
@@ -420,15 +429,9 @@
 						</t:template>
 					</t:Column>
 
-                    <t:Column width="300px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
-						<Label text="Anticipated or Requested" wrapping="true"/>
-						<t:template>
-							<Text text="{fastAppData>AnticipatedRequestedQuantity}"/>
-						</t:template>
-					</t:Column>
-
-                    <t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
-						<Label text="{i18n>bu}" wrapping="true"/>
+                    <t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/BU/description',
+                                       formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SKUCountry/BU}"/>
 						</t:template>

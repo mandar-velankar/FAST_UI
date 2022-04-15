@@ -21,11 +21,15 @@
         singleContainerFullSize="false" >
         <form:content>
             <Label text="{i18n>PVL}" required="true"/>
-            <Input value="{fastAppData>PVL}" type="Number"  description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
+            <Input value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>PVL}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>PVL} }"
+            type="Number"  description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
+            <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
+            <Input value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>YLAP}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>YLAP} }"
+            type="Number"  visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
             <Label text="{i18n>Discount}" required="true"/>
             <Input value="{fastAppData>Discount}" type="Number" enabled="{fastAppData>/EditMode}" description="%" fieldWidth="80%" liveChange=".calculateNetPricesDescuentoComercial"/>
             <Label text="{i18n>RoyalDecree}" required="true"/> 
-            <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}"> 
+            <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}" change=".calculateNetPricesDescuentoComercial"> 
                 <items>
                     <core:Item key="" text="" />
                     <core:Item key="Yes" text="Yes" />

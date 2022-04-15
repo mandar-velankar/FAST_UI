@@ -31,6 +31,7 @@ sap.ui.define([
 			});
 
 			this.getView().setModel(oViewModel, "finOfferView");
+            Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
 
 			//get resource bundle for translations or texts
 			this._oOwnerComponent = this.getOwnerComponent();
@@ -52,6 +53,7 @@ sap.ui.define([
 
 		},
 
+
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: async function (oEvent) {
 
@@ -68,8 +70,13 @@ sap.ui.define([
                 // this.getView().setBusyIndicatorDelay(0);
 
                 await this.getCountryBrandProductsCombined();
-				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
+                await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 
+				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
+                
+                // initialize ConsolidatedProfitability
+                Services.initializeConsolidatedProfitability();
+                
                 // get PriceConditionClassification
                 const priceConditionClassification = await this.getPriceConditionClassification();
                 // add empty item
@@ -84,6 +91,18 @@ sap.ui.define([
                 const priceConditionViews = await this.getPriceConditionView();
                 Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
+                // Manage financial offer when existing agreement is in place
+                const applicableTenderCondition = await this.getApplicableTenderCondition();
+                if(applicableTenderCondition){
+                    const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
+                    const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
+                    this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
+                    Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
+                }else{
+                    Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
+                }
+                
+
                 //bind Rappel and FOC fragments 
                 const rappelBindingPath = this.bindRappelFragment();
                 const focBindingPath = this.bindFocFragment();
@@ -96,6 +115,8 @@ sap.ui.define([
                 const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
                 if(existingMainPriceCondition){
                     this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
+                    // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
+                    existingMainPriceCondition.ExistingPriceConditionID = null; 
                 }else{
                     this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
                 }
@@ -104,10 +125,76 @@ sap.ui.define([
                 const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : "";
                 this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
+                this.calculateProfitability();
+
                 BusyIndicator.hide();
 			}
 
 		},
+
+        /**
+         * Copy the existing condition to the main price condition and update the model
+         */
+        copyAndSetApplicableTenderConditionValues: function(applicableTenderCondition, applicablePriceConditionView){
+            applicablePriceConditionView.AdditionalDiscount = applicableTenderCondition.AdditionalDiscount;
+            applicablePriceConditionView.AnnualValue = applicableTenderCondition.AnnualValue;
+            applicablePriceConditionView.CountryCode = applicableTenderCondition.CountryCode;
+            applicablePriceConditionView.Discount = applicableTenderCondition.Discount;
+            applicablePriceConditionView.Liquidation = applicableTenderCondition.Liquidation;
+            applicablePriceConditionView.MaximumPrice = applicableTenderCondition.MaximumPrice;
+            applicablePriceConditionView.MonthlyRentPerUnit = applicableTenderCondition.MonthlyRentPerUnit;
+            applicablePriceConditionView.NetPriceWithTax = applicableTenderCondition.NetPriceWithTax;
+            applicablePriceConditionView.NetPriceWithTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithTaxAfterDeductionRD;
+            applicablePriceConditionView.NetPriceWithoutTax = applicableTenderCondition.NetPriceWithoutTax;
+            applicablePriceConditionView.NetPriceWithoutTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithoutTaxAfterDeductionRD;
+            applicablePriceConditionView.NetPriceWithoutTaxBeforeDeductionRD = applicableTenderCondition.NetPriceWithoutTaxBeforeDeductionRD;
+            applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
+            applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
+            applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
+            applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
+            applicablePriceConditionView.StandardDiscount = applicableTenderCondition.StandardDiscount;
+            applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
+            const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
+            applicablePriceConditionView.PriceConditionClassificationID = classification.ID;
+            applicablePriceConditionView.ExistingPriceConditionID = "99999999-9999-9999-9999-999999999999"; // set dummy reference needed for the UI flow
+        },
+
+
+        /**
+         * Get the existing price agreement related to a Tender classification "Tender" and 
+         * check if the current Institute is a candidate/customer in the existing PriceAgreement
+         * @returns {Object|null} - returns the main price condition if candidate/customer or null 
+         */
+         getApplicableTenderCondition: async function(){
+            const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+            const existingPriceAgreement = await this.getExistingPriceAgreement();
+            const isCustomer = existingPriceAgreement?.Candidates?.results.some(candidate => candidate.CandidateID === currentInstituteId);
+            if(isCustomer){
+                const mainCondition = existingPriceAgreement.PriceConditions.results.find(priceCondition => priceCondition.PriceConditionClassification.isMain);
+                return mainCondition;
+            }
+            return null;
+         },
+
+
+         /**
+         * Get the existing price agreement related to a Tender classification "Tender"
+         * which is not expiring before tomorrow for the same product
+         */
+        getExistingPriceAgreement: async function(){
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0,0,0,0); // we only take the date into account
+            const filter = {
+                CountryCode: Services.getSelectedCountry(),
+                ProductCode: Services.getSelectedProductID(),
+                TenderClassification: "Tender",
+                notExpiringBeforeDate: tomorrow,
+                notEqualTenderId: Services.getSelectedTenderID() // exclude current Tender from the list
+            };
+            return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results[0];
+        },
 
         /**
          * This method  sets the element binding of the Rappel fragment
@@ -184,6 +271,7 @@ sap.ui.define([
 		},
 
         getCountryBrandFOCsCombined: async function(){
+            
             const oFastAppDataModel = Services.getFastAppDataModel();
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
@@ -192,21 +280,28 @@ sap.ui.define([
 
 			//load countryBrandProducts
 			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
-
-            if(aFreeGoodsOther.length > 0){
+            if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
                 aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                     var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
                     freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
                     return freegood;
                 });
 
-                //set to fastappdata model for easy access on the view
-                aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-                oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
+                if(aFreeGoodsOther.length > 0){
+                    aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
+                        var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+                        freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                        return freegood;
+                    });
 
-                return aFreeGoodsOther;
-            } else {
-                return null;
+                    //set to fastappdata model for easy access on the view
+                    aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+                    oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
+
+                    return aFreeGoodsOther;
+                } else {
+                    return null;
+                }
             }
 		},
 
@@ -241,7 +336,9 @@ sap.ui.define([
 		},
 		refreshFinancialTabES: async function () {
 			await this.getCountryBrandProductsCombined();
+            await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
+            this.calculateProfitability();
 		},
 
 		
@@ -275,16 +372,33 @@ sap.ui.define([
 			}
 		},
 
+        getProductTypeProfitability: async function (sOfferId, sCountryCode){
+            const oFastAppDataModel = Services.getFastAppDataModel();
+
+            if (sOfferId, sCountryCode) {
+				const response = await Services.getProductTypeProfitability(sOfferId, sCountryCode);
+                oFastAppDataModel.setProperty("/ProductTypeProfitability", response.data.results);
+				return response.data.results;
+			}
+        },
+
         getPriceConditionClassification: async function(){
 
             const oFastAppDataModel = Services.getFastAppDataModel();
             const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+            const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
+            const productType = selectedProduct?.SKU?.ProductType;
             const filter = {
                 "CountryCode": offer.CountryCode,
                 "Classification": offer.Tender.Classification,
-                "Division": offer.Division
+                "Division": offer.Division,
+                "ProductTypes": ["All"]
                 // "isMain": true
             };
+
+            if(productType === "Injector"){
+                filter.ProductTypes.push(productType);
+            }
 
             const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
             return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
@@ -375,7 +489,14 @@ sap.ui.define([
                 this.byId("ApprovalButtonId").setEnabled(true);
 
                 //refresh data (for table)
-                this.refreshFinancialTabES();
+                await this.refreshFinancialTabES();
+
+                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
+                const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
+                    return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
+                });
+
+                await Promise.all(saveProductProfitabilityPromises);
 
                 BusyIndicator.hide();
             } 
@@ -431,6 +552,24 @@ sap.ui.define([
         //for additional saving to PT_TMBDPR
 		getOfferProductPrices: function (oOffer, oProduct, oProductPrice, oMainPriceCondition) {
 
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let correctPrice;
+            if(instType === "Private Account"){
+                if(UOM === "Unit"){
+                    correctPrice = oMainPriceCondition.PVL / packFactor;
+                } else {
+                    correctPrice = oMainPriceCondition.PVL;
+                }
+            } else {
+                if(UOM === "Unit"){
+                    correctPrice = oMainPriceCondition.YLAP / packFactor;
+                } else {
+                    correctPrice = oMainPriceCondition.YLAP;
+                }
+            }
+
 			//PT_TMBDPR structure
 			let oNewPriceInfo = {
 				TenderID: Services.getSelectedTenderID(),
@@ -443,7 +582,7 @@ sap.ui.define([
 				Tier: 0,
 				VolumeFrom: 0,
 				VolumeTo: 0,
-				RegPrice: oMainPriceCondition.PVL,
+				RegPrice: correctPrice,
 				FOC: null,
 				FOCType: null,
 				FOCStep: null,
@@ -529,6 +668,11 @@ sap.ui.define([
             }
 
             return selectedPriceConditions;
+        },
+
+        getConsolidatedProfitability: function(){  
+            let oFastAppDataModel = Services.getFastAppDataModel();
+            return oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
         },
 
         checkSaveFinancialOfferSpain: function (oPriceConditions){
@@ -650,6 +794,13 @@ sap.ui.define([
             if(selectedPriceConditionsIndex > -1) {
                 const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
                 let sFragmentName = sConditionType.split(" ").join("");
+
+                // add RequestedVolume from the selected product to the PriceConditionView entity.
+                const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
+                Services.getFastAppDataModel().setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
+                
+                Services.setSelectedPriceConditionPath(bindingPath);
+
                 Fragment.load({
                     id: this.getView().getId(),
                     name: sFragmentPath.concat(".",sFragmentName),
@@ -671,9 +822,36 @@ sap.ui.define([
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
 
-            const newNetPriceWithoutTaxBeforeDeductionRD = Number(oEvent.getSource().getValue());
-            const standardPrice = Number(bindingContext.getProperty("StandardPrice"));
-            const additionalDiscount =  standardPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2) : 0;
+            let newNetP;
+            if (oEvent.getId() === "change"){
+                newNetP = Number(priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);
+            } else {
+                 newNetP = Number(oEvent.getSource().getValue());
+
+            }
+
+            const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
+
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let correctPrice;
+            if(instType === "Private Account"){
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.PVL;
+                }
+            } else {
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.YLAP;
+                }
+            }
+
+            const standardPrice = correctPrice * (1 - priceConditionViewObj.StandardDiscount);
+            const additionalDiscount =  correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2) : 0;
 
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
@@ -692,8 +870,8 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
-            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD;
-            priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = newNetPriceWithTaxAfterDeductionRD;
+            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(2));
+            priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(2));
 
             bindingContext.getModel().updateBindings();
             
@@ -701,23 +879,306 @@ sap.ui.define([
 
         calculateNetPricesDescuentoComercial: function (oEvent){
 
-            const discount = Number(oEvent.getSource().getValue());
+            
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
-
+           
             let newNetPriceWithoutTax = "";
 
+            let newDiscount;
+            if (oEvent.getId() === "change"){
+               newDiscount = Number(priceConditionViewObj.Discount);
+            } else {
+               newDiscount = Number(oEvent.getSource().getValue());
+
+            }
+            const discount = newDiscount;
+            
+
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let correctPrice;
+            if(instType === "Private Account"){
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.PVL;
+                }
+            } else {
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.YLAP;
+                }
+            }
+
             if(priceConditionViewObj.RoyalDecree === "Yes"){
-                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
+                newNetPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
             }else {
-                newNetPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount / 100);
+                newNetPriceWithoutTax = correctPrice * (1 - discount / 100);
             }
 
             // set the calcualted field and update the bindings
             priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
-            priceConditionViewObj.NetPriceWithTax = newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)
+            priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2))
 
             bindingContext.getModel().updateBindings();
+        },
+
+        calculateProfitability: function(){
+            this.calculateProductProfitability();
+            this.calculateConsolidatedProfitability();
+        },
+
+        calculateProductProfitability: function (){
+            let oProductsTable = this.byId("idFinancialOfferViewProduct");
+            let oBindingContext = oProductsTable.getBindingContext('fastAppData');
+            let oFastAppDataModel = Services.getFastAppDataModel();
+            let productProfitabilityData = [];
+            let oProductConditionView = null;
+
+            const aOfferProducts = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
+            let aPriceConditionViews = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
+                //aPriceConditionViews = aPriceConditionViews && aPriceConditionViews.filter(priceCondition => priceCondition.ExistingPriceConditionID != null); // we only need the active ones
+            let aProductPricingView = oFastAppDataModel.getProperty('/ProductPricingView');
+            const oSelectedOffer = oFastAppDataModel.getProperty('/SelectedOffer'); //get selected offer
+
+            if (aOfferProducts && aOfferProducts.length > 0){
+                productProfitabilityData = aOfferProducts.map(product => {
+                    if(aPriceConditionViews && aPriceConditionViews.length > 0){
+                        oProductConditionView = aPriceConditionViews[(Services.getSelectedPriceConditionPath()).split("/").pop()];
+                    }
+
+                    if(oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental'){
+                        
+                        /* Calculation A
+                        Only applies for all price conditions, except for rental, having offer division different then Radiology */
+                        let oPriceCondition; 
+                        if(aProductPricingView && aProductPricingView.length > 0){
+                            oPriceCondition = aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                        } 
+                        
+                        let sFOCType;
+                        let sFOCBonus;
+                        let netPrice = 0;
+
+                        if(oPriceCondition){
+                            let aFreeGoodsOther = oPriceCondition.FreeGoodsOther;
+                            if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
+                                aFreeGoodsOther = aFreeGoodsOther.filter(freeGood => freeGood.ProductCode === product.SKU.PRODUCTPACKID);
+                            }
+
+                            sFOCType = oPriceCondition.FOCType;
+                            sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
+                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD;
+                        }
+                        let requestedVolume = product.RequestedVolume;
+                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
+
+                        let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
+                        let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
+                        let grossSales = netPrice * dPaidVolume;
+                        let netPriceWithFoc = grossSales / dTotalVolume;
+                        let grossProfit = grossSales - (cogs * dTotalVolume);
+                        let grossMargin = grossSales ? (grossProfit / grossSales) : 0;
+
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
+                        oPriceCondition.GrossMargin = grossMargin;
+                        oPriceCondition.Sales_NPV = 0;
+                        oPriceCondition.Cost_NPV = 0;
+
+                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental'){
+                        /* Calculation B
+                            Only applies for all RENTAL price conditions, and offer division equals Radiology */
+                        let dCost_Yi = [];
+                        let dSales_Yi = [];
+                        let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;                               
+                        let dMonthlyRentPerUnit = oProductConditionView ? oProductConditionView.MonthlyRentPerUnit : 0;
+                        let dAnnualValue = oProductConditionView ? oProductConditionView.AnnualValue : 0;
+                        let dAnnualUnits = product.RequestedVolume;
+
+                        let dStartMonth = 1;
+                        let dDiscountRate = 0.05;
+                        let dMaintenanceCost = 1200;
+                        let dDurationAgreementYears = 5;
+                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
+
+                        let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
+                        let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
+                        
+                        for(let i = 2; i <= dDurationAgreementYears; i++){
+                            //should this return an array? 
+                            dCost_Yi.push(cogs * dAnnualUnits / dDurationAgreementYears + dAnnualUnits * dMaintenanceCost);
+                            dSales_Yi.push(dAnnualValue);
+                        }
+                        
+                        let costY_total = cogs * (dAnnualUnits) * (dStartMonth - 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (dStartMonth - 1) / 12;
+                        let salesY_total = dAnnualValue / 12 * (dStartMonth - 1);
+                    
+                        let dCost_NPV = dCost_Y1;
+                        let dSales_NPV = dSales_Y1;
+                        
+                        for(let i = 2; i <= (dDurationAgreementYears); i++){
+                            dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate)**i);
+                            dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate)**i);
+                        }
+                    
+                        let netOfferPrice = dMonthlyRentPerUnit;
+                        let netPriceWithFoc = dMonthlyRentPerUnit;
+                        let grossSales = dAnnualValue;
+                        let grossProfit = dSales_NPV - dCost_NPV;
+                        let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
+
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.NetofferPrice = netOfferPrice;
+                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
+                        oPriceCondition.GrossMargin = grossMargin;
+                        oPriceCondition.Sales_NPV = dSales_NPV;
+                        oPriceCondition.Cost_NPV = dCost_NPV;
+
+                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') {
+                    
+                        /* Calculation C
+                        Only applies for all price conditions, except for rental, and offer division equals Radiology */
+                        let dCost_Yi = [];
+                        let dSales_Yi = [];
+
+                        let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
+                        let netPrice = oProductConditionView ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : 0;
+                        let dAnnualUnits = product.RequestedVolume;
+                        let dAnnualValue = dAnnualUnits * netPrice;
+                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                        
+                        let dStartMonth = 1;
+                        let dDiscountRate = 0.05;
+                        let dDurationAgreementYears = 5;
+                        let dGrowthRate = 5;
+
+                        let dCost_Y1 = cogs * (dAnnualUnits * (12 - dStartMonth + 1)) / (dDurationAgreementYears * 12);
+                        let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
+                        
+                        for(let i = 2; i <= dDurationAgreementYears; i++){
+                            dCost_Yi.push((cogs * dAnnualUnits * dGrowthRate**(i-2)) / dDurationAgreementYears);
+                            dSales_Yi.push(dAnnualValue * dGrowthRate**(i-2));
+                        }
+                        
+                        let costY_total = cogs * dAnnualUnits * (dGrowthRate**dDurationAgreementYears) * (dStartMonth-1) / (dDurationAgreementYears * 12);
+                        let salesY_total = dAnnualValue * dGrowthRate**dDurationAgreementYears * (dStartMonth - 1) / (dDurationAgreementYears * 12);
+
+                        let dCost_NPV = dCost_Y1;
+                        let dSales_NPV = dSales_Y1;
+                        
+                        for(let i = 2; i <= (dDurationAgreementYears); i++){
+                            dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate )**i);
+                            dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate )**i); 
+                        }
+
+                        let grossSales = dAnnualValue;
+                        let grossProfit = dSales_NPV - dCost_NPV;
+                        let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
+
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.NetofferPrice = netPrice;
+                        oPriceCondition.NetPriceFOC = netPrice;
+                        oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
+                        oPriceCondition.GrossMargin = grossMargin;
+                        oPriceCondition.Sales_NPV = dSales_NPV;
+                        oPriceCondition.Cost_NPV = dCost_NPV;
+                    }
+                });
+
+                Services.getFastAppDataModel().updateBindings();
+            }
+        },
+
+        calculateConsolidatedProfitability: function(){
+            const oFastAppDataModel          = Services.getFastAppDataModel();
+            const aOfferProducts             = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
+            const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
+            const oConsolidatedProfitability = oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
+            const oProductTypeProfitability  = oFastAppDataModel.getProperty('/ProductTypeProfitability');
+            var oCalculatedResultTotals = { GrossMargin: 0,
+                                            NetSales: 0,
+                                            COGS: 0,
+                                            Profitability: 0
+                                          }
+
+            if(oConsolidatedProfitability && oConsolidatedProfitability.length > 0){
+                oConsolidatedProfitability.map(consolidatedEntry => {
+                    let oCalculatedResult = {};
+
+                    if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
+                        //calculate contract agents, consumables & injectors
+                        let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1));
+                        oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                    } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
+                        //calculate any other product type
+                        let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable'));
+                        oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                    } else if(consolidatedEntry.ProductType === 'Total'){
+                        //calculate totals
+                        oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
+                        oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
+                        oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
+                        oCalculatedResult.Profitability = oCalculatedResultTotals.Profitability;
+                    }
+
+                    if(consolidatedEntry.ProductType !== 'Total'){
+                        //keep track of actual totals
+                        oCalculatedResultTotals.GrossMargin = oCalculatedResultTotals.GrossMargin + oCalculatedResult.GrossMargin;
+                        oCalculatedResultTotals.NetSales = oCalculatedResultTotals.NetSales + oCalculatedResult.NetSales;
+                        oCalculatedResultTotals.COGS = oCalculatedResultTotals.COGS + oCalculatedResult.COGS;
+                        oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                    }
+
+                    if(oProductTypeProfitability && oProductTypeProfitability.length > 0){
+                        consolidatedEntry.ID = oProductTypeProfitability.filter(dbProfitability => dbProfitability.ProductType === consolidatedEntry.ProductType)[0].ID; //get the effective ID from the db entity.
+                    }
+                    consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
+                    consolidatedEntry.NetSales = oCalculatedResult.NetSales;
+                    consolidatedEntry.COGS = oCalculatedResult.COGS;
+                    consolidatedEntry.Profitability = oCalculatedResult.Profitability;
+                });
+
+                Services.getFastAppDataModel().updateBindings();
+            }
+
+        },
+
+        getCalculatedProfitability: function(aProductsPerType, aProductPricingView){
+            //let oConsolidatedProfitability = {};
+
+            let npv_grossmargin = 0;
+            let npv_netsales = 0;
+            let npv_cogs = 0;
+            let profitability = 0;
+
+            aProductsPerType.map(product => {
+                let oProductPricing; 
+                if(aProductPricingView && aProductPricingView.length > 0){
+                    oProductPricing = aProductPricingView.filter(productPricing => productPricing.ProductCode === product.SKU.PRODUCTPACKID)[0];
+
+                    npv_grossmargin = npv_grossmargin + oProductPricing.GrossMargin;
+                    npv_netsales = npv_netsales + oProductPricing.Sales_NPV;
+                    npv_cogs = npv_cogs + oProductPricing.Cost_NPV;
+                }
+
+                profitability = npv_netsales ? npv_cogs / npv_netsales : 0;
+            });
+
+            return {
+                GrossMargin: Number((npv_grossmargin).toFixed(2)),
+                NetSales: Number((npv_netsales).toFixed(2)),
+                COGS: Number((npv_cogs).toFixed(2)),
+                Profitability: Number((profitability).toFixed(2))
+            }
         },
 
         validateMaximumPrice: function(oEvent){
@@ -811,10 +1272,28 @@ sap.ui.define([
 
             let netPriceWithoutTax = "";
 
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let correctPrice;
+            if(instType === "Private Account"){
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.PVL;
+                }
+            } else {
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObj.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObj.YLAP;
+                }
+            }
+
             if(priceConditionViewObj.RoyalDecree === "Yes"){
-                netPriceWithoutTax = priceConditionViewObj.PVL * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
+                netPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
             }else {
-                netPriceWithoutTax = priceConditionViewObj.PVL * (1 - discount / 100)
+                netPriceWithoutTax = correctPrice * (1 - discount / 100)
             }
 
             // set the calcualted field and update the bindings
@@ -1020,15 +1499,47 @@ sap.ui.define([
             
             let potentialSaving = "";
 
-            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
-                potentialSaving = bonusAmount * priceConditionViewObject.PVL * (1 - freeGoodsObject.RoyalDecreePercentage);                
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let correctPrice;
+            if(instType === "Private Account"){
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObject.PVL / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObject.PVL;
+                }
             } else {
-                potentialSaving = bonusAmount * priceConditionViewObject.PVL;
+                if(UOM === "Unit"){
+                    correctPrice = priceConditionViewObject.YLAP / packFactor;
+                } else {
+                    correctPrice = priceConditionViewObject.YLAP;
+                }
+            }
+
+            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
+                potentialSaving = bonusAmount * correctPrice * (1 - freeGoodsObject.RoyalDecreePercentage);                
+            } else {
+                potentialSaving = bonusAmount * correctPrice;
             }
 
             freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
             bindingContext.getModel().updateBindings();           
         },
+
+        onMonthlyRentPerUnitChange: function(oEvent){
+            this.calculateAnnualValue(oEvent);
+        },
+
+        calculateAnnualValue: function(oEvent){
+            const monthlyRent = oEvent.getParameter("newValue");
+            const selectedPriceCondition = Services.getFastAppDataModel().getProperty(Services.getSelectedPriceConditionPath());
+            const reqestedVolume = selectedPriceCondition.RequestedVolume;
+            // Annual Values = (Monthly Rent x 12) x (RequestedVolume)
+            selectedPriceCondition.AnnualValue = (monthlyRent * 12) * reqestedVolume;
+            Services.getFastAppDataModel().updateBindings();
+        },
+
 
         
     });

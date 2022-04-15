@@ -1,0 +1,49 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" 
+    xmlns:t="sap.ui.table" 
+    xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
+	xmlns:l="sap.ui.layout">
+
+    <Table inset="false"
+        items="{
+                path: 'fastAppData>/SelectedOffer/ConsolidatedProfitability'
+            }"
+    >
+    <headerToolbar>
+			<OverflowToolbar>
+				<content>
+					<Title text="Consolidated Profitability" level="H2"/>
+					<ToolbarSpacer />
+				</content>
+			</OverflowToolbar>
+		</headerToolbar>
+        <columns>
+            <Column>
+                <Text text=""/>
+            </Column>
+            <Column>
+                <Text text="NPV (Gross Margin)"/>
+            </Column>
+            <Column>
+                <Text text="NPV (Net Sales)"/>
+            </Column>
+            <Column>
+                <Text text="NPV (COGS)"/>
+            </Column>
+            <Column>
+                <Text text="NPV (Profitability)"/>
+            </Column>
+        </columns>
+        <items>
+			<ColumnListItem vAlign="Middle">
+				<cells>
+					<Text text="{fastAppData>ProductType}" />
+					<Text text="{fastAppData>GrossMargin}" />
+					<Text text="{fastAppData>NetSales}" />
+					<Text text="{fastAppData>COGS}" />
+					<Text text="{fastAppData>Profitability}" />
+				</cells>
+			</ColumnListItem>
+		</items>
+    </Table>
+    
+</core:FragmentDefinition>

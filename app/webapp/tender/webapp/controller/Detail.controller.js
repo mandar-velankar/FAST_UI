@@ -695,26 +695,31 @@ sap.ui.define([
 				oDetailController.setTenderSpecificationsSelectedKeys(sTenderID);
 
 				
-				// Italy 
-				if (Services.getSelectedCountry() === "IT"){
+				// Italy  & spain
+				if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 					Services.getWordTemplates(Services.getSelectedCountry());
 					that.getTenderRegions(sTenderID).then(response => {
+
+                        const oRegionView = that.byId("idRegionView");
+                        let sFilterValue = Services.getSelectedCountry();
+                        let oBinding = oRegionView.getBinding("items");
+                        let aFilters = [];
+
+                        if (sFilterValue){
+                            aFilters.push( new Filter("CountryCode", 'EQ', sFilterValue) );
+                        }
+                        oBinding.filter(aFilters);
 
                         const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
                         let regionIDs = [];
                         if(tenderArray.length !== 0){
                             regionIDs = tenderArray[0].Regions.results.map(region => region.RegionID);                            
                         }
-						that.byId("idRegionView").setSelectedKeys(regionIDs);
+						oRegionView.setSelectedKeys(regionIDs);
 						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
 
 					})
-				}
-
-                if (Services.getSelectedCountry() === "ES"){
-                    that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
-                }
-			
+				}			
 
 				//vanaf hier 
 
@@ -2086,7 +2091,7 @@ sap.ui.define([
 
 
 						// Italy
-						if (Services.getSelectedCountry() === "IT"){
+						if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 						//that.getView().byId("idRegionEdit").setVisible(true);
 							that.getTenderRegions(Services.getSelectedTenderID()).then(response => {
 								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
@@ -3670,10 +3675,12 @@ sap.ui.define([
 
 		//Reset institute name
 		resetInstituteName: function (oEvent) {
+            const oRegionEdit = this.byId("idRegionEdit");
+            
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast' || this._country === 'IT' || this._country === 'ES'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT'){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
                 if(this._country === 'ES'){
                     this.byId("idSelectTenderType2Edit").setVisible(true);                    
@@ -3684,11 +3691,20 @@ sap.ui.define([
 			}
 
 			// hide/unhide the Region field
-			if(selectedItem === 'Region(s)' && this._country === 'IT'){
-				this.byId("idRegionEdit").setVisible(true);
+            if(selectedItem === 'Region(s)' && (this._country === 'IT' || this._country === 'ES') ){
+                let sFilterValue = this._country;
+                let oBinding = oRegionEdit.getBinding("items");
+                let aFilters = [];
+
+                if (sFilterValue){
+                    aFilters.push( new Filter("CountryCode", 'EQ', sFilterValue) );
+                }
+                oBinding.filter(aFilters);
+				oRegionEdit.setVisible(true);
+                
 			}else{
-				this.byId("idRegionEdit").setSelectedKeys([]); // clear the region selected keys
-				this.byId("idRegionEdit").setVisible(false);
+				oRegionEdit.setSelectedKeys([]); // clear the region selected keys
+				oRegionEdit.setVisible(false);
 			}
 		},
 
@@ -3821,8 +3837,8 @@ sap.ui.define([
 							}
 						}
 
-						// Italy - Load regins again 
-						if (Services.getSelectedCountry() === "IT"){
+						// Italy & Spain - Load regins again 
+						if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
 								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
@@ -3974,7 +3990,7 @@ sap.ui.define([
 						}
 
 						// Italy - Load regins again 
-						if (Services.getSelectedCountry() === "IT"){
+						if (Services.getSelectedCountry() === "IT" || Services.getSelectedCountry() === "ES"){
 							that.byId("idRegionView").setBusy(true);
 							that.getTenderRegions(sTenderID).then(response => {
 								const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
@@ -4133,7 +4149,7 @@ sap.ui.define([
 			var aAwardCriteria = this.getView().byId("idAwrdEdit").getItems();
 
 			//regions should be saved for Italy
-			if(this._country === 'IT' && tenderRegions){
+			if((this._country === 'IT' || this._country === 'ES') && tenderRegions){
 				promises.push(that.saveTenderRegions(tenderRegions));
 			}
 
@@ -4237,7 +4253,7 @@ sap.ui.define([
 			promises.push(that.saveSpecifications(oTenderToSave, "create"));
 
 			//regions should be saved for Italy
-			if(this._country === 'IT' && tenderRegions){
+			if((this._country === 'IT' || this._country === 'ES') && tenderRegions){
 				promises.push(that.saveTenderRegions(tenderRegions));
 			}
 
@@ -5717,7 +5733,7 @@ sap.ui.define([
 			this.byId("idintrDueDte").setValue();
 
 			//if italy, default the internal due date to offer due date
-			if(Services.getSelectedCountry() === 'IT'){
+			if(Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES'){
 				this.byId("idintrDueDte").setValue(this.byId("idOrfDueDate").getValue());
 			}
 			this.byId("idWhleSle").setValue();
@@ -6550,7 +6566,7 @@ sap.ui.define([
 					var sCountry = Services.getSelectedCountry();
 
 					// for Italy only the Regions must be set
-					if(sCountry === 'IT' && instituteType === "Region(s)"){
+					if((sCountry === 'IT' || sCountry === 'ES') && instituteType === "Region(s)"){
 						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 						setTenderRegion(regionId);
 					}
@@ -8264,17 +8280,21 @@ sap.ui.define([
 		 * @returns {dialog} - oDialog
 		 */
 		 _getCreateBankGuaranteeDialog: function () {
-
+			var selectedCountry = Services.getSelectedCountry();
+			var dialogVersion = "";
+			if(selectedCountry === 'ES'){
+				dialogVersion = '_ES';
+			}
 			//create new dialog if not yet existing
-			if (!this._oAddNewBankGuaranteeDialog) {
+			if (!this["_oAddNewBankGuaranteeDialog"+dialogVersion]) {
 
 					//get dialog
-					this._oAddNewBankGuaranteeDialog = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.NewBankGuarantee", this);
-					this.getView().addDependent(this._oAddNewBankGuaranteeDialog);
+					this["_oAddNewBankGuaranteeDialog"+dialogVersion] = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.NewBankGuarantee"+dialogVersion, this);
+					this.getView().addDependent(this["_oAddNewBankGuaranteeDialog"+dialogVersion]);
 					
 			}
 
-			return this._oAddNewBankGuaranteeDialog;
+			return this["_oAddNewBankGuaranteeDialog"+dialogVersion];
 		},
 
 		onUpdateBankGuarantee: function(oEvent){
@@ -8437,7 +8457,15 @@ sap.ui.define([
 			}
 
 			const oSelectedProduct = offerProducts[iRowIndex];
+			const selectedProductType = oSelectedProduct.SKU.ProductType;
 			var oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
+
+			
+			// TODO: check if this only applies to Spain
+			if (oSelectedProduct.CountryCode === "ES" && selectedProductType === "Injector"){
+				sap.m.MessageToast.show("No price agreement can be created for Rental");
+				return;
+			}
 		
 
 			if(oLoadedPriceAgreement){
@@ -9838,6 +9866,18 @@ sap.ui.define([
 
 		onCancelNotificationMail: function(evt){
 			this._sendNotificationDialog.destroy();
+		},
+
+		checkBtnCreatePriceAgreementEnabled: function(outcome, priceConditions){
+			if(!outcome || !priceConditions) return false;
+			let bEnabled = false;
+			const mainCondition = priceConditions?.results?.find(condition => condition?.PriceConditionClassification?.isMain);
+			const referencePriceAgreement = mainCondition?.ReferencePriceAgreement ? true : false;
+			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
+			const hadAdditionalPriceConditions = priceConditions.results.length > 1;
+			bEnabled = isOutcomeWon;
+			if(isOutcomeWon && referencePriceAgreement) bEnabled = hadAdditionalPriceConditions;
+			return bEnabled;
 		},
 
 

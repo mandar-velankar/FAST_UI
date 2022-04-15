@@ -51,6 +51,7 @@ sap.ui.define([
 		_sSelectedProductID: "",
 		_sSelectedProductName: "",
 		_sSelectedProductPath: "",
+		_sSelectedPriceConditionPath: "",
 		_sSelectedTab: "",
 		_defaultModel: "",
 		//_connectionString: "/v2/tender/",
@@ -260,6 +261,11 @@ sap.ui.define([
 		//get current selected productPath
 		getSelectedProductPath: function () {
 			return this._sSelectedProductPath;
+		},
+
+		//get current selected priceConditionPath
+		getSelectedPriceConditionPath: function () {
+			return this._sSelectedPriceConditionPath;
 		},
 
 		//get instituteID of selected ProductID
@@ -640,6 +646,11 @@ sap.ui.define([
 			this._sSelectedProductPath = sProductPath;
 		},
 
+		//get current selected PriceCondition TODO clear on switching between tabs!!
+		setSelectedPriceConditionPath: function (sPriceConditionPath) {
+			this._sSelectedPriceConditionPath = sPriceConditionPath;
+		},
+		
 		//get current quotation table template
 		setSelectedQuotationTemplate: function (oTemplate) {
 			this._oSelectedQuotationTemplate = oTemplate;
@@ -6058,6 +6069,10 @@ sap.ui.define([
 			return oProductService.getCountryBrandProducts(countryCode);
 		},
 
+        getProductTypeProfitability: function (sOfferId, sCountryCode) {
+			let oOfferService = this.getService('Offer');
+			return oOfferService.getProductTypeProfitability(sOfferId, sCountryCode);
+		},
 
 
 		//soft delete Offer (=set inactive column to 0)
@@ -7009,16 +7024,22 @@ sap.ui.define([
 		//check new bank guarantee
 		checkNewBankGuarantee: function(oBankGuarantee){
 			let bValid = false;
-			
 			if(oBankGuarantee.Reference && 
-			   oBankGuarantee.Type && 
-			   oBankGuarantee.GuaranteedAmount != 0 && 
-			   oBankGuarantee.Currency && 
-			   oBankGuarantee.IssueDate &&
-			   oBankGuarantee.ExpectedExpiryDate){
-			   //oBankGuarantee.ClosingDate
-					bValid = true;
-			}
+				oBankGuarantee.Type && 
+				oBankGuarantee.GuaranteedAmount != 0 && 
+				oBankGuarantee.Currency && 
+				oBankGuarantee.IssueDate &&
+				oBankGuarantee.ExpectedExpiryDate && 
+				(this.getSelectedCountry() !== 'ES' || 
+					(this.getSelectedCountry() === 'ES' && 
+					oBankGuarantee.BankRequestDate &&
+					oBankGuarantee.BankName &&
+					oBankGuarantee.BankStatus &&
+					oBankGuarantee.ShippingDate))){
+				//oBankGuarantee.ClosingDate
+					 bValid = true;
+			 }
+ 
 
 			return bValid;
 		},
@@ -7706,6 +7727,51 @@ sap.ui.define([
 			};
 
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
+		},
+
+		initializeConsolidatedProfitability: function(){
+
+			const table = [
+                {
+                    ProductType: "Contrast Agents",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Consumables",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Injectors",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Other",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Total",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+            ];
+
+
+			this.getFastAppDataModel().setProperty("/SelectedOffer/ConsolidatedProfitability", table);
+
 		},
 
 	});

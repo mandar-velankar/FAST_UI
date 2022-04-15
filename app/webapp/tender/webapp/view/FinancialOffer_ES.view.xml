@@ -121,6 +121,9 @@
 						</Table>
 						
 					</VBox>
+					<VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ConsolidatedProfitability" type="XML" />
+                    </VBox>
 				</l:BlockLayoutCell>
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
@@ -133,11 +136,21 @@
             <l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
                     <VBox>
+                        <MessageStrip
+							text="Existing agreement in place"
+							type="Warning"
+							showIcon="false"
+							showCloseButton="false"
+							class="sapUiSmallMarginBottom" 
+							visible="{fastAppData>/ExistingAgreementInPlace}">
+						</MessageStrip>
+                    </VBox>
+                    <VBox>
                         <HBox alignItems="Center">
                             <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
                             <Select
                                 id="idPriceConditionSelect"
-                                enabled="{fastAppData>/EditMode}"
+                                enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
                                 forceSelection="false"
                                 change=".onPriceConditionChange"
                                 items="{
@@ -177,7 +190,7 @@
 							<Toolbar>
 								<content>
 									<ToolbarSpacer/>
-									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="true"/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="false"/>
 									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
 									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
