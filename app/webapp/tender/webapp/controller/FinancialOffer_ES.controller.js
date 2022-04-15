@@ -437,7 +437,7 @@ sap.ui.define([
 
             else {            
                 const savePriceConditionPromises = selectedPriceConditionViewObjects.map(priceConditionViewObj => {
-                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj);
+                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj,"");
                     return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
                 });
 
