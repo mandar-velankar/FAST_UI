@@ -287,7 +287,7 @@ sap.ui.define([
             
             const oFastAppDataModel = Services.getFastAppDataModel();
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const focIndex = priceConditions ? priceConditions.findIndex(item => item.ConditionType === "FOC") : -1;
             const focBindingPath = "/PriceConditionView/".concat(focIndex) + '/FreeGoodsOther';
             let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
 
@@ -818,23 +818,34 @@ sap.ui.define([
                             
                             
 						}
-                        //that.onFinancialProductPress(oEvent, true);
+                        that.onFinancialProductPress(oEvent, true);
                         this.selectedProductPricePath = Services.getSelectedProductPath();
 				}
 			}
 		},
 
-        onFinancialProductPress: async function(oEvent){
+        onFinancialProductPress: async function(oEvent, bBindingFinished){
+            //get context of selected price product
+            let oFastAppDataModel = Services.getFastAppDataModel();
+            if (!bBindingFinished) {
+                const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+                this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+                this.selectedProductPricePath = bindingContext.sPath;
+            } else {
+                this.selectedProductPricePath = Services.getSelectedProductPath();
+                let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+                this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
+            }
 
-            //get price conditions
-
-            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-			let oFastAppDataModel = Services.getFastAppDataModel();
-            
-            const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
-            
             this.selectedProductPricePath = bindingContext.sPath;
             let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+            
+            //keep selected product ID
+            Services.setSelectedProductID(oProductPrice.ProductCode);
+            Services.setSelectedProductName(oProductPrice.ProductPackName);
+        
+            const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
+            
 
             await this.getCountryBrandFOCsCombined();            
 
