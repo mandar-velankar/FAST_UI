@@ -836,14 +836,24 @@ sap.ui.define([
                 let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
                 this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
             }
-
-            this.selectedProductPricePath = bindingContext.sPath;
-            let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+            
+			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
             
             //keep selected product ID
             Services.setSelectedProductID(oProductPrice.ProductCode);
             Services.setSelectedProductName(oProductPrice.ProductPackName);
         
+            //Edit offer copy to move back to original values during cancel
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
+
+			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			if(oSelectedProduct){
+				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
+			}
+
             const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
             
 
