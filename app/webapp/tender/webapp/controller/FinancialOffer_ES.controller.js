@@ -1086,10 +1086,10 @@ sap.ui.define([
                         let dAnnualValue = oProductConditionView ? oProductConditionView.AnnualValue : 0;
                         let dAnnualUnits = product.RequestedVolume;
 
-                        let dStartMonth = 1;
-                        let dDiscountRate = 0.05;
-                        let dMaintenanceCost = 1200;
-                        let dDurationAgreementYears = 5;
+                        let dStartMonth = oSelectedOffer.ProfitabilityStartMnth;
+                        let dDiscountRate = oSelectedOffer.ProfitabilityDiscRate;
+                        let dMaintenanceCost = oSelectedOffer.ProfitabilityYrlyMntCost;
+                        let dDurationAgreementYears = oSelectedOffer.ProfitabilityAgrDur;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
 
                         let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
@@ -1140,10 +1140,10 @@ sap.ui.define([
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
                         
-                        let dStartMonth = 1;
-                        let dDiscountRate = 0.05;
-                        let dDurationAgreementYears = 5;
-                        let dGrowthRate = 5;
+                        let dStartMonth = oSelectedOffer.ProfitabilityStartMnth;
+                        let dDiscountRate = oSelectedOffer.ProfitabilityDiscRate;
+                        let dDurationAgreementYears = oSelectedOffer.ProfitabilityAgrDur;
+                        let dGrowthRate = oSelectedOffer.ProfitabilityGrowthRate;
 
                         let dCost_Y1 = cogs * (dAnnualUnits * (12 - dStartMonth + 1)) / (dDurationAgreementYears * 12);
                         let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
