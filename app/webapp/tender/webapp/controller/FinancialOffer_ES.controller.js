@@ -217,7 +217,7 @@ sap.ui.define([
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditionViews[rappelIndex].ExistingPriceConditionID;
+            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;
             if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/RappelRequired", true);
             return rappelBindingPath;
         },
@@ -232,7 +232,7 @@ sap.ui.define([
             const focBindingPath = "/PriceConditionView/".concat(focIndex);
             const focVbox = this.byId("idFOCVbox");
             focVbox.bindElement({ path: focBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditions[focIndex].ExistingPriceConditionID;
+            const existingPriceCondition = !!priceConditions[focIndex]?.ExistingPriceConditionID;
             if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/FOCRequired", true);
             return focBindingPath;
         },
@@ -287,7 +287,7 @@ sap.ui.define([
             
             const oFastAppDataModel = Services.getFastAppDataModel();
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const focIndex = priceConditions ? priceConditions.findIndex(item => item.ConditionType === "FOC") : -1;
             const focBindingPath = "/PriceConditionView/".concat(focIndex) + '/FreeGoodsOther';
             let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
 
@@ -528,7 +528,7 @@ sap.ui.define([
                     }
                 }
                 if(requiredPriceConditionViewObject){
-                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(requiredPriceConditionViewObject);
+                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(requiredPriceConditionViewObject,"");
                     savePriceConditionPromises.push(Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject));
                 }
             });
@@ -818,23 +818,44 @@ sap.ui.define([
                             
                             
 						}
-                        //that.onFinancialProductPress(oEvent, true);
+                        that.onFinancialProductPress(oEvent, true);
                         this.selectedProductPricePath = Services.getSelectedProductPath();
 				}
 			}
 		},
 
-        onFinancialProductPress: async function(oEvent){
-
-            //get price conditions
-
-            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-			let oFastAppDataModel = Services.getFastAppDataModel();
+        onFinancialProductPress: async function(oEvent, bBindingFinished){
+            //get context of selected price product
+            let oFastAppDataModel = Services.getFastAppDataModel();
+            if (!bBindingFinished) {
+                const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+                this.byId("FinPricingOfferSubsection").setBindingContext(bindingContext, "fastAppData");
+                this.selectedProductPricePath = bindingContext.sPath;
+            } else {
+                this.selectedProductPricePath = Services.getSelectedProductPath();
+                let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+                this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
+            }
             
+			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
+            
+            //keep selected product ID
+            Services.setSelectedProductID(oProductPrice.ProductCode);
+            Services.setSelectedProductName(oProductPrice.ProductPackName);
+        
+            //Edit offer copy to move back to original values during cancel
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
+
+			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			if(oSelectedProduct){
+				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
+			}
+
             const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
             
-            this.selectedProductPricePath = bindingContext.sPath;
-            let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 
             await this.getCountryBrandFOCsCombined();            
 

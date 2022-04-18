@@ -5924,6 +5924,11 @@ sap.ui.define([
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
+                oOfferSaveInfo.ProfitabilityStartMnth = 1;
+                oOfferSaveInfo.ProfitabilityAgrDur = 5;
+                oOfferSaveInfo.ProfitabilityYrlyMntCost = 1,200;
+                oOfferSaveInfo.ProfitabilityDiscRate = 0.05;
+                oOfferSaveInfo.ProfitabilityGrowthRate = 0.05;
 			}
 			
 			if (!Services.getNewOfferPressed() && (Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed() || Number(
@@ -8513,7 +8518,7 @@ sap.ui.define([
 						const priceConditions = offerProduct.PriceCondition.results
 						const savePriceConditionPromises = priceConditions.map(condition => {
 							condition.PriceAgreement_ID = priceAgreementID;
-							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"PA");
 							return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
 						});
 						await Promise.all(savePriceConditionPromises);
