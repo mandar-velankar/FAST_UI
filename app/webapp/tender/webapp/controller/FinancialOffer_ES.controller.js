@@ -82,59 +82,9 @@ sap.ui.define([
                 
                 // initialize ConsolidatedProfitability
                 Services.initializeConsolidatedProfitability();
-                
-                // get PriceConditionClassification
-                const priceConditionClassification = await this.getPriceConditionClassification();
-                // add empty item
-                priceConditionClassification.push({
-                    "ID": "99999999-9999-9999-9999-999999999999",
-                    "ConditionType": "",
-                    "isMain": true
-                });
-                Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
-
-                // get price conditions
-                const priceConditionViews = await this.getPriceConditionView();
-                Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
-
-                // Manage financial offer when existing agreement is in place
-                const applicableTenderCondition = await this.getApplicableTenderCondition();
-                if(applicableTenderCondition){
-                    const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
-                    const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
-                    this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
-                    Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
-                }else{
-                    Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
-                }
-                
-
-                //bind Rappel and FOC fragments 
-                const rappelBindingPath = this.bindRappelFragment();
-                const focBindingPath = this.bindFocFragment();
-
-                // add DiscountCondition
-                await this.addDiscountConditions(rappelBindingPath);
-                await this.addFOCs(focBindingPath);
-
-                // set selected key on idPriceConditionSelect
-                const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
-                const PVLPriceCondition = priceConditionClassification.find( pcc => pcc.ConditionType === 'PVL' );
-                if(existingMainPriceCondition){
-                    this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
-                    // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
-                    if(existingMainPriceCondition.ExistingPriceConditionID === "99999999"){
-                        existingMainPriceCondition.ExistingPriceConditionID = null; 
-                    }
-                }else if(PVLPriceCondition){
-                    this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
-                }else{
-                    this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
-                }
-
-                // load main fragment if main condition already exists
-                const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
-                this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+            
+                await this.managePriceConditionClassification();
+                await this.managePriceConditions();
 
                 this.calculateProfitability();
 
@@ -142,6 +92,66 @@ sap.ui.define([
 			}
 
 		},
+
+        /**
+         * Fetches PriceConditionClassification and sets it on the model
+         */
+        managePriceConditionClassification: async function(){
+            const priceConditionClassification = await this.getPriceConditionClassification();
+            // add empty item
+            priceConditionClassification.push({
+                "ID": "99999999-9999-9999-9999-999999999999",
+                "ConditionType": "",
+                "isMain": true
+            });
+            Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
+        },
+
+        managePriceConditions: async function(){
+            // get price conditions
+            const priceConditionViews = await this.getPriceConditionView();
+            Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
+
+            // Manage financial offer when existing agreement is in place
+            const applicableTenderCondition = await this.getApplicableTenderCondition();
+            if(applicableTenderCondition){
+                const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
+                const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
+                this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
+                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
+            }else{
+                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
+            }
+            
+
+            //bind Rappel and FOC fragments 
+            const rappelBindingPath = this.bindRappelFragment();
+            const focBindingPath = this.bindFocFragment();
+
+            // add DiscountCondition
+            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
+            focBindingPath && await this.addFOCs(focBindingPath);
+
+            // set selected key on idPriceConditionSelect
+            const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
+            const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
+            const PVLPriceCondition = priceConditionClassification.find( pcc => pcc.ConditionType === 'PVL' );
+            if(existingMainPriceCondition){
+                this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
+                // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
+                if(existingMainPriceCondition.ExistingPriceConditionID === "99999999"){
+                    existingMainPriceCondition.ExistingPriceConditionID = null; 
+                }
+            }else if(PVLPriceCondition){
+                this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
+            }else{
+                this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
+            }
+
+            // load main fragment if main condition already exists
+            const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
+            this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+        },
 
         /**
          * Copy the existing condition to the main price condition and update the model
@@ -214,6 +224,7 @@ sap.ui.define([
         bindRappelFragment: function(){
             const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
+            if(rappelIndex < 0) return null;
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
@@ -229,6 +240,7 @@ sap.ui.define([
         bindFocFragment: function(){
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            if(focIndex < 0) return null;
             const focBindingPath = "/PriceConditionView/".concat(focIndex);
             const focVbox = this.byId("idFOCVbox");
             focVbox.bindElement({ path: focBindingPath, model: "fastAppData" });
@@ -321,12 +333,14 @@ sap.ui.define([
         getPriceConditionView: async function(){
 
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+            const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
 
             const filter = {
                 "CountryCode": offer.CountryCode,
                 "Classification": offer.Tender.Classification,
                 "Division": offer.Division,
-                "OfferID": offer.OfferID
+                "OfferID": offer.OfferID,
+                "ProductCode": selectedProduct.ProductCode
             };
 
 			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
@@ -409,6 +423,7 @@ sap.ui.define([
                 // "isMain": true
             };
 
+            // add Injector as filter
             if(productType === "Injector"){
                 filter.ProductTypes.push(productType);
             }
@@ -855,9 +870,13 @@ sap.ui.define([
 			}
 
             const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
+            await this.getCountryBrandFOCsCombined();     
             
-
-            await this.getCountryBrandFOCsCombined();            
+            // some magic for just not to break the code. blame the other guy :-)
+            if(!bBindingFinished){
+                await this.managePriceConditionClassification();
+                await this.managePriceConditions();
+            }
 
         },
 
