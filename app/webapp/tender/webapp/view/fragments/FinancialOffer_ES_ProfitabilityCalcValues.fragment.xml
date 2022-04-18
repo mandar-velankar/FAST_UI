@@ -29,9 +29,9 @@
                 <Label text="Yearly Maintenance Cost Per Unit" required="true"/>
                 <Input  value="{fastAppData>/SelectedOffer/ProfitabilityYrlyMntCost}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
                 <Label text="Discount Rate" required="true"/>
-                <Input  value="{path:'fastAppData>/SelectedOffer/ProfitabilityDiscRate', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}" type="Number" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Input  value="{path:'fastAppData>/SelectedOffer/ProfitabilityDiscRate', formatter:'.formatter.percentageNoUnit'}" type="Number" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
                 <Label text="Growth Rate" required="true"/>
-                <Input value="{path:'fastAppData>/SelectedOffer/ProfitabilityGrowthRate', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}" type="Number" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Input value="{path:'fastAppData>/SelectedOffer/ProfitabilityGrowthRate', formatter:'.formatter.percentageNoUnit'}" type="Number" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
             </form:content>
         </form:SimpleForm>
     </Panel>

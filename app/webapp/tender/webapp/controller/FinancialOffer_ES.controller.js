@@ -467,6 +467,8 @@ sap.ui.define([
                 // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
                 await this.savePricesToTMBDPR();
 
+                await this.saveProfitabilityParameters();
+
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
 
@@ -510,6 +512,26 @@ sap.ui.define([
                 BusyIndicator.hide();
             } 
 		},
+
+        saveProfitabilityParameters: function(){
+            const saveOfferDataPromises = [];
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const oSelectedOffer = oFastAppDataModel.getProperty('/SelectedOffer');
+            let oOfferSaveInfo = {
+                OfferID: Services.getSelectedOfferID(),
+                ProfitabilityStartMnth: oSelectedOffer.ProfitabilityStartMnth,
+                ProfitabilityAgrDur: oSelectedOffer.ProfitabilityAgrDur,
+                ProfitabilityYrlyMntCost: oSelectedOffer.ProfitabilityYrlyMntCost,
+                ProfitabilityDiscRate: oSelectedOffer.ProfitabilityDiscRate,
+                ProfitabilityGrowthRate: oSelectedOffer.ProfitabilityGrowthRate,
+            }
+
+            if(oOfferSaveInfo){
+                saveOfferDataPromises.push(Services.getService("Offer").updateOffer(oOfferSaveInfo));
+            }
+
+            return Promise.all([saveOfferDataPromises]);
+        },
 
         savePriceConditions: function(selectedPriceConditionViewObjects){
             const savePriceConditionPromises = [];
