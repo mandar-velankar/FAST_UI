@@ -121,6 +121,9 @@
 						</Table>
 						
 					</VBox>
+                    <VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ProfitabilityCalcValues" type="XML" />
+                    </VBox>
 					<VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ConsolidatedProfitability" type="XML" />
                     </VBox>

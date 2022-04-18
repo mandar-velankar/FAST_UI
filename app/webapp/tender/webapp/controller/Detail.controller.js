@@ -5924,11 +5924,13 @@ sap.ui.define([
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
-                oOfferSaveInfo.ProfitabilityStartMnth = 1;
-                oOfferSaveInfo.ProfitabilityAgrDur = 5;
-                oOfferSaveInfo.ProfitabilityYrlyMntCost = 1,200;
-                oOfferSaveInfo.ProfitabilityDiscRate = 0.05;
-                oOfferSaveInfo.ProfitabilityGrowthRate = 0.05;
+                if(this._country === "ES"){
+                    oOfferSaveInfo.ProfitabilityStartMnth = 1;
+                    oOfferSaveInfo.ProfitabilityAgrDur = 5;
+                    oOfferSaveInfo.ProfitabilityYrlyMntCost = 1200;
+                    oOfferSaveInfo.ProfitabilityDiscRate = 0.05;
+                    oOfferSaveInfo.ProfitabilityGrowthRate = 0.05;
+                }
 			}
 			
 			if (!Services.getNewOfferPressed() && (Services.getContinuedOfferPressed() || Services.getReviewedOfferPressed() || Number(

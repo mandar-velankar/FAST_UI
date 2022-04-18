@@ -1,0 +1,39 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" 
+    xmlns:t="sap.ui.table" 
+    xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
+	xmlns:l="sap.ui.layout">
+
+    <Panel expandable="true" headerText="Profitability Calculation Parameters" expanded="false">
+        <form:SimpleForm
+            editable="false"
+            class="editableForm"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="2"
+            labelSpanL="2"
+            labelSpanM="2"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="4"
+            emptySpanL="4"
+            emptySpanM="4"
+            emptySpanS="0"
+            columnsXL="1"
+            columnsL="1"
+            columnsM="1"
+            singleContainerFullSize="false" >
+            <form:content>
+                <Label text="Start Month" required="true"/>
+                <Input  value="{fastAppData>/SelectedOffer/ProfitabilityStartMnth}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Label text="Agreement Duration" required="true"/>
+                <Input  value="{fastAppData>/SelectedOffer/ProfitabilityAgrDur}" type="Number" description="Years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Label text="Yearly Maintenance Cost Per Unit" required="true"/>
+                <Input  value="{fastAppData>/SelectedOffer/ProfitabilityYrlyMntCost}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Label text="Discount Rate" required="true"/>
+                <Input  value="{path:'fastAppData>/SelectedOffer/ProfitabilityDiscRate', formatter:'.formatter.percentageNoUnit'}" type="Number" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Label text="Growth Rate" required="true"/>
+                <Input value="{path:'fastAppData>/SelectedOffer/ProfitabilityGrowthRate', formatter:'.formatter.percentageNoUnit'}" type="Number" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+            </form:content>
+        </form:SimpleForm>
+    </Panel>
+    
+</core:FragmentDefinition>
