@@ -1077,7 +1077,10 @@ sap.ui.define([
             if (aOfferProducts && aOfferProducts.length > 0){
                 productProfitabilityData = aOfferProducts.map(product => {
                     if(aPriceConditionViews && aPriceConditionViews.length > 0){
-                        oProductConditionView = aPriceConditionViews[(Services.getSelectedPriceConditionPath()).split("/").pop()];
+                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[(Services.getSelectedPriceConditionPath()).split("/").pop()];
+                        /*if(aPriceConditionViewByProduct){
+                            oProductConditionView = aPriceConditionViewByProduct[(Services.getSelectedPriceConditionPath()).split("/").pop()];
+                        }*/
                     }
 
                     if(oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental'){
