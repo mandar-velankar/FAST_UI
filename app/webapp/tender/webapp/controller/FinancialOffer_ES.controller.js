@@ -444,6 +444,22 @@ sap.ui.define([
             return priceConditionResponse.data && priceConditionResponse.data.results;
         },
 
+        getPriceConditionViewAllProduts: async function(){
+            
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+
+            const filter = {
+                "CountryCode": Services.getSelectedCountry(),
+                "OfferID": Services.getSelectedOfferID(),
+                "Classification": offer.Tender.Classification,
+                "Division": offer.Division,
+            };
+
+            const priceConditionResponse = await Services.getService('PriceCondition').getPriceConditionView(filter);
+            return priceConditionResponse.data && priceConditionResponse.data.results;
+        },
+
 		// _checkApprovalEnabled: function (){
 		// 	let sOfferID = Services.getSelectedOfferID();
 		// 	var oOffer = Services.getLoadedOffer(sOfferID);
@@ -1056,12 +1072,12 @@ sap.ui.define([
             bindingContext.getModel().updateBindings();
         },
 
-        calculateProfitability: function(){
-            this.calculateProductProfitability();
+        calculateProfitability: async function(){
+            await this.calculateProductProfitability();
             this.calculateConsolidatedProfitability();
         },
 
-        calculateProductProfitability: function (){
+        calculateProductProfitability: async function (){
             let oProductsTable = this.byId("idFinancialOfferViewProduct");
             let oBindingContext = oProductsTable.getBindingContext('fastAppData');
             let oFastAppDataModel = Services.getFastAppDataModel();
@@ -1069,15 +1085,16 @@ sap.ui.define([
             let oProductConditionView = null;
 
             const aOfferProducts = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
-            let aPriceConditionViews = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
+            //let aPriceConditionViews = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
                 //aPriceConditionViews = aPriceConditionViews && aPriceConditionViews.filter(priceCondition => priceCondition.ExistingPriceConditionID != null); // we only need the active ones
+            let aPriceConditionViews = await this.getPriceConditionViewAllProduts();    
             let aProductPricingView = oFastAppDataModel.getProperty('/ProductPricingView');
             const oSelectedOffer = oFastAppDataModel.getProperty('/SelectedOffer'); //get selected offer
 
             if (aOfferProducts && aOfferProducts.length > 0){
                 productProfitabilityData = aOfferProducts.map(product => {
                     if(aPriceConditionViews && aPriceConditionViews.length > 0){
-                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[(Services.getSelectedPriceConditionPath()).split("/").pop()];
+                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null)[0];
                         /*if(aPriceConditionViewByProduct){
                             oProductConditionView = aPriceConditionViewByProduct[(Services.getSelectedPriceConditionPath()).split("/").pop()];
                         }*/
@@ -1299,8 +1316,8 @@ sap.ui.define([
                     oProductPricing = aProductPricingView.filter(productPricing => productPricing.ProductCode === product.SKU.PRODUCTPACKID)[0];
 
                     npv_grossmargin = npv_grossmargin + oProductPricing.GrossMargin;
-                    npv_netsales = npv_netsales + oProductPricing.Sales_NPV;
-                    npv_cogs = npv_cogs + oProductPricing.Cost_NPV;
+                    npv_netsales = npv_netsales + (oProductPricing.Sales_NPV ? oProductPricing.Sales_NPV : 0);
+                    npv_cogs = npv_cogs + (oProductPricing.Cost_NPV ? oProductPricing.Cost_NPV : 0);
                 }
 
                 profitability = npv_netsales ? npv_cogs / npv_netsales : 0;
