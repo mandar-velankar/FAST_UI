@@ -840,6 +840,8 @@ sap.ui.define([
 		},
 
         onFinancialProductPress: async function(oEvent, bBindingFinished){
+
+            BusyIndicator.show();
             //get context of selected price product
             let oFastAppDataModel = Services.getFastAppDataModel();
             if (!bBindingFinished) {
@@ -877,6 +879,8 @@ sap.ui.define([
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
             }
+
+            BusyIndicator.hide();
 
         },
 
