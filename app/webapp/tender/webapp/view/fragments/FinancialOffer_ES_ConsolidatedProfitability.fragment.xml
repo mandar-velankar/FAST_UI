@@ -37,10 +37,10 @@
 			<ColumnListItem vAlign="Middle">
 				<cells>
 					<Text text="{fastAppData>ProductType}" />
-					<Text text="{fastAppData>GrossMargin}" />
+					<Text text="{fastAppData>GrossMargin}"/>
 					<Text text="{fastAppData>NetSales}" />
 					<Text text="{fastAppData>COGS}" />
-					<Text text="{fastAppData>Profitability}" />
+					<Text text="{path:'fastAppData>Profitability', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}" />
 				</cells>
 			</ColumnListItem>
 		</items>
