@@ -1151,10 +1151,10 @@ sap.ui.define([
                         let dAnnualValue = oProductConditionView ? oProductConditionView.AnnualValue : 0;
                         let dAnnualUnits = product.RequestedVolume;
 
-                        let dStartMonth = oSelectedOffer.ProfitabilityStartMnth;
-                        let dDiscountRate = oSelectedOffer.ProfitabilityDiscRate;
-                        let dMaintenanceCost = oSelectedOffer.ProfitabilityYrlyMntCost;
-                        let dDurationAgreementYears = oSelectedOffer.ProfitabilityAgrDur;
+                        let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
+                        let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
+                        let dMaintenanceCost = Number(oSelectedOffer.ProfitabilityYrlyMntCost);
+                        let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
 
                         let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
@@ -1166,22 +1166,25 @@ sap.ui.define([
                             dSales_Yi.push(dAnnualValue);
                         }
                         
-                        let costY_total = cogs * (dAnnualUnits) * (dStartMonth - 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (dStartMonth - 1) / 12;
-                        let salesY_total = dAnnualValue / 12 * (dStartMonth - 1);
+                        let costY_lastyear = cogs * (dAnnualUnits) * (dStartMonth - 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (dStartMonth - 1) / 12;
+                        let salesY_lastyear = dAnnualValue / 12 * (dStartMonth - 1);
                     
                         let dCost_NPV = dCost_Y1;
                         let dSales_NPV = dSales_Y1;
                         
                         for(let i = 2; i <= (dDurationAgreementYears); i++){
-                            dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate)**i);
-                            dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate)**i);
+                            dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate)**(i-1));
+                            dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate)**(i-1));
                         }
+
+                        let dCost_NPV_total = dCost_NPV + costY_lastyear / ((1 + dDiscountRate)**(dDurationAgreementYears));
+                        let dSales_NPV_total = dSales_NPV + salesY_lastyear / ((1 + dDiscountRate)**(dDurationAgreementYears));
                     
                         let netOfferPrice = dMonthlyRentPerUnit;
                         let netPriceWithFoc = dMonthlyRentPerUnit;
                         let grossSales = dAnnualValue;
-                        let grossProfit = dSales_NPV - dCost_NPV;
-                        let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
+                        let grossProfit = dSales_NPV_total - dCost_NPV_total;
+                        let grossMargin = dSales_NPV_total ? grossProfit / dSales_NPV_total : 0;
 
                         oPriceCondition.cogsUoM = cogs;
                         oPriceCondition.GrossSales = grossSales;
@@ -1196,8 +1199,7 @@ sap.ui.define([
                     
                         /* Calculation C
                         Only applies for all price conditions, except for rental, and offer division equals Radiology */
-                        let dCost_Yi = [];
-                        let dSales_Yi = [];
+                        let dUnits = [];
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                         let netPrice = oProductConditionView ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : 0;
@@ -1205,28 +1207,28 @@ sap.ui.define([
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
                         
-                        let dStartMonth = oSelectedOffer.ProfitabilityStartMnth;
-                        let dDiscountRate = oSelectedOffer.ProfitabilityDiscRate;
-                        let dDurationAgreementYears = oSelectedOffer.ProfitabilityAgrDur;
-                        let dGrowthRate = oSelectedOffer.ProfitabilityGrowthRate;
+                        let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
+                        let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
+                        let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
+                        let dGrowthRate = Number(oSelectedOffer.ProfitabilityGrowthRate);
 
-                        let dCost_Y1 = cogs * (dAnnualUnits * (12 - dStartMonth + 1)) / (dDurationAgreementYears * 12);
-                        let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
-                        
-                        for(let i = 2; i <= dDurationAgreementYears; i++){
-                            dCost_Yi.push((cogs * dAnnualUnits * dGrowthRate**(i-2)) / dDurationAgreementYears);
-                            dSales_Yi.push(dAnnualValue * dGrowthRate**(i-2));
+                        /* units per year */
+                        dUnits.push(Math.round( (dAnnualUnits * (12 - dStartMonth + 1)) / 12 ));
+                        dUnits.push(Math.round( dAnnualUnits * (1 + dGrowthRate) ));
+
+                        for(let i = 3; i <= (dDurationAgreementYears); i++){
+                            dUnits.push(Math.round( dUnits[i-2] * (1 + dGrowthRate) ));
                         }
-                        
-                        let costY_total = cogs * dAnnualUnits * (dGrowthRate**dDurationAgreementYears) * (dStartMonth-1) / (dDurationAgreementYears * 12);
-                        let salesY_total = dAnnualValue * dGrowthRate**dDurationAgreementYears * (dStartMonth - 1) / (dDurationAgreementYears * 12);
 
-                        let dCost_NPV = dCost_Y1;
-                        let dSales_NPV = dSales_Y1;
+                        dUnits.push(Math.round( dUnits[dDurationAgreementYears-1] * (1 + dGrowthRate) * (dStartMonth - 1) / (dDurationAgreementYears * 12) ));
+                        /* end of units per year calculation */
+
+                        let dCost_NPV = 0;
+                        let dSales_NPV = 0;
                         
-                        for(let i = 2; i <= (dDurationAgreementYears); i++){
-                            dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate )**i);
-                            dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate )**i); 
+                        for(let i = 0; i <= (dDurationAgreementYears); i++){
+                            dCost_NPV = dCost_NPV + dUnits[i] * cogs / ((1 + dDiscountRate )**i);
+                            dSales_NPV = dSales_NPV + dUnits[i] * netPrice / ((1 + dDiscountRate )**i); 
                         }
 
                         let grossSales = dAnnualValue;
@@ -1315,12 +1317,12 @@ sap.ui.define([
                 if(aProductPricingView && aProductPricingView.length > 0){
                     oProductPricing = aProductPricingView.filter(productPricing => productPricing.ProductCode === product.SKU.PRODUCTPACKID)[0];
 
-                    npv_grossmargin = npv_grossmargin + oProductPricing.GrossMargin;
+                    npv_grossmargin = npv_grossmargin + oProductPricing.GrossProfit;
                     npv_netsales = npv_netsales + (oProductPricing.Sales_NPV ? oProductPricing.Sales_NPV : 0);
                     npv_cogs = npv_cogs + (oProductPricing.Cost_NPV ? oProductPricing.Cost_NPV : 0);
                 }
 
-                profitability = npv_netsales ? npv_cogs / npv_netsales : 0;
+                profitability = npv_netsales ? npv_grossmargin / npv_netsales : 0;
             });
 
             return {
@@ -1347,6 +1349,16 @@ sap.ui.define([
                 oEvent.getSource().setValueStateText("");
                 oEvent.getSource().closeValueStateMessage();
             }
+        },
+
+        onChangeDiscountRate: function(oEvent){
+            let value = Number((oEvent.getSource().getValue())/100);
+            Services.getFastAppDataModel().setProperty('/SelectedOffer/ProfitabilityDiscRate', value);
+        },
+
+        onChangeGrowthRate: function(oEvent){
+            let value = Number((oEvent.getSource().getValue())/100);
+            Services.getFastAppDataModel().setProperty('/SelectedOffer/ProfitabilityGrowthRate', value);
         },
 
         onVolumeTreshhold: function(oEvent){
