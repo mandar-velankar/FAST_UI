@@ -71,63 +71,82 @@ sap.ui.define([
 
             return this.createPriceCondition(oPriceCondition);
 
+            // let sPath = "/PriceCondition";
+            // if(oPriceCondition.ID){
+            //     sPath = oModel.createKey("/PriceCondition", {
+            //         ID: oPriceCondition.ID
+            //     });
+            // }
+			// return this.odata(sPath).put(oPriceCondition);
         },
 
-        convertToSaveObject: function(oPriceConditionViewObject){
+        deletePriceCondition: function (oPriceCondition) {
+            const oModel = Services.getDefaultModel();
+			const sPath = oModel.createKey("/PriceCondition", {
+				ID: oPriceCondition.ID
+			});
+			return this.odata(sPath).delete();
+		},
+
+        convertToSaveObject: function(oPriceConditionViewObject,tab){
             let priceConditionCode;         
-
-            switch(oPriceConditionViewObject.ConditionType) {
-                case "Precio Neto":
-                    switch(oPriceConditionViewObject.RoyalDecree) {
-                        case "IncludeInPrecioNeto":
-                        priceConditionCode = "YLTP";
-                          break;
-                        case "ExcludeInPrecioNeto":
-                        priceConditionCode = "YLTF";
-                          break;
-                        case "No":
-                        priceConditionCode = "YLTF";
-                          break;
-                        default:
-                        priceConditionCode = "";
-                      }
-                  break;
-                case "Descuento Comercial":
-                priceConditionCode = "YL60";
-                  break;
-                case "Descuento Especial":
-                priceConditionCode = "YDC0";
-                  break;
-                case "Rappel":
-                priceConditionCode = "YAW1";
-                  break;
-                case "FOC":
-                priceConditionCode = "YA01";
-                  break;
-                default:
-                priceConditionCode = "";
-              }
-
-              oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
-
-            let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
-            let packFactor =  Services.getFastAppDataModel().getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = Services.getFastAppDataModel().getData().ProductPricingView[0].UOM;
             let convertedPVL;
             let convertedConfPrice;
-
-            if(UOM === "Unit"){
-                convertedPVL = oPriceConditionViewObject.PVL / packFactor;
-                convertedConfPrice = oPriceConditionViewObject.YLAP / packFactor;
-            } else {
+            if(tab === "PA"){
                 convertedPVL = oPriceConditionViewObject.PVL;
-                convertedConfPrice = oPriceConditionViewObject.YLAP;
-            }
+                convertedConfPrice = oPriceConditionViewObject.ConfidentialPrice;
+            } else {
+                switch(oPriceConditionViewObject.ConditionType) {
+                    case "Precio Neto":
+                        switch(oPriceConditionViewObject.RoyalDecree) {
+                            case "IncludeInPrecioNeto":
+                            priceConditionCode = "YLTP";
+                            break;
+                            case "ExcludeInPrecioNeto":
+                            priceConditionCode = "YLTF";
+                            break;
+                            case "No":
+                            priceConditionCode = "YLTF";
+                            break;
+                            default:
+                            priceConditionCode = "";
+                        }
+                    break;
+                    case "Descuento Comercial":
+                    priceConditionCode = "YL60";
+                    break;
+                    case "Descuento Especial":
+                    priceConditionCode = "YDC0";
+                    break;
+                    case "Rappel":
+                    priceConditionCode = "YAW1";
+                    break;
+                    case "FOC":
+                    priceConditionCode = "YA01";
+                    break;
+                    default:
+                    priceConditionCode = "";
+                }
 
-            if(instType === "Private Account"){
-                convertedConfPrice = null;
-                
-            } 
+                oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
+
+                let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
+                let packFactor =  Services.getFastAppDataModel().getData().ProductPricingView[0].PACKFACTOR;
+                let UOM = Services.getFastAppDataModel().getData().ProductPricingView[0].UOM;
+
+                if(UOM === "Unit"){
+                    convertedPVL = oPriceConditionViewObject.PVL / packFactor;
+                    convertedConfPrice = oPriceConditionViewObject.YLAP / packFactor;
+                } else {
+                    convertedPVL = oPriceConditionViewObject.PVL;
+                    convertedConfPrice = oPriceConditionViewObject.YLAP;
+                }
+
+                if(instType === "Private Account"){
+                    convertedConfPrice = null;
+                    
+                } 
+            }
                       
             let obj = {
                 "CountryCode": oPriceConditionViewObject.CountryCode,
@@ -153,8 +172,8 @@ sap.ui.define([
                 "AnnualValue": oPriceConditionViewObject.AnnualValue,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
-                "DiscountCondition": this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
-                "FreeGoodsOther": this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
+                "DiscountCondition": tab === "PA" ? oPriceConditionViewObject.DiscountConditions : this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
+                "FreeGoodsOther": tab === "PA" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
                 "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement
             }
             

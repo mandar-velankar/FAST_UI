@@ -27,7 +27,7 @@
 	<!-- TENDER OFFER SUBSECTION -->
 	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<u:actions>
-			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
+			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="{= ${fastAppData>/SelectedOffer/SelectedProduct/PriceCondition/results}.length>0}"/>
 		</u:actions>
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
@@ -121,6 +121,9 @@
 						</Table>
 						
 					</VBox>
+                    <VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ProfitabilityCalcValues" type="XML" />
+                    </VBox>
 					<VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ConsolidatedProfitability" type="XML" />
                     </VBox>
@@ -145,28 +148,30 @@
 							visible="{fastAppData>/ExistingAgreementInPlace}">
 						</MessageStrip>
                     </VBox>
-                    <VBox>
-                        <HBox alignItems="Center">
-                            <Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
-                            <Select
-                                id="idPriceConditionSelect"
-                                enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
-                                forceSelection="false"
-                                change=".onPriceConditionChange"
-                                items="{
-                                    path: 'fastAppData>/PriceConditionClassification',
-                                    sorter: { path: 'ConditionType' },
-                                    filters : [
-                                        { path : 'isMain', operator : 'EQ', value1 : true}
-                                    ]
-                                }">
-                                <core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
-                            </Select>
-                        </HBox>
-                    </VBox>
-                    <VBox id="idPriceConditionVbox">
-                        <!-- Fragments of price conditions and its binding context are added/set dynamically from the controller. see 'onPriceConditionChange' method-->
-                    </VBox>
+					<Panel expandable="true" headerText="Main Price Condition">
+                   		<VBox>
+                        	<HBox alignItems="Center">
+								<Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
+								<Select
+									id="idPriceConditionSelect"
+									enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
+									forceSelection="false"
+									change=".onPriceConditionChange"
+									items="{
+										path: 'fastAppData>/PriceConditionClassification',
+										sorter: { path: 'ConditionType' },
+										filters : [
+											{ path : 'isMain', operator : 'EQ', value1 : true}
+										]
+									}">
+									<core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
+								</Select>
+							</HBox>
+						</VBox>
+						<VBox id="idPriceConditionVbox">
+							<!-- Fragments of price conditions and its binding context are added/set dynamically from the controller. see 'onPriceConditionChange' method-->
+						</VBox>
+					</Panel>
                     <VBox id="idRappelVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement'}">
                         <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />
                     </VBox>

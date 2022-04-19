@@ -163,6 +163,11 @@ sap.ui.define([
 			oOfferToSave.FOCType = oOfferSaveInfo.FOCType;
 			oOfferToSave.DEFAULT_FOC_ABS_PCT = oOfferSaveInfo.DEFAULT_FOC_ABS_PCT;
 			oOfferToSave.Division = oOfferSaveInfo.Division;
+            oOfferToSave.ProfitabilityStartMnth = oOfferSaveInfo.ProfitabilityStartMnth;
+            oOfferToSave.ProfitabilityAgrDur = oOfferSaveInfo.ProfitabilityAgrDur;
+            oOfferToSave.ProfitabilityYrlyMntCost = oOfferSaveInfo.ProfitabilityYrlyMntCost;
+            oOfferToSave.ProfitabilityDiscRate = oOfferSaveInfo.ProfitabilityDiscRate;
+            oOfferToSave.ProfitabilityGrowthRate = oOfferSaveInfo.ProfitabilityGrowthRate;
 
 			return oOfferToSave;
 
