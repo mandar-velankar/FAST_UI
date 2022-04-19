@@ -7722,8 +7722,14 @@ sap.ui.define([
 				value1: "Direct"
 			});
 
+            var oDivisionFilter = new Filter({
+				path: 'DIVISION',
+				operator: FilterOperator.EQ,
+				value1: this.getFastAppDataModel().oData.EditOffer.Division
+			});
+
 			var mParameters = {
-				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter]
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter, oDivisionFilter]
 			};
 
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
