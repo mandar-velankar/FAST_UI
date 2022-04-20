@@ -308,14 +308,14 @@ sap.ui.define([
             if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
                 aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                     var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                    freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                    freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
                     return freegood;
                 });
 
                 if(aFreeGoodsOther.length > 0){
                     aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                         var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                        freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                        freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
                         return freegood;
                     });
 
@@ -904,7 +904,7 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
-			let oSelectedProduct = oOffer?.Product && oOffer?.Product?.results?.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
