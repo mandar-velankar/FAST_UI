@@ -9880,11 +9880,15 @@ sap.ui.define([
 		},
 
 		checkBtnCreatePriceAgreementEnabled: function(outcome, priceConditions){
-			if(!outcome || !priceConditions) return false;
+			if(!outcome) return false;
+			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
+			const isSpain = Services.getSelectedCountry().indexOf("ES") > -1;
+			if(!isOutcomeWon) return false;
+			if(isOutcomeWon && !isSpain) return true;
+			if(!priceConditions) return false;
 			let bEnabled = false;
 			const mainCondition = priceConditions?.results?.find(condition => condition?.PriceConditionClassification?.isMain);
 			const referencePriceAgreement = mainCondition?.ReferencePriceAgreement ? true : false;
-			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
 			const hadAdditionalPriceConditions = priceConditions.results.length > 1;
 			bEnabled = isOutcomeWon;
 			if(isOutcomeWon && referencePriceAgreement) bEnabled = hadAdditionalPriceConditions;
