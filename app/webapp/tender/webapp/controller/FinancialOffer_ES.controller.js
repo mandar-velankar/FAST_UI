@@ -10,7 +10,8 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator) {
+    "sap/ui/model/Sorter"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	var bundle;
@@ -308,14 +309,14 @@ sap.ui.define([
             if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
                 aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                     var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                    freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                    freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
                     return freegood;
                 });
 
                 if(aFreeGoodsOther.length > 0){
                     aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                         var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                        freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                        freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
                         return freegood;
                     });
 
@@ -499,6 +500,10 @@ sap.ui.define([
                 await this.savePricesToTMBDPR();
 
                 await this.saveProfitabilityParameters();
+                
+                var bLoadedCheck = false;
+                const sTenderID = Services.getSelectedTenderID();
+				await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
 
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
@@ -515,7 +520,6 @@ sap.ui.define([
 
 
                 //refresh tenders master table (left pane)
-                const sTenderID = selectedPriceConditionViewObjects[0].TenderID;
                 Services.refreshTendersMasterTable(sTenderID);
 
                 //update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
@@ -904,7 +908,7 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
-			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			let oSelectedProduct = oOffer?.Product && oOffer?.Product?.results?.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
@@ -1121,7 +1125,7 @@ sap.ui.define([
 
                             sFOCType = oPriceCondition.FOCType;
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD;
+                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1202,7 +1206,7 @@ sap.ui.define([
                         let dUnits = [];
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
-                        let netPrice = oProductConditionView ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : 0;
+                        let netPrice = oProductConditionView && oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax ? oProductConditionView.NetPriceWithoutTax : 0;
                         let dAnnualUnits = product.RequestedVolume;
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1380,11 +1384,11 @@ sap.ui.define([
             }
 
             this.pDialog.then(function (oDialog) {
-                const priceConditionView = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-                const rappelIndex = priceConditionView.findIndex(item => item.ConditionType === "Rappel");
-                const bindingPath = "/PriceConditionView/".concat(rappelIndex);
+                const bindingPaths = this.getBindingPathsDiscountCondition();
                 const oTable = this.byId("idVolumeTreshold");
-                oTable.bindElement({ path: bindingPath, model: "fastAppData" });
+                const discountConditions = JSON.parse(JSON.stringify(Services.getFastAppDataModel().getProperty(bindingPaths.dc)));
+                Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}Temp`, discountConditions);
+                oTable.bindElement({ path: bindingPaths.root, model: "fastAppData" });
                 oDialog.open();
             }.bind(this));
 
@@ -1394,7 +1398,7 @@ sap.ui.define([
 
             const bindingPath = this.byId("idVolumeTreshold").getElementBinding("fastAppData").sPath;
             const priceConditions = Services.getFastAppDataModel().getProperty(bindingPath);
-            const discountConditions = Services.getFastAppDataModel().getProperty(bindingPath.concat("/DiscountConditions")) || [];
+            const discountConditions = Services.getFastAppDataModel().getProperty(bindingPath.concat("/DiscountConditionsTemp")) || [];
 
             
             discountConditions.push({
@@ -1405,10 +1409,45 @@ sap.ui.define([
                 NetPriceWithTax: "",
             });
 
-            Services.getFastAppDataModel().setProperty(bindingPath.concat("/DiscountConditions"), discountConditions);
+            Services.getFastAppDataModel().setProperty(bindingPath.concat("/DiscountConditionsTemp"), discountConditions);
 
         },
+        onSortDiscountCondition:function(){
+            var view = this.getView();
+			if (!this.volumeTreshholdSortingDialog) {
+				this.volumeTreshholdSortingDialog = Fragment.load({
+					id: this.getView().getId(),
+					name: "FAST_NS0FAST0.view.fragments.priceConditions.VolumeTreshholdSorting",
+					controller: this
+				}).then(function (dialog) {
+                    // connect dialog to the root view of this component (models, lifecycle)
+                    view.addDependent(dialog);
+                    dialog.setModel(Services.getFastAppDataModel(), "fastAppData");
+                    return dialog;
+				});
+			}
+            this.volumeTreshholdSortingDialog.then(function(dialog){
+                dialog.open();
+            });
+        },
+        handleSortDialogDiscountConditionConfirm:function(event){
+			const table = this.byId("idVolumeTreshold"),
+				params = event.getParameters(),
+				binding = table.getBinding("items"),
+				sorters = [];
 
+			const path = params.sortItem.getKey();
+			const descending = params.sortDescending;
+			sorters.push(new Sorter(path, descending,false,function(a,b){
+                a = parseFloat(a);
+                b = parseFloat(b);
+                if( a < b ) return -1;
+                if( a > b ) return 1;
+                return -1;
+            }));
+
+			binding.sort(sorters);
+        },
         onDeleteDiscountCondition: function(oEvent){
 
             const path = oEvent.getSource().getParent().getBindingContext("fastAppData").getPath();
@@ -1465,8 +1504,23 @@ sap.ui.define([
             bindingContext.getModel().updateBindings();
 
         },
-
+        getBindingPathsDiscountCondition:function(){
+            const priceConditionView = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const rappelIndex = priceConditionView.findIndex(item => item.ConditionType === "Rappel");
+            const bindingPath = "/PriceConditionView/".concat(rappelIndex);
+            const bindingPathDC = `${bindingPath}/DiscountConditions`;
+            return {
+                root:bindingPath,
+                dc:bindingPathDC
+            };
+        },
         onApplyDiscountCondition: function(){
+            const bindingPaths = this.getBindingPathsDiscountCondition();
+            const discountConditionsTemp = JSON.parse(JSON.stringify(Services.getFastAppDataModel().getProperty(`${bindingPaths.dc}Temp`)));
+            Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}`, discountConditionsTemp);
+            this.onCancelDiscountCondition();
+        },
+        onCancelDiscountCondition:function(){
             if(this.pDialog) this.pDialog.then(dialog => dialog.close());
         },
 
