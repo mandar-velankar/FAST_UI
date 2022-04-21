@@ -519,7 +519,6 @@ sap.ui.define([
 
 
                 //refresh tenders master table (left pane)
-                const sTenderID = selectedPriceConditionViewObjects[0].TenderID;
                 Services.refreshTendersMasterTable(sTenderID);
 
                 //update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
