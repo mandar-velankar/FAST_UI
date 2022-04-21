@@ -60,11 +60,11 @@
                         enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"
                         class="sapUiSmallMarginBottom"/>
                 <Label text="{i18n>VolTreshold}" required="true"/>
-                <MultiInput valueHelpOnly="true" valueHelpRequest=".onVolumeTreshhold" tokens="{fastAppData>DiscountConditions}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }">
-                    <tokens>
-                        <Token key="{fastAppData>Volume}" text="{fastAppData>Volume}" editable="false"></Token>
-                    </tokens>
-                </MultiInput>
+                <Button icon="sap-icon://value-help" press=".onVolumeTreshhold" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }">
+					<layoutData>
+						<l:GridData span="XL1 L1 M1 S2" />
+					</layoutData>
+                </Button>
             </form:content>
         </form:SimpleForm>
     </Panel>
