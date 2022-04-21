@@ -499,6 +499,10 @@ sap.ui.define([
                 await this.savePricesToTMBDPR();
 
                 await this.saveProfitabilityParameters();
+                
+                var bLoadedCheck = false;
+                const sTenderID = Services.getSelectedTenderID();
+				await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
 
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
