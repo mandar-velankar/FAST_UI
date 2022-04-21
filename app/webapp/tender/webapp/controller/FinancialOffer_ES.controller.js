@@ -1094,7 +1094,7 @@ sap.ui.define([
             if (aOfferProducts && aOfferProducts.length > 0){
                 productProfitabilityData = aOfferProducts.map(product => {
                     if(aPriceConditionViews && aPriceConditionViews.length > 0){
-                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null)[0];
+                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
                         /*if(aPriceConditionViewByProduct){
                             oProductConditionView = aPriceConditionViewByProduct[(Services.getSelectedPriceConditionPath()).split("/").pop()];
                         }*/
@@ -1114,7 +1114,7 @@ sap.ui.define([
                         let netPrice = 0;
 
                         if(oPriceCondition){
-                            let aFreeGoodsOther = oPriceCondition.FreeGoodsOther;
+                            let aFreeGoodsOther = aPriceConditionViews.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ExistingPriceConditionID !== null && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
                             if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
                                 aFreeGoodsOther = aFreeGoodsOther.filter(freeGood => freeGood.ProductCode === product.SKU.PRODUCTPACKID);
                             }
