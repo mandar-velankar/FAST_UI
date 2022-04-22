@@ -38,7 +38,8 @@
 						<form:SimpleForm id="idCurrencyForm" editable="true"  layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
 							 columnsL="1" class="editableForm"  title="">
 							<Label text="{i18n>Currency}"/>
-								<Select id="idCurrency" selectedKey="{fastAppData>/EditOffer/Currency}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' }, filters: [
+<!--TEMP solution Currency problem due to IT view financial offer-->                            
+								<Select id="idCurrency" selectedKey="{fastAppData>/CurrencyTEMP}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' }, filters: [
 									{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
 								] }" >					
 									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
