@@ -461,18 +461,18 @@ sap.ui.define([
             return priceConditionResponse.data && priceConditionResponse.data.results;
         },
 
-		// _checkApprovalEnabled: function (){
-		// 	let sOfferID = Services.getSelectedOfferID();
-		// 	var oOffer = Services.getLoadedOffer(sOfferID);
-		// 	var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+		_checkApprovalEnabled: function (){
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID);
+			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
 
-		// 	if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
-		// 		bEnableApproval = false;
-		// 	}
+			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+				bEnableApproval = false;
+			}
 
-		// 	this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
 
-		// },
+		},
 
 		/**
 		 * Save financial offer for Italy
@@ -532,7 +532,7 @@ sap.ui.define([
                 });
 
                 // enable approval button
-                this.byId("ApprovalButtonId").setEnabled(true);
+                this._checkApprovalEnabled();
 
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
@@ -921,6 +921,9 @@ sap.ui.define([
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
             }
+
+            // enable approval button
+            this._checkApprovalEnabled();
 
             BusyIndicator.hide();
 
