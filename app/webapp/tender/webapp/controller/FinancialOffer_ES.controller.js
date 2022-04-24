@@ -1085,7 +1085,7 @@ sap.ui.define([
             let oProductConditionView = null;
 
             const aOfferProducts = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
-            //let aPriceConditionViews = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
+            let aPricingView = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
                 //aPriceConditionViews = aPriceConditionViews && aPriceConditionViews.filter(priceCondition => priceCondition.ExistingPriceConditionID != null); // we only need the active ones
             let aPriceConditionViews = await this.getPriceConditionViewAllProduts();    
             let aProductPricingView = oFastAppDataModel.getProperty('/ProductPricingView');
@@ -1113,10 +1113,10 @@ sap.ui.define([
                         let sFOCBonus;
                         let netPrice = 0;
 
-                        if(oPriceCondition){
-                            let aFreeGoodsOther = aPriceConditionViews.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ExistingPriceConditionID !== null && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
-                            if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
-                                aFreeGoodsOther = aFreeGoodsOther.filter(freeGood => freeGood.ProductCode === product.SKU.PRODUCTPACKID);
+                        if(oPriceCondition){ 
+                            let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ExistingPriceConditionID !== null && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                            if(aFreeGoodsOther && aFreeGoodsOther.FreeGoodsOther && aFreeGoodsOther.FreeGoodsOther.length > 0){
+                                aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductCode === product.SKU.PRODUCTPACKID);
                             }
 
                             sFOCType = oPriceCondition.FOCType;
