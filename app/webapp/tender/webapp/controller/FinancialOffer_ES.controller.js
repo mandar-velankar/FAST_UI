@@ -1700,7 +1700,7 @@ sap.ui.define([
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				oFreeGoodsOther.ProductPackId = parseInt(oSelectedItem.getDescription());
+				oFreeGoodsOther.ProductPackId = oSelectedItem.getBindingContext('fastAppData').getObject().PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath))
 			}
