@@ -539,12 +539,13 @@ sap.ui.define([
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
-                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
-                const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
-                    return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
-                });
+                if(calculatedConsolidatedProfitability && calculatedConsolidatedProfitability.length > 0){
+                    const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
+                        return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
+                    });
 
-                await Promise.all(saveProductProfitabilityPromises);
+                    await Promise.all(saveProductProfitabilityPromises);
+                }
 
                 BusyIndicator.hide();
             } 
