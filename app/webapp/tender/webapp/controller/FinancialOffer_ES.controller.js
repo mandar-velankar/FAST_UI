@@ -540,7 +540,7 @@ sap.ui.define([
 
                 // enable approval button
                 this._checkApprovalEnabled();
-                onVolumeTreshholdonVolumeTreshhold
+
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
