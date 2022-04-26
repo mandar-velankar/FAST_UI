@@ -8885,6 +8885,7 @@ sap.ui.define([
 												UOM: oCompetitorResult.UOM,
 												REQUESTEDVOLUME: null,
 												AWARDEDQTY: oCompetitorResult.AWARDEDQTY,
+                                                TOTALAWARDEDVALUE: oCompetitorResult.TOTALAWARDEDVALUE,
 												REASON: oCompetitorResult.REASON,
 												COMMENT: oCompetitorResult.COMMENT,
 												AWARDEDCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
