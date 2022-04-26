@@ -540,7 +540,7 @@ sap.ui.define([
 
                 // enable approval button
                 this._checkApprovalEnabled();
-
+                onVolumeTreshholdonVolumeTreshhold
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
@@ -1400,7 +1400,8 @@ sap.ui.define([
             this.pDialog.then(function (oDialog) {
                 const bindingPaths = this.getBindingPathsDiscountCondition();
                 const oTable = this.byId("idVolumeTreshold");
-                const discountConditions = JSON.parse(JSON.stringify(Services.getFastAppDataModel().getProperty(bindingPaths.dc)));
+                const existingDiscountCondition = Services.getFastAppDataModel().getProperty(bindingPaths.dc);
+                const discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
                 Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}Temp`, discountConditions);
                 oTable.bindElement({ path: bindingPaths.root, model: "fastAppData" });
                 oDialog.open();
