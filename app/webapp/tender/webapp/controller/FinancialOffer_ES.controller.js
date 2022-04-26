@@ -109,6 +109,8 @@ sap.ui.define([
         },
 
         managePriceConditions: async function(){
+            BusyIndicator.show();
+
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
             Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
@@ -152,6 +154,8 @@ sap.ui.define([
             // load main fragment if main condition already exists
             const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+
+            BusyIndicator.hide();
         },
 
         /**
@@ -335,6 +339,8 @@ sap.ui.define([
 
         getPriceConditionView: async function(){
 
+            BusyIndicator.show();
+
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
             const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
 
@@ -348,7 +354,7 @@ sap.ui.define([
 
 			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
             
-
+            BusyIndicator.hide();
             return priceConditionViews.data.results;
 
         },
@@ -510,17 +516,6 @@ sap.ui.define([
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
 
-                //show success message
-                Services.getOfferCompositeMessages().push({
-                    type: 'Success',
-                    title: 'Financial Offer Saved Successfully',
-                    description: 'Financial Offer Saved Successfully'
-                });
-
-                Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
-                Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
-
-
                 //refresh tenders master table (left pane)
                 Services.refreshTendersMasterTable(sTenderID);
 
@@ -533,11 +528,23 @@ sap.ui.define([
                     Services.showErrorMessage(oError, "Background saving for approvals sent field");
                 });
 
+                //show success message
+                Services.getOfferCompositeMessages().push({
+                    type: 'Success',
+                    title: 'Financial Offer Saved Successfully',
+                    description: 'Financial Offer Saved Successfully'
+                });
+
+                Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+                Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
                 // enable approval button
                 this._checkApprovalEnabled();
 
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
+
+                await this.managePriceConditions();
 
                 let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
                 if(calculatedConsolidatedProfitability && calculatedConsolidatedProfitability.length > 0){
