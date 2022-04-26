@@ -87,7 +87,7 @@ sap.ui.define([
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
 
-                this.calculateProfitability();
+                await this.calculateProfitability();
 
                 BusyIndicator.hide();
 			}
@@ -109,6 +109,8 @@ sap.ui.define([
         },
 
         managePriceConditions: async function(){
+            BusyIndicator.show();
+
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
             Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
@@ -152,6 +154,8 @@ sap.ui.define([
             // load main fragment if main condition already exists
             const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+
+            BusyIndicator.hide();
         },
 
         /**
@@ -335,6 +339,8 @@ sap.ui.define([
 
         getPriceConditionView: async function(){
 
+            BusyIndicator.show();
+
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
             const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
 
@@ -348,7 +354,7 @@ sap.ui.define([
 
 			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
             
-
+            BusyIndicator.hide();
             return priceConditionViews.data.results;
 
         },
@@ -368,7 +374,7 @@ sap.ui.define([
 			await this.getCountryBrandProductsCombined();
             await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
-            this.calculateProfitability();
+            await this.calculateProfitability();
 		},
 
 		
@@ -510,17 +516,6 @@ sap.ui.define([
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
 
-                //show success message
-                Services.getOfferCompositeMessages().push({
-                    type: 'Success',
-                    title: 'Financial Offer Saved Successfully',
-                    description: 'Financial Offer Saved Successfully'
-                });
-
-                Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
-                Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
-
-
                 //refresh tenders master table (left pane)
                 Services.refreshTendersMasterTable(sTenderID);
 
@@ -533,18 +528,32 @@ sap.ui.define([
                     Services.showErrorMessage(oError, "Background saving for approvals sent field");
                 });
 
+                //show success message
+                Services.getOfferCompositeMessages().push({
+                    type: 'Success',
+                    title: 'Financial Offer Saved Successfully',
+                    description: 'Financial Offer Saved Successfully'
+                });
+
+                Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+                Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
                 // enable approval button
                 this._checkApprovalEnabled();
 
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
-                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
-                const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
-                    return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
-                });
+                await this.managePriceConditions();
 
-                await Promise.all(saveProductProfitabilityPromises);
+                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
+                if(calculatedConsolidatedProfitability && calculatedConsolidatedProfitability.length > 0){
+                    const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
+                        return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
+                    });
+
+                    await Promise.all(saveProductProfitabilityPromises);
+                }
 
                 BusyIndicator.hide();
             } 
@@ -1083,7 +1092,7 @@ sap.ui.define([
 
         calculateProfitability: async function(){
             await this.calculateProductProfitability();
-            this.calculateConsolidatedProfitability();
+            await this.calculateConsolidatedProfitability();
         },
 
         calculateProductProfitability: async function (){
@@ -1259,7 +1268,7 @@ sap.ui.define([
             }
         },
 
-        calculateConsolidatedProfitability: function(){
+        calculateConsolidatedProfitability: async function(){
             const oFastAppDataModel          = Services.getFastAppDataModel();
             const aOfferProducts             = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
             const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
@@ -1391,7 +1400,8 @@ sap.ui.define([
             this.pDialog.then(function (oDialog) {
                 const bindingPaths = this.getBindingPathsDiscountCondition();
                 const oTable = this.byId("idVolumeTreshold");
-                const discountConditions = JSON.parse(JSON.stringify(Services.getFastAppDataModel().getProperty(bindingPaths.dc)));
+                const existingDiscountCondition = Services.getFastAppDataModel().getProperty(bindingPaths.dc);
+                const discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
                 Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}Temp`, discountConditions);
                 oTable.bindElement({ path: bindingPaths.root, model: "fastAppData" });
                 oDialog.open();
@@ -1700,7 +1710,7 @@ sap.ui.define([
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				oFreeGoodsOther.ProductPackId = parseInt(oSelectedItem.getDescription());
+				oFreeGoodsOther.ProductPackId = oSelectedItem.getBindingContext('fastAppData').getObject().PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath))
 			}
