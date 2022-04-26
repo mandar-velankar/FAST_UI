@@ -87,7 +87,7 @@ sap.ui.define([
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
 
-                this.calculateProfitability();
+                await this.calculateProfitability();
 
                 BusyIndicator.hide();
 			}
@@ -368,7 +368,7 @@ sap.ui.define([
 			await this.getCountryBrandProductsCombined();
             await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
-            this.calculateProfitability();
+            await this.calculateProfitability();
 		},
 
 		
@@ -539,6 +539,7 @@ sap.ui.define([
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
+                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
                 if(calculatedConsolidatedProfitability && calculatedConsolidatedProfitability.length > 0){
                     const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
                         return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
@@ -1084,7 +1085,7 @@ sap.ui.define([
 
         calculateProfitability: async function(){
             await this.calculateProductProfitability();
-            this.calculateConsolidatedProfitability();
+            await this.calculateConsolidatedProfitability();
         },
 
         calculateProductProfitability: async function (){
@@ -1260,7 +1261,7 @@ sap.ui.define([
             }
         },
 
-        calculateConsolidatedProfitability: function(){
+        calculateConsolidatedProfitability: async function(){
             const oFastAppDataModel          = Services.getFastAppDataModel();
             const aOfferProducts             = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
             const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
