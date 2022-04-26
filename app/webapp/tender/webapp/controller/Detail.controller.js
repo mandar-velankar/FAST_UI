@@ -8885,6 +8885,7 @@ sap.ui.define([
 												UOM: oCompetitorResult.UOM,
 												REQUESTEDVOLUME: null,
 												AWARDEDQTY: oCompetitorResult.AWARDEDQTY,
+                                                TOTALAWARDEDVALUE: oCompetitorResult.TOTALAWARDEDVALUE,
 												REASON: oCompetitorResult.REASON,
 												COMMENT: oCompetitorResult.COMMENT,
 												AWARDEDCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
@@ -8965,6 +8966,7 @@ sap.ui.define([
 										PriceAgreement: oProduct.PriceAgreement,
                                         APPEAL: oResult.Appeal,
                                         INFONEEDED: oResult.InfoNeeded,
+                                        TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 
@@ -9297,6 +9299,34 @@ sap.ui.define([
 								missingFields.add("Product");
 							}
 
+                            if(sCountryCode === 'ES'){
+                                //extra checks for Spain
+                                if(!oOutcomeLevel.OUTCOME){
+                                    missingFields.add("Outcome");
+                                }
+                                if(oOutcomeLevel.PRODUCT === "Other" && !oOutcomeLevel.AWARDEDPRICE){
+                                    missingFields.add("Awarded Price");
+                                }
+                                if(!oOutcomeLevel.AWARDEDQTY){
+                                    missingFields.add("Awarded Quantity");
+                                }
+                                if(!oOutcomeLevel.TOTALAWARDEDVALUE){
+                                    missingFields.add("Total Awarded Value");
+                                }
+                                if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.INFONEEDED){
+                                    missingFields.add("Information Needed?");
+                                }
+                                if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.APPEAL){
+                                    missingFields.add("Appeal");
+                                }
+                                if(!oOutcomeLevel.COMMENT){
+                                    missingFields.add("Comment");
+                                }
+                                if((oOutcomeLevel.OUTCOME && (oOutcomeLevel.OUTCOME === 'Won' || oOutcomeLevel.OUTCOME === 'Lost')) && !oOutcomeLevel.REASON){
+                                    missingFields.add("Reason");
+                                }
+                            }
+
 						}
 					});
 				}
@@ -9361,6 +9391,7 @@ sap.ui.define([
 						AwardDate: oResultForTree.AwardDate,
 						AwardActing: oResultForTree.AwardActing,
                         Appeal: oResultForTree.APPEAL,
+                        TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
                         InfoNeeded: oResultForTree.INFONEEDED                        
 					};
 
