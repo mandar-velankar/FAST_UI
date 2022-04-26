@@ -780,8 +780,8 @@ sap.ui.define([
 
 					//email content
 					var sCloudUser = UserInfo.getUserName();
-					var sEmail = "jonathan.hubeau.ext@bayer.com";
-					var sEmailCC = "felipe.maul@bayer.com";
+					var sEmail = "FAST_Admin@bayer.com";
+					var sEmailCC = "fabian.deck@bayer.com;frank.schmitt1@bayer.com";
 					var sSubject = "Access to Fast Tender management: " + sCloudUser;
 					var sBody = "Can you please grant me access? My SAP cloud platform user is " + sCloudUser + ".";
 
