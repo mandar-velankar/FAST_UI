@@ -43,8 +43,10 @@
 								] }" >					
 									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
 								</Select>
-							<Label text="{i18n>FOC}"/>
-							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}">
+							<Label text="{i18n>FOC}" visisble="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }"/>
+							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
 								<items>
 									<core:Item key="FOC 2" text="In addition to requested volume" />
 									<core:Item key="FOC 1" text="Part of requested volume" />									
@@ -237,8 +239,10 @@
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>UnitPack}"/>
 							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>FOC}"/>
+							<Column minScreenWidth="Tablet" demandPopin="true" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
+								<Text text="{i18n>FOC}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>Status}"/>
