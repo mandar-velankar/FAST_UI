@@ -1105,7 +1105,7 @@ sap.ui.define([
 
                             sFOCType = oPriceCondition.FOCType;
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
+                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
