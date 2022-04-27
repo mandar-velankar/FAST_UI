@@ -74,9 +74,11 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty("/FOCRequired", false);
                 Services.getFastAppDataModel().setProperty("/FOCExpanded", false);
 
-                // this.getView().setBusyIndicatorDelay(0);
+                //load countryBrandProducts ( needed to get productnames for FOC model)
+			    let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+                Services.getFastAppDataModel().setProperty("/CountryBrandProducts", aCountryBrandProducts);
 
-                await this.getCountryBrandProductsCombined();
+                await this.getProducts();
                 await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
@@ -267,43 +269,36 @@ sap.ui.define([
         },
 
         addFOCs: async function(focBindingPath){
+
             const focPriceCondition = Services.getFastAppDataModel().getProperty(focBindingPath);
             if(focPriceCondition && focPriceCondition.ExistingPriceConditionID){
-                const focs = (await Services.getService("PriceCondition").getFocs({
+                let focs = (await Services.getService("PriceCondition").getFocs({
                     PriceConditionID: focPriceCondition.ExistingPriceConditionID
                 })).data.results;
+
+                let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
+
+                focs = focs.map(freegood => {
+                    var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+                    freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
+                    return freegood;
+                });
+
+
                 Services.getFastAppDataModel().setProperty(focBindingPath.concat("/FreeGoodsOther"), focs);
             }   
         },
 
-		getCountryBrandProductsCombined: async function(){
-
+        getProducts: async function (){ 
             //load products
 		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
-
-			//load countryBrandProducts
-			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
-
-			aProducts = aProducts.map(product => {
-				product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
-					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-					return FreeGoodsOther;
-				}) || [];
-				return product;
-			});
-
-			//set to fastappdata model for easy access on the view
-			var oFastAppDataModel = Services.getFastAppDataModel();
             aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+            let oFastAppDataModel = Services.getFastAppDataModel();
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
-			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
 
-			return aProducts;
-		},
+        },
 
         getCountryBrandFOCsCombined: async function(){
-            
             const oFastAppDataModel = Services.getFastAppDataModel();
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const focIndex = priceConditions ? priceConditions.findIndex(item => item.ConditionType === "FOC") : -1;
@@ -311,7 +306,7 @@ sap.ui.define([
             let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
 
 			//load countryBrandProducts
-			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+			let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
             if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
                 aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                     var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
@@ -319,21 +314,8 @@ sap.ui.define([
                     return freegood;
                 });
 
-                if(aFreeGoodsOther.length > 0){
-                    aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
-                        var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                        freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
-                        return freegood;
-                    });
+                oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
 
-                    //set to fastappdata model for easy access on the view
-                    aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-                    oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
-
-                    return aFreeGoodsOther;
-                } else {
-                    return null;
-                }
             }
 		},
 
@@ -371,7 +353,7 @@ sap.ui.define([
 
 		},
 		refreshFinancialTabES: async function () {
-			await this.getCountryBrandProductsCombined();
+			await this.getProducts();
             await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
             await this.calculateProfitability();
@@ -439,18 +421,6 @@ sap.ui.define([
 
             const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
             return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
-        },
-
-        getPriceConditions: async function(productCode){
-
-            const filter = {
-                "CountryCode": Services.getSelectedCountry(),
-                "OfferID": Services.getSelectedOfferID(),
-                "ProductCode": productCode
-            };
-
-            const priceConditionResponse = await Services.getService('PriceCondition').getPriceCondition(filter);
-            return priceConditionResponse.data && priceConditionResponse.data.results;
         },
 
         getPriceConditionViewAllProduts: async function(){
@@ -893,7 +863,6 @@ sap.ui.define([
 		},
 
         onFinancialProductPress: async function(oEvent, bBindingFinished){
-
             BusyIndicator.show();
             //get context of selected price product
             let oFastAppDataModel = Services.getFastAppDataModel();
@@ -923,15 +892,12 @@ sap.ui.define([
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
-
-            const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
-            await this.getCountryBrandFOCsCombined();     
-            
+                       
             // some magic for just not to break the code. blame the other guy :-)
             if(!bBindingFinished){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
-            }
+            } 
 
             // enable approval button
             this._checkApprovalEnabled();
