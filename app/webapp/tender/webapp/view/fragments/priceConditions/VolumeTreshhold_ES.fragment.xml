@@ -5,7 +5,7 @@
 	<Dialog title="Volume Treshhold" >
 		<buttons>
 			<Button text="{i18n>Apply}" press=".onApplyDiscountCondition" />
-            <Button text="{i18n>Close}" press=".onCancelDiscountCondition"/>
+            <Button text="{i18n>Cancel}" press=".onCancelDiscountCondition"/>
 		</buttons>
 
         <Table id="idVolumeTreshold" items="{path:'fastAppData>DiscountConditionsTemp'}">
