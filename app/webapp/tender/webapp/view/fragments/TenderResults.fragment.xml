@@ -79,6 +79,14 @@
                                         </m:Menu>
                                     </m:menu>
 		                        </m:MenuButton>
+                                <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+                                    <m:menu>
+                                        <m:Menu itemSelected="onBankGuarantee">
+                                            <m:MenuItem text="Final"    icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}" />
+                                            <m:MenuItem text="Additional" icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}" />
+                                        </m:Menu>
+                                    </m:menu>
+                                </m:MenuButton>
                                 <!--<m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>PriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
 
                                 <m:ToolbarSpacer/>
