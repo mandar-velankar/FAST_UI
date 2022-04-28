@@ -43,7 +43,7 @@
 								] }" >					
 									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
 								</Select>
-							<Label text="{i18n>FOC}" visisble="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+							<Label text="{i18n>FOC}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
                                     (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }"/>
 							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
                                     (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
