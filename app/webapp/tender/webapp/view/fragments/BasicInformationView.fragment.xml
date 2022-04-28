@@ -151,7 +151,7 @@
 						  enabled="false"
                           visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 				<!-- Italy only -->
-				<Label text="{i18n>CWID}" design="Bold" />
+				<Label text="{i18n>CreatedBy}" design="Bold" />
 				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
@@ -268,6 +268,11 @@
 				<Input id="input10" value="{fastData>ContractLength}" enabled="false"/>
 				<Label text="{i18n>contextnprd}" design="Bold"/>
 				<Input id="input11" value="{fastData>ContractExtenseion}" enabled="false"/>
+
+                <!-- Spain only -->
+                <Label text="{i18n>CreatedAt}" design="Bold"/>
+                <Input id="idCreationDate" value="{path :'fastAppData>/EditTender/CreatedAt', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                <!-- End Spain only -->
 				
 				<!-- Status  tender -->
 				<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>
