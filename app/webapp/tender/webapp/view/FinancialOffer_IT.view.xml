@@ -468,7 +468,7 @@
 
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>History}" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
