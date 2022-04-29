@@ -72,10 +72,10 @@
 				<Input value="{fastData>Institute/CustomerID}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                 
 				<Label text="{i18n>institProvince}" design="Bold"   required="false"/>
-				<Input value="{fastData>Institute/InstituteName}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+				<Input value="{fastData>Institute/Province/Name}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 
-				<Label text="{i18n>institRegion}" design="Bold"   required="false"/>
-				<Input value="{fastData>Institute/Region/Name}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+				<Label text="{i18n>institRegion}" design="Bold"   required="false" visible="false"/>
+				<Input value="{fastData>Institute/Region/Name}" enabled="false" visible="false"/>
 
 				<Label text="{i18n>institPoblacion}" design="Bold"   required="false"/>
 				<Input value="{fastData>Institute/City}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
@@ -151,8 +151,8 @@
 						  enabled="false"
                           visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 				<!-- Italy only -->
-				<Label text="{i18n>CWID}" design="Bold" />
-				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
+				<Label text="{i18n>CreatedBy}" design="Bold" />
+				<Input value="{fastData>User/UserName}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
@@ -268,6 +268,11 @@
 				<Input id="input10" value="{fastData>ContractLength}" enabled="false"/>
 				<Label text="{i18n>contextnprd}" design="Bold"/>
 				<Input id="input11" value="{fastData>ContractExtenseion}" enabled="false"/>
+
+                <!-- Spain only -->
+                <Label text="{i18n>CreatedAt}" design="Bold"/>
+                <Input id="idCreationDate" value="{path :'fastAppData>/EditTender/SubmittedOn', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                <!-- End Spain only -->
 				
 				<!-- Status  tender -->
 				<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>

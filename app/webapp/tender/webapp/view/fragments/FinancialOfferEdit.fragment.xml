@@ -104,7 +104,7 @@
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
-	<u:ObjectPageSubSection title="Tender History">
+	<u:ObjectPageSubSection title="{i18n>History}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">

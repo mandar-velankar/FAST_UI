@@ -469,19 +469,24 @@ sap.ui.define([
                 return;
             } 
 
-            else {            
-                
-                await this.savePriceConditions(selectedPriceConditionViewObjects);
+            else {         
+                let sTenderID = "";   
+                try {
+                    await this.savePriceConditions(selectedPriceConditionViewObjects);
 
-                // Additional saving to PT_TMBDPR. The tender flow should keep working. 
-                // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
-                await this.savePricesToTMBDPR();
+                    // Additional saving to PT_TMBDPR. The tender flow should keep working. 
+                    // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
+                    await this.savePricesToTMBDPR();
 
-                await this.saveProfitabilityParameters();
-                
-                var bLoadedCheck = false;
-                const sTenderID = Services.getSelectedTenderID();
-				await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
+                    await this.saveProfitabilityParameters();
+                    
+                    var bLoadedCheck = false;
+                    sTenderID = Services.getSelectedTenderID();
+                    await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
+                    
+                } catch (error) {
+                    throw error;
+                }
 
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
@@ -572,7 +577,7 @@ sap.ui.define([
             });
 
             const deletePriceConditionPromises = [];
-            selectedPriceConditionViewObjects.map(priceConditionViewObj => {
+            selectedPriceConditionViewObjects.forEach(priceConditionViewObj => {
                 let requiredPriceConditionViewObject = null;
                 if(!priceConditionViewObj.isMain){
                     const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
@@ -590,7 +595,29 @@ sap.ui.define([
                 }
             });
 
-            return Promise.all([savePriceConditionPromises,deletePriceConditionPromises]);
+        
+            
+            const deletePreExistingMainPriceConditionPromises = this.deletePreExistingMainPriceConditions(selectedPriceConditionViewObjects);
+
+
+            return Promise.all([savePriceConditionPromises,deletePriceConditionPromises,deletePreExistingMainPriceConditionPromises]);
+        },
+
+        /**
+         * Delete all pre-existing main price conditions.
+         * This use case can occur when the user changes the main price condition type 
+         * after a main price condition was already been created
+         * @returns {Array<Promise>}
+         */
+        deletePreExistingMainPriceConditions: function(selectedPriceConditionViewObjects){
+            const allPriceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const mainSelectedPriceConditionView = selectedPriceConditionViewObjects.find(obj => obj.isMain);
+            const preExistingPriceConditions = allPriceConditionViews.filter(condition => condition.isMain && condition.ExistingPriceConditionID)
+                                                                     .filter(condition => condition.ExistingPriceConditionID !== mainSelectedPriceConditionView.ExistingPriceConditionID);
+            return preExistingPriceConditions.map(condition => {
+                const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+                return Services.getService("PriceCondition").deletePriceCondition(priceConditionDeleteObject);
+            });
         },
 
         savePricesToTMBDPR: async function(){
@@ -1077,14 +1104,12 @@ sap.ui.define([
 
             if (aOfferProducts && aOfferProducts.length > 0){
                 productProfitabilityData = aOfferProducts.map(product => {
+
                     if(aPriceConditionViews && aPriceConditionViews.length > 0){
                         oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
-                        /*if(aPriceConditionViewByProduct){
-                            oProductConditionView = aPriceConditionViewByProduct[(Services.getSelectedPriceConditionPath()).split("/").pop()];
-                        }*/
                     }
 
-                    if(oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental'){
+                    if((oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') || (oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.ProductType !== 'Contrast Agent' && product.ProductType !== 'Consumable'))){
                         
                         /* Calculation A
                         Only applies for all price conditions, except for rental, having offer division different then Radiology */
@@ -1105,7 +1130,7 @@ sap.ui.define([
 
                             sFOCType = oPriceCondition.FOCType;
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
+                            netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1179,14 +1204,14 @@ sap.ui.define([
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
 
-                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') {
+                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.ProductType === 'Contrast Agent' || product.ProductType === 'Consumable')) {
                     
                         /* Calculation C
                         Only applies for all price conditions, except for rental, and offer division equals Radiology */
                         let dUnits = [];
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
-                        let netPrice = oProductConditionView && oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax ? oProductConditionView.NetPriceWithoutTax : 0;
+                        let netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         let dAnnualUnits = product.RequestedVolume;
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;

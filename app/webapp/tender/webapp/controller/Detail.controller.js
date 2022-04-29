@@ -687,7 +687,7 @@ sap.ui.define([
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen(oTender.CountryCode)).done(function (bShowGroupPurchasing) {
-					oDetailController.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
+					oDetailController.getView().byId("idGroupPurchasing")?.setVisible(bShowGroupPurchasing);
 				});
 
 
@@ -6563,14 +6563,23 @@ sap.ui.define([
 
 				}
 			});
-			var handleCloseInstituteName = function (oEvent) {
+			var handleCloseInstituteName = async function (oEvent) {
 				var oSelectedItem = oEvent.getParameter("selectedItem");
+                const oFastAppDataModel = Services.getFastAppDataModel();
+                const event = oEvent.getSource();
 				if (oSelectedItem) {
 					that.byId("idInstituteName").setValue(oSelectedItem.getTitle());
 					//that.byId("idInstituteID").setValue(oSelectedItem.getDescription());
 					//that.getView().byId("idhdrInstID").setText(oSelectedItem.getDescription());
 					var sSelectedInstituteID = oSelectedItem.data("InstituteID");
+                    let oInstitute = await Services.loadInstitute(Services.getSelectedCountry(), sSelectedInstituteID, true);
+                    
 					that.byId("idInstituteID").setValue(sSelectedInstituteID);
+                    that.byId("idInstituteCifCode").setValue(oInstitute.CifCode);
+                    that.byId("idRegionalHealthSystem").setValue(oInstitute.RegionalHealthSystem);
+                    that.byId("idInstitutePoblacion").setValue(oInstitute.City);
+                    that.byId("idInstituteCode").setValue(oInstitute.CustomerID);
+                    that.byId("idInstituteProvince").setValue(oInstitute.Province.Name);
 					that.getView().byId("idhdrInstID").setText(sSelectedInstituteID);
 
 					//should group purchasing be visible on the screen based on data back-end
@@ -6606,8 +6615,9 @@ sap.ui.define([
 							}
 						}
 					});
+                    oFastAppDataModel.refresh(true);
 				}
-				oEvent.getSource().getBinding("items").filter([]);
+				event.getBinding("items").filter([]);
 			};
 
 			

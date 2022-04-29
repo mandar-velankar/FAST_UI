@@ -302,7 +302,13 @@
 				<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" />
 				<Label text="{i18n>contextnprd}" design="Bold"/>
 				<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" />
-				<!-- Status  tender -->
+                
+                <!-- Spain only 
+                <Label text="{i18n>CreatedAt}" design="Bold"/>
+                <Input id="idCreationDate" value="{path :'fastAppData>/EditTender/CreatedAt', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                End Spain only -->
+				
+                <!-- Status  tender -->
 				<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>
 				<Select id="idTenderStatus" selectedKey="{fastData>TenderStatus}" enabled="{= ${fastData>TenderID} !== null}" visible="false">
 					<items>
