@@ -5,7 +5,7 @@
 
     <Panel expandable="true" headerText="Profitability Calculation Parameters" expanded="false">
         <form:SimpleForm
-            editable="false"
+            editable="true"
             class="editableForm"
             layout="ResponsiveGridLayout"
             labelSpanXL="2"
@@ -22,15 +22,15 @@
             columnsM="1"
             singleContainerFullSize="false" >
             <form:content>
-                <Label text="Start Month" required="true"/>
+                <Label text="{i18n>StartMonth}" required="true"/>
                 <Input  value="{fastAppData>/SelectedOffer/ProfitabilityStartMnth}" type="Number" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-                <Label text="Agreement Duration" required="true"/>
+                <Label text="{i18n>AgreementDuration}" required="true"/>
                 <Input  value="{fastAppData>/SelectedOffer/ProfitabilityAgrDur}" type="Number" description="Years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-                <Label text="Yearly Maintenance Cost Per Unit" required="true"/>
+                <Label text="{i18n>YearlyMaintenanceCostPerUnit}" required="true"/>
                 <Input  value="{fastAppData>/SelectedOffer/ProfitabilityYrlyMntCost}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-                <Label text="Discount Rate" required="true"/>
+                <Label text="{i18n>NPVInterestRate}" required="true"/>
                 <Input  value="{path:'fastAppData>/SelectedOffer/ProfitabilityDiscRate', formatter:'.formatter.percentageNoUnit'}" type="Number" liveChange="onChangeDiscountRate" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-                <Label text="Growth Rate" required="true"/>
+                <Label text="{i18n>GrowthRate}" required="true"/>
                 <Input value="{path:'fastAppData>/SelectedOffer/ProfitabilityGrowthRate', formatter:'.formatter.percentageNoUnit'}" type="Number" liveChange="onChangeGrowthRate" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
             </form:content>
         </form:SimpleForm>
