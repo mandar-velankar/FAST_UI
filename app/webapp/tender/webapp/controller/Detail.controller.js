@@ -9920,7 +9920,13 @@ sap.ui.define([
 			this._sendNotificationDialog.destroy();
 		},
 
-		checkBtnCreatePriceAgreementEnabled: function(outcome, priceConditions){
+		checkBtnCreatePriceAgreementEnabled: function(outcome){
+            const selectedProductPath = '/SelectedOffer/SelectedProduct';
+            let oFastAppModel = Services.getFastAppDataModel();
+            if (oFastAppModel.getProperty(selectedProductPath) === undefined){
+                oFastAppModel.setProperty(selectedProductPath,Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID()));
+            }
+            let priceConditions = oFastAppModel.getProperty('/SelectedOffer/SelectedProduct').results[0].PriceCondition;
 			if(!outcome) return false;
 			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
 			const isSpain = Services.getSelectedCountry().indexOf("ES") > -1;
