@@ -469,19 +469,24 @@ sap.ui.define([
                 return;
             } 
 
-            else {            
-                
-                await this.savePriceConditions(selectedPriceConditionViewObjects);
+            else {         
+                let sTenderID = "";   
+                try {
+                    await this.savePriceConditions(selectedPriceConditionViewObjects);
 
-                // Additional saving to PT_TMBDPR. The tender flow should keep working. 
-                // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
-                await this.savePricesToTMBDPR();
+                    // Additional saving to PT_TMBDPR. The tender flow should keep working. 
+                    // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
+                    await this.savePricesToTMBDPR();
 
-                await this.saveProfitabilityParameters();
-                
-                var bLoadedCheck = false;
-                const sTenderID = Services.getSelectedTenderID();
-				await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
+                    await this.saveProfitabilityParameters();
+                    
+                    var bLoadedCheck = false;
+                    sTenderID = Services.getSelectedTenderID();
+                    await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
+                    
+                } catch (error) {
+                    throw error;
+                }
 
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
@@ -572,7 +577,7 @@ sap.ui.define([
             });
 
             const deletePriceConditionPromises = [];
-            selectedPriceConditionViewObjects.map(priceConditionViewObj => {
+            selectedPriceConditionViewObjects.forEach(priceConditionViewObj => {
                 let requiredPriceConditionViewObject = null;
                 if(!priceConditionViewObj.isMain){
                     const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
@@ -590,7 +595,29 @@ sap.ui.define([
                 }
             });
 
-            return Promise.all([savePriceConditionPromises,deletePriceConditionPromises]);
+        
+            
+            const deletePreExistingMainPriceConditionPromises = this.deletePreExistingMainPriceConditions(selectedPriceConditionViewObjects);
+
+
+            return Promise.all([savePriceConditionPromises,deletePriceConditionPromises,deletePreExistingMainPriceConditionPromises]);
+        },
+
+        /**
+         * Delete all pre-existing main price conditions.
+         * This use case can occur when the user changes the main price condition type 
+         * after a main price condition was already been created
+         * @returns {Array<Promise>}
+         */
+        deletePreExistingMainPriceConditions: function(selectedPriceConditionViewObjects){
+            const allPriceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const mainSelectedPriceConditionView = selectedPriceConditionViewObjects.find(obj => obj.isMain);
+            const preExistingPriceConditions = allPriceConditionViews.filter(condition => condition.isMain && condition.ExistingPriceConditionID)
+                                                                     .filter(condition => condition.ExistingPriceConditionID !== mainSelectedPriceConditionView.ExistingPriceConditionID);
+            return preExistingPriceConditions.map(condition => {
+                const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+                return Services.getService("PriceCondition").deletePriceCondition(priceConditionDeleteObject);
+            });
         },
 
         savePricesToTMBDPR: async function(){
