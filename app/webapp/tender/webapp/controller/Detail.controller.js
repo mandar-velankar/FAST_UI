@@ -1780,47 +1780,47 @@ sap.ui.define([
 
 					//should tendertype be visible on the basic info screen?
 					$.when(Services.checkShowTenderType(sClassification)).done(function (bShowTenderType) {
-						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
+						that.getView().byId("idSelectTenderTypeEdit")?.setVisible(bShowTenderType);
 						if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
-							that.getView().byId("idSelectTenderTypeEdit").setVisible(true);
+							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(true);
 						}else{
-							that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
+							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(bShowTenderType);
 						}
 					});
 
                     //should tendertype2 be visible on the basic info screen?
 					$.when(Services.checkShowTenderType2(sClassification)).done(function (bShowTenderType) {
-						that.getView().byId("idSelectTenderType2Edit").setVisible(bShowTenderType);
+						that.getView().byId("idSelectTenderType2Edit")?.setVisible(bShowTenderType);
 					});
 
 					/* Mexico */
 					$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
-						that.getView().byId("idSelectSalesTypeEdit").setVisible(bShowSalesType);
-						that.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
+						that.getView().byId("idSelectSalesTypeEdit")?.setVisible(bShowSalesType);
+						that.getView().byId("idSelectSalesType")?.setVisible(bShowSalesType);
 					});
 
 					$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
-						that.getView().byId("idSelectTenderOriginEdit").setVisible(bShowTenderOrigin);
-						that.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
+						that.getView().byId("idSelectTenderOriginEdit")?.setVisible(bShowTenderOrigin);
+						that.getView().byId("idSelectTenderOrigin")?.setVisible(bShowTenderOrigin);
 					});
 
 					$.when(Services.checkShowContractType()).done(function (bShowContractType) {
-						that.getView().byId("idSelectContractTypeEdit").setVisible(bShowContractType);
-						that.getView().byId("idSelectContractType").setVisible(bShowContractType);
+						that.getView().byId("idSelectContractTypeEdit")?.setVisible(bShowContractType);
+						that.getView().byId("idSelectContractType")?.setVisible(bShowContractType);
 					});
 					/* End of mexico */
 
 					/* Thailand */
 					$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
-						that.getView().byId("idSelectProcurementMethodEdit").setVisible(bShowProcurementMethod);
-						that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
+						that.getView().byId("idSelectProcurementMethodEdit")?.setVisible(bShowProcurementMethod);
+						that.getView().byId("idSelectProcurementMethod")?.setVisible(bShowProcurementMethod);
 					});
 					/* End of Thailand */
 
 					//should group purchasing be visible on the screen based on data back-end
 					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) { 
-						that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
-						that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
+						that.getView().byId("idGroupPurchasingEdit")?.setVisible(bShowGroupPurchasing);
+						that.getView().byId("idGroupPurchasing")?.setVisible(bShowGroupPurchasing);
 					});
 
 					that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
@@ -6579,7 +6579,7 @@ sap.ui.define([
                     that.byId("idRegionalHealthSystem").setValue(oInstitute.RegionalHealthSystem);
                     that.byId("idInstitutePoblacion").setValue(oInstitute.City);
                     that.byId("idInstituteCode").setValue(oInstitute.CustomerID);
-                    that.byId("idInstituteProvince").setValue(oInstitute.Province.Name);
+                    that.byId("idInstituteProvince").setValue(oInstitute.Province?.Name);
 					that.getView().byId("idhdrInstID").setText(sSelectedInstituteID);
 
 					//should group purchasing be visible on the screen based on data back-end
