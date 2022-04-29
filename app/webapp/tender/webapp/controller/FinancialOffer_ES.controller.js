@@ -1130,7 +1130,7 @@ sap.ui.define([
 
                             sFOCType = oPriceCondition.FOCType;
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
+                            netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1211,7 +1211,7 @@ sap.ui.define([
                         let dUnits = [];
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
-                        let netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
+                        let netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         let dAnnualUnits = product.RequestedVolume;
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
