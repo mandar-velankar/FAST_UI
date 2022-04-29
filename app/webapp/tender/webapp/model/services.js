@@ -2158,7 +2158,7 @@ sap.ui.define([
 				oFastDataCalls.read(sTenderPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation"
+						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation,User"
 					},
 					success: function (oData, oResponse) {
 
@@ -3002,7 +3002,7 @@ sap.ui.define([
 		//-------
 
 		//load Institute information
-		loadInstitute: function (sCountry, sInstituteID, bWithChilderen) {
+		loadInstitute: async function (sCountry, sInstituteID, bWithChilderen) {
 
 			var that = this;
 
@@ -3024,7 +3024,7 @@ sap.ui.define([
 
 			if (bWithChilderen) {
 				var oExpand = {
-					"$expand": "Children/Institute"
+					"$expand": "Province,Children/Institute"
 				}
 			} else {
 				var oExpand = {}; //no expand
