@@ -1109,7 +1109,7 @@ sap.ui.define([
                         oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
                     }
 
-                    if((oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') || (oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.ProductType !== 'Contrast Agent' && product.ProductType !== 'Consumable'))){
+                    if((oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') || (oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Consumable'))){
                         
                         /* Calculation A
                         Only applies for all price conditions, except for rental, having offer division different then Radiology */
@@ -1125,12 +1125,17 @@ sap.ui.define([
                         if(oPriceCondition){ 
                             let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ExistingPriceConditionID !== null && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
                             if(aFreeGoodsOther && aFreeGoodsOther.FreeGoodsOther && aFreeGoodsOther.FreeGoodsOther.length > 0){
-                                aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductCode === product.SKU.PRODUCTPACKID);
+                                aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductPackId === product.SKU.PRODUCTPACKID);
                             }
 
                             sFOCType = oPriceCondition.FOCType;
-                            sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
+                            sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
+                            if (oProductConditionView.ConditionType === 'PVL'){
+                                let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                                netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.YLLP / factor);
+                            } else {
+                                netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
+                            }
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1138,17 +1143,18 @@ sap.ui.define([
                         let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
                         let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
                         let grossSales = netPrice * dPaidVolume;
-                        let netPriceWithFoc = grossSales / dTotalVolume;
+                        let netPriceWithFoc = grossSales / dTotalVolume; //rounding
                         let grossProfit = grossSales - (cogs * dTotalVolume);
                         let grossMargin = grossSales ? (grossProfit / grossSales) : 0;
 
+                        oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = grossSales;
-                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
+                        oPriceCondition.NetPriceFOC = Number((netPriceWithFoc).toFixed(2));
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
-                        oPriceCondition.Sales_NPV = 0;
-                        oPriceCondition.Cost_NPV = 0;
+                        oPriceCondition.Sales_NPV = grossSales;
+                        oPriceCondition.Cost_NPV = Number(cogs);
 
                     } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental'){
                         /* Calculation B
@@ -1195,23 +1201,29 @@ sap.ui.define([
                         let grossProfit = dSales_NPV_total - dCost_NPV_total;
                         let grossMargin = dSales_NPV_total ? grossProfit / dSales_NPV_total : 0;
 
-                        oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = grossSales;
                         oPriceCondition.NetofferPrice = netOfferPrice;
-                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
+                        oPriceCondition.NetPriceFOC = Number((netPriceWithFoc).toFixed(2));;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
 
-                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.ProductType === 'Contrast Agent' || product.ProductType === 'Consumable')) {
+                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType === 'Contrast Agent' || product.SKU.ProductType === 'Consumable')) {
                     
                         /* Calculation C
                         Only applies for all price conditions, except for rental, and offer division equals Radiology */
                         let dUnits = [];
+                        let netPrice = 0;
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
-                        let netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
+                        if (oProductConditionView.ConditionType === 'PVL'){
+                            let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                            netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.YLLP / factor);
+                        } else {
+                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
+                        }
                         let dAnnualUnits = product.RequestedVolume;
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1245,7 +1257,7 @@ sap.ui.define([
                         let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
 
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
                         oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.NetPriceFOC = netPrice;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
@@ -1288,7 +1300,7 @@ sap.ui.define([
                         oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
                         oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
                         oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
-                        oCalculatedResult.Profitability = oCalculatedResultTotals.Profitability;
+                        oCalculatedResult.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
                     }
 
                     if(consolidatedEntry.ProductType !== 'Total'){
@@ -1296,7 +1308,8 @@ sap.ui.define([
                         oCalculatedResultTotals.GrossMargin = oCalculatedResultTotals.GrossMargin + oCalculatedResult.GrossMargin;
                         oCalculatedResultTotals.NetSales = oCalculatedResultTotals.NetSales + oCalculatedResult.NetSales;
                         oCalculatedResultTotals.COGS = oCalculatedResultTotals.COGS + oCalculatedResult.COGS;
-                        oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                        //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                        //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
                     }
 
                     if(oProductTypeProfitability && oProductTypeProfitability.length > 0){
