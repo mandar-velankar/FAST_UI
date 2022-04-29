@@ -1104,14 +1104,12 @@ sap.ui.define([
 
             if (aOfferProducts && aOfferProducts.length > 0){
                 productProfitabilityData = aOfferProducts.map(product => {
+
                     if(aPriceConditionViews && aPriceConditionViews.length > 0){
                         oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
-                        /*if(aPriceConditionViewByProduct){
-                            oProductConditionView = aPriceConditionViewByProduct[(Services.getSelectedPriceConditionPath()).split("/").pop()];
-                        }*/
                     }
 
-                    if(oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental'){
+                    if((oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') || (oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.ProductType !== 'Contrast Agent' && product.ProductType !== 'Consumable'))){
                         
                         /* Calculation A
                         Only applies for all price conditions, except for rental, having offer division different then Radiology */
@@ -1132,7 +1130,7 @@ sap.ui.define([
 
                             sFOCType = oPriceCondition.FOCType;
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
+                            netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1206,14 +1204,14 @@ sap.ui.define([
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
 
-                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') {
+                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.ProductType === 'Contrast Agent' || product.ProductType === 'Consumable')) {
                     
                         /* Calculation C
                         Only applies for all price conditions, except for rental, and offer division equals Radiology */
                         let dUnits = [];
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
-                        let netPrice = oProductConditionView && oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax ? oProductConditionView.NetPriceWithoutTax : 0;
+                        let netPrice = oProductConditionView.ConditionType === 'PVL' ? oProductConditionView.PVL : oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? oProductConditionView.NetPriceWithTaxAfterDeductionRD : oProductConditionView.NetPriceWithoutTax;
                         let dAnnualUnits = product.RequestedVolume;
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
