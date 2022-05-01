@@ -10,7 +10,8 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator) {
+    "sap/ui/model/Sorter"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	var bundle;
@@ -73,9 +74,11 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty("/FOCRequired", false);
                 Services.getFastAppDataModel().setProperty("/FOCExpanded", false);
 
-                // this.getView().setBusyIndicatorDelay(0);
+                //load countryBrandProducts ( needed to get productnames for FOC model)
+			    let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+                Services.getFastAppDataModel().setProperty("/CountryBrandProducts", aCountryBrandProducts);
 
-                await this.getCountryBrandProductsCombined();
+                await this.getProducts();
                 await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
@@ -86,7 +89,7 @@ sap.ui.define([
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
 
-                this.calculateProfitability();
+                await this.calculateProfitability();
 
                 BusyIndicator.hide();
 			}
@@ -108,6 +111,8 @@ sap.ui.define([
         },
 
         managePriceConditions: async function(){
+            BusyIndicator.show();
+
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
             Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
@@ -151,6 +156,8 @@ sap.ui.define([
             // load main fragment if main condition already exists
             const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+
+            BusyIndicator.hide();
         },
 
         /**
@@ -229,6 +236,7 @@ sap.ui.define([
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
             const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;
+            Services.getFastAppDataModel().setProperty("/RappelRequired", false);
             if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/RappelRequired", true);
             return rappelBindingPath;
         },
@@ -245,6 +253,7 @@ sap.ui.define([
             const focVbox = this.byId("idFOCVbox");
             focVbox.bindElement({ path: focBindingPath, model: "fastAppData" });
             const existingPriceCondition = !!priceConditions[focIndex]?.ExistingPriceConditionID;
+            Services.getFastAppDataModel().setProperty("/FOCRequired", false);
             if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/FOCRequired", true);
             return focBindingPath;
         },
@@ -260,43 +269,36 @@ sap.ui.define([
         },
 
         addFOCs: async function(focBindingPath){
+
             const focPriceCondition = Services.getFastAppDataModel().getProperty(focBindingPath);
             if(focPriceCondition && focPriceCondition.ExistingPriceConditionID){
-                const focs = (await Services.getService("PriceCondition").getFocs({
+                let focs = (await Services.getService("PriceCondition").getFocs({
                     PriceConditionID: focPriceCondition.ExistingPriceConditionID
                 })).data.results;
+
+                let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
+
+                focs = focs.map(freegood => {
+                    var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+                    freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
+                    return freegood;
+                });
+
+
                 Services.getFastAppDataModel().setProperty(focBindingPath.concat("/FreeGoodsOther"), focs);
             }   
         },
 
-		getCountryBrandProductsCombined: async function(){
-
+        getProducts: async function (){ 
             //load products
 		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
-
-			//load countryBrandProducts
-			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
-
-			aProducts = aProducts.map(product => {
-				product.FreeGoodsOther = product.FreeGoodsOther && product.FreeGoodsOther.map(FreeGoodsOther => {
-					var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === FreeGoodsOther.ProductPackId);
-					FreeGoodsOther.ProductName = countryBrandProduct.PRODUCT_NAME;
-					return FreeGoodsOther;
-				}) || [];
-				return product;
-			});
-
-			//set to fastappdata model for easy access on the view
-			var oFastAppDataModel = Services.getFastAppDataModel();
             aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+            let oFastAppDataModel = Services.getFastAppDataModel();
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
-			oFastAppDataModel.setProperty("/CountryBrandProducts", aCountryBrandProducts);
 
-			return aProducts;
-		},
+        },
 
         getCountryBrandFOCsCombined: async function(){
-            
             const oFastAppDataModel = Services.getFastAppDataModel();
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const focIndex = priceConditions ? priceConditions.findIndex(item => item.ConditionType === "FOC") : -1;
@@ -304,33 +306,22 @@ sap.ui.define([
             let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
 
 			//load countryBrandProducts
-			let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+			let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
             if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
                 aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
                     var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                    freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
+                    freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
                     return freegood;
                 });
 
-                if(aFreeGoodsOther.length > 0){
-                    aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
-                        var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                        freegood.ProductName = countryBrandProduct.PRODUCT_NAME;
-                        return freegood;
-                    });
+                oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
 
-                    //set to fastappdata model for easy access on the view
-                    aFreeGoodsOther.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
-                    oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
-
-                    return aFreeGoodsOther;
-                } else {
-                    return null;
-                }
             }
 		},
 
         getPriceConditionView: async function(){
+
+            BusyIndicator.show();
 
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
             const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
@@ -345,7 +336,7 @@ sap.ui.define([
 
 			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
             
-
+            BusyIndicator.hide();
             return priceConditionViews.data.results;
 
         },
@@ -362,10 +353,10 @@ sap.ui.define([
 
 		},
 		refreshFinancialTabES: async function () {
-			await this.getCountryBrandProductsCombined();
+			await this.getProducts();
             await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
-            this.calculateProfitability();
+            await this.calculateProfitability();
 		},
 
 		
@@ -432,18 +423,6 @@ sap.ui.define([
             return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
         },
 
-        getPriceConditions: async function(productCode){
-
-            const filter = {
-                "CountryCode": Services.getSelectedCountry(),
-                "OfferID": Services.getSelectedOfferID(),
-                "ProductCode": productCode
-            };
-
-            const priceConditionResponse = await Services.getService('PriceCondition').getPriceCondition(filter);
-            return priceConditionResponse.data && priceConditionResponse.data.results;
-        },
-
         getPriceConditionViewAllProduts: async function(){
             
             const oFastAppDataModel = Services.getFastAppDataModel();
@@ -460,18 +439,18 @@ sap.ui.define([
             return priceConditionResponse.data && priceConditionResponse.data.results;
         },
 
-		// _checkApprovalEnabled: function (){
-		// 	let sOfferID = Services.getSelectedOfferID();
-		// 	var oOffer = Services.getLoadedOffer(sOfferID);
-		// 	var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+		_checkApprovalEnabled: function (){
+			let sOfferID = Services.getSelectedOfferID();
+			var oOffer = Services.getLoadedOffer(sOfferID);
+			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
 
-		// 	if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
-		// 		bEnableApproval = false;
-		// 	}
+			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+				bEnableApproval = false;
+			}
 
-		// 	this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
 
-		// },
+		},
 
 		/**
 		 * Save financial offer for Italy
@@ -490,32 +469,29 @@ sap.ui.define([
                 return;
             } 
 
-            else {            
-                
-                await this.savePriceConditions(selectedPriceConditionViewObjects);
+            else {         
+                let sTenderID = "";   
+                try {
+                    await this.savePriceConditions(selectedPriceConditionViewObjects);
 
-                // Additional saving to PT_TMBDPR. The tender flow should keep working. 
-                // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
-                await this.savePricesToTMBDPR();
+                    // Additional saving to PT_TMBDPR. The tender flow should keep working. 
+                    // Thats why we need to store the basic price structure not only in the new tables but also in the PT_TMBDPR table
+                    await this.savePricesToTMBDPR();
 
-                await this.saveProfitabilityParameters();
+                    await this.saveProfitabilityParameters();
+                    
+                    var bLoadedCheck = false;
+                    sTenderID = Services.getSelectedTenderID();
+                    await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
+                    
+                } catch (error) {
+                    throw error;
+                }
 
                 //switch from edit to display
                 this._DetailController.onEditToggleButtonPress();
 
-                //show success message
-                Services.getOfferCompositeMessages().push({
-                    type: 'Success',
-                    title: 'Financial Offer Saved Successfully',
-                    description: 'Financial Offer Saved Successfully'
-                });
-
-                Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
-                Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
-
-
                 //refresh tenders master table (left pane)
-                const sTenderID = selectedPriceConditionViewObjects[0].TenderID;
                 Services.refreshTendersMasterTable(sTenderID);
 
                 //update approvals sent to 0 (to indicate that a change has been made to the offer data, so approvals need to be send again)
@@ -527,18 +503,32 @@ sap.ui.define([
                     Services.showErrorMessage(oError, "Background saving for approvals sent field");
                 });
 
+                //show success message
+                Services.getOfferCompositeMessages().push({
+                    type: 'Success',
+                    title: 'Financial Offer Saved Successfully',
+                    description: 'Financial Offer Saved Successfully'
+                });
+
+                Services.showMessageCompositeView("Offer Saved", Services.getOfferCompositeMessages(), 'Success');
+                Services.getOfferCompositeMessages().splice(0, Services.getOfferCompositeMessages().length);
+
                 // enable approval button
-                this.byId("ApprovalButtonId").setEnabled(true);
+                this._checkApprovalEnabled();
 
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
-                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
-                const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
-                    return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
-                });
+                await this.managePriceConditions();
 
-                await Promise.all(saveProductProfitabilityPromises);
+                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
+                if(calculatedConsolidatedProfitability && calculatedConsolidatedProfitability.length > 0){
+                    const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
+                        return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
+                    });
+
+                    await Promise.all(saveProductProfitabilityPromises);
+                }
 
                 BusyIndicator.hide();
             } 
@@ -587,7 +577,7 @@ sap.ui.define([
             });
 
             const deletePriceConditionPromises = [];
-            selectedPriceConditionViewObjects.map(priceConditionViewObj => {
+            selectedPriceConditionViewObjects.forEach(priceConditionViewObj => {
                 let requiredPriceConditionViewObject = null;
                 if(!priceConditionViewObj.isMain){
                     const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
@@ -605,7 +595,29 @@ sap.ui.define([
                 }
             });
 
-            return Promise.all([savePriceConditionPromises,deletePriceConditionPromises]);
+        
+            
+            const deletePreExistingMainPriceConditionPromises = this.deletePreExistingMainPriceConditions(selectedPriceConditionViewObjects);
+
+
+            return Promise.all([savePriceConditionPromises,deletePriceConditionPromises,deletePreExistingMainPriceConditionPromises]);
+        },
+
+        /**
+         * Delete all pre-existing main price conditions.
+         * This use case can occur when the user changes the main price condition type 
+         * after a main price condition was already been created
+         * @returns {Array<Promise>}
+         */
+        deletePreExistingMainPriceConditions: function(selectedPriceConditionViewObjects){
+            const allPriceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const mainSelectedPriceConditionView = selectedPriceConditionViewObjects.find(obj => obj.isMain);
+            const preExistingPriceConditions = allPriceConditionViews.filter(condition => condition.isMain && condition.ExistingPriceConditionID)
+                                                                     .filter(condition => condition.ExistingPriceConditionID !== mainSelectedPriceConditionView.ExistingPriceConditionID);
+            return preExistingPriceConditions.map(condition => {
+                const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+                return Services.getService("PriceCondition").deletePriceCondition(priceConditionDeleteObject);
+            });
         },
 
         savePricesToTMBDPR: async function(){
@@ -878,7 +890,6 @@ sap.ui.define([
 		},
 
         onFinancialProductPress: async function(oEvent, bBindingFinished){
-
             BusyIndicator.show();
             //get context of selected price product
             let oFastAppDataModel = Services.getFastAppDataModel();
@@ -904,19 +915,19 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
-			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			let oSelectedProduct = oOffer?.Product && oOffer?.Product?.results?.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
-
-            const aPriceConditions = await this.getPriceConditions(Services.getSelectedProductID());
-            await this.getCountryBrandFOCsCombined();     
-            
+                       
             // some magic for just not to break the code. blame the other guy :-)
             if(!bBindingFinished){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
-            }
+            } 
+
+            // enable approval button
+            this._checkApprovalEnabled();
 
             BusyIndicator.hide();
 
@@ -1074,7 +1085,7 @@ sap.ui.define([
 
         calculateProfitability: async function(){
             await this.calculateProductProfitability();
-            this.calculateConsolidatedProfitability();
+            await this.calculateConsolidatedProfitability();
         },
 
         calculateProductProfitability: async function (){
@@ -1085,7 +1096,7 @@ sap.ui.define([
             let oProductConditionView = null;
 
             const aOfferProducts = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
-            //let aPriceConditionViews = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
+            let aPricingView = oFastAppDataModel.getProperty('/PriceConditionView'); //get all price conditions from the model
                 //aPriceConditionViews = aPriceConditionViews && aPriceConditionViews.filter(priceCondition => priceCondition.ExistingPriceConditionID != null); // we only need the active ones
             let aPriceConditionViews = await this.getPriceConditionViewAllProduts();    
             let aProductPricingView = oFastAppDataModel.getProperty('/ProductPricingView');
@@ -1093,14 +1104,12 @@ sap.ui.define([
 
             if (aOfferProducts && aOfferProducts.length > 0){
                 productProfitabilityData = aOfferProducts.map(product => {
+
                     if(aPriceConditionViews && aPriceConditionViews.length > 0){
-                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null)[0];
-                        /*if(aPriceConditionViewByProduct){
-                            oProductConditionView = aPriceConditionViewByProduct[(Services.getSelectedPriceConditionPath()).split("/").pop()];
-                        }*/
+                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
                     }
 
-                    if(oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental'){
+                    if((oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') || (oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Consumable'))){
                         
                         /* Calculation A
                         Only applies for all price conditions, except for rental, having offer division different then Radiology */
@@ -1113,15 +1122,20 @@ sap.ui.define([
                         let sFOCBonus;
                         let netPrice = 0;
 
-                        if(oPriceCondition){
-                            let aFreeGoodsOther = oPriceCondition.FreeGoodsOther;
-                            if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
-                                aFreeGoodsOther = aFreeGoodsOther.filter(freeGood => freeGood.ProductCode === product.SKU.PRODUCTPACKID);
+                        if(oPriceCondition){ 
+                            let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ExistingPriceConditionID !== null && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                            if(aFreeGoodsOther && aFreeGoodsOther.FreeGoodsOther && aFreeGoodsOther.FreeGoodsOther.length > 0){
+                                aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductPackId === product.SKU.PRODUCTPACKID);
                             }
 
                             sFOCType = oPriceCondition.FOCType;
-                            sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? aFreeGoodsOther[0].FOCBonus : 0;
-                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD;
+                            sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
+                            if (oProductConditionView.ConditionType === 'PVL'){
+                                let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                                netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.YLLP / factor);
+                            } else {
+                                netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
+                            }
                         }
                         let requestedVolume = product.RequestedVolume;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1129,17 +1143,18 @@ sap.ui.define([
                         let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
                         let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
                         let grossSales = netPrice * dPaidVolume;
-                        let netPriceWithFoc = grossSales / dTotalVolume;
+                        let netPriceWithFoc = grossSales / dTotalVolume; //rounding
                         let grossProfit = grossSales - (cogs * dTotalVolume);
                         let grossMargin = grossSales ? (grossProfit / grossSales) : 0;
 
+                        oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = grossSales;
-                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
+                        oPriceCondition.NetPriceFOC = Number((netPriceWithFoc).toFixed(2));
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
-                        oPriceCondition.Sales_NPV = 0;
-                        oPriceCondition.Cost_NPV = 0;
+                        oPriceCondition.Sales_NPV = grossSales;
+                        oPriceCondition.Cost_NPV = Number(cogs);
 
                     } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental'){
                         /* Calculation B
@@ -1186,23 +1201,29 @@ sap.ui.define([
                         let grossProfit = dSales_NPV_total - dCost_NPV_total;
                         let grossMargin = dSales_NPV_total ? grossProfit / dSales_NPV_total : 0;
 
-                        oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = grossSales;
                         oPriceCondition.NetofferPrice = netOfferPrice;
-                        oPriceCondition.NetPriceFOC = netPriceWithFoc;
+                        oPriceCondition.cogsUoM = cogs;
+                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
+                        oPriceCondition.NetPriceFOC = Number((netPriceWithFoc).toFixed(2));;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
 
-                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') {
+                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType === 'Contrast Agent' || product.SKU.ProductType === 'Consumable')) {
                     
                         /* Calculation C
                         Only applies for all price conditions, except for rental, and offer division equals Radiology */
                         let dUnits = [];
+                        let netPrice = 0;
 
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
-                        let netPrice = oProductConditionView ? oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : 0;
+                        if (oProductConditionView.ConditionType === 'PVL'){
+                            let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                            netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.YLLP / factor);
+                        } else {
+                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
+                        }
                         let dAnnualUnits = product.RequestedVolume;
                         let dAnnualValue = dAnnualUnits * netPrice;
                         let cogs = product.Cogs ? product.Cogs.COGS : 0;
@@ -1236,7 +1257,7 @@ sap.ui.define([
                         let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
 
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = grossSales;
+                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
                         oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.NetPriceFOC = netPrice;
                         oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
@@ -1250,7 +1271,7 @@ sap.ui.define([
             }
         },
 
-        calculateConsolidatedProfitability: function(){
+        calculateConsolidatedProfitability: async function(){
             const oFastAppDataModel          = Services.getFastAppDataModel();
             const aOfferProducts             = oFastAppDataModel.getProperty('/SelectedOffer/Product/results');  //get all products from the model
             const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
@@ -1279,7 +1300,7 @@ sap.ui.define([
                         oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
                         oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
                         oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
-                        oCalculatedResult.Profitability = oCalculatedResultTotals.Profitability;
+                        oCalculatedResult.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
                     }
 
                     if(consolidatedEntry.ProductType !== 'Total'){
@@ -1287,7 +1308,8 @@ sap.ui.define([
                         oCalculatedResultTotals.GrossMargin = oCalculatedResultTotals.GrossMargin + oCalculatedResult.GrossMargin;
                         oCalculatedResultTotals.NetSales = oCalculatedResultTotals.NetSales + oCalculatedResult.NetSales;
                         oCalculatedResultTotals.COGS = oCalculatedResultTotals.COGS + oCalculatedResult.COGS;
-                        oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                        //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                        //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
                     }
 
                     if(oProductTypeProfitability && oProductTypeProfitability.length > 0){
@@ -1380,11 +1402,12 @@ sap.ui.define([
             }
 
             this.pDialog.then(function (oDialog) {
-                const priceConditionView = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-                const rappelIndex = priceConditionView.findIndex(item => item.ConditionType === "Rappel");
-                const bindingPath = "/PriceConditionView/".concat(rappelIndex);
+                const bindingPaths = this.getBindingPathsDiscountCondition();
                 const oTable = this.byId("idVolumeTreshold");
-                oTable.bindElement({ path: bindingPath, model: "fastAppData" });
+                const existingDiscountCondition = Services.getFastAppDataModel().getProperty(bindingPaths.dc);
+                const discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
+                Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}Temp`, discountConditions);
+                oTable.bindElement({ path: bindingPaths.root, model: "fastAppData" });
                 oDialog.open();
             }.bind(this));
 
@@ -1394,7 +1417,7 @@ sap.ui.define([
 
             const bindingPath = this.byId("idVolumeTreshold").getElementBinding("fastAppData").sPath;
             const priceConditions = Services.getFastAppDataModel().getProperty(bindingPath);
-            const discountConditions = Services.getFastAppDataModel().getProperty(bindingPath.concat("/DiscountConditions")) || [];
+            const discountConditions = Services.getFastAppDataModel().getProperty(bindingPath.concat("/DiscountConditionsTemp")) || [];
 
             
             discountConditions.push({
@@ -1405,10 +1428,45 @@ sap.ui.define([
                 NetPriceWithTax: "",
             });
 
-            Services.getFastAppDataModel().setProperty(bindingPath.concat("/DiscountConditions"), discountConditions);
+            Services.getFastAppDataModel().setProperty(bindingPath.concat("/DiscountConditionsTemp"), discountConditions);
 
         },
+        onSortDiscountCondition:function(){
+            var view = this.getView();
+			if (!this.volumeTreshholdSortingDialog) {
+				this.volumeTreshholdSortingDialog = Fragment.load({
+					id: this.getView().getId(),
+					name: "FAST_NS0FAST0.view.fragments.priceConditions.VolumeTreshholdSorting",
+					controller: this
+				}).then(function (dialog) {
+                    // connect dialog to the root view of this component (models, lifecycle)
+                    view.addDependent(dialog);
+                    dialog.setModel(Services.getFastAppDataModel(), "fastAppData");
+                    return dialog;
+				});
+			}
+            this.volumeTreshholdSortingDialog.then(function(dialog){
+                dialog.open();
+            });
+        },
+        handleSortDialogDiscountConditionConfirm:function(event){
+			const table = this.byId("idVolumeTreshold"),
+				params = event.getParameters(),
+				binding = table.getBinding("items"),
+				sorters = [];
 
+			const path = params.sortItem.getKey();
+			const descending = params.sortDescending;
+			sorters.push(new Sorter(path, descending,false,function(a,b){
+                a = parseFloat(a);
+                b = parseFloat(b);
+                if( a < b ) return -1;
+                if( a > b ) return 1;
+                return -1;
+            }));
+
+			binding.sort(sorters);
+        },
         onDeleteDiscountCondition: function(oEvent){
 
             const path = oEvent.getSource().getParent().getBindingContext("fastAppData").getPath();
@@ -1465,8 +1523,23 @@ sap.ui.define([
             bindingContext.getModel().updateBindings();
 
         },
-
+        getBindingPathsDiscountCondition:function(){
+            const priceConditionView = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const rappelIndex = priceConditionView.findIndex(item => item.ConditionType === "Rappel");
+            const bindingPath = "/PriceConditionView/".concat(rappelIndex);
+            const bindingPathDC = `${bindingPath}/DiscountConditions`;
+            return {
+                root:bindingPath,
+                dc:bindingPathDC
+            };
+        },
         onApplyDiscountCondition: function(){
+            const bindingPaths = this.getBindingPathsDiscountCondition();
+            const discountConditionsTemp = JSON.parse(JSON.stringify(Services.getFastAppDataModel().getProperty(`${bindingPaths.dc}Temp`)));
+            Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}`, discountConditionsTemp);
+            this.onCancelDiscountCondition();
+        },
+        onCancelDiscountCondition:function(){
             if(this.pDialog) this.pDialog.then(dialog => dialog.close());
         },
 
@@ -1641,7 +1714,7 @@ sap.ui.define([
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
 
-				oFreeGoodsOther.ProductPackId = parseInt(oSelectedItem.getDescription());
+				oFreeGoodsOther.ProductPackId = oSelectedItem.getBindingContext('fastAppData').getObject().PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath))
 			}

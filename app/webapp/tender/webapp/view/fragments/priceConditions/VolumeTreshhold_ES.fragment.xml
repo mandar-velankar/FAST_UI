@@ -4,14 +4,16 @@
 
 	<Dialog title="Volume Treshhold" >
 		<buttons>
-			<Button text="Apply" press=".onApplyDiscountCondition" />
+			<Button text="{i18n>Apply}" press=".onApplyDiscountCondition" />
+            <Button text="{i18n>Cancel}" press=".onCancelDiscountCondition"/>
 		</buttons>
 
-        <Table id="idVolumeTreshold" items="{path:'fastAppData>DiscountConditions'}">
+        <Table id="idVolumeTreshold" items="{path:'fastAppData>DiscountConditionsTemp'}">
             <headerToolbar>
                 <OverflowToolbar>
                     <content>
                         <ToolbarSpacer />
+						<Button icon="sap-icon://sort" press=".onSortDiscountCondition"/>
                         <Button icon="sap-icon://add" press=".onAddNewDiscountCondition"></Button>
                     </content>
                 </OverflowToolbar>
@@ -38,7 +40,10 @@
             </columns>
             <ColumnListItem>
                 <cells>
-                    <Input value="{fastAppData>Volume}" type="Number" fieldWidth="80%"/>
+                    <HBox >
+                        <Text text=">=" wrapping="false" class="sapUiSmallMarginTop"/>
+                        <Input value="{fastAppData>Volume}" type="Number" fieldWidth="80%"/>
+                    </HBox>
                     <Input value="{fastAppData>Discount}" type="Number" description="%" fieldWidth="80%" liveChange=".calculateNetPricesRappel"/>
                     <Input value="{fastAppData>Tax}" type="Number"  description="%" enabled="false" fieldWidth="80%"/>
                     <Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>

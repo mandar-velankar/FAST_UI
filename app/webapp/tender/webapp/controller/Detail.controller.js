@@ -687,7 +687,7 @@ sap.ui.define([
 
 				//should group purchasing be visible on the screen based on data back-end
 				$.when(Services.checkInstituteChilderen(oTender.CountryCode)).done(function (bShowGroupPurchasing) {
-					oDetailController.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
+					oDetailController.getView().byId("idGroupPurchasing")?.setVisible(bShowGroupPurchasing);
 				});
 
 
@@ -1780,47 +1780,47 @@ sap.ui.define([
 
 					//should tendertype be visible on the basic info screen?
 					$.when(Services.checkShowTenderType(sClassification)).done(function (bShowTenderType) {
-						that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
+						that.getView().byId("idSelectTenderTypeEdit")?.setVisible(bShowTenderType);
 						if(Services.getSelectedCountry() === 'CL' && sInstituteType === 'Cenabast'){
-							that.getView().byId("idSelectTenderTypeEdit").setVisible(true);
+							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(true);
 						}else{
-							that.getView().byId("idSelectTenderTypeEdit").setVisible(bShowTenderType);
+							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(bShowTenderType);
 						}
 					});
 
                     //should tendertype2 be visible on the basic info screen?
 					$.when(Services.checkShowTenderType2(sClassification)).done(function (bShowTenderType) {
-						that.getView().byId("idSelectTenderType2Edit").setVisible(bShowTenderType);
+						that.getView().byId("idSelectTenderType2Edit")?.setVisible(bShowTenderType);
 					});
 
 					/* Mexico */
 					$.when(Services.checkShowSalesType()).done(function (bShowSalesType) {
-						that.getView().byId("idSelectSalesTypeEdit").setVisible(bShowSalesType);
-						that.getView().byId("idSelectSalesType").setVisible(bShowSalesType);
+						that.getView().byId("idSelectSalesTypeEdit")?.setVisible(bShowSalesType);
+						that.getView().byId("idSelectSalesType")?.setVisible(bShowSalesType);
 					});
 
 					$.when(Services.checkShowTenderOrigin()).done(function (bShowTenderOrigin) {
-						that.getView().byId("idSelectTenderOriginEdit").setVisible(bShowTenderOrigin);
-						that.getView().byId("idSelectTenderOrigin").setVisible(bShowTenderOrigin);
+						that.getView().byId("idSelectTenderOriginEdit")?.setVisible(bShowTenderOrigin);
+						that.getView().byId("idSelectTenderOrigin")?.setVisible(bShowTenderOrigin);
 					});
 
 					$.when(Services.checkShowContractType()).done(function (bShowContractType) {
-						that.getView().byId("idSelectContractTypeEdit").setVisible(bShowContractType);
-						that.getView().byId("idSelectContractType").setVisible(bShowContractType);
+						that.getView().byId("idSelectContractTypeEdit")?.setVisible(bShowContractType);
+						that.getView().byId("idSelectContractType")?.setVisible(bShowContractType);
 					});
 					/* End of mexico */
 
 					/* Thailand */
 					$.when(Services.checkShowProcurementMethod()).done(function (bShowProcurementMethod) {
-						that.getView().byId("idSelectProcurementMethodEdit").setVisible(bShowProcurementMethod);
-						that.getView().byId("idSelectProcurementMethod").setVisible(bShowProcurementMethod);
+						that.getView().byId("idSelectProcurementMethodEdit")?.setVisible(bShowProcurementMethod);
+						that.getView().byId("idSelectProcurementMethod")?.setVisible(bShowProcurementMethod);
 					});
 					/* End of Thailand */
 
 					//should group purchasing be visible on the screen based on data back-end
 					$.when(Services.checkInstituteChilderen()).done(function (bShowGroupPurchasing) { 
-						that.getView().byId("idGroupPurchasingEdit").setVisible(bShowGroupPurchasing);
-						that.getView().byId("idGroupPurchasing").setVisible(bShowGroupPurchasing);
+						that.getView().byId("idGroupPurchasingEdit")?.setVisible(bShowGroupPurchasing);
+						that.getView().byId("idGroupPurchasing")?.setVisible(bShowGroupPurchasing);
 					});
 
 					that._showSubSectionFragment("BasicInformationView", "basicInformationSubSectionId");
@@ -3684,7 +3684,7 @@ sap.ui.define([
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast' || this._country === 'IT'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT' || this._country === 'ES'){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
                 if(this._country === 'ES'){
                     this.byId("idSelectTenderType2Edit").setVisible(true);                    
@@ -6563,14 +6563,23 @@ sap.ui.define([
 
 				}
 			});
-			var handleCloseInstituteName = function (oEvent) {
+			var handleCloseInstituteName = async function (oEvent) {
 				var oSelectedItem = oEvent.getParameter("selectedItem");
+                const oFastAppDataModel = Services.getFastAppDataModel();
+                const event = oEvent.getSource();
 				if (oSelectedItem) {
 					that.byId("idInstituteName").setValue(oSelectedItem.getTitle());
 					//that.byId("idInstituteID").setValue(oSelectedItem.getDescription());
 					//that.getView().byId("idhdrInstID").setText(oSelectedItem.getDescription());
 					var sSelectedInstituteID = oSelectedItem.data("InstituteID");
+                    let oInstitute = await Services.loadInstitute(Services.getSelectedCountry(), sSelectedInstituteID, true);
+                    
 					that.byId("idInstituteID").setValue(sSelectedInstituteID);
+                    that.byId("idInstituteCifCode").setValue(oInstitute.CifCode);
+                    that.byId("idRegionalHealthSystem").setValue(oInstitute.RegionalHealthSystem);
+                    that.byId("idInstitutePoblacion").setValue(oInstitute.City);
+                    that.byId("idInstituteCode").setValue(oInstitute.CustomerID);
+                    that.byId("idInstituteProvince").setValue(oInstitute.Province?.Name);
 					that.getView().byId("idhdrInstID").setText(sSelectedInstituteID);
 
 					//should group purchasing be visible on the screen based on data back-end
@@ -6606,8 +6615,9 @@ sap.ui.define([
 							}
 						}
 					});
+                    oFastAppDataModel.refresh(true);
 				}
-				oEvent.getSource().getBinding("items").filter([]);
+				event.getBinding("items").filter([]);
 			};
 
 			
@@ -8885,6 +8895,7 @@ sap.ui.define([
 												UOM: oCompetitorResult.UOM,
 												REQUESTEDVOLUME: null,
 												AWARDEDQTY: oCompetitorResult.AWARDEDQTY,
+                                                TOTALAWARDEDVALUE: oCompetitorResult.TOTALAWARDEDVALUE,
 												REASON: oCompetitorResult.REASON,
 												COMMENT: oCompetitorResult.COMMENT,
 												AWARDEDCOMPANY: oCompetitorResult.AWARDEDCOMPANY,
@@ -8965,6 +8976,7 @@ sap.ui.define([
 										PriceAgreement: oProduct.PriceAgreement,
                                         APPEAL: oResult.Appeal,
                                         INFONEEDED: oResult.InfoNeeded,
+                                        TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
 
@@ -9297,6 +9309,34 @@ sap.ui.define([
 								missingFields.add("Product");
 							}
 
+                            if(sCountryCode === 'ES'){
+                                //extra checks for Spain
+                                if(!oOutcomeLevel.OUTCOME){
+                                    missingFields.add("Outcome");
+                                }
+                                if(oOutcomeLevel.PRODUCT === "Other" && !oOutcomeLevel.AWARDEDPRICE){
+                                    missingFields.add("Awarded Price");
+                                }
+                                if(!oOutcomeLevel.AWARDEDQTY){
+                                    missingFields.add("Awarded Quantity");
+                                }
+                                if(!oOutcomeLevel.TOTALAWARDEDVALUE){
+                                    missingFields.add("Total Awarded Value");
+                                }
+                                if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.INFONEEDED){
+                                    missingFields.add("Information Needed?");
+                                }
+                                if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.APPEAL){
+                                    missingFields.add("Appeal");
+                                }
+                                if(!oOutcomeLevel.COMMENT){
+                                    missingFields.add("Comment");
+                                }
+                                if((oOutcomeLevel.OUTCOME && (oOutcomeLevel.OUTCOME === 'Won' || oOutcomeLevel.OUTCOME === 'Lost')) && !oOutcomeLevel.REASON){
+                                    missingFields.add("Reason");
+                                }
+                            }
+
 						}
 					});
 				}
@@ -9361,6 +9401,7 @@ sap.ui.define([
 						AwardDate: oResultForTree.AwardDate,
 						AwardActing: oResultForTree.AwardActing,
                         Appeal: oResultForTree.APPEAL,
+                        TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
                         InfoNeeded: oResultForTree.INFONEEDED                        
 					};
 
@@ -9880,11 +9921,15 @@ sap.ui.define([
 		},
 
 		checkBtnCreatePriceAgreementEnabled: function(outcome, priceConditions){
-			if(!outcome || !priceConditions) return false;
+			if(!outcome) return false;
+			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
+			const isSpain = Services.getSelectedCountry().indexOf("ES") > -1;
+			if(!isOutcomeWon) return false;
+			if(isOutcomeWon && !isSpain) return true;
+			if(!priceConditions) return false;
 			let bEnabled = false;
 			const mainCondition = priceConditions?.results?.find(condition => condition?.PriceConditionClassification?.isMain);
 			const referencePriceAgreement = mainCondition?.ReferencePriceAgreement ? true : false;
-			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
 			const hadAdditionalPriceConditions = priceConditions.results.length > 1;
 			bEnabled = isOutcomeWon;
 			if(isOutcomeWon && referencePriceAgreement) bEnabled = hadAdditionalPriceConditions;

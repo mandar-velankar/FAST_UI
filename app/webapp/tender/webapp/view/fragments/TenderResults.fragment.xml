@@ -79,6 +79,14 @@
                                         </m:Menu>
                                     </m:menu>
 		                        </m:MenuButton>
+                                <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+                                    <m:menu>
+                                        <m:Menu itemSelected="onBankGuarantee">
+                                            <m:MenuItem text="Final"    icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}" />
+                                            <m:MenuItem text="Additional" icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}" />
+                                        </m:Menu>
+                                    </m:menu>
+                                </m:MenuButton>
                                 <!--<m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>PriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
 
                                 <m:ToolbarSpacer/>
@@ -111,7 +119,7 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="13rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
-                                <m:Label text="ContractNo" />
+                                <m:Label text="ContractNo" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer'}"/>
                                 </t:template>
@@ -178,7 +186,7 @@
                             </t:Column>
 
                             <t:Column width="9rem">
-                                <m:Label text="Outcome"/>
+                                <m:Label text="Outcome" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <!--<m:Input value="{fastAppData>OUTCOME}" editable="false"/>-->
                                     <m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
@@ -192,7 +200,7 @@
                             </t:Column>
         
                             <t:Column width="9rem">
-                                <m:Label text="Awarded Price"/>
+                                <m:Label text="Awarded Price" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <m:Input type="Number" id="resultsForTreeAwardedPrice" value="{fastAppData>AWARDEDPRICE}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}" liveChange="onAwardedQtyLiveChange" change="onAwardedQtyChange"/>
                                 </t:template>
@@ -224,13 +232,19 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="7rem">
-                                <m:Label text="Awarded Qty"/>
+                                <m:Label text="Awarded Qty" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <m:Input type="Number" id="resultsForTreeAwardedQty" value="{fastAppData>AWARDEDQTY}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" />
                                 </t:template>
                             </t:Column>
-                            <t:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES' }">
-                                <m:Label text="Information Needed"/>
+                            <t:Column width="9rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }" >
+                                <m:Label text="Total Awarded Value" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+                                <t:template>
+                                    <m:Input type="Number" value="{fastAppData>TOTALAWARDEDVALUE}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+                                <m:Label text="Information Needed" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <m:Select id="resultsForTreeInfoNeeded" selectedKey="{fastAppData>INFONEEDED}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}">
                                         <m:items>
@@ -265,8 +279,8 @@
                                     </m:Select>
                                 </t:template>
                             </t:Column>
-                            <t:Column width="9rem">
-                                <m:Label text="Appeal" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES' }"/>
+                            <t:Column width="9rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }" >
+                                <m:Label text="Appeal" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <m:Select id="appealDropdown" selectedKey="{fastAppData>APPEAL}" 
                                                                   enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"
@@ -281,7 +295,7 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="14rem">
-                                <m:Label text="Reason"/>
+                                <m:Label text="Reason" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <m:Select id="resultsForTreeReason" selectedKey="{fastAppData>REASON}" items="{ path: 'fastAppData>LISTOUTCOMEREASONS/', templateShareable: false, sorter: { path: 'TenderOutcomeReasons' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; (${fastAppData>OUTCOME} === 'Won' || ${fastAppData>OUTCOME} === 'Lost') ? true : false}">
                                             <core:Item key="{fastAppData>TenderOutcomeReasons}" text="{fastAppData>TenderOutcomeReasons}"/>
@@ -289,7 +303,7 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="14rem">
-                                <m:Label text="Comment"/>
+                                <m:Label text="Comment" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
                                     <m:Input id="resultsForTreeComment" value="{fastAppData>COMMENT}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                 </t:template>

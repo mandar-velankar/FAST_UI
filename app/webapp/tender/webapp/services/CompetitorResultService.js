@@ -77,6 +77,7 @@ sap.ui.define([
 					COMMENT: oCompetitorResultTree.COMMENT,
 					LASTUPDATE: moment().utc().toDate(),
 					UPDATEDBY: UserInfo.getCWID(),
+                    TOTALAWARDEDVALUE: (oCompetitorResultTree.TOTALAWARDEDVALUE === null) ? null : oCompetitorResultTree.TOTALAWARDEDVALUE.toString(),
 					DELETED: 0
 				};
 			}
