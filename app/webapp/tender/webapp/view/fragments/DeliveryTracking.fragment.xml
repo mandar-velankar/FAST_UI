@@ -3,15 +3,17 @@
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
 
 	<!-- DELIVERIES SUB SECTION PAGE -->
-			<m:VBox>
+			<m:VBox >
 				<!-- Buttons for editing -->
-				<m:Toolbar id='deliveriesTableToolbarId' design="Solid">
+				<m:Toolbar id='deliveriesTableToolbarId'>
 					<m:ToolbarSpacer/>
 					<m:Button visible="{= ${fastAppData>/EditMode} === true ? true : false}" text="{i18n>AddDelivery}" icon="sap-icon://add" press="onAddDeliverie"/>
 					<!--<m:Button id="idDelDelv" visible="false" text="{i18n>DeleteDelivery}" icon="sap-icon://delete" press="onDeleteDeliverie" enabled="{= ${fastAppData>/SelectedDeliverieProduct/Deliveries/results/length} > 0 }"/>-->
 				</m:Toolbar>
 				<!-- Deliveries table -->
-				<m:Table id="deliveriesTableID" popinLayout="GridSmall" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}"
+
+                <m:ScrollContainer>
+				<m:Table id="deliveriesTableID" popinLayout="GridSmall" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}" 
 					delete=".onDeleteDeliverie" selectionChange=".onDeliveryItemSelect"
 					items="{ 
 						path: 'fastAppData>/SelectedDeliverieProduct/Deliveries/results/', 
@@ -39,6 +41,15 @@
 						<m:Column width="6rem">
 							<m:Label text="{i18n>ActualDeliveryQuantity}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
 						</m:Column>
+            <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
+                        <m:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp;  ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"> 
+                        <m:Label text="{i18n>ActualDeliveredProduct}" wrapping="true"/>
+						</m:Column>
+                       
+                        <m:Column width="7rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}">  
+							<m:Label text="{i18n>ActualDeliveredProductQty}"  wrapping="true"/>
+						</m:Column> 
+        <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
 						<m:Column width="6rem">
 							<m:Label text="{i18n>PaidOrFree}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
 						</m:Column>
@@ -48,6 +59,11 @@
 						<m:Column width="6rem">
 							<m:Label text="{i18n>InvoiceNo}" wrapping="true"/>
 						</m:Column>
+         <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
+                        <m:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"> 
+                    	<m:Label text="{i18n>LocalDeliveryNoteNo}" wrapping="true"/>
+						</m:Column>
+        <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
 						<m:Column width="5.5rem">
 							<m:Label text="{i18n>Penalty}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 						</m:Column>
@@ -94,6 +110,10 @@
 									value="{path :'fastAppData>ActualDeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
 									tooltip="{i18n>EffDate}" enabled="false" placeholder="{i18n>Select_date}"/>
 								<m:Input value="{fastAppData>ActualDeliveryQuantity}" type="Number" enabled="false" required="true"/>
+            <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
+                                <m:Input value="{fastAppData>ActualDeliveredProduct}"  enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/> 
+                                <m:Input value="{fastAppData>ActualDeliveredProductQty}" type="Number" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/> 
+        <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->                  
 								<m:Select selectedKey="{fastAppData>PaidOrFree}" enabled="false">
 									<m:items>
 										<core:Item text="Paid" key="Paid"/>
@@ -102,6 +122,9 @@
 								</m:Select>
 								<m:Input value="{fastAppData>PO}" enabled="false"/>
 								<m:Input value="{fastAppData>InvoiceNo}" enabled="false"/>
+         <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
+                                <m:Input value="{fastAppData>LocalDeliveryNoteNo}" enabled="false" required="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/> 
+          <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
 								<m:Select selectedKey="{fastAppData>Penalty}" change="onChangePenalty" enabled="false">
 									<m:items>
 										<core:Item text="Yes" key="Yes"/>
@@ -118,6 +141,7 @@
 						</m:ColumnListItem>
 					</m:items>
 				</m:Table>
+                 </m:ScrollContainer>
 			</m:VBox>
 
 </core:FragmentDefinition>
