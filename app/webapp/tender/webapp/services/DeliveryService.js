@@ -82,7 +82,7 @@ sap.ui.define([
     // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
             oDeliverieToSave.ActualDeliveredProduct=oDeliverySaveInfo.ActualDeliveredProduct.toString();
             oDeliverieToSave.ActualDeliveredProductQty=oDeliverySaveInfo.ActualDeliveredProductQty;
-            oDeliverieToSave.LocalDeliveryNoteNo=oDeliverySaveInfo.LocalDeliveryNoteNo.toString();
+            oDeliverieToSave.LocalDeliveryNoteNo=oDeliverySaveInfo.LocalDeliveryNoteNo;
     // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
             oDeliverieToSave.Penalty = oDeliverySaveInfo.Penalty;
 			oDeliverieToSave.PenaltyValue = oDeliverySaveInfo.PenaltyValue;
