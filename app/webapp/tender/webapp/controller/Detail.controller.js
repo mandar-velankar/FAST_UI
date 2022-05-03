@@ -499,7 +499,7 @@ sap.ui.define([
 			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
 
 			// for Italy the clone button is not visible
-			if(this._country === 'IT'){
+			if(this._country === 'IT' || this._country === 'ES'){
 				oDetailController.getView().byId("cloneButtonId").setVisible(false);
 			}
 
@@ -784,7 +784,7 @@ sap.ui.define([
 				}
 
 				// for Italy the clone button is not visible
-				if(oDetailController._country === 'IT'){
+				if(oDetailController._country === 'IT' || oDetailController._country === 'ES'){
 					oDetailController.getView().byId("cloneButtonId").setVisible(false);
 				}else {
 					oDetailController.getView().byId("cloneButtonId").setVisible(true);
@@ -2458,7 +2458,7 @@ sap.ui.define([
 				updateButton.setEnabled(bCurrentShowFooterState);
 				updateButton.setVisible(true);
 
-				if(updateButtonId === 'cloneButtonId' && Services.getSelectedCountry() === 'IT'){
+				if(updateButtonId === 'cloneButtonId' && (Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES')){
 				updateButton.setVisible(false);
 				}
 			});
