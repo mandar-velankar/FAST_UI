@@ -357,7 +357,7 @@
 							columnsM="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" />
 								<Input value="{fastAppData>Warranty}" liveChange="onValidateMonth" change="onValidateMonth" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " required="true"/>
 								<Input value="{fastAppData>AgreementDuration}" type="Number"  liveChange="onValidateMonth" change="onValidateMonth"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
@@ -377,6 +377,7 @@
 										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />
 										<core:Item key="SecondHand" text="Second Hand" />									
+										<core:Item key="NotApplicable" text="Not Applicable" />
 									</items>
 								</Select>
 								<Label text="FOC Absolute/Percentage" />
@@ -424,7 +425,7 @@
 							columnsL="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
 								<Input value="{fastAppData>Warranty}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " required="true"/>
 								<Input value="{fastAppData>AgreementDuration}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
@@ -443,7 +444,8 @@
 									<items>
 										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />
-										<core:Item key="SecondHand" text="Second Hand" />									
+										<core:Item key="SecondHand" text="Second Hand" />	
+										<core:Item key="NotApplicable" text="Not Applicable" />								
 									</items>
 								</Select>
 								<Label text="free goods for other product(s)" />
