@@ -1132,7 +1132,7 @@ sap.ui.define([
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
                             if (oProductConditionView.ConditionType === 'PVL'){
                                 let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.YLLP / factor);
+                                netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.PVL / factor);
                             } else {
                                 netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                             }
@@ -1220,7 +1220,7 @@ sap.ui.define([
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                         if (oProductConditionView.ConditionType === 'PVL'){
                             let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                            netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.YLLP / factor);
+                            netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.PVL / factor);
                         } else {
                             netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                         }
