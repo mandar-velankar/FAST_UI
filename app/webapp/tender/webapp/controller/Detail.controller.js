@@ -9922,12 +9922,19 @@ sap.ui.define([
 
 		checkBtnCreatePriceAgreementEnabled: function(outcome){
             const selectedProductPath = '/SelectedOffer/SelectedProduct';
-            let oFastAppModel = Services.getFastAppDataModel();
-            if (oFastAppModel.getProperty(selectedProductPath) === undefined){
-                oFastAppModel.setProperty(selectedProductPath,Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID()));
+            const oFastAppModel = Services.getFastAppDataModel();
+            let oSelectedProduct = oFastAppModel.getProperty(selectedProductPath);
+
+
+            if (oSelectedProduct === undefined){
+                const aLoadedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
+                oSelectedProduct = aLoadedProduct && aLoadedProduct.length > 0 ? aLoadedProduct.results[0] : null;
+                if (oSelectedProduct) oFastAppModel.setProperty(selectedProductPath, oSelectedProduct);
             }
-            let priceConditions = oFastAppModel.getProperty('/SelectedOffer/SelectedProduct').results[0].PriceCondition;
-			if(!outcome) return false;
+
+            let priceConditions = oSelectedProduct ? oSelectedProduct.PriceCondition : null;
+			
+            if(!outcome) return false;
 			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
 			const isSpain = Services.getSelectedCountry().indexOf("ES") > -1;
 			if(!isOutcomeWon) return false;
