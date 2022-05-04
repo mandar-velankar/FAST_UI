@@ -1149,9 +1149,9 @@ sap.ui.define([
 
                         oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
-                        oPriceCondition.NetPriceFOC = Number((netPriceWithFoc).toFixed(2));
-                        oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
+                        oPriceCondition.GrossSales = Number(grossSales).toFixed(2);
+                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc).toFixed(2);
+                        oPriceCondition.GrossProfit = Number(grossProfit).toFixed(2);
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = grossSales;
                         oPriceCondition.Cost_NPV = Number(cogs);
@@ -1203,9 +1203,9 @@ sap.ui.define([
 
                         oPriceCondition.NetofferPrice = netOfferPrice;
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
-                        oPriceCondition.NetPriceFOC = Number((netPriceWithFoc).toFixed(2));;
-                        oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
+                        oPriceCondition.GrossSales = Number(grossSales).toFixed(2);
+                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc).toFixed(2);
+                        oPriceCondition.GrossProfit = Number(grossProfit).toFixed(2);
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
@@ -1257,10 +1257,10 @@ sap.ui.define([
                         let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
 
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number((grossSales).toFixed(2));
+                        oPriceCondition.GrossSales = Number(grossSales).toFixed(2);
                         oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.NetPriceFOC = netPrice;
-                        oPriceCondition.GrossProfit = Number((grossProfit).toFixed(2));
+                        oPriceCondition.GrossProfit = Number(grossProfit).toFixed(2);
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
@@ -1348,10 +1348,10 @@ sap.ui.define([
             });
 
             return {
-                GrossMargin: Number((npv_grossmargin).toFixed(2)),
-                NetSales: Number((npv_netsales).toFixed(2)),
-                COGS: Number((npv_cogs).toFixed(2)),
-                Profitability: Number((profitability).toFixed(2))
+                GrossMargin: Number(npv_grossmargin).toFixed(2),
+                NetSales: Number(npv_netsales).toFixed(2),
+                COGS: Number(npv_cogs).toFixed(2),
+                Profitability: Number(profitability).toFixed(2)
             }
         },
 
