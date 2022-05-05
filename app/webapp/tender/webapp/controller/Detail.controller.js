@@ -27,7 +27,7 @@ sap.ui.define([
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
-	var bundle;
+	var bundle; 
 	var URLHelper = mLib.URLHelper;
 
 	return Controller.extend("FAST_NS0FAST0.controller.Detail", {
@@ -52,7 +52,7 @@ sap.ui.define([
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
 			
 			Services.setRouterObject(this.oRouter);
-
+            
 			//TODO: talk about better solution with Wouter
 			//Keep services object in Financial
 			Financial.setServices(Services);

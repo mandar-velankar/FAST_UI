@@ -2146,7 +2146,7 @@ sap.ui.define([
 				oFastDataCalls.read(sTenderPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation"
+						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation,Country"
 					},
 					success: function (oData, oResponse) {
 

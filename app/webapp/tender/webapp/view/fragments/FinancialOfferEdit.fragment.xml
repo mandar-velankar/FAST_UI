@@ -114,9 +114,10 @@
 								<content>
 									<ToolbarSpacer/>
 									<CheckBox id="editCurrentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" 
-											  visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false }"/>
+											  visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }"/>
 									<CheckBox id="editCurrentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
-									<CheckBox id="editParentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
+									<CheckBox id="editParentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"
+											  visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }"/>
 									<CheckBox id="editWonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="editLossCheckId" text="{i18n>Loss}" selected="false" select=".onHistoryFilterCheck"/>
 								</content>
