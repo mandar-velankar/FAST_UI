@@ -139,7 +139,7 @@ sap.ui.define([
 					var aProducts = [];
 					
 					//if products exist for offer
-					if(oOffer.Product && oOffer.Product.results){
+					if(oOffer && oOffer.Product && oOffer.Product.results){
 						
 						//products
 						aProducts = oOffer.Product.results;
