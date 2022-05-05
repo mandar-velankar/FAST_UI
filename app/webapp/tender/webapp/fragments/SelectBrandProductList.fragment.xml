@@ -60,7 +60,9 @@
 															path: 'fastAppData>/ProductCollection'
 														}"
 														selectionChange="onSelectionChangeProductListInput"
-														includeItemInSelection="true">
+														includeItemInSelection="true"
+														growing="true"
+														growingThreshold="100">
 														
 														<headerToolbar>
 															<OverflowToolbar
