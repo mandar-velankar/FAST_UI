@@ -5641,6 +5641,8 @@ sap.ui.define([
 			that._oDialog = new sap.m.Dialog("addProductDialog", {
 				title: bundle.getText("Addprod"),
 				stretch: true,
+				horizontalScrolling:false,
+				verticalScrolling:false,
 				buttons: [new sap.m.Button({
 						id: "idAddProductsBtn",
 						text: bundle.getText("Apply"),
@@ -5664,6 +5666,13 @@ sap.ui.define([
 			});
 
 			that.getView().addDependent(that._oDialog);
+			if(sMercadoInProductsMessage === ''){
+				sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
+				sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
+			}else{
+				sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithTwoMessages");
+				sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithTwoMessages");
+			}
 			that._oDialog.open();
 
 			//Clear all fields
