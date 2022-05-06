@@ -499,7 +499,7 @@ sap.ui.define([
 			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
 
 			// for Italy the clone button is not visible
-			if(this._country === 'IT'){
+			if(this._country === 'IT' || this._country === 'ES'){
 				oDetailController.getView().byId("cloneButtonId").setVisible(false);
 			}
 
@@ -784,7 +784,7 @@ sap.ui.define([
 				}
 
 				// for Italy the clone button is not visible
-				if(oDetailController._country === 'IT'){
+				if(oDetailController._country === 'IT' || oDetailController._country === 'ES'){
 					oDetailController.getView().byId("cloneButtonId").setVisible(false);
 				}else {
 					oDetailController.getView().byId("cloneButtonId").setVisible(true);
@@ -2458,7 +2458,7 @@ sap.ui.define([
 				updateButton.setEnabled(bCurrentShowFooterState);
 				updateButton.setVisible(true);
 
-				if(updateButtonId === 'cloneButtonId' && Services.getSelectedCountry() === 'IT'){
+				if(updateButtonId === 'cloneButtonId' && (Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES')){
 				updateButton.setVisible(false);
 				}
 			});
@@ -9920,8 +9920,21 @@ sap.ui.define([
 			this._sendNotificationDialog.destroy();
 		},
 
-		checkBtnCreatePriceAgreementEnabled: function(outcome, priceConditions){
-			if(!outcome) return false;
+		checkBtnCreatePriceAgreementEnabled: function(outcome){
+            const selectedProductPath = '/SelectedOffer/SelectedProduct';
+            const oFastAppModel = Services.getFastAppDataModel();
+            let oSelectedProduct = oFastAppModel.getProperty(selectedProductPath);
+
+
+            if (oSelectedProduct === undefined){
+                const aLoadedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
+                oSelectedProduct = aLoadedProduct && aLoadedProduct.length > 0 ? aLoadedProduct.results[0] : null;
+                if (oSelectedProduct) oFastAppModel.setProperty(selectedProductPath, oSelectedProduct);
+            }
+
+            let priceConditions = oSelectedProduct ? oSelectedProduct.PriceCondition : null;
+			
+            if(!outcome) return false;
 			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
 			const isSpain = Services.getSelectedCountry().indexOf("ES") > -1;
 			if(!isOutcomeWon) return false;

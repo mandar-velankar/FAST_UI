@@ -108,7 +108,7 @@
 
 				<!-- Expected Expiry Date-->
 				<!-- <Label text="{i18n>expectedExpiryDate}" required="true"/> -->
-				<Label text="{i18n>cancellationDate}" required="true"/>
+				<Label text="{i18n>cancellationDate}" required="false"/>
 				<DatePicker 
 					id="idExpectedExpiryDateNewBankGuaranteeES" 
 					value="{
