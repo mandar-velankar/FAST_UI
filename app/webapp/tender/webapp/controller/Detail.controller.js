@@ -6180,7 +6180,7 @@ sap.ui.define([
 			oListOutput.removeSelections();
 			oInfoToolbar.setVisible(false);
 			//oButtonAddSelected.setEnabled(true);
-			this.setScrollProductsInputContainter();
+			this.setScrollProductsOutputContainter();
 		},
 
 		//Remove product from output list
@@ -6224,7 +6224,7 @@ sap.ui.define([
 			//no selection anymore
 			//oList.removeSelections();
 			oInfoToolbar.setVisible(false);
-			this.setScrollProductsInputContainter();
+			this.setScrollProductsOutputContainter();
 		},
 
 		onSelectionChangeProcurementMethod: function(oEvent){
@@ -6434,10 +6434,8 @@ sap.ui.define([
 		setScrollProductsInputContainter:function(){
 			const fastAppDataModel = Services.getFastAppDataModel();
 			const productsInput = fastAppDataModel.getProperty("/ProductCollection");
-			const productsOuput = fastAppDataModel.getProperty("/EditOffer/Product/results/");
 			const mercadoInProductsMessage = fastAppDataModel.getProperty("/MercadoInProductsMessage");
 			const inputItemsHeight = productsInput.length * 67;
-			const outputItemsHeight = productsOuput.length * 67;
 			const dialogContentHeight = this._oDialog.getContent()[0].getDomRef().offsetHeight;
 			let parentHeight = dialogContentHeight - 49 - 65; //todo: add check for message of MercadoInProductsMessage
 			if(mercadoInProductsMessage !== ''){
@@ -6445,8 +6443,6 @@ sap.ui.define([
 			}
 			sap.ui.getCore().byId("idListProductsInputContainer").removeStyleClass("listInDialogWithTwoMessages");
 			sap.ui.getCore().byId("idListProductsInputContainer").removeStyleClass("listInDialogWithMessage");
-			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithTwoMessages");
-			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithMessage");
 			if(inputItemsHeight>=parentHeight){
 				if(mercadoInProductsMessage === ''){
 					sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
@@ -6454,6 +6450,21 @@ sap.ui.define([
 					sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithTwoMessages");
 				}
 			}
+			// sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
+			// sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
+		},
+		setScrollProductsOutputContainter:function(){
+			const fastAppDataModel = Services.getFastAppDataModel();
+			const productsOuput = fastAppDataModel.getProperty("/EditOffer/Product/results/");
+			const mercadoInProductsMessage = fastAppDataModel.getProperty("/MercadoInProductsMessage");
+			const outputItemsHeight = productsOuput.length * 67;
+			const dialogContentHeight = this._oDialog.getContent()[0].getDomRef().offsetHeight;
+			let parentHeight = dialogContentHeight - 49 - 65; //todo: add check for message of MercadoInProductsMessage
+			if(mercadoInProductsMessage !== ''){
+				parentHeight -= 65;
+			}
+			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithTwoMessages");
+			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithMessage");
 			if(outputItemsHeight>=parentHeight){
 				if(mercadoInProductsMessage === ''){
 					sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
