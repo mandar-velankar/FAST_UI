@@ -6436,7 +6436,21 @@ sap.ui.define([
 			}
 			oEvent.getSource().getBinding("items").filter([]);
 		},
-
+		onSearchProductsInput: function(event){
+			// const fastAppDataModel = Services.getFastAppDataModel();
+			// const pathProductCollection = "/ProductCollection";
+			const searchValue = event.getParameter("newValue");
+			const binding = sap.ui.getCore().byId("idListProductsInput").getBinding("items");
+			const filters = ['PRODUCT_NAME','SKUS'].map(filterPath => new Filter({
+				path:filterPath,
+				operator:FilterOperator.Contains,
+				value1: searchValue
+			}));
+			binding.filter(new Filter({
+				filters: filters,
+				and:false
+			}));
+		},
 		//When the user is adding or removing a token
 		onBrandTokenChange: function (oEvent) {
 

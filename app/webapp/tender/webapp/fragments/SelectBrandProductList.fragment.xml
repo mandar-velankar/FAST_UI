@@ -64,12 +64,19 @@
 											growingThreshold="100">
 											
 											<headerToolbar>
-												<OverflowToolbar
+												<OverflowToolbar >
+												<!-- <OverflowToolbar
 													visible="false"
 													id="idInfoToolbarInput" >
-													<Label id="idFilterLabelInput" />
+													<Label id="idFilterLabelInput" /> -->
+													<SearchField liveChange=".onSearchProductsInput" width="90%" />
 												</OverflowToolbar>
 											</headerToolbar>
+											<infoToolbar>
+												<OverflowToolbar visible="false" id="idInfoToolbarInput">
+													<Label id="idFilterLabelInput" />
+												</OverflowToolbar>
+											</infoToolbar>
 											<columns>
 												<Column>
 													<Text text="Products" />
