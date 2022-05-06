@@ -1305,9 +1305,9 @@ sap.ui.define([
 
                     if(consolidatedEntry.ProductType !== 'Total'){
                         //keep track of actual totals
-                        oCalculatedResultTotals.GrossMargin = oCalculatedResultTotals.GrossMargin + oCalculatedResult.GrossMargin;
-                        oCalculatedResultTotals.NetSales = oCalculatedResultTotals.NetSales + oCalculatedResult.NetSales;
-                        oCalculatedResultTotals.COGS = oCalculatedResultTotals.COGS + oCalculatedResult.COGS;
+                        oCalculatedResultTotals.GrossMargin = (Number(oCalculatedResultTotals.GrossMargin) + Number(oCalculatedResult.GrossMargin)).toFixed(2);
+                        oCalculatedResultTotals.NetSales = (Number(oCalculatedResultTotals.NetSales) + Number(oCalculatedResult.NetSales)).toFixed(2);
+                        oCalculatedResultTotals.COGS = (Number(oCalculatedResultTotals.COGS) + Number(oCalculatedResult.COGS)).toFixed(2);
                         //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
                         //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
                     }
