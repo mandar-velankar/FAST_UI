@@ -49,6 +49,7 @@
 									<!-- Input list -->
 									<ScrollContainer
 										id="idListProductsInputContainer"
+										height="100%" 
 										width="100%"
 										vertical="true"
 										focusable="true">
@@ -61,7 +62,8 @@
 											selectionChange="onSelectionChangeProductListInput"
 											includeItemInSelection="true"
 											growing="true"
-											growingThreshold="100">
+											growingThreshold="100"
+											 >
 											
 											<headerToolbar>
 												<OverflowToolbar >

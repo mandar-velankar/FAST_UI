@@ -5666,13 +5666,6 @@ sap.ui.define([
 			});
 
 			that.getView().addDependent(that._oDialog);
-			if(sMercadoInProductsMessage === ''){
-				sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
-				sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
-			}else{
-				sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithTwoMessages");
-				sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithTwoMessages");
-			}
 			that._oDialog.open();
 
 			//Clear all fields
@@ -6187,6 +6180,7 @@ sap.ui.define([
 			oListOutput.removeSelections();
 			oInfoToolbar.setVisible(false);
 			//oButtonAddSelected.setEnabled(true);
+			this.setScrollProductsInputContainter();
 		},
 
 		//Remove product from output list
@@ -6230,7 +6224,7 @@ sap.ui.define([
 			//no selection anymore
 			//oList.removeSelections();
 			oInfoToolbar.setVisible(false);
-
+			this.setScrollProductsInputContainter();
 		},
 
 		onSelectionChangeProcurementMethod: function(oEvent){
@@ -6435,6 +6429,40 @@ sap.ui.define([
 
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+			this.setScrollProductsInputContainter();
+		},
+		setScrollProductsInputContainter:function(){
+			const fastAppDataModel = Services.getFastAppDataModel();
+			const productsInput = fastAppDataModel.getProperty("/ProductCollection");
+			const productsOuput = fastAppDataModel.getProperty("/EditOffer/Product/results/");
+			const mercadoInProductsMessage = fastAppDataModel.getProperty("/MercadoInProductsMessage");
+			const inputItemsHeight = productsInput.length * 67;
+			const outputItemsHeight = productsOuput.length * 67;
+			const dialogContentHeight = this._oDialog.getContent()[0].getDomRef().offsetHeight;
+			let parentHeight = dialogContentHeight - 49 - 65; //todo: add check for message of MercadoInProductsMessage
+			if(mercadoInProductsMessage !== ''){
+				parentHeight -= 65;
+			}
+			sap.ui.getCore().byId("idListProductsInputContainer").removeStyleClass("listInDialogWithTwoMessages");
+			sap.ui.getCore().byId("idListProductsInputContainer").removeStyleClass("listInDialogWithMessage");
+			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithTwoMessages");
+			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithMessage");
+			if(inputItemsHeight>=parentHeight){
+				if(mercadoInProductsMessage === ''){
+					sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
+				}else{
+					sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithTwoMessages");
+				}
+			}
+			if(outputItemsHeight>=parentHeight){
+				if(mercadoInProductsMessage === ''){
+					sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
+				}else{
+					sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithTwoMessages");
+				}
+			}
+			// sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
+			// sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
 		},
 		onSearchProductsInput: function(event){
 			// const fastAppDataModel = Services.getFastAppDataModel();
@@ -6505,6 +6533,7 @@ sap.ui.define([
 					oFastAppDataModel.setProperty(sPathProductCollection, oData.results);
 
 					oProductInputList.getBinding("items").refresh(true);
+					that.setScrollProductsInputContainter();
 				});
 			} else {
 				//path for clearing
@@ -6517,8 +6546,8 @@ sap.ui.define([
 
 				//refresh empty list
 				oProductInputList.getBinding("items").refresh(true);
+				this.setScrollProductsInputContainter();
 			}
-
 		},
 
 		InstituteName_f4: function (oEvent) {
