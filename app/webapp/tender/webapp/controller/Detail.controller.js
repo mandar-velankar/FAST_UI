@@ -9920,22 +9920,19 @@ sap.ui.define([
 			this._sendNotificationDialog.destroy();
 		},
 
-		checkBtnCreatePriceAgreementEnabled: function(outcome){
-            const selectedProductPath = '/SelectedOffer/SelectedProduct';
+		checkBtnCreatePriceAgreementEnabled: function(productCode){
+            const selectedProductPath = '/SelectedOffer/Product/results';
             const oFastAppModel = Services.getFastAppDataModel();
-            let oSelectedProduct = oFastAppModel.getProperty(selectedProductPath);
-
-
-            if (oSelectedProduct === undefined){
-                const aLoadedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
-                oSelectedProduct = aLoadedProduct && aLoadedProduct.length > 0 ? aLoadedProduct.results[0] : null;
-                if (oSelectedProduct) oFastAppModel.setProperty(selectedProductPath, oSelectedProduct);
-            }
+            let oOfferProducts = oFastAppModel.getProperty(selectedProductPath)?.filter(product => product.ProductCode = productCode);;
+            let aResultsForTree = oFastAppModel.getProperty('/ResultsForTree')?.filter(result => result.PRODUCTCODE = productCode);
+            let oTenderResultProduct = aResultsForTree && aResultsForTree.length > 0 ? aResultsForTree[0] : null;
+            let oSelectedProduct = oOfferProducts && oOfferProducts.length > 0 ? oOfferProducts[0] : null;
 
             let priceConditions = oSelectedProduct ? oSelectedProduct.PriceCondition : null;
-			
+			let outcome = oTenderResultProduct && oTenderResultProduct.OUTCOME ? oTenderResultProduct.OUTCOME : null;
+
             if(!outcome) return false;
-			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
+			const isOutcomeWon = outcome && outcome.toLowerCase().indexOf("won") > -1;
 			const isSpain = Services.getSelectedCountry().indexOf("ES") > -1;
 			if(!isOutcomeWon) return false;
 			if(isOutcomeWon && !isSpain) return true;
