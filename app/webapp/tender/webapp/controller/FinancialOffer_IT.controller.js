@@ -130,6 +130,11 @@ sap.ui.define([
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+
+//TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
+            Services.getFastAppDataModel().setProperty("/CurrencyTEMP",  oOffer.Currency);
+//TEMP SOLUTION
+
 			//Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
 			let sSelectedSection = Services.getFinancialOfferPageSectionID_IT();
@@ -256,6 +261,9 @@ sap.ui.define([
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+            //TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
+            oOffer.Currency = Services.getSelectedCountry() === 'IT' ? Services.getFastAppDataModel().setProperty("/CurrencyTEMP", oOffer.Currency) : oOffer.Currency;
+            //TEMP SOLUTION            
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
@@ -326,6 +334,9 @@ sap.ui.define([
 			let that = this;
 			let sTenderID = Services.getSelectedTenderID();
 			let oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+            //TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
+            oOffer.Currency = Services.getFastAppDataModel().getProperty("/CurrencyTEMP");
+            //TEMP SOLUTION
 			let sOfferID = oOffer.OfferID;
 			let sOfferPath = Services.getSelectedOfferPath();
 			let sProductId = Services.getSelectedProductID();

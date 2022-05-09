@@ -191,7 +191,7 @@ sap.ui.define([
 
 		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if ((e === 'Warranty' || e === 'StatusOfDevice' ||  e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
+				if ((e === 'StatusOfDevice' ||  e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
@@ -200,7 +200,7 @@ sap.ui.define([
 
 		validateProductPriceComodato: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if ((e === 'Warranty' || e === 'StatusOfDevice'  ||  e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
+				if ((e === 'StatusOfDevice'  ||  e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
