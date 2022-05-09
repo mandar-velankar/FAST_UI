@@ -27,7 +27,7 @@
 	<!-- TENDER OFFER SUBSECTION -->
 	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<u:actions>
-			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
+			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
 		</u:actions>
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
