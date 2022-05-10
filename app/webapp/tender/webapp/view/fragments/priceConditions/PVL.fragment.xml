@@ -24,12 +24,11 @@
             <Input 
                 value="{
                     parts: [
-                        path:'fastAppData>/ProductPricingView/0/UOM',
-                        path:'fastAppData>/ProductPricingView/0/PACKFACTOR',
-                        path:'fastAppData>PVL',
+                        {path:'fastAppData>/ProductPricingView/0/UOM', type: new sap.ui.model.type.String()},
+                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR', type: new sap.ui.model.type.Float()},
+                        {path:'fastAppData>PVL', type: new sap.ui.model.type.Float()},
                     ],
-                    type: '.types.uomPrice',
-                    formatOptions: { minFractionDigits: 2}
+                    type: '.types.uomPrice'
                 }"
                 type="Number"  
                 description="{fastAppData>Currency}" 
