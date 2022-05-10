@@ -708,7 +708,8 @@ sap.ui.define([
                         if (sFilterValue){
                             aFilters.push( new Filter("CountryCode", 'EQ', sFilterValue) );
                         }
-                        oBinding.filter(aFilters);
+
+                        oBinding?.filter(aFilters);
 
                         const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
                         let regionIDs = [];
