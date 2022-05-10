@@ -559,6 +559,9 @@ sap.ui.define([
             selectedPriceConditionViewObjects.forEach(priceConditionViewObj => {
                 let requiredPriceConditionViewObject = null;
                 if(priceConditionViewObj.isMain){
+                    if(priceConditionViewObj.ConditionType === "PVL"){
+                        priceConditionViewObj = this.calculateNetPricesPVL(priceConditionViewObj);
+                    }
                     requiredPriceConditionViewObject = priceConditionViewObj;
                 }else{
                     const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
@@ -1032,6 +1035,20 @@ sap.ui.define([
 
             bindingContext.getModel().updateBindings();
             
+        },
+
+        calculateNetPricesPVL: function (priceConditionObject){
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
+
+            if(UOM === "Unit"){
+                priceConditionObject.NetPriceWithoutTax = priceConditionObject.PVL / packFactor;
+            } else {
+                priceConditionObject.NetPriceWithoutTax = priceConditionObject.PVL;
+            }
+            priceConditionObject.NetPriceWithTax = Number((priceConditionObject.NetPriceWithoutTax * (1 + priceConditionObject.Tax)).toFixed(2));
+
+            return priceConditionObject;
         },
 
         calculateNetPricesDescuentoComercial: function (oEvent){
