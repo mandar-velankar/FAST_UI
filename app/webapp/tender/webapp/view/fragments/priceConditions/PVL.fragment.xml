@@ -24,27 +24,27 @@
             <Input 
                 value="{
                     parts: [
-                        {path:'fastAppData>/ProductPricingView/0/UOM', type: new sap.ui.model.type.String()},
-                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR', type: new sap.ui.model.type.Float()},
-                        {path:'fastAppData>PVL', type: new sap.ui.model.type.Float()},
+                        {path:'fastAppData>/ProductPricingView/0/UOM'},
+                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                        {path:'fastAppData>PVL'}
                     ],
-                    type: '.types.uomPrice'
+                    formatter: '.formatter.formatUoMPrice'
                 }"
                 type="Number"  
                 description="{fastAppData>Currency}" 
                 enabled="false" 
                 fieldWidth="80%"
             />
-            <!-- <Input 
-                value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>PVL}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>PVL} }"
-                type="Number"  
-                description="{fastAppData>Currency}" 
-                enabled="false" 
-                fieldWidth="80%"
-            /> -->
             <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
             <Input 
-                value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>YLAP}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>YLAP} }"
+                value="{
+                    parts: [
+                        {path:'fastAppData>/ProductPricingView/0/UOM'},
+                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                        {path:'fastAppData>YLAP'}
+                    ],
+                    formatter: '.formatter.formatUoMPrice'
+                }"
                 type="Number"  
                 visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                 description="{fastAppData>Currency}" 

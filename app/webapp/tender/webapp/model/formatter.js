@@ -432,7 +432,23 @@ sap.ui.define([
 		offerProductsColumnName: function(description){
 			var resourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			return resourceBundle.getText(description);
-		}
+		},
+
+		formatUoMPrice: function(uom="Pack", packFactor=1, price){
+			if(!price) {return};
+			let newPrice = Number(price);
+			if(~uom.toLowerCase().indexOf("unit")){ 
+				newPrice = newPrice / packFactor;
+			}
+			const floatFormatter = NumberFormat.getFloatInstance({
+				// maxFractionDigits: 2,
+				minFractionDigits: 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			return floatFormatter.format(newPrice);
+		},
 		
 	};
 });
