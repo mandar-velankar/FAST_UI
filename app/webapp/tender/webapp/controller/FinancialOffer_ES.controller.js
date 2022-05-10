@@ -444,7 +444,7 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(sOfferID);
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
 
-			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+			if (oOffer?.Active !== 1 || oOffer?.ActiveOffer !== 1) {
 				bEnableApproval = false;
 			}
 
