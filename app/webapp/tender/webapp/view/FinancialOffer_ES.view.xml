@@ -101,19 +101,19 @@
 										<Text text="{fastAppData>UOM}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetofferPrice}"/>
+                                        <Text text="{path: 'fastAppData>NetofferPrice', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetPriceFOC}"/>
+                                        <Text text="{path: 'fastAppData>NetPriceFOC', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>cogsUoM}"/>
+                                        <Text text="{path: 'fastAppData>cogsUoM', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>GrossSales}"/>
+                                        <Text text="{path: 'fastAppData>GrossSales', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>GrossProfit}"/>
+                                        <Text text="{path: 'fastAppData>GrossProfit', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
 										<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
