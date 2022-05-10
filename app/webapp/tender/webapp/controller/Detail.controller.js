@@ -9984,6 +9984,7 @@ sap.ui.define([
 		},
 
 		checkBtnCreatePriceAgreementEnabled: function(productCode){
+            if(!productCode) return;
             const selectedProductPath = '/SelectedOffer/Product/results';
             const oFastAppModel = Services.getFastAppDataModel();
             let oOfferProducts = oFastAppModel.getProperty(selectedProductPath)?.filter(product => product.ProductCode = productCode);;
