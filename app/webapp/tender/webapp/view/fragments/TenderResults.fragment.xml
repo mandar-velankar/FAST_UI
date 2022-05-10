@@ -105,7 +105,7 @@
                                         press="onCreatePriceAgreement" 
                                         enabled="{
                                             parts: [
-                                                {path: 'fastAppData>OUTCOME'}
+                                                {path: 'fastAppData>PRODUCTCODE'}
                                             ],
                                             formatter:'.checkBtnCreatePriceAgreementEnabled'
                                         }" 
