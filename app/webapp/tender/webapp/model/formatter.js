@@ -441,7 +441,7 @@ sap.ui.define([
 				newPrice = newPrice / packFactor;
 			}
 			const floatFormatter = NumberFormat.getFloatInstance({
-				// maxFractionDigits: 2,
+				maxFractionDigits: 2,
 				minFractionDigits: 2,
 				groupingEnabled: true,
 				groupingSeparator: ",",

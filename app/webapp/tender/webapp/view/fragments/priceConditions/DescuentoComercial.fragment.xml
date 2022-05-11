@@ -21,13 +21,38 @@
         singleContainerFullSize="false" >
         <form:content>
             <Label text="{i18n>PVL}" required="true"/>
-            <Input value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>PVL}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>PVL} }"
-            type="Number"  description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
+            <Input 
+                value="{
+                    parts: [
+                        {path:'fastAppData>/ProductPricingView/0/UOM'},
+                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                        {path:'fastAppData>PVL'}
+                    ],
+                    formatter: '.formatter.formatUoMPrice'
+                }"
+                type="Number"  
+                description="{fastAppData>Currency}" 
+                enabled="false" 
+                fieldWidth="80%"
+            />
             <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
-            <Input value="{= ${fastAppData>/ProductPricingView/0/UOM} === 'Unit' ? ${fastAppData>YLAP}/${fastAppData>/ProductPricingView/0/PACKFACTOR} : ${fastAppData>YLAP} }"
-            type="Number"  visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/>
+            <Input 
+                value="{
+                    parts: [
+                        {path:'fastAppData>/ProductPricingView/0/UOM'},
+                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                        {path:'fastAppData>YLAP'}
+                    ],
+                    formatter: '.formatter.formatUoMPrice'
+                }"
+                type="Number"  
+                visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
+                description="{fastAppData>Currency}" 
+                enabled="false" 
+                fieldWidth="80%"
+            />
             <Label text="{i18n>Discount}" required="true"/>
-            <Input value="{fastAppData>Discount}" type="Number" enabled="{fastAppData>/EditMode}" description="%" fieldWidth="80%" liveChange=".calculateNetPricesDescuentoComercial"/>
+            <Input value="{path:'fastAppData>Discount', type:'.types.percent'}" type="Number" enabled="{fastAppData>/EditMode}" description="%" fieldWidth="80%" liveChange=".calculateNetPricesDescuentoComercial"/>
             <Label text="{i18n>RoyalDecree}" required="true"/> 
             <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{fastAppData>/EditMode}" change=".calculateNetPricesDescuentoComercial"> 
                 <items>
@@ -37,11 +62,11 @@
                 </items>
             </Select>
             <Label text="{i18n>NetPriceWOtax}" required="true"/>
-            <Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>    
+            <Input value="{path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" type="Number" enabled="false" fieldWidth="80%"/>    
             <Label text="{i18n>Tax}" required="true"/>
-            <Input value="{fastAppData>Tax}" type="Number" description="%" enabled="false" fieldWidth="80%"/>
+            <Input value="{path:'fastAppData>Tax', type:'.types.percent'}" type="Number" description="%" enabled="false" fieldWidth="80%"/>
             <Label text="{i18n>NetPriceWtax}" required="true"/>
-            <Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/>
+            <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" type="Number" enabled="false" fieldWidth="80%"/>
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
