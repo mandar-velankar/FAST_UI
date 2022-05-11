@@ -103,7 +103,7 @@
 					<!-- tender id -->
 					<Column id="TenderTableTenderID" minScreenWidth="920px" width="7rem">
 						<header>
-							<ObjectIdentifier title="{i18n>TenderID}" titleActive="true" titlePress="onClick"/>
+							<ObjectIdentifier title="{i18n>ID}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
 					
