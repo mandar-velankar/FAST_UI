@@ -7,11 +7,12 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/financial",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"com/bayer/tender/uilib/datatypes/UoMPriceType",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator,Sorter) {
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	var bundle;
@@ -21,7 +22,8 @@ sap.ui.define([
 		//Formatting functions
 		formatter: formatter,
 		types: {
-			percent: PercentageType
+			percent: PercentageType,
+            uomPrice: UoMPriceType
 		},
 
 		onInit: function (oEvent) {
