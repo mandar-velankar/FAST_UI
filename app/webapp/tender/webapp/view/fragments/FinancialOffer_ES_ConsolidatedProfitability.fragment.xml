@@ -37,9 +37,9 @@
 			<ColumnListItem vAlign="Middle">
 				<cells>
 					<Text text="{fastAppData>ProductType}" />
-					<Text text="{fastAppData>GrossMargin}"/>
-					<Text text="{fastAppData>NetSales}" />
-					<Text text="{fastAppData>COGS}" />
+					<Text text="{path: 'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
+					<Text text="{path: 'fastAppData>NetSales', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}" />
+					<Text text="{path: 'fastAppData>COGS', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}" />
 					<Text text="{path:'fastAppData>Profitability', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}" />
 				</cells>
 			</ColumnListItem>
