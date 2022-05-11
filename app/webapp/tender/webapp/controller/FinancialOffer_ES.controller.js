@@ -1042,9 +1042,9 @@ sap.ui.define([
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
 
             if(UOM === "Unit"){
-                priceConditionObject.NetPriceWithoutTax = priceConditionObject.PVL / packFactor;
+                priceConditionObject.NetPriceWithoutTax = priceConditionObject.ConfidentialPrice ? priceConditionObject.ConfidentialPrice / packFactor : priceConditionObject.PVL / packFactor;
             } else {
-                priceConditionObject.NetPriceWithoutTax = priceConditionObject.PVL;
+                priceConditionObject.NetPriceWithoutTax = priceConditionObject.ConfidentialPrice ? priceConditionObject.ConfidentialPrice : priceConditionObject.PVL;
             }
             priceConditionObject.NetPriceWithTax = Number((priceConditionObject.NetPriceWithoutTax * (1 + priceConditionObject.Tax)).toFixed(2));
 
@@ -1149,7 +1149,7 @@ sap.ui.define([
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
                             if (oProductConditionView.ConditionType === 'PVL'){
                                 let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.PVL / factor);
+                                netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
                             } else {
                                 netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                             }
@@ -1237,7 +1237,7 @@ sap.ui.define([
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                         if (oProductConditionView.ConditionType === 'PVL'){
                             let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                            netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.PVL / factor);
+                            netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
                         } else {
                             netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                         }
