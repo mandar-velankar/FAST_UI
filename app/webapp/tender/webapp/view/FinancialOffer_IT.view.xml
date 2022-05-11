@@ -25,7 +25,7 @@
 	</u:ObjectPageSubSection>
 	
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="{i18n>offersum}" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
 		</u:actions>
@@ -471,7 +471,7 @@
 
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>History}" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>offerhistory}" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -490,10 +490,10 @@
 						</headerToolbar>
 						<columns>
 							<Column>
-								<Text text="{i18n>TenderID}"/>
+								<Text text="{i18n>ID}"/>
 							</Column>
 							<Column>
-								<Text text="{i18n>Tender}"/>
+								<Text text="{i18n>reference}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>OfferID}"/>

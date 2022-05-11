@@ -11,7 +11,7 @@
 				<Input id="idTenderID" value="{fastData>TenderID}" visible="false"/>
 				<Input id="idInstituteID" value="{fastData>InstituteID}" visible="false"/>
 				<!-- TODO this NewTenderID should be shown differently, we no longer check upon it, thats already done (Servicess.getNewTenderNo(  -->
-				<Label text="{i18n>TenderID}" design="Bold" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" required="true"/>
+				<Label text="{i18n>ID}" design="Bold" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" required="true"/>
 				<Input id="idNewTenderID" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" enabled="false" />
 				<Label text="{i18n>tenderref}" design="Bold" required="true"/>
 				<Input id="idTenderName" value="{fastData>TenderName}" />

@@ -25,7 +25,7 @@
 	</u:ObjectPageSubSection>
 	
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="{i18n>offersum}" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
 		</u:actions>
@@ -101,19 +101,19 @@
 										<Text text="{fastAppData>UOM}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetofferPrice}"/>
+                                        <Text text="{path: 'fastAppData>NetofferPrice', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetPriceFOC}"/>
+                                        <Text text="{path: 'fastAppData>NetPriceFOC', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>cogsUoM}"/>
+                                        <Text text="{path: 'fastAppData>cogsUoM', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>GrossSales}"/>
+                                        <Text text="{path: 'fastAppData>GrossSales', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>GrossProfit}"/>
+                                        <Text text="{path: 'fastAppData>GrossProfit', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
 										<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
@@ -189,7 +189,7 @@
 
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>History}" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>offerhistory}" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -208,10 +208,10 @@
 						</headerToolbar>
 						<columns>
 							<Column>
-								<Text text="{i18n>TenderID}"/>
+								<Text text="{i18n>ID}"/>
 							</Column>
 							<Column>
-								<Text text="{i18n>Tender}"/>
+								<Text text="{i18n>reference}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>OfferID}"/>
