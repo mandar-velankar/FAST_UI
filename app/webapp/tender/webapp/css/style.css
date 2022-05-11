@@ -2,3 +2,12 @@
 .tileLayout {
     background-size: auto ;
 }
+.listInDialog{
+    height: calc(100% - 49px) !important;
+}
+.listInDialogWithMessage{
+    height: calc(100% - 49px - 65px) !important;
+}
+.listInDialogWithTwoMessages{
+    height: calc(100% - 49px - 65px - 65px) !important;
+}

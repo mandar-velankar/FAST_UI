@@ -1,7 +1,7 @@
 <core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.OfferProducts" xmlns="sap.m" xmlns:core="sap.ui.core"
 	xmlns:form="sap.ui.layout.form" xmlns:t="sap.ui.table" xmlns:u="sap.uxap" xmlns:l="sap.ui.layout" xmlns:viz.data="sap.viz.ui5.data"
 	xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
-	<u:ObjectPageSubSection title="Tender Offer" mode="Expanded">
+	<u:ObjectPageSubSection title="{i18n>offersum}" mode="Expanded">
 		<u:actions>
 			<Button text="Scenario Planner" icon="sap-icon://customize" press=".onToggleScenarioPlanner"/>
 		</u:actions>
@@ -104,7 +104,7 @@
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
-	<u:ObjectPageSubSection title="{i18n>History}">
+	<u:ObjectPageSubSection title="{i18n>offerhistory}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -114,16 +114,10 @@
 								<content>
 									<ToolbarSpacer/>
 									<CheckBox id="editCurrentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" 
-											  visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; 
-                                                          ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; 
-                                                          ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; 
-                                                          ${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; 
-                                                          ${fastAppData>/Tender/CountryCode} !== 'TH' &amp;&amp;
-                                                          ${fastAppData>/Tender/CountryCode} !== 'TN' &amp;&amp; 
-                                                          ${fastAppData>/Tender/CountryCode} !== 'MO' &amp;&amp;
-                                                          ${fastAppData>/Tender/CountryCode} !== 'AL' ? true : false }"/>
+											  visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }"/>
 									<CheckBox id="editCurrentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
-									<CheckBox id="editParentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
+									<CheckBox id="editParentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"
+											  visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }"/>
 									<CheckBox id="editWonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="editLossCheckId" text="{i18n>Loss}" selected="false" select=".onHistoryFilterCheck"/>
 								</content>
@@ -131,10 +125,10 @@
 						</headerToolbar>
 						<columns>
 							<Column>
-								<Text text="{i18n>TenderID}"/>
+								<Text text="{i18n>ID}"/>
 							</Column>
 							<Column>
-								<Text text="{i18n>Tender}"/>
+								<Text text="{i18n>reference}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>OfferID}"/>

@@ -77,6 +77,17 @@ FAST_NS0FAST0.utils.Formatter = {
 			return false;
 		}
 	},//temp because not working in other formatter
+    floatNoUnit: function(value){
+        var oNumberFormat = sap.ui.core.format.NumberFormat.getFloatInstance({
+            maxFractionDigits: 2,
+            minFractionDigits: 2,
+            groupingEnabled: true,
+            groupingSeparator: ",",
+            decimalSeparator: "."
+        });
+        var oValue = oNumberFormat.format(parseFloat(value));
+        return oValue;
+    },
 	percentage: function(pct){
 			var oNumberFormat = sap.ui.core.format.NumberFormat.getPercentInstance({
 				maxFractionDigits: 2

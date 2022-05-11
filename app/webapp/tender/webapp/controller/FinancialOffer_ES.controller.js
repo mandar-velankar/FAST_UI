@@ -7,11 +7,12 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/financial",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"com/bayer/tender/uilib/datatypes/UoMPriceType",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator,Sorter) {
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	var bundle;
@@ -21,7 +22,8 @@ sap.ui.define([
 		//Formatting functions
 		formatter: formatter,
 		types: {
-			percent: PercentageType
+			percent: PercentageType,
+            uomPrice: UoMPriceType
 		},
 
 		onInit: function (oEvent) {
@@ -444,7 +446,7 @@ sap.ui.define([
 			var oOffer = Services.getLoadedOffer(sOfferID);
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
 
-			if (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1) {
+			if (oOffer && (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1)) {
 				bEnableApproval = false;
 			}
 
@@ -559,6 +561,9 @@ sap.ui.define([
             selectedPriceConditionViewObjects.forEach(priceConditionViewObj => {
                 let requiredPriceConditionViewObject = null;
                 if(priceConditionViewObj.isMain){
+                    if(priceConditionViewObj.ConditionType === "PVL"){
+                        priceConditionViewObj = this.calculateNetPricesPVL(priceConditionViewObj);
+                    }
                     requiredPriceConditionViewObject = priceConditionViewObj;
                 }else{
                     const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
@@ -1034,6 +1039,20 @@ sap.ui.define([
             
         },
 
+        calculateNetPricesPVL: function (priceConditionObject){
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
+
+            if(UOM === "Unit"){
+                priceConditionObject.NetPriceWithoutTax = priceConditionObject.ConfidentialPrice ? priceConditionObject.ConfidentialPrice / packFactor : priceConditionObject.PVL / packFactor;
+            } else {
+                priceConditionObject.NetPriceWithoutTax = priceConditionObject.ConfidentialPrice ? priceConditionObject.ConfidentialPrice : priceConditionObject.PVL;
+            }
+            priceConditionObject.NetPriceWithTax = Number((priceConditionObject.NetPriceWithoutTax * (1 + priceConditionObject.Tax)).toFixed(2));
+
+            return priceConditionObject;
+        },
+
         calculateNetPricesDescuentoComercial: function (oEvent){
 
             
@@ -1132,7 +1151,7 @@ sap.ui.define([
                             sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
                             if (oProductConditionView.ConditionType === 'PVL'){
                                 let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.PVL / factor);
+                                netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
                             } else {
                                 netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                             }
@@ -1149,9 +1168,9 @@ sap.ui.define([
 
                         oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number(grossSales).toFixed(2);
-                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc).toFixed(2);
-                        oPriceCondition.GrossProfit = Number(grossProfit).toFixed(2);
+                        oPriceCondition.GrossSales = Number(grossSales);
+                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc);
+                        oPriceCondition.GrossProfit = Number(grossProfit);
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = grossSales;
                         oPriceCondition.Cost_NPV = Number(cogs);
@@ -1203,9 +1222,9 @@ sap.ui.define([
 
                         oPriceCondition.NetofferPrice = netOfferPrice;
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number(grossSales).toFixed(2);
-                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc).toFixed(2);
-                        oPriceCondition.GrossProfit = Number(grossProfit).toFixed(2);
+                        oPriceCondition.GrossSales = Number(grossSales);
+                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc);
+                        oPriceCondition.GrossProfit = Number(grossProfit);
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
@@ -1220,7 +1239,7 @@ sap.ui.define([
                         let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                         if (oProductConditionView.ConditionType === 'PVL'){
                             let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                            netPrice = oProductConditionView.YLAP ? (+oProductConditionView.YLAP / factor) : (+oProductConditionView.PVL / factor);
+                            netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
                         } else {
                             netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                         }
@@ -1257,10 +1276,10 @@ sap.ui.define([
                         let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
 
                         oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number(grossSales).toFixed(2);
+                        oPriceCondition.GrossSales = Number(grossSales);
                         oPriceCondition.NetofferPrice = netPrice;
                         oPriceCondition.NetPriceFOC = netPrice;
-                        oPriceCondition.GrossProfit = Number(grossProfit).toFixed(2);
+                        oPriceCondition.GrossProfit = Number(grossProfit);
                         oPriceCondition.GrossMargin = grossMargin;
                         oPriceCondition.Sales_NPV = dSales_NPV;
                         oPriceCondition.Cost_NPV = dCost_NPV;
@@ -1305,9 +1324,9 @@ sap.ui.define([
 
                     if(consolidatedEntry.ProductType !== 'Total'){
                         //keep track of actual totals
-                        oCalculatedResultTotals.GrossMargin = (Number(oCalculatedResultTotals.GrossMargin) + Number(oCalculatedResult.GrossMargin)).toFixed(2);
-                        oCalculatedResultTotals.NetSales = (Number(oCalculatedResultTotals.NetSales) + Number(oCalculatedResult.NetSales)).toFixed(2);
-                        oCalculatedResultTotals.COGS = (Number(oCalculatedResultTotals.COGS) + Number(oCalculatedResult.COGS)).toFixed(2);
+                        oCalculatedResultTotals.GrossMargin = (Number(oCalculatedResultTotals.GrossMargin) + Number(oCalculatedResult.GrossMargin));
+                        oCalculatedResultTotals.NetSales = (Number(oCalculatedResultTotals.NetSales) + Number(oCalculatedResult.NetSales));
+                        oCalculatedResultTotals.COGS = (Number(oCalculatedResultTotals.COGS) + Number(oCalculatedResult.COGS));
                         //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
                         //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
                     }
@@ -1348,10 +1367,10 @@ sap.ui.define([
             });
 
             return {
-                GrossMargin: Number(npv_grossmargin).toFixed(2),
-                NetSales: Number(npv_netsales).toFixed(2),
-                COGS: Number(npv_cogs).toFixed(2),
-                Profitability: Number(profitability).toFixed(2)
+                GrossMargin: Number(npv_grossmargin),
+                NetSales: Number(npv_netsales),
+                COGS: Number(npv_cogs),
+                Profitability: Number(profitability)
             }
         },
 

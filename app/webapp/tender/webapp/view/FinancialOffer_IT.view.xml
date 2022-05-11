@@ -25,7 +25,7 @@
 	</u:ObjectPageSubSection>
 	
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="{i18n>offersum}" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
 		</u:actions>
@@ -38,7 +38,8 @@
 						<form:SimpleForm id="idCurrencyForm" editable="true"  layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
 							 columnsL="1" class="editableForm"  title="">
 							<Label text="{i18n>Currency}"/>
-								<Select id="idCurrency" selectedKey="{fastAppData>/EditOffer/Currency}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' }, filters: [
+<!--TEMP solution Currency problem due to IT view financial offer-->                            
+								<Select id="idCurrency" selectedKey="{fastAppData>/CurrencyTEMP}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' }, filters: [
 									{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
 								] }" >					
 									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
@@ -356,7 +357,7 @@
 							columnsM="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" />
 								<Input value="{fastAppData>Warranty}" liveChange="onValidateMonth" change="onValidateMonth" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " required="true"/>
 								<Input value="{fastAppData>AgreementDuration}" type="Number"  liveChange="onValidateMonth" change="onValidateMonth"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
@@ -376,6 +377,7 @@
 										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />
 										<core:Item key="SecondHand" text="Second Hand" />									
+										<core:Item key="NotApplicable" text="Not Applicable" />
 									</items>
 								</Select>
 								<Label text="FOC Absolute/Percentage" />
@@ -423,7 +425,7 @@
 							columnsL="1"
 							singleContainerFullSize="false" >
 							<form:content>
-								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}" required="true"/>
+								<Label text="Warranty" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/>
 								<Input value="{fastAppData>Warranty}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number"  description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 								<Label text="Duration of agreement " required="true"/>
 								<Input value="{fastAppData>AgreementDuration}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
@@ -442,7 +444,8 @@
 									<items>
 										<core:Item key="" text="" />
 										<core:Item key="New" text="New" />
-										<core:Item key="SecondHand" text="Second Hand" />									
+										<core:Item key="SecondHand" text="Second Hand" />	
+										<core:Item key="NotApplicable" text="Not Applicable" />								
 									</items>
 								</Select>
 								<Label text="free goods for other product(s)" />
@@ -468,7 +471,7 @@
 
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>History}" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>offerhistory}" visible="{fastAppData>/CheckOfferVisibleForTab_IT}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -479,7 +482,7 @@
 									<ToolbarSpacer/>
 									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="false"/>
 									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
-									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
+									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck" visible="false"/>
 									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="lossCheckId" text="{i18n>Loss}" selected= "false" select=".onHistoryFilterCheck"/>
 								</content>
@@ -487,10 +490,10 @@
 						</headerToolbar>
 						<columns>
 							<Column>
-								<Text text="{i18n>TenderID}"/>
+								<Text text="{i18n>ID}"/>
 							</Column>
 							<Column>
-								<Text text="{i18n>Tender}"/>
+								<Text text="{i18n>reference}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>OfferID}"/>

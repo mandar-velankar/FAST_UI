@@ -79,7 +79,12 @@ sap.ui.define([
 			oDeliverieToSave.RequestedQuantity = oDeliverySaveInfo.RequestedQuantity.toString();
 			oDeliverieToSave.ActualDeliveryDate = oDeliverySaveInfo.ActualDeliveryDate;
 			oDeliverieToSave.ActualDeliveryQuantity = oDeliverySaveInfo.ActualDeliveryQuantity.toString();
-			oDeliverieToSave.Penalty = oDeliverySaveInfo.Penalty;
+    // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+            oDeliverieToSave.ActualDeliveredProduct=oDeliverySaveInfo.ActualDeliveredProduct.toString();
+            oDeliverieToSave.ActualDeliveredProductQty=oDeliverySaveInfo.ActualDeliveredProductQty;
+            oDeliverieToSave.LocalDeliveryNoteNo=oDeliverySaveInfo.LocalDeliveryNoteNo;
+    // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+            oDeliverieToSave.Penalty = oDeliverySaveInfo.Penalty;
 			oDeliverieToSave.PenaltyValue = oDeliverySaveInfo.PenaltyValue;
 			oDeliverieToSave.Currency = oDeliverySaveInfo.Currency;
 			oDeliverieToSave.PenaltyReason = oDeliverySaveInfo.PenaltyReason;
@@ -127,6 +132,9 @@ sap.ui.define([
 				RequestedQuantity: null,
 				ActualDeliveryDate: null,
 				ActualDeliveryQuantity: null,
+                ActualDeliveredProduct:null,
+                ActualDeliveredProductQty:null,
+                LocalDeliveryNoteNo:null,
 				Penalty: "No",
 				PenaltyValue: null,
 				Currency: null,

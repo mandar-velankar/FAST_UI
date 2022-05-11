@@ -27,7 +27,7 @@ sap.ui.define([
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
-	var bundle;
+	var bundle; 
 	var URLHelper = mLib.URLHelper;
 
 	return Controller.extend("FAST_NS0FAST0.controller.Detail", {
@@ -52,7 +52,7 @@ sap.ui.define([
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
 			
 			Services.setRouterObject(this.oRouter);
-
+            
 			//TODO: talk about better solution with Wouter
 			//Keep services object in Financial
 			Financial.setServices(Services);
@@ -708,7 +708,8 @@ sap.ui.define([
                         if (sFilterValue){
                             aFilters.push( new Filter("CountryCode", 'EQ', sFilterValue) );
                         }
-                        oBinding.filter(aFilters);
+
+                        oBinding?.filter(aFilters);
 
                         const tenderArray = response.data.results.filter(tender => tender.TenderID === Services.getSelectedTenderID());
                         let regionIDs = [];
@@ -5641,6 +5642,8 @@ sap.ui.define([
 			that._oDialog = new sap.m.Dialog("addProductDialog", {
 				title: bundle.getText("Addprod"),
 				stretch: true,
+				horizontalScrolling:false,
+				verticalScrolling:false,
 				buttons: [new sap.m.Button({
 						id: "idAddProductsBtn",
 						text: bundle.getText("Apply"),
@@ -6178,6 +6181,7 @@ sap.ui.define([
 			oListOutput.removeSelections();
 			oInfoToolbar.setVisible(false);
 			//oButtonAddSelected.setEnabled(true);
+			this.setScrollProductsOutputContainter();
 		},
 
 		//Remove product from output list
@@ -6221,7 +6225,7 @@ sap.ui.define([
 			//no selection anymore
 			//oList.removeSelections();
 			oInfoToolbar.setVisible(false);
-
+			this.setScrollProductsOutputContainter();
 		},
 
 		onSelectionChangeProcurementMethod: function(oEvent){
@@ -6426,8 +6430,67 @@ sap.ui.define([
 
 			}
 			oEvent.getSource().getBinding("items").filter([]);
+			this.setScrollProductsInputContainter();
 		},
-
+		setScrollProductsInputContainter:function(){
+			const fastAppDataModel = Services.getFastAppDataModel();
+			const productsInput = fastAppDataModel.getProperty("/ProductCollection");
+			const mercadoInProductsMessage = fastAppDataModel.getProperty("/MercadoInProductsMessage");
+			const inputItemsHeight = productsInput.length * 67;
+			const dialogContentHeight = this._oDialog.getContent()[0].getDomRef().offsetHeight;
+			let parentHeight = dialogContentHeight - 49 - 65; //todo: add check for message of MercadoInProductsMessage
+			if(mercadoInProductsMessage !== ''){
+				parentHeight -= 65;
+			}
+			sap.ui.getCore().byId("idListProductsInputContainer").removeStyleClass("listInDialogWithTwoMessages");
+			sap.ui.getCore().byId("idListProductsInputContainer").removeStyleClass("listInDialogWithMessage");
+			if(inputItemsHeight>=parentHeight){
+				if(mercadoInProductsMessage === ''){
+					sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
+				}else{
+					sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithTwoMessages");
+				}
+			}
+			// sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
+			// sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
+		},
+		setScrollProductsOutputContainter:function(){
+			const fastAppDataModel = Services.getFastAppDataModel();
+			const productsOuput = fastAppDataModel.getProperty("/EditOffer/Product/results/");
+			const mercadoInProductsMessage = fastAppDataModel.getProperty("/MercadoInProductsMessage");
+			const outputItemsHeight = productsOuput.length * 67;
+			const dialogContentHeight = this._oDialog.getContent()[0].getDomRef().offsetHeight;
+			let parentHeight = dialogContentHeight - 49 - 65; //todo: add check for message of MercadoInProductsMessage
+			if(mercadoInProductsMessage !== ''){
+				parentHeight -= 65;
+			}
+			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithTwoMessages");
+			sap.ui.getCore().byId("idListProductsOutputContainer").removeStyleClass("listInDialogWithMessage");
+			if(outputItemsHeight>=parentHeight){
+				if(mercadoInProductsMessage === ''){
+					sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
+				}else{
+					sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithTwoMessages");
+				}
+			}
+			// sap.ui.getCore().byId("idListProductsInputContainer").addStyleClass("listInDialogWithMessage");
+			// sap.ui.getCore().byId("idListProductsOutputContainer").addStyleClass("listInDialogWithMessage");
+		},
+		onSearchProductsInput: function(event){
+			// const fastAppDataModel = Services.getFastAppDataModel();
+			// const pathProductCollection = "/ProductCollection";
+			const searchValue = event.getParameter("newValue");
+			const binding = sap.ui.getCore().byId("idListProductsInput").getBinding("items");
+			const filters = ['PRODUCT_NAME','SKUS'].map(filterPath => new Filter({
+				path:filterPath,
+				operator:FilterOperator.Contains,
+				value1: searchValue
+			}));
+			binding.filter(new Filter({
+				filters: filters,
+				and:false
+			}));
+		},
 		//When the user is adding or removing a token
 		onBrandTokenChange: function (oEvent) {
 
@@ -6482,6 +6545,7 @@ sap.ui.define([
 					oFastAppDataModel.setProperty(sPathProductCollection, oData.results);
 
 					oProductInputList.getBinding("items").refresh(true);
+					that.setScrollProductsInputContainter();
 				});
 			} else {
 				//path for clearing
@@ -6494,8 +6558,8 @@ sap.ui.define([
 
 				//refresh empty list
 				oProductInputList.getBinding("items").refresh(true);
+				this.setScrollProductsInputContainter();
 			}
-
 		},
 
 		InstituteName_f4: function (oEvent) {
@@ -9920,22 +9984,20 @@ sap.ui.define([
 			this._sendNotificationDialog.destroy();
 		},
 
-		checkBtnCreatePriceAgreementEnabled: function(outcome){
-            const selectedProductPath = '/SelectedOffer/SelectedProduct';
+		checkBtnCreatePriceAgreementEnabled: function(productCode){
+            if(!productCode) return;
+            const selectedProductPath = '/SelectedOffer/Product/results';
             const oFastAppModel = Services.getFastAppDataModel();
-            let oSelectedProduct = oFastAppModel.getProperty(selectedProductPath);
-
-
-            if (oSelectedProduct === undefined){
-                const aLoadedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
-                oSelectedProduct = aLoadedProduct && aLoadedProduct.length > 0 ? aLoadedProduct.results[0] : null;
-                if (oSelectedProduct) oFastAppModel.setProperty(selectedProductPath, oSelectedProduct);
-            }
+            let oOfferProducts = oFastAppModel.getProperty(selectedProductPath)?.filter(product => product.ProductCode === productCode);
+            let aResultsForTree = oFastAppModel.getProperty('/ResultsForTree')?.filter(result => result.PRODUCTCODE === productCode);
+            let oTenderResultProduct = aResultsForTree && aResultsForTree.length > 0 ? aResultsForTree[0] : null;
+            let oSelectedProduct = oOfferProducts && oOfferProducts.length > 0 ? oOfferProducts[0] : null;
 
             let priceConditions = oSelectedProduct ? oSelectedProduct.PriceCondition : null;
-			
+			let outcome = oTenderResultProduct && oTenderResultProduct.OUTCOME ? oTenderResultProduct.OUTCOME : null;
+
             if(!outcome) return false;
-			const isOutcomeWon = outcome.toLowerCase().indexOf("won") > -1;
+			const isOutcomeWon = outcome && outcome.toLowerCase().indexOf("won") > -1;
 			const isSpain = Services.getSelectedCountry().indexOf("ES") > -1;
 			if(!isOutcomeWon) return false;
 			if(isOutcomeWon && !isSpain) return true;
