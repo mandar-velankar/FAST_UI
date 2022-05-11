@@ -9988,8 +9988,8 @@ sap.ui.define([
             if(!productCode) return;
             const selectedProductPath = '/SelectedOffer/Product/results';
             const oFastAppModel = Services.getFastAppDataModel();
-            let oOfferProducts = oFastAppModel.getProperty(selectedProductPath)?.filter(product => product.ProductCode = productCode);;
-            let aResultsForTree = oFastAppModel.getProperty('/ResultsForTree')?.filter(result => result.PRODUCTCODE = productCode);
+            let oOfferProducts = oFastAppModel.getProperty(selectedProductPath)?.filter(product => product.ProductCode === productCode);
+            let aResultsForTree = oFastAppModel.getProperty('/ResultsForTree')?.filter(result => result.PRODUCTCODE === productCode);
             let oTenderResultProduct = aResultsForTree && aResultsForTree.length > 0 ? aResultsForTree[0] : null;
             let oSelectedProduct = oOfferProducts && oOfferProducts.length > 0 ? oOfferProducts[0] : null;
 
