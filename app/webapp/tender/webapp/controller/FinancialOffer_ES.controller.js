@@ -1042,12 +1042,10 @@ sap.ui.define([
         calculateNetPricesPVL: function (priceConditionObject){
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
+            let factor = UOM === 'Unit' ? packFactor : 1;
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
 
-            if(UOM === "Unit"){
-                priceConditionObject.NetPriceWithoutTax = priceConditionObject.ConfidentialPrice ? priceConditionObject.ConfidentialPrice / packFactor : priceConditionObject.PVL / packFactor;
-            } else {
-                priceConditionObject.NetPriceWithoutTax = priceConditionObject.ConfidentialPrice ? priceConditionObject.ConfidentialPrice : priceConditionObject.PVL;
-            }
+            priceConditionObject.NetPriceWithoutTax = instType !== "Private Account"  ? priceConditionObject.YLAP / factor : priceConditionObject.PVL / factor;
             priceConditionObject.NetPriceWithTax = Number((priceConditionObject.NetPriceWithoutTax * (1 + priceConditionObject.Tax)).toFixed(2));
 
             return priceConditionObject;
