@@ -1140,7 +1140,7 @@ sap.ui.define([
                         let netPrice = 0;
 
                         if(oPriceCondition){ 
-                            let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ExistingPriceConditionID !== null && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                            let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
                             if(aFreeGoodsOther && aFreeGoodsOther.FreeGoodsOther && aFreeGoodsOther.FreeGoodsOther.length > 0){
                                 aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductPackId === product.SKU.PRODUCTPACKID);
                             }
