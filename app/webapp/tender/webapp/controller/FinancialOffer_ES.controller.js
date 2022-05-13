@@ -51,8 +51,8 @@ sap.ui.define([
 			Services.setRouterObject(this._oRouter);
 
 			//attach the onTenderMatched method to handle routing between pages + load correct data
-			this._oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this);
-			this._oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);
+			// this._oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this); // is this needed? according to the routing config this will cause side effects
+			this._oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);  
 
 		},
 
@@ -84,9 +84,6 @@ sap.ui.define([
                 await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
-                
-                // initialize ConsolidatedProfitability
-                Services.initializeConsolidatedProfitability();
             
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
@@ -1101,6 +1098,7 @@ sap.ui.define([
         },
 
         calculateProfitability: async function(){
+            Services.initializeConsolidatedProfitability();
             await this.calculateProductProfitability();
             await this.calculateConsolidatedProfitability();
         },
@@ -1140,7 +1138,7 @@ sap.ui.define([
                         let netPrice = 0;
 
                         if(oPriceCondition){ 
-                            let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ExistingPriceConditionID !== null && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                            let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
                             if(aFreeGoodsOther && aFreeGoodsOther.FreeGoodsOther && aFreeGoodsOther.FreeGoodsOther.length > 0){
                                 aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductPackId === product.SKU.PRODUCTPACKID);
                             }
