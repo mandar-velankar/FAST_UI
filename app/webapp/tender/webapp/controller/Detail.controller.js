@@ -3681,11 +3681,11 @@ sap.ui.define([
 		//Reset institute name
 		resetInstituteName: function (oEvent) {
             const oRegionEdit = this.byId("idRegionEdit");
-            
+            const oClassification = this.byId("idClassification");
 			this.byId("idInstituteName").setValue("...Select Institute");
 
 			const selectedItem = oEvent.getParameter("selectedItem").getText();
-			if(selectedItem === 'Cenabast' || this._country === 'IT' || this._country === 'ES'){
+			if(selectedItem === 'Cenabast' || this._country === 'IT' || (this._country === 'ES' && oClassification?.getSelectedKey() === 'Tender')){
 				this.byId("idSelectTenderTypeEdit").setVisible(true);
                 if(this._country === 'ES'){
                     this.byId("idSelectTenderType2Edit").setVisible(true);                    
