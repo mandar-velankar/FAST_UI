@@ -1,5 +1,5 @@
 <core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.DeliveryTracking" xmlns="sap.uxap" xmlns:m="sap.m" xmlns:f="sap.f"
-	xmlns:form="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:t="sap.ui.table" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout"
+	xmlns:form="sap.ui.layout.form" xmlns:mvc="sap.ui.core.mvc" xmlns:t="sap.ui.table" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:comp="sap.ui.comp"
 	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
 
 	<!-- DELIVERIES SUB SECTION PAGE -->
@@ -13,7 +13,7 @@
 				<!-- Deliveries table -->
 
                 <m:ScrollContainer>
-				<m:Table id="deliveriesTableID" popinLayout="GridSmall" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}" 
+				<m:Table  id="deliveriesTableID" popinLayout="GridSmall" mode="{= ${fastAppData>/EditMode} === true ? 'Delete' : 'SingleSelectMaster'}" 
 					delete=".onDeleteDeliverie" selectionChange=".onDeliveryItemSelect"
 					items="{ 
 						path: 'fastAppData>/SelectedDeliverieProduct/Deliveries/results/', 
@@ -24,7 +24,7 @@
 					}">
 					<m:columns>
 						<m:Column width="7rem">
-							<m:Label text="{i18n>LocalOrDicectDelivery}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
+							<m:Label text="{i18n>LocalOrDicectDelivery.}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
 						</m:Column>
 						<m:Column width="6rem">
 							<m:Label text="{i18n>PlannedInAPO}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
@@ -42,7 +42,7 @@
 							<m:Label text="{i18n>ActualDeliveryQuantity}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
 						</m:Column>
             <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
-                        <m:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp;  ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"> 
+                        <m:Column width= "15rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp;  ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"> 
                         <m:Label text="{i18n>ActualDeliveredProduct}" wrapping="true"/>
 						</m:Column>
                        
@@ -109,11 +109,15 @@
 								<m:DatePicker
 									value="{path :'fastAppData>ActualDeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
 									tooltip="{i18n>EffDate}" enabled="false" placeholder="{i18n>Select_date}"/>
-								<m:Input value="{fastAppData>ActualDeliveryQuantity}" type="Number" enabled="false" required="true"/>
+								<m:Input value="{fastAppData>ActualDeliveryQuantity}"  enabled="false" required="true"/>
             <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
-                                <m:Input value="{fastAppData>ActualDeliveredProduct}"  enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/> 
-                                <m:Input value="{fastAppData>ActualDeliveredProductQty}" type="Number" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/> 
-        <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->                  
+            
+              <m:Input enabled="false" valueHelpOnly="true" valueHelpRequest="onPress" showValueHelp= "true" value="{fastAppData>ActualDeliveredProduct}" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/>
+              
+          	  <m:Input value="{fastAppData>ActualDeliveredProductQty}" type="Number" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/>                      
+        <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->  
+
+                       
 								<m:Select selectedKey="{fastAppData>PaidOrFree}" enabled="false">
 									<m:items>
 										<core:Item text="Paid" key="Paid"/>
