@@ -570,8 +570,18 @@ sap.ui.define([
 					new sap.m.Text({
 						text: "{fastData>TENDER_REFERENCE}"
 					}),
-					new sap.m.Text({
-						text: "{fastData>TENDER_ID}"
+					new sap.m.VBox({
+						items: [
+							new sap.m.Text({
+								text: "{fastData>TENDER_ID}"
+							}),
+							new sap.m.Text({
+								text: "{fastData>EXTERNAL_ID}"
+							}),
+							new sap.m.Text({
+								text: "{fastData>SAP_ID}"
+							}),
+						]
 					}),
 					new sap.m.Text({
 						text: "{fastData>TENDER_NAME}"
