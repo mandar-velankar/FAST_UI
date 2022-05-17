@@ -713,6 +713,20 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
+				orFilters.push(new Filter({
+					path: "EXTERNAL_ID",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "SAP_ID",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
 				andFilters.push(new sap.ui.model.Filter(orFilters, false));
 			}
 			var oFilters = new sap.ui.model.Filter(andFilters, true);
