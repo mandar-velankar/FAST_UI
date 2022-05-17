@@ -316,7 +316,44 @@ sap.ui.define([
 			var todayDate = day + "." + month + "." + year;
 			return todayDate;
 		},
+        loadDeliveryProductPack: function () {
 
+			//lets work with callbacks: 
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+
+			//path for product pack read
+			var sProductPackPath = "/PT_TMPRDPCK(ACTIVERECORD='Yes')";
+
+			if (sProductPackPath) {
+
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sProductPackPath, {
+					urlParameters: {
+						"$expand": "Product"
+					},
+					success: function (oData, oResponse) {
+
+						//let the callback be triggered
+						oDeferred.resolve(oData);
+                        return oData;
+
+					},
+					error: function (oError) {
+
+						//let the callback be triggered
+						oDeferred.reject(oError);
+
+					}
+				});
+			}
+
+			//return promise so the function can check if execution is done
+			//return oDeferred.promise();
+
+		},
 		//get offer path from fastappdata
 		getLoadedOfferPath: function (sOfferID) {
 			var oFastAppDataModel = this.getFastAppDataModel();
