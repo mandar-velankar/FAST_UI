@@ -1,0 +1,83 @@
+<!-- Fragment for Add product - Product offer screen -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+	
+<l:VerticalLayout width="100%" >
+		
+		<l:content>
+			
+			<VBox id="idProductSelection" fitContainer="true" alignItems="Stretch">
+				<items>
+
+<!-- Select brand -->
+<MultiInput id="idBrandListDelivery" width="100%" enabled="true" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="brandList_f4" value="" placeholder="{i18n>SelectBrand}" tokenUpdate="onBrandTokenChangeForDelivery"/>
+							
+<!-- empty line -->
+	<Label></Label>
+							
+	<!-- Source & Target table next to each other -->
+		<HBox width="100%">
+			<items>
+				<!-- Source -->
+				<VBox width="100%">
+						<items>
+													
+													<!-- Input list -->
+                                <Table id="idListProductsInput" mode="SingleSelect"
+													  items="{
+															path: 'fastAppData>/ProductCollection'
+														}"
+														itemPress="onSelectionChange"
+														includeItemInSelection="true"
+                                                        width="100%"
+                                                        >
+														
+														<headerToolbar>
+															<OverflowToolbar
+																visible="false"
+																id="idInfoToolbarInput" >
+																<Label id="idFilterLabelInput" />
+															</OverflowToolbar>
+														</headerToolbar>
+														<columns>
+															<Column>
+																<Text text="Products" />
+															</Column>
+														</columns>
+														<items>
+															<ColumnListItem>
+																<cells>
+																	<VBox>
+																		<Text text="{fastAppData>PRODUCT_NAME}" wrapping="false" />
+																		<Text text="{fastAppData>SKUS}" wrapping="false" visible="false" />
+																	</VBox>
+																	
+																</cells>
+															</ColumnListItem>
+														</items>
+													</Table>
+													
+												</items>
+											</VBox>
+											
+											
+																						
+											
+											
+													
+											
+										</items>
+							</HBox>
+							
+				</items>
+			</VBox>
+			
+		</l:content>
+		
+	</l:VerticalLayout>
+	
+</core:FragmentDefinition>

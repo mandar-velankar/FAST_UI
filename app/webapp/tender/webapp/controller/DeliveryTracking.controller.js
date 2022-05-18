@@ -3,11 +3,17 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"FAST_NS0FAST0/model/formatter",
 	"FAST_NS0FAST0/model/services",
+    "sap/ui/core/Fragment",
+    "sap/m/Dialog",
 	"FAST_NS0FAST0/model/userinfo",
+    "sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator",
+    "sap/m/Token",
+	"sap/m/Tokenizer",
 	"FAST_NS0FAST0/libs/momentjs/moment.min"
-], function (Controller, MessageToast, formatter, Services, UserInfo, MomentJS) {
+], function (Controller, MessageToast, formatter, Services,Fragment,Dialog, UserInfo,Filter,FilterOperator, Token,Tokenizer,MomentJS) {
 	"use strict";
-
+    var bundle; var flag="";
 	return Controller.extend("FAST_NS0FAST0.controller.DeliveryTracking", {
 
 		//Formatting functions
@@ -31,9 +37,247 @@ sap.ui.define([
 			//attach the onTenderMatched method to handle routing between pages + load correct data
 			this.oRouter.getRoute("master").attachPatternMatched(this._onTenderMatched, this);
 			this.oRouter.getRoute("detail").attachPatternMatched(this._onTenderMatched, this);
+            
+
+            
+		},
+       // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+        brandList_f4: function () {
+			var that = this;
+			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			var sDistributorID = Services.getSelectedDistributorID(); //DISTRIBUTOR_ID
+			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			var Tendervalue=Services.getFastAppDataModel().getProperty("/Tender");
+            var sLegalEntity =Tendervalue.Offer.results[0].SellingCompany;
+			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sOfferDivision =Tendervalue.Offer.results[0].Division;
+			var aBrandTokens = [];
+			that.aBrandProducts = [];
+
+			//Check if distributor is selected						
+			if (sDistributorID) {
+
+				//load the corresponding products for the input list
+				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+					aCommercialAgreement, aBrandTokens, sOfferDivision)).done(function (oData) {
+
+					//check if results are found
+					if (oData && oData.results.length > 0) {
+
+						//keep brand products
+						that.aBrandProducts = oData.results;
+
+						//only keep unique brands... this way we also know there are valid products underneath these...
+						var aUniqueBrands = Array.from(new Set(oData.results.map(x => x.BRAND_ID)))
+							.map(BRAND_ID => {
+								return {
+									BRAND_ID: BRAND_ID,
+									BRAND_NAME: oData.results.find(x => x.BRAND_ID === BRAND_ID).BRAND_NAME
+								};
+							});
+
+						//for binding stateModel
+						var oBrandResults = {
+							results: aUniqueBrands
+						};
+
+						//binding statemodel to value help popup
+						var stateModel = new sap.ui.model.json.JSONModel();
+						stateModel.setData(oBrandResults);
+						if (!that._valueHelpSelectBrandDialog) {
+							that._valueHelpSelectBrandDialog = new sap.m.SelectDialog({
+								title: that.oBundle.getText("brandnme"),
+								multiSelect: true,
+								rememberSelections: true,
+								items: {
+									path: "/results",
+									template: new sap.m.StandardListItem({
+										title: "{BRAND_NAME}",
+										description: "{BRAND_ID}",
+										//active: true
+									})
+								},
+								liveChange: function (oEvent) {
+									var sValue = oEvent.getParameter("value");
+									var oFilters = [];
+									oFilters.push(new sap.ui.model.Filter("BRAND_NAME", sap.ui.model.FilterOperator.Contains, sValue));
+									oFilters.push(new sap.ui.model.Filter("BRAND_ID", sap.ui.model.FilterOperator.Contains, sValue));
+									oEvent.getSource().getBinding("items").filter(new sap.ui.model.Filter(oFilters, false));
+								},
+								confirm: function (oEvent) {
+									that._handleCloseBrandNameList(oEvent);
+								},
+								cancel: function (oEvent) {
+									that._handleCloseBrandNameList(oEvent);
+								}
+							});
+						}
+
+						that._valueHelpSelectBrandDialog.setModel(stateModel);
+						that._valueHelpSelectBrandDialog.open();
+
+					} else {
+						MessageToast.show("There are no brands to display.");
+					}
+
+				});
+
+			} else {
+				sap.m.MessageBox.show("Select Distributor name first!", sap.m.MessageBox.Icon.ERROR);
+			}
 
 		},
+     // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+		_handleCloseBrandNameList: function (oEvent) {
 
+			//general
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//no selection anymore
+			sap.ui.getCore().byId("idInfoToolbarInput").setVisible(false);
+			var oListInput = sap.ui.getCore().byId("idListProductsInput");
+			oListInput.removeSelections();
+
+			//selected brands
+			var aContexts = oEvent.getParameter("selectedContexts");
+			if (aContexts && aContexts.length) {
+
+				MessageToast.show("The following brands where selected: " + aContexts.map(function (oContext) {
+					return oContext.getObject().BRAND_NAME;
+				}).join(", "));
+
+				//get multi input box
+				var oBrandList = sap.ui.getCore().byId("idBrandListDelivery");
+				var aBrandTokens = [];
+				var aBrands = [];
+
+				//push the selected brands 
+				aContexts.map(function (oContext) {
+
+					var oToken = new Token({
+						text: oContext.getObject().BRAND_NAME,
+						key: oContext.getObject().BRAND_ID
+					});
+					aBrandTokens.push(oToken);
+
+					//Brands for filtering
+					var oBrand = {
+						BRAND_ID: oContext.getObject().BRAND_ID
+					}
+					aBrands.push(oBrand);
+				});
+
+				//add the array of tokens to the multi input
+				oBrandList.setTokens(aBrandTokens);
+
+				//Filter brand products to find only the products of the selected brand
+				const aFilteredBrandProducts = that.aBrandProducts.filter(
+					(elem) => aBrands.find(({
+						BRAND_ID
+					}) => elem.BRAND_ID === BRAND_ID)
+				);
+
+				var sPathProductCollection = "/ProductCollection";
+
+				//path is updated with the products
+				oFastAppDataModel.setProperty(sPathProductCollection, aFilteredBrandProducts);
+				//});
+
+			} else {
+
+				MessageToast.show("No new item was selected.");
+
+			}
+			oEvent.getSource().getBinding("items").filter([]);
+		},
+     // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+        onSelectionChange: function (oEvt) {
+
+			var oList = oEvt.getSource();
+			var oLabel = sap.ui.getCore().byId("idFilterLabelInput");
+			var oInfoToolbar = sap.ui.getCore().byId("idInfoToolbarInput");
+
+			// With the 'getSelectedContexts' function you can access the context paths
+			// of all list items that have been selected, regardless of any current
+			// filter on the aggregation binding.
+			var aContexts = oList.getSelectedContexts(true);
+
+			// update UI
+			var bSelected = (aContexts && aContexts.length > 0);
+			var sText = (bSelected) ? aContexts.length + " selected" : null;
+			oInfoToolbar.setVisible(bSelected);
+			oLabel.setText(sText);
+
+		},
+	 // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+		onBrandTokenChangeForDelivery: function (oEvent) {
+
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			//get multi input box
+			var oBrandList = sap.ui.getCore().byId("idBrandListDelivery");
+			//Brands already existing in the multi input field
+			that._aBrandTokens = oBrandList.getTokens();
+
+			//added brands
+			if (oEvent.getParameter('type') === Tokenizer.TokenUpdateType.Added) {
+				var aBrandsAdded = oEvent.getParameter("addedTokens");
+				aBrandsAdded.forEach(function (iIndex, oBrandToken) {
+					that._aBrandTokens.push(oBrandToken);
+				});
+			}
+
+			//removed brands
+			if (oEvent.getParameter('type') === Tokenizer.TokenUpdateType.Removed) {
+				var aBrandsRemoved = oEvent.getParameter("removedTokens");
+				aBrandsRemoved.forEach(function (oRemovedBrandToken, iIndex) {
+					that._aBrandTokens = $.grep(that._aBrandTokens, function (oBrandToken) {
+						return oBrandToken.getProperty("key") != oRemovedBrandToken.getProperty("key");
+					});
+				});
+			}
+
+			//load the corresponding products for the input list
+			var sInstituteID = Services.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+			var sCountryCode = Services.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+			var sDistributorID = Services.getSelectedDistributorID(); //DISTRIBUTOR_ID
+			var oProductInputList = sap.ui.getCore().byId("idListProductsInput");
+			var sTenderChannel = Services.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+			var sLegalEntity = Services.getFastAppDataModel().getProperty("/EditOffer/SellingCompany");
+			var aCommercialAgreement = Services.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+			var sOfferDivision = Services.getFastAppDataModel().getProperty("/EditOffer/Division");
+
+			//load products for list
+			if (that._aBrandTokens && that._aBrandTokens.length > 0) {
+				$.when(Services.loadBrandProductNameList(sInstituteID, sCountryCode, sDistributorID, sTenderChannel, sLegalEntity,
+					aCommercialAgreement, that._aBrandTokens, sOfferDivision)).done(function (oData) {
+					//loaded products
+
+					//path where the products should be stored
+					var sPathProductCollection = "/ProductCollection";
+
+					//path is updated with the products
+					oFastAppDataModel.setProperty(sPathProductCollection, oData.results);
+
+					oProductInputList.getBinding("items").refresh(true);
+				});
+			} else {
+				//path for clearing
+				var sPathProductCollection = "/ProductCollection";
+
+				var aEmpty = [];
+
+				//path is updated with the products
+				oFastAppDataModel.setProperty(sPathProductCollection, aEmpty);
+
+				//refresh empty list
+				oProductInputList.getBinding("items").refresh(true);
+			}
+
+		},
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: function (oEvent) {
 
@@ -235,6 +479,12 @@ sap.ui.define([
 
 			//don't show the delivery detail form
 			that.byId("idDeliveryDetailSection").setVisible(false);
+           // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+                       if(flag==true){
+                that.byId("idDeliveryDetailSection").setVisible(true);
+                flag=false;
+            }
+         // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
 
 			//Keep info of selectedDeliverie Product
 			oFastAppDataModel.setProperty("/SelectedDeliverieProduct/", oProduct);
@@ -261,15 +511,13 @@ sap.ui.define([
 				$.when(Services.loadPenaltyReasons()).done(function (oTenderData) {
 
 				});
-
 			}
 
 		},
 
 		//When you click on add purchase order
 		onAddPurchaseOrder: function (oEvent) {
-
-			//distributor id is set on page form and should be used (instead of requested) when adding product
+           //distributor id is set on page form and should be used (instead of requested) when adding product
 			//payment terms and inco terns should set based on information in view providing product
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -586,6 +834,7 @@ sap.ui.define([
 
 		onDeliveryItemDetail: function (oEvent) {
 			var that = this;
+            //var Acproduct=this.getView().byId("idquan").getValue();
 			var oTableDeliveries = sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
 
 			if (oTableDeliveries) {
@@ -623,8 +872,9 @@ sap.ui.define([
 					var aCells = oRow.getCells();
 					aCells.forEach(function (oCell, index) {
 						oCell.setProperty("enabled", Services.getEditMode());
+                       
 					});
-
+                   
 					Services.setDeliveryItemEdit(iIndex);
 				}
 			}
@@ -1057,7 +1307,80 @@ sap.ui.define([
 			that.byId("idLetterDetailSection").setVisible(true);
 
 		},
+        //EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+        onPress:function(oEvent){
+            var oFastAppDataModel = Services.getFastAppDataModel();
+			var that = this;
+			let oTender = Services.getLoadedTender();
+			let sTenderReference = oTender.CountrySpecificInformation && oTender.CountrySpecificInformation.TenderReference;
+             let sDistID=oTender.Offer.results[0].DistributorID;
+            Services.setSelectedDistributorID(sDistID);
 
+			//clear fields
+			oFastAppDataModel.setProperty("/ProductCollection", null);
+            
+			
+			if (that._oDialog) {
+				that._oDialog.destroy();
+			}
+            
+          
+			that._oDialog = new sap.m.Dialog("addProductDialog", {
+                title:that.oBundle.getText("Product Details"),
+                buttons: [new sap.m.Button({
+                    id: "idProductButton",
+                    text: "Apply",
+                    enabled: true,
+                    tap: [that.onProductConfirm, that]
+                    
+
+                }),
+                ],
+                
+			   content: [sap.ui.xmlfragment("FAST_NS0FAST0.fragments.ProductDetailsForDelivery", that)]
+            });
+               that.getView().addDependent(that._oDialog);
+               that._oDialog.open();
+   
+               //Clear all fields
+               var oBrandList = sap.ui.getCore().byId("idBrandListDelivery");
+               var aBrandTokens = [];
+               oBrandList.setTokens(aBrandTokens);   
+                            
+					
+			},
+           // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
+			onProductConfirm : function (oEvent) {
+            
+                var oFastAppDataModel = Services.getFastAppDataModel();
+                var oListInput = sap.ui.getCore().byId("idListProductsInput");
+                var oEditOfferProductTable =  sap.ui.core.Fragment.byId('deliveryTableFragment', 'deliveriesTableID');
+                var that = this;
+               var index= oEditOfferProductTable.getItems()[Services.getDeliveryItemEdit()].sId.split("-")[4];
+             
+                var bContexts = oListInput.getSelectedContexts(true);
+                                        
+                     for(const oContext of bContexts){
+                            //         //first selected product
+                      var oProduct = oFastAppDataModel.getProperty(oContext.getPath());
+                     var binditem= oEditOfferProductTable.getBinding("items").getModel().getData().ProductsForOffer.results[0].Deliveries.results[index];
+                     binditem.ActualDeliveredProduct=oProduct.PRODUCT_NAME;
+                    
+                            }
+                            if(oEditOfferProductTable.getBinding("items") ) {
+                                
+                       oEditOfferProductTable.getBinding("items").getModel().refresh(true);
+                       
+                       
+                       }
+                       flag=true;  
+                       that.getView().byId("idDeliveryDetailSection").setVisible(true);  
+                        that._oDialog.close();
+                
+            },
+    
+        
+       
 		//Save delivery tracking from button save in footer
 		_onSaveDelvrTracking: function (oEvent) {
 
@@ -1114,7 +1437,7 @@ sap.ui.define([
 						bError = true;
 				}
 			});
-
+           
 			aLettersSaveInfo.forEach(function (oLetterSaveInfo, index) {
 				if (oLetterSaveInfo._sOperation !== "DELETE") {
 					if (!oLetterSaveInfo.REASONFORLETTER ||
