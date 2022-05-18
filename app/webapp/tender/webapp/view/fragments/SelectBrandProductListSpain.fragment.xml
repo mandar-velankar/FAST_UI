@@ -23,7 +23,9 @@
 			description="{fastAppData>SKUS}"
 			iconDensityAware="false"
 			iconInset="false"
-			type="Active" />
+			type="Active"
+			highlight="{= ${fastAppData>/SelectedProductName}===${fastAppData>PRODUCT_NAME}?'Information':'None' }"
+			highlightText="{fastAppData>/SelectedProductName}" />
 	</SelectDialog>
 
 </core:FragmentDefinition>
