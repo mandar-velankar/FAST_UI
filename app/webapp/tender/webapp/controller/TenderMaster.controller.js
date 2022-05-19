@@ -570,8 +570,18 @@ sap.ui.define([
 					new sap.m.Text({
 						text: "{fastData>TENDER_REFERENCE}"
 					}),
-					new sap.m.Text({
-						text: "{fastData>TENDER_ID}"
+					new sap.m.VBox({
+						items: [
+							new sap.m.Text({
+								text: "{fastData>TENDER_ID}"
+							}),
+							new sap.m.Text({
+								text: "{fastData>EXTERNAL_ID}"
+							}),
+							new sap.m.Text({
+								text: "{fastData>SAP_ID}"
+							}),
+						]
 					}),
 					new sap.m.Text({
 						text: "{fastData>TENDER_NAME}"
@@ -698,6 +708,20 @@ sap.ui.define([
 
 				orFilters.push(new Filter({
 					path: "PFI_NO",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "EXTERNAL_ID",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "SAP_ID",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false

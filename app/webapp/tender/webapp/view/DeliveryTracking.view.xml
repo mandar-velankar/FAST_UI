@@ -84,7 +84,7 @@
 						<!--<m:Title level="H4" text="Compensated Details:" />-->
 						<m:Label text="{i18n>UndertakingLetters}" required="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 						<m:Select id="idDeliveryDetailUndertakingLetters" selectedKey="{fastAppData>UndertakingLetters}"
-							enabled="{= ${fastAppData>/EditMode} === true ? true : false}">
+							enabled="{= ${fastAppData>/EditMode} === true ? true : false}"  >
 							<m:items>
 								<core:Item text="Yes" key="Yes"/>
 								<core:Item text="No" key="No"/>
