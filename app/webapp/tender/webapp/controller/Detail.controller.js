@@ -405,6 +405,10 @@ sap.ui.define([
 			//Thailand
 			oProcurementMethod.setEnabled(true);
 			oProducrementReason.setEnabled(true);
+            // Thailand word templates 
+            if (Services.getSelectedCountry() === "TH"){
+                Services.getWordTemplates(Services.getSelectedCountry());
+            }
 
 			//Keep track that we are in change modus
 			Services.setEditMode(true);
@@ -661,6 +665,11 @@ sap.ui.define([
 
 					})
 				}
+
+                // Thailand word templates 
+				if (Services.getSelectedCountry() === "TH"){
+					Services.getWordTemplates(Services.getSelectedCountry());
+                }
 			
 
 				//vanaf hier 
