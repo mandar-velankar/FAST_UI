@@ -818,7 +818,9 @@ sap.ui.define([
                             // !oPriceConditions[i].onVolumeTreshhold || 
                             // !oPriceConditions[i].Discount || 
                             !oPriceConditions[i].DiscountConditions || 
-                            !oPriceConditions[i].RefundDate)){
+                            !oPriceConditions[i].RefundDate ||
+                            !oPriceConditions[i].Settlement_ID
+                            )){
                         aErroneousCondition.push(oPriceConditions[i].ConditionType);
                     } // TODO: check the requirements 
                 } else if(oPriceConditions[i].ConditionType === "FOC"){
@@ -1796,6 +1798,7 @@ sap.ui.define([
             if(!isRequired && switchName === 'Rappel'){
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RoyalDecree`,"");
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Liquidation`,"");
+                Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Settlement_ID`,"");
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RefundDate`,null);
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
             }
