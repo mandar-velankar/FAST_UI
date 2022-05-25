@@ -7999,7 +7999,7 @@ sap.ui.define([
 
 			//load quotation data
 			$.when(Quotation.loadOfferAndProductValidationInfo()).done(function (oData) {
-
+				if(Services.getSelectedCountry() === "ES") that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -8065,6 +8065,60 @@ sap.ui.define([
 
 			});
 
+		},
+
+		/**
+		 * This method creates entities to be used for the binding of the Price Condition 
+		 * tables on the Quotation tab for Spain.
+		 */
+		_createPriceConditionTableEntitiesOnQuotationTabForSpain: function(){ 
+			const aOfferProductValidation = Services.getFastAppDataModel().getProperty("/OfferProductValidation");
+			const tableData = {
+				pvl: [],
+				precioNeto: [],
+				descuentoComercial: [],
+				descuentoEspecial: [],
+				rappel: [],
+				foc: [],
+				rental: []
+			};
+			aOfferProductValidation.forEach(prd => {
+				const priceConditions = prd.PriceCondition.results;
+				priceConditions.forEach(pc => {
+					const data = {
+						SORTER: prd.SORTER,
+						PRODUCTNAME: prd.PRODUCTNAME,
+						PACKSIZ: prd.PACKSIZ,
+						REQUESTED_QUANTIT: prd.REQUESTED_QUANTIT,
+						REQ_PRICE_UNIT_OFFER_CURRENC: prd.REQ_PRICE_UNIT_OFFER_CURRENC,
+						CURRENC: prd.CURRENC,
+						IS_LOWES: prd.IS_LOWES,
+						REQ_PRICE_PACK_OFFER_CURRENC: prd.REQ_PRICE_PACK_OFFER_CURRENC,
+						GROSS_SALES_OFFER_CURRENC: prd.GROSS_SALES_OFFER_CURRENC,
+						PriceCondition: pc
+					};
+					const conditionType = pc.PriceConditionClassification.ConditionType;
+					switch(conditionType){
+						case "PVL": tableData.pvl.push(data);
+									break;
+						case "Precio Neto": tableData.precioNeto.push(data);
+									break;
+						case "Descuento Comercial": tableData.descuentoComercial.push(data);
+									break;
+						case "Descuento Especial": tableData.descuentoEspecial.push(data);
+									break;
+						case "Rappel": tableData.rappel.push(data);
+									break;
+						case "FOC": tableData.foc.push(data);
+									break;
+						case "Rental": tableData.rental.push(data);
+									break;
+					}
+				});
+			});
+
+
+			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
 
 
