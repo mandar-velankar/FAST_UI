@@ -24,7 +24,11 @@
                    <MultiInput id="idFrom" width="70%" showValueHelp="false" required="true" enabled="false"/>
 
                     <Label text="{i18n>To}" required="true"/>
-                    <MultiInput id="idTo" width="70%" showValueHelp="false" required="true"/>
+                    <!--<MultiInput id="idTo" width="70%" showValueHelp="false" required="true"/>-->
+                    <MultiComboBox id="idTo" width="70%" required="true" 
+                                   items="{path: 'fastAppData>/CountryApprovers' }">
+                                <core:Item key="{fastAppData>ApproverEmailID}" text="{fastAppData>ApproverType}"/>
+                    </MultiComboBox>
 
                     <Label text="{i18n>Subject}" required="true"/>
                     <Input id="idSubject" required="true"/>
