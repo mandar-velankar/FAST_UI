@@ -56,6 +56,13 @@
                     press=".onSubmitQuotation"
                     enabled="false"/>
                     
+                <m:MenuButton text="Download Word" id="btnDownloadWordQuotation" visible="{= ${fastAppData>/WordTemplates}.length > 0 }">
+                    <m:menu>
+                        <m:Menu itemSelected="onMenuAction" items="{fastAppData>/WordTemplates}">
+                            <m:MenuItem text="{fastAppData>WordTemplates/name}" icon="sap-icon://download" press=".onDownloadWord"/>
+                        </m:Menu>
+                    </m:menu>
+                </m:MenuButton>
                     
                 <m:Button
                     id="btnExportToExcel"
