@@ -2495,6 +2495,7 @@ sap.ui.define([
 			Services.loadCountryChannels(sCountryCode);
 			Services.loadCountryCompetitors(sCountryCode);
 			Services.loadCountryOutcomes(sCountryCode);
+            if(sCountryCode === 'ES') Services.loadCountryApprovers(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
 			// set the selected keys on the dropdowns
@@ -9883,10 +9884,16 @@ sap.ui.define([
 			let oSender = sap.ui.getCore().byId("idFrom");
 			let sSender = UserInfo.getUserEmail();
 			let oEditor = sap.ui.getCore().byId("idEditor");
+            let aRAMs = [];
 
             const oFastAppDataModel = Services.getFastAppDataModel();
+            const sDivision = oFastAppDataModel.getProperty('/SelectedOffer/Division');
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
+            aRAMs = oFastAppDataModel.getProperty('/CountryApprovers');
+
+            aRAMs = aRAMs.filter(ram => ram.Division === sDivision);
+            oFastAppDataModel.setProperty('/CountryApprovers', aRAMs);
 			
 			oEditor.setValue(template.value);
 			oSubject.setValue(sSubject);
@@ -9921,7 +9928,7 @@ sap.ui.define([
 				return new Token({key: text, text: text});
 			};
 
-			oRecipients.addValidator(fnValidator);
+			//oRecipients.addValidator(fnValidator);
 			oSender.addValidator(fnValidator);
 
 			BusyIndicator.hide();
@@ -9947,9 +9954,9 @@ sap.ui.define([
 			let sRecipients = "";
 			let sSubject = sap.ui.getCore().byId('idSubject').getValue();
 			let sMailBody = sap.ui.getCore().byId('idEditor').getValue();
-			let aRecipients = sap.ui.getCore().byId('idTo').getTokens();
+			let aRecipients = sap.ui.getCore().byId('idTo').getSelectedKeys();
 			let sSenders = sap.ui.getCore().byId('idFrom').getTokens();
-			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
+			aRecipients.forEach(recipient => sRecipients += recipient + ';')
 
 			let oMail = {
 				"CountryCode": Services.getSelectedCountry(),
