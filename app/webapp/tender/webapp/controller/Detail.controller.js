@@ -20,10 +20,11 @@ sap.ui.define([
 	"sap/m/Token",
 	"sap/m/Tokenizer",
 	"FAST_NS0FAST0/libs/ranking/Ranking",
-	"sap/m/library"
+	"sap/m/library",
+	"com/bayer/tender/uilib/datatypes/PercentageType",
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -36,6 +37,10 @@ sap.ui.define([
 		//---------------------------------------------
 		//Formatting functions
 		formatter: formatter,
+		types: {
+			percent: PercentageType
+		},
+
 
 		//initialitation of the detail page
 		onInit: function () {
@@ -8112,6 +8117,8 @@ sap.ui.define([
 						case "FOC": tableData.foc.push(data);
 									break;
 						case "Rental": tableData.rental.push(data);
+									break;
+						default : console.error(`ConditionType ${conditionType} does not exist`); 
 									break;
 					}
 				});
