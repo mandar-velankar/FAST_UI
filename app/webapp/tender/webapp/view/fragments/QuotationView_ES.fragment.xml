@@ -263,6 +263,16 @@
                         <m:Text text="{i18n>Price Condition}"/>
                     </m:Column>
 
+                    <!-- Rappel -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Rappel}"/>
+                    </m:Column>
+
+                    <!-- FOC -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>FOC}"/>
+                    </m:Column>
+
                     <!-- Total -->
                     <m:Column width="12%">
                         <m:Text text="{i18n>Total}"/>
@@ -306,6 +316,12 @@
 
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
+
+                            <!-- Rappel -->
+                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/rappel}.length > 0 ? 'Yes' : 'No'}"/>
+
+                            <!-- FOC -->
+                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/foc}.length > 0 ? 'Yes' : 'No'}"/>
 
                             <!-- Total -->
                             <m:Text text="{parts: [
@@ -396,6 +412,21 @@
                         <m:Text text="{i18n>NetPriceWithTaxAfterRD}"/>
                     </m:Column>
 
+                    <!-- Rappel -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Rappel}"/>
+                    </m:Column>
+
+                    <!-- FOC -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>FOC}"/>
+                    </m:Column>
+
+                    <!-- Total -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>Total}"/>
+                    </m:Column>
+
                 </m:columns>
                 <m:items>
                     <m:ColumnListItem>
@@ -450,6 +481,18 @@
                             <!-- NetPriceWithTaxAfterRD -->
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/NetPriceWithTaxAfterDeductionRD'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <!-- Rappel -->
+                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/rappel}.length > 0 ? 'Yes' : 'No'}"/>
+
+                            <!-- FOC -->
+                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/foc}.length > 0 ? 'Yes' : 'No'}"/>
+
+                            <!-- Total -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
 
@@ -819,34 +862,29 @@
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
-                    <!-- Pack Factor -->
+                    <!-- PVL -->
                     <m:Column width="5%">
-                        <m:Text text="{i18n>PackFactor}"/>
+                        <m:Text text="{i18n>PVL}"/>
                     </m:Column>
 
-                    <!-- Quantity -->
+                    <!-- Royal Decree -->
                     <m:Column width="13%">
-                        <m:Text text="{i18n>qQuantity}"/>
+                        <m:Text text="{i18n>Royal Decree}"/>
                     </m:Column>
 
-                    <!-- Unit Price -->
+                    <!-- Liquidation -->
                     <m:Column width="8%">
-                        <m:Text text="{i18n>UnitPrice}"/>
+                        <m:Text text="{i18n>Liquidation}"/>
                     </m:Column>
 
-                    <!-- Pack Price -->
+                    <!-- Payment Back date -->
                     <m:Column width="8%">
-                        <m:Text text="{i18n>PackPrice}" visible="true"/>
+                        <m:Text text="{i18n>Payment Back date}"/>
                     </m:Column>
 
-                    <!-- Monthly Rent -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>MonthlyRent}" visible="true"/>
-                    </m:Column>
-
-                    <!-- Total -->
+                    <!-- Volume Threshold -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Total}"/>
+                        <m:Text text="{i18n>Volume Threshold}"/>
                     </m:Column>
 
                 </m:columns>
@@ -859,37 +897,34 @@
                             <!-- Article Name -->
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
 
-                            <!-- Pack Factor -->
-                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
-
-                            <!-- Quantity -->
-                            <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
-
-                            <!-- Unit Price -->
-                            <m:ObjectStatus
-                                text="{parts: [
-                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
-                                    {path: 'fastAppData>CURRENCY'}
-                                ], formatter:'.formatter.priceTwoOrFour'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
-
-                            <!-- Pack Price -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
-
-                            <!-- Monthly Rent -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
-
-
-                            <!-- Total -->
+                            <!-- PVL -->
                             <m:Text text="{parts: [
-                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                                    {path: 'fastAppData>PriceCondition/PVL'}, 
+                                    {path: 'fastAppData>CURRENCY'}
+                                ], formatter:'.formatter.price'}"
+                            />
+
+                            <!-- Royal Decree -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
+
+                            <!-- Liquidation -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/Liquidation'}"/>
+
+                            <!-- Payment Back date -->
+                            <m:Text text="{
+                                path: 'fastAppData>PriceCondition/RefundDate',
+                                type: 'sap.ui.model.type.Date',
+                                formatOptions: {
+                                    style: 'long'
+                                }
+                            }" />
+
+                            <!-- Volume Threshold -->
+                            <m:Button icon="sap-icon://value-help" press=".onVolumeTreshhold">
+                                <m:layoutData>
+                                    <l:GridData span="XL1 L1 M1 S2" />
+                                </m:layoutData>
+                            </m:Button>
 
                         </m:cells>
                     </m:ColumnListItem>
