@@ -330,7 +330,7 @@ sap.ui.define([
 					oFastDataCalls.read(sOfferProductValidationPath, {
 							filters: aFilters,
 							urlParameters: {
-								$expand: "PriceCondition/PriceConditionClassification"
+								$expand: "PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition,PriceCondition/FreeGoodsOther"
 							},
 							success: function(oData, oResponse) {
 								

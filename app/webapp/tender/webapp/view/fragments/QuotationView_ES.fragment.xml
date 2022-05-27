@@ -205,6 +205,7 @@
                     </form:SimpleForm>
                 </m:VBox>
 
+            <!-- The following tables are generated in Detail.controller:_createPriceConditionTableEntitiesOnQuotationTabForSpain() -->
             <!-- PVL Table -->
              <m:Table 
                 visible="{= ${fastAppData>/QuotationPriceConditionTableSpain/pvl}.length > 0}"
@@ -1146,19 +1147,19 @@
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
 
                             <!-- FOC Product -->
-                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+                            <m:Text text="{path :'fastAppData>ProductPackId'}"/>
 
                             <!-- Royal Decree -->
-                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+                            <m:Text text="{path :'fastAppData>RoyalDecree'}"/>
 
                             <!-- FOC Min Amount -->
-                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+                            <m:Text text="{path :'fastAppData>FOCMinAmount'}"/>
 
                             <!-- FOC Bonus -->
-                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+                            <m:Text text="{path :'fastAppData>FOCBonus'}"/>
 
                             <!-- Potential Savings Generated -->
-                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+                            <m:Text text="{path :'fastAppData>PotentialGeneratedSavings'}"/>
 
                         </m:cells>
                     </m:ColumnListItem>

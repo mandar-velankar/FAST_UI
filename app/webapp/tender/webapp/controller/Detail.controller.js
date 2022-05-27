@@ -8087,6 +8087,8 @@ sap.ui.define([
 				foc: [],
 				rental: []
 			};
+
+			// create PriceConditionTableEntities
 			aOfferProductValidation.forEach(prd => {
 				const priceConditions = prd.PriceCondition.results;
 				priceConditions.forEach(pc => {
@@ -8125,6 +8127,11 @@ sap.ui.define([
 			});
 
 
+			// flatten/unpack rappel entities
+
+			// flatten/unpack foc entities
+			tableData.foc = [].concat.apply([], tableData.foc.map(focCondition => focCondition.PriceCondition.FreeGoodsOther.results.map(foc => ({...focCondition, ...foc}))));
+			
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
 
