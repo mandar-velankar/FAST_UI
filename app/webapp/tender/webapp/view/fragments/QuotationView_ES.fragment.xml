@@ -318,11 +318,24 @@
                             <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
 
                             <!-- Rappel -->
-                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/rappel}.length > 0 ? 'Yes' : 'No'}"/>
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/rappel'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
 
                             <!-- FOC -->
-                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/foc}.length > 0 ? 'Yes' : 'No'}"/>
-
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/foc'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
                             <!-- Total -->
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
@@ -404,12 +417,12 @@
 
                     <!-- NetPriceWithoutTaxAfterRD -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>NetPriceWithoutTaxAfterRD}"/>
+                        <m:Text text="{i18n>Net Price Without Tax After RD}"/>
                     </m:Column>
 
                     <!-- NetPriceWithTaxAfterRD -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>NetPriceWithTaxAfterRD}"/>
+                        <m:Text text="{i18n>Net Price With Tax After RD}"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -485,10 +498,24 @@
                             ], formatter:'.formatter.price'}"/>
 
                             <!-- Rappel -->
-                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/rappel}.length > 0 ? 'Yes' : 'No'}"/>
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/rappel'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
 
                             <!-- FOC -->
-                            <m:Text text="{= ${fastAppData>/QuotationPriceConditionTableSpain/foc}.length > 0 ? 'Yes' : 'No'}"/>
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/foc'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
 
                             <!-- Total -->
                             <m:Text text="{parts: [
@@ -549,8 +576,53 @@
                         <m:Text text="{i18n>PackPrice}" visible="true"/>
                     </m:Column>
 
+                    <!-- PVL -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>PVL}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Price Condition -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Discount -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Discount}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Royal Decree -->
+                    <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Royal Decree}"/>
+                    </m:Column>
+
+                    <!-- VAT -->
+                    <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>VAT}"/>
+                    </m:Column>
+
+                    <!-- NetPriceWithoutTaxAfter -->
+                    <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Net Price Without Tax After}"/>
+                    </m:Column>
+
+                    <!-- NetPriceWithTaxAfterRD -->
+                    <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Net Price With Tax After RD}"/>
+                    </m:Column>
+
+                    <!-- Rappel -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Rappel}"/>
+                    </m:Column>
+
+                    <!-- FOC -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>FOC}"/>
+                    </m:Column>
+
                     <!-- Monthly Rent -->
-                    <m:Column width="8%">
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}">
                         <m:Text text="{i18n>MonthlyRent}" visible="true"/>
                     </m:Column>
 
@@ -589,11 +661,60 @@
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
 
+                            <!-- PVL -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PVL'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <!-- Price Condition -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
+
+                            <!-- Discount -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/Discount'}"/>
+
+                            <!-- Royal Decree -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
+
+                            <!-- VAT -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'}"/>
+
+                            <!-- NetPriceWithoutTax -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <!-- NetPriceWithTaxAfterRD -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/NetPriceWithTaxAfterDeductionRD'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <!-- Rappel -->
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/rappel'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
+
+                            <!-- FOC -->
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/foc'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
+
                             <!-- Monthly Rent -->
                             <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
-
 
                             <!-- Total -->
                             <m:Text text="{parts: [
@@ -659,6 +780,16 @@
                         <m:Text text="{i18n>MonthlyRent}" visible="true"/>
                     </m:Column>
 
+                    <!-- Rappel -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Rappel}"/>
+                    </m:Column>
+
+                    <!-- FOC -->
+                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>FOC}"/>
+                    </m:Column>
+
                     <!-- Total -->
                     <m:Column width="12%">
                         <m:Text text="{i18n>Total}"/>
@@ -699,6 +830,25 @@
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
 
+                            <!-- Rappel -->
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/rappel'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
+
+                            <!-- FOC -->
+                            <m:Text text="{ 
+                                    parts:[
+                                        {path:'fastAppData>SORTER'},
+                                        {path:'fastAppData>/QuotationPriceConditionTableSpain/foc'}
+                                    ], 
+                                    formatter: '.formatter.hasAdditionalCondition'
+                                }"
+                            />
 
                             <!-- Total -->
                             <m:Text text="{parts: [
@@ -959,35 +1109,31 @@
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
-                    <!-- Pack Factor -->
+                    <!-- FOC Product -->
                     <m:Column width="5%">
-                        <m:Text text="{i18n>PackFactor}"/>
+                        <m:Text text="{i18n>FOC Product}"/>
                     </m:Column>
 
-                    <!-- Quantity -->
+                     <!-- Royal Decree -->
                     <m:Column width="13%">
-                        <m:Text text="{i18n>qQuantity}"/>
+                        <m:Text text="{i18n>Royal Decree}"/>
                     </m:Column>
 
-                    <!-- Unit Price -->
+                    <!-- FOC Min Amount -->
                     <m:Column width="8%">
-                        <m:Text text="{i18n>UnitPrice}"/>
+                        <m:Text text="{i18n>FOC Min Amount}"/>
                     </m:Column>
 
-                    <!-- Pack Price -->
+                    <!-- FOC Bonus -->
                     <m:Column width="8%">
-                        <m:Text text="{i18n>PackPrice}" visible="true"/>
+                        <m:Text text="{i18n>FOC Bonus}"/>
                     </m:Column>
 
-                    <!-- Monthly Rent -->
+                    <!-- Potential Savings Generated -->
                     <m:Column width="8%">
-                        <m:Text text="{i18n>MonthlyRent}" visible="true"/>
+                        <m:Text text="{i18n>Potential Savings Generated}"/>
                     </m:Column>
 
-                    <!-- Total -->
-                    <m:Column width="12%">
-                        <m:Text text="{i18n>Total}"/>
-                    </m:Column>
 
                 </m:columns>
                 <m:items>
@@ -999,37 +1145,20 @@
                             <!-- Article Name -->
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
 
-                            <!-- Pack Factor -->
+                            <!-- FOC Product -->
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
-                            <!-- Quantity -->
-                            <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
+                            <!-- Royal Decree -->
+                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
-                            <!-- Unit Price -->
-                            <m:ObjectStatus
-                                text="{parts: [
-                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
-                                    {path: 'fastAppData>CURRENCY'}
-                                ], formatter:'.formatter.priceTwoOrFour'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
+                            <!-- FOC Min Amount -->
+                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
-                            <!-- Pack Price -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
+                            <!-- FOC Bonus -->
+                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
-                            <!-- Monthly Rent -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
-
-
-                            <!-- Total -->
-                            <m:Text text="{parts: [
-                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            <!-- Potential Savings Generated -->
+                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                         </m:cells>
                     </m:ColumnListItem>
