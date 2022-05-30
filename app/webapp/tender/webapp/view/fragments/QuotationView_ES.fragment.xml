@@ -1111,7 +1111,7 @@
                     </m:Column>
 
                     <!-- FOC Product -->
-                    <m:Column width="5%">
+                    <m:Column width="14%">
                         <m:Text text="{i18n>FOC Product}"/>
                     </m:Column>
 
@@ -1147,7 +1147,7 @@
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
 
                             <!-- FOC Product -->
-                            <m:Text text="{path :'fastAppData>ProductPackId'}"/>
+                            <m:Text text="{path :'fastAppData>ProductPack/results/0/PRODUCTPACKNAME'}"/>
 
                             <!-- Royal Decree -->
                             <m:Text text="{path :'fastAppData>RoyalDecree'}"/>
