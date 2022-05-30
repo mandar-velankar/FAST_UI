@@ -449,6 +449,11 @@ sap.ui.define([
 			});
 			return floatFormatter.format(newPrice);
 		},
+
+		hasAdditionalCondition: function(sorter, additionalConditions){
+			if(!sorter || !additionalConditions) return 'No';
+			return additionalConditions.some(cond => cond.SORTER === sorter) ? 'Yes' : 'No';
+		},
 		
 	};
 });
