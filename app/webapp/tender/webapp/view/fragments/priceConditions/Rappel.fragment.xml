@@ -72,7 +72,8 @@
                         <core:Item key="" text="" />
                         <core:Item key="Monthly" text="Monthly" />
                         <core:Item key="Quarterly" text="Quarterly" />
-                        <core:Item key="Annually" text="Annually" />									
+                        <core:Item key="HalfYearly" text="Half Yearly" />
+                        <core:Item key="Annually" text="Yearly" />									
                     </items>
                 </Select>
                 <Label text="{i18n>PaymentBackDate}" required="true"/>
@@ -85,6 +86,15 @@
                         change="handleChange"
                         enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"
                         class="sapUiSmallMarginBottom"/>
+                <Label text="{i18n>Settlement}" required="true"/>
+                <Select selectedKey="{fastAppData>Settlement_ID}" 
+                        enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"
+                        items="{fastData>/Settlements}"
+                        forceSelection="false"> 
+                    <items>
+                        <core:Item key="{fastData>ID}" text="{fastData>Description}" />								
+                    </items>
+                </Select>
                 <Label text="{i18n>VolTreshold}" required="true"/>
                 <Button icon="sap-icon://value-help" press=".onVolumeTreshhold" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }">
 					<layoutData>

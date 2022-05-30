@@ -114,6 +114,13 @@
 						</header>
 					</Column>
 					
+					<!-- Username who created the tender -->
+					<Column  width="8rem">
+						<header>
+							<ObjectIdentifier title="{i18n>CreatedBy}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
 					<!-- Institute -->
 					<Column minScreenWidth="920px" width="6rem">
 						<header>

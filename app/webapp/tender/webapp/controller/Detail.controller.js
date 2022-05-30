@@ -20,10 +20,11 @@ sap.ui.define([
 	"sap/m/Token",
 	"sap/m/Tokenizer",
 	"FAST_NS0FAST0/libs/ranking/Ranking",
-	"sap/m/library"
+	"sap/m/library",
+	"com/bayer/tender/uilib/datatypes/PercentageType",
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -36,6 +37,10 @@ sap.ui.define([
 		//---------------------------------------------
 		//Formatting functions
 		formatter: formatter,
+		types: {
+			percent: PercentageType
+		},
+
 
 		//initialitation of the detail page
 		onInit: function () {
@@ -2495,6 +2500,7 @@ sap.ui.define([
 			Services.loadCountryChannels(sCountryCode);
 			Services.loadCountryCompetitors(sCountryCode);
 			Services.loadCountryOutcomes(sCountryCode);
+            if(sCountryCode === 'ES') Services.loadCountryApprovers(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
 			// set the selected keys on the dropdowns
@@ -7999,7 +8005,7 @@ sap.ui.define([
 
 			//load quotation data
 			$.when(Quotation.loadOfferAndProductValidationInfo()).done(function (oData) {
-
+				if(Services.getSelectedCountry() === "ES") that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -8066,6 +8072,109 @@ sap.ui.define([
 			});
 
 		},
+
+		/**
+		 * This method creates entities to be used for the binding of the Price Condition 
+		 * tables on the Quotation tab for Spain.
+		 */
+		_createPriceConditionTableEntitiesOnQuotationTabForSpain: function(){ 
+			const aOfferProductValidation = Services.getFastAppDataModel().getProperty("/OfferProductValidation");
+			const tableData = {
+				pvl: [],
+				precioNeto: [],
+				descuentoComercial: [],
+				descuentoEspecial: [],
+				rappel: [],
+				foc: [],
+				rental: []
+			};
+
+			// create PriceConditionTableEntities
+			aOfferProductValidation.forEach(prd => {
+				const priceConditions = prd.PriceCondition.results;
+				priceConditions.forEach(pc => {
+					const data = {
+						SORTER: prd.SORTER,
+						PRODUCTNAME: prd.PRODUCTNAME,
+						PACKSIZE: prd.PACKSIZE,
+						REQUESTED_QUANTITY: prd.REQUESTED_QUANTITY,
+						REQ_PRICE_UNIT_OFFER_CURRENCY: prd.REQ_PRICE_UNIT_OFFER_CURRENCY,
+						CURRENCY: prd.CURRENCY,
+						IS_LOWEST: prd.IS_LOWEST,
+						REQ_PRICE_PACK_OFFER_CURRENCY: prd.REQ_PRICE_PACK_OFFER_CURRENCY,
+						GROSS_SALES_OFFER_CURRENCY: prd.GROSS_SALES_OFFER_CURRENCY,
+						PriceCondition: pc
+					};
+					const conditionType = pc.PriceConditionClassification.ConditionType;
+					switch(conditionType){
+						case "PVL": tableData.pvl.push(data);
+									break;
+						case "Precio Neto": tableData.precioNeto.push(data);
+									break;
+						case "Descuento Comercial": tableData.descuentoComercial.push(data);
+									break;
+						case "Descuento Especial": tableData.descuentoEspecial.push(data);
+									break;
+						case "Rappel": tableData.rappel.push(data);
+									break;
+						case "FOC": tableData.foc.push(data);
+									break;
+						case "Rental": tableData.rental.push(data);
+									break;
+						default : console.error(`ConditionType ${conditionType} does not exist`); 
+									break;
+					}
+				});
+			});
+
+
+			// add Tax to each DiscountCondition entity
+			tableData.rappel.forEach(rappelCondition => {
+				rappelCondition.PriceCondition.DiscountCondition.results = rappelCondition.PriceCondition.DiscountCondition.results.map(dc => ({...dc, Tax: rappelCondition.PriceCondition.Tax}))
+			});
+
+			// flatten/unpack foc entities
+			tableData.foc = [].concat.apply([], tableData.foc.map(focCondition => focCondition.PriceCondition.FreeGoodsOther.results.map(foc => ({...focCondition, ...foc}))));
+			
+			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
+		},
+
+
+		/**
+		 * Click handler for VolumeTreshhold fragment on the Quotation page
+		 * @param {*} oEvent 
+		 */
+		onVolumeTreshholdPress: function(oEvent){
+
+            const oView = this.getView();
+			const oContext = oEvent.getSource().getParent().getBindingContext('fastAppData');
+
+            // create dialog lazily
+            if (!this.pDialog) {
+                this.pDialog = Fragment.load({
+                    id: oView.getId(),
+                    name: "FAST_NS0FAST0.view.fragments.priceConditions.VolumeTreshhold_ES_Display",
+                    controller: this
+                }).then(function (oDialog) {
+                    // connect dialog to the root view of this component (models, lifecycle)
+                    oView.addDependent(oDialog);
+                    oDialog.setModel(Services.getFastAppDataModel(), "fastAppData");
+                    return oDialog;
+                });
+            }
+
+            this.pDialog.then(function (oDialog) {
+				const oTable = this.byId("idVolumeTresholdDisplay");
+				oTable.setBindingContext(oContext, "fastAppData");
+                oDialog.open();
+            }.bind(this));
+
+        },
+
+
+		onCancelDiscountCondition:function(){
+            if(this.pDialog) this.pDialog.then(dialog => dialog.close());
+        },
 
 
 		//switchDelayInSubmission on or off
@@ -9883,10 +9992,16 @@ sap.ui.define([
 			let oSender = sap.ui.getCore().byId("idFrom");
 			let sSender = UserInfo.getUserEmail();
 			let oEditor = sap.ui.getCore().byId("idEditor");
+            let aRAMs = [];
 
             const oFastAppDataModel = Services.getFastAppDataModel();
+            const sDivision = oFastAppDataModel.getProperty('/SelectedOffer/Division');
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
+            aRAMs = oFastAppDataModel.getProperty('/CountryApprovers');
+
+            aRAMs = aRAMs.filter(ram => ram.Division === sDivision);
+            oFastAppDataModel.setProperty('/CountryApprovers', aRAMs);
 			
 			oEditor.setValue(template.value);
 			oSubject.setValue(sSubject);
@@ -9921,7 +10036,7 @@ sap.ui.define([
 				return new Token({key: text, text: text});
 			};
 
-			oRecipients.addValidator(fnValidator);
+			//oRecipients.addValidator(fnValidator);
 			oSender.addValidator(fnValidator);
 
 			BusyIndicator.hide();
@@ -9947,9 +10062,9 @@ sap.ui.define([
 			let sRecipients = "";
 			let sSubject = sap.ui.getCore().byId('idSubject').getValue();
 			let sMailBody = sap.ui.getCore().byId('idEditor').getValue();
-			let aRecipients = sap.ui.getCore().byId('idTo').getTokens();
+			let aRecipients = sap.ui.getCore().byId('idTo').getSelectedKeys();
 			let sSenders = sap.ui.getCore().byId('idFrom').getTokens();
-			aRecipients.forEach(recipient => sRecipients += recipient.getProperty('text') + ';')
+			aRecipients.forEach(recipient => sRecipients += recipient + ';')
 
 			let oMail = {
 				"CountryCode": Services.getSelectedCountry(),

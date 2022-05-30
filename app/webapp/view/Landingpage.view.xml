@@ -21,7 +21,6 @@
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="Offer Management" 
 									press="onTileTenderManagementPress" 
-									appShortcut="shortcut" systemInfo="systeminfo"
 									visible="{tiles>/tender}">
 									<TileContent>
 										<ImageContent src="sap-icon://request"/>
