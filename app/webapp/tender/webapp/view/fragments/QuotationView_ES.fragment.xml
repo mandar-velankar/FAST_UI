@@ -1071,7 +1071,7 @@
                             }" />
 
                             <!-- Volume Threshold -->
-                            <m:Button icon="sap-icon://value-help" press=".onVolumeTreshhold">
+                            <m:Button icon="sap-icon://value-help" press=".onVolumeTreshholdPress">
                                 <m:layoutData>
                                     <l:GridData span="XL1 L1 M1 S2" />
                                 </m:layoutData>

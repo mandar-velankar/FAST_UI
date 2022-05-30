@@ -8127,13 +8127,53 @@ sap.ui.define([
 			});
 
 
-			// flatten/unpack rappel entities
+			// add Tax to each DiscountCondition entity
+			tableData.rappel.forEach(rappelCondition => {
+				rappelCondition.PriceCondition.DiscountCondition.results = rappelCondition.PriceCondition.DiscountCondition.results.map(dc => ({...dc, Tax: rappelCondition.PriceCondition.Tax}))
+			});
 
 			// flatten/unpack foc entities
 			tableData.foc = [].concat.apply([], tableData.foc.map(focCondition => focCondition.PriceCondition.FreeGoodsOther.results.map(foc => ({...focCondition, ...foc}))));
 			
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
+
+
+		/**
+		 * Click handler for VolumeTreshhold fragment on the Quotation page
+		 * @param {*} oEvent 
+		 */
+		onVolumeTreshholdPress: function(oEvent){
+
+            const oView = this.getView();
+			const oContext = oEvent.getSource().getParent().getBindingContext('fastAppData');
+
+            // create dialog lazily
+            if (!this.pDialog) {
+                this.pDialog = Fragment.load({
+                    id: oView.getId(),
+                    name: "FAST_NS0FAST0.view.fragments.priceConditions.VolumeTreshhold_ES_Display",
+                    controller: this
+                }).then(function (oDialog) {
+                    // connect dialog to the root view of this component (models, lifecycle)
+                    oView.addDependent(oDialog);
+                    oDialog.setModel(Services.getFastAppDataModel(), "fastAppData");
+                    return oDialog;
+                });
+            }
+
+            this.pDialog.then(function (oDialog) {
+				const oTable = this.byId("idVolumeTresholdDisplay");
+				oTable.setBindingContext(oContext, "fastAppData");
+                oDialog.open();
+            }.bind(this));
+
+        },
+
+
+		onCancelDiscountCondition:function(){
+            if(this.pDialog) this.pDialog.then(dialog => dialog.close());
+        },
 
 
 		//switchDelayInSubmission on or off
