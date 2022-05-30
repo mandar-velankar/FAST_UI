@@ -246,7 +246,7 @@ sap.ui.define([
 				oSel = "COUNTRY";
 			} else if (this.oSelCol === "TenderID") {
 				oSel = "TENDER_ID";
-			} else if (this.oSelCol === "Tender Name") {
+			} else if (this.oSelCol === "Name / Reference") {
 				oSel = "TENDER_NAME";
 			} else if (this.oSelCol === "Institute") {
 				oSel = "INSTITUTE";
@@ -268,6 +268,8 @@ sap.ui.define([
 				oSel = "DISTRIBUTOR";
 			} else if (this.oSelCol === "Offer Date") {
 				oSel = "OFFER_DATE";
+			} else if (this.oSelCol === "Created By") {
+				oSel = "UserName";
 			}
 
 			//var oTextfield = this.getView().byID("filterFieldID").getValue();
@@ -313,7 +315,7 @@ sap.ui.define([
 				oSel = "COUNTRY";
 			} else if (this.oSelCol === "TenderID") {
 				oSel = "TENDER_ID";
-			} else if (this.oSelCol === "Tender Name") {
+			} else if (this.oSelCol === "Name / Reference") {
 				oSel = "TENDER_NAME";
 			} else if (this.oSelCol === "Institute") {
 				oSel = "INSTITUTE";
@@ -335,6 +337,8 @@ sap.ui.define([
 				oSel = "DISTRIBUTOR";
 			} else if (this.oSelCol === "Offer Date") {
 				oSel = "OFFER_DATE";
+			} else if (this.oSelCol === "Created By") {
+				oSel = "UserName";
 			}
 
 			var oTable = this.oProductsTable,
@@ -360,7 +364,7 @@ sap.ui.define([
 				oSel = "COUNTRY";
 			} else if (this.oSelCol === "TenderID") {
 				oSel = "TENDER_ID";
-			} else if (this.oSelCol === "Tender Name") {
+			} else if (this.oSelCol === "Name / Reference") {
 				oSel = "TENDER_NAME";
 			} else if (this.oSelCol === "Institute") {
 				oSel = "INSTITUTE";
@@ -382,6 +386,8 @@ sap.ui.define([
 				oSel = "DISTRIBUTOR";
 			} else if (this.oSelCol === "Offer Date") {
 				oSel = "OFFER_DATE";
+			} else if (this.oSelCol === "Created By") {
+				oSel = "UserName";
 			}
 
 			var oTable = this.oProductsTable,
@@ -587,6 +593,9 @@ sap.ui.define([
 						text: "{fastData>TENDER_NAME}"
 					}),
 					new sap.m.Text({
+						text: "{fastData>UserName}"
+					}),
+					new sap.m.Text({
 						text: "{fastData>INSTITUTE}"
 					}),
 					// new sap.m.Text({
@@ -673,6 +682,13 @@ sap.ui.define([
 
 				orFilters.push(new Filter({
 					path: "TENDER_NAME",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+				
+				orFilters.push(new Filter({
+					path: "UserName",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false

@@ -1511,6 +1511,65 @@ sap.ui.define([
 
 		},
 
+        loadCountryApprovers: function (sCountry, sDivision) {
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sCountryApproversPath = "/CountryApprovers";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+            if (sDivision){
+				aFilters.push(new sap.ui.model.Filter("Division", sap.ui.model.FilterOperator.EQ, sDivision));
+            }
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sCountryApproversPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryApprovers = oData.results;
+					
+					// add an empty value at the begining of the array. needed for the dropdown
+					if(oData.results.length > 0){
+						aCountryApprovers.unshift({});
+					}
+					
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryApprovers", aCountryApprovers);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryApprovers);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country approvers");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
 		//load country channels
 		loadCountryChannels: function (sCountry) {
 
