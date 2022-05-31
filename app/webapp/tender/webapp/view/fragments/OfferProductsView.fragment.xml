@@ -226,6 +226,15 @@
 						</t:template>
 					</t:Column>
 
+                    <t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/MaxPrice/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MaxPrice/description',
+									   formatter: '.formatter.offerProductsColumnName' }"
+							   wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>MaxPrice}" wrapping="true"/>
+						</t:template>
+					</t:Column>
+
                     <t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/description',
                                        formatter: '.formatter.offerProductsColumnName'}" wrapping="true"/>
