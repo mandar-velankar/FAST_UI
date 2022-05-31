@@ -274,6 +274,7 @@ sap.ui.define([
 			oProductToSave.DeliveryConditions = oProductSaveInfo.DeliveryConditions;
 			oProductToSave.OfferType = oProductSaveInfo.OfferType;
             oProductToSave.AnticipatedRequestedQuantity = oProductSaveInfo.AnticipatedRequestedQuantity;
+            oProductToSave.MaxPrice = oProductSaveInfo.MaxPrice;
 
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 

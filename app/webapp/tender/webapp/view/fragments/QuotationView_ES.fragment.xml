@@ -293,7 +293,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
+                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
 
                             <!-- PVL -->
                             <m:Text text="{parts: [
@@ -455,7 +455,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
+                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -646,7 +646,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
+                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -810,7 +810,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
+                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -944,7 +944,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
+                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -1190,54 +1190,6 @@
 
                                         </m:items>
                                     </m:HBox>
-                                   
-                                    <m:Toolbar width="100%" height="1px"/>
-                                    <m:HBox visible="true">
-                                        <m:items>
-                                                
-                                            <!-- Remarks -->
-                                            <m:VBox class="sapUiSmallMarginEnd" width="50%" >
-                                                <m:items>
-                                                    <m:Label text="{i18n>qStandardRemark}" design="Bold"/>
-                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/REMARKS}" class="sapMText" />
-                                                </m:items>
-                                            </m:VBox>
-                                                    
-                                            <!-- Additional remarks -->
-                                            <m:VBox class="sapUiSmallMarginEnd" width="50%" alignItems="Start">
-                                                <m:items>
-                                                    <m:Label text="{i18n>qCustomRemark}" design="Bold"/>
-                                                    <m:TextArea id="idCustomRemark" value="{path: 'fastAppData>/OfferValidation/CUSTOM_REMARKS'}" maxLength="500" enabled="false" height="10rem" width="30rem"/>
-                                                </m:items>
-                                            </m:VBox>									
-                                                
-                                        </m:items>
-                                    </m:HBox>
-                                    <m:Toolbar width="100%" height="1px" visible="true"/>	
-                                    <m:HBox visible="true">
-                                        <m:items>
-                                            <!-- Issued by -->
-                                            <m:VBox class="sapUiSmallMarginEnd" width="48%">
-                                                <m:items>
-                                                    <m:Label text="{i18n>qIssuedBy}" design="Bold"/>
-                                                    <m:Select id="idSelectIssuedBy" 
-                                                        showSecondaryValues="true"
-                                                        selectedKey="{fastAppData>/OfferValidation/SELLING_COMPANY_AS1}" 
-                                                        enabled="false" 
-                                                            items="{ path: 'fastAppData>/EditOffer/Signatories/results'}">
-                                                        <core:ListItem text="{fastAppData>NAME}" additionalText="{fastAppData>TITLE}" key="{fastAppData>AUTHORIZED_SIGNATORY}"/>
-                                                    </m:Select>
-                                                </m:items>
-                                            </m:VBox>																
-                                            <m:VBox width="4%">
-                                            </m:VBox>	
-                                                    
-                                        </m:items>
-                                    </m:HBox>
-                                    
-                                    <!-- Creating additional space, so flickering of screen doesn't happen. This happens when content is almost fitting on the screen vs not -->
-                                    <!-- these empty boxes solves this problem, since scrollbar is always shown -->
-                                    <m:VBox fitContainer="true" height="500px" />
                                     
                                 </m:items>
                             </m:VBox>
