@@ -329,6 +329,9 @@ sap.ui.define([
 					//Reading the back end data from the tender table
 					oFastDataCalls.read(sOfferProductValidationPath, {
 							filters: aFilters,
+							urlParameters: {
+								$expand: "PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition,PriceCondition/FreeGoodsOther/ProductPack"
+							},
 							success: function(oData, oResponse) {
 								
 								//catch the offer products
