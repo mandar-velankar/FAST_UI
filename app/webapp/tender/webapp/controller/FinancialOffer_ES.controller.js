@@ -977,7 +977,7 @@ sap.ui.define([
         },
 
         calculateDiscountsAndNetPricesPrecioNeto: function(oEvent){
-
+            const evt = oEvent;
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
 
@@ -990,6 +990,17 @@ sap.ui.define([
             }
 
             const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
+
+            // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
+            if(newNetPriceWithoutTaxBeforeDeductionRD > bindingContext.getProperty('/SelectedOffer/SelectedProduct/MaxPrice')){
+                evt.getSource().setValueState("Error");
+                evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
+                evt.getSource().openValueStateMessage();
+            }else{
+                evt.getSource().setValueState("None");
+                evt.getSource().setValueStateText("");
+                evt.getSource().closeValueStateMessage();
+            }
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;

@@ -176,6 +176,18 @@
 									</t:template>
 								</t:Column>
 
+                                <t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/MaxPrice/visible}">
+									<Label id="idMaxPriceLabel" 
+									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MaxPrice/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/MaxPrice/required}"
+									/>
+									<t:template>
+										<Input  id="idMaxPrice" value="{fastAppData>MaxPrice}" type="Number" placeholder="{i18n>maxprice}"  maxLength="255"/>
+									</t:template>
+								</t:Column>
+
                                 <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
 									<Label id="idAnticipatedRequestedQuantity" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/description'}" 
 												    		   wrapping="true" 
