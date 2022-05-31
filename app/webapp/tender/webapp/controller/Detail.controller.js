@@ -8103,6 +8103,8 @@ sap.ui.define([
 						IS_LOWEST: prd.IS_LOWEST,
 						REQ_PRICE_PACK_OFFER_CURRENCY: prd.REQ_PRICE_PACK_OFFER_CURRENCY,
 						GROSS_SALES_OFFER_CURRENCY: prd.GROSS_SALES_OFFER_CURRENCY,
+						TOTAL_QUANTITY_UNITS: prd.TOTAL_QUANTITY_UNITS,
+						UNIT: prd.UNIT,
 						PriceCondition: pc
 					};
 					const conditionType = pc.PriceConditionClassification.ConditionType;
