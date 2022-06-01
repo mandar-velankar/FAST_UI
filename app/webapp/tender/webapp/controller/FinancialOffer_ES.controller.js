@@ -458,7 +458,7 @@ sap.ui.define([
 		onSaveFinancialOfferSpain: async function (oEvent) {
 
             BusyIndicator.show();
-            
+
             const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
             const aErroneousConditions = this.checkSaveFinancialOfferSpain(selectedPriceConditionViewObjects);   
             if(aErroneousConditions && (aErroneousConditions.length > 0)) {
@@ -958,7 +958,9 @@ sap.ui.define([
 
                 // add RequestedVolume from the selected product to the PriceConditionView entity.
                 const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
+                const maxPrice = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.MaxPrice;
                 Services.getFastAppDataModel().setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
+                if(sConditionType === 'Precio Neto') Services.getFastAppDataModel().setProperty(bindingPath.concat("/MaximumPrice"), maxPrice);
                 
                 Services.setSelectedPriceConditionPath(bindingPath);
 
