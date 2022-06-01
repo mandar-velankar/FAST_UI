@@ -30,7 +30,6 @@
                     ],
                     formatter: '.formatter.formatUoMPrice'
                 }"
-                type="Number"  
                 description="{fastAppData>Currency}" 
                 enabled="false" 
                 fieldWidth="80%"
@@ -44,8 +43,7 @@
                         {path:'fastAppData>YLAP'}
                     ],
                     formatter: '.formatter.formatUoMPrice'
-                }"
-                type="Number"  
+                }" 
                 visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                 description="{fastAppData>Currency}" 
                 enabled="false" fieldWidth="80%"/>   
