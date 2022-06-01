@@ -996,7 +996,7 @@ sap.ui.define([
             const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
 
             // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
-            if(newNetPriceWithoutTaxBeforeDeductionRD > bindingContext.getProperty('/SelectedOffer/SelectedProduct/MaxPrice')){
+            if(newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice){
                 evt.getSource().setValueState("Error");
                 evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
                 evt.getSource().openValueStateMessage();
