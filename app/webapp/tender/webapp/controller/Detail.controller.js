@@ -5365,7 +5365,13 @@ sap.ui.define([
 				var aMessages = [];
 				var iMsgCount = 0;
 				var sErroneousFields = "";
-
+                
+                //maxPrice should not be mandatory for commercial agreement in spain
+                if(oFastAppData.getProperty('/Tender/CountryCode') === 'ES' && oFastAppData.getProperty('/Tender/Classification') === 'Commercial Agreement'){
+                    let index = aMandatoryFields.findIndex(field => field.Column === 'MaxPrice');
+                    if (index > -1) aMandatoryFields.splice(index, 1);
+                }
+                
 				// TODO: as discussed with Wouter: these kind of validation logic should be done in the backend and the back-end should throw an error 
 				aProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
