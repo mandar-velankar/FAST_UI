@@ -42,12 +42,12 @@
                 <cells>
                     <HBox >
                         <Text text=">=" wrapping="false" class="sapUiSmallMarginTop"/>
-                        <Input value="{fastAppData>Volume}" type="Number" fieldWidth="80%"/>
+                        <Input value="{fastAppData>Volume}" fieldWidth="80%"/>
                     </HBox>
-                    <Input value="{fastAppData>Discount}" type="Number" description="%" fieldWidth="80%" liveChange=".calculateNetPricesRappel"/>
-                    <Input value="{path:'fastAppData>Tax', type:'.types.percent'}" type="Number"  description="%" enabled="false" fieldWidth="80%"/>
-                    <Input value="{path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" type="Number" enabled="false" fieldWidth="80%"/>
-                    <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" type="Number" enabled="false" fieldWidth="80%"/>
+                    <Input value="{fastAppData>Discount}" description="%" fieldWidth="80%" liveChange=".calculateNetPricesRappel"/>
+                    <Input value="{path:'fastAppData>Tax', type:'.types.percent'}"  description="%" enabled="false" fieldWidth="80%"/>
+                    <Input value="{path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%"/>
+                    <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%"/>
                     <Button icon="sap-icon://delete" press=".onDeleteDiscountCondition"/>
                 </cells>
             </ColumnListItem>
