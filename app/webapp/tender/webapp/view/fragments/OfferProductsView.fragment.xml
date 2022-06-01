@@ -226,7 +226,7 @@
 						</t:template>
 					</t:Column>
 
-                    <t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/MaxPrice/visible}">
+                    <t:Column width="7rem" visible="{= ${fastAppData>/permissions/tables/editofferProductId/MaxPrice/visible} &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender' ? true : false }">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MaxPrice/description',
 									   formatter: '.formatter.offerProductsColumnName' }"
 							   wrapping="true"/>
