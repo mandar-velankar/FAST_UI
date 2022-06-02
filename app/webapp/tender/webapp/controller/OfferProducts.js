@@ -1054,7 +1054,7 @@ sap.ui.define([
              //EHQUT OTT—102215-Historic Offer Details-Financial and Quotation tab
 			if (productValues.Cogs !== null) {
 				cogsValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Cogs.__ref);
-                if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX') {
+                if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX' && oProduct.Price!== null) {
                     cogsValues.COGS = oProduct.Price.COGS;
                 }
 
@@ -1074,7 +1074,7 @@ sap.ui.define([
 				if(oBudgetExchangeRates !== false){
 
                     //EHQUT OTT—102215-Historic Offer Details-Financial and Quotation tab
-                    if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX') {
+                    if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX' && oProduct.Price!== null) {
                         budgetRate = oProduct.Price.BudgetRate;
                     } else {
                         budgetRate = oBudgetExchangeRates.X_RATE;
@@ -1093,7 +1093,7 @@ sap.ui.define([
 			aPromises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(oMonthlyAvgExchangeRates => {
 				if(oMonthlyAvgExchangeRates !== false){
                      //EHQUT- OTT—102215-Historic Offer Details-Financial and Quotation tab
-                     if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX') {
+                     if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX' && oProduct.Price!== null) {
                         spotRate = oProduct.Price.SpotRate;
                     } else {
                         spotRate = oMonthlyAvgExchangeRates.X_RATE;
