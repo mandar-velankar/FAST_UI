@@ -798,11 +798,12 @@ sap.ui.define([
         checkSaveFinancialOfferSpain: function (oPriceConditions){
             const rappelRequired = Services.getFastAppDataModel().getProperty("/RappelRequired");
             const focRequired = Services.getFastAppDataModel().getProperty("/FOCRequired");
+            const classification = Services.getFastAppDataModel().getProperty("/Classification");
             var aErroneousCondition = [];            
 
             for(let i = 0; i < oPriceConditions.length; i++){            
                 if(oPriceConditions[i].ConditionType === "Precio Neto") {
-                    if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].NetPriceWithoutTaxAfterDeductionRD || !oPriceConditions[i].MaximumPrice){
+                    if(!oPriceConditions[i].RoyalDecree || !oPriceConditions[i].NetPriceWithoutTaxAfterDeductionRD || (classification === 'Tender' && !oPriceConditions[i].MaximumPrice)){
                         aErroneousCondition.push(oPriceConditions[i].ConditionType);
                     }
                 } else if(oPriceConditions[i].ConditionType === "Descuento Comercial"){
@@ -996,7 +997,7 @@ sap.ui.define([
             const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
 
             // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
-            if(newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice){
+            if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice){
                 evt.getSource().setValueState("Error");
                 evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
                 evt.getSource().openValueStateMessage();
@@ -1073,7 +1074,7 @@ sap.ui.define([
 
             let newDiscount;
             if (oEvent.getId() === "change"){
-               newDiscount = Number(priceConditionViewObj.Discount);
+               newDiscount = Number(priceConditionViewObj.Discount) * 100;
             } else {
                newDiscount = Number(oEvent.getSource().getValue());
 

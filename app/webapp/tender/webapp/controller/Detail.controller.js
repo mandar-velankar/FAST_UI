@@ -10008,7 +10008,7 @@ sap.ui.define([
 			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
             aRAMs = oFastAppDataModel.getProperty('/CountryApprovers');
 
-            aRAMs = aRAMs.filter(ram => ram.Division === sDivision);
+            aRAMs = aRAMs.filter(ram => ram.Division === sDivision && ram.ApproverType === 'BU/RAM');
             oFastAppDataModel.setProperty('/CountryApprovers', aRAMs);
 			
 			oEditor.setValue(template.value);
