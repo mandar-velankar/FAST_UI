@@ -81,7 +81,7 @@
                     fieldWidth="80%"
                 />
                 <Label text="{i18n>MaximumPrice}" required="true"/>
-                <Input value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice"/>
+                <Input value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}"/>
                 <Label text="{i18n>Tax}" required="true"/>
                 <Input value="{path:'fastAppData>Tax', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>NetPriceWtax}" required="true"/>
