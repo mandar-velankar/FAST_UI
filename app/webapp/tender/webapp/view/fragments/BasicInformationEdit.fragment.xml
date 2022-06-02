@@ -87,22 +87,22 @@
 					value="{fastData>Institute/InstituteName}" enabled="false"/>
 
                 <Label text="{i18n>institCode}" design="Bold" required="false"/>
-				<Input xmlns="sap.m" id="idInstituteCode" value="{fastData>Institute/CustomerID}" enabled="false" visible="false"/>
+				<Input xmlns="sap.m" id="idInstituteCode" value="{fastData>Institute/CustomerID}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 
                 <Label text="{i18n>institProvince}" design="Bold" required="false"/>
-				<Input xmlns="sap.m" id="idInstituteProvince" value="{fastData>Institute/Province/Name}" enabled="false" visible="false"/>
+				<Input xmlns="sap.m" id="idInstituteProvince" value="{fastData>Institute/Province/Name}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                 
 				<Label text="{i18n>institRegion}" design="Bold"  required="false"/>
-				<Input value="{fastData>Institute/Region/Name}" id="idInstituteRegion" enabled="false" visible="false"/>
+				<Input value="{fastData>Institute/Region/Name}" id="idInstituteRegion" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 
                 <Label text="{i18n>institPoblacion}" design="Bold" required="false"/>
-				<Input xmlns="sap.m" id="idInstitutePoblacion" value="{fastData>Institute/City}" enabled="false" visible="false"/>
+				<Input xmlns="sap.m" id="idInstitutePoblacion" value="{fastData>Institute/City}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 
                 <Label text="{i18n>institcifcode}" design="Bold" required="false" />
-				<Input xmlns="sap.m" id="idInstituteCifCode" value="{fastData>Institute/CifCode}" enabled="false" visible="false"/>
+				<Input xmlns="sap.m" id="idInstituteCifCode" value="{fastData>Institute/CifCode}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 
                 <Label text="{i18n>regionalhealthsystem}" design="Bold" required="false"/>
-				<Input xmlns="sap.m" id="idRegionalHealthSystem" value="{fastData>Institute/RegionalHealthSystem}" enabled="false" visible="false"/>
+				<Input xmlns="sap.m" id="idRegionalHealthSystem" value="{fastData>Institute/RegionalHealthSystem}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                 
 				<!-- Italy only -->
 				<Label text="{i18n>region}" design="Bold" required="true"/>
@@ -162,7 +162,7 @@
 						  valueLiveUpdate="false" 
 						  liveChange="handleLiveChange" 
 						  enabled="false"
-                          visible="false"/>
+                          visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 
                 <Label text="{i18n>Portal}" design="Bold"/>
                 <TextArea id="idPortalEdit" 
@@ -174,7 +174,7 @@
 						  valueLiveUpdate="false" 
 						  liveChange="handleLiveChange" 
 						  enabled="false"
-                          visible="false"/>
+                          visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 				<!-- Block - Timeline -->
 
 				<!-- Argentina only -->
