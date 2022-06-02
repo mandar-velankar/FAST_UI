@@ -1074,7 +1074,7 @@ sap.ui.define([
 
             let newDiscount;
             if (oEvent.getId() === "change"){
-               newDiscount = Number(priceConditionViewObj.Discount);
+               newDiscount = Number(priceConditionViewObj.Discount) * 100;
             } else {
                newDiscount = Number(oEvent.getSource().getValue());
 
