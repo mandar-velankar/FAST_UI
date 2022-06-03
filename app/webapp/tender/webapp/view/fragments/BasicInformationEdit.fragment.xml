@@ -229,7 +229,8 @@
 					selectedKey="{fastData>PROCUREMENT_METHOD_ID}" 
 					enabled="false"
 					items="{ path: '', sorter: '' }"
-					change="onSelectionChangeProcurementMethod">
+					change="onSelectionChangeProcurementMethod"
+                    visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' }">
 					<core:Item text="" key="" />
 				</Select>
 
