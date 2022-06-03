@@ -6627,7 +6627,7 @@ sap.ui.define([
 							oEvent.getSource().getBinding("items").filter(oFilters);
 						},
 						confirm: handleCloseInstituteName,
-						cancel: handleCloseInstituteName
+						// cancel: handleCloseInstituteName
 					});
 					that.valueHelpBasicInsSlctDialog.setModel(stateModel);
 					that.valueHelpBasicInsSlctDialog.open();
@@ -6644,6 +6644,7 @@ sap.ui.define([
                 const oFastAppDataModel = Services.getFastAppDataModel();
                 const event = oEvent.getSource();
 				if (oSelectedItem) {
+					const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 					that.byId("idInstituteName").setValue(oSelectedItem.getTitle());
 					//that.byId("idInstituteID").setValue(oSelectedItem.getDescription());
 					//that.getView().byId("idhdrInstID").setText(oSelectedItem.getDescription());
@@ -6663,7 +6664,6 @@ sap.ui.define([
 
 					// for Italy only the Regions must be set
 					if((sCountry === 'IT' || sCountry === 'ES') && instituteType === "Region(s)"){
-						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 						setTenderRegion(regionId);
 					}
 
@@ -6691,15 +6691,15 @@ sap.ui.define([
 							}
 						}
 					});
-                    oFastAppDataModel.refresh(true);
+                    // oFastAppDataModel.refresh(true); // this is causing issues and hinding the Regions field
 				}
-				event.getBinding("items").filter([]);
+				// event.getBinding("items").filter([]); // is this needed ?
 			};
 
 			
 			const setTenderRegion = function(regionId){
 				regionMCB && regionMCB.setSelectedKeys([regionId]);
-				regionMCB.getSelectedItems()[0].setEnabled(false);
+				// regionMCB.getSelectedItems()[0].setEnabled(false); // the UI5 API has changed and thus setEnabled does not provided the required result
 			}
 
 		},
