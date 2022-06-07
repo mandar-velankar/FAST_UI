@@ -25,6 +25,10 @@
 				<Input value="{fastAppData>/OfferValidation/OFFERID}" enabled="false" />
 				<Label text="Cliente" />
 				<Input value="{fastAppData>/OfferValidation/INSTITUTENAME}" enabled="false"/>
+                <!-- EHQUT-OfferValidy Date Picker in Chile -->
+                <Label text="Offer Validity" />
+                <DatePicker id="idQuotationOfferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/> 
+                <!-- EHQUT-OfferValidy Date Picker in Chile -->
 			</form:content>
 		</form:SimpleForm>
 	</VBox>
