@@ -1053,13 +1053,19 @@ sap.ui.define([
         },
 
         calculateNetPricesPVL: function (priceConditionObject){
+            let oFastAppDataModel = Services.getFastAppDataModel();
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
             let factor = UOM === 'Unit' ? packFactor : 1;
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let modelPriceCondition = oFastAppDataModel.getProperty('/PriceConditionView')?.find(priceCondition => priceCondition.OfferID === priceConditionObject.OfferID && priceCondition.ProductCode === priceConditionObject.ProductCode && priceCondition.ConditionType === priceConditionObject.ConditionType);
 
             priceConditionObject.NetPriceWithoutTax = instType !== "Private Account"  ? priceConditionObject.YLAP / factor : priceConditionObject.PVL / factor;
             priceConditionObject.NetPriceWithTax = Number((priceConditionObject.NetPriceWithoutTax * (1 + priceConditionObject.Tax)).toFixed(2));
+            modelPriceCondition.NetPriceWithoutTax = priceConditionObject.NetPriceWithoutTax;
+            modelPriceCondition.NetPriceWithTax = priceConditionObject.NetPriceWithTax;
+            
+            oFastAppDataModel.updateBindings(true);
 
             return priceConditionObject;
         },
