@@ -306,6 +306,7 @@ sap.ui.define([
 
 			//CurrentTender on FASTAPPDATA model for easy access, so we can move step by step to FastAppData model binding on basic information tab TODO currently we only use the dates in this way, we should use all fields in this way
 			var oTenderNew = Services.getService('Tender').getEmptyTender();
+            oTenderNew.CountryCode = Services.getSelectedCountry();
 			oFastAppDataModel.setProperty("/EditTender/", oTenderNew);
 
 			//new tender --> = show edit mode with corresponding fragment
