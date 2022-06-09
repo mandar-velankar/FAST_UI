@@ -4,6 +4,7 @@
 
 	<Dialog id="OtherProducts" title="Products" >
 		<buttons>
+			<Button text="Cancel" press=".oCancelProducts" />
 			<Button text="Apply" press=".oApplyProducts" />
 		</buttons>
 

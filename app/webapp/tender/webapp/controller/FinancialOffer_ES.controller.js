@@ -1585,6 +1585,16 @@ sap.ui.define([
         onOpenProducts: function () {
 
 			var oView = this.getView();
+            
+            //store original freegoodsother for cancellation
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            const aCurrentFreeGoods = oFastAppDataModel.getProperty(bindingPath + '/FreeGoodsOther');
+            this._aCurrentFreeGoodsTemp = aCurrentFreeGoods?.map(freeGood => {
+                return Object.create(freeGood);
+            });
 
 			// create dialog lazily
 			if (!this.pDialogFoc) {
@@ -1697,6 +1707,20 @@ sap.ui.define([
 			const foundError = freeGoodsOther.find(freeGoods => freeGoods.FreeGoodsOtherFOCMinAmountValueState === "Error" || freeGoods.FOCBonusValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
 		},
+
+        oCancelProducts: function () {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            oFastAppDataModel.setProperty(bindingPath + '/FreeGoodsOther', this._aCurrentFreeGoodsTemp);
+            
+            if(this.pDialogFoc){
+
+                this.pDialogFoc.then(pDialog => pDialog.close());
+            }
+                
+        },
 
         handleValueHelp: function(oEvent){ 
 
