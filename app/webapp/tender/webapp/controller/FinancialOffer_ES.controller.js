@@ -40,6 +40,9 @@ sap.ui.define([
 			this._oOwnerComponent = this.getOwnerComponent();
 			this._oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
+            // Register the view with the message manager
+		    sap.ui.getCore().getMessageManager().registerObject(this.getView(), true);
+
 			//keep router and model locally in this controller
 			this._oRouter = this._oOwnerComponent.getRouter();
 			this._oModel = this._oOwnerComponent.getModel();
