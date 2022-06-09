@@ -93,7 +93,7 @@
 				<Input xmlns="sap.m" id="idInstituteProvince" value="{fastData>Institute/Province/Name}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
                 
 				<Label text="{i18n>institRegion}" design="Bold"  required="false"/>
-				<Input value="{fastData>Institute/Region/Name}" id="idInstituteRegion" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
+				<Input value="{fastData>Institute/Region/Name}" id="idInstituteRegion" enabled="false" visible="false"/>
 
                 <Label text="{i18n>institPoblacion}" design="Bold" required="false"/>
 				<Input xmlns="sap.m" id="idInstitutePoblacion" value="{fastData>Institute/City}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
