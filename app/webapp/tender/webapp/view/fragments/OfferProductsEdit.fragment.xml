@@ -140,7 +140,7 @@
 															   required="{fastAppData>/permissions/tables/editofferProductId/ProductType/required}"/>
 									<t:template>
 										<VBox>
-											<Input value="{fastAppData>SKU/ProductType}" editable="false" maxLength="100" visible="{= !${fastAppData>/permissions/tables/editofferProductId/ProductType/visible} }" />	
+											<Input value="{fastAppData>SKU/ProductType}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/ProductType/visible}" />	
 										</VBox>
 									</t:template>
 								</t:Column>

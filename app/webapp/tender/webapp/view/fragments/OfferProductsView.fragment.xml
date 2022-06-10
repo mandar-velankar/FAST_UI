@@ -194,7 +194,7 @@
 							   wrapping="true"/>
 						<t:template>
 							<VBox>
-								<Text text="{fastAppData>SKU/ProductType}" wrapping="true" visible="{= !${fastAppData>/permissions/tables/editofferProductId/ProductType/visible} }" />
+								<Text text="{fastAppData>SKU/ProductType}" wrapping="true" visible="{fastAppData>/permissions/tables/editofferProductId/ProductType/visible}" />
 							</VBox>
 						</t:template>
 					</t:Column>
