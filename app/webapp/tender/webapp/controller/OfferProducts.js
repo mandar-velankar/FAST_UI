@@ -432,11 +432,11 @@ sap.ui.define([
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
-
+            //EHQUT-OTT—102215-Historic Offer Details-Financial and Quotation tab
 			// 1. format the budgetRate and spotRate before doing calcuations
-			price.budgetRate = oNumberFormat.format(parseFloat(price.budgetRate));
-			price.spotRate = oNumberFormat.format(parseFloat(price.spotRate));
-
+			//price.budgetRate = oNumberFormat.format(parseFloat(price.budgetRate));
+			//price.spotRate = oNumberFormat.format(parseFloat(price.spotRate));
+            //EHQUT-OTT—102215-Historic Offer Details-Financial and Quotation tab
 			
 			// 2. get calculated fields for profit table
 			var oCalculatedFields = this._getCalculatedFieldsForProfitTables(price);
@@ -1051,10 +1051,15 @@ sap.ui.define([
 			var cogsValues = {
 				COGS: 0
 			};
+             //EHQUT OTT—102215-Historic Offer Details-Financial and Quotation tab
 			if (productValues.Cogs !== null) {
 				cogsValues = oDetailController.getView().getModel("fastData").getObject("/" + productValues.Cogs.__ref);
-			}
+                if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX' && oProduct.Price!== null) {
+                    cogsValues.COGS = oProduct.Price.COGS;
+                }
 
+			}
+            //EHQUT-OTT—102215-Historic Offer Details-Financial and Quotation tab
 			//get country information to read reportingCurrency
 			const { data: {results: [oCountryInformation]} } = await Services.getService('Tender').getCountryInfo(sCountryCode);
 			this.sReportingCurrency = oCountryInformation.ReportingCurrency;
@@ -1067,7 +1072,14 @@ sap.ui.define([
 			var budgetRate = null;
 			aPromises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(oBudgetExchangeRates => {
 				if(oBudgetExchangeRates !== false){
-					budgetRate = oBudgetExchangeRates.X_RATE;
+
+                    //EHQUT OTT—102215-Historic Offer Details-Financial and Quotation tab
+                    if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX' && oProduct.Price!== null) {
+                        budgetRate = oProduct.Price.BudgetRate;
+                    } else {
+                        budgetRate = oBudgetExchangeRates.X_RATE;
+                    }
+                     //EHQUT-OTT—102215-Historic Offer Details-Financial and Quotation tab
 				}
 				return oBudgetExchangeRates;
 			}));
@@ -1080,8 +1092,15 @@ sap.ui.define([
 			var spotRate = null;
 			aPromises.push(that.loadExchangeRates(sCountry, sCurrencyFrom, sCurrencyTo, sX_TYPE).then(oMonthlyAvgExchangeRates => {
 				if(oMonthlyAvgExchangeRates !== false){
-					spotRate = oMonthlyAvgExchangeRates.X_RATE;
+                     //EHQUT- OTT—102215-Historic Offer Details-Financial and Quotation tab
+                     if (sCountryCode !== 'TH' && sCountryCode !== 'AR' && sCountryCode !== 'CL' && sCountryCode !== 'MX' && oProduct.Price!== null) {
+                        spotRate = oProduct.Price.SpotRate;
+                    } else {
+                        spotRate = oMonthlyAvgExchangeRates.X_RATE;
+                    }
+
 				}
+                 //EHQUT-OTT—102215-Historic Offer Details-Financial and Quotation tab
 				return oMonthlyAvgExchangeRates;
 			}));
 			

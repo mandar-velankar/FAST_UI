@@ -40,6 +40,9 @@ sap.ui.define([
 			this._oOwnerComponent = this.getOwnerComponent();
 			this._oBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
+            // Register the view with the message manager
+		    sap.ui.getCore().getMessageManager().registerObject(this.getView(), true);
+
 			//keep router and model locally in this controller
 			this._oRouter = this._oOwnerComponent.getRouter();
 			this._oModel = this._oOwnerComponent.getModel();
@@ -1053,13 +1056,19 @@ sap.ui.define([
         },
 
         calculateNetPricesPVL: function (priceConditionObject){
+            let oFastAppDataModel = Services.getFastAppDataModel();
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
             let factor = UOM === 'Unit' ? packFactor : 1;
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let modelPriceCondition = oFastAppDataModel.getProperty('/PriceConditionView')?.find(priceCondition => priceCondition.OfferID === priceConditionObject.OfferID && priceCondition.ProductCode === priceConditionObject.ProductCode && priceCondition.ConditionType === priceConditionObject.ConditionType);
 
             priceConditionObject.NetPriceWithoutTax = instType !== "Private Account"  ? priceConditionObject.YLAP / factor : priceConditionObject.PVL / factor;
             priceConditionObject.NetPriceWithTax = Number((priceConditionObject.NetPriceWithoutTax * (1 + priceConditionObject.Tax)).toFixed(2));
+            modelPriceCondition.NetPriceWithoutTax = priceConditionObject.NetPriceWithoutTax;
+            modelPriceCondition.NetPriceWithTax = priceConditionObject.NetPriceWithTax;
+            
+            oFastAppDataModel.updateBindings(true);
 
             return priceConditionObject;
         },
@@ -1579,6 +1588,16 @@ sap.ui.define([
         onOpenProducts: function () {
 
 			var oView = this.getView();
+            
+            //store original freegoodsother for cancellation
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            const aCurrentFreeGoods = oFastAppDataModel.getProperty(bindingPath + '/FreeGoodsOther');
+            this._aCurrentFreeGoodsTemp = aCurrentFreeGoods?.map(freeGood => {
+                return Object.create(freeGood);
+            });
 
 			// create dialog lazily
 			if (!this.pDialogFoc) {
@@ -1691,6 +1710,20 @@ sap.ui.define([
 			const foundError = freeGoodsOther.find(freeGoods => freeGoods.FreeGoodsOtherFOCMinAmountValueState === "Error" || freeGoods.FOCBonusValueState === "Error");
 			if (!foundError) this.byId("OtherProducts").close();
 		},
+
+        oCancelProducts: function () {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            oFastAppDataModel.setProperty(bindingPath + '/FreeGoodsOther', this._aCurrentFreeGoodsTemp);
+            
+            if(this.pDialogFoc){
+
+                this.pDialogFoc.then(pDialog => pDialog.close());
+            }
+                
+        },
 
         handleValueHelp: function(oEvent){ 
 

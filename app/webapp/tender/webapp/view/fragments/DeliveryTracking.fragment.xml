@@ -24,7 +24,7 @@
 					}">
 					<m:columns>
 						<m:Column width="7rem">
-							<m:Label text="{i18n>LocalOrDicectDelivery.}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
+							<m:Label text="{i18n>LocalOrDicectDelivery}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>
 						</m:Column>
 						<m:Column width="6rem">
 							<m:Label text="{i18n>PlannedInAPO}" required="{= ${fastAppData>/EditMode} === true ? true : false}" wrapping="true"/>

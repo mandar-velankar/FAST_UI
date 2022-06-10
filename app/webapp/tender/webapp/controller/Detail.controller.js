@@ -306,6 +306,7 @@ sap.ui.define([
 
 			//CurrentTender on FASTAPPDATA model for easy access, so we can move step by step to FastAppData model binding on basic information tab TODO currently we only use the dates in this way, we should use all fields in this way
 			var oTenderNew = Services.getService('Tender').getEmptyTender();
+            oTenderNew.CountryCode = Services.getSelectedCountry();
 			oFastAppDataModel.setProperty("/EditTender/", oTenderNew);
 
 			//new tender --> = show edit mode with corresponding fragment
@@ -437,6 +438,10 @@ sap.ui.define([
 			//Thailand
 			oProcurementMethod.setEnabled(true);
 			oProducrementReason.setEnabled(true);
+            // Thailand word templates 
+            if (Services.getSelectedCountry() === "TH"){
+                Services.getWordTemplates(Services.getSelectedCountry());
+            }
 
 			//Keep track that we are in change modus
 			Services.setEditMode(true);
@@ -725,7 +730,13 @@ sap.ui.define([
 						that.byId("idTenderChannel") && that.byId("idTenderChannel").setVisible(false);
 
 					})
-				}			
+				}
+
+                // Thailand word templates 
+				if (Services.getSelectedCountry() === "TH"){
+					Services.getWordTemplates(Services.getSelectedCountry());
+                }
+			
 
 				//vanaf hier 
 
@@ -6627,7 +6638,7 @@ sap.ui.define([
 							oEvent.getSource().getBinding("items").filter(oFilters);
 						},
 						confirm: handleCloseInstituteName,
-						cancel: handleCloseInstituteName
+						// cancel: handleCloseInstituteName
 					});
 					that.valueHelpBasicInsSlctDialog.setModel(stateModel);
 					that.valueHelpBasicInsSlctDialog.open();
@@ -6644,6 +6655,7 @@ sap.ui.define([
                 const oFastAppDataModel = Services.getFastAppDataModel();
                 const event = oEvent.getSource();
 				if (oSelectedItem) {
+					const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 					that.byId("idInstituteName").setValue(oSelectedItem.getTitle());
 					//that.byId("idInstituteID").setValue(oSelectedItem.getDescription());
 					//that.getView().byId("idhdrInstID").setText(oSelectedItem.getDescription());
@@ -6663,7 +6675,6 @@ sap.ui.define([
 
 					// for Italy only the Regions must be set
 					if((sCountry === 'IT' || sCountry === 'ES') && instituteType === "Region(s)"){
-						const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 						setTenderRegion(regionId);
 					}
 
@@ -6691,15 +6702,15 @@ sap.ui.define([
 							}
 						}
 					});
-                    oFastAppDataModel.refresh(true);
+                    // oFastAppDataModel.refresh(true); // this is causing issues and hinding the Regions field
 				}
-				event.getBinding("items").filter([]);
+				// event.getBinding("items").filter([]); // is this needed ?
 			};
 
 			
 			const setTenderRegion = function(regionId){
 				regionMCB && regionMCB.setSelectedKeys([regionId]);
-				regionMCB.getSelectedItems()[0].setEnabled(false);
+				// regionMCB.getSelectedItems()[0].setEnabled(false); // the UI5 API has changed and thus setEnabled does not provided the required result
 			}
 
 		},
@@ -8624,6 +8635,8 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
+            oPriceAgreementSaveInfo.ExtendPriceAgreement = oTender.Classification === 'Commercial Agreement' ? true : false;
+            oPriceAgreementSaveInfo.ExpiryExtensionPeriod = oTender.Classification === 'Commercial Agreement' ? 12 : 0;
 
 
 			// Spain only 

@@ -188,6 +188,17 @@
 						</t:template>
 					</t:Column>
 
+                    <t:Column width="10rem" visible="{fastAppData>/permissions/tables/editofferProductId/ProductType/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/ProductType/description',
+									   formatter: '.formatter.offerProductsColumnName' }" 
+							   wrapping="true"/>
+						<t:template>
+							<VBox>
+								<Text text="{fastAppData>SKU/ProductType}" wrapping="true" visible="{fastAppData>/permissions/tables/editofferProductId/ProductType/visible}" />
+							</VBox>
+						</t:template>
+					</t:Column>
+
 					<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PackFactor/description',
 															formatter: '.formatter.offerProductsColumnName' }" 
