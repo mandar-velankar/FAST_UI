@@ -601,6 +601,16 @@ sap.ui.define([
 
 			var oView = this.getView();
 
+            //store original freegoodsother for cancellation
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            const aCurrentFreeGoods = oFastAppDataModel.getProperty(bindingPath + '/FreeGoodsOther');
+            this._aCurrentFreeGoodsTemp = aCurrentFreeGoods?.map(freeGood => {
+                return Object.create(freeGood);
+            });
+
 			// create dialog lazily
 			if (!this.pDialog) {
 				this.pDialog = Fragment.load({
@@ -690,6 +700,20 @@ sap.ui.define([
 
 
 		},
+
+        oCancelProducts: function () {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
+            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+            const bindingPath = "/PriceConditionView/".concat(focIndex);
+            oFastAppDataModel.setProperty(bindingPath + '/FreeGoodsOther', this._aCurrentFreeGoodsTemp);
+            
+            if(this.pDialogFoc){
+
+                this.pDialogFoc.then(pDialog => pDialog.close());
+            }
+                
+        },
 
 		/**
 		 * Event handler for the UoM radioButtonGroup 
