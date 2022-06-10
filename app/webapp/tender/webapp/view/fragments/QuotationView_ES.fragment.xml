@@ -604,7 +604,7 @@
 
                     <!-- NetPriceWithoutTaxAfter -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Net Price Without Tax After}"/>
+                        <m:Text text="{i18n>Net Price Without Tax}"/>
                     </m:Column>
 
                     <!-- NetPriceWithTaxAfterRD -->
@@ -672,7 +672,7 @@
                             <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
 
                             <!-- Discount -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Discount'}"/>
+                            <m:Text text="{path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} %"/>
 
                             <!-- Royal Decree -->
                             <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
@@ -688,7 +688,7 @@
 
                             <!-- NetPriceWithTaxAfterRD -->
                             <m:Text text="{parts: [
-                                {path: 'fastAppData>PriceCondition/NetPriceWithTaxAfterDeductionRD'}, 
+                                {path: 'fastAppData>PriceCondition/NetPriceWithTax'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
 
