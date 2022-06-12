@@ -5688,7 +5688,7 @@ sap.ui.define([
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sProductPackPath, {
 					urlParameters: {
-						"$expand": "Product"
+						"$expand": "Product,ProductPackSKUs"
 					},
 					success: function (oData, oResponse) {
 
