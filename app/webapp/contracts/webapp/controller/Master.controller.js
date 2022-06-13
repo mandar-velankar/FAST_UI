@@ -469,6 +469,14 @@ sap.ui.define([
 			this.getChannels();
 		},
 
+		getAppConfig: async function(sCountryCode){
+			try{
+				await this.ctrState.getAppConfig(sCountryCode);
+			} catch(error){
+				console.error(error);
+            }
+		},
+
 		/**
 		 * Get list of institutes 
 		 */
@@ -831,6 +839,7 @@ sap.ui.define([
 			// this.getView().byId("idSlctBrand").getBinding("items").filter(new sap.ui.model.Filter("countryCode", "EQ", oCountry), FilterType.Application);
 
 			this.getCountryContractBrands(oCountry);
+            this.getAppConfig(oCountry);
 
 		},
 

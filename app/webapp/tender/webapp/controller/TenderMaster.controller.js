@@ -745,6 +745,7 @@ sap.ui.define([
 				this.setTenderOrigins();
 				this.setCountryStatusses(oCountry);
 				Services.loadCountryPermissions(oCountry);
+                Services.loadAppConfig(oCountry);
 			}
 
 			oMercadoPublicoRef.setVisible(oCountry === 'CL');
