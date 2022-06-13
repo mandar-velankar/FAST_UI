@@ -776,9 +776,19 @@
                         <m:Text text="{i18n>PackPrice}" visible="true"/>
                     </m:Column>
 
-                    <!-- Monthly Rent -->
+                    <!-- PVL -->
                     <m:Column width="8%">
-                        <m:Text text="{i18n>MonthlyRent}" visible="true"/>
+                        <m:Text text="{i18n>PVL}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Discount -->
+                    <m:Column width="8%">
+                        <m:Text text="{i18n>Discount}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Net Price without Tax -->
+                    <m:Column width="8%">
+                        <m:Text text="{i18n>Net Price Without Tax}" visible="true"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -790,6 +800,12 @@
                     <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>FOC}"/>
                     </m:Column>
+
+                    <!-- Monthly Rent -->
+                    <m:Column width="8%">
+                        <m:Text text="{i18n>MonthlyRent}" visible="true"/>
+                    </m:Column>
+
 
                     <!-- Total -->
                     <m:Column width="12%">
@@ -826,10 +842,20 @@
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
 
-                            <!-- Monthly Rent -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
+                            <!-- PVL -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PVL'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+                            
+                            <!-- Discount -->
+                            <m:Text text="{= ${fastAppData>PriceCondition/Discount} ? ${path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} + '%' : Number(100).toFixed(2) + '%'}"/>
+
+                            <!-- NetPriceWithoutTax -->
+                            <m:Text text="{= ${fastAppData>PriceCondition/NetPriceWithoutTax} ? {parts: [
+                                {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'} : Number(0).toFixed(2) + ' ' + ${path: 'fastAppData>CURRENCY'}}"/>
 
                             <!-- Rappel -->
                             <m:Text text="{ 
@@ -849,6 +875,11 @@
                                     ], 
                                     formatter: '.formatter.hasAdditionalCondition'
                                 }"
+                            />
+
+                            <!-- Monthly Rent -->
+                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
 
                             <!-- Total -->
