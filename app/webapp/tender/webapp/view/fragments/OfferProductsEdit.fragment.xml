@@ -274,7 +274,7 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/SapNo/required}"/>
 									<t:template>
-										<Input value="{fastAppData>SKUCountry/ProductPack/ProductPackSKUs/results/SKUCode}" editable="false" maxLength="100"/>
+										<Input value="{fastAppData>SKU/ProductPackSKUs/results/0/SKUCode}" editable="false" maxLength="100"/>
 									</t:template>
 								</t:Column>
 
