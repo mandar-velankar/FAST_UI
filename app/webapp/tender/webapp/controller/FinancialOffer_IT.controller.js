@@ -603,10 +603,7 @@ sap.ui.define([
 
             //store original freegoodsother for cancellation
             const oFastAppDataModel = Services.getFastAppDataModel();
-			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            const bindingPath = "/PriceConditionView/".concat(focIndex);
-            const aCurrentFreeGoods = oFastAppDataModel.getProperty(bindingPath + '/FreeGoodsOther');
+            const aCurrentFreeGoods =  oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther")
             this._aCurrentFreeGoodsTemp = aCurrentFreeGoods?.map(freeGood => {
                 return Object.create(freeGood);
             });
@@ -703,14 +700,11 @@ sap.ui.define([
 
         oCancelProducts: function () {
             const oFastAppDataModel = Services.getFastAppDataModel();
-			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            const bindingPath = "/PriceConditionView/".concat(focIndex);
-            oFastAppDataModel.setProperty(bindingPath + '/FreeGoodsOther', this._aCurrentFreeGoodsTemp);
+            oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", this._aCurrentFreeGoodsTemp);
             
-            if(this.pDialogFoc){
+            if(this.pDialog){
 
-                this.pDialogFoc.then(pDialog => pDialog.close());
+                this.pDialog.then(pDialog => pDialog.close());
             }
                 
         },
