@@ -109,7 +109,43 @@ sap.ui.define([
 			return this.odata("/CountryTenderBrands").get(mParameters);
 		},
 
+        getAppConfig: function (sCountryCode, sEnvironment) {
+			
+			var aFilters = [];
 
+			if(sCountryCode){
+
+				var oCountryCodeFilter = new Filter({
+					path: 'CountryCode',
+					operator: FilterOperator.EQ,
+					value1: sCountryCode
+				});
+
+				aFilters.push(oCountryCodeFilter);
+			}
+
+            if(sEnvironment){
+
+				var oEnvironmentFilter = new Filter({
+					path: 'Environment',
+					operator: FilterOperator.EQ,
+					value1: sEnvironment
+				});
+
+				aFilters.push(oEnvironmentFilter);
+			}
+
+            aFilters.push(new Filter({
+                path: 'ApplicationName',
+                operator: FilterOperator.EQ,
+                value1: "Contract"}));
+			
+			var mParameters = {
+				filters: aFilters
+			};
+
+			return this.odata("/AppConfig").get(mParameters);
+		},
 
     });
     
