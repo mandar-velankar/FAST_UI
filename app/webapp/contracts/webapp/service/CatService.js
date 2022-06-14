@@ -109,7 +109,7 @@ sap.ui.define([
 			return this.odata("/CountryTenderBrands").get(mParameters);
 		},
 
-        getAppConfig: function (sCountryCode) {
+        getAppConfig: function (sCountryCode, sEnvironment) {
 			
 			var aFilters = [];
 
@@ -124,21 +124,21 @@ sap.ui.define([
 				aFilters.push(oCountryCodeFilter);
 			}
 
-            var oCountryCodeFilter = new Filter({
-                path: 'CountryCode',
-                operator: FilterOperator.EQ,
-                value1: sCountryCode
-            });
+            if(sEnvironment){
+
+				var oEnvironmentFilter = new Filter({
+					path: 'Environment',
+					operator: FilterOperator.EQ,
+					value1: sEnvironment
+				});
+
+				aFilters.push(oEnvironmentFilter);
+			}
 
             aFilters.push(new Filter({
                 path: 'ApplicationName',
                 operator: FilterOperator.EQ,
                 value1: "Contract"}));
-
-            aFilters.push(new Filter({
-                path: 'Environment',
-                operator: FilterOperator.EQ,
-                value1: "DEV"}));
 			
 			var mParameters = {
 				filters: aFilters

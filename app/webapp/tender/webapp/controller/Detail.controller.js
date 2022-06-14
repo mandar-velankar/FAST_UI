@@ -82,7 +82,7 @@ sap.ui.define([
 		//Go to sharepoint folder
 		_onFolderButtonPress: function (oEvent) {
             const sDownloadButtonUrl = Services.getFastAppDataModel().getProperty('/appConfig')?.find(config => config.Control === 'DocumentButton');
-			var url = sDownloadButtonUrl ? sDownloadButtonUrl + '$CountryCode/$TenderId' : "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
+			var url = sDownloadButtonUrl ? sDownloadButtonUrl.URL + '$CountryCode/$TenderId' : "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
 			var countryCode = Services.getCountryCodeofSelectedTender();
 			var tenderId = Services.getSelectedTenderID();
 			url = url.replace("$CountryCode", countryCode);
@@ -7895,20 +7895,21 @@ sap.ui.define([
 		onDownloadQuotation: function (oEvent) {
 			// Now using download link on sharepoint
 			$.when(Services.checkOfferStatus()).done(function (oData) {
-                
                 const sDownloadButtonUrl = Services.getFastAppDataModel().getProperty('/appConfig')?.find(config => config.Control === 'DownloadButton');
                 const sDownloadButtonApproval = Services.getFastAppDataModel().getProperty('/appConfig')?.find(config => config.Control === 'DownloadButtonAwaitingApproval');
 			
-				var url = (oData.STATUS !== "Awaiting Approval") ? sDownloadButtonApproval + '$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf' : sDownloadButtonUrl + 'Quotation_$OfferId.pdf';
-					/*"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf" :
-					"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/System_Data/System_TMP/Quotation_$OfferId.pdf";*/
-				var countryCode = Services.getCountryCodeofSelectedTender();
-				var tenderId = Services.getSelectedTenderID();
-				var offerId = Services.getSelectedOfferID();
-				url = url.replace("$CountryCode", countryCode);
-				url = url.replace("$TenderId", tenderId);
-				url = url.replace("$OfferId", offerId);
-				window.open(url);
+                if(sDownloadButtonUrl && sDownloadButtonApproval){
+                    var url = (oData.STATUS !== "Awaiting Approval") ? sDownloadButtonApproval.URL + '$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf' : sDownloadButtonUrl.URL + 'Quotation_$OfferId.pdf';
+                        /*"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf" :
+                        "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/System_Data/System_TMP/Quotation_$OfferId.pdf";*/
+                    var countryCode = Services.getCountryCodeofSelectedTender();
+                    var tenderId = Services.getSelectedTenderID();
+                    var offerId = Services.getSelectedOfferID();
+                    url = url.replace("$CountryCode", countryCode);
+                    url = url.replace("$TenderId", tenderId);
+                    url = url.replace("$OfferId", offerId);
+                    window.open(url);
+                }
 			});
 
 			// KEEP!!! OUTDATED BUT MIGHT BE RE-USED!!!

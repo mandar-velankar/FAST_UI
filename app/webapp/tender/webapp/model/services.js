@@ -5673,7 +5673,7 @@ sap.ui.define([
         /**
 		*Load app config
 		*/
-		loadAppConfig: function(sCountry){
+		loadAppConfig: function(sCountry, sEnvironment){
 
 			if(!sCountry || sCountry.indexOf("NA") > -1 ){
 				return;
@@ -5688,6 +5688,10 @@ sap.ui.define([
 
 			const oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
 			aFilters.push(oCountryFilter);
+
+            if(sEnvironment){
+                aFilters.push(new sap.ui.model.Filter("Environment", sap.ui.model.FilterOperator.EQ, sEnvironment));
+            }
 
 			const promise = new Promise((resolve, reject) => {
 
@@ -5872,10 +5876,6 @@ sap.ui.define([
 		},
 
         setAppConfig: function(aData){ 
-
-			if(!Array.isArray(aData) || aData.length <= 0){
-				return;
-			}
 			this.getFastAppDataModel().setProperty('/appConfig', aData);			
 		},
 		/**

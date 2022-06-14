@@ -1084,8 +1084,8 @@ sap.ui.define([
         /**
 		 * Fetches the App settings from the backend
 		 */
-        getAppConfig: async function (sCountryCode) {
-			let aAppConfig =  await this.getCatService().getAppConfig(sCountryCode);
+        getAppConfig: async function (sCountryCode, sEnvironment) {
+			let aAppConfig =  await this.getCatService().getAppConfig(sCountryCode, sEnvironment);
 			this.setProperty('appConfig', aAppConfig?.data?.results);
 			
 		},

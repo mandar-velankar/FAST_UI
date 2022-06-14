@@ -739,13 +739,15 @@ sap.ui.define([
 
 			//if a new country is set, the brandlist should be re-loaded
 			if (this._country !== oCountry) {
+                let sEnvironment = window.location.host.search('dev') > -1 ? 'DEV' : window.location.host.search('qa')  > -1 ? 'QA' : window.location.host.search('sbx')  > -1 ? 'SBX' : window.location.host.search('prod')  > -1 ? 'PRD' : 'LOCL';
+
 				this._country = oCountry;
 				Services.setSelectedCountry(oCountry);
 				this.setBrandsList();
 				this.setTenderOrigins();
 				this.setCountryStatusses(oCountry);
 				Services.loadCountryPermissions(oCountry);
-                Services.loadAppConfig(oCountry);
+                Services.loadAppConfig(oCountry, sEnvironment);
 			}
 
 			oMercadoPublicoRef.setVisible(oCountry === 'CL');
