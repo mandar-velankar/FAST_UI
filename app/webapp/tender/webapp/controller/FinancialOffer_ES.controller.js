@@ -533,7 +533,7 @@ sap.ui.define([
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
-                if(oFastAppDataModel.getProperty("/SelectedOffer")){
+                if(Services.getFastAppDataModel().getProperty("/SelectedOffer")){
                     await this.managePriceConditions();
 
                     let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
