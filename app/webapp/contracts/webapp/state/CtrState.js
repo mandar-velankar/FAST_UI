@@ -1081,6 +1081,15 @@ sap.ui.define([
 			
 		},
 
+        /**
+		 * Fetches the App settings from the backend
+		 */
+        getAppConfig: async function (sCountryCode, sEnvironment) {
+			let aAppConfig =  await this.getCatService().getAppConfig(sCountryCode, sEnvironment);
+			this.setProperty('appConfig', aAppConfig?.data?.results);
+			
+		},
+
 
 		// This is a list of products from the selected brand used in Add Product screen
 		setProductCollection: function (products) {

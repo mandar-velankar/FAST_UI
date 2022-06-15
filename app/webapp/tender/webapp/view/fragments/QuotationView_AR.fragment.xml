@@ -55,13 +55,14 @@
                     icon="sap-icon://sys-enter"
                     press=".onSubmitQuotation"
                     enabled="false"/>
-                
+                  <!-- EHQUT-FAST Argentina-INC0174113 | INC15627145 quotation email issue-->	
                 <m:Button
                     id="btnEmailQuotation"
                     text="{i18n>emailQuotation}"
                     icon="sap-icon://email"
                     press=".onEmailQuotation"
-                    enabled="true"/>
+                    enabled="{= ${fastAppData>/EditOffer/OfferStatus/STATUS} === 'Offer Created' || ${fastAppData>/EditOffer/OfferStatus/STATUS} === 'Awaiting Approval' || ${fastAppData>/EditOffer/OfferStatus/STATUS} === 'Offer Declined' || ${fastAppData>/EditOffer/OfferStatus/STATUS} === 'Offer Rejected' ? false : true}"/>
+                <!-- EHQUT-INC0174113 | INC15627145-FAST Argentina- quotation email issue     -->
             </actions>
             <l:BlockLayout background="Light">
                 <l:BlockLayoutRow>
