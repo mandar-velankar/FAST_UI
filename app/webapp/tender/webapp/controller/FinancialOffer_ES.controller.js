@@ -1137,7 +1137,7 @@ sap.ui.define([
         },
 
         calculateProfitability: async function(){
-            if(oFastAppDataModel.getProperty('/SelectedOffer')){
+            if(Services.getFastAppDataModel().getProperty('/SelectedOffer')){
                 Services.initializeConsolidatedProfitability();
                 await this.calculateProductProfitability();
                 await this.calculateConsolidatedProfitability();
