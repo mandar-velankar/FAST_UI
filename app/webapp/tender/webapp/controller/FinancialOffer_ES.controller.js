@@ -123,6 +123,8 @@ sap.ui.define([
 
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
+            const descuentoEspecial = priceConditionViews.find(pc => pc.ConditionType === "Descuento Especial");
+            if(!descuentoEspecial.Discount) descuentoEspecial.Discount = 1;
             Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
 
             // Manage financial offer when existing agreement is in place
