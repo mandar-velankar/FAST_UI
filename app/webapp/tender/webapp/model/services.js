@@ -5832,6 +5832,59 @@ sap.ui.define([
 
 		},
 
+        /**
+		*Load app config
+		*/
+		loadAppConfig: function(sCountry, sEnvironment){
+
+			if(!sCountry || sCountry.indexOf("NA") > -1 ){
+				return;
+			}
+
+			const that = this;
+			const oFastDataCalls = this.getDefaultModel();
+			
+			//path for product pack read
+			const sPath = "/AppConfig";
+			const aFilters = [];
+
+			const oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+			aFilters.push(oCountryFilter);
+
+            if(sEnvironment){
+                aFilters.push(new sap.ui.model.Filter("Environment", sap.ui.model.FilterOperator.EQ, sEnvironment));
+            }
+
+			const promise = new Promise((resolve, reject) => {
+
+				//Reading the back end data 
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						// creates a permissions object
+						that.setAppConfig(oData.results);
+
+						resolve(oData.results);
+
+					},
+					error: function (oError) {
+
+						//show error message
+						that.showErrorMessage(oError, "Loading of App configuration");
+
+						reject(oError);
+
+					}
+				});
+
+			});
+
+			
+			return promise;
+
+		},
+
 		/**
 		*Load fragement permissions
 		*/
@@ -5984,6 +6037,9 @@ sap.ui.define([
 			
 		},
 
+        setAppConfig: function(aData){ 
+			this.getFastAppDataModel().setProperty('/appConfig', aData);			
+		},
 		/**
 		 * This method creates and sets a permission object in the FastAppDataModel.
 		 * This object can be then used in Views to make the controls visible/required (per Country)

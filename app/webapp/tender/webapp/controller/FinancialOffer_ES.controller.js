@@ -88,10 +88,11 @@ sap.ui.define([
 
 				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
             
-                await this.managePriceConditionClassification();
-                await this.managePriceConditions();
-
-                await this.calculateProfitability();
+                if(Services.getFastAppDataModel().getProperty('/SelectedOffer')){
+                    await this.managePriceConditionClassification();
+                    await this.managePriceConditions();
+                    await this.calculateProfitability();
+                }
 
                 BusyIndicator.hide();
 			}
@@ -102,14 +103,19 @@ sap.ui.define([
          * Fetches PriceConditionClassification and sets it on the model
          */
         managePriceConditionClassification: async function(){
-            const priceConditionClassification = await this.getPriceConditionClassification();
-            // add empty item
-            priceConditionClassification.push({
-                "ID": "99999999-9999-9999-9999-999999999999",
-                "ConditionType": "",
-                "isMain": true
-            });
-            Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
+            
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+            if(offer){
+                const priceConditionClassification = await this.getPriceConditionClassification();
+                // add empty item
+                priceConditionClassification.push({
+                    "ID": "99999999-9999-9999-9999-999999999999",
+                    "ConditionType": "",
+                    "isMain": true
+                });
+                Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
+            }
         },
 
         managePriceConditions: async function(){
@@ -326,20 +332,22 @@ sap.ui.define([
             BusyIndicator.show();
 
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
-            const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
+            if(offer){
+                const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
 
-            const filter = {
-                "CountryCode": offer.CountryCode,
-                "Classification": offer.Tender.Classification,
-                "Division": offer.Division,
-                "OfferID": offer.OfferID,
-                "ProductCode": selectedProduct.ProductCode
-            };
+                const filter = {
+                    "CountryCode": offer.CountryCode,
+                    "Classification": offer.Tender.Classification,
+                    "Division": offer.Division,
+                    "OfferID": offer.OfferID,
+                    "ProductCode": selectedProduct.ProductCode
+                };
 
-			let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
-            
-            BusyIndicator.hide();
-            return priceConditionViews.data.results;
+                let priceConditionViews = await Services.getService("PriceCondition").getPriceConditionView(filter);
+                
+                BusyIndicator.hide();
+                return priceConditionViews.data.results;
+            } else return null;
 
         },
         
@@ -406,23 +414,27 @@ sap.ui.define([
 
             const oFastAppDataModel = Services.getFastAppDataModel();
             const offer = oFastAppDataModel.getProperty("/SelectedOffer");
-            const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
-            const productType = selectedProduct?.SKU?.ProductType;
-            const filter = {
-                "CountryCode": offer.CountryCode,
-                "Classification": offer.Tender.Classification,
-                "Division": offer.Division,
-                "ProductTypes": ["All"]
-                // "isMain": true
-            };
+            if(offer){
+                const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
+                const productType = selectedProduct?.SKU?.ProductType;
+                const filter = {
+                    "CountryCode": offer.CountryCode,
+                    "Classification": offer.Tender.Classification,
+                    "Division": offer.Division,
+                    "ProductTypes": ["All"]
+                    // "isMain": true
+                };
 
-            // add Injector as filter
-            if(productType === "Injector"){
-                filter.ProductTypes.push(productType);
+                // add Injector as filter
+                if(productType === "Injector"){
+                    filter.ProductTypes.push(productType);
+                }
+
+                const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
+                return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
+            } else {
+                return null;
             }
-
-            const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
-            return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
         },
 
         getPriceConditionViewAllProduts: async function(){
@@ -521,15 +533,17 @@ sap.ui.define([
                 //refresh data (for table)
                 await this.refreshFinancialTabES();
 
-                await this.managePriceConditions();
+                if(Services.getFastAppDataModel().getProperty("/SelectedOffer")){
+                    await this.managePriceConditions();
 
-                let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
-                if(calculatedConsolidatedProfitability && calculatedConsolidatedProfitability.length > 0){
-                    const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
-                        return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
-                    });
+                    let calculatedConsolidatedProfitability = this.getConsolidatedProfitability();
+                    if(calculatedConsolidatedProfitability && calculatedConsolidatedProfitability.length > 0){
+                        const saveProductProfitabilityPromises = calculatedConsolidatedProfitability.map(consolidatedProfitabilityObj => {
+                            return Services.getService("Offer").upsertProductTypeProfitability(consolidatedProfitabilityObj);
+                        });
 
-                    await Promise.all(saveProductProfitabilityPromises);
+                        await Promise.all(saveProductProfitabilityPromises);
+                    }
                 }
 
                 BusyIndicator.hide();
@@ -929,7 +943,7 @@ sap.ui.define([
 			}
                        
             // some magic for just not to break the code. blame the other guy :-)
-            if(!bBindingFinished){
+            if(!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer")){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
             } 
@@ -1123,9 +1137,11 @@ sap.ui.define([
         },
 
         calculateProfitability: async function(){
-            Services.initializeConsolidatedProfitability();
-            await this.calculateProductProfitability();
-            await this.calculateConsolidatedProfitability();
+            if(Services.getFastAppDataModel().getProperty('/SelectedOffer')){
+                Services.initializeConsolidatedProfitability();
+                await this.calculateProductProfitability();
+                await this.calculateConsolidatedProfitability();
+            }
         },
 
         calculateProductProfitability: async function (){
@@ -1142,172 +1158,174 @@ sap.ui.define([
             let aProductPricingView = oFastAppDataModel.getProperty('/ProductPricingView');
             const oSelectedOffer = oFastAppDataModel.getProperty('/SelectedOffer'); //get selected offer
 
-            if (aOfferProducts && aOfferProducts.length > 0){
-                productProfitabilityData = aOfferProducts.map(product => {
+            if(oSelectedOffer){
+                if (aOfferProducts && aOfferProducts.length > 0){
+                    productProfitabilityData = aOfferProducts.map(product => {
 
-                    if(aPriceConditionViews && aPriceConditionViews.length > 0){
-                        oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
-                    }
+                        if(aPriceConditionViews && aPriceConditionViews.length > 0){
+                            oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
+                        }
 
-                    if((oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') || (oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Consumable'))){
+                        if((oSelectedOffer.Division !== 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental') || (oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Consumable'))){
+                            
+                            /* Calculation A
+                            Only applies for all price conditions, except for rental, having offer division different then Radiology */
+                            let oPriceCondition; 
+                            if(aProductPricingView && aProductPricingView.length > 0){
+                                oPriceCondition = aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                            } 
+                            
+                            let sFOCType;
+                            let sFOCBonus;
+                            let netPrice = 0;
+
+                            if(oPriceCondition){ 
+                                let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
+                                if(aFreeGoodsOther && aFreeGoodsOther.FreeGoodsOther && aFreeGoodsOther.FreeGoodsOther.length > 0){
+                                    aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductPackId === product.SKU.PRODUCTPACKID);
+                                }
+
+                                sFOCType = oPriceCondition.FOCType;
+                                sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
+                                if (oProductConditionView.ConditionType === 'PVL'){
+                                    let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                                    netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
+                                } else {
+                                    netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
+                                }
+                            }
+                            let requestedVolume = product.RequestedVolume;
+                            let cogs = product.Cogs ? product.Cogs.COGS : 0;
+
+                            let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
+                            let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
+                            let grossSales = netPrice * dPaidVolume;
+                            let netPriceWithFoc = grossSales / dTotalVolume; //rounding
+                            let grossProfit = grossSales - (cogs * dTotalVolume);
+                            let grossMargin = grossSales ? (grossProfit / grossSales) : 0;
+
+                            oPriceCondition.NetofferPrice = netPrice;
+                            oPriceCondition.cogsUoM = cogs;
+                            oPriceCondition.GrossSales = Number(grossSales);
+                            oPriceCondition.NetPriceFOC = Number(netPriceWithFoc);
+                            oPriceCondition.GrossProfit = Number(grossProfit);
+                            oPriceCondition.GrossMargin = grossMargin;
+                            oPriceCondition.Sales_NPV = grossSales;
+                            oPriceCondition.Cost_NPV = Number(cogs);
+
+                        } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental'){
+                            /* Calculation B
+                                Only applies for all RENTAL price conditions, and offer division equals Radiology */
+                            let dCost_Yi = [];
+                            let dSales_Yi = [];
+                            let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;                               
+                            let dMonthlyRentPerUnit = oProductConditionView ? oProductConditionView.MonthlyRentPerUnit : 0;
+                            let dAnnualValue = oProductConditionView ? oProductConditionView.AnnualValue : 0;
+                            let dAnnualUnits = product.RequestedVolume;
+
+                            let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
+                            let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
+                            let dMaintenanceCost = Number(oSelectedOffer.ProfitabilityYrlyMntCost);
+                            let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
+                            let cogs = product.Cogs ? product.Cogs.COGS : 0;
+
+                            let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
+                            let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
+                            
+                            for(let i = 2; i <= dDurationAgreementYears; i++){
+                                //should this return an array? 
+                                dCost_Yi.push(cogs * dAnnualUnits / dDurationAgreementYears + dAnnualUnits * dMaintenanceCost);
+                                dSales_Yi.push(dAnnualValue);
+                            }
+                            
+                            let costY_lastyear = cogs * (dAnnualUnits) * (dStartMonth - 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (dStartMonth - 1) / 12;
+                            let salesY_lastyear = dAnnualValue / 12 * (dStartMonth - 1);
                         
-                        /* Calculation A
-                        Only applies for all price conditions, except for rental, having offer division different then Radiology */
-                        let oPriceCondition; 
-                        if(aProductPricingView && aProductPricingView.length > 0){
-                            oPriceCondition = aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
-                        } 
-                        
-                        let sFOCType;
-                        let sFOCBonus;
-                        let netPrice = 0;
-
-                        if(oPriceCondition){ 
-                            let aFreeGoodsOther = aPricingView.filter(priceCondition => priceCondition.ConditionType === 'FOC' && priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0];
-                            if(aFreeGoodsOther && aFreeGoodsOther.FreeGoodsOther && aFreeGoodsOther.FreeGoodsOther.length > 0){
-                                aFreeGoodsOther = aFreeGoodsOther.FreeGoodsOther.filter(freeGood => freeGood.ProductPackId === product.SKU.PRODUCTPACKID);
+                            let dCost_NPV = dCost_Y1;
+                            let dSales_NPV = dSales_Y1;
+                            
+                            for(let i = 2; i <= (dDurationAgreementYears); i++){
+                                dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate)**(i-1));
+                                dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate)**(i-1));
                             }
 
-                            sFOCType = oPriceCondition.FOCType;
-                            sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
+                            let dCost_NPV_total = dCost_NPV + costY_lastyear / ((1 + dDiscountRate)**(dDurationAgreementYears));
+                            let dSales_NPV_total = dSales_NPV + salesY_lastyear / ((1 + dDiscountRate)**(dDurationAgreementYears));
+                        
+                            let netOfferPrice = dMonthlyRentPerUnit;
+                            let netPriceWithFoc = dMonthlyRentPerUnit;
+                            let grossSales = dAnnualValue;
+                            let grossProfit = dSales_NPV_total - dCost_NPV_total;
+                            let grossMargin = dSales_NPV_total ? grossProfit / dSales_NPV_total : 0;
+
+                            oPriceCondition.NetofferPrice = netOfferPrice;
+                            oPriceCondition.cogsUoM = cogs;
+                            oPriceCondition.GrossSales = Number(grossSales);
+                            oPriceCondition.NetPriceFOC = Number(netPriceWithFoc);
+                            oPriceCondition.GrossProfit = Number(grossProfit);
+                            oPriceCondition.GrossMargin = grossMargin;
+                            oPriceCondition.Sales_NPV = dSales_NPV;
+                            oPriceCondition.Cost_NPV = dCost_NPV;
+
+                        } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType === 'Contrast Agent' || product.SKU.ProductType === 'Consumable')) {
+                        
+                            /* Calculation C
+                            Only applies for all price conditions, except for rental, and offer division equals Radiology */
+                            let dUnits = [];
+                            let netPrice = 0;
+
+                            let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                             if (oProductConditionView.ConditionType === 'PVL'){
                                 let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
                                 netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
                             } else {
                                 netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                             }
+                            let dAnnualUnits = product.RequestedVolume;
+                            let dAnnualValue = dAnnualUnits * netPrice;
+                            let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                            
+                            let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
+                            let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
+                            let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
+                            let dGrowthRate = Number(oSelectedOffer.ProfitabilityGrowthRate);
+
+                            /* units per year */
+                            dUnits.push(Math.round( (dAnnualUnits * (12 - dStartMonth + 1)) / 12 ));
+                            dUnits.push(Math.round( dAnnualUnits * (1 + dGrowthRate) ));
+
+                            for(let i = 3; i <= (dDurationAgreementYears); i++){
+                                dUnits.push(Math.round( dUnits[i-2] * (1 + dGrowthRate) ));
+                            }
+
+                            dUnits.push(Math.round( dUnits[dDurationAgreementYears-1] * (1 + dGrowthRate) * (dStartMonth - 1) / (dDurationAgreementYears * 12) ));
+                            /* end of units per year calculation */
+
+                            let dCost_NPV = 0;
+                            let dSales_NPV = 0;
+                            
+                            for(let i = 0; i <= (dDurationAgreementYears); i++){
+                                dCost_NPV = dCost_NPV + dUnits[i] * cogs / ((1 + dDiscountRate )**i);
+                                dSales_NPV = dSales_NPV + dUnits[i] * netPrice / ((1 + dDiscountRate )**i); 
+                            }
+
+                            let grossSales = dAnnualValue;
+                            let grossProfit = dSales_NPV - dCost_NPV;
+                            let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
+
+                            oPriceCondition.cogsUoM = cogs;
+                            oPriceCondition.GrossSales = Number(grossSales);
+                            oPriceCondition.NetofferPrice = netPrice;
+                            oPriceCondition.NetPriceFOC = netPrice;
+                            oPriceCondition.GrossProfit = Number(grossProfit);
+                            oPriceCondition.GrossMargin = grossMargin;
+                            oPriceCondition.Sales_NPV = dSales_NPV;
+                            oPriceCondition.Cost_NPV = dCost_NPV;
                         }
-                        let requestedVolume = product.RequestedVolume;
-                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                    });
 
-                        let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
-                        let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
-                        let grossSales = netPrice * dPaidVolume;
-                        let netPriceWithFoc = grossSales / dTotalVolume; //rounding
-                        let grossProfit = grossSales - (cogs * dTotalVolume);
-                        let grossMargin = grossSales ? (grossProfit / grossSales) : 0;
-
-                        oPriceCondition.NetofferPrice = netPrice;
-                        oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number(grossSales);
-                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc);
-                        oPriceCondition.GrossProfit = Number(grossProfit);
-                        oPriceCondition.GrossMargin = grossMargin;
-                        oPriceCondition.Sales_NPV = grossSales;
-                        oPriceCondition.Cost_NPV = Number(cogs);
-
-                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType === 'Rental'){
-                        /* Calculation B
-                            Only applies for all RENTAL price conditions, and offer division equals Radiology */
-                        let dCost_Yi = [];
-                        let dSales_Yi = [];
-                        let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;                               
-                        let dMonthlyRentPerUnit = oProductConditionView ? oProductConditionView.MonthlyRentPerUnit : 0;
-                        let dAnnualValue = oProductConditionView ? oProductConditionView.AnnualValue : 0;
-                        let dAnnualUnits = product.RequestedVolume;
-
-                        let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
-                        let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
-                        let dMaintenanceCost = Number(oSelectedOffer.ProfitabilityYrlyMntCost);
-                        let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
-                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
-
-                        let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
-                        let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
-                        
-                        for(let i = 2; i <= dDurationAgreementYears; i++){
-                            //should this return an array? 
-                            dCost_Yi.push(cogs * dAnnualUnits / dDurationAgreementYears + dAnnualUnits * dMaintenanceCost);
-                            dSales_Yi.push(dAnnualValue);
-                        }
-                        
-                        let costY_lastyear = cogs * (dAnnualUnits) * (dStartMonth - 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (dStartMonth - 1) / 12;
-                        let salesY_lastyear = dAnnualValue / 12 * (dStartMonth - 1);
-                    
-                        let dCost_NPV = dCost_Y1;
-                        let dSales_NPV = dSales_Y1;
-                        
-                        for(let i = 2; i <= (dDurationAgreementYears); i++){
-                            dCost_NPV = dCost_NPV + dCost_Yi[i-2] / ((1 + dDiscountRate)**(i-1));
-                            dSales_NPV = dSales_NPV + dSales_Yi[i-2] / ((1 + dDiscountRate)**(i-1));
-                        }
-
-                        let dCost_NPV_total = dCost_NPV + costY_lastyear / ((1 + dDiscountRate)**(dDurationAgreementYears));
-                        let dSales_NPV_total = dSales_NPV + salesY_lastyear / ((1 + dDiscountRate)**(dDurationAgreementYears));
-                    
-                        let netOfferPrice = dMonthlyRentPerUnit;
-                        let netPriceWithFoc = dMonthlyRentPerUnit;
-                        let grossSales = dAnnualValue;
-                        let grossProfit = dSales_NPV_total - dCost_NPV_total;
-                        let grossMargin = dSales_NPV_total ? grossProfit / dSales_NPV_total : 0;
-
-                        oPriceCondition.NetofferPrice = netOfferPrice;
-                        oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number(grossSales);
-                        oPriceCondition.NetPriceFOC = Number(netPriceWithFoc);
-                        oPriceCondition.GrossProfit = Number(grossProfit);
-                        oPriceCondition.GrossMargin = grossMargin;
-                        oPriceCondition.Sales_NPV = dSales_NPV;
-                        oPriceCondition.Cost_NPV = dCost_NPV;
-
-                    } else if(oSelectedOffer.Division === 'Radiology' && oProductConditionView && oProductConditionView.ConditionType !== 'Rental' && (product.SKU.ProductType === 'Contrast Agent' || product.SKU.ProductType === 'Consumable')) {
-                    
-                        /* Calculation C
-                        Only applies for all price conditions, except for rental, and offer division equals Radiology */
-                        let dUnits = [];
-                        let netPrice = 0;
-
-                        let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
-                        if (oProductConditionView.ConditionType === 'PVL'){
-                            let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                            netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
-                        } else {
-                            netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
-                        }
-                        let dAnnualUnits = product.RequestedVolume;
-                        let dAnnualValue = dAnnualUnits * netPrice;
-                        let cogs = product.Cogs ? product.Cogs.COGS : 0;
-                        
-                        let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
-                        let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
-                        let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
-                        let dGrowthRate = Number(oSelectedOffer.ProfitabilityGrowthRate);
-
-                        /* units per year */
-                        dUnits.push(Math.round( (dAnnualUnits * (12 - dStartMonth + 1)) / 12 ));
-                        dUnits.push(Math.round( dAnnualUnits * (1 + dGrowthRate) ));
-
-                        for(let i = 3; i <= (dDurationAgreementYears); i++){
-                            dUnits.push(Math.round( dUnits[i-2] * (1 + dGrowthRate) ));
-                        }
-
-                        dUnits.push(Math.round( dUnits[dDurationAgreementYears-1] * (1 + dGrowthRate) * (dStartMonth - 1) / (dDurationAgreementYears * 12) ));
-                        /* end of units per year calculation */
-
-                        let dCost_NPV = 0;
-                        let dSales_NPV = 0;
-                        
-                        for(let i = 0; i <= (dDurationAgreementYears); i++){
-                            dCost_NPV = dCost_NPV + dUnits[i] * cogs / ((1 + dDiscountRate )**i);
-                            dSales_NPV = dSales_NPV + dUnits[i] * netPrice / ((1 + dDiscountRate )**i); 
-                        }
-
-                        let grossSales = dAnnualValue;
-                        let grossProfit = dSales_NPV - dCost_NPV;
-                        let grossMargin = dSales_NPV ? grossProfit / dSales_NPV : 0;
-
-                        oPriceCondition.cogsUoM = cogs;
-                        oPriceCondition.GrossSales = Number(grossSales);
-                        oPriceCondition.NetofferPrice = netPrice;
-                        oPriceCondition.NetPriceFOC = netPrice;
-                        oPriceCondition.GrossProfit = Number(grossProfit);
-                        oPriceCondition.GrossMargin = grossMargin;
-                        oPriceCondition.Sales_NPV = dSales_NPV;
-                        oPriceCondition.Cost_NPV = dCost_NPV;
-                    }
-                });
-
-                Services.getFastAppDataModel().updateBindings();
+                    Services.getFastAppDataModel().updateBindings();
+                }
             }
         },
 
@@ -1317,53 +1335,56 @@ sap.ui.define([
             const aProductPricingView        = oFastAppDataModel.getProperty('/ProductPricingView');
             const oConsolidatedProfitability = oFastAppDataModel.getProperty('/SelectedOffer/ConsolidatedProfitability');
             const oProductTypeProfitability  = oFastAppDataModel.getProperty('/ProductTypeProfitability');
-            var oCalculatedResultTotals = { GrossMargin: 0,
-                                            NetSales: 0,
-                                            COGS: 0,
-                                            Profitability: 0
-                                          }
+            const oSelectedOffer             = oFastAppDataModel.getProperty('/SelectedOffer');
 
-            if(oConsolidatedProfitability && oConsolidatedProfitability.length > 0){
-                oConsolidatedProfitability.map(consolidatedEntry => {
-                    let oCalculatedResult = {};
+            if(oSelectedOffer){
+                var oCalculatedResultTotals = { GrossMargin: 0,
+                                                NetSales: 0,
+                                                COGS: 0,
+                                                Profitability: 0
+                                            }
 
-                    if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
-                        //calculate contract agents, consumables & injectors
-                        let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1));
-                        oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
-                    } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
-                        //calculate any other product type
-                        let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable'));
-                        oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
-                    } else if(consolidatedEntry.ProductType === 'Total'){
-                        //calculate totals
-                        oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
-                        oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
-                        oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
-                        oCalculatedResult.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
-                    }
+                if(oConsolidatedProfitability && oConsolidatedProfitability.length > 0){
+                    oConsolidatedProfitability.map(consolidatedEntry => {
+                        let oCalculatedResult = {};
 
-                    if(consolidatedEntry.ProductType !== 'Total'){
-                        //keep track of actual totals
-                        oCalculatedResultTotals.GrossMargin = (Number(oCalculatedResultTotals.GrossMargin) + Number(oCalculatedResult.GrossMargin));
-                        oCalculatedResultTotals.NetSales = (Number(oCalculatedResultTotals.NetSales) + Number(oCalculatedResult.NetSales));
-                        oCalculatedResultTotals.COGS = (Number(oCalculatedResultTotals.COGS) + Number(oCalculatedResult.COGS));
-                        //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
-                        //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
-                    }
+                        if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
+                            //calculate contract agents, consumables & injectors
+                            let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1));
+                            oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                        } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
+                            //calculate any other product type
+                            let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable'));
+                            oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
+                        } else if(consolidatedEntry.ProductType === 'Total'){
+                            //calculate totals
+                            oCalculatedResult.GrossMargin = oCalculatedResultTotals.GrossMargin;
+                            oCalculatedResult.NetSales = oCalculatedResultTotals.NetSales;
+                            oCalculatedResult.COGS = oCalculatedResultTotals.COGS;
+                            oCalculatedResult.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
+                        }
 
-                    if(oProductTypeProfitability && oProductTypeProfitability.length > 0){
-                        consolidatedEntry.ID = oProductTypeProfitability.filter(dbProfitability => dbProfitability.ProductType === consolidatedEntry.ProductType)[0].ID; //get the effective ID from the db entity.
-                    }
-                    consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
-                    consolidatedEntry.NetSales = oCalculatedResult.NetSales;
-                    consolidatedEntry.COGS = oCalculatedResult.COGS;
-                    consolidatedEntry.Profitability = oCalculatedResult.Profitability;
-                });
+                        if(consolidatedEntry.ProductType !== 'Total'){
+                            //keep track of actual totals
+                            oCalculatedResultTotals.GrossMargin = (Number(oCalculatedResultTotals.GrossMargin) + Number(oCalculatedResult.GrossMargin));
+                            oCalculatedResultTotals.NetSales = (Number(oCalculatedResultTotals.NetSales) + Number(oCalculatedResult.NetSales));
+                            oCalculatedResultTotals.COGS = (Number(oCalculatedResultTotals.COGS) + Number(oCalculatedResult.COGS));
+                            //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.Profitability + oCalculatedResult.Profitability;
+                            //oCalculatedResultTotals.Profitability = oCalculatedResultTotals.GrossMargin / oCalculatedResultTotals.NetSales;
+                        }
 
-                Services.getFastAppDataModel().updateBindings();
+                        if(oProductTypeProfitability && oProductTypeProfitability.length > 0){
+                            consolidatedEntry.ID = oProductTypeProfitability.filter(dbProfitability => dbProfitability.ProductType === consolidatedEntry.ProductType)[0].ID; //get the effective ID from the db entity.
+                        }
+                        consolidatedEntry.GrossMargin = oCalculatedResult.GrossMargin;
+                        consolidatedEntry.NetSales = oCalculatedResult.NetSales;
+                        consolidatedEntry.COGS = oCalculatedResult.COGS;
+                        consolidatedEntry.Profitability = oCalculatedResult.Profitability;
+                    });
+
+                    Services.getFastAppDataModel().updateBindings();
+                }
             }
-
         },
 
         getCalculatedProfitability: function(aProductsPerType, aProductPricingView){
