@@ -1446,7 +1446,8 @@ sap.ui.define([
 
 		_onFolderButtonPress: function(oEvent){
 			let oContract = this.ctrState.getCurrentContract();
-			let url = "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$ContractNumber";
+            let urlDownloadButton = this.ctrState.getProperty('appConfig')?.find(config => config.Control === 'DocumentButton');
+			let url = urlDownloadButton ? urlDownloadButton.URL + '$CountryCode/$ContractNumber': "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$ContractNumber";
 			
 			url = url.replace("$CountryCode", oContract.countryCode);
 			url = url.replace("$ContractNumber", oContract.contractNumber);
