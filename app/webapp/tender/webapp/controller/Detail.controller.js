@@ -22,9 +22,10 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/ranking/Ranking",
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"sap/m/MessageBox"
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -1400,6 +1401,8 @@ sap.ui.define([
 				if(oQofferValidity){
 					oQofferValidity.setEnabled(false);
 				}
+				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
 					oCustomRemark.setEnabled(false);
@@ -1906,6 +1909,8 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
+					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
@@ -2396,6 +2401,8 @@ sap.ui.define([
 						if(oQofferValidity){
 							oQofferValidity.setEnabled(true);
 						}
+						that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
+						that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
 						let oCustomRemark = that.byId("idCustomRemark");
 						if(oCustomRemark){
 							oCustomRemark.setEnabled(true);
@@ -8022,7 +8029,10 @@ sap.ui.define([
 
 			//load quotation data
 			$.when(Quotation.loadOfferAndProductValidationInfo()).done(function (oData) {
-				if(Services.getSelectedCountry() === "ES") that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
+				if(Services.getSelectedCountry() === "ES"){
+					that.setQuotationDateRestrictions();
+					that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
+				}
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -8157,8 +8167,19 @@ sap.ui.define([
 			
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
-
-
+		setQuotationDateRestrictions:function(){
+			let tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			const dateRestrictions = {
+				effectiveDate:{
+					min: tomorrow
+				}
+			};
+			Services.getFastAppDataModel().setProperty("/QuotationDateRestrictions", dateRestrictions);
+		},
+		onChangeQuotationDates:function(event,dateType){
+			Services.getFastAppDataModel().setProperty(`/OfferValidation/${dateType}ValueState`,event.getSource().isValidValue()?"None":"Error");
+		},
 		/**
 		 * Click handler for VolumeTreshhold fragment on the Quotation page
 		 * @param {*} oEvent 
@@ -8310,6 +8331,8 @@ sap.ui.define([
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+						EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+						ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
 						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
 						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
 						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
@@ -8781,6 +8804,8 @@ sap.ui.define([
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+						EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+						ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
 						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
 						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
 						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
@@ -8874,6 +8899,8 @@ sap.ui.define([
 			var quotationFields = {
 				OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 				OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+				EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+				ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
 				CustomRemark: oCustomRemark ? this.byId("idCustomRemark").getValue() : '',
 				IssuedBy: oSelectIssuedBy ? this.byId("idSelectIssuedBy").getSelectedKey() : '',
 				CompanyStamp: oSelectCompanyStamp ? this.byId("idSelectCompanyStamp").getSelectedKey() : '',
@@ -8882,17 +8909,40 @@ sap.ui.define([
 			//keep selected offer
 			var sOfferID = Services.getSelectedOfferID();
 			var sOfferPath = Services.getSelectedOfferPath();
+			
+			var effectiveDateValueState = oFastAppDataModel.getProperty("/OfferValidation/EffectiveDateValueState");
+			var expiryDateValueState = oFastAppDataModel.getProperty("/OfferValidation/ExpiryDateValueState");
+			if(effectiveDateValueState === 'Error' || expiryDateValueState === 'Error' || quotationFields.EffectiveDate > quotationFields.ExpiryDate){
+				MessageBox.error("Make sure effective date and expiry date are valid! Effective date needs to be in the future and not after the expiry date.");
+				return;
+			}
+			//if it comes at this place, we already checked if dates are in error or not correct match
+			//this allows us to just check for the warning: if expiry date is more than 12 months after effective date. 
+			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
+			warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
+			if(warningDate < quotationFields.ExpiryDate){
+				MessageBox.warning("Warning, agreement is set for more than 12 months", {
+					actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+					emphasizedAction: MessageBox.Action.OK,
+					onClose: function (action) {
+						if(action === MessageBox.Action.OK) that._onSaveQuotationToBackend(quotationFields);
+					}
+				});
+				return;
+			}
+			this._onSaveQuotationToBackend(quotationFields);
 
+		},
+		_onSaveQuotationToBackend:function(quotationFields){
+			var that = this;
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
-
 				//Refresh (beceause offer is reselected in onRefresh as well)
 				that.onRefresh();
 
 			});
 
 			this.onEditToggleButtonPress();
-
 		},
 
 		onSendQuotationMail: function (oEvent){
