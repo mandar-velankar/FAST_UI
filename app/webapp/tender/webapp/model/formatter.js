@@ -450,6 +450,22 @@ sap.ui.define([
 			return floatFormatter.format(newPrice);
 		},
 
+        formatUoMPriceExtraDigits: function(uom="Pack", packFactor=1, price){
+			if(!price) {return};
+			let newPrice = Number(price);
+			if(~uom.toLowerCase().indexOf("unit")){ 
+				newPrice = newPrice / packFactor;
+			}
+			const floatFormatter = NumberFormat.getFloatInstance({
+				maxFractionDigits: 6,
+				minFractionDigits: 6,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			return floatFormatter.format(newPrice);
+		},
+
 		hasAdditionalCondition: function(sorter, additionalConditions){
 			if(!sorter || !additionalConditions) return 'No';
 			return additionalConditions.some(cond => cond.SORTER === sorter) ? 'Yes' : 'No';
