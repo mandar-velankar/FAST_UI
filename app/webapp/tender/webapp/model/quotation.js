@@ -487,6 +487,8 @@ sap.ui.define([
 						var oQuotationSaveInfo = that.getQuotationSaveInfo();
 						oQuotationSaveInfo.OfferDate = quotationFields.OfferDate;
 						oQuotationSaveInfo.OfferValidity = quotationFields.OfferValidity
+						oQuotationSaveInfo.EffectiveDate = quotationFields.EffectiveDate;
+						oQuotationSaveInfo.ExpiryDate = quotationFields.ExpiryDate;
 						oQuotationSaveInfo.Comment = quotationFields.CustomRemark;
 						oQuotationSaveInfo.AS1 = quotationFields.IssuedBy;
 						oQuotationSaveInfo.AS2 = quotationFields.CompanyStamp;
@@ -715,6 +717,8 @@ sap.ui.define([
 				
 				saveQuotation: function(quotationFields, updatedFlag) {
 
+					var oFastAppDataModel = Services.getFastAppDataModel();
+
 					//lets work with callbacks
 					var oDeferred = $.Deferred();
 					var that = this;
@@ -786,6 +790,8 @@ sap.ui.define([
 						var oQuotationSaveInfo = that.getQuotationSaveInfo();
 						oQuotationSaveInfo.OfferDate = quotationFields.OfferDate;
 						oQuotationSaveInfo.OfferValidity = quotationFields.OfferValidity;
+						oQuotationSaveInfo.EffectiveDate = quotationFields.EffectiveDate;
+						oQuotationSaveInfo.ExpiryDate = quotationFields.ExpiryDate;
 						oQuotationSaveInfo.Comment = quotationFields.CustomRemark;
 						oQuotationSaveInfo.AS1 = quotationFields.IssuedBy;
 						oQuotationSaveInfo.AS2 = quotationFields.CompanyStamp;
