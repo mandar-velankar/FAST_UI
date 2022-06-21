@@ -6190,7 +6190,7 @@ sap.ui.define([
 
 					let oPriceAgreements = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
                     let aPriceAgreements = oPriceAgreements?.data?.results;
-                    aPriceAgreements = aPriceAgreements.filter(priceAgreement => priceAgreement.ExpiryDate.toISOString() > oTomorrowsDate.toISOString());
+                    aPriceAgreements = aPriceAgreements.filter(priceAgreement => priceAgreement.ExpiryDate && priceAgreement.ExpiryDate.toISOString() > oTomorrowsDate.toISOString());
 
                     for (let i = 0; i < aPriceAgreements.length; i++) {
                         let candidates = aPriceAgreements[i].Candidates?.results;
