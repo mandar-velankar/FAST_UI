@@ -124,7 +124,7 @@ sap.ui.define([
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
             const descuentoEspecial = priceConditionViews.find(pc => pc.ConditionType === "Descuento Especial");
-            if(!descuentoEspecial?.Discount){
+            if(descuentoEspecial && !descuentoEspecial.Discount){
                 descuentoEspecial.Discount = 1;
                 descuentoEspecial.NetPriceWithoutTax = 0;
             } 
