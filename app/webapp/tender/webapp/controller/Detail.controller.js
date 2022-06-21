@@ -8654,6 +8654,8 @@ sap.ui.define([
 			let oPriceAgreementSaveInfo = {};
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTender = oFastAppDataModel.getProperty("/EditTender/");
+            let oEffectiveDateOneYr = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
+            oEffectiveDateOneYr.setFullYear(oEffectiveDateOneYr.getFullYear() + 1);
 
 			const {
 					data: {
@@ -8679,8 +8681,8 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
-            oPriceAgreementSaveInfo.ExtendPriceAgreement = oTender.Classification === 'Commercial Agreement' ? true : false;
-            oPriceAgreementSaveInfo.ExpiryExtensionPeriod = oTender.Classification === 'Commercial Agreement' ? 12 : 0;
+            oPriceAgreementSaveInfo.ExtendPriceAgreement = oTender.Classification === 'Commercial Agreement' && oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate").toISOString() >= oEffectiveDateOneYr.toISOString() ? true : false;
+            oPriceAgreementSaveInfo.ExpiryExtensionPeriod = oTender.Classification === 'Commercial Agreement' && oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate").toISOString() >= oEffectiveDateOneYr.toISOString() ? 12 : 0;
 
 
 			// Spain only 
