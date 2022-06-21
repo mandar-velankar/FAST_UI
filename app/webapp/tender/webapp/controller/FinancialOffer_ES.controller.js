@@ -488,6 +488,14 @@ sap.ui.define([
                 return;
             } 
 
+            let aFieldGroupContent = sap.ui.getCore().byFieldGroupId("priceInputPrecioNeto");
+            if(aFieldGroupContent.find(element => !element.sId.includes('popup') && element.getProperty('valueState') === 'Error')){
+                BusyIndicator.hide();                
+                this.byId("ApprovalButtonId").setEnabled(false);
+                sap.m.MessageBox.error(`You must correct all errors before saving`);
+                return;
+            }
+
             else {         
                 let sTenderID = "";   
                 try {
