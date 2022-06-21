@@ -6184,8 +6184,23 @@ sap.ui.define([
 					oAddProduct._sOperation = 'POST';
 
 					//get possible price agreement
-					let oPriceAgreement = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
-					oAddProduct.OtherPriceAgreementsExist = oPriceAgreement.data && oPriceAgreement.data.results.length > 0 ? 'Yes' : 'No';
+                    let agreementExists = false;
+                    let oTomorrowsDate = new Date();
+                    oTomorrowsDate.setDate(oTomorrowsDate.getDate() + 1);
+
+					let oPriceAgreements = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
+                    let aPriceAgreements = oPriceAgreements?.data?.results;
+                    aPriceAgreements = aPriceAgreements.filter(priceAgreement => priceAgreement.ExpiryDate && priceAgreement.ExpiryDate.toISOString() > oTomorrowsDate.toISOString());
+
+                    for (let i = 0; i < aPriceAgreements.length; i++) {
+                        let candidates = aPriceAgreements[i].Candidates?.results;
+                        if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
+                            agreementExists = true; 
+                            break;
+                        } 
+                    }
+
+					oAddProduct.OtherPriceAgreementsExist = aPriceAgreements.length > 0 && agreementExists ? 'Yes' : 'No';
 
 					aProducts.push(oAddProduct);
 
@@ -8659,7 +8674,8 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.hasNewMaterials = false;
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
-			oPriceAgreementSaveInfo.EffectiveDate = new Date();
+			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate") : new Date();
+			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
 			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
@@ -8686,6 +8702,7 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+			const offerValidation = oFastAppDataModel.getProperty("/OfferValidation/");
 
 			const sPath = oEvent.oSource.getParent().oBindingContexts.fastAppData.sPath;
 

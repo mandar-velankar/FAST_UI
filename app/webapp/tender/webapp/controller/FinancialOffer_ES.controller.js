@@ -124,7 +124,7 @@ sap.ui.define([
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
             const descuentoEspecial = priceConditionViews.find(pc => pc.ConditionType === "Descuento Especial");
-            if(!descuentoEspecial?.Discount){
+            if(descuentoEspecial && !descuentoEspecial.Discount){
                 descuentoEspecial.Discount = 1;
                 descuentoEspecial.NetPriceWithoutTax = 0;
             } 
@@ -1008,6 +1008,10 @@ sap.ui.define([
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
 
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+
             let newNetP;
             if (oEvent.getId() === "change"){
                 newNetP = Number(priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);
@@ -1023,15 +1027,27 @@ sap.ui.define([
                 evt.getSource().setValueState("Error");
                 evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
                 evt.getSource().openValueStateMessage();
+            } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement' ){
+                if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
+                    evt.getSource().setValueState("Error");
+                    evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than PVL.");
+                    evt.getSource().openValueStateMessage();
+                } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
+                    evt.getSource().setValueState("Error");
+                    evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the confidential price.");
+                    evt.getSource().openValueStateMessage();
+                }else{
+                    evt.getSource().setValueState("None");
+                    evt.getSource().setValueStateText("");
+                    evt.getSource().closeValueStateMessage();
+                }
+
             }else{
                 evt.getSource().setValueState("None");
                 evt.getSource().setValueStateText("");
                 evt.getSource().closeValueStateMessage();
             }
 
-            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
@@ -1048,7 +1064,7 @@ sap.ui.define([
             }
 
             const standardPrice = correctPrice * (1 - priceConditionViewObj.StandardDiscount);
-            const additionalDiscount =  correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(2) : 0;
+            const additionalDiscount =  correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6) : 0;
 
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
@@ -1067,8 +1083,8 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
-            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(2));
-            priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(2));
+            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(6));
+            priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(6));
 
             bindingContext.getModel().updateBindings();
             
