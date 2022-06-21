@@ -4330,7 +4330,7 @@ sap.ui.define([
 			return Promise.all(promises).then((result) => {
 
 				//success
-				sap.m.MessageBox.success("Tender Created Successfully", {});
+				sap.m.MessageBox.success(oTenderToSave.Classification + " Created Successfully", {});
 
 				var sTenderPath = "/PT_TMTEND('" + Services.getSelectedTenderID() + "')";
 				that.getView().bindElement({
@@ -4353,7 +4353,7 @@ sap.ui.define([
 
 			}).catch(function (error) {
 				//failed
-				sap.m.MessageBox.error("Tender Creation failed", {});
+				sap.m.MessageBox.error(oTenderToSave.Classification + " Creation failed", {});
 			});
 
 		},
