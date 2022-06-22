@@ -254,14 +254,19 @@ sap.ui.define([
 
 			this._setSelectedProductUoM(oProductPrice.UOM);
 
-			//keep selected product ID
-			Services.setSelectedProductID(oProductPrice.ProductCode);
-			Services.setSelectedProductName(oProductPrice.ProductPackName);
-
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
-            //TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
+						
+			//keep selected product ID
+			Services.setSelectedProductID(oProductPrice.ProductCode);
+			Services.setSelectedProductName(oProductPrice.ProductPackName);
+			Services.setSelectedProductPath(this.selectedProductPricePath);
+
+			//keep track of Distributor
+			Services.setSelectedDistributorID(oOffer.DistributorID);
+
+			//TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
             oOffer.Currency = Services.getSelectedCountry() === 'IT' ? Services.getFastAppDataModel().setProperty("/CurrencyTEMP", oOffer.Currency) : oOffer.Currency;
             //TEMP SOLUTION            
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
