@@ -193,6 +193,35 @@
                                                             
                                                         </m:items>
                                                     </m:HBox>-->
+                                                    <m:HBox>
+                                                        <m:items>
+                                                            <!-- Effective Date -->
+                                                            <m:VBox width="20%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>EffectiveDate}" design="Bold"/>
+                                                                    <m:DatePicker id="idQofferEffectiveDate" 
+										                            valueState="{fastAppData>/OfferValidation/EffectiveDateValueState}" 
+                                                                    minDate="{fastAppData>/QuotationDateRestrictions/effectiveDate/min}"
+                                                                    maxDate="{fastAppData>/OfferValidation/ExpiryDate}"
+										                            change=".onChangeQuotationDates($event,'EffectiveDate')"
+                                                                    value="{path :'fastAppData>/OfferValidation/EffectiveDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="10%">
+                                                            </m:VBox>
+                                                            <!-- Expiry Date -->
+                                                            <m:VBox width="20%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>ExpiryDate}" design="Bold"/>
+                                                                    <m:DatePicker id="idQofferExpiryDate"
+										                            valueState="{fastAppData>/OfferValidation/ExpiryDateValueState}" 
+                                                                    minDate="{fastAppData>/OfferValidation/EffectiveDate}"
+										                            change=".onChangeQuotationDates($event,'EffectiveDate')"
+                                                                    value="{path :'fastAppData>/OfferValidation/ExpiryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                        </m:items>
+                                                    </m:HBox>
                                                 </m:items>
                                             </m:VBox>
                                         </m:items>
@@ -776,9 +805,19 @@
                         <m:Text text="{i18n>PackPrice}" visible="true"/>
                     </m:Column>
 
-                    <!-- Monthly Rent -->
+                    <!-- PVL -->
                     <m:Column width="8%">
-                        <m:Text text="{i18n>MonthlyRent}" visible="true"/>
+                        <m:Text text="{i18n>PVL}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Discount -->
+                    <m:Column width="8%">
+                        <m:Text text="{i18n>Discount}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Net Price without Tax -->
+                    <m:Column width="8%">
+                        <m:Text text="{i18n>Net Price Without Tax}" visible="true"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -812,24 +851,46 @@
                             <!-- Quantity -->
                             <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
 
-                            <!-- Unit Price -->
+                            <!-- Unit Price    -->                        
                             <m:ObjectStatus
-                                text="{parts: [
-                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                text="{= ${fastAppData>/Tender/Institute/InstituteType} === 'Private Account' ? ${parts: [
+                                    {path: 'fastAppData>PriceCondition/PVL'}, 
                                     {path: 'fastAppData>CURRENCY'}
-                                ], formatter:'.formatter.priceTwoOrFour'}"
+                                ], formatter:'.formatter.priceTwoOrFour'} : ${parts: [
+                                    {path: 'fastAppData>PriceCondition/ConfidentialPrice'}, 
+                                    {path: 'fastAppData>CURRENCY'}
+                                ], formatter:'.formatter.priceTwoOrFour'} }"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
 
                             <!-- Pack Price -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                            <m:ObjectStatus
+                                text="{= ${fastAppData>/Tender/Institute/InstituteType} === 'Private Account' ? 
+                                ${parts: [
+                                    {path: 'fastAppData>PriceCondition/PVL'}, 
+                                    {path: 'fastAppData>CURRENCY'}
+                                ], formatter:'.formatter.priceTwoOrFour'} : 
+                                ${parts: [
+                                    {path: 'fastAppData>PriceCondition/ConfidentialPrice'}, 
+                                    {path: 'fastAppData>CURRENCY'}
+                                ], formatter:'.formatter.priceTwoOrFour'} }"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
 
-                            <!-- Monthly Rent -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
+                            <!-- PVL -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PVL'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+                            
+                            <!-- Discount -->
+                            <m:Text text="{= ${fastAppData>PriceCondition/Discount} ? ${path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} + '%' : Number(100).toFixed(2) + '%'}"/>
+
+                            <!-- NetPriceWithoutTax -->
+                            <m:Text text="{= ${fastAppData>PriceCondition/NetPriceWithoutTax} ? {parts: [
+                                {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'} : Number(0).toFixed(2) + ' ' + ${path: 'fastAppData>CURRENCY'}}"/>
 
                             <!-- Rappel -->
                             <m:Text text="{ 

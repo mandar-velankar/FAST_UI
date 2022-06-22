@@ -28,7 +28,7 @@
                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
                             {path:'fastAppData>PVL'}
                         ],
-                        formatter: '.formatter.formatUoMPrice'
+                        formatter: '.formatter.formatUoMPriceExtraDigits'
                     }"
                     description="{fastAppData>Currency}" 
                     enabled="false" 
@@ -42,7 +42,7 @@
                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
                             {path:'fastAppData>YLAP'}
                         ],
-                        formatter: '.formatter.formatUoMPrice'
+                        formatter: '.formatter.formatUoMPriceExtraDigits'
                     }"
                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                     description="{fastAppData>Currency}" 
@@ -69,23 +69,24 @@
                 />
                 <Label text="{i18n>NetPriceBeforeRC}" required="true"/>
                 <Input 
-                    value="{path:'fastAppData>NetPriceWithoutTaxBeforeDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" 
+                    fieldGroupIds="priceInputPrecioNeto"
+                    value="{path:'fastAppData>NetPriceWithoutTaxBeforeDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" 
                     enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" 
                     fieldWidth="80%" 
                     liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
                 />
                 <Label text="{i18n>NetPriceAfterRC}" required="true"/>
                 <Input 
-                    value="{path:'fastAppData>NetPriceWithoutTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" 
+                    value="{path:'fastAppData>NetPriceWithoutTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" 
                     enabled="false" 
                     fieldWidth="80%"
                 />
                 <Label text="{i18n>MaximumPrice}" required="true"/>
-                <Input value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}"/>
+                <Input fieldGroupIds="priceInputPrecioNeto" value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}"/>
                 <Label text="{i18n>Tax}" required="true"/>
                 <Input value="{path:'fastAppData>Tax', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>NetPriceWtax}" required="true"/>
-                <Input value="{path:'fastAppData>NetPriceWithTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%"/>
+                <Input value="{path:'fastAppData>NetPriceWithTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" enabled="false" fieldWidth="80%"/>
             </form:content>
         </form:SimpleForm>
 

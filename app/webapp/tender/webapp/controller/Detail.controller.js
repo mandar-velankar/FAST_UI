@@ -22,9 +22,10 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/ranking/Ranking",
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"sap/m/MessageBox"
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -86,8 +87,8 @@ sap.ui.define([
 
 		//Go to sharepoint folder
 		_onFolderButtonPress: function (oEvent) {
-			var url =
-				"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
+            const sDownloadButtonUrl = Services.getFastAppDataModel().getProperty('/appConfig')?.find(config => config.Control === 'DocumentButton');
+			var url = sDownloadButtonUrl ? sDownloadButtonUrl.URL + '$CountryCode/$TenderId' : "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId";
 			var countryCode = Services.getCountryCodeofSelectedTender();
 			var tenderId = Services.getSelectedTenderID();
 			url = url.replace("$CountryCode", countryCode);
@@ -1400,6 +1401,8 @@ sap.ui.define([
 				if(oQofferValidity){
 					oQofferValidity.setEnabled(false);
 				}
+				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
 					oCustomRemark.setEnabled(false);
@@ -1906,6 +1909,8 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
+					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
@@ -2396,6 +2401,8 @@ sap.ui.define([
 						if(oQofferValidity){
 							oQofferValidity.setEnabled(true);
 						}
+						that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
+						that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
 						let oCustomRemark = that.byId("idCustomRemark");
 						if(oCustomRemark){
 							oCustomRemark.setEnabled(true);
@@ -4245,7 +4252,7 @@ sap.ui.define([
 				that.getView().getModel("fastData").refresh(true);
 				oRefresh.getModel("fastData").refresh(true);
 				$.when(Services.loadAllFastAppDataForProdOffer(Services.getSelectedTenderID(), false)).done(function (oDataTenderOffer) {
-					sap.m.MessageBox.success("Tender Updated Successfully", {});
+					sap.m.MessageBox.success(oTenderToSave.Classification + " Updated Successfully", {});
 					that.onEditToggleButtonPress();
 				});
 
@@ -4323,7 +4330,7 @@ sap.ui.define([
 			return Promise.all(promises).then((result) => {
 
 				//success
-				sap.m.MessageBox.success("Tender Created Successfully", {});
+				sap.m.MessageBox.success(oTenderToSave.Classification + " Created Successfully", {});
 
 				var sTenderPath = "/PT_TMTEND('" + Services.getSelectedTenderID() + "')";
 				that.getView().bindElement({
@@ -4346,7 +4353,7 @@ sap.ui.define([
 
 			}).catch(function (error) {
 				//failed
-				sap.m.MessageBox.error("Tender Creation failed", {});
+				sap.m.MessageBox.error(oTenderToSave.Classification + " Creation failed", {});
 			});
 
 		},
@@ -6177,8 +6184,23 @@ sap.ui.define([
 					oAddProduct._sOperation = 'POST';
 
 					//get possible price agreement
-					let oPriceAgreement = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
-					oAddProduct.OtherPriceAgreementsExist = oPriceAgreement.data && oPriceAgreement.data.results.length > 0 ? 'Yes' : 'No';
+                    let agreementExists = false;
+                    let oTomorrowsDate = new Date();
+                    oTomorrowsDate.setDate(oTomorrowsDate.getDate() + 1);
+
+					let oPriceAgreements = await Services.getProductPriceAgreement(oProduct.COUNTRY_CODE, oProduct.PRODUCT_ID);
+                    let aPriceAgreements = oPriceAgreements?.data?.results;
+                    aPriceAgreements = aPriceAgreements.filter(priceAgreement => priceAgreement.ExpiryDate && priceAgreement.ExpiryDate.toISOString() > oTomorrowsDate.toISOString());
+
+                    for (let i = 0; i < aPriceAgreements.length; i++) {
+                        let candidates = aPriceAgreements[i].Candidates?.results;
+                        if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
+                            agreementExists = true; 
+                            break;
+                        } 
+                    }
+
+					oAddProduct.OtherPriceAgreementsExist = aPriceAgreements.length > 0 && agreementExists ? 'Yes' : 'No';
 
 					aProducts.push(oAddProduct);
 
@@ -8022,7 +8044,10 @@ sap.ui.define([
 
 			//load quotation data
 			$.when(Quotation.loadOfferAndProductValidationInfo()).done(function (oData) {
-				if(Services.getSelectedCountry() === "ES") that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
+				if(Services.getSelectedCountry() === "ES"){
+					that.setQuotationDateRestrictions();
+					that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
+				}
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -8157,8 +8182,19 @@ sap.ui.define([
 			
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
-
-
+		setQuotationDateRestrictions:function(){
+			let tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			const dateRestrictions = {
+				effectiveDate:{
+					min: tomorrow
+				}
+			};
+			Services.getFastAppDataModel().setProperty("/QuotationDateRestrictions", dateRestrictions);
+		},
+		onChangeQuotationDates:function(event,dateType){
+			Services.getFastAppDataModel().setProperty(`/OfferValidation/${dateType}ValueState`,event.getSource().isValidValue()?"None":"Error");
+		},
 		/**
 		 * Click handler for VolumeTreshhold fragment on the Quotation page
 		 * @param {*} oEvent 
@@ -8226,16 +8262,21 @@ sap.ui.define([
 		onDownloadQuotation: function (oEvent) {
 			// Now using download link on sharepoint
 			$.when(Services.checkOfferStatus()).done(function (oData) {
-				var url = (oData.STATUS !== "Awaiting Approval") ?
-					"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf" :
-					"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/System_Data/System_TMP/Quotation_$OfferId.pdf";
-				var countryCode = Services.getCountryCodeofSelectedTender();
-				var tenderId = Services.getSelectedTenderID();
-				var offerId = Services.getSelectedOfferID();
-				url = url.replace("$CountryCode", countryCode);
-				url = url.replace("$TenderId", tenderId);
-				url = url.replace("$OfferId", offerId);
-				window.open(url);
+                const sDownloadButtonUrl = Services.getFastAppDataModel().getProperty('/appConfig')?.find(config => config.Control === 'DownloadButton');
+                const sDownloadButtonApproval = Services.getFastAppDataModel().getProperty('/appConfig')?.find(config => config.Control === 'DownloadButtonAwaitingApproval');
+			
+                if(sDownloadButtonUrl && sDownloadButtonApproval){
+                    var url = (oData.STATUS !== "Awaiting Approval") ? sDownloadButtonApproval.URL + '$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf' : sDownloadButtonUrl.URL + 'Quotation_$OfferId.pdf';
+                        /*"https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/Documents_Library/Countries/$CountryCode/$TenderId/Approval_Docs/Quotation_$OfferId.pdf" :
+                        "https://bayergroup.sharepoint.com/:f:/r/sites/FASTSystem/Shared%20Documents/System_Data/System_TMP/Quotation_$OfferId.pdf";*/
+                    var countryCode = Services.getCountryCodeofSelectedTender();
+                    var tenderId = Services.getSelectedTenderID();
+                    var offerId = Services.getSelectedOfferID();
+                    url = url.replace("$CountryCode", countryCode);
+                    url = url.replace("$TenderId", tenderId);
+                    url = url.replace("$OfferId", offerId);
+                    window.open(url);
+                }
 			});
 
 			// KEEP!!! OUTDATED BUT MIGHT BE RE-USED!!!
@@ -8305,6 +8346,8 @@ sap.ui.define([
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+						EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+						ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
 						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
 						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
 						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
@@ -8611,6 +8654,8 @@ sap.ui.define([
 			let oPriceAgreementSaveInfo = {};
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTender = oFastAppDataModel.getProperty("/EditTender/");
+            let oEffectiveDateOneYr = new Date(oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate"));
+            oEffectiveDateOneYr.setFullYear(oEffectiveDateOneYr.getFullYear() + 1);
 
 			const {
 					data: {
@@ -8631,12 +8676,13 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.hasNewMaterials = false;
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
-			oPriceAgreementSaveInfo.EffectiveDate = new Date();
+			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
+			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
 			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
-            oPriceAgreementSaveInfo.ExtendPriceAgreement = oTender.Classification === 'Commercial Agreement' ? true : false;
-            oPriceAgreementSaveInfo.ExpiryExtensionPeriod = oTender.Classification === 'Commercial Agreement' ? 12 : 0;
+            oPriceAgreementSaveInfo.ExtendPriceAgreement = oTender.Classification === 'Commercial Agreement' && oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate").toISOString() >= oEffectiveDateOneYr.toISOString() ? true : false;
+            oPriceAgreementSaveInfo.ExpiryExtensionPeriod = oTender.Classification === 'Commercial Agreement' && oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate").toISOString() >= oEffectiveDateOneYr.toISOString() ? 12 : 0;
 
 
 			// Spain only 
@@ -8658,6 +8704,7 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+			const offerValidation = oFastAppDataModel.getProperty("/OfferValidation/");
 
 			const sPath = oEvent.oSource.getParent().oBindingContexts.fastAppData.sPath;
 
@@ -8776,6 +8823,8 @@ sap.ui.define([
 					var quotationFields = {
 						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+						EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+						ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
 						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
 						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
 						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
@@ -8869,6 +8918,8 @@ sap.ui.define([
 			var quotationFields = {
 				OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
 				OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+				EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+				ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
 				CustomRemark: oCustomRemark ? this.byId("idCustomRemark").getValue() : '',
 				IssuedBy: oSelectIssuedBy ? this.byId("idSelectIssuedBy").getSelectedKey() : '',
 				CompanyStamp: oSelectCompanyStamp ? this.byId("idSelectCompanyStamp").getSelectedKey() : '',
@@ -8877,17 +8928,40 @@ sap.ui.define([
 			//keep selected offer
 			var sOfferID = Services.getSelectedOfferID();
 			var sOfferPath = Services.getSelectedOfferPath();
+			
+			var effectiveDateValueState = oFastAppDataModel.getProperty("/OfferValidation/EffectiveDateValueState");
+			var expiryDateValueState = oFastAppDataModel.getProperty("/OfferValidation/ExpiryDateValueState");
+			if(effectiveDateValueState === 'Error' || expiryDateValueState === 'Error' || quotationFields.EffectiveDate > quotationFields.ExpiryDate){
+				MessageBox.error("Make sure effective date and expiry date are valid! Effective date needs to be in the future and not after the expiry date.");
+				return;
+			}
+			//if it comes at this place, we already checked if dates are in error or not correct match
+			//this allows us to just check for the warning: if expiry date is more than 12 months after effective date. 
+			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
+			warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
+			if(warningDate < quotationFields.ExpiryDate){
+				MessageBox.warning("Warning, agreement is set for more than 12 months", {
+					actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+					emphasizedAction: MessageBox.Action.OK,
+					onClose: function (action) {
+						if(action === MessageBox.Action.OK) that._onSaveQuotationToBackend(quotationFields);
+					}
+				});
+				return;
+			}
+			this._onSaveQuotationToBackend(quotationFields);
 
+		},
+		_onSaveQuotationToBackend:function(quotationFields){
+			var that = this;
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
-
 				//Refresh (beceause offer is reselected in onRefresh as well)
 				that.onRefresh();
 
 			});
 
 			this.onEditToggleButtonPress();
-
 		},
 
 		onSendQuotationMail: function (oEvent){
@@ -9697,7 +9771,7 @@ sap.ui.define([
 				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
 
 					//give message that everything was updated
-					sap.m.MessageBox.success("Tender Results Updated Successfully", {});
+					sap.m.MessageBox.success("Results Updated Successfully", {});
 
 					//save offer status as tender recorded... 
 					$.when(Services.saveOfferStatus("Results Recorded")).done(function (oSaveStatus) {

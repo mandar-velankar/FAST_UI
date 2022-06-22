@@ -254,14 +254,19 @@ sap.ui.define([
 
 			this._setSelectedProductUoM(oProductPrice.UOM);
 
-			//keep selected product ID
-			Services.setSelectedProductID(oProductPrice.ProductCode);
-			Services.setSelectedProductName(oProductPrice.ProductPackName);
-
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
-            //TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
+						
+			//keep selected product ID
+			Services.setSelectedProductID(oProductPrice.ProductCode);
+			Services.setSelectedProductName(oProductPrice.ProductPackName);
+			Services.setSelectedProductPath(this.selectedProductPricePath);
+
+			//keep track of Distributor
+			Services.setSelectedDistributorID(oOffer.DistributorID);
+
+			//TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
             oOffer.Currency = Services.getSelectedCountry() === 'IT' ? Services.getFastAppDataModel().setProperty("/CurrencyTEMP", oOffer.Currency) : oOffer.Currency;
             //TEMP SOLUTION            
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
@@ -603,10 +608,7 @@ sap.ui.define([
 
             //store original freegoodsother for cancellation
             const oFastAppDataModel = Services.getFastAppDataModel();
-			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            const bindingPath = "/PriceConditionView/".concat(focIndex);
-            const aCurrentFreeGoods = oFastAppDataModel.getProperty(bindingPath + '/FreeGoodsOther');
+            const aCurrentFreeGoods =  oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther")
             this._aCurrentFreeGoodsTemp = aCurrentFreeGoods?.map(freeGood => {
                 return Object.create(freeGood);
             });
@@ -703,14 +705,11 @@ sap.ui.define([
 
         oCancelProducts: function () {
             const oFastAppDataModel = Services.getFastAppDataModel();
-			const priceConditions = oFastAppDataModel.getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            const bindingPath = "/PriceConditionView/".concat(focIndex);
-            oFastAppDataModel.setProperty(bindingPath + '/FreeGoodsOther', this._aCurrentFreeGoodsTemp);
+            oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", this._aCurrentFreeGoodsTemp);
             
-            if(this.pDialogFoc){
+            if(this.pDialog){
 
-                this.pDialogFoc.then(pDialog => pDialog.close());
+                this.pDialog.then(pDialog => pDialog.close());
             }
                 
         },
