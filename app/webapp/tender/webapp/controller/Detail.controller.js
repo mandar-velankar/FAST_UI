@@ -4252,7 +4252,7 @@ sap.ui.define([
 				that.getView().getModel("fastData").refresh(true);
 				oRefresh.getModel("fastData").refresh(true);
 				$.when(Services.loadAllFastAppDataForProdOffer(Services.getSelectedTenderID(), false)).done(function (oDataTenderOffer) {
-					sap.m.MessageBox.success("Tender Updated Successfully", {});
+					sap.m.MessageBox.success(oTenderToSave.Classification + " Updated Successfully", {});
 					that.onEditToggleButtonPress();
 				});
 
@@ -8654,7 +8654,7 @@ sap.ui.define([
 			let oPriceAgreementSaveInfo = {};
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTender = oFastAppDataModel.getProperty("/EditTender/");
-            let oEffectiveDateOneYr = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
+            let oEffectiveDateOneYr = new Date(oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate"));
             oEffectiveDateOneYr.setFullYear(oEffectiveDateOneYr.getFullYear() + 1);
 
 			const {
@@ -9771,7 +9771,7 @@ sap.ui.define([
 				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
 
 					//give message that everything was updated
-					sap.m.MessageBox.success("Tender Results Updated Successfully", {});
+					sap.m.MessageBox.success("Results Updated Successfully", {});
 
 					//save offer status as tender recorded... 
 					$.when(Services.saveOfferStatus("Results Recorded")).done(function (oSaveStatus) {
