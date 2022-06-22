@@ -8654,7 +8654,7 @@ sap.ui.define([
 			let oPriceAgreementSaveInfo = {};
 			let oFastAppDataModel = Services.getFastAppDataModel();
 			let oTender = oFastAppDataModel.getProperty("/EditTender/");
-            let oEffectiveDateOneYr = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
+            let oEffectiveDateOneYr = new Date(oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate"));
             oEffectiveDateOneYr.setFullYear(oEffectiveDateOneYr.getFullYear() + 1);
 
 			const {
