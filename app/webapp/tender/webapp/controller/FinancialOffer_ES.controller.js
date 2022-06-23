@@ -368,10 +368,13 @@ sap.ui.define([
 
 		},
 		refreshFinancialTabES: async function () {
+            
+            this.bRefresh = true;
 			await this.getProducts();
             await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 			this.setFinancialOffer();
             await this.calculateProfitability();
+            this.bRefresh = false;
 		},
 
 		
@@ -915,7 +918,6 @@ sap.ui.define([
 
                             let selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
                             Services.getFastAppDataModel().setProperty("/SelectedOffer/SelectedProduct",selectedProduct);
-                            
 						}
                             
                         that.onFinancialProductPress(oEvent, true);
@@ -957,7 +959,7 @@ sap.ui.define([
                        
             // some magic for just not to break the code. blame the other guy :-)
             // the magic didn't fix everything. Not blaming anyone ¯\_ (ツ) _/¯
-            if(oFastAppDataModel.getProperty("/SelectedOffer")){
+            if(this.bRefresh || (!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer"))){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
             } 
