@@ -356,7 +356,7 @@ sap.ui.define([
 
         },
         
-		setFinancialOffer:function(){
+		setFinancialOffer: async function(){
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
@@ -916,8 +916,8 @@ sap.ui.define([
                             let selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
                             Services.getFastAppDataModel().setProperty("/SelectedOffer/SelectedProduct",selectedProduct);
                             
-                            
 						}
+                            
                         that.onFinancialProductPress(oEvent, true);
                         this.selectedProductPricePath = Services.getSelectedProductPath();
 				}
@@ -956,7 +956,8 @@ sap.ui.define([
 			}
                        
             // some magic for just not to break the code. blame the other guy :-)
-            if(!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer")){
+            // the magic didn't fix everything. Not blaming anyone ¯\_ (ツ) _/¯
+            if(oFastAppDataModel.getProperty("/SelectedOffer")){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
             } 
