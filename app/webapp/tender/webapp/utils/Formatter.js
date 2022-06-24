@@ -78,13 +78,14 @@ FAST_NS0FAST0.utils.Formatter = {
 		}
 	},//temp because not working in other formatter
     floatNoUnit: function(value){
+		let oLocale = new sap.ui.core.Locale("en-US"); //force the same number format for all countries (also if browser language is german, . will be . as decimal)
         var oNumberFormat = sap.ui.core.format.NumberFormat.getFloatInstance({
             maxFractionDigits: 2,
             minFractionDigits: 2,
             groupingEnabled: true,
             groupingSeparator: ",",
             decimalSeparator: "."
-        });
+        },oLocale);
         var oValue = oNumberFormat.format(parseFloat(value));
         return oValue;
     },
@@ -96,9 +97,10 @@ FAST_NS0FAST0.utils.Formatter = {
 			return oValue;
 		},
 	percentageNoUnit: function(pct){
+			let oLocale = new sap.ui.core.Locale("en-US"); //force the same number format for all countries (also if browser language is german, . will be . as decimal)
 			var oNumberFormat = sap.ui.core.format.NumberFormat.getFloatInstance({
 				maxFractionDigits: 0
-			});
+			},oLocale);
 			var oValue = oNumberFormat.format(parseFloat(pct)*100);
 			return oValue;
 		},
