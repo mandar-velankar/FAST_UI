@@ -9887,13 +9887,13 @@ sap.ui.define([
 						this.byId("idSpecifications").setVisible(true);
 					}
 
-                    if(sCountry === 'ES' && sKey === 'Tender'){
+                    if((sCountry === 'ES' || sCountry === 'IT') && sKey === 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(true);
                         this.byId("idSelectTenderType2Edit").setVisible(true);                        
-                    } else if(sCountry === 'ES' && sKey !== 'Tender'){
+                    } else if((sCountry === 'ES' || sCountry === 'IT') && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
                         this.byId("idSelectTenderType2Edit").setVisible(false);                        
-                    }                       					
+                    }         
 
 				} catch(err) {
 					console.log(err);
