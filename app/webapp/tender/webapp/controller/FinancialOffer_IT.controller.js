@@ -526,7 +526,7 @@ sap.ui.define([
 				ActiveTier: 0,
 				NetPrice: oProductPrice.NetofferPrice,
 				NetPrice_OfPaid: 0,
-				PRICE_UPDATE: 0
+				PRICE_UPDATE: oOffer.APPROVALS_SENT // Mechanism to identify that approval is required again is based on this field
 			};
 
 			/*if(oProductPrice.ID !== null){
