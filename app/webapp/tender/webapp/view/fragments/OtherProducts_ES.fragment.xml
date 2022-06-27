@@ -49,7 +49,7 @@
                         <Input type="Number" value="{path:'fastAppData>FOCMinAmount'}" valueState="{fastAppData>FOCMinAmountValueState}" visible="true"/>
                     </HBox>
                     <Input type="Number" value="{path:'fastAppData>FOCBonus'}" valueState="{fastAppData>FOCBonusValueState}" enabled="true" visible="true" liveChange=".calculatePotentialSavings"/>
-                    <Input value="{path:'fastAppData>PotentialGeneratedSavings', type:'sap.ui.model.type.Float', formatOptions: {  maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" visible="true"/>
+                    <Input value="{path:'fastAppData>PotentialGeneratedSavings', type:'sap.ui.model.type.Float', formatOptions: {  maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" enabled="false" visible="true"/>
                     
                     <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther" visible="true"/>
                 </cells>
