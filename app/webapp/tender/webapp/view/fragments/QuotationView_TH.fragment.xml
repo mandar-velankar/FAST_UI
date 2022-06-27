@@ -147,7 +147,7 @@
                                                             <!-- Tender refrence -->
                                                             <m:VBox width="28%">
                                                                 <m:items>
-                                                                    <m:Label text="{i18n>TenderRef}" design="Bold"/>
+                                                                    <m:Label text="{i18n>reference}" design="Bold"/>
                                                                     <m:Text text="{fastAppData>/OfferValidation/TENDER_REFERENCE}"/>
                                                                 </m:items>
                                                             </m:VBox>

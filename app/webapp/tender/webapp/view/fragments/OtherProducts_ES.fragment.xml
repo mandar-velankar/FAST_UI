@@ -1,0 +1,59 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog id="OtherProducts" title="Products" >
+		<buttons>
+			<Button text="Cancel" press=".oCancelProducts" />
+			<Button text="Apply" press=".oApplyProducts" />
+		</buttons>
+
+        <Table id="FreeGoodsOtherTable" items="{path:'fastAppData>FreeGoodsOther'}">
+		<headerToolbar>
+			<OverflowToolbar>
+				<content>
+					<ToolbarSpacer />
+                    <Button icon="sap-icon://add" press=".onAddNewFreeGoods"></Button>
+				</content>
+			</OverflowToolbar>
+		</headerToolbar>
+            <columns>
+                <Column>
+                    <Text text="{i18n>product}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>RoyalDecree}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>FocMinAmount}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>FocBonus}"/>
+                </Column>    
+                <Column>
+                    <Text text="{i18n>PotSavingsGen}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>Action}"/>
+                </Column>               
+            </columns>
+            <ColumnListItem>
+                <cells>
+                    <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true" visible="true"/>
+                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}" visible="true">
+                        <core:Item key="" text="" />
+                        <core:Item key="Yes" text="Yes" />
+                        <core:Item key="No" text="No" />
+                    </Select>
+                    <HBox>
+                        <Input type="Number" value="{path:'fastAppData>FOCMinAmount'}" valueState="{fastAppData>FOCMinAmountValueState}" visible="true"/>
+                    </HBox>
+                    <Input type="Number" value="{path:'fastAppData>FOCBonus'}" valueState="{fastAppData>FOCBonusValueState}" enabled="true" visible="true" liveChange=".calculatePotentialSavings"/>
+                    <Input value="{path:'fastAppData>PotentialGeneratedSavings', type:'sap.ui.model.type.Float', formatOptions: {  maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" visible="true"/>
+                    
+                    <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther" visible="true"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+   	</Dialog>	
+</core:FragmentDefinition>

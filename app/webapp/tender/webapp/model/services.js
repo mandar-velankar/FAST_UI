@@ -51,6 +51,7 @@ sap.ui.define([
 		_sSelectedProductID: "",
 		_sSelectedProductName: "",
 		_sSelectedProductPath: "",
+		_sSelectedPriceConditionPath: "",
 		_sSelectedTab: "",
 		_defaultModel: "",
 		//_connectionString: "/v2/tender/",
@@ -68,6 +69,7 @@ sap.ui.define([
 		_sBasicInformationPageSectionID: "---tenderManagementDetailId--basicInformationId",
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
 		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
+        _sFinancialOfferPageSectionID_ES: "---tenderManagementDetailId--financialOfferId_ES",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -259,6 +261,11 @@ sap.ui.define([
 		//get current selected productPath
 		getSelectedProductPath: function () {
 			return this._sSelectedProductPath;
+		},
+
+		//get current selected priceConditionPath
+		getSelectedPriceConditionPath: function () {
+			return this._sSelectedPriceConditionPath;
 		},
 
 		//get instituteID of selected ProductID
@@ -676,6 +683,11 @@ sap.ui.define([
 			this._sSelectedProductPath = sProductPath;
 		},
 
+		//get current selected PriceCondition TODO clear on switching between tabs!!
+		setSelectedPriceConditionPath: function (sPriceConditionPath) {
+			this._sSelectedPriceConditionPath = sPriceConditionPath;
+		},
+		
 		//get current quotation table template
 		setSelectedQuotationTemplate: function (oTemplate) {
 			this._oSelectedQuotationTemplate = oTemplate;
@@ -1499,6 +1511,65 @@ sap.ui.define([
 
 		},
 
+        loadCountryApprovers: function (sCountry, sDivision) {
+
+			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sCountryApproversPath = "/CountryApprovers";
+
+			var aFilters = [];
+
+			if (sCountry) {
+				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
+				aFilters.push(oCountryFilter);
+			}
+            if (sDivision){
+				aFilters.push(new sap.ui.model.Filter("Division", sap.ui.model.FilterOperator.EQ, sDivision));
+            }
+
+			//Reading the back end data from the tender table
+			oFastDataCalls.read(sCountryApproversPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					//add empty country (so on add delivey tab, you can have an empty currency in case of penalty = no)
+					var aCountryApprovers = oData.results;
+					
+					// add an empty value at the begining of the array. needed for the dropdown
+					if(oData.results.length > 0){
+						aCountryApprovers.unshift({});
+					}
+					
+					//data received is set
+					oFastAppDataModel.setProperty("/CountryApprovers", aCountryApprovers);
+
+					//let the callback be triggered
+					oDeferred.resolve(aCountryApprovers);
+
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading of country approvers");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
 		//load country channels
 		loadCountryChannels: function (sCountry) {
 
@@ -2183,7 +2254,7 @@ sap.ui.define([
 				oFastDataCalls.read(sTenderPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation,Country"
+						"$expand": "Institute/Children/Institute,Offer,Criteria,TenderValue,Brands,NextOfferId,CommercialAgreement,Specifications,CountrySpecificInformation,User,Country"
 					},
 					success: function (oData, oResponse) {
 
@@ -2366,7 +2437,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 
@@ -3027,7 +3098,7 @@ sap.ui.define([
 		//-------
 
 		//load Institute information
-		loadInstitute: function (sCountry, sInstituteID, bWithChilderen) {
+		loadInstitute: async function (sCountry, sInstituteID, bWithChilderen) {
 
 			var that = this;
 
@@ -3049,7 +3120,7 @@ sap.ui.define([
 
 			if (bWithChilderen) {
 				var oExpand = {
-					"$expand": "Children/Institute"
+					"$expand": "Province,Children/Institute"
 				}
 			} else {
 				var oExpand = {}; //no expand
@@ -3529,7 +3600,7 @@ sap.ui.define([
 		},
 
 		//check if tender type needs to be shown (if only 1 tendertype it is not shown)
-		checkShowTenderType: function () {
+		checkShowTenderType: function (sClassification) {
 
 			var that = this;
 
@@ -3588,6 +3659,97 @@ sap.ui.define([
 						// at later point in time the dropdown will set this to true
 						const country = that.getSelectedCountry();
 						if(country === 'CL'){
+							bShowTenderType = false;
+						} else if(country ==='ES' && sClassification !== 'Tender'){
+                            bShowTenderType = false;                                                                                    
+                        }
+
+						//let the callback be triggered
+						oDeferred.resolve(bShowTenderType);
+
+					},
+					error: function (oError) {
+
+						// CLOSE loading dialog
+						if (that._LoadingDialog) {
+							that._LoadingDialog.close();
+						}
+
+						//Error
+						that.showErrorMessage(oError, "Checking to show tender type");
+
+						//let the callback be triggered
+						oDeferred.reject(oError);
+
+					}
+				});
+			}
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		},
+
+        		//check if tender type needs to be shown (if only 1 tendertype it is not shown)
+		checkShowTenderType2: function (sClassification) {
+
+			var that = this;
+
+			//lets work with callbacks: 
+			var oDeferred = $.Deferred();
+
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getDefaultModel();
+
+			//path for reading
+			var sPath = "/CountryTenderType2";
+
+			//filters
+			var aFilters = [];
+
+			//filter country
+			var sCountryCode = that.getSelectedCountry();
+
+			var oFilter = new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, sCountryCode);
+			//Add to filter array
+			aFilters.push(oFilter);
+
+			// instantiate loading dialog
+			if (!that._LoadingDialog) {
+				that._LoadingDialog = sap.ui.xmlfragment("FAST_NS0FAST0.fragments.Loading", that);
+			}
+
+			// open loading dialog
+			that._LoadingDialog.open();
+
+			if (sPath) {
+
+				//Reading the back end data from the tender table
+				oFastDataCalls.read(sPath, {
+					filters: aFilters,
+					success: function (oData, oResponse) {
+
+						//show tender type
+						var bShowTenderType = false;
+
+						//check length
+						if (oData.results) {
+							if (oData.results.length > 1) {
+								//als er meer dan 1 tendertypes gevonden worden
+								bShowTenderType = true;
+							}
+						}
+
+						// CLOSE loading dialog
+						if (that._LoadingDialog) {
+							that._LoadingDialog.close();
+						}
+
+						// for Chile the TenderType is only shown when InstituteType == 'Cenabast'
+						// because of this requirement we default the bShowTenderType to false
+						// at later point in time the dropdown will set this to true
+						const country = that.getSelectedCountry();
+						if(country !== 'ES' || country === 'ES' && sClassification !== 'Tender'){
 							bShowTenderType = false;
 						}
 
@@ -5526,7 +5688,7 @@ sap.ui.define([
 				//Reading the back end data from the tender table
 				oFastDataCalls.read(sProductPackPath, {
 					urlParameters: {
-						"$expand": "Product"
+						"$expand": "Product,ProductPackSKUs"
 					},
 					success: function (oData, oResponse) {
 
@@ -6059,6 +6221,10 @@ sap.ui.define([
 			return oProductService.getCountryBrandProducts(countryCode);
 		},
 
+        getProductTypeProfitability: function (sOfferId, sCountryCode) {
+			let oOfferService = this.getService('Offer');
+			return oOfferService.getProductTypeProfitability(sOfferId, sCountryCode);
+		},
 
 
 		//soft delete Offer (=set inactive column to 0)
@@ -6280,7 +6446,19 @@ sap.ui.define([
 							}
 
 							//Create Product (push pending to promises as well)
-							return that.getService('Product').updateProduct(oProductToSave, sOperation).catch(function (oError) {
+							return that.getService('Product').updateProduct(oProductToSave, sOperation)
+                            // .then(function(reponse){
+
+                            //     // for Spain only.
+                            //     if(oProductToSave.CountryCode === "ES"){
+                            //         that.getService('Product').updateCountryProductPack(oProductSaveInfo.SKUCountry)
+                            //         .catch(function (oError) {
+                            //             that.showErrorMessage(oError, "Update of Country product pack");
+                            //             throw oError;
+                            //         });
+                            //     }
+                            // })
+                            .catch(function (oError) {
 								that.showErrorMessage(oError, "Update of product");
 								throw new Error(oError);
 							});
@@ -6998,16 +7176,21 @@ sap.ui.define([
 		//check new bank guarantee
 		checkNewBankGuarantee: function(oBankGuarantee){
 			let bValid = false;
-			
 			if(oBankGuarantee.Reference && 
-			   oBankGuarantee.Type && 
-			   oBankGuarantee.GuaranteedAmount != 0 && 
-			   oBankGuarantee.Currency && 
-			   oBankGuarantee.IssueDate &&
-			   oBankGuarantee.ExpectedExpiryDate){
-			   //oBankGuarantee.ClosingDate
-					bValid = true;
-			}
+				oBankGuarantee.Type && 
+				oBankGuarantee.GuaranteedAmount != 0 && 
+				oBankGuarantee.Currency && 
+				oBankGuarantee.IssueDate &&
+				(this.getSelectedCountry() !== 'ES' || 
+					(this.getSelectedCountry() === 'ES' && 
+					oBankGuarantee.BankRequestDate &&
+					oBankGuarantee.BankName &&
+					oBankGuarantee.BankStatus &&
+					oBankGuarantee.ShippingDate))){
+				//oBankGuarantee.ClosingDate
+					 bValid = true;
+			 }
+ 
 
 			return bValid;
 		},
@@ -7060,7 +7243,7 @@ sap.ui.define([
 			switch(oPriceAgreementSaveInfo._sOperation){
 				case "POST":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
 						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 						
 						//show message view
@@ -7071,6 +7254,8 @@ sap.ui.define([
 						});
 						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
 						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+
+						return response && response.data;
 					})
 					.catch(function (oError) {
 						//that.showErrorMessage(oError, "Create Price Agreement");
@@ -7089,7 +7274,7 @@ sap.ui.define([
 					break;
 				case "PUT":
 					delete oPriceAgreementSaveInfo._sOperation;
-					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (){
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
 						//oFastAppDataModel.setProperty('/newPriceAgreement', oPriceAgreementSaveInfo);
 
 						//show message view
@@ -7100,6 +7285,8 @@ sap.ui.define([
 						});
 						that.showMessageCompositeView("Success", that.getOfferCompositeMessages(), 'Success');
 						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+
+						return response && response.data;
 					})
 					.catch(function (oError) {
 						//that.showErrorMessage(oError, "Update Price Agreement");
@@ -7118,7 +7305,8 @@ sap.ui.define([
 					break;
 			}
 
-			oPriceAgreementSaveInfo = {};
+			// oPriceAgreementSaveInfo = {};
+			return Promise.all(promises);
 
 		},
 
@@ -7655,6 +7843,92 @@ sap.ui.define([
 			};
 
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
+		},
+
+        getInstituteDistributorBrandProductsForSpain: function (sInstitute) {
+
+			var oCountryCodeFilter = new Filter({
+				path: 'COUNTRY_CODE',
+				operator: FilterOperator.EQ,
+				value1: 'ES'
+			});
+
+
+			var oInstituteFilter = new Filter({
+				path: 'INSTITUTE_ID',
+				operator: FilterOperator.EQ,
+				value1: sInstitute
+			});
+
+
+			var oDistributorFilter = new Filter({
+				path: 'DISTRIBUTOR_ID',
+				operator: FilterOperator.EQ,
+				value1: this.getFastAppDataModel().oData.EditOffer.DistributorID
+			});
+
+			var oChannelFilter = new Filter({
+				path: 'CHANNEL',
+				operator: FilterOperator.EQ,
+				value1: "Direct"
+			});
+
+            var oDivisionFilter = new Filter({
+				path: 'DIVISION',
+				operator: FilterOperator.EQ,
+				value1: this.getFastAppDataModel().oData.EditOffer.Division
+			});
+
+			var mParameters = {
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter, oDivisionFilter]
+			};
+
+			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
+		},
+
+		initializeConsolidatedProfitability: function(){
+
+			const table = [
+                {
+                    ProductType: "Contrast Agents",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Consumables",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Injectors",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Other",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+                {
+                    ProductType: "Total",
+                    GrossMargin: 0,
+                    NetSales: 0,
+                    COGS: 0,
+                    Profitability: 0
+                },
+            ];
+
+
+			this.getFastAppDataModel().setProperty("/SelectedOffer/ConsolidatedProfitability", table);
+
 		},
 
 	});

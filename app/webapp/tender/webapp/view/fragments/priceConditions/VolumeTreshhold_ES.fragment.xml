@@ -1,0 +1,56 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog title="Volume Treshhold" >
+		<buttons>
+			<Button text="{i18n>Apply}" press=".onApplyDiscountCondition" />
+            <Button text="{i18n>Cancel}" press=".onCancelDiscountCondition"/>
+		</buttons>
+
+        <Table id="idVolumeTreshold" items="{path:'fastAppData>DiscountConditionsTemp'}">
+            <headerToolbar>
+                <OverflowToolbar>
+                    <content>
+                        <ToolbarSpacer />
+						<Button icon="sap-icon://sort" press=".onSortDiscountCondition"/>
+                        <Button icon="sap-icon://add" press=".onAddNewDiscountCondition"></Button>
+                    </content>
+                </OverflowToolbar>
+            </headerToolbar>
+            <columns>
+                <Column>
+                    <Text text="Volume"/>
+                </Column>
+                <Column>
+                    <Text text="Discount"/>
+                </Column>
+                <Column>
+                    <Text text="Tax"/>
+                </Column>
+                <Column>
+                    <Text text="Net Price w/o Tax"/>
+                </Column>    
+                <Column>
+                    <Text text="Net Price with Tax"/>
+                </Column>  
+                <Column>
+                    <Text text="{i18n>Action}"/>
+                </Column>            
+            </columns>
+            <ColumnListItem>
+                <cells>
+                    <HBox >
+                        <Text text=">=" wrapping="false" class="sapUiSmallMarginTop"/>
+                        <Input value="{fastAppData>Volume}" fieldWidth="80%"/>
+                    </HBox>
+                    <Input value="{fastAppData>Discount}" description="%" fieldWidth="80%" liveChange=".calculateNetPricesRappel"/>
+                    <Input value="{path:'fastAppData>Tax', type:'.types.percent'}"  description="%" enabled="false" fieldWidth="80%"/>
+                    <Input value="{path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%"/>
+                    <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%"/>
+                    <Button icon="sap-icon://delete" press=".onDeleteDiscountCondition"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+   	</Dialog>	
+</core:FragmentDefinition>

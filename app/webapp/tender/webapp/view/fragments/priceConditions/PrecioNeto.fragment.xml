@@ -1,0 +1,93 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
+	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+
+    <form:SimpleForm
+            title="Precio Neto"
+            editable="false"
+            class="editableForm"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="3"
+            labelSpanL="3"
+            labelSpanM="3"
+            labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="4"
+            emptySpanL="4"
+            emptySpanM="4"
+            emptySpanS="0"
+            columnsXL="1"
+            columnsL="1"
+            columnsM="1"
+            singleContainerFullSize="false" >
+            <form:content>
+                <Label text="{i18n>PVL}" required="true"/>
+                <Input  
+                    value="{
+                        parts: [
+                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                            {path:'fastAppData>PVL'}
+                        ],
+                        formatter: '.formatter.formatUoMPriceExtraDigits'
+                    }"
+                    description="{fastAppData>Currency}" 
+                    enabled="false" 
+                    fieldWidth="80%"
+                />
+                <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
+                <Input 
+                    value="{
+                        parts: [
+                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                            {path:'fastAppData>YLAP'}
+                        ],
+                        formatter: '.formatter.formatUoMPriceExtraDigits'
+                    }"
+                    visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
+                    description="{fastAppData>Currency}" 
+                    enabled="false" 
+                    fieldWidth="80%"
+                />  
+                <Label text="{i18n>RoyalDecree}" required="true"/> 
+                <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" change=".calculateDiscountsAndNetPricesPrecioNeto"> 
+                    <items>
+                        <core:Item key="" text="" />
+                        <core:Item key="IncludeInPrecioNeto" text="Yes, (include in precio neto)" />
+                        <core:Item key="ExcludeInPrecioNeto" text="Yes, (exclude in precio neto)" />
+                        <core:Item key="No" text="No" />									
+                    </items>
+                </Select>
+                <Label text="{i18n>StandardDiscount}" required="true"/>
+                <Input value="{path:'fastAppData>StandardDiscount', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>AdditionalDiscount}" required="true"/>
+                <Input 
+                    value="{path:'fastAppData>AdditionalDiscount', type:'.types.percent'}" 
+                    description="%" 
+                    enabled="false" 
+                    fieldWidth="80%"
+                />
+                <Label text="{i18n>NetPriceBeforeRC}" required="true"/>
+                <Input 
+                    fieldGroupIds="priceInputPrecioNeto"
+                    value="{path:'fastAppData>NetPriceWithoutTaxBeforeDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" 
+                    enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" 
+                    fieldWidth="80%" 
+                    liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
+                />
+                <Label text="{i18n>NetPriceAfterRC}" required="true"/>
+                <Input 
+                    value="{path:'fastAppData>NetPriceWithoutTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" 
+                    enabled="false" 
+                    fieldWidth="80%"
+                />
+                <Label text="{i18n>MaximumPrice}" required="true"/>
+                <Input fieldGroupIds="priceInputPrecioNeto" value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}"/>
+                <Label text="{i18n>Tax}" required="true"/>
+                <Input value="{path:'fastAppData>Tax', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
+                <Label text="{i18n>NetPriceWtax}" required="true"/>
+                <Input value="{path:'fastAppData>NetPriceWithTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}}" enabled="false" fieldWidth="80%"/>
+            </form:content>
+        </form:SimpleForm>
+
+</core:FragmentDefinition>

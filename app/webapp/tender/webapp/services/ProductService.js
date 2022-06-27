@@ -33,7 +33,7 @@ sap.ui.define([
 			var mParameters = {
 				filters: [oTenderIdFilter],
 				urlParameters: {
-					$expand: "SKU/Product,PriceAgreement"
+					$expand: "SKU/Product,PriceAgreement,PriceCondition"
 				}
 			};
 
@@ -60,7 +60,7 @@ sap.ui.define([
 			var mParameters = {
 				filters: aFilters,
 				urlParameters: {
-					$expand: "OfferProduct"
+					$expand: "OfferProduct,Candidates"
 				}
 			};
 
@@ -180,6 +180,32 @@ sap.ui.define([
 			return that.odata(sPath).put(oProductToSave);
 
 		},
+
+        // update Country Product Pack
+        updateCountryProductPack: function (countryProductPack) {
+
+			//get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of product
+			var sPath = oModel.createKey("/PT_TMCTPRDPCK", {
+				PRODUCTPACKID: countryProductPack.PRODUCTPACKID,
+				COUNTRYCODE: countryProductPack.COUNTRYCODE,
+				ACTIVERECORD: countryProductPack.ACTIVERECORD
+			});
+
+            delete countryProductPack["PRODUCTPACKID"];
+            delete countryProductPack["COUNTRYCODE"];
+            delete countryProductPack["ACTIVERECORD"];
+            delete countryProductPack["COGS"];
+            delete countryProductPack["Country"];
+            delete countryProductPack["Origin"];
+            delete countryProductPack["ProductPack"];
+
+
+			return this.odata(sPath).put(countryProductPack);
+
+		},
 		
 		removeProduct: function (oProductToRemove) {
 
@@ -247,6 +273,9 @@ sap.ui.define([
 			oProductToSave.MinInvoiceAmount = oProductSaveInfo.MinInvoiceAmount ? Number(oProductSaveInfo.MinInvoiceAmount) : 0;
 			oProductToSave.DeliveryConditions = oProductSaveInfo.DeliveryConditions;
 			oProductToSave.OfferType = oProductSaveInfo.OfferType;
+            oProductToSave.AnticipatedRequestedQuantity = oProductSaveInfo.AnticipatedRequestedQuantity;
+            oProductToSave.MaxPrice = oProductSaveInfo.MaxPrice;
+
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;
@@ -269,6 +298,8 @@ sap.ui.define([
 				AWARDEDPRICE: null,
 				CURRENCY: null,
 				OutcomeLevel: null,
+                APPEAL: null,
+                INFONEEDED: null,                                                
 				_sOperation: "POST"
 			};
 

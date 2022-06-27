@@ -67,6 +67,25 @@
 				<Input value="{fastData>Institute/InstituteType}" enabled="false"/>
 				<Label text="{i18n>institnme}" design="Bold"  required="true"/>
 				<Input value="{fastData>Institute/InstituteName}" enabled="false"/>
+
+				<Label text="{i18n>institCode}" design="Bold"  required="false"/>
+				<Input value="{fastData>Institute/CustomerID}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+                
+				<Label text="{i18n>institProvince}" design="Bold"   required="false"/>
+				<Input value="{fastData>Institute/Province/Name}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+
+				<Label text="{i18n>institRegion}" design="Bold"   required="false" visible="false"/>
+				<Input value="{fastData>Institute/Region/Name}" enabled="false" visible="false"/>
+
+				<Label text="{i18n>institPoblacion}" design="Bold"   required="false"/>
+				<Input value="{fastData>Institute/City}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+                
+				<Label text="{i18n>institcifcode}" design="Bold"   required="false"/>
+				<Input value="{fastData>Institute/CifCode}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+                
+				<Label text="{i18n>regionalhealthsystem}" design="Bold"   required="false"/>
+				<Input value="{fastData>Institute/RegionalHealthSystem}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+
 				<!-- Italy onlye -->
 				<Label text="{i18n>region}" design="Bold" required="true"/>
 				<MultiComboBox id="idRegionView" 
@@ -75,19 +94,14 @@
 					enabled="false"
 					items="{ 
 						path: 'fastData>/CountryRegions',
-						sorter: { path: 'Name' },
-                        filters: [{                                     
-                                    path : 'CountryCode',
-                                    operator : 'EQ',
-                                    value1 : 'IT'
-                            } ] 
+						sorter: { path: 'Name' }
 					}" 
-					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; (${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES') }">
 					<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
 				</MultiComboBox>
 				<!-- /Italy onlye -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-				<Input value="{fastData>TenderChannel}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT'}"/>
+				<Input value="{fastData>TenderChannel}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'ES'}"/>
 				<Label text="{i18n>grpurchsng}" design="Bold" required="true"/>
 				<Select id="idGroupPurchasing" selectedKey="{fastData>GroupPurchasing}" enabled="false">
 					<items>
@@ -96,16 +110,49 @@
 						<core:Item text="Yes, Requested Quantity - Delivery Tracking" key="2"/>
 					</items>
 				</Select>
-				<Label id="idLabelTenderType" text="{i18n>tendertype}" design="Bold" required="true" visible="true"/>
+				<Label id="idLabelTenderType" text="{i18n>tendertype}" design="Bold" required="true"/>
 				<Select id="idSelectTenderType" 
 				selectedKey="{fastData>TENDER_TYPE_ID}" 
 				enabled="false" 
-				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }">
+				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }"
+                visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
+
 					<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
 				</Select>
+
+                <Label id="idLabelTenderType2" text="{i18n>tendertype2}" design="Bold" required="true"/>
+				<Select id="idSelectTenderType2" 
+				selectedKey="{fastData>TENDER_TYPE_2_ID}" 
+				enabled="false" 
+				items="{ path: 'fastData>/TenderType', sorter: { path: 'ID' } }"
+                visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
+					<core:Item text="{fastData>NAME}" key="{fastData>ID}"/>
+				</Select>
+
+                <Label id="idContent" text="{i18n>Content}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'	}"/>
+                <TextArea value="{fastData>CONTENT}" 
+						  showExceededText="true" 
+						  maxLength="500" 
+						  width="100%" 
+						  valueState="{= ${fastAppData>CONTENT}.length > 500 ? 'Warning' : 'None' }" 
+						  valueLiveUpdate="false" 
+						  liveChange="handleLiveChange" 
+						  enabled="false"
+                          visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+
+                <Label id="idPortal" text="{i18n>Portal}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+                <TextArea value="{fastData>PORTAL}" 
+						  showExceededText="true" 
+						  maxLength="500" 
+						  width="100%" 
+						  valueState="{= ${fastAppData>PORTAL}.length > 500 ? 'Warning' : 'None' }" 
+						  valueLiveUpdate="false" 
+						  liveChange="handleLiveChange" 
+						  enabled="false"
+                          visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 				<!-- Italy only -->
-				<Label text="{i18n>CWID}" design="Bold" />
-				<Input value="{fastData>createdBy}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}"/>
+				<Label text="{i18n>CreatedBy}" design="Bold" />
+				<Input value="{fastData>User/UserName}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
 				<!-- Argentina only -->
 				<Label text="{i18n>HighValue}" design="Bold" 
 					visible="{= 
@@ -221,6 +268,11 @@
 				<Input id="input10" value="{fastData>ContractLength}" enabled="false"/>
 				<Label text="{i18n>contextnprd}" design="Bold"/>
 				<Input id="input11" value="{fastData>ContractExtenseion}" enabled="false"/>
+
+                <!-- Spain only -->
+                <Label text="{i18n>CreatedAt}" design="Bold"/>
+                <Input id="idCreationDate" value="{path :'fastAppData>/Tender/SubmittedOn', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                <!-- End Spain only -->
 				
 				<!-- Status  tender -->
 				<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>

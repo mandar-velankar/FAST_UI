@@ -1,0 +1,46 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:t="sap.ui.table" xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
+	xmlns:l="sap.ui.layout" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+    <Panel expandable="true" expanded="{fastAppData>/FOCExpanded}">
+		<headerToolbar>
+			<OverflowToolbar>
+				<Title text="Free Goods"/>
+				<ToolbarSpacer />
+				<Switch state="{fastAppData>/FOCRequired}" visible="{fastAppData>/EditMode}" change=".onSwitchChanged($event,'FOC')"/>
+			</OverflowToolbar>
+		</headerToolbar>
+        <form:Form  editable="true">
+            <form:layout>
+                <form:ResponsiveGridLayout
+                    class="editableForm"
+                    labelSpanXL="3"
+                    labelSpanL="3"
+                    labelSpanM="3"
+                    labelSpanS="12"
+                    adjustLabelSpan="false"
+                    emptySpanXL="4"
+                    emptySpanL="4"
+                    emptySpanM="4"
+                    emptySpanS="0"
+                    columnsXL="1"
+                    columnsL="1"
+                    columnsM="1"
+                    singleContainerFullSize="false" />
+            </form:layout>
+            <form:formContainers>
+                <form:FormContainer>
+                    <form:formElements>
+                        <form:FormElement label="Free goods for other product(s)">
+                            <form:fields>            
+                                <MultiInput valueHelpOnly="true" valueHelpRequest=".onOpenProducts" tokens="{fastAppData>FreeGoodsOther}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/FOCRequired} }">
+                                    <tokens>
+                                        <Token key="{fastAppData>ProductPackId}" text="{fastAppData>ProductName}" editable="false"></Token>
+                                    </tokens>
+                                </MultiInput>
+                            </form:fields>
+                        </form:FormElement>						
+                    </form:formElements>
+                </form:FormContainer>
+            </form:formContainers>            
+        </form:Form>    
+    </Panel>
+</core:FragmentDefinition>

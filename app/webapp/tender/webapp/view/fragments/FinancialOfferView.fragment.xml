@@ -17,7 +17,7 @@
 	</u:ObjectPageSubSection>
 	
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded">
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="{i18n>offersum}" mode="Expanded">
 		<u:actions>
 			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
 			<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onTenderOverviewPress" visible="{= ${fastAppData>/Tender/CountryCode} === 'AR' }" />	
@@ -156,7 +156,7 @@
 	-->
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>offerhistory}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -177,10 +177,10 @@
 						</headerToolbar>
 						<columns>
 							<Column>
-								<Text text="{i18n>TenderID}"/>
+								<Text text="{i18n>ID}"/>
 							</Column>
 							<Column>
-								<Text text="{i18n>Tender}"/>
+								<Text text="{i18n>reference}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>OfferID}"/>
