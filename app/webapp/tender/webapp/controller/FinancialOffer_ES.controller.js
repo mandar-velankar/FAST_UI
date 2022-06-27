@@ -512,6 +512,9 @@ sap.ui.define([
                     var bLoadedCheck = false;
                     sTenderID = Services.getSelectedTenderID();
                     await Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck);
+
+                    // refresh the Master list
+                    Services.getDefaultModel().refresh(true);
                     
                 } catch (error) {
                     throw error;
@@ -757,7 +760,7 @@ sap.ui.define([
 				ActiveTier: 0,
 				NetPrice: oMainPriceCondition.NetPriceWithoutTaxAfterDeductionRD || oMainPriceCondition.NetPriceWithoutTax,
 				NetPrice_OfPaid: 0,
-				PRICE_UPDATE: 0
+				PRICE_UPDATE: oOffer.APPROVALS_SENT // Mechanism to identify that approval is required again is based on this field
 			};
 
 			return oNewPriceInfo;
