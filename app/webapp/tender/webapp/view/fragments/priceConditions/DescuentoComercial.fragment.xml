@@ -60,11 +60,11 @@
                 </items>
             </Select>
             <Label text="{i18n>NetPriceWOtax}" required="true"/>
-            <Input value="{path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%"/>    
+            <Input value="{path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" enabled="false" fieldWidth="80%"/>    
             <Label text="{i18n>Tax}" required="true"/>
             <Input value="{path:'fastAppData>Tax', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
             <Label text="{i18n>NetPriceWtax}" required="true"/>
-            <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" fieldWidth="80%"/>
+            <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" enabled="false" fieldWidth="80%"/>
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>
