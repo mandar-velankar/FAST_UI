@@ -37,7 +37,7 @@
             </l:BlockLayout>
         </ObjectPageSubSection>
 
-        <ObjectPageSubSection id="TenderResOfferAwardedComp" title="Tender Results">
+        <ObjectPageSubSection id="TenderResOfferAwardedComp" title="{i18n>TenderResults}">
             <!-- outcome awarded companies -->
         
             <blocks>
