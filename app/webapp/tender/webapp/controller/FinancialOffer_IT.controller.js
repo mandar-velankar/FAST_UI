@@ -60,6 +60,11 @@ sap.ui.define([
 		//Navigation between TenderMaster & Detail pages routing is matched
 		_onTenderMatched: async function (oEvent) {
 
+            // This code should only for Italy
+            if(Services.getSelectedCountry() !== "IT"){
+                return;
+            }
+
 			// this method should only be called in case of Italy
 			var sTab = oEvent.getParameter("arguments").tab || "";
 			if (sTab && sTab.includes("financialOfferId_IT")) {
@@ -249,14 +254,19 @@ sap.ui.define([
 
 			this._setSelectedProductUoM(oProductPrice.UOM);
 
-			//keep selected product ID
-			Services.setSelectedProductID(oProductPrice.ProductCode);
-			Services.setSelectedProductName(oProductPrice.ProductPackName);
-
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
-            //TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
+						
+			//keep selected product ID
+			Services.setSelectedProductID(oProductPrice.ProductCode);
+			Services.setSelectedProductName(oProductPrice.ProductPackName);
+			Services.setSelectedProductPath(this.selectedProductPricePath);
+
+			//keep track of Distributor
+			Services.setSelectedDistributorID(oOffer.DistributorID);
+
+			//TEMP SOLUTION : for hotfix on currency problem - Currency problem due to IT view financial offer
             oOffer.Currency = Services.getSelectedCountry() === 'IT' ? Services.getFastAppDataModel().setProperty("/CurrencyTEMP", oOffer.Currency) : oOffer.Currency;
             //TEMP SOLUTION            
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
@@ -516,7 +526,7 @@ sap.ui.define([
 				ActiveTier: 0,
 				NetPrice: oProductPrice.NetofferPrice,
 				NetPrice_OfPaid: 0,
-				PRICE_UPDATE: 0
+				PRICE_UPDATE: oOffer.APPROVALS_SENT // Mechanism to identify that approval is required again is based on this field
 			};
 
 			/*if(oProductPrice.ID !== null){
@@ -561,6 +571,13 @@ sap.ui.define([
 		},
 
 		onBindingItemsFinished: function (oEvent, bInitLoad) {
+
+            // This code should only for Italy. TODO: check why this method is also being run for Spain. This is a side effect.
+            if(Services.getSelectedCountry() !== "IT"){
+                return;
+            }
+
+
 			if (oEvent && oEvent.oSource) {
 				var sSourceId = oEvent.oSource.sId
 				var oProductsTable = oEvent.getSource();
@@ -588,6 +605,13 @@ sap.ui.define([
 		onOpenProducts: function () {
 
 			var oView = this.getView();
+
+            //store original freegoodsother for cancellation
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const aCurrentFreeGoods =  oFastAppDataModel.getProperty(this.selectedProductPricePath + "/FreeGoodsOther")
+            this._aCurrentFreeGoodsTemp = aCurrentFreeGoods?.map(freeGood => {
+                return Object.create(freeGood);
+            });
 
 			// create dialog lazily
 			if (!this.pDialog) {
@@ -678,6 +702,17 @@ sap.ui.define([
 
 
 		},
+
+        oCancelProducts: function () {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", this._aCurrentFreeGoodsTemp);
+            
+            if(this.pDialog){
+
+                this.pDialog.then(pDialog => pDialog.close());
+            }
+                
+        },
 
 		/**
 		 * Event handler for the UoM radioButtonGroup 

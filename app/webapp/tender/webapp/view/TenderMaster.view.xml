@@ -103,7 +103,7 @@
 					<!-- tender id -->
 					<Column id="TenderTableTenderID" minScreenWidth="920px" width="7rem">
 						<header>
-							<ObjectIdentifier title="{i18n>TenderID}" titleActive="true" titlePress="onClick"/>
+							<ObjectIdentifier title="{i18n>ID}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
 					
@@ -111,6 +111,13 @@
 					<Column minScreenWidth="920px" width="12rem">
 						<header>
 							<ObjectIdentifier title="{i18n>TenderName}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+					
+					<!-- Username who created the tender -->
+					<Column  width="8rem">
+						<header>
+							<ObjectIdentifier title="{i18n>CreatedBy}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
 					

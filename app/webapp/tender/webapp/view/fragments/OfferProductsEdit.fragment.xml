@@ -35,6 +35,10 @@
 										change="onChangeSellingCompany">
 									<core:Item text="{fastData>LegalEntityName}" key="{fastData>LegalEntityCode}"/>
 								</Select>
+
+                                <Label text="{i18n>offerNumber}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
+								<Input value="{fastAppData>/SelectedOfferID}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'}"/>
+                                
 								<core:Title/>
 								
 								<Label text="{i18n>intrnlduedte}" required="true"/>
@@ -48,7 +52,7 @@
 								<core:Title/>
 								
 								<Label text="{i18n>whlseofr}" required="true"/>
-								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL'  || ${fastAppData>/Tender/CountryCode} === 'IT' ? false : true}">
+								<Select id="idWhleSle" selectedKey="{fastAppData>/EditOffer/WholesaleOffer}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/Tender/CountryCode} === 'AR' || ${fastAppData>/Tender/CountryCode} === 'CL'  || ${fastAppData>/Tender/CountryCode} === 'IT'  || ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}">
 									<items>
 										<core:Item text="No" key="No"/>
 										<core:Item text="Yes" key="Yes"/>
@@ -59,13 +63,23 @@
 								<DatePicker id="idNewOfferDate" minDate="{dateModel>/minDate}" required="true" value="{path :'fastAppData>/EditOffer/NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= (${fastAppData>/NewOfferPressed} === false &amp;&amp; ((${fastAppData>/ReviewedOfferPressed} === true || ${fastAppData>/ContinuedOfferPressed} === true) || ( (${fastAppData>/ReviewedOfferPressed} === false &amp;&amp; ${fastAppData>/ContinuedOfferPressed} === false) &amp;&amp; (${fastAppData>/EditOffer/RevisedOfferNo} !== 0 || ${fastAppData>/EditOffer/ContinuationOfferNo} !== 0)))) ? true : false }"/>
 
 								<Label text="{i18n>Division}" required="true"/>
-								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="true" change="onChangeDivision">
+								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? false : true}" change="onChangeDivision">
 										<items>
 											<core:Item text="" key=""/>
 											<core:Item text="Pharma" key="Pharma"/>
 											<core:Item text="Radiology" key="Radiology"/>
 										</items>
-								</Select>			
+								</Select>	
+                                <!-- Spain only --> <!-- TODO: this is not a scalable solution. We should consider using a service to get the item values for Division -->
+                                <Label text="{i18n>Division}" required="true"/>
+                                <Select id="idProductOfferDivisionES" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}" change="onChangeDivision">
+                                    <items>
+                                        <core:Item text="" key=""/>
+                                        <core:Item text="Pharma" key="Pharma"/>
+                                        <core:Item text="Radiology" key="Radiology"/>
+                                        <core:Item text="Consumer Health" key="Consumer Health"/>
+                                    </items>
+                                </Select>		
 								<!-- <Text id="idDistID" text="{fastAppData>/EditOffer/Distributor/DistributorID}" visible="false"/> -->
 								
 							</form:content>
@@ -119,6 +133,18 @@
 									</t:template>
 								</t:Column>
 
+                                <t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/ProductType/visible}">
+									<Label id="idProductTypeLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/ProductType/description',
+												  					   formatter: '.formatter.offerProductsColumnName' }" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/ProductType/required}"/>
+									<t:template>
+										<VBox>
+											<Input value="{fastAppData>SKU/ProductType}" editable="false" maxLength="100" visible="{fastAppData>/permissions/tables/editofferProductId/ProductType/visible}" />	
+										</VBox>
+									</t:template>
+								</t:Column>
+
 								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/PackFactor/visible}">
 									<Label id="idPackFactorLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PackFactor/description',
 												  					   formatter: '.formatter.offerProductsColumnName' }" 
@@ -161,6 +187,37 @@
 										<Input  id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}"  maxLength="255"/>
 									</t:template>
 								</t:Column>
+
+                                <t:Column width="200px" visible="{= ${fastAppData>/permissions/tables/editofferProductId/MaxPrice/visible} &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender' ? true : false }">
+									<Label id="idMaxPriceLabel" 
+									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/MaxPrice/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/MaxPrice/required}"
+									/>
+									<t:template>
+										<Input  id="idMaxPrice" value="{fastAppData>MaxPrice}" type="Number" placeholder="{i18n>maxprice}"  maxLength="255"/>
+									</t:template>
+								</t:Column>
+
+                                <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+									<Label id="idAnticipatedRequestedQuantity" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/required}"/>
+									<t:template>
+                                        <Select selectedKey="{fastAppData>AnticipatedRequestedQuantity}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/AnticipatedRequestedQuantity/visible}">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Anticipated" key="Anticipated"/>
+												<core:Item text="Requested" key="Requested"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
+                                
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/visible}">
 									<Label id="idAlternateOfferLabel" 
 									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AlternateOfferYN/description',
@@ -217,7 +274,7 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/SapNo/required}"/>
 									<t:template>
-										<Input value="{fastAppData>SKUCountry/ProductPack/ProductPackSKUs/results/SKUCode}" editable="false" maxLength="100"/>
+										<Input value="{fastAppData>SKU/ProductPackSKUs/results/0/SKUCode}" editable="false" maxLength="100"/>
 									</t:template>
 								</t:Column>
 
@@ -449,7 +506,7 @@
 										</Select>
 									</t:template>
 								</t:Column>
-								<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+								<t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}">
 									<Label id="idPriceAgreementLabel" text="Price Agreement" 
 												    		     wrapping="true" 
 															     required="false"/>
@@ -464,6 +521,15 @@
 												<l:GridData span="L6 M6 S6"/>
 											</layoutData>
 										</Select>
+									</t:template>
+								</t:Column>
+                                
+                                <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/BU/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/BU/required}"/>
+									<t:template>
+                                        <Input value="{fastAppData>SKUCountry/BU}" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}" enabled="false"/>
 									</t:template>
 								</t:Column>
 							</t:columns>

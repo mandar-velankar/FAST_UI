@@ -11,7 +11,7 @@
 				<Input id="idTenderID" value="{fastData>TenderID}" visible="false"/>
 				<Input id="idInstituteID" value="{fastData>InstituteID}" visible="false"/>
 				<!-- TODO this NewTenderID should be shown differently, we no longer check upon it, thats already done (Servicess.getNewTenderNo(  -->
-				<Label text="{i18n>TenderID}" design="Bold" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" required="true"/>
+				<Label text="{i18n>ID}" design="Bold" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" required="true"/>
 				<Input id="idNewTenderID" visible="{path :'fastData>TenderID',formatter:'FAST_NS0FAST0.utils.Formatter.setVisible'}" enabled="false" />
 				<Label text="{i18n>tenderref}" design="Bold" required="true"/>
 				<Input id="idTenderName" value="{fastData>TenderName}" />
@@ -29,7 +29,7 @@
 				<Select id="idBiddingTypeLevel1" 
 					selectedKey="{fastData>BiddingTypeLevel1}"  
 					visible="{= 
-						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
+						(${fastAppData>/Tender/CountryCode} === 'AR') &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel1} &amp;&amp; ${fastData>Classification} ? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel1'}" 
@@ -42,7 +42,7 @@
 				<Select id="idBiddingTypeLevel2" 
 					selectedKey="{fastData>BiddingTypeLevel2}" 
 					visible="{= 
-						${fastAppData>/Tender/CountryCode} === 'AR' &amp;&amp; 
+						(${fastAppData>/Tender/CountryCode} === 'AR') &amp;&amp; 
 						${fastAppData>/CountryBiddingTypeLevel2} &amp;&amp; ${fastData>BiddingTypeLevel1} &amp;&amp; ${fastAppData>CountryBiddingTypeLevel2}.length > 0? true : false
 					}" 
 					items="{ path: 'fastAppData>/CountryBiddingTypeLevel2'}" 
@@ -85,6 +85,25 @@
 				<Label text="{i18n>institnme}" design="Bold" required="true"/>
 				<Input xmlns="sap.m" id="idInstituteName" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="InstituteName_f4"
 					value="{fastData>Institute/InstituteName}" enabled="false"/>
+
+                <Label text="{i18n>institCode}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idInstituteCode" value="{fastData>Institute/CustomerID}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
+
+                <Label text="{i18n>institProvince}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idInstituteProvince" value="{fastData>Institute/Province/Name}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
+                
+				<Label text="{i18n>institRegion}" design="Bold"  required="false"/>
+				<Input value="{fastData>Institute/Region/Name}" id="idInstituteRegion" enabled="false" visible="false"/>
+
+                <Label text="{i18n>institPoblacion}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idInstitutePoblacion" value="{fastData>Institute/City}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
+
+                <Label text="{i18n>institcifcode}" design="Bold" required="false" />
+				<Input xmlns="sap.m" id="idInstituteCifCode" value="{fastData>Institute/CifCode}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
+
+                <Label text="{i18n>regionalhealthsystem}" design="Bold" required="false"/>
+				<Input xmlns="sap.m" id="idRegionalHealthSystem" value="{fastData>Institute/RegionalHealthSystem}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
+                
 				<!-- Italy only -->
 				<Label text="{i18n>region}" design="Bold" required="true"/>
 				<MultiComboBox id="idRegionEdit" 
@@ -92,14 +111,9 @@
 					selectionFinish="handleRegionSelectionFinish"
 					items="{ 
 						path: 'fastData>/CountryRegions',
-						sorter: { path: 'Name' },
-                        filters: [{                                     
-                                    path : 'CountryCode',
-                                    operator : 'EQ',
-                                    value1 : 'IT'
-                            }]                     
+						sorter: { path: 'Name' }              
 					}" 
-					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT' }">
+					visible="{= (${fastData>Institute/InstituteType} === 'Region(s)' || ${fastData>/newTender/instituteType}  === 'Region(s)') &amp;&amp; (${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES') }">
 					<items>
 						<core:Item text="{fastData>Name}" key="{fastData>ID}"/>
 					</items>
@@ -128,6 +142,39 @@
 						items="{ path: '', sorter: { path: '' } }">
 					<core:Item text="" key=""/>
 				</Select>
+
+                <Label id="idLabelTenderType2Edit" text="{i18n>tendertype2}" design="Bold" required="true" visible="true"/>
+				<!-- TenderType: BeAware: binding is overwritten by controller logic -->
+				<Select id="idSelectTenderType2Edit"
+						selectedKey="{fastData>TENDER_TYPE_2_ID}" 
+						enabled="false" 
+						items="{ path: '', sorter: { path: '' } }">
+					<core:Item text="" key=""/>
+				</Select>
+
+                <Label text="{i18n>Content}" design="Bold"/>
+                <TextArea id="idContentEdit" 
+                          value="{fastData>CONTENT}" 
+						  showExceededText="true" 
+						  maxLength="500" 
+						  width="100%" 
+						  valueState="{= ${fastAppData>CONTENT}.length > 500 ? 'Warning' : 'None' }" 
+						  valueLiveUpdate="false" 
+						  liveChange="handleLiveChange" 
+						  enabled="false"
+                          visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
+
+                <Label text="{i18n>Portal}" design="Bold"/>
+                <TextArea id="idPortalEdit" 
+                          value="{fastData>PORTAL}" 
+						  showExceededText="true" 
+						  maxLength="500" 
+						  width="100%" 
+                          valueState="{= ${fastAppData>PORTAL}.length > 500 ? 'Warning' : 'None' }" 
+						  valueLiveUpdate="false" 
+						  liveChange="handleLiveChange" 
+						  enabled="false"
+                          visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/EditTender/CountryCode} === 'ES' }"/>
 				<!-- Block - Timeline -->
 
 				<!-- Argentina only -->
@@ -182,7 +229,8 @@
 					selectedKey="{fastData>PROCUREMENT_METHOD_ID}" 
 					enabled="false"
 					items="{ path: '', sorter: '' }"
-					change="onSelectionChangeProcurementMethod">
+					change="onSelectionChangeProcurementMethod"
+                    visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' }">
 					<core:Item text="" key="" />
 				</Select>
 
@@ -255,7 +303,13 @@
 				<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" />
 				<Label text="{i18n>contextnprd}" design="Bold"/>
 				<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" />
-				<!-- Status  tender -->
+                
+                <!-- Spain only 
+                <Label text="{i18n>CreatedAt}" design="Bold"/>
+                <Input id="idCreationDate" value="{path :'fastAppData>/EditTender/CreatedAt', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                End Spain only -->
+				
+                <!-- Status  tender -->
 				<Label text="{i18n>tenderstatus}" design="Bold" visible="false"/>
 				<Select id="idTenderStatus" selectedKey="{fastData>TenderStatus}" enabled="{= ${fastData>TenderID} !== null}" visible="false">
 					<items>

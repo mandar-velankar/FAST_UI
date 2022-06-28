@@ -25,9 +25,9 @@
 	</u:ObjectPageSubSection>
 	
 	<!-- TENDER OFFER SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="Tender Offer" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection id="FinTenderOfferSubsection" title="{i18n>offersum}" mode="Expanded" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<u:actions>
-			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false"/>
+			<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
 		</u:actions>
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
@@ -44,8 +44,10 @@
 								] }" >					
 									<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
 								</Select>
-							<Label text="{i18n>FOC}"/>
-							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}">
+							<Label text="{i18n>FOC}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }"/>
+							<Select id="idFOCType" selectedKey="{fastAppData>/EditOffer/FOCType}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
 								<items>
 									<core:Item key="FOC 2" text="In addition to requested volume" />
 									<core:Item key="FOC 1" text="Part of requested volume" />									
@@ -99,19 +101,19 @@
 										<Text text="{fastAppData>UOM}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetofferPrice}"/>
+                                        <Text text="{path: 'fastAppData>NetofferPrice', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>NetPriceFOC}"/>
+                                        <Text text="{path: 'fastAppData>NetPriceFOC', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>cogsUoM}"/>
+                                        <Text text="{path: 'fastAppData>cogsUoM', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>GrossSales}"/>
+                                        <Text text="{path: 'fastAppData>GrossSales', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
-										<Text text="{fastAppData>GrossProfit}"/>
+                                        <Text text="{path: 'fastAppData>GrossProfit', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 									</cells>
 									<cells>
 										<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
@@ -122,6 +124,12 @@
 						</Table>
 						
 					</VBox>
+                    <VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ProfitabilityCalcValues" type="XML" />
+                    </VBox>
+					<VBox visible="{= ${fastAppData>/SelectedOffer/Division} === 'Radiology'}" class="sapUiLargeMarginTop">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOffer_ES_ConsolidatedProfitability" type="XML" />
+                    </VBox>
 				</l:BlockLayoutCell>
 			</l:BlockLayoutRow>
 		</l:BlockLayout>
@@ -129,15 +137,59 @@
 	
 	
 	<!-- PRICING OFFER SUBSECTION -->
-	<u:ObjectPageSubSection title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" id="FinPricingOfferSubsection" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection id="FinPricingOfferSubsection" title="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}"  visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<l:BlockLayout background="Light">
-
+            <l:BlockLayoutRow>
+				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                    <VBox>
+                        <MessageStrip
+							text="Existing agreement in place"
+							type="Warning"
+							showIcon="false"
+							showCloseButton="false"
+							class="sapUiSmallMarginBottom" 
+							visible="{fastAppData>/ExistingAgreementInPlace}">
+						</MessageStrip>
+                    </VBox>
+					<Panel expandable="true" headerText="Main Price Condition">
+                   		<VBox>
+                        	<HBox alignItems="Center">
+								<Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
+								<Select
+									id="idPriceConditionSelect"
+									enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
+									forceSelection="false"
+									change=".onPriceConditionChange"
+									items="{
+										path: 'fastAppData>/PriceConditionClassification',
+										sorter: { path: 'ConditionType' },
+										filters : [
+											{ path : 'isMain', operator : 'EQ', value1 : true}
+										]
+									}">
+									<core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
+								</Select>
+							</HBox>
+						</VBox>
+						<VBox id="idPriceConditionVbox">
+							<!-- Fragments of price conditions and its binding context are added/set dynamically from the controller. see 'onPriceConditionChange' method-->
+						</VBox>
+					</Panel>
+                    <VBox id="idRappelVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement'}">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />
+                    </VBox>
+                    <VBox id="idFOCVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
+                        <core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.FOC" type="XML" />
+                    </VBox>
+				</l:BlockLayoutCell>
+			</l:BlockLayoutRow>
 		</l:BlockLayout>
 	</u:ObjectPageSubSection>
 
 	
 	<!-- TENDER HISTORY SUBSECTION -->
-	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="Tender History" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+	<u:ObjectPageSubSection id="FinTenderHistorySubsection" title="{i18n>offerhistory}" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
 		<l:BlockLayout background="Light">
 			<l:BlockLayoutRow>
 				<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -146,7 +198,7 @@
 							<Toolbar>
 								<content>
 									<ToolbarSpacer/>
-									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="true"/>
+									<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="false"/>
 									<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
 									<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
@@ -156,10 +208,10 @@
 						</headerToolbar>
 						<columns>
 							<Column>
-								<Text text="{i18n>TenderID}"/>
+								<Text text="{i18n>ID}"/>
 							</Column>
 							<Column>
-								<Text text="{i18n>Tender}"/>
+								<Text text="{i18n>reference}"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>OfferID}"/>
@@ -188,8 +240,10 @@
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>UnitPack}"/>
 							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>FOC}"/>
+							<Column minScreenWidth="Tablet" demandPopin="true" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
+								<Text text="{i18n>FOC}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                    (${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }"/>
 							</Column>
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>Status}"/>

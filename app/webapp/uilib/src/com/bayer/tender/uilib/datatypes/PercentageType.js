@@ -11,7 +11,7 @@ sap.ui.define([
 
         parseValue: function(oValue) {
             var floatNum = parseFloat(oValue.replace(",","."));
-            return (floatNum/100).toFixed(2);
+            return (floatNum/100);
 
         },
 

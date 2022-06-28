@@ -126,6 +126,10 @@ sap.ui.define([
 			oTenderToSave.PROCUREMENT_METHOD_ID = oTenderSaveInfo.PROCUREMENT_METHOD_ID;
 			oTenderToSave.PROCUREMENT_REASON = oTenderSaveInfo.PROCUREMENT_REASON;
 			/* End of Thailand */
+            /* Spain */
+            oTenderToSave.PORTAL = oTenderSaveInfo.PORTAL;
+            oTenderToSave.CONTENT = oTenderSaveInfo.CONTENT;
+            oTenderToSave.TENDER_TYPE_2_ID = oTenderSaveInfo.TENDER_TYPE_2_ID;
 
 			return oTenderToSave;
 		},
@@ -168,6 +172,9 @@ sap.ui.define([
 			oNewTender.SALES_TYPE_ID = "";
 			oNewTender.TENDER_ORIGIN_ID = "";
 			oNewTender.CONTRACT_TYPE_ID = "";
+            oNewTender.PORTAL = "";
+            oNewTender.CONTENT = "";
+            oNewTender.TENDER_TYPE_2_ID = "";
 
 			return oNewTender;
 
