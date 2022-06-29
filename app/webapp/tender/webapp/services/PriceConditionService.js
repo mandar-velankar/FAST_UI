@@ -125,7 +125,7 @@ sap.ui.define([
                         priceConditionCode = "YA01";
                         break;
                     default:
-                        priceConditionCode = "";
+                        oPriceConditionViewObject.PriceConditionCode && (priceConditionCode = oPriceConditionViewObject.PriceConditionCode) ||  (priceConditionCode = ""); // used when creating continued/revised offer
                 }
 
                 oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
@@ -153,7 +153,7 @@ sap.ui.define([
                 "OfferID": oPriceConditionViewObject.OfferID,
                 "ProductCode": oPriceConditionViewObject.ProductCode,
                 "PVL": convertedPVL,
-                "ConfidentialPrice":  convertedConfPrice,
+                "ConfidentialPrice":  convertedConfPrice || oPriceConditionViewObject.ConfidentialPrice, // oPriceConditionViewObject.ConfidentialPrice used when creating continued/revised offer
                 "Discount": oPriceConditionViewObject.Discount,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "StandardDiscount": oPriceConditionViewObject.StandardDiscount,
