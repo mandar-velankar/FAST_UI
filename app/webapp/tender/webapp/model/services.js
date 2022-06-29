@@ -2510,14 +2510,26 @@ sap.ui.define([
 
 								//check if other price agreements exist, not associated to the given tender / offer
 								let oPriceAgreement = await that.getProductPriceAgreement(oProduct.CountryCode, oProduct.ProductCode);
+                                let agreementExists = false;
+
 								if(oPriceAgreement.data && oPriceAgreement.data.results.length > 0){
-									oProduct.OtherPriceAgreementsExist = 'Yes';
+                                    let oTomorrowsDate = new Date();
+                                    oTomorrowsDate.setDate(oTomorrowsDate.getDate() + 1);
+                                    let aPriceAgreements = oPriceAgreement.data.results;
+                                    aPriceAgreements = aPriceAgreements.filter(priceAgreement => priceAgreement.ExpiryDate && priceAgreement.ExpiryDate.toISOString() > oTomorrowsDate.toISOString());
+
+                                    for (let i = 0; i < aPriceAgreements.length; i++) {
+                                        let candidates = aPriceAgreements[i].Candidates?.results;
+                                        if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
+                                            agreementExists = true; 
+                                            break;
+                                        } 
+                                    }
 								} else {
-									oProduct.OtherPriceAgreementsExist = 'No';
+									agreementExists = false;
 								}
 
-
-
+                                oProduct.OtherPriceAgreementsExist = agreementExists ? 'Yes' : 'No';
 							});
 						}
 
