@@ -111,28 +111,28 @@ sap.ui.define([
                             default:
                             priceConditionCode = "";
                         }
-                    break;
+                        break;
                     case "Descuento Comercial":
-                    priceConditionCode = "YL60";
-                    break;
+                        priceConditionCode = "YL60";
+                        break;
                     case "Descuento Especial":
-                    priceConditionCode = "YDC0";
-                    break;
+                        priceConditionCode = "YDC0";
+                        break;
                     case "Rappel":
-                    priceConditionCode = "YAW1";
-                    break;
+                        priceConditionCode = "YAW1";
+                        break;
                     case "FOC":
-                    priceConditionCode = "YA01";
-                    break;
+                        priceConditionCode = "YA01";
+                        break;
                     default:
-                    priceConditionCode = "";
+                        oPriceConditionViewObject.PriceConditionCode && (priceConditionCode = oPriceConditionViewObject.PriceConditionCode) ||  (priceConditionCode = ""); // used when creating continued/revised offer
                 }
 
                 oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
 
                 let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
-                let packFactor =  Services.getFastAppDataModel().getData().ProductPricingView[0].PACKFACTOR;
-                let UOM = Services.getFastAppDataModel().getData().ProductPricingView[0].UOM;
+                let packFactor =  Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].PACKFACTOR;
+                let UOM = Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].UOM;
 
                 if(UOM === "Unit"){
                     convertedPVL = oPriceConditionViewObject.PVL / packFactor;
@@ -153,7 +153,7 @@ sap.ui.define([
                 "OfferID": oPriceConditionViewObject.OfferID,
                 "ProductCode": oPriceConditionViewObject.ProductCode,
                 "PVL": convertedPVL,
-                "ConfidentialPrice":  convertedConfPrice,
+                "ConfidentialPrice":  convertedConfPrice || oPriceConditionViewObject.ConfidentialPrice, // oPriceConditionViewObject.ConfidentialPrice used when creating continued/revised offer
                 "Discount": oPriceConditionViewObject.Discount,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "StandardDiscount": oPriceConditionViewObject.StandardDiscount,
