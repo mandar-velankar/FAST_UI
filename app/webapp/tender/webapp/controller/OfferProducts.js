@@ -2274,7 +2274,8 @@ sap.ui.define([
 								path: "fastData>Price/SpotRate"
 							}],
 							formatter: formatter.cogs
-						}
+						},
+						visible:"{access>/tenderAccess/COGS}"
 					}),
 					//gross sales
 					new sap.m.ObjectNumber({
@@ -2306,7 +2307,8 @@ sap.ui.define([
 								path: "fastData>Price/FOCType"
 							}],
 							formatter: formatter.netSales
-						}
+						},
+						visible:"{access>/tenderAccess/COGS}"
 					}),
 					//Profitability
 					new sap.m.ObjectNumber({
@@ -2358,7 +2360,8 @@ sap.ui.define([
 									{ path: "fastData>Price/Bundled_1_Cogs/COGS" },
 									{ path: "fastData>Price/Bundled_1_SKU/PACKFACTOR" }
 								], formatter: formatter.profitState
-							}
+							},
+						visible:"{access>/tenderAccess/COGS}"
 					})
 				]
 			});

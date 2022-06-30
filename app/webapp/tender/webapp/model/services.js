@@ -29,6 +29,7 @@ sap.ui.define([
 
 			//one model for the seperation layer
 			this._oFastAppDataModel = new JSONModel();
+			this._accessModel = new JSONModel();
 			this._oAllServices = {};
 
 		},
@@ -104,6 +105,9 @@ sap.ui.define([
 		//TODO move to financial tab logic
 		getFinancialModel: function () {
 			return this._oFinancialModel;
+		},
+		getAccessModel:function(){
+			return this._accessModel;
 		},
 
 		//TODO move to financial tab logic
@@ -360,6 +364,15 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			//return oDeferred.promise();
 
+		},
+		getAccess:function(){
+			const accessService = this.getService("Access");
+			const accessModel = this.getAccessModel();
+
+			return accessService.getAccess().then(result=>{
+				accessModel.setData(result.data);
+				return result.data;
+			});
 		},
 		//get offer path from fastappdata
 		getLoadedOfferPath: function (sOfferID) {

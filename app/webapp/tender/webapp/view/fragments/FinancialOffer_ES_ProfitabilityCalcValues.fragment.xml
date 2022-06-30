@@ -3,7 +3,7 @@
     xmlns:form="sap.ui.layout.form" xmlns:u="sap.uxap"
 	xmlns:l="sap.ui.layout">
 
-    <Panel expandable="true" headerText="Profitability Calculation Parameters" expanded="false">
+    <Panel expandable="true" visible="{access>/tenderAccess/COGS}" headerText="Profitability Calculation Parameters" expanded="false">
         <form:SimpleForm
             editable="true"
             class="editableForm"
