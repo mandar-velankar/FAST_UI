@@ -73,6 +73,8 @@ sap.ui.define([
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 
+			this.accessModel = Services.getAccessModel();
+			this.getView().setModel(this.accessModel, "access");
 			// Responsibility Assignment Model - this model can be used to set the visibility of the controls for a specific country in the user interface
 			/*this._oRaModel = new sap.ui.model.json.JSONModel({
 				visibleCountry: ""
@@ -7849,7 +7851,8 @@ sap.ui.define([
 									path: "fastData>SKU/PACKFACTOR"
 								}],
 								formatter: formatter.cogs
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"	
 						}),
 						//gross sales
 						new sap.m.ObjectNumber({
@@ -7862,7 +7865,7 @@ sap.ui.define([
 									path: "fastAppData>EditOffer/Currency"
 								}],
 								formatter: formatter.grossSales
-							}
+							}	
 						}),
 						//net sales
 						new sap.m.ObjectNumber({
@@ -7881,7 +7884,8 @@ sap.ui.define([
 									path: "fastData>Price/FOCType"
 								}],
 								formatter: formatter.netSales
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"
 						}),
 						//Profitability
 						new sap.m.ObjectNumber({
@@ -7949,7 +7953,8 @@ sap.ui.define([
 									path: "fastData>Price/Bundled_1_SKU/PACKFACTOR"
 								}],
 								formatter: formatter.profitState
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"
 						})
 					]
 				});

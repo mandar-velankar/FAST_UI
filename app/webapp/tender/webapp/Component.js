@@ -44,12 +44,13 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/ScenarioService",
 	"FAST_NS0FAST0/services/QuotationService",
 	"FAST_NS0FAST0/services/SpecificationService",
+	"FAST_NS0FAST0/services/AccessService",
 	"sap/ui/Device",
 	"FAST_NS0FAST0/services/MailService",
     "FAST_NS0FAST0/services/PriceConditionService"
 ], function (UIComponent, JSONModel, fioriLibrary, FlexibleColumnLayoutSemanticHelper, Button, Dialog, Label, MessageToast, Text,
 	TextArea, ODataModel, Services, OfferService, TenderService, ApprovalService, AwardCriteriaService, CompetitorResultService, 
-	DeliveryService, BankGuaranteeService, PriceAgreementService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, SalesOpportunityService, ScenarioService, QuotationService, SpecificationService, Device, MailService, PriceConditionService) {
+	DeliveryService, BankGuaranteeService, PriceAgreementService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, SalesOpportunityService, ScenarioService, QuotationService, SpecificationService,AccessService, Device, MailService, PriceConditionService) {
 	"use strict";
 
 	return UIComponent.extend("FAST_NS0FAST0.Component", {
@@ -85,6 +86,7 @@ sap.ui.define([
 			oRouter.initialize();
 			
 			var oDefaultModel = this.getModel("fastData");
+			var accessModel = this.getModel("access");
 			Services.setDefaultModel(oDefaultModel);
 			Services.setComponentID(this.getId()); //keep component ID dynamically
 
@@ -112,6 +114,7 @@ sap.ui.define([
 			this.SpecificationService = new SpecificationService(oDefaultModel);
 			this.MailService = new MailService(oDefaultModel);
             this.PriceConditionService = new PriceConditionService(oDefaultModel);
+			this.AccessService = new AccessService(accessModel);
 			
 			Services.setAllServices({
 				OfferService:this.OfferService,
@@ -135,6 +138,7 @@ sap.ui.define([
 				SpecificationService: this.SpecificationService,
 				MailService: this.MailService,
                 PriceConditionService: this.PriceConditionService,
+                AccessService: this.AccessService,
 			});
 			
 			// //ADDED FOR SESSION TIMEOUT
@@ -162,6 +166,7 @@ sap.ui.define([
 			//set media query
 			oDeviceModel.getData().media.initRangeSet(sap.ui.Device.media.RANGESETS.SAP_6STEPS);
 			
+			Services.getAccess();
 		},
 		
 		//FlexibleColumnLayoutSemanticHelper class to implement the recommended UX patterns for layout changes in the app.

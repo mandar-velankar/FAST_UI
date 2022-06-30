@@ -16,6 +16,14 @@
 				"settings": {
 					"localUri": "localService/tender/metadata.xml"
 				}
+			},
+			"accessService": {
+				"uri": "/v2/access/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml"
+				}
 			}
 		},
 		"sourceTemplate": {
@@ -85,6 +93,16 @@
 					"defaultCountMode": "Request"
 				},
 				"dataSource": "tender",
+				"preload": true
+			},
+			"access": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "Request"
+				},
+				"dataSource": "accessService",
 				"preload": true
 			}
 		},
