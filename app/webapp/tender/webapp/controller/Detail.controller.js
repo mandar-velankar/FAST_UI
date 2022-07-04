@@ -9575,10 +9575,6 @@ sap.ui.define([
 				    if (oResultForTree) {
                                         
                         if(oResultForTree.PriceAgreement === null){
-
-                            if(!oResultForTree.CONTRACT_NO){
-                                missingFields.add("ContractNo");
-                            }
                                 
                             if(!oResultForTree.OUTCOME){
                                 missingFields.add("Outcome");
@@ -9597,9 +9593,6 @@ sap.ui.define([
                             }
                             if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.APPEAL){
                                 missingFields.add("Appeal");
-                            }
-                            if(!oResultForTree.COMMENT){
-                                missingFields.add("Comment");
                             }
                             if((oResultForTree.OUTCOME && (oResultForTree.OUTCOME === 'Won' || oResultForTree.OUTCOME === 'Lost')) && !oResultForTree.REASON){
                                 missingFields.add("Reason");
@@ -9641,9 +9634,6 @@ sap.ui.define([
                                 }
                                 if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.APPEAL){
                                     missingFields.add("Appeal");
-                                }
-                                if(!oOutcomeLevel.COMMENT){
-                                    missingFields.add("Comment");
                                 }
                                 if((oOutcomeLevel.OUTCOME && (oOutcomeLevel.OUTCOME === 'Won' || oOutcomeLevel.OUTCOME === 'Lost')) && !oOutcomeLevel.REASON){
                                     missingFields.add("Reason");

@@ -118,7 +118,7 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="13rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
-                                <m:Label text="ContractNo" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+                                <m:Label text="ContractNo" required="false"/>
                                 <t:template>
                                     <m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' &amp;&amp; !${fastAppData>PriceAgreement}}"/>
                                 </t:template>
@@ -302,7 +302,7 @@
                                 </t:template>
                             </t:Column>
                             <t:Column width="14rem">
-                                <m:Label text="Comment" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
+                                <m:Label text="Comment" required="false"/>
                                 <t:template>
                                     <m:Input id="resultsForTreeComment" value="{fastAppData>COMMENT}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}"/>
                                 </t:template>
