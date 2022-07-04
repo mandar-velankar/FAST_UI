@@ -5215,6 +5215,14 @@ sap.ui.define([
 								// clone PriceConditions
 								const clonedPriceConditions = priceConditions.map(pc => {
 									const clone = Object.assign({},pc);
+									// clone the DiscountConditions as well
+									if(pc.DiscountCondition.results.length){
+										delete clone.DiscountCondition; // to align the naming and type with the PriceConditionService:convertToSaveObject DiscountCondition
+										clone.DiscountConditions = pc.DiscountCondition.results.map(dc => {
+											const dcClone = Object.assign({},dc);
+											return dcClone.ID && delete dcClone.ID && dcClone;
+										});
+									} 
 									return clone.ID && delete clone.ID && clone;
 								});
 								clonedPriceConditions && (oCopyExistingOfferInfo.Product.results[index].PriceCondition.results = clonedPriceConditions);
