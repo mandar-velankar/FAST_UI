@@ -76,16 +76,16 @@
 								<Column>
 									<Text text="{i18n>NetPriceWithFOC}"/>
 								</Column>
-								<Column>
-									<Text text="{i18n>COGS}"/>
+								<Column visible="{access>/tenderAccess/COGS}">
+									<Text text="{i18n>COGS}" />
 								</Column>
 								<Column>
 									<Text text="{i18n>GrossSales}"/>
 								</Column>
-								<Column>
+								<Column visible="{access>/tenderAccess/COGS}">
 									<Text text="{i18n>GrossProfit}"/>
 								</Column>
-								<Column>
+								<Column visible="{access>/tenderAccess/COGS}">
 									<Text text="{i18n>GrossMargin}"/>
 								</Column>
 							</columns>
