@@ -2450,7 +2450,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition,PriceCondition/FreeGoodsOther" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 
@@ -5215,12 +5215,19 @@ sap.ui.define([
 								// clone PriceConditions
 								const clonedPriceConditions = priceConditions.map(pc => {
 									const clone = Object.assign({},pc);
-									// clone the DiscountConditions as well
+									// clone DiscountConditions
 									if(pc.DiscountCondition.results.length){
 										delete clone.DiscountCondition; // to align the naming and type with the PriceConditionService:convertToSaveObject DiscountCondition
 										clone.DiscountConditions = pc.DiscountCondition.results.map(dc => {
 											const dcClone = Object.assign({},dc);
 											return dcClone.ID && delete dcClone.ID && dcClone;
+										});
+									} 
+									// clone FreeGoodsOther
+									if(pc.FreeGoodsOther.results.length){
+										clone.FreeGoodsOther = pc.FreeGoodsOther.results.map(foc => {
+											const focClone = Object.assign({},foc);
+											return focClone.ID && delete focClone.ID && focClone;
 										});
 									} 
 									return clone.ID && delete clone.ID && clone;
