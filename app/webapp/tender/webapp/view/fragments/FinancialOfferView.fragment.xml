@@ -60,16 +60,16 @@
 								<Column>
 									<Text text="{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>OfferPrice_TH} : ${i18n>OfferPrice}}"/>
 								</Column>
-								<Column visible="{= ${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false}">
+								<Column visible="{= ${access>/tenderAccess/COGS} &amp;&amp; (${fastAppData>/Tender/CountryCode} !== 'CL' || (${fastAppData>/Tender/CountryCode} === 'CL' &amp;&amp; ${fastAppData>/Tender/Institute/InstituteType} === 'Cenabast' ) ? true : false )}">
 									<Text text="{i18n>COGS}"/>
 								</Column>
 								<Column>
 									<Text text="{i18n>GrossSales}"/>
 								</Column>
-								<Column>
+								<Column visible="{access>/tenderAccess/COGS}">
 									<Text text="{i18n>NetSales}"/>
 								</Column>
-								<Column>
+								<Column visible="{access>/tenderAccess/COGS}">
 									<Text text="{i18n>Profitability}"/>
 								</Column>
 							</columns>

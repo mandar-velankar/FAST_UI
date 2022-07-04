@@ -29,6 +29,7 @@ sap.ui.define([
 
 			//one model for the seperation layer
 			this._oFastAppDataModel = new JSONModel();
+			this._accessModel = new JSONModel();
 			this._oAllServices = {};
 
 		},
@@ -104,6 +105,9 @@ sap.ui.define([
 		//TODO move to financial tab logic
 		getFinancialModel: function () {
 			return this._oFinancialModel;
+		},
+		getAccessModel:function(){
+			return this._accessModel;
 		},
 
 		//TODO move to financial tab logic
@@ -360,6 +364,15 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			//return oDeferred.promise();
 
+		},
+		getAccess:function(){
+			const accessService = this.getService("Access");
+			const accessModel = this.getAccessModel();
+
+			return accessService.getAccess().then(result=>{
+				accessModel.setData(result.data);
+				return result.data;
+			});
 		},
 		//get offer path from fastappdata
 		getLoadedOfferPath: function (sOfferID) {
@@ -2437,7 +2450,7 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition,PriceCondition/FreeGoodsOther" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
 
@@ -5202,6 +5215,21 @@ sap.ui.define([
 								// clone PriceConditions
 								const clonedPriceConditions = priceConditions.map(pc => {
 									const clone = Object.assign({},pc);
+									// clone DiscountConditions
+									if(pc.DiscountCondition.results.length){
+										delete clone.DiscountCondition; // to align the naming and type with the PriceConditionService:convertToSaveObject DiscountCondition
+										clone.DiscountConditions = pc.DiscountCondition.results.map(dc => {
+											const dcClone = Object.assign({},dc);
+											return dcClone.ID && delete dcClone.ID && dcClone;
+										});
+									} 
+									// clone FreeGoodsOther
+									if(pc.FreeGoodsOther.results.length){
+										clone.FreeGoodsOther = pc.FreeGoodsOther.results.map(foc => {
+											const focClone = Object.assign({},foc);
+											return focClone.ID && delete focClone.ID && focClone;
+										});
+									} 
 									return clone.ID && delete clone.ID && clone;
 								});
 								clonedPriceConditions && (oCopyExistingOfferInfo.Product.results[index].PriceCondition.results = clonedPriceConditions);
