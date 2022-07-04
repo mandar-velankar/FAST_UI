@@ -9569,6 +9569,46 @@ sap.ui.define([
 
 				missingFields.clear();
 				
+                //Check missing mandatory fields for only Spain, as there are no mandatory fields for Italy
+                if(sCountryCode === 'ES'){
+                    
+				    if (oResultForTree) {
+                                        
+                        if(oResultForTree.PriceAgreement === null){
+
+                            if(!oResultForTree.CONTRACT_NO){
+                                missingFields.add("ContractNo");
+                            }
+                                
+                            if(!oResultForTree.OUTCOME){
+                                missingFields.add("Outcome");
+                            }
+                            if(oResultForTree.PRODUCT === "Other" && !oResultForTree.AWARDEDPRICE){
+                                missingFields.add("Awarded Price");
+                            }
+                            if(!oResultForTree.AWARDEDQTY){
+                                missingFields.add("Awarded Quantity");
+                            }
+                            if(!oResultForTree.TOTALAWARDEDVALUE){
+                                missingFields.add("Total Awarded Value");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.INFONEEDED){
+                                missingFields.add("Information Needed");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.APPEAL){
+                                missingFields.add("Appeal");
+                            }
+                            if(!oResultForTree.COMMENT){
+                                missingFields.add("Comment");
+                            }
+                            if((oResultForTree.OUTCOME && (oResultForTree.OUTCOME === 'Won' || oResultForTree.OUTCOME === 'Lost')) && !oResultForTree.REASON){
+                                missingFields.add("Reason");
+                            }                        
+                        }
+                    }
+                }                
+
+                                
 				//loop at competitors awarded results
 				if (oResultForTree.OutcomeLevel && oResultForTree.OutcomeLevel.length > 0) {
 					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
