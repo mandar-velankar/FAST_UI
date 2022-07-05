@@ -9255,7 +9255,7 @@ sap.ui.define([
 										AwardActing: oResult.AwardActing,
 										PriceAgreement: oProduct.PriceAgreement,
                                         APPEAL:(!oResult.Appeal ? "No" : oResult.Appeal) ,
-                                        INFONEEDED: oResult.InfoNeeded,
+                                        INFONEEDED:(!oResult.InfoNeeded ? "No" : oResult.InfoNeeded),
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
