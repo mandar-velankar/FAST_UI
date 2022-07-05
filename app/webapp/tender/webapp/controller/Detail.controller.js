@@ -8943,7 +8943,14 @@ sap.ui.define([
 			//if it comes at this place, we already checked if dates are in error or not correct match
 			//this allows us to just check for the warning: if expiry date is more than 12 months after effective date. 
 			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
-			warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
+            warningDate = new Date(warningDate.setFullYear(warningDate.getFullYear() + 1));
+			if(warningDate < quotationFields.ExpiryDate && warningDate.getMonth() < quotationFields.ExpiryDate.getMonth()){
+				MessageBox.error("Agreement is set for more than 12 months");
+				return;
+			}
+
+            //old code wouter - replaced for ticket https://trello.com/c/svXScOwQ
+			/*warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
 			if(warningDate < quotationFields.ExpiryDate){
 				MessageBox.warning("Warning, agreement is set for more than 12 months", {
 					actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
@@ -8953,7 +8960,7 @@ sap.ui.define([
 					}
 				});
 				return;
-			}
+			}*/
 			this._onSaveQuotationToBackend(quotationFields);
 
 		},
@@ -9247,7 +9254,7 @@ sap.ui.define([
 										AwardDate: oResult.AwardDate,
 										AwardActing: oResult.AwardActing,
 										PriceAgreement: oProduct.PriceAgreement,
-                                        APPEAL: oResult.Appeal,
+                                        APPEAL:(!oResult.Appeal ? "No" : oResult.Appeal) ,
                                         INFONEEDED: oResult.InfoNeeded,
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
@@ -9575,10 +9582,6 @@ sap.ui.define([
 				    if (oResultForTree) {
                                         
                         if(oResultForTree.PriceAgreement === null){
-
-                            if(!oResultForTree.CONTRACT_NO){
-                                missingFields.add("ContractNo");
-                            }
                                 
                             if(!oResultForTree.OUTCOME){
                                 missingFields.add("Outcome");
@@ -9597,9 +9600,6 @@ sap.ui.define([
                             }
                             if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.APPEAL){
                                 missingFields.add("Appeal");
-                            }
-                            if(!oResultForTree.COMMENT){
-                                missingFields.add("Comment");
                             }
                             if((oResultForTree.OUTCOME && (oResultForTree.OUTCOME === 'Won' || oResultForTree.OUTCOME === 'Lost')) && !oResultForTree.REASON){
                                 missingFields.add("Reason");
@@ -9641,9 +9641,6 @@ sap.ui.define([
                                 }
                                 if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.APPEAL){
                                     missingFields.add("Appeal");
-                                }
-                                if(!oOutcomeLevel.COMMENT){
-                                    missingFields.add("Comment");
                                 }
                                 if((oOutcomeLevel.OUTCOME && (oOutcomeLevel.OUTCOME === 'Won' || oOutcomeLevel.OUTCOME === 'Lost')) && !oOutcomeLevel.REASON){
                                     missingFields.add("Reason");
