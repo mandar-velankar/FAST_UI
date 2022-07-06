@@ -247,9 +247,8 @@
                                 <t:template>
                                     <m:Select id="resultsForTreeInfoNeeded" selectedKey="{fastAppData>INFONEEDED}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}">
                                         <m:items>
-                                            <core:Item text="" key=""/>
+                                            <core:Item text="No" key="No"/>                                        
                                             <core:Item text="Yes" key="Yes"/>
-                                            <core:Item text="No" key="No"/>
                                         </m:items>
                                     </m:Select>
                                 </t:template>
@@ -271,7 +270,6 @@
                                     <!--<m:Input value="{fastAppData>ERRORINSUBMISSION}" editable="false"/>-->
                                     <m:Select id="resultsForTreeError" selectedKey="{fastAppData>ERRORINSUBMISSION}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}">
                                         <m:items>
-                                            <core:Item text="" key=""/>
                                             <core:Item text="No" key="No"/>
                                             <core:Item text="Yes" key="Yes"/>
                                         </m:items>
