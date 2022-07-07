@@ -810,6 +810,11 @@
                         <m:Text text="{i18n>PVL}" visible="true"/>
                     </m:Column>
 
+                    <!-- Price Condition -->
+                    <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                    </m:Column>
+
                     <!-- Discount -->
                     <m:Column width="20%">
                         <m:Text text="{i18n>Discount}" visible="true"/>
@@ -882,15 +887,22 @@
                                 {path: 'fastAppData>PriceCondition/PVL'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
+
+                            <!-- Price Condition -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
                             
                             <!-- Discount -->
                             <m:Text text="{= ${fastAppData>PriceCondition/Discount} ? ${path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} + '%' : Number(100).toFixed(2) + '%'}"/>
 
                             <!-- NetPriceWithoutTax -->
-                            <m:Text text="{= ${fastAppData>PriceCondition/NetPriceWithoutTax} ? {parts: [
+                            <!-- <m:Text text="{= ${fastAppData>PriceCondition/NetPriceWithoutTax} ? {parts: [
                                 {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'} : Number(0).toFixed(2) + ' ' + ${path: 'fastAppData>CURRENCY'}}"/>
+                            ], formatter:'.formatter.price'} : Number(0).toFixed(2) + ' ' + ${path: 'fastAppData>CURRENCY'}}"/> -->
+                             <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
 
                             <!-- Rappel -->
                             <m:Text text="{ 
