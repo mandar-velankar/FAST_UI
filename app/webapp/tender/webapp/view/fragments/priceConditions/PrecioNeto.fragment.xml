@@ -50,7 +50,7 @@
                     fieldWidth="80%"
                 />  
                 <Label text="{i18n>RoyalDecreeApplies}" required="true"/> 
-                <Select selectedKey="{= (${fastAppData>/Tender/Institute/InstituteType} === 'Public Account' || ${fastAppData>/Tender/Institute/InstituteType} === 'Region(s)' || ${fastAppData>/Tender/Institute/InstituteType} === 'National') &amp;&amp; ${fastAppData>RoyalDecreeValue} &amp;&amp; ${fastAppData>RoyalDecreeValue} !== 0 ? 'Yes' : 'No'}" enabled="false" change=".calculateDiscountsAndNetPricesPrecioNeto"> 
+                <Select selectedKey="{= ${fastAppData>RoyalDecree} ? ${fastAppData>RoyalDecree} : 'No'}" enabled="false"> 
                     <items>
                         <core:Item key="No" text="No" />
                         <core:Item key="Yes" text="Yes" />
@@ -79,7 +79,7 @@
                     description="%" 
                     enabled="false" 
                     fieldWidth="80%"
-                    visible="{= ${fastAppData>RoyalDecree} !== 'No'}"
+                    visible="{= ${fastAppData>RoyalDecree} === 'Yes'}"
                 />
                 <Label text="{i18n>NetPriceBeforeRC}" required="true"/>
                 <Input 
@@ -89,20 +89,20 @@
                     fieldWidth="80%" 
                     liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
                 />
-                <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" visible="{= ${fastAppData>RoyalDecree} !== 'No'}"/>
-                <Label text="{i18n>RoyalDecreeValue}" required="{= ${fastAppData>RoyalDecree} !== 'No'}"/>
+                <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" selected="{fastAppData>RoyalDecreeIncl}" select=".calculateDiscountsAndNetPricesPrecioNeto"/>
+                <Label text="{i18n>RoyalDecreeValue}" required="false" />
                 <Input 
                     value="{path:'fastAppData>RoyalDecreeValue'}" 
                     enabled="false" 
                     fieldWidth="80%"
-                    visible="{= ${fastAppData>RoyalDecree} !== 'No'}"
+                    visible="{= ${fastAppData>RoyalDecree} === 'Yes'}"
                 />
                 <Label text="{i18n>NetPriceAfterRC}" required="true"/>
                 <Input 
                     value="{path:'fastAppData>NetPriceWithoutTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}}" 
                     enabled="false" 
                     fieldWidth="80%"
-                    visible="{= ${fastAppData>RoyalDecree} !== 'No'}"
+                    visible="{= ${fastAppData>RoyalDecree} === 'Yes'}"
                 />
                 <Label text="{i18n>MaximumPrice}" required="true"/>
                 <Input fieldGroupIds="priceInputPrecioNeto" value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}"/>

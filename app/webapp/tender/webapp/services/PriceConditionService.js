@@ -157,6 +157,7 @@ sap.ui.define([
                 "Discount": oPriceConditionViewObject.Discount,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "RoyalDecreeValue": oPriceConditionViewObject.RoyalDecreeValue,
+                "RoyalDecreeIncl": oPriceConditionViewObject.RoyalDecreeIncl,
                 "StandardDiscount": oPriceConditionViewObject.StandardDiscount,
                 "AdditionalDiscount": oPriceConditionViewObject.AdditionalDiscount,
                 "NetPriceWithoutTaxBeforeDeductionRD": oPriceConditionViewObject.NetPriceWithoutTaxBeforeDeductionRD,
