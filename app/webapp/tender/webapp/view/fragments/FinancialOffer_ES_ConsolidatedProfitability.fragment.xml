@@ -6,7 +6,7 @@
     <Table inset="false"
         items="{
                 path: 'fastAppData>/SelectedOffer/ConsolidatedProfitability'
-            }"
+            }" visible="{access>/tenderAccess/COGS}"
     >
     <headerToolbar>
 			<OverflowToolbar>
