@@ -1920,6 +1920,32 @@ sap.ui.define([
             const isRequired = Services.getFastAppDataModel().getProperty(`/${switchName}Required`);
             Services.getFastAppDataModel().setProperty(`/${switchName}Expanded`, isRequired);
             if(!isRequired && switchName === 'Rappel'){
+                
+                const oFastAppDataModel = Services.getFastAppDataModel();
+                const priceConditionView = oFastAppDataModel.getProperty("/PriceConditionView");
+                const mainPriceCondition = priceConditionView.find(i => i.isMain);
+                const rappelPriceCondition = priceConditionView.find(item => item.ConditionType === switchName);
+
+                if(mainPriceCondition.ConditionType === "Precio Neto")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
+                }
+
+                if(mainPriceCondition.ConditionType === "Descuento Comercial")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+                }
+
+                if(mainPriceCondition.ConditionType === "Descuento Especial")
+                {
+                    rappelPriceCondition.MainPrice = 0;
+                }
+
+                if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
+                }
+
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RoyalDecree`,"");
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Liquidation`,"");
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Settlement_ID`,"");
