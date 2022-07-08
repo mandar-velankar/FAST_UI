@@ -997,10 +997,12 @@ sap.ui.define([
                 const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
                 const maxPrice = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.MaxPrice;
                 oFastAppDataModel.setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
-                if(sConditionType === 'Precio Neto'){
-                    oFastAppDataModel.setProperty(bindingPath.concat("/MaximumPrice"), maxPrice);
+                if(sConditionType === 'Precio Neto' || sConditionType === 'Descuento Comercial'){
+                    
+                    if(sConditionType === 'Precio Neto'){                        
+                    oFastAppDataModel.setProperty(bindingPath.concat("/MaximumPrice"), maxPrice);}
 
-                    //check if royal decree applies for precio netto
+                    //check if royal decree applies for precio netto and Descuento Comercial
                     let oPrecioNettoCondition = oFastAppDataModel.getProperty(bindingPath);
                     let instType = oFastAppDataModel.getProperty('/Tender/Institute/InstituteType');
                     if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreeValue && oPrecioNettoCondition.RoyalDecreeValue !== 0 ? 'Yes' : 'No';
