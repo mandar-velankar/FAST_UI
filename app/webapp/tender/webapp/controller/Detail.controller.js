@@ -73,6 +73,8 @@ sap.ui.define([
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 
+			this.accessModel = Services.getAccessModel();
+			this.getView().setModel(this.accessModel, "access");
 			// Responsibility Assignment Model - this model can be used to set the visibility of the controls for a specific country in the user interface
 			/*this._oRaModel = new sap.ui.model.json.JSONModel({
 				visibleCountry: ""
@@ -7849,7 +7851,8 @@ sap.ui.define([
 									path: "fastData>SKU/PACKFACTOR"
 								}],
 								formatter: formatter.cogs
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"	
 						}),
 						//gross sales
 						new sap.m.ObjectNumber({
@@ -7862,7 +7865,7 @@ sap.ui.define([
 									path: "fastAppData>EditOffer/Currency"
 								}],
 								formatter: formatter.grossSales
-							}
+							}	
 						}),
 						//net sales
 						new sap.m.ObjectNumber({
@@ -7881,7 +7884,8 @@ sap.ui.define([
 									path: "fastData>Price/FOCType"
 								}],
 								formatter: formatter.netSales
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"
 						}),
 						//Profitability
 						new sap.m.ObjectNumber({
@@ -7949,7 +7953,8 @@ sap.ui.define([
 									path: "fastData>Price/Bundled_1_SKU/PACKFACTOR"
 								}],
 								formatter: formatter.profitState
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"
 						})
 					]
 				});
@@ -8938,7 +8943,14 @@ sap.ui.define([
 			//if it comes at this place, we already checked if dates are in error or not correct match
 			//this allows us to just check for the warning: if expiry date is more than 12 months after effective date. 
 			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
-			warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
+            warningDate = new Date(warningDate.setFullYear(warningDate.getFullYear() + 1));
+			if(warningDate < quotationFields.ExpiryDate && warningDate.getMonth() < quotationFields.ExpiryDate.getMonth()){
+				MessageBox.error("Agreement is set for more than 12 months");
+				return;
+			}
+
+            //old code wouter - replaced for ticket https://trello.com/c/svXScOwQ
+			/*warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
 			if(warningDate < quotationFields.ExpiryDate){
 				MessageBox.warning("Warning, agreement is set for more than 12 months", {
 					actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
@@ -8948,7 +8960,7 @@ sap.ui.define([
 					}
 				});
 				return;
-			}
+			}*/
 			this._onSaveQuotationToBackend(quotationFields);
 
 		},
@@ -9242,8 +9254,8 @@ sap.ui.define([
 										AwardDate: oResult.AwardDate,
 										AwardActing: oResult.AwardActing,
 										PriceAgreement: oProduct.PriceAgreement,
-                                        APPEAL: oResult.Appeal,
-                                        INFONEEDED: oResult.InfoNeeded,
+                                        APPEAL:(!oResult.Appeal ? "No" : oResult.Appeal) ,
+                                        INFONEEDED:(!oResult.InfoNeeded ? "No" : oResult.InfoNeeded),
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
 									}
@@ -9564,6 +9576,39 @@ sap.ui.define([
 
 				missingFields.clear();
 				
+                //Check missing mandatory fields for only Spain, as there are no mandatory fields for Italy
+                if(sCountryCode === 'ES'){
+                    
+				    if (oResultForTree) {
+                                        
+                        if(oResultForTree.PriceAgreement === null){
+                                
+                            if(!oResultForTree.OUTCOME){
+                                missingFields.add("Outcome");
+                            }
+                            if(oResultForTree.PRODUCT === "Other" && !oResultForTree.AWARDEDPRICE){
+                                missingFields.add("Awarded Price");
+                            }
+                            if(!oResultForTree.AWARDEDQTY){
+                                missingFields.add("Awarded Quantity");
+                            }
+                            if(!oResultForTree.TOTALAWARDEDVALUE){
+                                missingFields.add("Total Awarded Value");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.INFONEEDED){
+                                missingFields.add("Information Needed");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.APPEAL){
+                                missingFields.add("Appeal");
+                            }
+                            if((oResultForTree.OUTCOME && (oResultForTree.OUTCOME === 'Won' || oResultForTree.OUTCOME === 'Lost')) && !oResultForTree.REASON){
+                                missingFields.add("Reason");
+                            }                        
+                        }
+                    }
+                }                
+
+                                
 				//loop at competitors awarded results
 				if (oResultForTree.OutcomeLevel && oResultForTree.OutcomeLevel.length > 0) {
 					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
@@ -9596,9 +9641,6 @@ sap.ui.define([
                                 }
                                 if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.APPEAL){
                                     missingFields.add("Appeal");
-                                }
-                                if(!oOutcomeLevel.COMMENT){
-                                    missingFields.add("Comment");
                                 }
                                 if((oOutcomeLevel.OUTCOME && (oOutcomeLevel.OUTCOME === 'Won' || oOutcomeLevel.OUTCOME === 'Lost')) && !oOutcomeLevel.REASON){
                                     missingFields.add("Reason");
