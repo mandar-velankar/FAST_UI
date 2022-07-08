@@ -98,18 +98,9 @@ sap.ui.define([
             } else {
                 switch(oPriceConditionViewObject.ConditionType) {
                     case "Precio Neto":
-                        switch(oPriceConditionViewObject.RoyalDecree) {
-                            case "IncludeInPrecioNeto":
+                        priceConditionCode = "YLTF";
+                        if(oPriceConditionViewObject.RoyalDecree === "Yes" && !oPriceConditionViewObject.RoyalDecreeIncl){
                             priceConditionCode = "YLTP";
-                            break;
-                            case "ExcludeInPrecioNeto":
-                            priceConditionCode = "YLTF";
-                            break;
-                            case "No":
-                            priceConditionCode = "YLTF";
-                            break;
-                            default:
-                            priceConditionCode = "";
                         }
                         break;
                     case "Descuento Comercial":
