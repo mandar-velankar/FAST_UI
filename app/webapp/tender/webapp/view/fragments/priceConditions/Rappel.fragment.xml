@@ -64,7 +64,7 @@
                     </items>
                 </Select>
                 <Label text="{i18n>MainConditionPrice}"/>
-                <Input value="" enabled="false" fieldWidth="80%"/>
+                <Input value="{fastAppData>MainPrice}" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>Liquidation}" required="true"/>
                 <Select selectedKey="{fastAppData>Liquidation}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"> 
                     <items>
