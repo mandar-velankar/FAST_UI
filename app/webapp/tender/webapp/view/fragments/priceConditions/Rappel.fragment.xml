@@ -56,14 +56,15 @@
                     enabled="false" 
                     fieldWidth="80%"
                 />  
-                <Label text="{i18n>RoyalDecree}" required="true"/>
-                <Select selectedKey="{fastAppData>RoyalDecree}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"> 
+                <Label text="{i18n>RoyalDecreeApplies}"/>
+                <Select selectedKey="{fastAppData>RoyalDecree}" enabled="false"> 
                     <items>
-                        <core:Item key="" text="" />
-                        <core:Item key="Yes" text="Yes" />
-                        <core:Item key="No" text="No" />									
+                        <core:Item key="No" text="No" />
+                        <core:Item key="Yes" text="Yes" />									
                     </items>
                 </Select>
+                <Label text="{i18n>MainConditionPrice}"/>
+                <Input value="{fastAppData>MainPrice}" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>Liquidation}" required="true"/>
                 <Select selectedKey="{fastAppData>Liquidation}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"> 
                     <items>
@@ -78,8 +79,8 @@
                 <DatePicker
                         id="DP1"
                         value="{fastAppData>RefundDate}" 
-                        valueFormat="yyyy-MM-dd" 
-                        displayFormat="long"
+                        valueFormat="dd.MM.yyyy" 
+                        displayFormat="dd.MM.yyyy"
                         placeholder="Enter Date"
                         change="handleChange"
                         enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"
