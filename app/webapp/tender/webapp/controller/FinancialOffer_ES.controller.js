@@ -849,7 +849,7 @@ sap.ui.define([
                     //no explicit checks needed
                 } else if(oPriceConditions[i].ConditionType === "Rappel"){
                     if(rappelRequired && 
-                        ( !oPriceConditions[i].RoyalDecree || 
+                        ( //!oPriceConditions[i].RoyalDecree || 
                             !oPriceConditions[i].Liquidation || 
                             // !oPriceConditions[i].onVolumeTreshhold || 
                             // !oPriceConditions[i].Discount || 
