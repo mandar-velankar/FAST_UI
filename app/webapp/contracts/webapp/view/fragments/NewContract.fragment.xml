@@ -82,10 +82,12 @@
 				</Select> -->
 				<MultiComboBox id="idInstituteNewContract" 
 					selectionChange="handleSelectionChange"
-					selectionFinish="handleSelectionFinish"
-					items="{ path: 'ctr>/institutes', sorter: { path: 'instituteName' } }"
+			         selectionFinish="handleSelectionFinish"
+                    items="{ path: 'ctr>/institutes', sorter: { path: 'instituteName' } }"
 				>
+                <items>
 					<core:Item text="{ctr>instituteName}" key="{ctr>instituteID}"/>
+                    </items>
 				</MultiComboBox>
 
 				<!-- Distributor -->
