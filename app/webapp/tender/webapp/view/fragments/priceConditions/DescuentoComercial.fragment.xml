@@ -57,7 +57,7 @@
                 </items>
             </Select>
             <Label text="{i18n>Discount}" required="true"/>
-            <Input value="{path:'fastAppData>Discount', type:'.types.percent'}" enabled="{fastAppData>/EditMode}" description="%" fieldWidth="80%" liveChange=".calculateNetPricesDescuentoComercial"/>
+            <Input value="{path:'fastAppData>Discount', type:'.types.percent'}" enabled="{fastAppData>/EditMode}" description="%" fieldWidth="80%" liveChange=".onLiveChangeNetPricesDescuentoComercial"/>
             <Label text="{i18n>RoyalDecree}" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" />
             <Input value="{path:'fastAppData>RoyalDecreePercentage', type:'.types.percent'}" enabled="false" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" description="%" fieldWidth="80%"/>
             <Label text="{i18n>NetPriceBeforeRC}" required="true"/>
