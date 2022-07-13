@@ -1005,7 +1005,9 @@ sap.ui.define([
                     //check if royal decree applies for precio netto and Descuento Comercial
                     let oPrecioNettoCondition = oFastAppDataModel.getProperty(bindingPath);
                     let instType = oFastAppDataModel.getProperty('/Tender/Institute/InstituteType');
-                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreeValue && oPrecioNettoCondition.RoyalDecreeValue !== 0 ? 'Yes' : 'No';
+                    let discount = oPrecioNettoCondition.Discount ? oPrecioNettoCondition.Discount : 0;
+                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+                    if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
                 } 
                     
                 Services.setSelectedPriceConditionPath(bindingPath);
@@ -1142,14 +1144,11 @@ sap.ui.define([
 
             return priceConditionObject;
         },
+        
+        onLiveChangeNetPricesDescuentoComercial: function(oEvent){
 
-        calculateNetPricesDescuentoComercial: function (oEvent){
-
-            
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
-           
-            let newNetPriceWithoutTax = "";
 
             let newDiscount;
             if (oEvent.getId() === "change"){
@@ -1160,7 +1159,28 @@ sap.ui.define([
             }
             const discount = newDiscount;
             
+            this.calculateNetPricesDescuentoComercial(priceConditionViewObj,discount);
+            
+            
+            bindingContext.getModel().updateBindings();
+        },
 
+        calculateNetPricesDescuentoComercial: function (priceConditionViewObj,discount){
+
+            
+            /*const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const priceConditionViewObj = bindingContext.getObject(); */
+           
+            let newNetPriceWithoutTax = "";
+            
+          /*  let newDiscount;
+            if (oEvent.getId() === "change"){
+               newDiscount = Number(priceConditionViewObj.Discount) * 100;
+            } else {
+               newDiscount = Number(oEvent.getSource().getValue());
+
+            }
+            const discount = newDiscount; */
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
@@ -1181,17 +1201,18 @@ sap.ui.define([
 
             if(priceConditionViewObj.RoyalDecree === "Yes"){
                 newNetPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
+                priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.YLAP * (1 - discount / 100) * priceConditionViewObj.RoyalDecreePercentage;            
             }else {
                 newNetPriceWithoutTax = correctPrice * (1 - discount / 100);
             }
 
             // set the calcualted field and update the bindings
-            priceConditionViewObj.RoyalDecreeValue = newNetPriceWithoutTax * priceConditionViewObj.RoyalDecreePercentage;
-            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreeValue && priceConditionViewObj.RoyalDecreeValue !== 0 ? 'Yes' : 'No';
+            //priceConditionViewObj.RoyalDecreeValue = newNetPriceWithoutTax * priceConditionViewObj.RoyalDecreePercentage;
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
             priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
             priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2))
 
-            bindingContext.getModel().updateBindings();
+            //bindingContext.getModel().updateBindings();
         },
 
         calculateProfitability: async function(){
