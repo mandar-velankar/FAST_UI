@@ -84,7 +84,10 @@ sap.ui.define([
 
 			this.ctrState = this.getOwnerComponent().getState(this.getOwnerComponent().CTR);
 			this.setModel(this.ctrState.getModel(), "ctr");
-
+            //EHQUT-SCTASK0103493-Update Institute List in Contract Management
+            let oModel = this.getModel('ctr');
+            oModel.setSizeLimit(7000);
+            //EHQUT-SCTASK0103493-Update Institute List in Contract Management
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().getRoute("object").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);

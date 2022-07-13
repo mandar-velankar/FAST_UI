@@ -78,9 +78,11 @@
                 <Label text="{i18n>PaymentBackDate}" required="true"/>
                 <DatePicker
                         id="DP1"
-                        value="{fastAppData>RefundDate}" 
-                        valueFormat="dd.MM.yyyy" 
-                        displayFormat="dd.MM.yyyy"
+                        value="{
+                                path:'fastAppData>RefundDate',
+                                type:'sap.ui.model.type.Date', 
+                                formatOptions: { style: 'short', pattern: 'dd.MM.yyyy',UTC: true}
+                        }"
                         placeholder="Enter Date"
                         change="handleChange"
                         enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"
