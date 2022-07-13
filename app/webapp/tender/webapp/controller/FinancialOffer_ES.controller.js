@@ -1658,8 +1658,8 @@ sap.ui.define([
 
 
             // set the calcualted field and update the bindings
-            discountConditionObj.NetPriceWithoutTax = priceConditionViewObj.MainPrice * (1 - discount);
-            discountConditionObj.NetPriceWithTax = discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax);
+            discountConditionObj.NetPriceWithoutTax = priceConditionViewObj.MainPrice * (1 - discount / 100);
+            discountConditionObj.NetPriceWithTax = discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax).toFixed(2);
             /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
             discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
 
