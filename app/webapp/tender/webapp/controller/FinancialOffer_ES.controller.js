@@ -248,9 +248,38 @@ sap.ui.define([
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;
+            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;            
             Services.getFastAppDataModel().setProperty("/RappelRequired", false);
-            if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/RappelRequired", true);
+            if(existingPriceCondition){
+                Services.getFastAppDataModel().setProperty("/RappelRequired", true);                
+                //calculating the RoyalDecreeApplies
+                const rappelPriceCondition = priceConditionViews[rappelIndex];
+                let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");            
+                rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+                //calculating Main Price Condition
+                const mainPriceCondition = priceConditionViews.find(i => i.isMain && i.ExistingPriceConditionID);
+                if(mainPriceCondition.ConditionType === "Precio Neto")
+                {
+                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
+                }
+
+                if(mainPriceCondition.ConditionType === "Descuento Comercial")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+                }
+
+                if(mainPriceCondition.ConditionType === "Descuento Especial")
+                {
+                    rappelPriceCondition.MainPrice = 0;
+                }
+
+                if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+                {
+                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
+                }
+
+                Services.getFastAppDataModel().updateBindings();
+            } 
             return rappelBindingPath;
         },
 
@@ -1659,7 +1688,7 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             discountConditionObj.NetPriceWithoutTax = priceConditionViewObj.MainPrice * (1 - discount / 100);
-            discountConditionObj.NetPriceWithTax = discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax).toFixed(2);
+            discountConditionObj.NetPriceWithTax = discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax);
             /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
             discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
 
