@@ -266,10 +266,11 @@ sap.ui.define([
             let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");            
             rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
             //calculating Main Price Condition
-            const mainPriceCondition = priceConditionViews.find(i => i.isMain && i.ExistingPriceConditionID);
+            const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
+            const mainPriceCondition = priceConditionViews.find(i => i.isMain &&  i.ConditionType === sSelectedMainPriceCondition);
             if(mainPriceCondition.ConditionType === "Precio Neto")
             {
-                rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
+                rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD;
             }
 
             if(mainPriceCondition.ConditionType === "Descuento Comercial")
@@ -284,7 +285,7 @@ sap.ui.define([
 
             if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
             {
-                rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
+                rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : mainPriceCondition.PVL;                 
             }
 
             Services.getFastAppDataModel().updateBindings();
@@ -1012,6 +1013,7 @@ sap.ui.define([
         onPriceConditionChange: function(oEvent){
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
             this.loadMainPriceConditionFragment(sConditionType);
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice();
         },
 
         loadMainPriceConditionFragment: function(sConditionType){
@@ -1159,8 +1161,10 @@ sap.ui.define([
             priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(6));
             priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(6));
 
+
             bindingContext.getModel().updateBindings();
-            
+
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice(); 
         },
 
         calculateNetPricesPVL: function (priceConditionObject){
@@ -1196,7 +1200,8 @@ sap.ui.define([
             const discount = newDiscount;
             
             this.calculateNetPricesDescuentoComercial(priceConditionViewObj,discount);
-            
+
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice();
             
             bindingContext.getModel().updateBindings();
         },
@@ -1989,37 +1994,36 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RefundDate`,null);
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
             }
-            if(isRequired && switchName === 'Rappel'){ 
 
-                this.calculateRoyalDecreeAppliesAndMainConditionPrice();
-                
-                // const oFastAppDataModel = Services.getFastAppDataModel();
-                // const priceConditionView = oFastAppDataModel.getProperty("/PriceConditionView");
-                // const mainPriceCondition = priceConditionView.find(i => i.isMain && i.ExistingPriceConditionID);
-                // const rappelPriceCondition = priceConditionView.find(item => item.ConditionType === switchName);
+            // if(isRequired && switchName === 'Rappel'){ 
 
-                // if(mainPriceCondition.ConditionType === "Precio Neto")
-                // {
-                //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
-                // }
+            //     // const oFastAppDataModel = Services.getFastAppDataModel();
+            //     // const priceConditionView = oFastAppDataModel.getProperty("/PriceConditionView");
+            //     // const mainPriceCondition = priceConditionView.find(i => i.isMain && i.ExistingPriceConditionID);
+            //     // const rappelPriceCondition = priceConditionView.find(item => item.ConditionType === switchName);
 
-                // if(mainPriceCondition.ConditionType === "Descuento Comercial")
-                // {
-                //     rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
-                // }
+            //     // if(mainPriceCondition.ConditionType === "Precio Neto")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
+            //     // }
 
-                // if(mainPriceCondition.ConditionType === "Descuento Especial")
-                // {
-                //     rappelPriceCondition.MainPrice = 0;
-                // }
+            //     // if(mainPriceCondition.ConditionType === "Descuento Comercial")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+            //     // }
 
-                // if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
-                // {
-                //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
-                // }
+            //     // if(mainPriceCondition.ConditionType === "Descuento Especial")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = 0;
+            //     // }
 
-                // oFastAppDataModel.updateBindings();
-            }         
+            //     // if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
+            //     // }
+
+            //     // oFastAppDataModel.updateBindings();
+            // }         
             if(!isRequired && switchName === 'FOC'){
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/FreeGoodsOther`,[]);
             }
