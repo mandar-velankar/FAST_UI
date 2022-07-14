@@ -248,10 +248,47 @@ sap.ui.define([
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;
+            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;            
             Services.getFastAppDataModel().setProperty("/RappelRequired", false);
-            if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/RappelRequired", true);
+            if(existingPriceCondition){
+                Services.getFastAppDataModel().setProperty("/RappelRequired", true);                
+                this.calculateRoyalDecreeAppliesAndMainConditionPrice();
+            } 
             return rappelBindingPath;
+        },
+
+
+        calculateRoyalDecreeAppliesAndMainConditionPrice: function(){
+            //calculating the RoyalDecreeApplies
+            const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
+            const rappelPriceCondition = priceConditionViews[rappelIndex];
+            let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");            
+            rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+            //calculating Main Price Condition
+            const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem()?.getText();
+            const mainPriceCondition = priceConditionViews.find(i => i.isMain &&  i.ConditionType === sSelectedMainPriceCondition);
+            if(mainPriceCondition.ConditionType === "Precio Neto")
+            {
+                rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD;
+            }
+
+            if(mainPriceCondition.ConditionType === "Descuento Comercial")
+            {
+                rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+            }
+
+            if(mainPriceCondition.ConditionType === "Descuento Especial")
+            {
+                rappelPriceCondition.MainPrice = 0;
+            }
+
+            if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+            {
+                rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : mainPriceCondition.PVL;                 
+            }
+
+            Services.getFastAppDataModel().updateBindings();
         },
 
         /**
@@ -976,6 +1013,7 @@ sap.ui.define([
         onPriceConditionChange: function(oEvent){
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
             this.loadMainPriceConditionFragment(sConditionType);
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice();
         },
 
         loadMainPriceConditionFragment: function(sConditionType){
@@ -1028,12 +1066,10 @@ sap.ui.define([
 
         },
 
-        calculateDiscountsAndNetPricesPrecioNeto: function(oEvent){
+        onLiveChangeNetPricesPrecioNeto: function(oEvent){
             const evt = oEvent;
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
-
-            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
 
@@ -1047,11 +1083,6 @@ sap.ui.define([
 
             const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
 
-            // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
-            /* 
-                NOTE: the evt.getId() === "change" has been added, since we are now also calling this method from the "Royal decree inclusive" checkbox
-                      errors will occur, as the select control does not have a value state message attribute, thus, code will dump 
-            */
             if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice && evt.getId() === "change"){
                 evt.getSource().setValueState("Error");
                 evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
@@ -1080,6 +1111,65 @@ sap.ui.define([
                     evt.getSource().closeValueStateMessage(); 
                 }
             }
+
+            this.calculateDiscountsAndNetPricesPrecioNeto(priceConditionViewObj,newNetPriceWithoutTaxBeforeDeductionRD);
+                        
+            bindingContext.getModel().updateBindings();
+        
+        },
+                
+        calculateDiscountsAndNetPricesPrecioNeto: function(priceConditionViewObj,newNetPriceWithoutTaxBeforeDeductionRD){
+            /*const evt = oEvent;
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const priceConditionViewObj = bindingContext.getObject();*/
+
+            let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
+            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+
+           /* let newNetP;
+            if (oEvent.getId() === "change" || oEvent.getId() === "select"){
+                newNetP = Number(priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);
+            } else {
+                 newNetP = Number(oEvent.getSource().getValue());
+
+            }
+
+            const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
+
+            // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
+            /* 
+                NOTE: the evt.getId() === "change" has been added, since we are now also calling this method from the "Royal decree inclusive" checkbox
+                      errors will occur, as the select control does not have a value state message attribute, thus, code will dump 
+            */
+            /*if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice && evt.getId() === "change"){
+                evt.getSource().setValueState("Error");
+                evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
+                evt.getSource().openValueStateMessage();
+            } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement' && evt.getId() === "change"){
+                if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
+                    evt.getSource().setValueState("Error");
+                    evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than PVL.");
+                    evt.getSource().openValueStateMessage();
+                } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
+                    evt.getSource().setValueState("Error");
+                    evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the confidential price.");
+                    evt.getSource().openValueStateMessage();
+                }else{
+                    if(evt.getId() === "change"){
+                        evt.getSource().setValueState("None");
+                        evt.getSource().setValueStateText("");
+                        evt.getSource().closeValueStateMessage();
+                    }
+                }
+
+            }else{
+                if(evt.getId() === "change"){
+                    evt.getSource().setValueState("None");
+                    evt.getSource().setValueStateText("");
+                    evt.getSource().closeValueStateMessage(); 
+                }
+            }*/
 
             let correctPrice;
             if(instType === "Private Account"){
@@ -1115,16 +1205,19 @@ sap.ui.define([
             }*/
 
             // set the calcualted field and update the bindings
-            newNetPriceWithoutTaxAfterDeductionRD = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * (1 - priceConditionViewObj.RoyalDecreePercentage) : newNetPriceWithoutTaxBeforeDeductionRD;
-            priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage : newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage / 1 - priceConditionViewObj.RoyalDecreePercentage;
-            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreeValue && priceConditionViewObj.RoyalDecreeValue !== 0 ? 'Yes' : 'No';
-            newNetPriceWithTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD * (1 - priceConditionViewObj.Tax);
+            newNetPriceWithoutTaxAfterDeductionRD = priceConditionViewObj.RoyalDecreeIncl === true ? newNetPriceWithoutTaxBeforeDeductionRD : newNetPriceWithoutTaxBeforeDeductionRD * (1 - priceConditionViewObj.RoyalDecreePercentage);
+            if(instType === 'Private Account'){
+                newNetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxBeforeDeductionRD;
+            }
+            //priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage : newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage / 1 - priceConditionViewObj.RoyalDecreePercentage;
+            priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === true ? newNetPriceWithoutTaxBeforeDeductionRD / (1 - priceConditionViewObj.RoyalDecreePercentage) - newNetPriceWithoutTaxBeforeDeductionRD : newNetPriceWithoutTaxBeforeDeductionRD - newNetPriceWithoutTaxAfterDeductionRD;   
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 - priceConditionViewObj.Tax) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + priceConditionViewObj.Tax);
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
             priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(6));
             priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(6));
 
-            bindingContext.getModel().updateBindings();
-            
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice(); 
         },
 
         calculateNetPricesPVL: function (priceConditionObject){
@@ -1160,7 +1253,8 @@ sap.ui.define([
             const discount = newDiscount;
             
             this.calculateNetPricesDescuentoComercial(priceConditionViewObj,discount);
-            
+
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice();
             
             bindingContext.getModel().updateBindings();
         },
@@ -1658,7 +1752,7 @@ sap.ui.define([
 
 
             // set the calcualted field and update the bindings
-            discountConditionObj.NetPriceWithoutTax = priceConditionViewObj.MainPrice * (1 - discount);
+            discountConditionObj.NetPriceWithoutTax = priceConditionViewObj.MainPrice * (1 - discount / 100);
             discountConditionObj.NetPriceWithTax = discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax);
             /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
             discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
@@ -1953,35 +2047,36 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RefundDate`,null);
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
             }
-            if(isRequired && switchName === 'Rappel'){ 
-                
-                const oFastAppDataModel = Services.getFastAppDataModel();
-                const priceConditionView = oFastAppDataModel.getProperty("/PriceConditionView");
-                const mainPriceCondition = priceConditionView.find(i => i.isMain && i.ExistingPriceConditionID);
-                const rappelPriceCondition = priceConditionView.find(item => item.ConditionType === switchName);
 
-                if(mainPriceCondition.ConditionType === "Precio Neto")
-                {
-                    rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
-                }
+            // if(isRequired && switchName === 'Rappel'){ 
 
-                if(mainPriceCondition.ConditionType === "Descuento Comercial")
-                {
-                    rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
-                }
+            //     // const oFastAppDataModel = Services.getFastAppDataModel();
+            //     // const priceConditionView = oFastAppDataModel.getProperty("/PriceConditionView");
+            //     // const mainPriceCondition = priceConditionView.find(i => i.isMain && i.ExistingPriceConditionID);
+            //     // const rappelPriceCondition = priceConditionView.find(item => item.ConditionType === switchName);
 
-                if(mainPriceCondition.ConditionType === "Descuento Especial")
-                {
-                    rappelPriceCondition.MainPrice = 0;
-                }
+            //     // if(mainPriceCondition.ConditionType === "Precio Neto")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
+            //     // }
 
-                if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
-                {
-                    rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
-                }
+            //     // if(mainPriceCondition.ConditionType === "Descuento Comercial")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+            //     // }
 
-                oFastAppDataModel.updateBindings();
-            }         
+            //     // if(mainPriceCondition.ConditionType === "Descuento Especial")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = 0;
+            //     // }
+
+            //     // if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
+            //     // }
+
+            //     // oFastAppDataModel.updateBindings();
+            // }         
             if(!isRequired && switchName === 'FOC'){
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/FreeGoodsOther`,[]);
             }
