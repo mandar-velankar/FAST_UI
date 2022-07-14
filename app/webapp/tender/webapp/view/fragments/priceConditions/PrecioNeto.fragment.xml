@@ -87,9 +87,9 @@
                     value="{path:'fastAppData>NetPriceWithoutTaxBeforeDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
                     enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" 
                     fieldWidth="80%" 
-                    liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
+                    liveChange=".onLiveChangeNetPricesPrecioNeto"
                 />
-                <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" selected="{fastAppData>RoyalDecreeIncl}" select=".calculateDiscountsAndNetPricesPrecioNeto"/>
+                <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" selected="{fastAppData>RoyalDecreeIncl}" select=".onLiveChangeNetPricesPrecioNeto"/>
                 <Label text="{i18n>RoyalDecreeValue}" required="false" />
                 <Input 
                     value="{path:'fastAppData>RoyalDecreeValue'}" 
