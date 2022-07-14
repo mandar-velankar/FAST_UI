@@ -285,7 +285,7 @@ sap.ui.define([
 
             if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
             {
-                rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : mainPriceCondition.PVL;                 
+                rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? mainPriceCondition.YLAP : mainPriceCondition.PVL;                 
             }
 
             Services.getFastAppDataModel().updateBindings();
