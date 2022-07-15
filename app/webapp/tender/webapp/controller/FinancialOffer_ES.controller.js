@@ -1073,45 +1073,42 @@ sap.ui.define([
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
 
-            let newNetP;
-            if (oEvent.getId() === "change" || oEvent.getId() === "select"){
-                newNetP = Number(priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);
-            } else {
-                 newNetP = Number(oEvent.getSource().getValue());
+            const newNetPriceWithoutTaxBeforeDeductionRD = oEvent.getSource()?.getValue?.() || priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD;
+             
+            // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
+            /* 
+                NOTE: The if(evt.getSource().openValueStateMessage) check has been added, 
+                    since we are now also calling this method from the "Royal decree included" checkbox.
+                      Also, the code will throw error, as the sap.m.Select Control do not have openValueStateMessage() and closeValueStateMessage() methods. 
+            */
 
-            }
-
-            const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
-
-            if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice && evt.getId() === "change"){
-                evt.getSource().setValueState("Error");
-                evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
-                evt.getSource().openValueStateMessage();
-            } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement' && evt.getId() === "change"){
-                if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
+            if(evt.getSource().openValueStateMessage){            
+                if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice){
                     evt.getSource().setValueState("Error");
-                    evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than PVL.");
+                    evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price.");
                     evt.getSource().openValueStateMessage();
-                } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
-                    evt.getSource().setValueState("Error");
-                    evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the confidential price.");
-                    evt.getSource().openValueStateMessage();
+                } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement'){
+                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than PVL.");
+                        evt.getSource().openValueStateMessage();
+                    } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the confidential price.");
+                        evt.getSource().openValueStateMessage();
+                    }else{
+                            evt.getSource().setValueState("None");
+                            evt.getSource().setValueStateText("");
+                            evt.getSource().closeValueStateMessage();
+                        }
+
                 }else{
-                    if(evt.getId() === "change"){
                         evt.getSource().setValueState("None");
                         evt.getSource().setValueStateText("");
-                        evt.getSource().closeValueStateMessage();
+                        evt.getSource().closeValueStateMessage(); 
                     }
-                }
-
-            }else{
-                if(evt.getId() === "change"){
-                    evt.getSource().setValueState("None");
-                    evt.getSource().setValueStateText("");
-                    evt.getSource().closeValueStateMessage(); 
-                }
+                
             }
-
             this.calculateDiscountsAndNetPricesPrecioNeto(priceConditionViewObj,newNetPriceWithoutTaxBeforeDeductionRD);
                         
             bindingContext.getModel().updateBindings();
@@ -1212,7 +1209,7 @@ sap.ui.define([
             //priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage : newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage / 1 - priceConditionViewObj.RoyalDecreePercentage;
             priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === true ? newNetPriceWithoutTaxBeforeDeductionRD / (1 - priceConditionViewObj.RoyalDecreePercentage) - newNetPriceWithoutTaxBeforeDeductionRD : newNetPriceWithoutTaxBeforeDeductionRD - newNetPriceWithoutTaxAfterDeductionRD;   
             priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
-            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 - priceConditionViewObj.Tax) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + priceConditionViewObj.Tax);
+            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 + priceConditionViewObj.Tax) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + priceConditionViewObj.Tax);
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
             priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(6));
             priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(6));
