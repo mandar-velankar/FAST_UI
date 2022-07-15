@@ -1083,7 +1083,7 @@ sap.ui.define([
             */
 
             if(evt.getSource().openValueStateMessage){            
-                if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice){
+                if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice)){
                     evt.getSource().setValueState("Error");
                     evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price.");
                     evt.getSource().openValueStateMessage();
