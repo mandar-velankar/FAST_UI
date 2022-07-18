@@ -1012,8 +1012,9 @@ sap.ui.define([
 
         onPriceConditionChange: function(oEvent){
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");            
             this.loadMainPriceConditionFragment(sConditionType);
-            this.calculateRoyalDecreeAppliesAndMainConditionPrice();
+            if(classification === "Commercial Agreement") this.calculateRoyalDecreeAppliesAndMainConditionPrice();
         },
 
         loadMainPriceConditionFragment: function(sConditionType){
