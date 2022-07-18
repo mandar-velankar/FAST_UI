@@ -1084,10 +1084,20 @@ sap.ui.define([
             */
 
             if(evt.getSource().openValueStateMessage){            
-                if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice)){
-                    evt.getSource().setValueState("Error");
-                    evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price.");
-                    evt.getSource().openValueStateMessage();
+                if(bindingContext.getProperty('/Tender/Classification') === 'Tender'){
+                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) ))))){
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and PVL.");
+                        evt.getSource().openValueStateMessage();  
+                    } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and confidential price.");
+                        evt.getSource().openValueStateMessage();                    
+                    }else{
+                        evt.getSource().setValueState("None");
+                        evt.getSource().setValueStateText("");
+                        evt.getSource().closeValueStateMessage();
+                    }                         
                 } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement'){
                     if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
                         evt.getSource().setValueState("Error");
