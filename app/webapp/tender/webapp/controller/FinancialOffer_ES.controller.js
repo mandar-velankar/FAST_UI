@@ -245,6 +245,10 @@ sap.ui.define([
             const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
             if(rappelIndex < 0) return null;
+            const rappelPriceCondition = priceConditionViews[rappelIndex];
+            let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");            
+            if(classification === "Commercial Agreement") rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';            
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
@@ -1012,8 +1016,9 @@ sap.ui.define([
 
         onPriceConditionChange: function(oEvent){
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");            
             this.loadMainPriceConditionFragment(sConditionType);
-            this.calculateRoyalDecreeAppliesAndMainConditionPrice();
+            if(classification === "Commercial Agreement") this.calculateRoyalDecreeAppliesAndMainConditionPrice();
         },
 
         loadMainPriceConditionFragment: function(sConditionType){
@@ -1083,10 +1088,20 @@ sap.ui.define([
             */
 
             if(evt.getSource().openValueStateMessage){            
-                if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice)){
-                    evt.getSource().setValueState("Error");
-                    evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price.");
-                    evt.getSource().openValueStateMessage();
+                if(bindingContext.getProperty('/Tender/Classification') === 'Tender'){
+                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) ))))){
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and PVL.");
+                        evt.getSource().openValueStateMessage();  
+                    } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and confidential price.");
+                        evt.getSource().openValueStateMessage();                    
+                    }else{
+                        evt.getSource().setValueState("None");
+                        evt.getSource().setValueStateText("");
+                        evt.getSource().closeValueStateMessage();
+                    }                         
                 } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement'){
                     if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
                         evt.getSource().setValueState("Error");
@@ -2045,6 +2060,8 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
             }
 
+
+            if(isRequired && switchName === 'Rappel') this.calculateRoyalDecreeAppliesAndMainConditionPrice();
             // if(isRequired && switchName === 'Rappel'){ 
 
             //     // const oFastAppDataModel = Services.getFastAppDataModel();
