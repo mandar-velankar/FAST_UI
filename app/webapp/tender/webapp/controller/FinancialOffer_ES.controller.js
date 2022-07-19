@@ -245,6 +245,10 @@ sap.ui.define([
             const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
             if(rappelIndex < 0) return null;
+            const rappelPriceCondition = priceConditionViews[rappelIndex];
+            let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");            
+            if(classification === "Commercial Agreement") rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';            
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
@@ -2056,6 +2060,8 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
             }
 
+
+            if(isRequired && switchName === 'Rappel') this.calculateRoyalDecreeAppliesAndMainConditionPrice();
             // if(isRequired && switchName === 'Rappel'){ 
 
             //     // const oFastAppDataModel = Services.getFastAppDataModel();
