@@ -7242,9 +7242,9 @@ sap.ui.define([
 				(this.getSelectedCountry() !== 'ES' || 
 					(this.getSelectedCountry() === 'ES' && 
 					oBankGuarantee.BankRequestDate &&
-					oBankGuarantee.BankName &&
+					oBankGuarantee.BankName))){
 					//oBankGuarantee.BankStatus &&
-					oBankGuarantee.ShippingDate))){
+					//oBankGuarantee.ShippingDate
 				//oBankGuarantee.ClosingDate
 					 bValid = true;
 			 }
