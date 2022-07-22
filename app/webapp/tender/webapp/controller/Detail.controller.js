@@ -9225,7 +9225,16 @@ sap.ui.define([
                                         
                                         switch(priceConditionObject?.PriceConditionClassification?.ConditionType) {
                                             case "PVL":
-                                              // code block
+                                                let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
+
+                                                if (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National'){
+
+                                                    iAwardedPrice = priceConditionObject.ConfidentialPrice * ( 1- (priceConditionObject.RoyalDecreePercentage?.Percentage || 0));
+
+                                                } else {
+                                                    iAwardedPrice = priceConditionObject.PVL;
+                                                }
+
                                               break;
                                             case "Rental":
                                                 iAwardedPrice = priceConditionObject.MonthlyRentPerUnit;
