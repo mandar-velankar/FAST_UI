@@ -229,6 +229,21 @@ sap.ui.define([
 			return sFocDisplay;
 		
 		},
+        totalAwardedValue: function(PriceCondition, AWARDEDQTY, AWARDEDPRICE){
+            let multiplier = PriceCondition === "Rental" ? 12 : 1;
+            let totalAwardedValue = AWARDEDQTY*AWARDEDPRICE*multiplier;
+            let oLocale = new sap.ui.core.Locale("en-US"); //force the same number format for all countries (also if browser language is german, . will be . as decimal)
+            var oNumberFormat = sap.ui.core.format.NumberFormat.getFloatInstance({
+                maxFractionDigits: 2,
+                minFractionDigits: 2,
+                groupingEnabled: true,
+                groupingSeparator: ",",
+                decimalSeparator: "."
+            },oLocale);
+            var oValue = oNumberFormat.format(parseFloat(totalAwardedValue));
+            return oValue;
+
+        },
 		percentageNoUnit: function(pct){
 			var oNumberFormat = NumberFormat.getFloatInstance({
 				maxFractionDigits: 2,
