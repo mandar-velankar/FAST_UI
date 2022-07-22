@@ -239,7 +239,12 @@
                             <t:Column width="9rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }" >
                                 <m:Label text="Total Awarded Value" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                 <t:template>
-                                    <m:Input type="Number" value="{fastAppData>TOTALAWARDEDVALUE}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}" />
+                                    <m:Input value="{ parts:[ 
+                                                            { path: 'fastAppData>PriceCondition'}, 
+                                                            { path: 'fastAppData>AWARDEDQTY'}, 
+                                                            { path: 'fastAppData>AWARDEDPRICE'}
+                                                            ], formatter: '.formatter.totalAwardedValue'}"                                   
+                                    enabled="false"  />
                                 </t:template>
                             </t:Column>
                             <t:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
