@@ -272,26 +272,27 @@ sap.ui.define([
             //calculating Main Price Condition
             const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem()?.getText();
             const mainPriceCondition = priceConditionViews.find(i => i.isMain &&  i.ConditionType === sSelectedMainPriceCondition);
-            if(mainPriceCondition.ConditionType === "Precio Neto")
-            {
-                rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD;
-            }
+            if(mainPriceCondition){
+                if(mainPriceCondition.ConditionType === "Precio Neto")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD;
+                }
 
-            if(mainPriceCondition.ConditionType === "Descuento Comercial")
-            {
-                rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
-            }
+                if(mainPriceCondition.ConditionType === "Descuento Comercial")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+                }
 
-            if(mainPriceCondition.ConditionType === "Descuento Especial")
-            {
-                rappelPriceCondition.MainPrice = 0;
-            }
+                if(mainPriceCondition.ConditionType === "Descuento Especial")
+                {
+                    rappelPriceCondition.MainPrice = 0;
+                }
 
-            if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
-            {
-                rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? mainPriceCondition.YLAP : mainPriceCondition.PVL;                 
-            }
-
+                if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+                {
+                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? mainPriceCondition.YLAP : mainPriceCondition.PVL;                 
+                }
+            }            
             Services.getFastAppDataModel().updateBindings();
         },
 

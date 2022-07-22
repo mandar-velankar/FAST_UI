@@ -9218,6 +9218,36 @@ sap.ui.define([
 									if (oProduct && oProduct.Price && oProduct.Price.OfferPrice) {
 										iAwardedPrice = oProduct.Price.OfferPrice;
 									}
+
+                                    if(Services.getSelectedCountry().indexOf("ES") > -1){
+
+                                        let priceConditionObject = oProduct?.PriceCondition?.results?.find( cond => cond?.PriceConditionClassification?.isMain);
+                                        
+                                        switch(priceConditionObject?.PriceConditionClassification?.ConditionType) {
+                                            case "PVL":
+                                                let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
+
+                                                if (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National'){
+
+                                                    iAwardedPrice = priceConditionObject.ConfidentialPrice * ( 1- (priceConditionObject.RoyalDecreePercentage?.Percentage || 0));
+
+                                                } else {
+                                                    iAwardedPrice = priceConditionObject.PVL;
+                                                }
+
+                                              break;
+                                            case "Rental":
+                                                iAwardedPrice = priceConditionObject.MonthlyRentPerUnit;
+                                              break;
+                                            default:
+                                              // code block
+                                          }
+    
+
+                                    }
+                                    
+                                    
+
 									var oBayerProduct = {
 										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
@@ -9294,7 +9324,6 @@ sap.ui.define([
 			}
 
 		},
-
 		//collapse hyrarchie of tree table
 		onCollapseOutcome: function () {
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
