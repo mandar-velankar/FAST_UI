@@ -9215,15 +9215,15 @@ sap.ui.define([
 
 									//offerprice not always existing
 									var iAwardedPrice = null;
+                                    let iPriceCondition = null;
 									if (oProduct && oProduct.Price && oProduct.Price.OfferPrice) {
 										iAwardedPrice = oProduct.Price.OfferPrice;
 									}
-
                                     if(Services.getSelectedCountry().indexOf("ES") > -1){
 
                                         let priceConditionObject = oProduct?.PriceCondition?.results?.find( cond => cond?.PriceConditionClassification?.isMain);
-                                        
-                                        switch(priceConditionObject?.PriceConditionClassification?.ConditionType) {
+                                        iPriceCondition = priceConditionObject?.PriceConditionClassification?.ConditionType;
+                                        switch(iPriceCondition) {
                                             case "PVL":
                                                 let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
 
@@ -9287,8 +9287,9 @@ sap.ui.define([
                                         APPEAL:(!oResult.Appeal ? "No" : oResult.Appeal) ,
                                         INFONEEDED:(!oResult.InfoNeeded ? "No" : oResult.InfoNeeded),
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
-										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
-									}
+										_sOperation: oResult._sOperation, //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
+                                        PriceCondition: iPriceCondition
+                                    }
 
 									var oResultsForTree = {
 										OutcomeLevel: oBayerProduct
@@ -9621,9 +9622,6 @@ sap.ui.define([
                             if(!oResultForTree.AWARDEDQTY){
                                 missingFields.add("Awarded Quantity");
                             }
-                            if(!oResultForTree.TOTALAWARDEDVALUE){
-                                missingFields.add("Total Awarded Value");
-                            }
                             if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.INFONEEDED){
                                 missingFields.add("Information Needed");
                             }
@@ -9661,9 +9659,6 @@ sap.ui.define([
                                 }
                                 if(!oOutcomeLevel.AWARDEDQTY){
                                     missingFields.add("Awarded Quantity");
-                                }
-                                if(!oOutcomeLevel.TOTALAWARDEDVALUE){
-                                    missingFields.add("Total Awarded Value");
                                 }
                                 if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.INFONEEDED){
                                     missingFields.add("Information Needed?");
