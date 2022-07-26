@@ -9154,7 +9154,12 @@ sap.ui.define([
 											} else {
 												oCompetitorResult.REASON = oCompetitorResult.REASON;
 											}*/
-
+                                            //EHQUT-OTT-118849-Making decision pending as default
+                                            if(oCompetitorResult.OUTCOME=='' && sCountry=='IT')
+                                            {
+                                                oCompetitorResult.OUTCOME='Decision Pending';
+                                            }
+                                            //EHQUT-OTT-118849-Making decision pending as default
 											var oCompetitorResultForView = {
 												OFFERID: oCompetitorResult.OFFERID,
 												PRODUCTCODE: oCompetitorResult.PRODUCTCODE,
@@ -9206,6 +9211,12 @@ sap.ui.define([
 									if (oProduct && oProduct.Price && oProduct.Price.OfferPrice) {
 										iAwardedPrice = oProduct.Price.OfferPrice;
 									}
+                                    //EHQUT-OTT-118849-Making decision pending as default
+                                    if(oResult.Outcome=='' && sCountry=='IT')
+                                    {
+                                        oResult.Outcome='Decision Pending';
+                                    }
+                                    //EHQUT-OTT-118849-Making decision pending as default
 									var oBayerProduct = {
 										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
@@ -9335,7 +9346,11 @@ sap.ui.define([
 				//Add new awarded product
 				var oBayerProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
 				var oNewRewardedProduct = Services.getService('Product').getEmptyProductResult();
-				
+                //EHQUT-OTT-118849-Making decision pending as default
+                if(sCountry=='IT'){
+                    oNewRewardedProduct.OUTCOME='Decision Pending';
+                    }
+                //EHQUT-OTT-118849-Making decision pending as default
 				//fill necesary data
 				oNewRewardedProduct.OFFERID = oBayerProduct.OFFERID;
 				oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
