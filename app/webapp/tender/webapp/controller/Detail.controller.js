@@ -9886,19 +9886,19 @@ sap.ui.define([
 					if(aSpecifications.length > 0){
 						this.byId("idSpecifications").setVisible(true);
 					}
-
-                    if((sCountry === 'ES' || sCountry === 'IT') && sKey === 'Tender'){
+                    //EHQUT-INC0184560-Issue in offer creation
+                    if(sCountry === 'ES' && sKey === 'Tender' || sCountry === 'IT') {
                         this.byId("idSelectTenderTypeEdit").setVisible(true);
                         if(sCountry === 'ES'){
                             this.byId("idSelectTenderType2Edit").setVisible(true);     
                         }                   
-                    } else if((sCountry === 'ES' || sCountry === 'IT') && sKey !== 'Tender'){
+                    } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
                         if(sCountry === 'ES'){
                             this.byId("idSelectTenderType2Edit").setVisible(false);     
                         }                  
                     }         
-
+                    //EHQUT-INC0184560-Issue in offer creation
 				} catch(err) {
 					console.log(err);
 				} finally{
