@@ -7433,7 +7433,7 @@ sap.ui.define([
 						that.getView().setBusy(false);
 						return;
 					}
-
+                   //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//Set price for product
 					oNewPriceInfo = {
 						TenderID: tenderId,
@@ -7451,11 +7451,11 @@ sap.ui.define([
 							100 : that.byId("idEditPriceOffer_idFoc").getValue(),
 						FOCType: that.byId("idEditFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
 						Discount: that.byId("idEditPriceOffer_idDiscount").getValue() / 100,
-						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", "")),
+						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replaceAll(",", "")),
 						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue() / 100,
 						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
 						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
-						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replace(",", "")),
+						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replaceAll(",", "")),
 						BusinessCasePrice: parseFloat(that.byId("idEditPriceOffer_idBusinessCasePrice").getValue().replace(",", "")),
 						WholesalePrice: that.byId("idEditPriceOffer_idWhlseofr").getSelectedKey(),
 						COGS: cogsValues.COGS,
@@ -7468,11 +7468,11 @@ sap.ui.define([
 						FOC_Bundled_1: (that.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey() === "PCT") ? that.byId(
 							"idEditPriceOffer_idFoc1").getValue() / 100 : that.byId("idEditPriceOffer_idFoc1").getValue(), //FOC ADDITIONAL PROD VALUE
 						ActiveTier: 0,
-						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replace(",", "")),
-						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replace(",", "")),
+						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
+						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						PRICE_UPDATE: 0
 					};
-
+                //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//check if any of the pricing data is changed
 					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
 
