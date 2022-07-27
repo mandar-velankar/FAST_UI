@@ -2081,7 +2081,11 @@ sap.ui.define([
 					var aCountryOutcomes = oData.results;
 
 					if(oData.results.length > 0){
+                        //EHQUT-OTT-118849-Making decision pending as default
+                        if(sCountry !=='IT'){
 						aCountryOutcomes.unshift({CountryCode:sCountry,Outcome:"",Sorter:"0"});
+                        }
+                        //EHQUT-OTT-118849-Making decision pending as default
 					}
 
 					//data received is set
