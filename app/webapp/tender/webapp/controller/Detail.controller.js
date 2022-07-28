@@ -8729,7 +8729,9 @@ sap.ui.define([
 
 			
 			// TODO: check if this only applies to Spain
-			if (oSelectedProduct.CountryCode === "ES" && selectedProductType === "Injector"){
+            // CHANGE: instead of checking on selectedProductType, the check should check whether or not the main price condition is "Rental"
+            //         if it's a rental condition, the error should be shown. Otherwise, the PA can be created
+			if (oSelectedProduct.CountryCode === "ES" && oSelectedProduct.PriceCondition.results.find(condition => condition.PriceConditionClassification.ConditionType === "Rental")){
 				sap.m.MessageToast.show("No price agreement can be created for Rental");
 				return;
 			}
