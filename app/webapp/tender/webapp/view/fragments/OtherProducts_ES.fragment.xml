@@ -4,8 +4,8 @@
 
 	<Dialog id="OtherProducts" title="Products" >
 		<buttons>
-			<Button text="Cancel" press=".oCancelProducts" />
 			<Button text="Apply" press=".oApplyProducts" />
+			<Button text="Cancel" press=".oCancelProducts" />
 		</buttons>
 
         <Table id="FreeGoodsOtherTable" items="{path:'fastAppData>FreeGoodsOther'}">

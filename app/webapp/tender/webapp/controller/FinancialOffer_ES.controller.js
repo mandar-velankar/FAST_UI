@@ -1223,7 +1223,7 @@ sap.ui.define([
                 newNetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxBeforeDeductionRD;
             }
             //priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage : newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage / 1 - priceConditionViewObj.RoyalDecreePercentage;
-            priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === true ? newNetPriceWithoutTaxBeforeDeductionRD / (1 - priceConditionViewObj.RoyalDecreePercentage) - newNetPriceWithoutTaxBeforeDeductionRD : newNetPriceWithoutTaxBeforeDeductionRD - newNetPriceWithoutTaxAfterDeductionRD;   
+            priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === true ? Number(newNetPriceWithoutTaxBeforeDeductionRD / (1 - priceConditionViewObj.RoyalDecreePercentage) - newNetPriceWithoutTaxBeforeDeductionRD).toFixed(6) : Number(newNetPriceWithoutTaxBeforeDeductionRD - newNetPriceWithoutTaxAfterDeductionRD).toFixed(6);   
             priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
             newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 + priceConditionViewObj.Tax) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + priceConditionViewObj.Tax);
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
@@ -1307,10 +1307,10 @@ sap.ui.define([
             }
 
             if(priceConditionViewObj.RoyalDecree === "Yes"){
-                newNetPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
-                priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.YLAP * (1 - discount / 100) * priceConditionViewObj.RoyalDecreePercentage;            
+                newNetPriceWithoutTax = Number(correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100)).toFixed(2);
+                priceConditionViewObj.RoyalDecreeValue = Number(priceConditionViewObj.YLAP * (1 - discount / 100) * priceConditionViewObj.RoyalDecreePercentage).toFixed(2);            
             }else {
-                newNetPriceWithoutTax = correctPrice * (1 - discount / 100);
+                newNetPriceWithoutTax = Number(correctPrice * (1 - discount / 100)).toFixed(2);
             }
 
             // set the calcualted field and update the bindings
@@ -1651,8 +1651,19 @@ sap.ui.define([
             this.pDialog.then(function (oDialog) {
                 const bindingPaths = this.getBindingPathsDiscountCondition();
                 const oTable = this.byId("idVolumeTreshold");
+                const priceCondition = Services.getFastAppDataModel().getProperty(bindingPaths.root);
                 const existingDiscountCondition = Services.getFastAppDataModel().getProperty(bindingPaths.dc);
-                const discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
+                let discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
+
+                if(discountConditions && discountConditions.length > 0){
+                    discountConditions.map((condition) => {
+                        if(!condition.Tax){
+                            condition.Tax = priceCondition.Tax;
+                        }
+
+                        return condition;
+                    });
+                }
                 Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}Temp`, discountConditions);
                 oTable.bindElement({ path: bindingPaths.root, model: "fastAppData" });
                 oDialog.open();
