@@ -1651,8 +1651,19 @@ sap.ui.define([
             this.pDialog.then(function (oDialog) {
                 const bindingPaths = this.getBindingPathsDiscountCondition();
                 const oTable = this.byId("idVolumeTreshold");
+                const priceCondition = Services.getFastAppDataModel().getProperty(bindingPaths.root);
                 const existingDiscountCondition = Services.getFastAppDataModel().getProperty(bindingPaths.dc);
-                const discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
+                let discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
+
+                if(discountConditions && discountConditions.length > 0){
+                    discountConditions.map((condition) => {
+                        if(!condition.Tax){
+                            condition.Tax = priceCondition.Tax;
+                        }
+
+                        return condition;
+                    });
+                }
                 Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}Temp`, discountConditions);
                 oTable.bindElement({ path: bindingPaths.root, model: "fastAppData" });
                 oDialog.open();
