@@ -2102,7 +2102,7 @@ sap.ui.define([
 						that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderType2Edit").setEnabled(false);
-                        that.getView().byId("idContentEdit").setEnabled(false);
+                        that.getView().byId("idContentEdit").setEnabled(true);
                         that.getView().byId("idPortalEdit").setEnabled(false);
                         that.getView().byId("idInstituteCode").setEnabled(false);
                         that.getView().byId("idInstituteProvince").setEnabled(false);
