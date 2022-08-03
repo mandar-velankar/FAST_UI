@@ -193,6 +193,8 @@ sap.ui.define([
             applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
             applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
             applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
+            applicablePriceConditionView.RoyalDecreeValue = applicableTenderCondition.RoyalDecreeValue;
+            applicablePriceConditionView.RoyalDecreeIncl = applicableTenderCondition.RoyalDecreeIncl;
             applicablePriceConditionView.StandardDiscount = applicableTenderCondition.StandardDiscount;
             applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
             const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
