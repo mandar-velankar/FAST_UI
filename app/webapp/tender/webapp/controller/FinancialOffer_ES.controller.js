@@ -431,7 +431,7 @@ sap.ui.define([
 			if (offerID) {
 				const response = await Services.getFinancialProducts(offerID);
 
-				return response.data && response.data.results.map(item => {
+				return response.data && response.data.results.filter(item => item.ActiveProduct === 1 ).map(item => {
 					
 					item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
 						freeGoods.UOM = item.UOM;
