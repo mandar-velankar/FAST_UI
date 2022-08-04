@@ -81,6 +81,31 @@ sap.ui.define([
 			return this.odata("/RoyalDecreePercentage").get(mParameters);
 		},
 
+
+        getMostRecentMasterPrices: function(countryCode, productPackID){
+            
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: countryCode
+			}));
+
+			aFilters.push(new Filter({
+				path: 'ProductPackId',
+				operator: FilterOperator.EQ,
+				value1: productPackID
+			}));
+
+			var mParameters = {
+				filters: aFilters,
+			};
+
+
+			return this.odata("/MostRecentMasterPricesView").get(mParameters);
+		},
+
 		createPriceCondition: function (oPriceCondition) {
 			return this.odata("/PriceCondition").post(oPriceCondition);
 		},

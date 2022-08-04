@@ -1997,6 +1997,9 @@ sap.ui.define([
             
 			var oFreeGoodsOther = oFastAppData.getProperty(sPath + "/" + this._focIndex);
 			var oSelectedItem = oEvent.getParameter("selectedItem");
+
+            // add PVL and ConfidentialPrice to the selected FOC product
+            // sets isSameAsMainProduct to true if FOC product and main product are the same
 			if (oSelectedItem) {
                 oDialog.setBusy(true);
                 const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
@@ -2006,6 +2009,10 @@ sap.ui.define([
 				oFreeGoodsOther.ProductPackId = selectedProduct.PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
                 oFreeGoodsOther.RoyalDecree = this.getFOCRoyalDecreeValue(royalDecree?.Percentage);
+                const oMostRecentMasterPrice = (await this.getMostRecentMasterPrices(selectedProduct.COUNTRY_CODE, selectedProduct.PRODUCT_ID))?.data?.results?.[0];
+                oFreeGoodsOther.PVL = oMostRecentMasterPrice.YLLP;
+                oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
+                oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
                 oDialog.setBusy(false);
 			}
@@ -2028,6 +2035,10 @@ sap.ui.define([
         
         getRoyalDecree: async function(productPackID){
             return Services.getService("PriceCondition").getRoyalDecree(productPackID);
+        },
+
+        getMostRecentMasterPrices: async function(countryCode, productPackID){
+            return Services.getService("PriceCondition").getMostRecentMasterPrices(countryCode, productPackID);
         },
             
 
