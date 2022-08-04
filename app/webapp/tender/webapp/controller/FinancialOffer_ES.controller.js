@@ -1877,7 +1877,7 @@ sap.ui.define([
             
             oFastAppDataModel.updateBindings();            
 		},
-        
+
 		onDeleteFreeGoodsOther: function (event) {
            
             const oFastAppDataModel = Services.getFastAppDataModel();
@@ -1988,25 +1988,48 @@ sap.ui.define([
 		},
 
 
-		_handleValueHelpClose: function (oEvent) {
+		_handleValueHelpClose: async function (oEvent) {
 			const oFastAppData = Services.getFastAppDataModel();
+            const oDialog = this.getView().byId("OtherProducts");
 			const priceConditions = oFastAppData.getProperty("/PriceConditionView");
             const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
             const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
             
 			var oFreeGoodsOther = oFastAppData.getProperty(sPath + "/" + this._focIndex);
-
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 			if (oSelectedItem) {
+                oDialog.setBusy(true);
+                const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
+                const royalDecree =  (await this.getRoyalDecree(selectedProduct.PRODUCT_ID))?.data?.results?.[0];
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
-
-				oFreeGoodsOther.ProductPackId = oSelectedItem.getBindingContext('fastAppData').getObject().PRODUCT_ID;
+				oFreeGoodsOther.ProductPackId = selectedProduct.PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
-				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath))
+                oFreeGoodsOther.RoyalDecree = this.getFOCRoyalDecreeValue(royalDecree?.Percentage);
+				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
+                oDialog.setBusy(false);
 			}
-			oEvent.getSource().getBinding("items").filter([]);
+			// oEvent.getSource().getBinding("items").filter([]); // TODO: check with Joris why this code was needed ?
 		},
+
+        /**
+         * Calculate the value of the FOC Royal Decree based on specific logic
+         * @returns {String} Yes/No
+         */
+        getFOCRoyalDecreeValue: function(royalDecreePercentage){
+            const instituteType = Services.getLoadedTender().Institute.InstituteType;
+            if(instituteType === "Private Account" || instituteType === "Cluster") return "No";
+            if(instituteType === "Public Account" || instituteType === "Region(s)" || instituteType === "National"){
+                if(royalDecreePercentage) return "Yes";
+                else return "No";
+            }
+        },
+
+        
+        getRoyalDecree: async function(productPackID){
+            return Services.getService("PriceCondition").getRoyalDecree(productPackID);
+        },
+            
 
         /*Calculations*/
         calculatePotentialSavings: function(oEvent){

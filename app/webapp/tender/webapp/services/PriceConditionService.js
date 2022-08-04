@@ -50,6 +50,37 @@ sap.ui.define([
 			return this.odata("/PriceCondition").get(mParameters);
 		},
 
+        getRoyalDecree: function(productPackID){
+            
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'ProductPackID',
+				operator: FilterOperator.EQ,
+				value1: productPackID
+			}));
+
+            // for info see https://trello.com/c/Wn9WZJfO/2439-foc-pop-up-adjustment
+			// aFilters.push(new Filter({
+			// 	path: 'CustomerGroup',
+			// 	operator: FilterOperator.EQ,
+			// 	value1: customerGroup
+			// }));
+
+            aFilters.push(new Filter({
+				path: 'ValidTo',
+				operator: FilterOperator.EQ,
+				value1: '9999-12-31'
+			}));
+
+			var mParameters = {
+				filters: aFilters,
+			};
+
+
+			return this.odata("/RoyalDecreePercentage").get(mParameters);
+		},
+
 		createPriceCondition: function (oPriceCondition) {
 			return this.odata("/PriceCondition").post(oPriceCondition);
 		},
