@@ -525,6 +525,7 @@ sap.ui.define([
 
             const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
             const aErroneousConditions = this.checkSaveFinancialOfferSpain(selectedPriceConditionViewObjects);   
+            const selectedProductID = Services.getSelectedProductID();
             if(aErroneousConditions && (aErroneousConditions.length > 0)) {
                 BusyIndicator.hide();                
                 this.byId("ApprovalButtonId").setEnabled(false);
@@ -605,6 +606,11 @@ sap.ui.define([
                         await Promise.all(saveProductProfitabilityPromises);
                     }
                 }
+
+                /* default selected product to the one which was selected */
+                Services.setSelectedProductID(selectedProductID);
+                let aProducts = Services.getFastAppDataModel().getProperty('/SelectedOffer/Product/results');
+                Services.setSelectedProductName(aProducts.find(product => product.ProductCode === selectedProductID)?.SKU?.PRODUCTPACKNAME);
 
                 BusyIndicator.hide();
             } 
@@ -989,6 +995,7 @@ sap.ui.define([
             //keep selected product ID
             Services.setSelectedProductID(oProductPrice.ProductCode);
             Services.setSelectedProductName(oProductPrice.ProductPackName);
+			Services.setSelectedProductPath(this.selectedProductPricePath);
         
             //Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
