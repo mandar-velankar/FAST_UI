@@ -2013,6 +2013,7 @@ sap.ui.define([
                 oFreeGoodsOther.PVL = oMostRecentMasterPrice.YLLP;
                 oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
+                oFreeGoodsOther.RoyalDecreePercentage = royalDecree.Percentage;
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
                 oDialog.setBusy(false);
 			}
@@ -2073,12 +2074,27 @@ sap.ui.define([
                 }
             }
 
-            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
-                potentialSaving = bonusAmount * correctPrice * (1 - freeGoodsObject.RoyalDecreePercentage);                
+            const privateCustomer = instType === "Private Account" || instType === "Cluster";
+            const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
+            let correctedMainPrice = correctPrice;
+            let correctedPVL;
+            if(UOM === "Unit"){
+                correctedPVL = freeGoodsObject.PVL / packFactor;
             } else {
-                potentialSaving = bonusAmount * correctPrice;
+                correctedPVL = freeGoodsObject.PVL;
             }
-
+            if(freeGoodsObject.isSameAsMainProduct){
+                potentialSaving = bonusAmount * correctedMainPrice;  
+            }else {
+                if(privateCustomer){
+                    potentialSaving = correctedPVL * bonusAmount;
+                }  
+                if(publicCustomer){
+                    if(freeGoodsObject.RoyalDecree === "Yes") potentialSaving = freeGoodsObject.ConfidentialPrice * (1 - freeGoodsObject.RoyalDecreePercentage) * bonusAmount;
+                    else potentialSaving = freeGoodsObject.ConfidentialPrice * bonusAmount;
+                }  
+            }
+            
             freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
             bindingContext.getModel().updateBindings();           
         },
