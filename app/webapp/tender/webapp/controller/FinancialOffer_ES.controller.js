@@ -648,6 +648,17 @@ sap.ui.define([
                         requiredPriceConditionViewObject = priceConditionViewObj;
                     }
                     if(priceConditionViewObj.ConditionType === "FOC" && focRequired){
+                        /**
+                         * Remove non-existent fields from the FreeGoodsOther entity. These fields have been added in the user interface 
+                         * and are needed for calculations. But they do not exist in the FreeGoodsOther entity and cannot be saved.
+                         */
+                         priceConditionViewObj.FreeGoodsOther?.forEach(item => {
+                            delete item.ConfidentialPrice;
+                            delete item.PVL;
+                            delete item.isSameAsMainProduct;
+                            delete item.RoyalDecreePercentage;
+                         });
+
                         requiredPriceConditionViewObject = priceConditionViewObj;
                     }
                 }
@@ -1990,7 +2001,7 @@ sap.ui.define([
 
 		_handleValueHelpClose: async function (oEvent) {
 			const oFastAppData = Services.getFastAppDataModel();
-            const oDialog = this.getView().byId("OtherProducts");
+            const oTable = this.getView().byId("FreeGoodsOtherTable");
 			const priceConditions = oFastAppData.getProperty("/PriceConditionView");
             const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
             const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
@@ -1998,10 +2009,10 @@ sap.ui.define([
 			var oFreeGoodsOther = oFastAppData.getProperty(sPath + "/" + this._focIndex);
 			var oSelectedItem = oEvent.getParameter("selectedItem");
 
-            // add PVL and ConfidentialPrice to the selected FOC product
+            // add PVL, ConfidentialPrice and RoyalDecreePercentage to the selected FOC product
             // sets isSameAsMainProduct to true if FOC product and main product are the same
 			if (oSelectedItem) {
-                oDialog.setBusy(true);
+                oTable.setBusy(true);
                 const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
                 const royalDecree =  (await this.getRoyalDecree(selectedProduct.PRODUCT_ID))?.data?.results?.[0];
 				var oInputfield = this.byId('idOtherProducts');
@@ -2015,7 +2026,7 @@ sap.ui.define([
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
                 oFreeGoodsOther.RoyalDecreePercentage = royalDecree.Percentage;
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
-                oDialog.setBusy(false);
+                oTable.setBusy(false);
 			}
 			// oEvent.getSource().getBinding("items").filter([]); // TODO: check with Joris why this code was needed ?
 		},
@@ -2094,7 +2105,7 @@ sap.ui.define([
                     else potentialSaving = freeGoodsObject.ConfidentialPrice * bonusAmount;
                 }  
             }
-            
+
             freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
             bindingContext.getModel().updateBindings();           
         },
