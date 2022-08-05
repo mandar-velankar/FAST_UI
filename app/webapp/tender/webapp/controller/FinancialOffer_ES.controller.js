@@ -2022,12 +2022,20 @@ sap.ui.define([
                 oTable.setBusy(true);
                 const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
                 const royalDecree =  (await this.getRoyalDecree(selectedProduct.PRODUCT_ID))?.data?.results?.[0];
+                if(!royalDecree){
+                    sap.m.MessageBox.error(`No RoyalDecree was found for product: ${selectedProduct.PRODUCT_ID}. \nPlease contact the service desk.`);
+                    oTable.setBusy(false);
+                }
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
 				oFreeGoodsOther.ProductPackId = selectedProduct.PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
                 oFreeGoodsOther.RoyalDecree = this.getFOCRoyalDecreeValue(royalDecree?.Percentage);
                 const oMostRecentMasterPrice = (await this.getMostRecentMasterPrices(selectedProduct.COUNTRY_CODE, selectedProduct.PRODUCT_ID))?.data?.results?.[0];
+                if(!oMostRecentMasterPrice){
+                    sap.m.MessageBox.error(`No MasterPrice was found for product: ${selectedProduct.PRODUCT_ID}. \nPlease contact the service desk.`);
+                    oTable.setBusy(false);
+                }
                 oFreeGoodsOther.PVL = oMostRecentMasterPrice.YLLP;
                 oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
