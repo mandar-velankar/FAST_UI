@@ -2022,10 +2022,6 @@ sap.ui.define([
                 oTable.setBusy(true);
                 const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
                 const royalDecree =  (await this.getRoyalDecree(selectedProduct.PRODUCT_ID))?.data?.results?.[0];
-                if(!royalDecree){
-                    sap.m.MessageBox.error(`No RoyalDecree was found for product: ${selectedProduct.PRODUCT_ID}. \nPlease contact the service desk.`);
-                    oTable.setBusy(false);
-                }
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
 				oFreeGoodsOther.ProductPackId = selectedProduct.PRODUCT_ID;
@@ -2039,7 +2035,7 @@ sap.ui.define([
                 oFreeGoodsOther.PVL = oMostRecentMasterPrice.YLLP;
                 oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
-                oFreeGoodsOther.RoyalDecreePercentage = royalDecree.Percentage;
+                oFreeGoodsOther.RoyalDecreePercentage = royalDecree?.Percentage;
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
                 oTable.setBusy(false);
 			}
