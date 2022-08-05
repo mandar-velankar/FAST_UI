@@ -8321,6 +8321,13 @@ sap.ui.define([
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
+            // make sure selectedOfferPath is set
+            if(Services.getSelectedOfferPath() === ""){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
+
 			$.when(Services.checkOfferStatus()).done(function (oData) {
 				var sStatus = oData.STATUS;
 				var aStatusNoEdit = [
