@@ -431,7 +431,7 @@ sap.ui.define([
 			if (offerID) {
 				const response = await Services.getFinancialProducts(offerID);
 
-				return response.data && response.data.results.map(item => {
+				return response.data && response.data.results.filter(item => item.ActiveProduct === 1 ).map(item => {
 					
 					item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
 						freeGoods.UOM = item.UOM;
@@ -2028,10 +2028,14 @@ sap.ui.define([
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
                 oFreeGoodsOther.RoyalDecree = this.getFOCRoyalDecreeValue(royalDecree?.Percentage);
                 const oMostRecentMasterPrice = (await this.getMostRecentMasterPrices(selectedProduct.COUNTRY_CODE, selectedProduct.PRODUCT_ID))?.data?.results?.[0];
+                if(!oMostRecentMasterPrice){
+                    sap.m.MessageBox.error(`No MasterPrice was found for product: ${selectedProduct.PRODUCT_ID}. \nPlease contact the service desk.`);
+                    oTable.setBusy(false);
+                }
                 oFreeGoodsOther.PVL = oMostRecentMasterPrice.YLLP;
                 oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
-                oFreeGoodsOther.RoyalDecreePercentage = royalDecree.Percentage;
+                oFreeGoodsOther.RoyalDecreePercentage = royalDecree?.Percentage;
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
                 oTable.setBusy(false);
 			}
