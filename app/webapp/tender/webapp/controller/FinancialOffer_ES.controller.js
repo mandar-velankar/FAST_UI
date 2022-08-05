@@ -654,6 +654,17 @@ sap.ui.define([
                         requiredPriceConditionViewObject = priceConditionViewObj;
                     }
                     if(priceConditionViewObj.ConditionType === "FOC" && focRequired){
+                        /**
+                         * Remove non-existent fields from the FreeGoodsOther entity. These fields have been added in the user interface 
+                         * and are needed for calculations. But they do not exist in the FreeGoodsOther entity and cannot be saved.
+                         */
+                         priceConditionViewObj.FreeGoodsOther?.forEach(item => {
+                            delete item.ConfidentialPrice;
+                            delete item.PVL;
+                            delete item.isSameAsMainProduct;
+                            delete item.RoyalDecreePercentage;
+                         });
+
                         requiredPriceConditionViewObject = priceConditionViewObj;
                     }
                 }
@@ -1884,7 +1895,7 @@ sap.ui.define([
             
             oFastAppDataModel.updateBindings();            
 		},
-        
+
 		onDeleteFreeGoodsOther: function (event) {
            
             const oFastAppDataModel = Services.getFastAppDataModel();
@@ -1995,25 +2006,60 @@ sap.ui.define([
 		},
 
 
-		_handleValueHelpClose: function (oEvent) {
+		_handleValueHelpClose: async function (oEvent) {
 			const oFastAppData = Services.getFastAppDataModel();
+            const oTable = this.getView().byId("FreeGoodsOtherTable");
 			const priceConditions = oFastAppData.getProperty("/PriceConditionView");
             const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
             const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
             
 			var oFreeGoodsOther = oFastAppData.getProperty(sPath + "/" + this._focIndex);
-
 			var oSelectedItem = oEvent.getParameter("selectedItem");
+
+            // add PVL, ConfidentialPrice and RoyalDecreePercentage to the selected FOC product
+            // sets isSameAsMainProduct to true if FOC product and main product are the same
 			if (oSelectedItem) {
+                oTable.setBusy(true);
+                const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
+                const royalDecree =  (await this.getRoyalDecree(selectedProduct.PRODUCT_ID))?.data?.results?.[0];
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
-
-				oFreeGoodsOther.ProductPackId = oSelectedItem.getBindingContext('fastAppData').getObject().PRODUCT_ID;
+				oFreeGoodsOther.ProductPackId = selectedProduct.PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
-				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath))
+                oFreeGoodsOther.RoyalDecree = this.getFOCRoyalDecreeValue(royalDecree?.Percentage);
+                const oMostRecentMasterPrice = (await this.getMostRecentMasterPrices(selectedProduct.COUNTRY_CODE, selectedProduct.PRODUCT_ID))?.data?.results?.[0];
+                oFreeGoodsOther.PVL = oMostRecentMasterPrice.YLLP;
+                oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
+                oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
+                oFreeGoodsOther.RoyalDecreePercentage = royalDecree.Percentage;
+				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
+                oTable.setBusy(false);
 			}
-			oEvent.getSource().getBinding("items").filter([]);
+			// oEvent.getSource().getBinding("items").filter([]); // TODO: check with Joris why this code was needed ?
 		},
+
+        /**
+         * Calculate the value of the FOC Royal Decree based on specific logic
+         * @returns {String} Yes/No
+         */
+        getFOCRoyalDecreeValue: function(royalDecreePercentage){
+            const instituteType = Services.getLoadedTender().Institute.InstituteType;
+            if(instituteType === "Private Account" || instituteType === "Cluster") return "No";
+            if(instituteType === "Public Account" || instituteType === "Region(s)" || instituteType === "National"){
+                if(royalDecreePercentage) return "Yes";
+                else return "No";
+            }
+        },
+
+        
+        getRoyalDecree: async function(productPackID){
+            return Services.getService("PriceCondition").getRoyalDecree(productPackID);
+        },
+
+        getMostRecentMasterPrices: async function(countryCode, productPackID){
+            return Services.getService("PriceCondition").getMostRecentMasterPrices(countryCode, productPackID);
+        },
+            
 
         /*Calculations*/
         calculatePotentialSavings: function(oEvent){
@@ -2046,10 +2092,25 @@ sap.ui.define([
                 }
             }
 
-            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
-                potentialSaving = bonusAmount * correctPrice * (1 - freeGoodsObject.RoyalDecreePercentage);                
+            const privateCustomer = instType === "Private Account" || instType === "Cluster";
+            const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
+            let correctedMainPrice = correctPrice;
+            let correctedPVL;
+            if(UOM === "Unit"){
+                correctedPVL = freeGoodsObject.PVL / packFactor;
             } else {
-                potentialSaving = bonusAmount * correctPrice;
+                correctedPVL = freeGoodsObject.PVL;
+            }
+            if(freeGoodsObject.isSameAsMainProduct){
+                potentialSaving = bonusAmount * correctedMainPrice;  
+            }else {
+                if(privateCustomer){
+                    potentialSaving = correctedPVL * bonusAmount;
+                }  
+                if(publicCustomer){
+                    if(freeGoodsObject.RoyalDecree === "Yes") potentialSaving = freeGoodsObject.ConfidentialPrice * (1 - freeGoodsObject.RoyalDecreePercentage) * bonusAmount;
+                    else potentialSaving = freeGoodsObject.ConfidentialPrice * bonusAmount;
+                }  
             }
 
             freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
