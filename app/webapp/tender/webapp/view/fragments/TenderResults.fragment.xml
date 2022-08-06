@@ -11,7 +11,7 @@
 
     <!-- QUOTATION TAB -->        
         <ObjectPageSubSection id="TenderResNoOfferSubsection">
-            <m:Panel headerText="{i18n>TenderResults}" visible="{= !${fastAppData>/CheckOfferVisibleForTab_ES} }">
+            <m:Panel visible="{= !${fastAppData>/CheckOfferVisibleForTab_ES} }">
                 <l:BlockLayout background="Light">
                     <l:BlockLayoutRow>
                         <l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
@@ -54,7 +54,7 @@
                             { path : '_sOperation', operator : 'NE', value1 : 'DELETE'}
                         ]}" 
                     -->
-                    <m:VBox><m:Panel headerText="{i18n>TenderResults}" visible="{= ${fastAppData>/CheckOfferVisibleForTab_ES} }">
+                    <m:VBox><m:Panel visible="{= ${fastAppData>/CheckOfferVisibleForTab_ES} }">
             
                         <m:Title text="Outcome Awarded Companies" />
 
