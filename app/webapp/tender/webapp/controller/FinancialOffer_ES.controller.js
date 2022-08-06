@@ -1796,8 +1796,8 @@ sap.ui.define([
 
 
             // set the calcualted field and update the bindings
-            discountConditionObj.NetPriceWithoutTax = priceConditionViewObj.MainPrice * (1 - discount / 100);
-            discountConditionObj.NetPriceWithTax = discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax);
+            discountConditionObj.NetPriceWithoutTax = Number(priceConditionViewObj.MainPrice * (1 - discount / 100)).toFixed(2);
+            discountConditionObj.NetPriceWithTax = Number(discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2);
             /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
             discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
 
@@ -2117,7 +2117,7 @@ sap.ui.define([
                 }  
             }
 
-            freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
+            freeGoodsObject.PotentialGeneratedSavings = Number(potentialSaving).toFixed(2); 
             bindingContext.getModel().updateBindings();           
         },
 
