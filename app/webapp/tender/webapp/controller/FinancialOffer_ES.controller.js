@@ -145,6 +145,7 @@ sap.ui.define([
             //bind Rappel and FOC fragments 
             const rappelBindingPath = this.bindRappelFragment();
             const focBindingPath = this.bindFocFragment();
+            this.bindingCurrentPrices();
 
             // add DiscountCondition
             rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
@@ -263,6 +264,24 @@ sap.ui.define([
             return rappelBindingPath;
         },
 
+        /**
+         * This method  sets the element binding of the Current Prices
+         * @returns {String} - Binding path of the Current Prices
+         */        
+        bindingCurrentPrices: function(){
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const currentPricesIndex = priceConditions.findIndex(i => i.isMain);
+            if(currentPricesIndex < 0) return null;
+            const currentPricesBindingPath = "/PriceConditionView/".concat(currentPricesIndex);
+            const currentPricesVbox = this.byId("idCurrentPricesVbox");
+            currentPricesVbox.bindElement({ path: currentPricesBindingPath, model: "fastAppData" });
+            const mainPriceCondition = priceConditions.find(i => i.isMain);
+            if(mainPriceCondition){
+                mainPriceCondition.PVLPercentageChange =  (Number(mainPriceCondition.PVL) - Number(mainPriceCondition.PriceConditionPVL)) / Number(mainPriceCondition.PriceConditionPVL);
+                mainPriceCondition.ConfidentialPricePercentageChange =  (Number(mainPriceCondition.YLAP) - Number(mainPriceCondition.ConfidentialPrice)) / Number(mainPriceCondition.ConfidentialPrice);         
+            }
+            return currentPricesBindingPath;
+        },        
 
         calculateRoyalDecreeAppliesAndMainConditionPrice: function(){
             //calculating the RoyalDecreeApplies
@@ -1073,7 +1092,7 @@ sap.ui.define([
                     if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
                     if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
                 } 
-                    
+                
                 Services.setSelectedPriceConditionPath(bindingPath);
 
                 Fragment.load({
