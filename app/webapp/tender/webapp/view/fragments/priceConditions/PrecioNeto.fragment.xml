@@ -22,28 +22,40 @@
             <form:content>
                 <Label text="{i18n>PVL}" required="true"/>
                 <Input  
-                    value="{
-                        parts: [
+                    value="{= !${fastAppData>/EditMode} 
+                        ? ${parts: [
                             {path:'fastAppData>/ProductPricingView/0/UOM'},
                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>PVL'}
+                            {path:'fastAppData>PriceConditionPVL'}
                         ],
-                        formatter: '.formatter.formatUoMPriceExtraDigits'
-                    }"
+                        formatter: '.formatter.formatUoMPrice'}
+                        : ${parts: [
+                                {path:'fastAppData>/ProductPricingView/0/UOM'},
+                                {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                                {path:'fastAppData>PVL'}
+                            ],
+                            formatter: '.formatter.formatUoMPrice'}
+                        }"
                     description="{fastAppData>Currency}" 
                     enabled="false" 
                     fieldWidth="80%"
                 />
                 <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
                 <Input 
-                    value="{
-                        parts: [
+                    value="{= !${fastAppData>/EditMode}
+                        ? ${parts: [
+                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                            {path:'fastAppData>ConfidentialPrice'}
+                        ],
+                        formatter: '.formatter.formatUoMPrice'}
+                        : ${parts: [
                             {path:'fastAppData>/ProductPricingView/0/UOM'},
                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
                             {path:'fastAppData>YLAP'}
                         ],
-                        formatter: '.formatter.formatUoMPriceExtraDigits'
-                    }"
+                        formatter: '.formatter.formatUoMPrice'}
+                        }"
                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                     description="{fastAppData>Currency}" 
                     enabled="false" 

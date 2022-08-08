@@ -1457,9 +1457,9 @@ sap.ui.define([
 				//reselect same offer if it exists, otherwise clear offer selected
 				//that._selectOfferInOfferTable("tenderResultsOfferTableViewID","tenderResultsOfferTableOfferID");
 				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
-
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", true);
 					//Tender Results - subsection
-					var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
+					/*var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oFinHistorySubSection) {
 						oFinHistorySubSection.setVisible(false);
 					}
@@ -1474,13 +1474,13 @@ sap.ui.define([
 					var oFinNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oFinNoOfferSubsection) {
 						oFinNoOfferSubsection.setVisible(false);
-					}
+					}*/
 
 					that.onTenderResultsOfferPress();
 				} else {
 
 					//Tender Results - subsection
-					var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
+					/*var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oTenderResOfferSubSection) {
 						oTenderResOfferSubSection.setVisible(false);
 					}
@@ -1495,8 +1495,8 @@ sap.ui.define([
 					var oTenderResNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oTenderResNoOfferSubsection) {
 						oTenderResNoOfferSubsection.setVisible(true);
-					}
-
+					}*/
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
 				}
 				break;
 
@@ -8320,6 +8320,13 @@ sap.ui.define([
 		onSaveDefaultQuotation: function (oEvent) {
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
+
+            // make sure selectedOfferPath is set
+            if(Services.getSelectedOfferPath() === ""){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
 
 			$.when(Services.checkOfferStatus()).done(function (oData) {
 				var sStatus = oData.STATUS;

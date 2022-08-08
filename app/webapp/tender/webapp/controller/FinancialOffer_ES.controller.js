@@ -145,6 +145,7 @@ sap.ui.define([
             //bind Rappel and FOC fragments 
             const rappelBindingPath = this.bindRappelFragment();
             const focBindingPath = this.bindFocFragment();
+            this.bindingCurrentPrices();
 
             // add DiscountCondition
             rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
@@ -263,6 +264,24 @@ sap.ui.define([
             return rappelBindingPath;
         },
 
+        /**
+         * This method  sets the element binding of the Current Prices
+         * @returns {String} - Binding path of the Current Prices
+         */        
+        bindingCurrentPrices: function(){
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const currentPricesIndex = priceConditions.findIndex(i => i.isMain);
+            if(currentPricesIndex < 0) return null;
+            const currentPricesBindingPath = "/PriceConditionView/".concat(currentPricesIndex);
+            const currentPricesVbox = this.byId("idCurrentPricesVbox");
+            currentPricesVbox.bindElement({ path: currentPricesBindingPath, model: "fastAppData" });
+            const mainPriceCondition = priceConditions.find(i => i.isMain);
+            if(mainPriceCondition){
+                mainPriceCondition.PVLPercentageChange =  (Number(mainPriceCondition.PVL) - Number(mainPriceCondition.PriceConditionPVL)) / Number(mainPriceCondition.PriceConditionPVL);
+                mainPriceCondition.ConfidentialPricePercentageChange =  (Number(mainPriceCondition.YLAP) - Number(mainPriceCondition.ConfidentialPrice)) / Number(mainPriceCondition.ConfidentialPrice);         
+            }
+            return currentPricesBindingPath;
+        },        
 
         calculateRoyalDecreeAppliesAndMainConditionPrice: function(){
             //calculating the RoyalDecreeApplies
@@ -1073,7 +1092,7 @@ sap.ui.define([
                     if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
                     if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
                 } 
-                    
+                
                 Services.setSelectedPriceConditionPath(bindingPath);
 
                 Fragment.load({
@@ -1796,8 +1815,8 @@ sap.ui.define([
 
 
             // set the calcualted field and update the bindings
-            discountConditionObj.NetPriceWithoutTax = priceConditionViewObj.MainPrice * (1 - discount / 100);
-            discountConditionObj.NetPriceWithTax = discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax);
+            discountConditionObj.NetPriceWithoutTax = Number(priceConditionViewObj.MainPrice * (1 - discount / 100)).toFixed(2);
+            discountConditionObj.NetPriceWithTax = Number(discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2);
             /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
             discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
 
@@ -2067,47 +2086,31 @@ sap.ui.define([
 
         /*Calculations*/
         calculatePotentialSavings: function(oEvent){
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            const bindingPath = "/PriceConditionView/".concat(focIndex);
-            const priceConditionViewObject = Services.getFastAppDataModel().getProperty(bindingPath);
-
+            // user inserted bonus amount
             const bonusAmount = Number(oEvent.getSource().getValue());
+
+            // selected FOC record that contains MasterPrice info
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const freeGoodsObject = bindingContext.getObject();
-            
-            let potentialSaving = "";
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
-            let correctPrice;
-            if(instType === "Private Account"){
-                if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObject.PVL / packFactor;
-                } else {
-                    correctPrice = priceConditionViewObject.PVL;
-                }
-            } else {
-                if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObject.YLAP / packFactor;
-                } else {
-                    correctPrice = priceConditionViewObject.YLAP;
-                }
-            }
-
             const privateCustomer = instType === "Private Account" || instType === "Cluster";
             const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
-            let correctedMainPrice = correctPrice;
-            let correctedPVL;
-            if(UOM === "Unit"){
-                correctedPVL = freeGoodsObject.PVL / packFactor;
-            } else {
-                correctedPVL = freeGoodsObject.PVL;
-            }
+            let mainConditionPrice = this.getMainConditionPrice(freeGoodsObject);
+
+            // calculate potential savings
+            let potentialSaving = "";
             if(freeGoodsObject.isSameAsMainProduct){
-                potentialSaving = bonusAmount * correctedMainPrice;  
+                potentialSaving = bonusAmount * mainConditionPrice;  
             }else {
+                let correctedPVL;
+                if(UOM === "Unit"){
+                    correctedPVL = freeGoodsObject.PVL / packFactor;
+                } else {
+                    correctedPVL = freeGoodsObject.PVL;
+                }
                 if(privateCustomer){
                     potentialSaving = correctedPVL * bonusAmount;
                 }  
@@ -2117,10 +2120,31 @@ sap.ui.define([
                 }  
             }
 
-            freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
+            freeGoodsObject.PotentialGeneratedSavings = Number(potentialSaving).toFixed(2); 
             bindingContext.getModel().updateBindings();           
         },
 
+        getMainConditionPrice(selectedFOCObject){
+            const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
+            const priceConditionViewObjects = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const index = priceConditionViewObjects.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);
+            const mainPriceConditionViewObject = Services.getFastAppDataModel().getProperty("/PriceConditionView/".concat(index));
+            if(mainPriceConditionViewObject.ConditionType === "Descuento Especial") return 0;
+            if(mainPriceConditionViewObject.ConditionType === "Precio Neto"){
+                if(selectedFOCObject.RoyalDecree === "No")
+                    return mainPriceConditionViewObject.NetPriceWithoutTax;
+                else 
+                    return mainPriceConditionViewObject.NetPriceWithoutTaxAfterDeductionRD;
+            }
+            if(mainPriceConditionViewObject.ConditionType === "Descuento Comercial") return mainPriceConditionViewObject.NetPriceWithoutTax;
+            if(mainPriceConditionViewObject.ConditionType === "Rental" || mainPriceConditionViewObject.ConditionType === "PVL"){
+                if(selectedFOCObject.RoyalDecree === "No")
+                    return mainPriceConditionViewObject.PVL;
+                else 
+                    return mainPriceConditionViewObject.ConfidentialPrice * (1 - mainPriceConditionViewObject.RoyalDecreePercentage);
+            }
+        },
+        
         onMonthlyRentPerUnitChange: function(oEvent){
             this.calculateAnnualValue(oEvent);
         },

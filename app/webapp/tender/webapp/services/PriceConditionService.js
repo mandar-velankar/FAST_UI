@@ -149,7 +149,9 @@ sap.ui.define([
             let convertedPVL;
             let convertedConfPrice;
             if(tab === "PA"){
-                convertedPVL = oPriceConditionViewObject.PVL;
+            /*During Price Agreement creation we should always take the trasactional PVL/Confidential Price,
+                as Price Agreement should be created using prices saved in the PriceCondition table. */            
+                convertedPVL = oPriceConditionViewObject.PriceConditionPVL;
                 convertedConfPrice = oPriceConditionViewObject.ConfidentialPrice;
             } else {
                 switch(oPriceConditionViewObject.ConditionType) {
@@ -180,7 +182,7 @@ sap.ui.define([
                 let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
                 let packFactor =  Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].PACKFACTOR;
                 let UOM = Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].UOM;
-
+                //During the edit of the Financial Offer prices should always come from the MasterData
                 if(UOM === "Unit"){
                     convertedPVL = oPriceConditionViewObject.PVL / packFactor;
                     convertedConfPrice = oPriceConditionViewObject.YLAP / packFactor;

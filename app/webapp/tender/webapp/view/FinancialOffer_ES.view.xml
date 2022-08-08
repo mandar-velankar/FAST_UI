@@ -160,6 +160,73 @@
 								visible="{fastAppData>/ExistingAgreementInPlace}">
 							</MessageStrip>
 						</VBox>
+                        <Panel expandable="true" headerText="Current Prices">
+                            <VBox id="idCurrentPricesVbox">
+                                <Label text="{i18n>PVL}" required="false"/>
+                                <Input 
+                                    value="{
+                                        parts: [
+                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                                            {path:'fastAppData>PVL'}
+                                        ],
+                                        formatter: '.formatter.formatUoMPrice'
+                                    }"
+                                    description="{fastAppData>Currency}" 
+                                    enabled="false" 
+                                    fieldWidth="50%"
+                                />
+                                <Label text="{i18n>PriceConditionPVL}" required="false" visible="false"/>
+                                <Input 
+                                    value="{
+                                        parts: [
+                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                                            {path:'fastAppData>PriceConditionPVL'}
+                                        ],
+                                        formatter: '.formatter.formatUoMPrice'
+                                    }"
+                                    description="{fastAppData>Currency}" 
+                                    enabled="false" 
+                                    visible="false"
+                                    fieldWidth="50%"
+                                />
+                                <Label text="{i18n>PVLPercentageChange}" visible="false"/>
+                                <Input value="{fastAppData>PVLPercentageChange}" enabled="false" visible="false" fieldWidth="80%"/>
+                                <Label text="{i18n>ConfidentialPrice}" required="false" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
+                                <Input 
+                                    value="{
+                                        parts: [
+                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                                            {path:'fastAppData>YLAP'}
+                                        ],
+                                        formatter: '.formatter.formatUoMPrice'
+                                    }"
+                                    visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
+                                    description="{fastAppData>Currency}" 
+                                    enabled="false" 
+                                    fieldWidth="50%"
+                                />
+                                <Label text="{i18n>PriceConditionConfidentialPrice}" required="false" visible="false"/>
+                                <Input 
+                                    value="{
+                                        parts: [
+                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                                            {path:'fastAppData>ConfidentialPrice'}
+                                        ],
+                                        formatter: '.formatter.formatUoMPrice'
+                                    }"
+                                    visible="false" 
+                                    description="{fastAppData>Currency}" 
+                                    enabled="false" 
+                                    fieldWidth="50%"
+                                />
+                                <Label text="{i18n>ConfidentialPricePercentageChange}" visible="false"/>
+                                <Input value="{fastAppData>ConfidentialPricePercentageChange}" enabled="false" visible="false" fieldWidth="80%"/>                                                        
+                            </VBox>
+                        </Panel>
 						<Panel expandable="true" headerText="Main Price Condition">
 							<VBox>
 								<HBox alignItems="Center">
