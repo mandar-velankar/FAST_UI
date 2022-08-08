@@ -2086,47 +2086,31 @@ sap.ui.define([
 
         /*Calculations*/
         calculatePotentialSavings: function(oEvent){
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            const bindingPath = "/PriceConditionView/".concat(focIndex);
-            const priceConditionViewObject = Services.getFastAppDataModel().getProperty(bindingPath);
-
+            // user inserted bonus amount
             const bonusAmount = Number(oEvent.getSource().getValue());
+
+            // selected FOC record that contains MasterPrice info
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const freeGoodsObject = bindingContext.getObject();
-            
-            let potentialSaving = "";
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
-            let correctPrice;
-            if(instType === "Private Account"){
-                if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObject.PVL / packFactor;
-                } else {
-                    correctPrice = priceConditionViewObject.PVL;
-                }
-            } else {
-                if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObject.YLAP / packFactor;
-                } else {
-                    correctPrice = priceConditionViewObject.YLAP;
-                }
-            }
-
             const privateCustomer = instType === "Private Account" || instType === "Cluster";
             const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
-            let correctedMainPrice = correctPrice;
-            let correctedPVL;
-            if(UOM === "Unit"){
-                correctedPVL = freeGoodsObject.PVL / packFactor;
-            } else {
-                correctedPVL = freeGoodsObject.PVL;
-            }
+            let mainConditionPrice = this.getMainConditionPrice(freeGoodsObject);
+
+            // calculate potential savings
+            let potentialSaving = "";
             if(freeGoodsObject.isSameAsMainProduct){
-                potentialSaving = bonusAmount * correctedMainPrice;  
+                potentialSaving = bonusAmount * mainConditionPrice;  
             }else {
+                let correctedPVL;
+                if(UOM === "Unit"){
+                    correctedPVL = freeGoodsObject.PVL / packFactor;
+                } else {
+                    correctedPVL = freeGoodsObject.PVL;
+                }
                 if(privateCustomer){
                     potentialSaving = correctedPVL * bonusAmount;
                 }  
@@ -2140,6 +2124,27 @@ sap.ui.define([
             bindingContext.getModel().updateBindings();           
         },
 
+        getMainConditionPrice(selectedFOCObject){
+            const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
+            const priceConditionViewObjects = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const index = priceConditionViewObjects.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);
+            const mainPriceConditionViewObject = Services.getFastAppDataModel().getProperty("/PriceConditionView/".concat(index));
+            if(mainPriceConditionViewObject.ConditionType === "Descuento Especial") return 0;
+            if(mainPriceConditionViewObject.ConditionType === "Precio Neto"){
+                if(selectedFOCObject.RoyalDecree === "No")
+                    return mainPriceConditionViewObject.NetPriceWithoutTax;
+                else 
+                    return mainPriceConditionViewObject.NetPriceWithoutTaxAfterDeductionRD;
+            }
+            if(mainPriceConditionViewObject.ConditionType === "Descuento Comercial") return mainPriceConditionViewObject.NetPriceWithoutTax;
+            if(mainPriceConditionViewObject.ConditionType === "Rental" || mainPriceConditionViewObject.ConditionType === "PVL"){
+                if(selectedFOCObject.RoyalDecree === "No")
+                    return mainPriceConditionViewObject.PVL;
+                else 
+                    return mainPriceConditionViewObject.ConfidentialPrice * (1 - mainPriceConditionViewObject.RoyalDecreePercentage);
+            }
+        },
+        
         onMonthlyRentPerUnitChange: function(oEvent){
             this.calculateAnnualValue(oEvent);
         },
