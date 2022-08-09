@@ -1133,7 +1133,7 @@ sap.ui.define([
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and PVL.");
                         evt.getSource().openValueStateMessage();  
-                    } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and confidential price.");
                         evt.getSource().openValueStateMessage();                    
@@ -1147,7 +1147,7 @@ sap.ui.define([
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than PVL.");
                         evt.getSource().openValueStateMessage();
-                    } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the confidential price.");
                         evt.getSource().openValueStateMessage();
