@@ -2131,9 +2131,9 @@ sap.ui.define([
             const mainPriceConditionViewObject = Services.getFastAppDataModel().getProperty("/PriceConditionView/".concat(index));
             if(mainPriceConditionViewObject.ConditionType === "Descuento Especial") return 0;
             if(mainPriceConditionViewObject.ConditionType === "Precio Neto"){
-                if(selectedFOCObject.RoyalDecree === "No")
-                    return mainPriceConditionViewObject.NetPriceWithoutTax;
-                else 
+                // if(selectedFOCObject.RoyalDecree === "No")
+                //     return mainPriceConditionViewObject.NetPriceWithoutTax;
+                // else 
                     return mainPriceConditionViewObject.NetPriceWithoutTaxAfterDeductionRD;
             }
             if(mainPriceConditionViewObject.ConditionType === "Descuento Comercial") return mainPriceConditionViewObject.NetPriceWithoutTax;
