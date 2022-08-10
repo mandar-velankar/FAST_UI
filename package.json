@@ -13,10 +13,11 @@
     "mbt": "~1.0.17"
   },
   "engines": {
-    "node": "^12"
+    "node": "^14"
   },
   "scripts": {
     "setup": "cd app && npm install",
+    "serve": "ui5 serve",
     "build:xs-security": "cds compile srv/ --to xsuaa  > xs-security.json",
     "build:xsa": "mbt build -p=xsa --mtar=FASTCAP-Frontend.mtar",
     "build:cf": "mbt build -p=cf --mtar=FASTCAP-Frontend-CF.mtar",
