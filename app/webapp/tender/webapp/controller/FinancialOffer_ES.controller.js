@@ -175,6 +175,31 @@ sap.ui.define([
         },
 
         /**
+         * Edit toggle action on the Edit/View mode on the Spain FinancialOfferPage
+         * @param {*} bEditMode 
+         */        
+        editFinancialOfferESToggle: function(bEditMode){
+            if(bEditMode){
+                const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
+                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);                
+                if(index < 0) return null;
+                if(sSelectedMainPriceCondition === "Descuento Comercial"){
+                    const descuentoComercialbindingPath = "/PriceConditionView/".concat(index);
+                    const dcpriceConditionViewObj = Services.getFastAppDataModel().getProperty(descuentoComercialbindingPath);
+                    this.calculateNetPricesDescuentoComercial(dcpriceConditionViewObj,dcpriceConditionViewObj.Discount);
+                }
+                if(sSelectedMainPriceCondition === "Precio Neto"){
+                    const precionetobindingPath = "/PriceConditionView/".concat(index);
+                    const pnpriceConditionViewObj = Services.getFastAppDataModel().getProperty(precionetobindingPath); 
+                    this.calculateDiscountsAndNetPricesPrecioNeto(pnpriceConditionViewObj,pnpriceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);               
+                }
+                
+            }
+            Services.getFastAppDataModel().updateBindings();
+        },
+                    
+        /**
          * Copy the existing condition to the main price condition and update the model
          */
         copyAndSetApplicableTenderConditionValues: function(applicableTenderCondition, applicablePriceConditionView){
@@ -287,6 +312,7 @@ sap.ui.define([
             //calculating the RoyalDecreeApplies
             const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
+            if(rappelIndex < 0) return null;
             const rappelPriceCondition = priceConditionViews[rappelIndex];
             let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");            
             rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
@@ -1133,7 +1159,7 @@ sap.ui.define([
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and PVL.");
                         evt.getSource().openValueStateMessage();  
-                    } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and confidential price.");
                         evt.getSource().openValueStateMessage();                    
@@ -1147,7 +1173,7 @@ sap.ui.define([
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than PVL.");
                         evt.getSource().openValueStateMessage();
-                    } else if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the confidential price.");
                         evt.getSource().openValueStateMessage();
@@ -2131,9 +2157,9 @@ sap.ui.define([
             const mainPriceConditionViewObject = Services.getFastAppDataModel().getProperty("/PriceConditionView/".concat(index));
             if(mainPriceConditionViewObject.ConditionType === "Descuento Especial") return 0;
             if(mainPriceConditionViewObject.ConditionType === "Precio Neto"){
-                if(selectedFOCObject.RoyalDecree === "No")
-                    return mainPriceConditionViewObject.NetPriceWithoutTax;
-                else 
+                // if(selectedFOCObject.RoyalDecree === "No")
+                //     return mainPriceConditionViewObject.NetPriceWithoutTax;
+                // else 
                     return mainPriceConditionViewObject.NetPriceWithoutTaxAfterDeductionRD;
             }
             if(mainPriceConditionViewObject.ConditionType === "Descuento Comercial") return mainPriceConditionViewObject.NetPriceWithoutTax;
