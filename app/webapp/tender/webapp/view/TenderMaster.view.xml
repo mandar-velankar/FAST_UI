@@ -115,7 +115,7 @@
 					</Column>
 					
 					<!-- Username who created the tender -->
-					<Column  width="8rem">
+					<Column  width="13rem">
 						<header>
 							<ObjectIdentifier title="{i18n>CreatedBy}" titleActive="true" titlePress="onClick"/>
 						</header>
@@ -130,7 +130,7 @@
 					
 					<!-- offerID -->
 					<!-- this column will never show as pop-in, beceause 1 column should not have a minScreenWidth and always be visible, other wise https://github.com/SAP/openui5/issues/1396 -->
-					<Column id="TenderTableOfferID" width="6rem">
+					<Column id="TenderTableOfferID" width="7rem">
 						<header>
 							<ObjectIdentifier title="{i18n>OfferID}" titleActive="true" titlePress="onClick"/>
 						</header>
@@ -144,11 +144,19 @@
 					</Column>
 					
 					<!-- status -->
-					<Column minScreenWidth="920px" demandPopin="true" popinDisplay="Inline" width="5rem">
+					<Column minScreenWidth="920px" demandPopin="true" popinDisplay="Inline" width="8rem">
 						<header>
 							<ObjectIdentifier title="{i18n>OfferStatus}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
+                    <!-- EHQUT-OTT-123341-Italy Customer Code in Tender Page -->
+                     <!-- Customer ID -->
+                    <Column id="idCustomer" demandPopin="true" popinDisplay="Inline" width="9rem" visible="{= ${fastAppData>/LayoutType/} !== 'OneColumn' &amp;&amp; ${fastAppData>/Tender/CountryCode} === 'IT'}">
+                        <header>
+                             <ObjectIdentifier title="{i18n>custId}" titleActive="true" titlePress="onClick"/>
+                        </header>
+                    </Column>
+                     <!-- EHQUT-OTT-123341-Italy Customer Code in Tender Page -->
 					
 					<!-- publication date -->
 					<Column minScreenWidth="920px" width="6rem">
