@@ -175,6 +175,31 @@ sap.ui.define([
         },
 
         /**
+         * Edit toggle action on the Edit/View mode on the Spain FinancialOfferPage
+         * @param {*} bEditMode 
+         */        
+        editFinancialOfferESToggle: function(bEditMode){
+            if(bEditMode){
+                const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
+                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);                
+                if(index < 0) return null;
+                if(sSelectedMainPriceCondition === "Descuento Comercial"){
+                    const descuentoComercialbindingPath = "/PriceConditionView/".concat(index);
+                    const dcpriceConditionViewObj = Services.getFastAppDataModel().getProperty(descuentoComercialbindingPath);
+                    this.calculateNetPricesDescuentoComercial(dcpriceConditionViewObj,dcpriceConditionViewObj.Discount);
+                }
+                if(sSelectedMainPriceCondition === "Precio Neto"){
+                    const precionetobindingPath = "/PriceConditionView/".concat(index);
+                    const pnpriceConditionViewObj = Services.getFastAppDataModel().getProperty(precionetobindingPath); 
+                    this.calculateDiscountsAndNetPricesPrecioNeto(pnpriceConditionViewObj,pnpriceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);               
+                }
+                
+            }
+            Services.getFastAppDataModel().updateBindings();
+        },
+                    
+        /**
          * Copy the existing condition to the main price condition and update the model
          */
         copyAndSetApplicableTenderConditionValues: function(applicableTenderCondition, applicablePriceConditionView){
@@ -287,6 +312,7 @@ sap.ui.define([
             //calculating the RoyalDecreeApplies
             const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
+            if(rappelIndex < 0) return null;
             const rappelPriceCondition = priceConditionViews[rappelIndex];
             let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");            
             rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
