@@ -1900,7 +1900,7 @@ sap.ui.define([
 						} else {
 							that.byId("ApprovalButtonId").setEnabled(false);
 						}
-	
+                        that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode()); 
 						break;
 				case Services.getQuotationPageSectionID():
 							
@@ -2392,6 +2392,7 @@ sap.ui.define([
 						//Edit offer copy to move back to original values during cancel
 						var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+                        that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode());
 						break;
 					case Services.getQuotationPageSectionID():
 									
