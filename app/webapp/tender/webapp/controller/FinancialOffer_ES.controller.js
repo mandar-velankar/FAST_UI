@@ -185,9 +185,11 @@ sap.ui.define([
                 const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);                
                 if(index < 0) return null;
                 if(sSelectedMainPriceCondition === "Descuento Comercial"){
+                    let newDiscount;
                     const descuentoComercialbindingPath = "/PriceConditionView/".concat(index);
                     const dcpriceConditionViewObj = Services.getFastAppDataModel().getProperty(descuentoComercialbindingPath);
-                    this.calculateNetPricesDescuentoComercial(dcpriceConditionViewObj,dcpriceConditionViewObj.Discount);
+                    newDiscount = Number(dcpriceConditionViewObj.Discount) * 100;
+                    this.calculateNetPricesDescuentoComercial(dcpriceConditionViewObj,newDiscount);
                 }
                 if(sSelectedMainPriceCondition === "Precio Neto"){
                     const precionetobindingPath = "/PriceConditionView/".concat(index);
