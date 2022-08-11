@@ -2086,6 +2086,7 @@ sap.ui.define([
                 oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
                 oFreeGoodsOther.RoyalDecreePercentage = royalDecree?.Percentage;
+                oFreeGoodsOther.packFactor = selectedProduct.PACKFACTOR;
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
                 oTable.setBusy(false);
 			}
@@ -2125,7 +2126,8 @@ sap.ui.define([
             const freeGoodsObject = bindingContext.getObject();
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            //let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let packFactor = freeGoodsObject.packFactor;        
             let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
             const privateCustomer = instType === "Private Account" || instType === "Cluster";
             const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
@@ -2137,17 +2139,20 @@ sap.ui.define([
                 potentialSaving = bonusAmount * mainConditionPrice;  
             }else {
                 let correctedPVL;
+                let correctedConfidentialPrice;                
                 if(UOM === "Unit"){
                     correctedPVL = freeGoodsObject.PVL / packFactor;
+                    correctedConfidentialPrice = freeGoodsObject.ConfidentialPrice / packFactor;
                 } else {
                     correctedPVL = freeGoodsObject.PVL;
+                    correctedConfidentialPrice = freeGoodsObject.ConfidentialPrice;
                 }
                 if(privateCustomer){
                     potentialSaving = correctedPVL * bonusAmount;
                 }  
                 if(publicCustomer){
-                    if(freeGoodsObject.RoyalDecree === "Yes") potentialSaving = freeGoodsObject.ConfidentialPrice * (1 - freeGoodsObject.RoyalDecreePercentage) * bonusAmount;
-                    else potentialSaving = freeGoodsObject.ConfidentialPrice * bonusAmount;
+                    if(freeGoodsObject.RoyalDecree === "Yes") potentialSaving = correctedConfidentialPrice * (1 - freeGoodsObject.RoyalDecreePercentage) * bonusAmount;
+                    else potentialSaving = correctedConfidentialPrice * bonusAmount;
                 }  
             }
 
