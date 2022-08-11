@@ -290,7 +290,7 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem">
-                        <m:Text text="{i18n>Price Condition}"/>
+                        <m:Text text="{i18n>PriceCondition}"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -432,12 +432,12 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Royal Decree -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- VAT -->
@@ -613,12 +613,12 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Royal Decree -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- VAT -->
@@ -812,7 +812,7 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Discount -->
@@ -985,7 +985,7 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Monthly Rent -->
@@ -1093,7 +1093,7 @@
 
                     <!-- Royal Decree -->
                     <m:Column width="25%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- Liquidation -->
@@ -1190,7 +1190,7 @@
 
                      <!-- Royal Decree -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- FOC Min Amount -->
