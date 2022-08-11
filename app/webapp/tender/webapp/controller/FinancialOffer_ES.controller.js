@@ -1416,7 +1416,7 @@ sap.ui.define([
 
             if(oSelectedOffer){
                 if (aOfferProducts && aOfferProducts.length > 0){
-                    productProfitabilityData = aOfferProducts.map(product => {
+                    productProfitabilityData = aOfferProducts.filter(oProduct => oProduct.ActiveProduct !== 2)?.map(product => {
 
                         if(aPriceConditionViews && aPriceConditionViews.length > 0){
                             oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
@@ -1606,11 +1606,11 @@ sap.ui.define([
 
                         if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
                             //calculate contract agents, consumables & injectors
-                            let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1));
+                            let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1) && product.ActiveProduct !== 2);
                             oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
                         } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
                             //calculate any other product type
-                            let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable'));
+                            let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable')  && product.ActiveProduct !== 2);
                             oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
                         } else if(consolidatedEntry.ProductType === 'Total'){
                             //calculate totals
@@ -1659,6 +1659,7 @@ sap.ui.define([
                     npv_grossmargin = npv_grossmargin + oProductPricing.GrossProfit;
                     npv_netsales = npv_netsales + (oProductPricing.Sales_NPV ? oProductPricing.Sales_NPV : 0);
                     npv_cogs = npv_cogs + (oProductPricing.Cost_NPV ? oProductPricing.Cost_NPV : 0);
+
                 }
 
                 profitability = npv_netsales ? npv_grossmargin / npv_netsales : 0;
