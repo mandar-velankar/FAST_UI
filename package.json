@@ -17,6 +17,7 @@
   },
   "scripts": {
     "setup": "cd app && npm install",
+    "serve": "ui5 serve",
     "build:xs-security": "cds compile srv/ --to xsuaa  > xs-security.json",
     "build:xsa": "mbt build -p=xsa --mtar=FASTCAP-Frontend.mtar",
     "build:cf": "mbt build -p=cf --mtar=FASTCAP-Frontend-CF.mtar",
