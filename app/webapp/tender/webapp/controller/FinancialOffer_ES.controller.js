@@ -1046,6 +1046,9 @@ sap.ui.define([
                 this.selectedProductPricePath = bindingContext.sPath;
             } else {
                 this.selectedProductPricePath = Services.getSelectedProductPath();
+                if(!this.selectedProductPricePath && this.byId("idFinancialOfferViewProduct").getItems()?.length > 0){
+                    this.selectedProductPricePath = '/ProductPricingView/0';
+                }
                 let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
                 this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
             }
