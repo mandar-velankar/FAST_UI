@@ -8322,8 +8322,8 @@ sap.ui.define([
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
-            // make sure selectedOfferPath is set
-            if(Services.getSelectedOfferPath() === ""){
+            // make sure selectedOfferPath is correctly set
+            if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
                 Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
                     OfferID: Services.getSelectedOfferID()
                 }))
