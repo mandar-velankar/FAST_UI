@@ -638,6 +638,12 @@ sap.ui.define([
 							formatter: formatter.statusInactive
 						}
 					}),
+                    //EHQUT-OTT-123341-Italy Customer Code in Tender Page
+                    new sap.m.Text({
+                        text: "{path:'fastAppData>/Tender/Institute/CustomerID'}"
+
+                    }),
+                    //EHQUT-OTT-123341-Italy Customer Code in Tender Page
 					new sap.m.Text({
 						text: "{path:'fastData>PUBLICATION_DATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"
 
