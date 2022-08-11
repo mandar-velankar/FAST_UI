@@ -290,7 +290,7 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem">
-                        <m:Text text="{i18n>Price Condition}"/>
+                        <m:Text text="{i18n>PriceCondition}"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -432,12 +432,12 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Royal Decree -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- VAT -->
@@ -447,12 +447,12 @@
 
                     <!-- NetPriceWithoutTaxAfterRD -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Net Price Without Tax After RD}"/>
+                        <m:Text text="{i18n>NetPriceWithoutTaxAfterRD}"/>
                     </m:Column>
 
                     <!-- NetPriceWithTaxAfterRD -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Net Price With Tax After RD}"/>
+                        <m:Text text="{i18n>NetPriceWithTaxAfterRD}"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -613,12 +613,12 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Royal Decree -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- VAT -->
@@ -628,12 +628,12 @@
 
                     <!-- NetPriceWithoutTaxAfter -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Net Price Without Tax}"/>
+                        <m:Text text="{i18n>}"/>
                     </m:Column>
 
                     <!-- NetPriceWithTaxAfterRD -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Net Price With Tax After RD}"/>
+                        <m:Text text="{i18n>NetPriceWithTaxAfterRD}"/>
                     </m:Column>
                     
                     <!-- Discount -->
@@ -812,7 +812,7 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Discount -->
@@ -822,7 +822,7 @@
 
                     <!-- Net Price without Tax -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>Net Price Without Tax}" visible="true"/>
+                        <m:Text text="{i18n>}" visible="true"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -985,7 +985,7 @@
 
                     <!-- Price Condition -->
                     <m:Column width="6rem">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Monthly Rent -->
@@ -995,7 +995,7 @@
 
                     <!-- Annual Value -->
                     <m:Column width="33%">
-                        <m:Text text="{i18n>Annual Value}" visible="true"/>
+                        <m:Text text="{i18n>AnnualValue}" visible="true"/>
                     </m:Column>
 
                     <!-- Total -->
@@ -1093,7 +1093,7 @@
 
                     <!-- Royal Decree -->
                     <m:Column width="25%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- Liquidation -->
@@ -1103,12 +1103,12 @@
 
                     <!-- Payment Back date -->
                     <m:Column width="25%">
-                        <m:Text text="{i18n>Payment Back date}"/>
+                        <m:Text text="{i18n>PaymentBackDate}"/>
                     </m:Column>
 
                     <!-- Volume Threshold -->
                     <m:Column width="25%">
-                        <m:Text text="{i18n>Volume Threshold}"/>
+                        <m:Text text="{i18n>VolumeThreshold}"/>
                     </m:Column>
 
                 </m:columns>
@@ -1185,27 +1185,27 @@
 
                     <!-- FOC Product -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>FOC Product}"/>
+                        <m:Text text="{i18n>FOCProduct}"/>
                     </m:Column>
 
                      <!-- Royal Decree -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- FOC Min Amount -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>FOC Min Amount}"/>
+                        <m:Text text="{i18n>FOCMinAmount}"/>
                     </m:Column>
 
                     <!-- FOC Bonus -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>FOC Bonus}"/>
+                        <m:Text text="{i18n>FOCBonus}"/>
                     </m:Column>
 
                     <!-- Potential Savings Generated -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>Potential Savings Generated}"/>
+                        <m:Text text="{i18n>PotentialSavingsGenerated}"/>
                     </m:Column>
 
 
