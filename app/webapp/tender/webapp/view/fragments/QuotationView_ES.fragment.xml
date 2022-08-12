@@ -628,7 +628,7 @@
 
                     <!-- NetPriceWithoutTaxAfter -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>}"/>
+                        <m:Text text="{i18n>NetPriceWithoutTax}"/>
                     </m:Column>
 
                     <!-- NetPriceWithTaxAfterRD -->
@@ -822,7 +822,7 @@
 
                     <!-- Net Price without Tax -->
                     <m:Column width="20%">
-                        <m:Text text="{i18n>}" visible="true"/>
+                        <m:Text text="{i18n>NetPriceWithoutTax}" visible="true"/>
                     </m:Column>
 
                     <!-- Rappel -->
