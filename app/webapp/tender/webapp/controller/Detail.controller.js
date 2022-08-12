@@ -8715,7 +8715,7 @@ sap.ui.define([
 			//get model & selected row
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
 			const offerValidation = oFastAppDataModel.getProperty("/OfferValidation/");
 
