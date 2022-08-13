@@ -2088,6 +2088,9 @@ sap.ui.define([
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
                 oFreeGoodsOther.RoyalDecreePercentage = royalDecree?.Percentage;
                 oFreeGoodsOther.packFactor = selectedProduct.PACKFACTOR;
+                oFreeGoodsOther.FOCMinAmount = 0;
+                oFreeGoodsOther.FOCBonus = 0;
+                oFreeGoodsOther.PotentialGeneratedSavings = 0;
 				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
                 oTable.setBusy(false);
 			}
