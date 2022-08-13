@@ -92,7 +92,7 @@
 					enabled="true"/>
 					
 				<!-- Shipping Date -->
-				<Label text="{i18n>shippingDate}" required="true"/>
+				<Label text="{i18n>shippingDate}" required="false"/>
 				<DatePicker
 					value="{
 						path :'fastAppData>/newBankGuarantee/ShippingDate', 

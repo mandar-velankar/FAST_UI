@@ -1457,9 +1457,9 @@ sap.ui.define([
 				//reselect same offer if it exists, otherwise clear offer selected
 				//that._selectOfferInOfferTable("tenderResultsOfferTableViewID","tenderResultsOfferTableOfferID");
 				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
-
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", true);
 					//Tender Results - subsection
-					var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
+					/*var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oFinHistorySubSection) {
 						oFinHistorySubSection.setVisible(false);
 					}
@@ -1474,13 +1474,13 @@ sap.ui.define([
 					var oFinNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oFinNoOfferSubsection) {
 						oFinNoOfferSubsection.setVisible(false);
-					}
+					}*/
 
 					that.onTenderResultsOfferPress();
 				} else {
 
 					//Tender Results - subsection
-					var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
+					/*var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oTenderResOfferSubSection) {
 						oTenderResOfferSubSection.setVisible(false);
 					}
@@ -1495,8 +1495,8 @@ sap.ui.define([
 					var oTenderResNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oTenderResNoOfferSubsection) {
 						oTenderResNoOfferSubsection.setVisible(true);
-					}
-
+					}*/
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
 				}
 				break;
 
@@ -1900,7 +1900,7 @@ sap.ui.define([
 						} else {
 							that.byId("ApprovalButtonId").setEnabled(false);
 						}
-	
+                        that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode()); 
 						break;
 				case Services.getQuotationPageSectionID():
 							
@@ -2102,7 +2102,7 @@ sap.ui.define([
 						that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderType2Edit").setEnabled(false);
-                        that.getView().byId("idContentEdit").setEnabled(false);
+                        that.getView().byId("idContentEdit").setEnabled(true);
                         that.getView().byId("idPortalEdit").setEnabled(false);
                         that.getView().byId("idInstituteCode").setEnabled(false);
                         that.getView().byId("idInstituteProvince").setEnabled(false);
@@ -2392,6 +2392,7 @@ sap.ui.define([
 						//Edit offer copy to move back to original values during cancel
 						var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+                        that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode());
 						break;
 					case Services.getQuotationPageSectionID():
 									
@@ -7435,7 +7436,7 @@ sap.ui.define([
 						that.getView().setBusy(false);
 						return;
 					}
-
+                   //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//Set price for product
 					oNewPriceInfo = {
 						TenderID: tenderId,
@@ -7453,11 +7454,11 @@ sap.ui.define([
 							100 : that.byId("idEditPriceOffer_idFoc").getValue(),
 						FOCType: that.byId("idEditFOCType").getSelectedKey(), //that.byId("idEditPriceOffer_idFocType").getSelectedKey(),
 						Discount: that.byId("idEditPriceOffer_idDiscount").getValue() / 100,
-						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replace(",", "")),
+						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replaceAll(",", "")),
 						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue() / 100,
 						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
 						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
-						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replace(",", "")),
+						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replaceAll(",", "")),
 						BusinessCasePrice: parseFloat(that.byId("idEditPriceOffer_idBusinessCasePrice").getValue().replace(",", "")),
 						WholesalePrice: that.byId("idEditPriceOffer_idWhlseofr").getSelectedKey(),
 						COGS: cogsValues.COGS,
@@ -7470,11 +7471,11 @@ sap.ui.define([
 						FOC_Bundled_1: (that.byId("idEditPriceOffer_idFocAbsPct1").getSelectedKey() === "PCT") ? that.byId(
 							"idEditPriceOffer_idFoc1").getValue() / 100 : that.byId("idEditPriceOffer_idFoc1").getValue(), //FOC ADDITIONAL PROD VALUE
 						ActiveTier: 0,
-						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replace(",", "")),
-						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replace(",", "")),
+						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
+						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						PRICE_UPDATE: 0
 					};
-
+                //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//check if any of the pricing data is changed
 					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
 
@@ -8321,6 +8322,13 @@ sap.ui.define([
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
+            // make sure selectedOfferPath is correctly set
+            if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
+
 			$.when(Services.checkOfferStatus()).done(function (oData) {
 				var sStatus = oData.STATUS;
 				var aStatusNoEdit = [
@@ -8707,7 +8715,7 @@ sap.ui.define([
 			//get model & selected row
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
 			const offerValidation = oFastAppDataModel.getProperty("/OfferValidation/");
 
@@ -8729,7 +8737,9 @@ sap.ui.define([
 
 			
 			// TODO: check if this only applies to Spain
-			if (oSelectedProduct.CountryCode === "ES" && selectedProductType === "Injector"){
+            // CHANGE: instead of checking on selectedProductType, the check should check whether or not the main price condition is "Rental"
+            //         if it's a rental condition, the error should be shown. Otherwise, the PA can be created
+			if (oSelectedProduct.CountryCode === "ES" && oSelectedProduct.PriceCondition.results.find(condition => condition.PriceConditionClassification.ConditionType === "Rental")){
 				sap.m.MessageToast.show("No price agreement can be created for Rental");
 				return;
 			}
@@ -9166,7 +9176,12 @@ sap.ui.define([
 											} else {
 												oCompetitorResult.REASON = oCompetitorResult.REASON;
 											}*/
-
+                                            //EHQUT-OTT-118849-Making decision pending as default
+                                            if(oCompetitorResult.OUTCOME=='' && sCountry=='IT')
+                                            {
+                                                oCompetitorResult.OUTCOME='Decision Pending';
+                                            }
+                                            //EHQUT-OTT-118849-Making decision pending as default
 											var oCompetitorResultForView = {
 												OFFERID: oCompetitorResult.OFFERID,
 												PRODUCTCODE: oCompetitorResult.PRODUCTCODE,
@@ -9215,9 +9230,45 @@ sap.ui.define([
 
 									//offerprice not always existing
 									var iAwardedPrice = null;
+                                    let iPriceCondition = null;
 									if (oProduct && oProduct.Price && oProduct.Price.OfferPrice) {
 										iAwardedPrice = oProduct.Price.OfferPrice;
 									}
+                                    if(Services.getSelectedCountry().indexOf("ES") > -1){
+
+                                        let priceConditionObject = oProduct?.PriceCondition?.results?.find( cond => cond?.PriceConditionClassification?.isMain);
+                                        iPriceCondition = priceConditionObject?.PriceConditionClassification?.ConditionType;
+                                        switch(iPriceCondition) {
+                                            case "PVL":
+                                                let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
+
+                                                if (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National'){
+
+                                                    iAwardedPrice = priceConditionObject.ConfidentialPrice * ( 1- (priceConditionObject.RoyalDecreePercentage?.Percentage || 0));
+
+                                                } else {
+                                                    iAwardedPrice = priceConditionObject.PVL;
+                                                }
+
+                                              break;
+                                            case "Rental":
+                                                iAwardedPrice = priceConditionObject.MonthlyRentPerUnit;
+                                              break;
+                                            default:
+                                              // code block
+                                          }
+    
+
+                                    }
+                                    
+                                    
+
+                                    //EHQUT-OTT-118849-Making decision pending as default
+                                    if(oResult.Outcome=='' && sCountry=='IT')
+                                    {
+                                        oResult.Outcome='Decision Pending';
+                                    }
+                                    //EHQUT-OTT-118849-Making decision pending as default
 									var oBayerProduct = {
 										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
@@ -9257,8 +9308,9 @@ sap.ui.define([
                                         APPEAL:(!oResult.Appeal ? "No" : oResult.Appeal) ,
                                         INFONEEDED:(!oResult.InfoNeeded ? "No" : oResult.InfoNeeded),
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
-										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
-									}
+										_sOperation: oResult._sOperation, //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
+                                        PriceCondition: iPriceCondition
+                                    }
 
 									var oResultsForTree = {
 										OutcomeLevel: oBayerProduct
@@ -9294,7 +9346,6 @@ sap.ui.define([
 			}
 
 		},
-
 		//collapse hyrarchie of tree table
 		onCollapseOutcome: function () {
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
@@ -9347,7 +9398,11 @@ sap.ui.define([
 				//Add new awarded product
 				var oBayerProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
 				var oNewRewardedProduct = Services.getService('Product').getEmptyProductResult();
-				
+                //EHQUT-OTT-118849-Making decision pending as default
+                if(sCountry=='IT'){
+                    oNewRewardedProduct.OUTCOME='Decision Pending';
+                    }
+                //EHQUT-OTT-118849-Making decision pending as default
 				//fill necesary data
 				oNewRewardedProduct.OFFERID = oBayerProduct.OFFERID;
 				oNewRewardedProduct.PRODUCTCODE = oBayerProduct.PRODUCTCODE;
@@ -9592,9 +9647,6 @@ sap.ui.define([
                             if(!oResultForTree.AWARDEDQTY){
                                 missingFields.add("Awarded Quantity");
                             }
-                            if(!oResultForTree.TOTALAWARDEDVALUE){
-                                missingFields.add("Total Awarded Value");
-                            }
                             if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.INFONEEDED){
                                 missingFields.add("Information Needed");
                             }
@@ -9632,9 +9684,6 @@ sap.ui.define([
                                 }
                                 if(!oOutcomeLevel.AWARDEDQTY){
                                     missingFields.add("Awarded Quantity");
-                                }
-                                if(!oOutcomeLevel.TOTALAWARDEDVALUE){
-                                    missingFields.add("Total Awarded Value");
                                 }
                                 if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.INFONEEDED){
                                     missingFields.add("Information Needed?");
@@ -9928,19 +9977,19 @@ sap.ui.define([
 					if(aSpecifications.length > 0){
 						this.byId("idSpecifications").setVisible(true);
 					}
-
-                    if((sCountry === 'ES' || sCountry === 'IT') && sKey === 'Tender'){
+                    //EHQUT-INC0184560-Issue in offer creation
+                    if(sCountry === 'ES' && sKey === 'Tender' || sCountry === 'IT') {
                         this.byId("idSelectTenderTypeEdit").setVisible(true);
                         if(sCountry === 'ES'){
                             this.byId("idSelectTenderType2Edit").setVisible(true);     
                         }                   
-                    } else if((sCountry === 'ES' || sCountry === 'IT') && sKey !== 'Tender'){
+                    } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
                         if(sCountry === 'ES'){
                             this.byId("idSelectTenderType2Edit").setVisible(false);     
                         }                  
                     }         
-
+                    //EHQUT-INC0184560-Issue in offer creation
 				} catch(err) {
 					console.log(err);
 				} finally{

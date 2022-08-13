@@ -2094,7 +2094,11 @@ sap.ui.define([
 					var aCountryOutcomes = oData.results;
 
 					if(oData.results.length > 0){
+                        //EHQUT-OTT-118849-Making decision pending as default
+                        if(sCountry !=='IT'){
 						aCountryOutcomes.unshift({CountryCode:sCountry,Outcome:"",Sorter:"0"});
+                        }
+                        //EHQUT-OTT-118849-Making decision pending as default
 					}
 
 					//data received is set
@@ -2450,10 +2454,9 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition,PriceCondition/FreeGoodsOther" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition,PriceCondition/FreeGoodsOther,PriceCondition/RoyalDecreePercentage" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
-
 					if (oDataProducts.results[0]) { //if products are found add them to the Model
 
 						//offers from application model
@@ -7242,9 +7245,9 @@ sap.ui.define([
 				(this.getSelectedCountry() !== 'ES' || 
 					(this.getSelectedCountry() === 'ES' && 
 					oBankGuarantee.BankRequestDate &&
-					oBankGuarantee.BankName &&
+					oBankGuarantee.BankName))){
 					//oBankGuarantee.BankStatus &&
-					oBankGuarantee.ShippingDate))){
+					//oBankGuarantee.ShippingDate
 				//oBankGuarantee.ClosingDate
 					 bValid = true;
 			 }

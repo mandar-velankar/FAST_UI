@@ -50,6 +50,62 @@ sap.ui.define([
 			return this.odata("/PriceCondition").get(mParameters);
 		},
 
+        getRoyalDecree: function(productPackID){
+            
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'ProductPackID',
+				operator: FilterOperator.EQ,
+				value1: productPackID
+			}));
+
+            // for info see https://trello.com/c/Wn9WZJfO/2439-foc-pop-up-adjustment
+			// aFilters.push(new Filter({
+			// 	path: 'CustomerGroup',
+			// 	operator: FilterOperator.EQ,
+			// 	value1: customerGroup
+			// }));
+
+            aFilters.push(new Filter({
+				path: 'ValidTo',
+				operator: FilterOperator.EQ,
+				value1: '9999-12-31'
+			}));
+
+			var mParameters = {
+				filters: aFilters,
+			};
+
+
+			return this.odata("/RoyalDecreePercentage").get(mParameters);
+		},
+
+
+        getMostRecentMasterPrices: function(countryCode, productPackID){
+            
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: countryCode
+			}));
+
+			aFilters.push(new Filter({
+				path: 'ProductPackId',
+				operator: FilterOperator.EQ,
+				value1: productPackID
+			}));
+
+			var mParameters = {
+				filters: aFilters,
+			};
+
+
+			return this.odata("/MostRecentMasterPricesView").get(mParameters);
+		},
+
 		createPriceCondition: function (oPriceCondition) {
 			return this.odata("/PriceCondition").post(oPriceCondition);
 		},
@@ -93,7 +149,9 @@ sap.ui.define([
             let convertedPVL;
             let convertedConfPrice;
             if(tab === "PA"){
-                convertedPVL = oPriceConditionViewObject.PVL;
+            /*During Price Agreement creation we should always take the trasactional PVL/Confidential Price,
+                as Price Agreement should be created using prices saved in the PriceCondition table. */            
+                convertedPVL = oPriceConditionViewObject.PriceConditionPVL;
                 convertedConfPrice = oPriceConditionViewObject.ConfidentialPrice;
             } else {
                 switch(oPriceConditionViewObject.ConditionType) {
@@ -124,7 +182,7 @@ sap.ui.define([
                 let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
                 let packFactor =  Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].PACKFACTOR;
                 let UOM = Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].UOM;
-
+                //During the edit of the Financial Offer prices should always come from the MasterData
                 if(UOM === "Unit"){
                     convertedPVL = oPriceConditionViewObject.PVL / packFactor;
                     convertedConfPrice = oPriceConditionViewObject.YLAP / packFactor;

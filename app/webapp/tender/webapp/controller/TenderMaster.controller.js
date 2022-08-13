@@ -244,8 +244,10 @@ sap.ui.define([
 			//TODO rebuild filtering by good practice of SAP or use get property for i18n
 			if (this.oSelCol === "Country") {
 				oSel = "COUNTRY";
-			} else if (this.oSelCol === "TenderID") {
+			} else if (this.oSelCol === "TenderID" || this.oSelCol === "ID") {
 				oSel = "TENDER_ID";
+			} else if (this.oSelCol === "Classification") {
+				oSel = "CLASSIFICATION";
 			} else if (this.oSelCol === "Name / Reference") {
 				oSel = "TENDER_NAME";
 			} else if (this.oSelCol === "Institute") {
@@ -313,8 +315,10 @@ sap.ui.define([
 			var oSel;
 			if (this.oSelCol === "Country") {
 				oSel = "COUNTRY";
-			} else if (this.oSelCol === "TenderID") {
+			} else if (this.oSelCol === "TenderID"|| this.oSelCol === "ID") {
 				oSel = "TENDER_ID";
+			} else if (this.oSelCol === "Classification") {
+				oSel = "CLASSIFICATION";
 			} else if (this.oSelCol === "Name / Reference") {
 				oSel = "TENDER_NAME";
 			} else if (this.oSelCol === "Institute") {
@@ -362,8 +366,10 @@ sap.ui.define([
 			var oSel;
 			if (this.oSelCol === "Country") {
 				oSel = "COUNTRY";
-			} else if (this.oSelCol === "TenderID") {
+			} else if (this.oSelCol === "TenderID"|| this.oSelCol === "ID") {
 				oSel = "TENDER_ID";
+			} else if (this.oSelCol === "Classification") {
+				oSel = "CLASSIFICATION";
 			} else if (this.oSelCol === "Name / Reference") {
 				oSel = "TENDER_NAME";
 			} else if (this.oSelCol === "Institute") {
@@ -590,6 +596,9 @@ sap.ui.define([
 						]
 					}),
 					new sap.m.Text({
+						text: "{fastData>CLASSIFICATION}"
+					}),
+					new sap.m.Text({
 						text: "{fastData>TENDER_NAME}"
 					}),
 					new sap.m.Text({
@@ -629,6 +638,12 @@ sap.ui.define([
 							formatter: formatter.statusInactive
 						}
 					}),
+                    //EHQUT-OTT-123341-Italy Customer Code in Tender Page
+                    new sap.m.Text({
+                        text: "{path:'fastAppData>/Tender/Institute/CustomerID'}"
+
+                    }),
+                    //EHQUT-OTT-123341-Italy Customer Code in Tender Page
 					new sap.m.Text({
 						text: "{path:'fastData>PUBLICATION_DATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"
 
@@ -682,6 +697,13 @@ sap.ui.define([
 
 				orFilters.push(new Filter({
 					path: "TENDER_NAME",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "CLASSIFICATION",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false

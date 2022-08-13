@@ -22,28 +22,40 @@
             <form:content>
                 <Label text="{i18n>PVL}" required="true"/>
                 <Input  
-                    value="{
-                        parts: [
+                    value="{= !${fastAppData>/EditMode} 
+                        ? ${parts: [
                             {path:'fastAppData>/ProductPricingView/0/UOM'},
                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>PVL'}
+                            {path:'fastAppData>PriceConditionPVL'}
                         ],
-                        formatter: '.formatter.formatUoMPriceExtraDigits'
-                    }"
+                        formatter: '.formatter.formatUoMPriceExtraDigits'}
+                        : ${parts: [
+                                {path:'fastAppData>/ProductPricingView/0/UOM'},
+                                {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                                {path:'fastAppData>PVL'}
+                            ],
+                            formatter: '.formatter.formatUoMPriceExtraDigits'}
+                        }"
                     description="{fastAppData>Currency}" 
                     enabled="false" 
                     fieldWidth="80%"
                 />
                 <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
                 <Input 
-                    value="{
-                        parts: [
+                    value="{= !${fastAppData>/EditMode}
+                        ? ${parts: [
+                            {path:'fastAppData>/ProductPricingView/0/UOM'},
+                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
+                            {path:'fastAppData>ConfidentialPrice'}
+                        ],
+                        formatter: '.formatter.formatUoMPriceExtraDigits'}
+                        : ${parts: [
                             {path:'fastAppData>/ProductPricingView/0/UOM'},
                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
                             {path:'fastAppData>YLAP'}
                         ],
-                        formatter: '.formatter.formatUoMPriceExtraDigits'
-                    }"
+                        formatter: '.formatter.formatUoMPriceExtraDigits'}
+                        }"
                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                     description="{fastAppData>Currency}" 
                     enabled="false" 
@@ -92,7 +104,7 @@
                 <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" selected="{fastAppData>RoyalDecreeIncl}" select=".onLiveChangeNetPricesPrecioNeto"/>
                 <Label text="{i18n>RoyalDecreeValue}" required="false" />
                 <Input 
-                    value="{path:'fastAppData>RoyalDecreeValue'}" 
+                    value="{path:'fastAppData>RoyalDecreeValue', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}}" 
                     enabled="false" 
                     fieldWidth="80%"
                     visible="{= ${fastAppData>RoyalDecree} === 'Yes'}"

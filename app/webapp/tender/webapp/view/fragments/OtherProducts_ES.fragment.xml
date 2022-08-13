@@ -4,8 +4,8 @@
 
 	<Dialog id="OtherProducts" title="Products" >
 		<buttons>
-			<Button text="Cancel" press=".oCancelProducts" />
 			<Button text="Apply" press=".oApplyProducts" />
+			<Button text="Cancel" press=".oCancelProducts" />
 		</buttons>
 
         <Table id="FreeGoodsOtherTable" items="{path:'fastAppData>FreeGoodsOther'}">
@@ -40,7 +40,7 @@
             <ColumnListItem>
                 <cells>
                     <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true" visible="true"/>
-                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}" visible="true">
+                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}" visible="true" enabled="false">
                         <core:Item key="" text="" />
                         <core:Item key="Yes" text="Yes" />
                         <core:Item key="No" text="No" />

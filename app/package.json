@@ -14,7 +14,7 @@
     "build": "ui5 build --clean-dest"
   },
   "engines": {
-    "node": "^12"
+    "node": "^14"
   },
   "dependencies": {
     "@sap/approuter": "^9",
