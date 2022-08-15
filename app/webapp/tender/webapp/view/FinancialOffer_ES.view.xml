@@ -170,7 +170,7 @@
                                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
                                             {path:'fastAppData>PVL'}
                                         ],
-                                        formatter: '.formatter.formatUoMPrice'
+                                        formatter: '.formatter.formatUoMPriceExtraDigits'
                                     }"
                                     description="{fastAppData>Currency}" 
                                     enabled="false" 
@@ -201,7 +201,7 @@
                                             {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
                                             {path:'fastAppData>YLAP'}
                                         ],
-                                        formatter: '.formatter.formatUoMPrice'
+                                        formatter: '.formatter.formatUoMPriceExtraDigits'
                                     }"
                                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                                     description="{fastAppData>Currency}" 
