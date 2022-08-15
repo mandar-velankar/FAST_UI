@@ -709,6 +709,8 @@ sap.ui.define([
                             delete item.ConfidentialPrice;
                             delete item.PVL;
                             delete item.isSameAsMainProduct;
+                            delete item.packFactor;
+                            delete item.ProductPackIdValueState;
                             delete item.RoyalDecreePercentage;
                          });
 
