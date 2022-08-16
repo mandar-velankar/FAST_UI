@@ -153,9 +153,11 @@ sap.ui.define([
 								//check if price is set, if price is not set for 1 product, return false
 								//if 1 false, all false
 								//bAllPricesSet = bAllPricesSet && oProduct.Price;
-								if(oProduct.Price === null || oProduct.Price === undefined || oProduct.Price.NetPrice === 0){
+                                //EHQUT-INC16229542-duplication of product
+								if(oProduct.Price === null || oProduct.Price === undefined || oProduct.Price.NetPrice === 0 || oProduct.Price.NetPrice ===null){
 									_allProductPricesSet = false;
 								}
+                                //EHQUT-INC16229542-duplication of product
 							}
 							
 						});
@@ -167,7 +169,7 @@ sap.ui.define([
 					return _allProductPricesSet;
 					
 				}
-	
+	                  
 		//SAVERS
 		//------		
 				
