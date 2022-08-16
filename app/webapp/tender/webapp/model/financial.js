@@ -154,7 +154,7 @@ sap.ui.define([
 								//if 1 false, all false
 								//bAllPricesSet = bAllPricesSet && oProduct.Price;
                                 //EHQUT-INC16229542-duplication of product
-								if(oProduct.Price === null || oProduct.Price === undefined || oProduct.Price.NetPrice === 0 || oProduct.Price.NetPrice ===null){
+								if(oProduct.Price === null || oProduct.Price === undefined || oProduct.Price.NetPrice === 0 || oProduct.Price.NetPrice === null){
 									_allProductPricesSet = false;
 								}
                                 //EHQUT-INC16229542-duplication of product
