@@ -42,7 +42,7 @@
                             ],
                             formatter: '.formatter.formatUoMPrice'}
                         }"
-                    description="{fastAppData>Currency}" 
+                    description="{fastAppData>masterPriceCurrency}" 
                     enabled="false" 
                     fieldWidth="80%"
                 />
@@ -64,7 +64,7 @@
                         formatter: '.formatter.formatUoMPrice'}
                         }"
                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
-                    description="{fastAppData>Currency}" 
+                    description="{fastAppData>masterPriceCurrency}" 
                     enabled="false" 
                     fieldWidth="80%"
                 />  
