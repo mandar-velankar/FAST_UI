@@ -172,7 +172,7 @@
                                         ],
                                         formatter: '.formatter.formatUoMPriceExtraDigits'
                                     }"
-                                    description="{fastAppData>Currency}" 
+                                    description="{fastAppData>masterPriceCurrency}" 
                                     enabled="false" 
                                     fieldWidth="50%"
                                 />
@@ -204,7 +204,7 @@
                                         formatter: '.formatter.formatUoMPriceExtraDigits'
                                     }"
                                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
-                                    description="{fastAppData>Currency}" 
+                                    description="{fastAppData>masterPriceCurrency}" 
                                     enabled="false" 
                                     fieldWidth="50%"
                                 />
