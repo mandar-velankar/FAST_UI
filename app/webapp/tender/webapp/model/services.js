@@ -3608,7 +3608,7 @@ sap.ui.define([
 				var bInistituteChilderen = false;
 
 				//check count results
-				if (oData.Children && oData.Children.results) {
+				if (oData.Children && oData.Children.results && oData.CountryCode !== 'ES') {
 					if (oData.Children.results.length > 0) {
 						//institute has childeren
 						bInistituteChilderen = true;
