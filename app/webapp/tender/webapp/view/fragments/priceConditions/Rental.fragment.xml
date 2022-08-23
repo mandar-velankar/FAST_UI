@@ -26,9 +26,9 @@
             <Label text="{i18n>RentalPrice}"/>
             <Input value="{fastAppData>RentalPrice}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
             <Label text="{i18n>MonthlyRentPerUnit}" required="true"/>
-            <Input value="{fastAppData>MonthlyRentPerUnit}"  description="{fastAppData>Currency}" liveChange=".onMonthlyRentPerUnitChange" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> 
+            <Input value="{fastAppData>MonthlyRentPerUnit}"  description="{fastAppData>masterPriceCurrency}" liveChange=".onMonthlyRentPerUnitChange" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/> 
             <Label text="{i18n>AnnualValue}" />
-            <Input value="{fastAppData>AnnualValue}" description="{fastAppData>Currency}" enabled="false" fieldWidth="80%"/> 
+            <Input value="{fastAppData>AnnualValue}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/> 
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

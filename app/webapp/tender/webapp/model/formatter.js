@@ -449,15 +449,20 @@ sap.ui.define([
 			return resourceBundle.getText(description);
 		},
 
-		formatUoMPrice: function(uom="Pack", packFactor=1, price){
-			if(!price) {return};
+		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal){
+			if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
+            let decval = Number(numOfDecimal);
+            let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
+            if(!product) {return};
+            let uom = product.UOM;
+            let packFactor = product.PACKFACTOR;  
 			if(~uom.toLowerCase().indexOf("unit")){ 
 				newPrice = newPrice / packFactor;
 			}
 			const floatFormatter = NumberFormat.getFloatInstance({
-				maxFractionDigits: 2,
-				minFractionDigits: 2,
+				maxFractionDigits: decval,
+				minFractionDigits: decval,
 				groupingEnabled: true,
 				groupingSeparator: ",",
 				decimalSeparator: "."
@@ -465,6 +470,8 @@ sap.ui.define([
 			return floatFormatter.format(newPrice);
 		},
 
+       /*
+       // Note: We are passing required number of decimal digits as an input to the formatter, thus we do not need this additional formatter function
         formatUoMPriceExtraDigits: function(uom="Pack", packFactor=1, price){
 			if(!price) {return};
 			let newPrice = Number(price);
@@ -479,7 +486,7 @@ sap.ui.define([
 				decimalSeparator: "."
 			});
 			return floatFormatter.format(newPrice);
-		},
+		}, */
 
 		hasAdditionalCondition: function(sorter, additionalConditions){
 			if(!sorter || !additionalConditions) return 'No';
