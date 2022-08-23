@@ -30,19 +30,21 @@
                 <Input 
                     value="{= !${fastAppData>/EditMode} 
                         ? ${parts: [
-                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>PriceConditionPVL'}
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>PriceConditionPVL'},
+                            {value: 2}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
-                                {path:'fastAppData>/ProductPricingView/0/UOM'},
-                                {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                                {path:'fastAppData>PVL'}
+                                {path:'fastAppData>ProductCode'},
+                                {path:'fastAppData>/ProductPricingView'},
+                                {path:'fastAppData>PVL'},
+                                {value: 2}
                             ],
                             formatter: '.formatter.formatUoMPrice'}
                         }"
-                    description="{fastAppData>Currency}" 
+                    description="{fastAppData>masterPriceCurrency}" 
                     enabled="false" 
                     fieldWidth="80%"
                 />
@@ -51,20 +53,22 @@
                 <Input 
                     value="{= !${fastAppData>/EditMode}
                         ? ${parts: [
-                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>ConfidentialPrice'}
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>ConfidentialPrice'},
+                            {value: 2}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
-                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>YLAP'}
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>YLAP'},
+                            {value: 2}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         }"
                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
-                    description="{fastAppData>Currency}" 
+                    description="{fastAppData>masterPriceCurrency}" 
                     enabled="false" 
                     fieldWidth="80%"
                 />  

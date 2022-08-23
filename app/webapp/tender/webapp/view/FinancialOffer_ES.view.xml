@@ -166,13 +166,14 @@
                                 <Input 
                                     value="{
                                         parts: [
-                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                                            {path:'fastAppData>PVL'}
+                                            {path:'fastAppData>ProductCode'},
+                                            {path:'fastAppData>/ProductPricingView'},
+                                            {path:'fastAppData>PVL'},
+                                            {value: 6}
                                         ],
-                                        formatter: '.formatter.formatUoMPriceExtraDigits'
+                                        formatter: '.formatter.formatUoMPrice'
                                     }"
-                                    description="{fastAppData>Currency}" 
+                                    description="{fastAppData>masterPriceCurrency}" 
                                     enabled="false" 
                                     fieldWidth="50%"
                                 />
@@ -180,9 +181,10 @@
                                 <Input 
                                     value="{
                                         parts: [
-                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                                            {path:'fastAppData>PriceConditionPVL'}
+                                            {path:'fastAppData>ProductCode'},
+                                            {path:'fastAppData>/ProductPricingView'},
+                                            {path:'fastAppData>PriceConditionPVL'},
+                                            {value: 6}
                                         ],
                                         formatter: '.formatter.formatUoMPrice'
                                     }"
@@ -197,14 +199,15 @@
                                 <Input 
                                     value="{
                                         parts: [
-                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                                            {path:'fastAppData>YLAP'}
+                                            {path:'fastAppData>ProductCode'},
+                                            {path:'fastAppData>/ProductPricingView'},
+                                            {path:'fastAppData>YLAP'},
+                                            {value: 6}
                                         ],
-                                        formatter: '.formatter.formatUoMPriceExtraDigits'
+                                        formatter: '.formatter.formatUoMPrice'
                                     }"
                                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
-                                    description="{fastAppData>Currency}" 
+                                    description="{fastAppData>masterPriceCurrency}" 
                                     enabled="false" 
                                     fieldWidth="50%"
                                 />
@@ -212,9 +215,10 @@
                                 <Input 
                                     value="{
                                         parts: [
-                                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                                            {path:'fastAppData>ConfidentialPrice'}
+                                            {path:'fastAppData>ProductCode'},
+                                            {path:'fastAppData>/ProductPricingView'},
+                                            {path:'fastAppData>ConfidentialPrice'},
+                                            {value: 6}
                                         ],
                                         formatter: '.formatter.formatUoMPrice'
                                     }"
