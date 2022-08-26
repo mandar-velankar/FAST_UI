@@ -9,10 +9,11 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
 	"sap/ui/model/Filter",
+    "sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterOperator, BusyIndicator,Sorter) {
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	var bundle;
@@ -123,12 +124,14 @@ sap.ui.define([
 
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
+            const tenderHistorySpain = await this.getTenderHistorySpain();
             const descuentoEspecial = priceConditionViews.find(pc => pc.ConditionType === "Descuento Especial");
             if(descuentoEspecial && !descuentoEspecial.Discount){
                 descuentoEspecial.Discount = 1;
                 descuentoEspecial.NetPriceWithoutTax = 0;
             } 
             Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
+            Services.getFastAppDataModel().setProperty("/TenderHistorySpain", tenderHistorySpain);
 
             // Manage financial offer when existing agreement is in place
             const applicableTenderCondition = await this.getApplicableTenderCondition();
@@ -145,7 +148,7 @@ sap.ui.define([
             //bind Rappel and FOC fragments 
             const rappelBindingPath = this.bindRappelFragment();
             const focBindingPath = this.bindFocFragment();
-            this.bindingCurrentPrices();
+            this.bindingCurrentPrices();    
 
             // add DiscountCondition
             rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
@@ -310,6 +313,26 @@ sap.ui.define([
             return currentPricesBindingPath;
         },        
 
+        onHistoryFilterCheck: function(oEvent){
+            let oFilters = [];
+            let vTable = this.byId("tenderHistoryId");
+            const sConditionType = (oEvent.getSource().getId()).split("-").pop();
+            const selectedProductId =  Services.getSelectedProductID();
+            oFilters.push(new sap.ui.model.Filter("PRODUCT_ID", sap.ui.model.FilterOperator.EQ, selectedProductId));
+            if(sConditionType === "currentInstituteCheckId"){
+                const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+                oFilters.push(new sap.ui.model.Filter("INSTITUTE_ID", sap.ui.model.FilterOperator.EQ, currentInstituteId));
+            }
+            if(sConditionType === "wonCheckId"){
+                oFilters.push(new sap.ui.model.Filter("OUTCOME", sap.ui.model.FilterOperator.EQ, "Won"));
+            }
+            if(sConditionType === "lossCheckId"){
+                oFilters.push(new sap.ui.model.Filter("OUTCOME", sap.ui.model.FilterOperator.EQ, "Lost"));
+            }     
+            
+            vTable.getBinding("items")?.filter(oFilters, FilterType.Application);            
+        }, 
+
         calculateRoyalDecreeAppliesAndMainConditionPrice: function(){
             //calculating the RoyalDecreeApplies
             const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
@@ -447,6 +470,30 @@ sap.ui.define([
 
         },
         
+        getTenderHistorySpain: async function(){
+
+            BusyIndicator.show();
+
+            const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+            if(offer){
+                const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
+                //const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+
+                const filter = {
+                  //  "INSTITUTE_ID": currentInstituteId,
+                   // "OfferID": offer.OfferID,
+                    "ProductCode": selectedProduct.ProductCode
+                    
+                };
+
+                let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(filter);
+                
+                BusyIndicator.hide();
+                return tenderHistorySpain.data.results;
+            } else return null;
+
+        },
+
 		setFinancialOffer: async function(){
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
