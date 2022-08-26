@@ -275,62 +275,126 @@
 			<l:BlockLayout background="Light">
 				<l:BlockLayoutRow>
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-						<Table id="tenderHistoryId" inset="false">
+						<Table id="tenderHistoryId" items="{path : 'fastAppData>/TenderHistorySpain'}" inset="false">
 							<headerToolbar>
 								<Toolbar>
 									<content>
 										<ToolbarSpacer/>
 										<CheckBox id="currentCountryCheckId" text="{i18n>CurrentCountry}" selected="true" select=".onHistoryFilterCheck" visible="false"/>
 										<CheckBox id="currentInstituteCheckId" text="{i18n>CurrentInstitute}" selected="true" select=".onHistoryFilterCheck"/>
-										<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck"/>
+										<CheckBox id="parentInstituteCheckId" text="{i18n>ParentInstitute}" selected="false" select=".onHistoryFilterCheck" visible="false"/>
 										<CheckBox id="wonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
 										<CheckBox id="lossCheckId" text="{i18n>Loss}" selected= "false" select=".onHistoryFilterCheck"/>
 									</content>
 								</Toolbar>
 							</headerToolbar>
 							<columns>
-								<Column>
+								<Column width="4rem">
 									<Text text="{i18n>ID}"/>
 								</Column>
-								<Column>
+								<Column width="6rem">
 									<Text text="{i18n>reference}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
+								<Column minScreenWidth="Tablet" width="6rem" demandPopin="true">
 									<Text text="{i18n>OfferID}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
+								<Column minScreenWidth="Tablet" width="4rem" demandPopin="true">
 									<Text text="{i18n>OfferDate}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
+								<Column minScreenWidth="Tablet" width="6rem" demandPopin="true">
 									<Text text="{i18n>InstituteName}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
+								<Column minScreenWidth="Tablet" width="6rem" demandPopin="true">
 									<Text text="{i18n>Product}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
+								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>UnitPrice}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
+								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>PackPrice}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
-									<Text text="{i18n>NetUnitPrice}"/>
+								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
+									<Text text="{i18n>PVL}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
-									<Text text="{i18n>NetPackPrice}"/>
+								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
+									<Text text="{i18n>ConfidentialPrice}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
-									<Text text="{i18n>UnitPack}"/>
+								<!-- <Column minScreenWidth="Tablet" demandPopin="true" visible="false">
+									<Text text="{i18n>UnitPack}" visible="false"/>
+								</Column> -->
+                                <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
+									<Text text="{i18n>PriceCondition}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
+                                <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
+									<Text text="{i18n>RoyalDecree}"/>
+								</Column>
+                                <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
+									<Text text="{i18n>Discount}"/>
+								</Column>
+								<Column minScreenWidth="Tablet" width="10%" demandPopin="true" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
 										(${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
 									<Text text="{i18n>FOC}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
 										(${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }"/>
 								</Column>
-								<Column minScreenWidth="Tablet" demandPopin="true">
+                                <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
+									<Text text="{i18n>Rappel}"/>
+								</Column>                                
+								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>Status}"/>
 								</Column>
 							</columns>
+                            <items>
+									<ColumnListItem highlight="Indication04">
+										<cells>
+											<Text text="{fastAppData>TenderID}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>TENDER_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>OfferID}"/>
+										</cells>
+										<cells>
+											<Text text="{path :'fastAppData>OFFER_DATE', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>INSTITUTE_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>PRODUCT_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>UNIT_PRICE}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>PACK_PRICE}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>PVL}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>CONFIDENTIAL_PRICE}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>PRICE_CONDITION}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>ROYALDECREE}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>DISCOUNT}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>FOC}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>RAPPEL}"/>
+										</cells>
+                                         <cells>
+											<Text text="{fastAppData>OUTCOME}"/>
+										</cells>
+									</ColumnListItem>
+								</items>                            
 						</Table>
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>
