@@ -294,17 +294,17 @@
                     </m:Column>
 
                     <!-- Rappel -->
-                    <m:Column width="33%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="25%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>Rappel}"/>
                     </m:Column>
 
                     <!-- FOC -->
-                    <m:Column width="33%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="25%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>FOC}"/>
                     </m:Column>
 
                     <!-- Total -->
-                    <m:Column width="33%">
+                    <m:Column width="100%">
                         <m:Text text="{i18n>Total}"/>
                     </m:Column>
 
@@ -704,7 +704,7 @@
                             <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
 
                             <!-- VAT -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'}"/>
+                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'} %"/>
 
                             <!-- NetPriceWithoutTax -->
                             <m:Text text="{parts: [

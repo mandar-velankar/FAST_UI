@@ -24,19 +24,21 @@
             <Input 
                 value="{= !${fastAppData>/EditMode} 
                         ? ${parts: [
-                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>PriceConditionPVL'}
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>PriceConditionPVL'},
+                            {value: 2}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
-                                {path:'fastAppData>/ProductPricingView/0/UOM'},
-                                {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                                {path:'fastAppData>PVL'}
+                                {path:'fastAppData>ProductCode'},
+                                {path:'fastAppData>/ProductPricingView'},
+                                {path:'fastAppData>PVL'},
+                                {value: 2}
                             ],
                             formatter: '.formatter.formatUoMPrice'}
                         }"
-                description="{fastAppData>Currency}" 
+                description="{fastAppData>masterPriceCurrency}" 
                 enabled="false" 
                 fieldWidth="80%"
             />
@@ -44,27 +46,29 @@
             <Input 
                 value="{= !${fastAppData>/EditMode}
                         ? ${parts: [
-                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>ConfidentialPrice'}
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>ConfidentialPrice'},
+                            {value: 2}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
-                            {path:'fastAppData>/ProductPricingView/0/UOM'},
-                            {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                            {path:'fastAppData>YLAP'}
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>YLAP'},
+                            {value: 2}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         }" 
                 visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
-                description="{fastAppData>Currency}" 
+                description="{fastAppData>masterPriceCurrency}" 
                 enabled="false" 
                 fieldWidth="80%"
             />
             <Label text="{i18n>Discount}" required="true"/>
             <Input value="{path:'fastAppData>Discount', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
             <Label text="{i18n>NetPriceWOtax}" required="true"/>
-            <Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}} : Number(0).toFixed(2)}" type="Number" enabled="false" fieldWidth="80%"/>
+            <Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${path:'fastAppData>NetPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}} : Number(0).toFixed(2)}" type="Number" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
         </form:content>
     </form:SimpleForm>
 </core:FragmentDefinition>

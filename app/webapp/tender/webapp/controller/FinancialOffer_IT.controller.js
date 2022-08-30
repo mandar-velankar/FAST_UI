@@ -654,7 +654,7 @@ sap.ui.define([
 
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
 		},
-		onProductPackChange: function (event) {
+		/*onProductPackChange: function (event) {
 			var validatedComboBox = event.getSource(),
 				selectedKey = validatedComboBox.getSelectedKey(),
 				value = validatedComboBox.getValue(),
@@ -669,7 +669,7 @@ sap.ui.define([
 				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "None");
 				Services.getFastAppDataModel().setProperty(path + "/VAT", vat);
 			}
-		},
+		},*/
 		oApplyProducts: function () {
 			const oFastAppDataModel = Services.getFastAppDataModel();
 
