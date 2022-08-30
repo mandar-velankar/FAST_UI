@@ -322,7 +322,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -484,7 +484,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -675,7 +675,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -854,7 +854,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price    -->                        
                             <m:ObjectStatus
@@ -1017,7 +1017,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <!-- <m:ObjectStatus
