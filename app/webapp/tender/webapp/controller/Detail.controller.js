@@ -8976,6 +8976,13 @@ sap.ui.define([
 		},
 		_onSaveQuotationToBackend:function(quotationFields){
 			var that = this;
+             // make sure selectedOfferPath is correctly set
+             if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
+
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
 				//Refresh (beceause offer is reselected in onRefresh as well)

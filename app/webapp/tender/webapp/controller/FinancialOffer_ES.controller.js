@@ -316,17 +316,17 @@ sap.ui.define([
         onHistoryFilterCheck: function(oEvent){
             let oFilters = [];
             let vTable = this.byId("tenderHistoryId");
-            const sConditionType = (oEvent.getSource().getId()).split("-").pop();
+            //const sConditionType = (oEvent.getSource().getId()).split("-").pop();
             const selectedProductId =  Services.getSelectedProductID();
             oFilters.push(new sap.ui.model.Filter("PRODUCT_ID", sap.ui.model.FilterOperator.EQ, selectedProductId));
-            if(sConditionType === "currentInstituteCheckId"){
+            if(this.byId("currentInstituteCheckId").getSelected()){
                 const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
                 oFilters.push(new sap.ui.model.Filter("INSTITUTE_ID", sap.ui.model.FilterOperator.EQ, currentInstituteId));
             }
-            if(sConditionType === "wonCheckId"){
+            if(this.byId("wonCheckId").getSelected()){
                 oFilters.push(new sap.ui.model.Filter("OUTCOME", sap.ui.model.FilterOperator.EQ, "Won"));
             }
-            if(sConditionType === "lossCheckId"){
+            if(this.byId("lossCheckId").getSelected()){
                 oFilters.push(new sap.ui.model.Filter("OUTCOME", sap.ui.model.FilterOperator.EQ, "Lost"));
             }     
             
