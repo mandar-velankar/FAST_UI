@@ -8151,7 +8151,7 @@ sap.ui.define([
 						IS_LOWEST: prd.IS_LOWEST,
 						REQ_PRICE_PACK_OFFER_CURRENCY: prd.REQ_PRICE_PACK_OFFER_CURRENCY,
 						GROSS_SALES_OFFER_CURRENCY: prd.GROSS_SALES_OFFER_CURRENCY,
-						TOTAL_QUANTITY_UNITS: prd.TOTAL_QUANTITY_UNITS,
+						PAID_VOLUME: prd.PAID_VOLUME,
 						UNIT: prd.UNIT,
 						PriceCondition: pc
 					};
@@ -8976,6 +8976,13 @@ sap.ui.define([
 		},
 		_onSaveQuotationToBackend:function(quotationFields){
 			var that = this;
+             // make sure selectedOfferPath is correctly set
+             if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
+
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
 				//Refresh (beceause offer is reselected in onRefresh as well)
