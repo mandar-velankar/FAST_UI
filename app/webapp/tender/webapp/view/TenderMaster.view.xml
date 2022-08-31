@@ -49,7 +49,17 @@
 								<core:Item key="{fastAppData>Status}" text="{fastAppData>Status}"/>
 							</items>-->
 						</Select>
-						
+                        <!--EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page -->
+						<!-- Filter for CreatedBy -->
+                        <Select id="idSlctCreatedBy" change=".setFilter" width="200px"   items="{ path: 'fastAppData>/Users/'}" visible="true" >
+                        <core:Item  key="{fastAppData>/User/UserID}" text="{fastAppData>User/UserName}" />
+                         </Select> 
+
+                        <!-- Filter for Institute -->
+                        <Select id="idSlctInstitute" change=".setFilter" visible="false" width="200px" wrapItemsText="true"  items="{ path: 'fastAppData>/PT_TMINST' }"  >
+                       <core:Item  key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}" /> 
+                       </Select>
+                       <!--EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page -->
 						<!-- Filter for tender origin --><!-- https://trello.com/c/zvdSpAJ7-->
 						<Select id="idSlctTenderOrigin" forceSelection="true" change=".setFilter" items="{ path: 'fastAppData>/CountryTenderOrigin/', sorter: { path: 'TENDER_ORIGIN_ID' } }" visible="{= ${fastAppData>/CountryTenderOrigin/length} > 2 ? true : false}">
 							<items>

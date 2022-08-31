@@ -4460,9 +4460,15 @@ sap.ui.define([
 
 			//get & keep offerPath
 			//var sOfferPath = oEvent.getSource().getBindingContext("fastAppData").getPath(); //oEvent.getSource().getBindingContext("fastData").getPath();
-			var sOfferPath = Services.getLoadedOfferPath(sOfferID);
-			Services.setSelectedOfferPath(sOfferPath);
-
+            //EHQUT-INC16347164-Issue with offer validity field
+            var sOfferPathnew = Services.getSelectedOfferPath();
+            var sOfferPath = Services.getLoadedOfferPath(sOfferID);
+            if(!sOfferPathnew)
+            {
+                
+                Services.setSelectedOfferPath(sOfferPath);
+            }
+            //EHQUT-INC16347164-Issue with offer validity field
 			//keep the selected offerID so we have it on the financial offer tab as well
 			//var oOffer = oFastAppDataModel.getProperty(sOfferPath); //before oDefaultModel
 			var oOffer = Services.getLoadedOffer(sOfferID)
