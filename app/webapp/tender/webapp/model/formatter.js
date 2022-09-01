@@ -453,13 +453,6 @@ sap.ui.define([
 			if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
             let decval = Number(numOfDecimal);
-            let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
-            if(!product) {return};
-            let uom = product.UOM;
-            let packFactor = product.PACKFACTOR;  
-			if(~uom.toLowerCase().indexOf("unit")){ 
-				newPrice = newPrice / packFactor;
-			}
 			const floatFormatter = NumberFormat.getFloatInstance({
 				maxFractionDigits: decval,
 				minFractionDigits: decval,
