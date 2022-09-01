@@ -757,6 +757,7 @@ sap.ui.define([
                             delete item.PVL;
                             delete item.isSameAsMainProduct;
                             delete item.packFactor;
+                            delete item.UOM;
                             delete item.ProductPackIdValueState;
                             delete item.RoyalDecreePercentage;
                          });
@@ -865,8 +866,8 @@ sap.ui.define([
 		getOfferProductPrices: function (oOffer, oProduct, oProductPrice, oMainPriceCondition) {
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
@@ -1195,8 +1196,9 @@ sap.ui.define([
             const evt = oEvent;
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
 
             const newNetPriceWithoutTaxBeforeDeductionRD = oEvent.getSource()?.getValue?.() || priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD;
              
@@ -1209,11 +1211,15 @@ sap.ui.define([
 
             if(evt.getSource().openValueStateMessage){            
                 if(bindingContext.getProperty('/Tender/Classification') === 'Tender'){
-                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) ))))){
+                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && 
+                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor )) || 
+                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) ))))){
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and PVL.");
                         evt.getSource().openValueStateMessage();  
-                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && 
+                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || 
+                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and confidential price.");
                         evt.getSource().openValueStateMessage();                    
@@ -1223,11 +1229,13 @@ sap.ui.define([
                         evt.getSource().closeValueStateMessage();
                     }                         
                 } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement'){
-                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
+                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || 
+                    (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than PVL.");
                         evt.getSource().openValueStateMessage();
-                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && 
+                            (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the confidential price.");
                         evt.getSource().openValueStateMessage();
@@ -1254,10 +1262,10 @@ sap.ui.define([
             /*const evt = oEvent;
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();*/
-
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
 
            /* let newNetP;
             if (oEvent.getId() === "change" || oEvent.getId() === "select"){
@@ -1354,8 +1362,9 @@ sap.ui.define([
 
         calculateNetPricesPVL: function (priceConditionObject){
             let oFastAppDataModel = Services.getFastAppDataModel();
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let factor = UOM === 'Unit' ? packFactor : 1;
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             let modelPriceCondition = oFastAppDataModel.getProperty('/PriceConditionView')?.find(priceCondition => priceCondition.OfferID === priceConditionObject.OfferID && priceCondition.ProductCode === priceConditionObject.ProductCode && priceCondition.ConditionType === priceConditionObject.ConditionType);
@@ -1407,9 +1416,10 @@ sap.ui.define([
 
             }
             const discount = newDiscount; */
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
@@ -1869,10 +1879,10 @@ sap.ui.define([
             const discountConditionObj = bindingContext.getObject();
 
             let netPriceWithoutTax = "";
-
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
@@ -2121,6 +2131,7 @@ sap.ui.define([
 			if (oSelectedItem) {
                 oTable.setBusy(true);
                 const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
+                let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
                 const royalDecree =  (await this.getRoyalDecree(selectedProduct.PRODUCT_ID))?.data?.results?.[0];
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
@@ -2137,6 +2148,7 @@ sap.ui.define([
                 oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
                 oFreeGoodsOther.RoyalDecreePercentage = royalDecree?.Percentage;
                 oFreeGoodsOther.packFactor = selectedProduct.PACKFACTOR;
+                oFreeGoodsOther.UOM = oProductPrice.UOM;
                 oFreeGoodsOther.FOCMinAmount = 0;
                 oFreeGoodsOther.FOCBonus = 0;
                 oFreeGoodsOther.PotentialGeneratedSavings = 0;

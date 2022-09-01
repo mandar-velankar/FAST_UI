@@ -178,10 +178,10 @@ sap.ui.define([
                 }
 
                 oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
-
+                let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
                 let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
-                let packFactor =  Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].PACKFACTOR;
-                let UOM = Services.getFastAppDataModel().getData()?.ProductPricingView?.[0].UOM;
+                let packFactor =  oProductPrice.PACKFACTOR;
+                let UOM = oProductPrice.UOM;
                 //During the edit of the Financial Offer prices should always come from the MasterData
                 if(UOM === "Unit"){
                     convertedPVL = oPriceConditionViewObject.PVL / packFactor;
