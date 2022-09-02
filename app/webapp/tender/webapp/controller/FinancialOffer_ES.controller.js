@@ -1511,6 +1511,7 @@ sap.ui.define([
                             }
                             let requestedVolume = product.RequestedVolume;
                             let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                            cogs = oPriceCondition.UOM === "Unit" ? cogs / oPriceCondition.PACKFACTOR : cogs;
 
                             let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
                             let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
@@ -1543,6 +1544,7 @@ sap.ui.define([
                             let dMaintenanceCost = Number(oSelectedOffer.ProfitabilityYrlyMntCost);
                             let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
                             let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                            cogs = oPriceCondition.UOM === "Unit" ? cogs / oPriceCondition.PACKFACTOR : cogs;
 
                             let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
                             let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
@@ -1599,6 +1601,7 @@ sap.ui.define([
                             let dAnnualUnits = product.RequestedVolume;
                             let dAnnualValue = dAnnualUnits * netPrice;
                             let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                            cogs = oPriceCondition.UOM === "Unit" ? cogs / oPriceCondition.PACKFACTOR : cogs;
                             
                             let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
                             let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
