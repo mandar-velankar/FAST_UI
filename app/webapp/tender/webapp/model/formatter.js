@@ -453,7 +453,7 @@ sap.ui.define([
             if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
             let decval = Number(numOfDecimal);
-            if(source === "currentPrices"){
+            if( source && source === "currentPrices"){
                 let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
                 if(!product) {return};
                 let uom = product.UOM;
