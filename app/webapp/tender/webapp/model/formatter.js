@@ -449,10 +449,19 @@ sap.ui.define([
 			return resourceBundle.getText(description);
 		},
 
-		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal){
-			if(!price || !ProductPricingView || !ProductCode) {return};
+		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,source){
+            if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
             let decval = Number(numOfDecimal);
+            if(source === "currentPrices"){
+                let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
+                if(!product) {return};
+                let uom = product.UOM;
+                let packFactor = product.PACKFACTOR;  
+                if(~uom.toLowerCase().indexOf("unit")){ 
+                    newPrice = newPrice / packFactor;
+                }
+            }
 			const floatFormatter = NumberFormat.getFloatInstance({
 				maxFractionDigits: decval,
 				minFractionDigits: decval,
