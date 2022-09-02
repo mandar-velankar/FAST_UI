@@ -449,11 +449,11 @@ sap.ui.define([
 			return resourceBundle.getText(description);
 		},
 
-		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,source){
+		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,mode){
             if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
             let decval = Number(numOfDecimal);
-            if( source && source === "currentPrices"){
+            if( mode !== "viewMode"){
                 let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
                 if(!product) {return};
                 let uom = product.UOM;
