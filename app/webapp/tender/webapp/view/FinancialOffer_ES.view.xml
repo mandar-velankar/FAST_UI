@@ -169,8 +169,7 @@
                                             {path:'fastAppData>ProductCode'},
                                             {path:'fastAppData>/ProductPricingView'},
                                             {path:'fastAppData>PVL'},
-                                            {value: 6},
-                                            {value: 'currentPrices'}
+                                            {value: 6}
                                         ],
                                         formatter: '.formatter.formatUoMPrice'
                                     }"
@@ -185,8 +184,7 @@
                                             {path:'fastAppData>ProductCode'},
                                             {path:'fastAppData>/ProductPricingView'},
                                             {path:'fastAppData>PriceConditionPVL'},
-                                            {value: 6},
-                                            {value: 'current'}
+                                            {value: 6}
                                         ],
                                         formatter: '.formatter.formatUoMPrice'
                                     }"
