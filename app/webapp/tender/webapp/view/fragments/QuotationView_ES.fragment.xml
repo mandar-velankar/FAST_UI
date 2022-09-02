@@ -513,7 +513,7 @@
                             <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
 
                             <!-- VAT -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'}"/>
+                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'} %"/>
 
                             <!-- NetPriceWithoutTaxAfterRD -->
                             <m:Text text="{parts: [
