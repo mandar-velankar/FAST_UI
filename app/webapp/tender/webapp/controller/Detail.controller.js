@@ -5951,7 +5951,15 @@ sap.ui.define([
 			oOfferSaveInfo.SellingCompany = that.byId("idSellingCompany").getSelectedKey(); //NILS_CHECK:that.byId("idSellingCompany").getValue();
 
 			oOfferSaveInfo.ProductCount = "3"; //No. of products in product table
-			oOfferSaveInfo.Currency = oFastAppDataModel.getProperty("/EditOffer/Currency");
+           //EHQUT-INC16393796-Offer creation - issue with delete material function
+           if(that._country=='IT'){
+            oOfferSaveInfo.Currency = oFastAppDataModel.getProperty("/CurrencyTEMP");
+             }
+            else{
+            oOfferSaveInfo.Currency = oFastAppDataModel.getProperty("/EditOffer/Currency");
+            }
+          //EHQUT-INC16393796-Offer creation - issue with delete material function
+			
 			oOfferSaveInfo.ManualSaveStatus = "Yes";
 			oOfferSaveInfo.WholesaleOffer = that.byId("idWhleSle").getSelectedItem().getKey();
 			//oOfferSaveInfo.Comment = that.byId("idComment").getValue();
