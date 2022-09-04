@@ -513,7 +513,7 @@
                             <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
 
                             <!-- VAT -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'}"/>
+                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'} %"/>
 
                             <!-- NetPriceWithoutTaxAfterRD -->
                             <m:Text text="{parts: [
@@ -815,14 +815,14 @@
                         <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
-                    <!-- Discount -->
-                    <m:Column width="20%">
-                        <m:Text text="{i18n>Discount}" visible="true"/>
-                    </m:Column>
-
                     <!-- Net Price without Tax -->
                     <m:Column width="20%">
                         <m:Text text="{i18n>NetPriceWithoutTax}" visible="true"/>
+                    </m:Column>
+
+                     <!-- Discount -->
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>Discount}" visible="true"/>
                     </m:Column>
 
                     <!-- Rappel -->
@@ -891,9 +891,6 @@
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
                             
-                            <!-- Discount -->
-                            <m:Text text="{= ${fastAppData>PriceCondition/Discount} ? ${path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} + '%' : Number(100).toFixed(2) + '%'}"/>
-
                             <!-- NetPriceWithoutTax -->
                             <!-- <m:Text text="{= ${fastAppData>PriceCondition/NetPriceWithoutTax} ? {parts: [
                                 {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
@@ -903,6 +900,9 @@
                                 {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
+
+                            <!-- Discount -->
+                            <m:Text text="{= ${fastAppData>PriceCondition/Discount} ? ${path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} + '%' : Number(100).toFixed(2) + '%'}"/>
 
                             <!-- Rappel -->
                             <m:Text text="{ 
