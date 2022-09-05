@@ -766,7 +766,7 @@ sap.ui.define([
                     }
                 }
                 if(requiredPriceConditionViewObject){
-                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(requiredPriceConditionViewObject,"");
+                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(requiredPriceConditionViewObject,"FinancialOfferPage");
                     savePriceConditionPromises.push(Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject));
                 }
             });
@@ -785,7 +785,7 @@ sap.ui.define([
                     }
                 }
                 if(requiredPriceConditionViewObject){
-                    const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj);
+                    const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj,"FinancialOfferPage");
                     deletePriceConditionPromises.push(Services.getService("PriceCondition").deletePriceCondition(priceConditionDeleteObject));
                 }
             });
@@ -810,7 +810,7 @@ sap.ui.define([
             const preExistingPriceConditions = allPriceConditionViews.filter(condition => condition.isMain && condition.ExistingPriceConditionID)
                                                                      .filter(condition => condition.ExistingPriceConditionID !== mainSelectedPriceConditionView.ExistingPriceConditionID);
             return preExistingPriceConditions.map(condition => {
-                const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+                const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(condition,"FinancialOfferPage");
                 return Services.getService("PriceCondition").deletePriceCondition(priceConditionDeleteObject);
             });
         },
