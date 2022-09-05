@@ -6631,11 +6631,11 @@ sap.ui.define([
 							}));
 						}
 
-						//for the reviewed offer, the products of the original offer can have price condition data as well
+						//for the reviewed or continued offer, the products of the original offer can have price condition data as well
 						if(oProductSaveInfo.PriceCondition?.results?.length){
 							// update offerID
 							oProductSaveInfo.PriceCondition.results.forEach(pc => pc.OfferID = that.getSelectedOfferID());
-							const priceConditionSaveObjects = oProductSaveInfo.PriceCondition.results.map(pc => that.getService("PriceCondition").convertToSaveObject(pc,""));
+							const priceConditionSaveObjects = oProductSaveInfo.PriceCondition.results.map(pc => that.getService("PriceCondition").convertToSaveObject(pc,"offerProductsPage"));
 							const savePriceConditionPromises = priceConditionSaveObjects.map(pc => that.getService("PriceCondition").upsertPriceCondition(pc))
 							promises.concat(savePriceConditionPromises);
 						}
