@@ -143,16 +143,6 @@ sap.ui.define([
             }else{
                 Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
             }
-            
-
-            //bind Rappel and FOC fragments 
-            const rappelBindingPath = this.bindRappelFragment();
-            const focBindingPath = this.bindFocFragment();
-            this.bindingCurrentPrices();    
-
-            // add DiscountCondition
-            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
-            focBindingPath && await this.addFOCs(focBindingPath);
 
             // set selected key on idPriceConditionSelect
             const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
@@ -173,6 +163,15 @@ sap.ui.define([
             // load main fragment if main condition already exists
             const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+
+            //bind Rappel and FOC fragments 
+            const rappelBindingPath = this.bindRappelFragment();
+            const focBindingPath = this.bindFocFragment();
+            this.bindingCurrentPrices();    
+
+            // add DiscountCondition
+            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
+            focBindingPath && await this.addFOCs(focBindingPath);
 
             BusyIndicator.hide();
         },
@@ -313,24 +312,13 @@ sap.ui.define([
             return currentPricesBindingPath;
         },        
 
-        onHistoryFilterCheck: function(oEvent){
-            let oFilters = [];
-            let vTable = this.byId("tenderHistoryId");
-            //const sConditionType = (oEvent.getSource().getId()).split("-").pop();
-            const selectedProductId =  Services.getSelectedProductID();
-            oFilters.push(new sap.ui.model.Filter("PRODUCT_ID", sap.ui.model.FilterOperator.EQ, selectedProductId));
-            if(this.byId("currentInstituteCheckId").getSelected()){
-                const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
-                oFilters.push(new sap.ui.model.Filter("INSTITUTE_ID", sap.ui.model.FilterOperator.EQ, currentInstituteId));
-            }
-            if(this.byId("wonCheckId").getSelected()){
-                oFilters.push(new sap.ui.model.Filter("OUTCOME", sap.ui.model.FilterOperator.EQ, "Won"));
-            }
-            if(this.byId("lossCheckId").getSelected()){
-                oFilters.push(new sap.ui.model.Filter("OUTCOME", sap.ui.model.FilterOperator.EQ, "Lost"));
-            }     
-            
-            vTable.getBinding("items")?.filter(oFilters, FilterType.Application);            
+        /**
+         * This method triggers on TenderHistory filter events
+         * @param {*} oEvent 
+         */
+        onHistoryFilterCheck: async function(oEvent){
+            const tenderHistorySpain = await this.getTenderHistorySpain();
+            Services.getFastAppDataModel().setProperty("/TenderHistorySpain", tenderHistorySpain);    
         }, 
 
         calculateRoyalDecreeAppliesAndMainConditionPrice: function(){
@@ -470,23 +458,50 @@ sap.ui.define([
 
         },
         
+        /**
+         * Get TenderHistory data for Spain using filters
+         */
         getTenderHistorySpain: async function(){
 
             BusyIndicator.show();
+            let aFilters = [];
+            let oFilters = [];
 
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
             if(offer){
-                const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
-                //const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
-
-                const filter = {
-                  //  "INSTITUTE_ID": currentInstituteId,
-                   // "OfferID": offer.OfferID,
-                    "ProductCode": selectedProduct.ProductCode
+                const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+                    if(this.byId("currentInstituteCheckId").getSelected()){                    
+                        aFilters.push(new Filter({
+                            path: 'INSTITUTE_ID',
+                            operator: FilterOperator.EQ,
+                            value1: currentInstituteId
+                        }));
+                    }
+                    if(this.byId("wonCheckId").getSelected()){
+                        oFilters.push(new Filter({
+                            path: 'OUTCOME',
+                            operator: FilterOperator.EQ,
+                            value1: "Won"
+                        }));
+                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
+                    }                        
+                    if(this.byId("lossCheckId").getSelected()){
+                        oFilters.push(new Filter({
+                            path: 'OUTCOME',
+                            operator: FilterOperator.EQ,
+                            value1: "Lost"
+                        }));
+                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
+                    }
+                    if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){                    
+                        aFilters.push(new Filter({
+                            path: 'ProductCode',
+                            operator: FilterOperator.EQ,
+                            value1: Services.getSelectedProductID()
+                        }));
+                    }
                     
-                };
-
-                let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(filter);
+                let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(aFilters);
                 
                 BusyIndicator.hide();
                 return tenderHistorySpain.data.results;
@@ -1120,9 +1135,8 @@ sap.ui.define([
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
-                       
-            // some magic for just not to break the code. blame the other guy :-)
-            // the magic didn't fix everything. Not blaming anyone ¯\_ (ツ) _/¯
+               
+            // to solve some loading issues this code is needed
             if(!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer")){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
