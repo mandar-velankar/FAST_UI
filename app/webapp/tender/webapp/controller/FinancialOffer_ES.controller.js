@@ -143,16 +143,6 @@ sap.ui.define([
             }else{
                 Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
             }
-            
-
-            //bind Rappel and FOC fragments 
-            const rappelBindingPath = this.bindRappelFragment();
-            const focBindingPath = this.bindFocFragment();
-            this.bindingCurrentPrices();    
-
-            // add DiscountCondition
-            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
-            focBindingPath && await this.addFOCs(focBindingPath);
 
             // set selected key on idPriceConditionSelect
             const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
@@ -173,6 +163,15 @@ sap.ui.define([
             // load main fragment if main condition already exists
             const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+
+            //bind Rappel and FOC fragments 
+            const rappelBindingPath = this.bindRappelFragment();
+            const focBindingPath = this.bindFocFragment();
+            this.bindingCurrentPrices();    
+
+            // add DiscountCondition
+            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
+            focBindingPath && await this.addFOCs(focBindingPath);
 
             BusyIndicator.hide();
         },
@@ -1136,9 +1135,8 @@ sap.ui.define([
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
-                       
-            // some magic for just not to break the code. blame the other guy :-)
-            // the magic didn't fix everything. Not blaming anyone ¯\_ (ツ) _/¯
+               
+            // to solve some loading issues this code is needed
             if(!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer")){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
