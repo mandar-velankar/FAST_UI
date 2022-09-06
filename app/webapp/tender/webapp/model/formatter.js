@@ -448,12 +448,20 @@ sap.ui.define([
 			var resourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			return resourceBundle.getText(description);
 		},
-
-		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,mode){
+        /** Used for formatting prices as well as dividing by packfactor if needed
+         * 
+         * @param {*} ProductCode 
+         * @param {*} ProductPricingView 
+         * @param {*} price 
+         * @param {*} numOfDecimal 
+         * @param {*} ExistingPriceConditionID - This way we can check if the pricecondition is already saved or not
+         */
+		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,ExistingPriceConditionID){
             if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
             let decval = Number(numOfDecimal);
-            if( mode !== "viewMode"){
+            // if price condition was saved, do not apply conversion!
+            if( ExistingPriceConditionID == null ){
                 let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
                 if(!product) {return};
                 let uom = product.UOM;

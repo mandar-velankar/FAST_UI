@@ -144,6 +144,12 @@ sap.ui.define([
 			return this.odata(sPath).delete();
 		},
 
+        /**
+         * Converts a given object to an objects that can be saved to DB
+         * @param {*} oPriceConditionViewObject 
+         * @param {*} tab - Indicates from which tab the call is comming from
+         * @returns 
+         */
         convertToSaveObject: function(oPriceConditionViewObject,tab){
             let priceConditionCode;         
             let convertedPVL;
@@ -179,9 +185,15 @@ sap.ui.define([
 
                 oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
                 let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                // when this method is being called from Continued Offer, oProductPrice is null
+                // because of this we will get some info from the product table of the EditOffer page.
+                let oEditOfferProduct = null;
+                if(tab === "offerProductsPage"){
+                    oEditOfferProduct = Services.getFastAppDataModel().getProperty("/EditOffer/Product/results").find(item => item.ProductCode === oPriceConditionViewObject.ProductCode);
+                }
                 let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
-                let packFactor =  oProductPrice.PACKFACTOR;
-                let UOM = oProductPrice.UOM;
+                let packFactor =  oProductPrice?.PACKFACTOR || oEditOfferProduct?.SKU?.PACKFACTOR;
+                let UOM = oProductPrice?.UOM || oEditOfferProduct?.UnitPerPack;
                 //During the edit of the Financial Offer prices should always come from the MasterData
                 if(UOM === "Unit"){
                     convertedPVL = oPriceConditionViewObject.PVL / packFactor;
