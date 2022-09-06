@@ -331,10 +331,8 @@
                                 <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>Discount}"/>
 								</Column>
-								<Column minScreenWidth="Tablet" width="10%" demandPopin="true" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
-										(${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
-									<Text text="{i18n>FOC}" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
-										(${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }"/>
+								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
+									<Text text="{i18n>FOC}"/>
 								</Column>
                                 <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>Rappel}"/>
