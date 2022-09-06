@@ -1120,9 +1120,8 @@ sap.ui.define([
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
-                       
-            // some magic for just not to break the code. blame the other guy :-)
-            // the magic didn't fix everything. Not blaming anyone ¯\_ (ツ) _/¯
+               
+            // to solve some loading issues this code is needed
             if(!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer")){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
