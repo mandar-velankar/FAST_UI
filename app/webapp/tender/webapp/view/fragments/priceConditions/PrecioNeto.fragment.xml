@@ -27,7 +27,8 @@
                             {path:'fastAppData>ProductCode'},
                             {path:'fastAppData>/ProductPricingView'},
                             {path:'fastAppData>PriceConditionPVL'},
-                            {value: 6}
+                            {value: 6},
+                            {path: 'fastAppData>ExistingPriceConditionID'}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
@@ -49,7 +50,8 @@
                             {path:'fastAppData>ProductCode'},
                             {path:'fastAppData>/ProductPricingView'},
                             {path:'fastAppData>ConfidentialPrice'},
-                            {value: 6}
+                            {value: 6},
+                            {path: 'fastAppData>ExistingPriceConditionID'}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
