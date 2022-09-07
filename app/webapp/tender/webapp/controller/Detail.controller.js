@@ -8786,7 +8786,7 @@ sap.ui.define([
 						const priceConditions = offerProduct.PriceCondition.results
 						const savePriceConditionPromises = priceConditions.map(condition => {
 							condition.PriceAgreement_ID = priceAgreementID;
-							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"PA");
+							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
 							return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
 						});
 						await Promise.all(savePriceConditionPromises);

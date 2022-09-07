@@ -154,7 +154,7 @@ sap.ui.define([
             let priceConditionCode;         
             let convertedPVL;
             let convertedConfPrice;
-            if(tab === "PA"){
+            if(tab === "ResultsPage"){
             /*During Price Agreement creation we should always take the trasactional PVL/Confidential Price,
                 as Price Agreement should be created using prices saved in the PriceCondition table. */            
                 convertedPVL = oPriceConditionViewObject.PriceConditionPVL;
@@ -235,8 +235,8 @@ sap.ui.define([
                 "AnnualValue": oPriceConditionViewObject.AnnualValue,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
-                "DiscountCondition": tab === "PA" ? oPriceConditionViewObject.DiscountConditions : this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
-                "FreeGoodsOther": tab === "PA" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
+                "DiscountCondition": tab === "ResultsPage" ? oPriceConditionViewObject.DiscountConditions : this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
+                "FreeGoodsOther": tab === "ResultsPage" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
                 "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement,
                 "Settlement_ID":oPriceConditionViewObject.Settlement_ID
             }
