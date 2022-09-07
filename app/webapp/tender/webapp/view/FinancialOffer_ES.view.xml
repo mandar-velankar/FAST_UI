@@ -146,7 +146,12 @@
 	
 	<!-- PRICING OFFER SUBSECTION -->
 	<u:ObjectPageSubSection id="FinPricingOfferSubsection" >
-		<Panel headerText="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" visible="{fastAppData>/CheckOfferVisibleForTab_ES}">
+		<Panel 
+			headerText="{= (${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== '') ? 'Pricing Offer (for ' + ${fastAppData>OfferType} + ')' : 'Pricing Offer'}" 
+			visible="{fastAppData>/CheckOfferVisibleForTab_ES}"
+			busy="{finOfferView>/FinPricingOfferSubsectionisBusy}"
+			busyIndicatorDelay="0"
+		>
 			<l:BlockLayout background="Light" >
 				<l:BlockLayoutRow>
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
