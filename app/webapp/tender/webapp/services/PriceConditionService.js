@@ -381,40 +381,13 @@ sap.ui.define([
 			return this.odata("/PriceConditionView").get(mParameters);
 		},
 
-        getTenderHistorySpain: function(filter){
-            
-			let aFilters = [];
-
-           /* if(filter.INSTITUTE_ID){
-                aFilters.push(new Filter({
-                    path: 'INSTITUTE_ID',
-                    operator: FilterOperator.EQ,
-                    value1: filter.INSTITUTE_ID
-                }));
-            }*/
-
-		    if(filter.ProductCode){
-                aFilters.push(new Filter({
-                    path: 'ProductCode',
-                    operator: FilterOperator.EQ,
-                    value1: filter.ProductCode
-                }));
-            }
-            
-          /*  if(filter.OfferID){
-                aFilters.push(new Filter({
-                    path: 'OfferID',
-                    operator: FilterOperator.EQ,
-                    value1: filter.OfferID
-                }));
-            } */
+        getTenderHistorySpain: function(aFilters){
 
 			var mParameters = {
 				filters: aFilters
 			};
 
-
-			return this.odata("/TenderHistorySpain").get(mParameters);
+            return this.odata("/TenderHistorySpain").get(mParameters);
 		},
 
         getDiscountConditions: function(filter){
