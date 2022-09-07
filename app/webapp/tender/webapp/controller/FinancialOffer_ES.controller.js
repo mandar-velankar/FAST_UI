@@ -32,6 +32,7 @@ sap.ui.define([
 			const oViewModel = new sap.ui.model.json.JSONModel({
 				delay: 0,
 				selectedProductUoM: "",
+                FinPricingOfferSubsectionisBusy: false,
 			});
 
 			this.getView().setModel(oViewModel, "finOfferView");
@@ -47,7 +48,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this._oRouter = this._oOwnerComponent.getRouter();
 			this._oModel = this._oOwnerComponent.getModel();
-			bundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+			bundle = this.getOwnerComponent().getModel("i18n").getResourceBundle(); // why do we have this two times ?
 
 			this._DetailView = sap.ui.getCore().byId(this.getView().getId().split("---")[0] + "---tenderManagementDetailId");
 			this._DetailController = this._DetailView.getController();
@@ -1102,7 +1103,9 @@ sap.ui.define([
 		},
 
         onFinancialProductPress: async function(oEvent, bBindingFinished){
-            BusyIndicator.show();
+            // BusyIndicator.show();
+            // set the busy indicator on the princing subsection
+            this.getView().getModel("finOfferView").setProperty("/FinPricingOfferSubsectionisBusy", true);
             //get context of selected price product
             let oFastAppDataModel = Services.getFastAppDataModel();
             if (!bBindingFinished) {
@@ -1145,7 +1148,7 @@ sap.ui.define([
             // enable approval button
             this._checkApprovalEnabled();
 
-            BusyIndicator.hide();
+            // BusyIndicator.hide();
 
         },
 
@@ -1201,6 +1204,8 @@ sap.ui.define([
                         vBox.addItem(oFragment);
                     }
                     vBox.bindElement({ path: bindingPath, model: "fastAppData" });
+                    // disable the busy indicator on the pricing subsection
+                    this.getView().getModel("finOfferView").setProperty("/FinPricingOfferSubsectionisBusy", false);
                 }.bind(this));
             }
 
