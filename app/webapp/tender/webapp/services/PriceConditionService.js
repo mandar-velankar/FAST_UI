@@ -154,7 +154,7 @@ sap.ui.define([
             let priceConditionCode;         
             let convertedPVL;
             let convertedConfPrice;
-            if(tab === "PA"){
+            if(tab === "ResultsPage"){
             /*During Price Agreement creation we should always take the trasactional PVL/Confidential Price,
                 as Price Agreement should be created using prices saved in the PriceCondition table. */            
                 convertedPVL = oPriceConditionViewObject.PriceConditionPVL;
@@ -184,24 +184,39 @@ sap.ui.define([
                 }
 
                 oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
-                let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                let oFastAppDataModel = Services.getFastAppDataModel();
+                let offerID = tab === "offerProductsPage" ? oFastAppDataModel.getProperty("/EditOffer/OfferStatus/OFFER_ID") : oPriceConditionViewObject.OfferID;
+                let product = Services.getLoadedProductsForOffer(offerID).results.find(prd => prd.ProductCode === oPriceConditionViewObject.ProductCode);
+
                 // when this method is being called from Continued Offer, oProductPrice is null
                 // because of this we will get some info from the product table of the EditOffer page.
-                let oEditOfferProduct = null;
-                if(tab === "offerProductsPage"){
-                    oEditOfferProduct = Services.getFastAppDataModel().getProperty("/EditOffer/Product/results").find(item => item.ProductCode === oPriceConditionViewObject.ProductCode);
-                }
-                let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
-                let packFactor =  oProductPrice?.PACKFACTOR || oEditOfferProduct?.SKU?.PACKFACTOR;
-                let UOM = oProductPrice?.UOM || oEditOfferProduct?.UnitPerPack;
                 //During the edit of the Financial Offer prices should always come from the MasterData
-                if(UOM === "Unit"){
-                    convertedPVL = oPriceConditionViewObject.PVL / packFactor;
-                    convertedConfPrice = oPriceConditionViewObject.YLAP / packFactor;
-                } else {
-                    convertedPVL = oPriceConditionViewObject.PVL;
-                    convertedConfPrice = oPriceConditionViewObject.YLAP;
-                }
+                if(tab === "offerProductsPage"){
+                    let currentProduct = Services.getFastAppDataModel().getProperty("/EditOffer/Product/results").find(item => item.ProductCode === oPriceConditionViewObject.ProductCode);
+                    let newUOM = currentProduct.UnitPerPack;
+                    let previousUOM = product.UnitPerPack;
+                    let packFactor = currentProduct.SKU.PACKFACTOR;
+                    if(newUOM === previousUOM){
+                        convertedPVL = oPriceConditionViewObject.PVL;
+                        convertedConfPrice = oPriceConditionViewObject.ConfidentialPrice;
+                    }else if(previousUOM  === "Unit" && newUOM === "Pack"){
+                        convertedPVL = oPriceConditionViewObject.PVL * packFactor;
+                        convertedConfPrice = oPriceConditionViewObject.ConfidentialPrice * packFactor;
+                    }else if(previousUOM  === "Pack" && newUOM === "Unit"){
+                        convertedPVL = oPriceConditionViewObject.PVL / packFactor;
+                        convertedConfPrice = oPriceConditionViewObject.ConfidentialPrice / packFactor;
+                    }
+                    
+                } else if(product.UnitPerPack === "Unit"){ // if we are coming from the financial offer page
+                        convertedPVL = oPriceConditionViewObject.PVL / product.SKU.PACKFACTOR;
+                        convertedConfPrice = oPriceConditionViewObject.YLAP / product.SKU.PACKFACTOR;
+                    } else {
+                        convertedPVL = oPriceConditionViewObject.PVL;
+                        convertedConfPrice = oPriceConditionViewObject.YLAP;
+                    }
+                
+                let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
+                
 
                 if(instType === "Private Account"){
                     convertedConfPrice = null;
@@ -235,8 +250,8 @@ sap.ui.define([
                 "AnnualValue": oPriceConditionViewObject.AnnualValue,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
-                "DiscountCondition": tab === "PA" ? oPriceConditionViewObject.DiscountConditions : this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
-                "FreeGoodsOther": tab === "PA" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
+                "DiscountCondition": tab === "ResultsPage" ? oPriceConditionViewObject.DiscountConditions : this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
+                "FreeGoodsOther": tab === "ResultsPage" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
                 "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement,
                 "Settlement_ID":oPriceConditionViewObject.Settlement_ID
             }

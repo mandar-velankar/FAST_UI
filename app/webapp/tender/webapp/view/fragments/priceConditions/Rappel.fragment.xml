@@ -34,7 +34,8 @@
                             {path:'fastAppData>/ProductPricingView'},
                             {path:'fastAppData>PriceConditionPVL'},
                             {value: 2},
-                            {path: 'fastAppData>ExistingPriceConditionID'}
+                            {path: 'fastAppData>ExistingPriceConditionID'},
+                            {path: 'fastAppData>ReferencePriceAgreement'}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
@@ -58,7 +59,8 @@
                             {path:'fastAppData>/ProductPricingView'},
                             {path:'fastAppData>ConfidentialPrice'},
                             {value: 2},
-                            {path: 'fastAppData>ExistingPriceConditionID'}
+                            {path: 'fastAppData>ExistingPriceConditionID'},
+                            {path: 'fastAppData>ReferencePriceAgreement'}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
