@@ -486,7 +486,7 @@
 			<l:BlockLayout background="Light">
 				<l:BlockLayoutRow>
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-						<Table id="tenderHistoryId" inset="false">
+						<Table id="tenderHistoryId" items="{path : 'fastAppData>/TenderHistory'}" inset="false">
 							<headerToolbar>
 								<Toolbar>
 									<content>
@@ -540,6 +540,49 @@
 									<Text text="{i18n>Status}"/>
 								</Column>
 							</columns>
+                            <items>
+									<ColumnListItem highlight="Indication04">
+										<cells>
+											<Text text="{fastAppData>TENDER_ID}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>TENDER_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>OFFER_ID}"/>
+										</cells>
+										<cells>
+											<Text text="{path :'fastAppData>OFFER_DATE', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>INSTITUTE_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>PRODUCT_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>UNIT_PRICE}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>PACK_PRICE}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>UNIT_NET_PRICE}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>PACK_NET_PRICE}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>UOM}"/>
+										</cells>
+                                        <cells>
+											<Text text="{fastAppData>FOC}"/>
+										</cells>
+                                         <cells>
+											<Text text="{fastAppData>OUTCOME}"/>
+										</cells>
+									</ColumnListItem>
+								</items>   
 						</Table>
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>
