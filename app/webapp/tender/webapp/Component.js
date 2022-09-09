@@ -47,10 +47,11 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/AccessService",
 	"sap/ui/Device",
 	"FAST_NS0FAST0/services/MailService",
-    "FAST_NS0FAST0/services/PriceConditionService"
+    "FAST_NS0FAST0/services/PriceConditionService",
+    "FAST_NS0FAST0/services/TenderHistoryService"
 ], function (UIComponent, JSONModel, fioriLibrary, FlexibleColumnLayoutSemanticHelper, Button, Dialog, Label, MessageToast, Text,
 	TextArea, ODataModel, Services, OfferService, TenderService, ApprovalService, AwardCriteriaService, CompetitorResultService, 
-	DeliveryService, BankGuaranteeService, PriceAgreementService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, SalesOpportunityService, ScenarioService, QuotationService, SpecificationService,AccessService, Device, MailService, PriceConditionService) {
+	DeliveryService, BankGuaranteeService, PriceAgreementService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, SalesOpportunityService, ScenarioService, QuotationService, SpecificationService,AccessService, Device, MailService, PriceConditionService, TenderHistoryService) {
 	"use strict";
 
 	return UIComponent.extend("FAST_NS0FAST0.Component", {
@@ -115,6 +116,7 @@ sap.ui.define([
 			this.MailService = new MailService(oDefaultModel);
             this.PriceConditionService = new PriceConditionService(oDefaultModel);
 			this.AccessService = new AccessService(accessModel);
+            this.TenderHistoryService = new TenderHistoryService(oDefaultModel);
 			
 			Services.setAllServices({
 				OfferService:this.OfferService,
@@ -139,6 +141,7 @@ sap.ui.define([
 				MailService: this.MailService,
                 PriceConditionService: this.PriceConditionService,
                 AccessService: this.AccessService,
+                TenderHistoryService: this.TenderHistoryService,
 			});
 			
 			// //ADDED FOR SESSION TIMEOUT
