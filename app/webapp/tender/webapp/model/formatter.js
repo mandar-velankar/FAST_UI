@@ -153,6 +153,24 @@ sap.ui.define([
 			}
 			return oValue + " "+ currency;
 		},
+
+        unitPriceMinTwoDec: function(price, currency) {
+			if (!price){
+				return "";
+			}
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: 2,
+                minFractionDigits: 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			var oValue = oNumberFormat.format(parseFloat(price));
+			if (currency === undefined){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
 		
 		packPrice: function(price, currency, unit, packFactor) {
 			if (!price){
