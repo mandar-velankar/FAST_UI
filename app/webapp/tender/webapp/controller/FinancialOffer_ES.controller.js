@@ -494,13 +494,15 @@ sap.ui.define([
                         }));
                         aFilters.push(new sap.ui.model.Filter(oFilters, false));
                     }
-                    if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){                    
-                        aFilters.push(new Filter({
-                            path: 'ProductCode',
-                            operator: FilterOperator.EQ,
-                            value1: Services.getSelectedProductID()
-                        }));
-                    }
+                    //if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){  
+                        if(Services.getSelectedProductID()){             
+                            aFilters.push(new Filter({
+                                path: 'ProductCode',
+                                operator: FilterOperator.EQ,
+                                value1: Services.getSelectedProductID()
+                            }));
+                        }
+                    //}
                     
                 let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(aFilters);
                 
