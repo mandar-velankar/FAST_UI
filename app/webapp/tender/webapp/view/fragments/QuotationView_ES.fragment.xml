@@ -998,11 +998,6 @@
                         <m:Text text="{i18n>AnnualValue}" visible="true"/>
                     </m:Column>
 
-                    <!-- Total -->
-                    <m:Column width="33%">
-                        <m:Text text="{i18n>Total}"/>
-                    </m:Column>
-
                 </m:columns>
                 <m:items>
                     <m:ColumnListItem>
@@ -1044,12 +1039,6 @@
                             <!-- Annual Value -->
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/AnnualValue'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
-
-                            <!-- Total -->
-                            <m:Text text="{parts: [
-                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
 
