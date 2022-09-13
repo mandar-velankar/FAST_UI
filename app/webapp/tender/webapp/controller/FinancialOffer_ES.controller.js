@@ -2215,7 +2215,7 @@ sap.ui.define([
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             //let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
             let packFactor = freeGoodsObject.packFactor;        
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let UOM = freeGoodsObject.UOM;
             const privateCustomer = instType === "Private Account" || instType === "Cluster";
             const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
             let mainConditionPrice = this.getMainConditionPrice(freeGoodsObject);
