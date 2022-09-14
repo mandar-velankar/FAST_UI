@@ -1220,8 +1220,12 @@
                             <!-- FOC Bonus -->
                             <m:Text text="{path :'fastAppData>FOCBonus'}"/>
 
-                            <!-- Potential Savings Generated -->
-                            <m:Text text="{path :'fastAppData>PotentialGeneratedSavings'}"/>
+                            <!-- Potential Savings Generated 
+                            <m:Text text="{path :'fastAppData>PotentialGeneratedSavings'}"/>-->
+                            <m:Text text="{parts: [
+                                    {path: 'fastAppData>PotentialGeneratedSavings'}, 
+                                    {path: 'fastAppData>/OfferValidation/CURRENCY'}
+                                ], formatter:'.formatter.unitPriceMinTwoDec'}" class="sapUiSmallMarginEnd"/>	
 
                         </m:cells>
                     </m:ColumnListItem>
