@@ -494,13 +494,15 @@ sap.ui.define([
                         }));
                         aFilters.push(new sap.ui.model.Filter(oFilters, false));
                     }
-                    if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){                    
-                        aFilters.push(new Filter({
-                            path: 'ProductCode',
-                            operator: FilterOperator.EQ,
-                            value1: Services.getSelectedProductID()
-                        }));
-                    }
+                    //if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){  
+                        if(Services.getSelectedProductID()){             
+                            aFilters.push(new Filter({
+                                path: 'ProductCode',
+                                operator: FilterOperator.EQ,
+                                value1: Services.getSelectedProductID()
+                            }));
+                        }
+                    //}
                     
                 let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(aFilters);
                 
@@ -2215,7 +2217,7 @@ sap.ui.define([
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             //let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
             let packFactor = freeGoodsObject.packFactor;        
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let UOM = freeGoodsObject.UOM;
             const privateCustomer = instType === "Private Account" || instType === "Cluster";
             const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
             let mainConditionPrice = this.getMainConditionPrice(freeGoodsObject);
