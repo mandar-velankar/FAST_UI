@@ -153,6 +153,24 @@ sap.ui.define([
 			}
 			return oValue + " "+ currency;
 		},
+
+        unitPriceMinTwoDec: function(price, currency) {
+			if (!price){
+				return "";
+			}
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: 2,
+                minFractionDigits: 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			var oValue = oNumberFormat.format(parseFloat(price));
+			if (currency === undefined){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
 		
 		packPrice: function(price, currency, unit, packFactor) {
 			if (!price){
@@ -456,12 +474,12 @@ sap.ui.define([
          * @param {*} numOfDecimal 
          * @param {*} ExistingPriceConditionID - This way we can check if the pricecondition is already saved or not
          */
-		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,ExistingPriceConditionID){
+		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,ExistingPriceConditionID,ReferencePriceAgreement){
             if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
             let decval = Number(numOfDecimal);
             // if price condition was saved, do not apply conversion!
-            if( ExistingPriceConditionID == null ){
+            if( ExistingPriceConditionID == null){
                 let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
                 if(!product) {return};
                 let uom = product.UOM;

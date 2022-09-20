@@ -2538,9 +2538,10 @@ sap.ui.define([
 
 			//that is this, to keep reference to controller
 			var that = this;
-
+            let oTender = Services.getFastAppDataModel().getProperty('/Tender');
+            let oMsg = oTender.CountryCode === 'ES' ? `Are you sure you want to delete the ${oTender.Classification.toLowerCase()}?` : `Are you sure you want to delete the tender?`
 			//successfully created clone
-			sap.m.MessageBox.warning("Are you sure you want to delete the tender?", {
+			sap.m.MessageBox.warning(oMsg, {
 				actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.ABORT],
 				styleClass: "sapUiSizeCompact",
 				onClose: function (sAction) {
@@ -8786,7 +8787,7 @@ sap.ui.define([
 						const priceConditions = offerProduct.PriceCondition.results
 						const savePriceConditionPromises = priceConditions.map(condition => {
 							condition.PriceAgreement_ID = priceAgreementID;
-							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"PA");
+							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
 							return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
 						});
 						await Promise.all(savePriceConditionPromises);

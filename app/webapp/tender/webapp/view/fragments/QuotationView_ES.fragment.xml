@@ -998,11 +998,6 @@
                         <m:Text text="{i18n>AnnualValue}" visible="true"/>
                     </m:Column>
 
-                    <!-- Total -->
-                    <m:Column width="33%">
-                        <m:Text text="{i18n>Total}"/>
-                    </m:Column>
-
                 </m:columns>
                 <m:items>
                     <m:ColumnListItem>
@@ -1044,12 +1039,6 @@
                             <!-- Annual Value -->
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/AnnualValue'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
-
-                            <!-- Total -->
-                            <m:Text text="{parts: [
-                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
 
@@ -1231,8 +1220,12 @@
                             <!-- FOC Bonus -->
                             <m:Text text="{path :'fastAppData>FOCBonus'}"/>
 
-                            <!-- Potential Savings Generated -->
-                            <m:Text text="{path :'fastAppData>PotentialGeneratedSavings'}"/>
+                            <!-- Potential Savings Generated 
+                            <m:Text text="{path :'fastAppData>PotentialGeneratedSavings'}"/>-->
+                            <m:Text text="{parts: [
+                                    {path: 'fastAppData>PotentialGeneratedSavings'}, 
+                                    {path: 'fastAppData>/OfferValidation/CURRENCY'}
+                                ], formatter:'.formatter.unitPriceMinTwoDec'}" class="sapUiSmallMarginEnd"/>	
 
                         </m:cells>
                     </m:ColumnListItem>
