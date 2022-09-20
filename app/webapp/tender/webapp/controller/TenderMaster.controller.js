@@ -53,7 +53,7 @@ sap.ui.define([
 				that.oProductsTable.attachBrowserEvent("tab keyup", function (oEvent) {
 					that._bKeyboard = oEvent.type == "keyup";
 				}, that);
-
+                Services.getFastAppDataModel().setSizeLimit(6000);
 				//set default filtering
 				that.setFilter();			
 
@@ -150,6 +150,44 @@ sap.ui.define([
 			this.oView.setModel(oFastAppDataModel, "fastAppData");
 
 		},
+        //EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
+        setInstituteList: function (oCountry) {
+            var oDeferred = $.Deferred();
+            //get model for doing the calls to the back-end
+            var oFastDataCalls = this.getView().getModel("fastData");
+            var oFastAppDataModel = Services.getFastAppDataModel();
+
+            const sInstitutesPath = "/PT_TMINST";
+            var aFilter = [];
+            aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
+            
+            oFastDataCalls.read(sInstitutesPath, {
+                 filters: aFilter,
+             
+                 success: function (oData, oResponse) {
+                    
+                     var aCountryInstitute = oData.results;
+                     aCountryInstitute = Services.sortByKeyAsc(aCountryInstitute, "InstituteName");
+                                        
+                     if(oData.results.length > 0){
+                        aCountryInstitute.unshift({});
+                     }
+                     oFastAppDataModel.setProperty("/PT_TMINST", aCountryInstitute);
+                     
+                     oDeferred.resolve(aCountryInstitute);
+                     
+                 },
+                 error: function (oError) {
+                       //show error message
+                       this.showErrorMessage(oError, "No Institute");
+                       oDeferred.reject(oError);
+                   }
+               });
+               return oDeferred.promise();
+                
+                       
+            },
+        
 
 		//routing for tender Master view is matched
 		_onTenderMatched: function (oEvent) {
@@ -535,14 +573,30 @@ sap.ui.define([
 		setFilter: function (oSelection) {
 
 			var oFastAppData = Services.getFastAppDataModel();
+            
+
 
 			//get possible filters
 			let sSelectedCountry = Services.getSelectedCountry() || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : sSelectedCountry;
 			Services.setSelectedCountry(oCountry);
 			//this.oRouter.getHashChanger().setHash(oCountry + Services.getLayoutType() || "/OneColumn")
+            //EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
+            if(oCountry=='TH'){
+                this.byId("idSlctInstitute").setVisible(true);
+                this.byId("idSlctCreatedBy").setVisible(true);
+           
+            }else{
+                this.byId("idSlctInstitute").setVisible(false);
+                this.byId("idSlctCreatedBy").setVisible(false);
+               
+            }
+            var oBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 
-			var oBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
+            var oCreatedBy=this.byId("idSlctCreatedBy").getSelectedItem() ? this.byId("idSlctCreatedBy").getSelectedItem().getText() :
+                "";
+            var oInstituteName=this.byId("idSlctInstitute").getSelectedItem() ? this.byId("idSlctInstitute").getSelectedItem().getText(): "";
+            //EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
 			var oStatus = this.byId("idSlctStatus").getSelectedItem() ? this.byId("idSlctStatus").getSelectedItem().getText() :
 				"Awaiting Approval";
 
@@ -665,12 +719,19 @@ sap.ui.define([
 					})
 				]
 			});
-
+             //EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
 			//Add filters if they are set (so not the default, all...)
 			var orFilters = [];
 			var andFilters = [
 				new sap.ui.model.Filter("COUNTRY", "EQ", oCountry)
 			];
+            if(oCreatedBy !== "" ) {
+                andFilters.push(new sap.ui.model.Filter("UserName", "EQ", oCreatedBy));
+             }
+            if(oInstituteName !== ""){
+           andFilters.push(new sap.ui.model.Filter("INSTITUTE", "EQ", oInstituteName));
+           }
+ 
 			if (!oSeeInactive) {
 				andFilters.push(new sap.ui.model.Filter("ACTIVE_OFFER", "EQ", 1));
 			}
@@ -768,16 +829,27 @@ sap.ui.define([
 				andFilters.push(new sap.ui.model.Filter(orFilters, false));
 			}
 			var oFilters = new sap.ui.model.Filter(andFilters, true);
-
+            var sSortingPath,sDescending;
 			//addsorter
 			if (oStatus === 'Awaiting Approval' || oStatus === 'Offer Created' || oStatus === 'Offer Approved' || oStatus === 'Offer Rejected') {
-				var sSortingPath = 'INTERNAL_BID_DUE_DATE';
-				var sDescending = false;
+                if(oCountry=='TH'){
+                    sSortingPath= 'OFFER_ID';
+                    sDescending = true;
+                }else{
+                    sSortingPath = 'INTERNAL_BID_DUE_DATE';
+                    sDescending = false;
+                }
+				
 			} else if (oStatus === 'Quotation Submitted' || oStatus === 'Results Recorded' || oStatus === 'In FOC Negotiation' || oStatus === 'Appeal in Progress' || oStatus === 'Delivery Ongoing' ||
 				oStatus === 'Wholesale Offer' || oStatus === 'Offer Declined' || oStatus === 'Tender Closed' || oStatus === 'Cancelled' || oStatus ===
 				'All') {
-				sSortingPath = 'PUBLICATION_DATE';
-				sDescending = true;
+                    if(oCountry=='TH'){
+                         sSortingPath = 'OFFER_ID';
+                         sDescending = true;
+                    }else{
+                    sSortingPath = 'PUBLICATION_DATE';
+				    sDescending = true;
+                    }
 			}
 			var oSorter = new sap.ui.model.Sorter({
 				path: sSortingPath,
@@ -806,6 +878,8 @@ sap.ui.define([
 				this._country = oCountry;
 				Services.setSelectedCountry(oCountry);
 				this.setBrandsList();
+                this.setInstituteList(oCountry);
+                this.setCreatedByList(oCountry);
 				this.setTenderOrigins();
 				this.setCountryStatusses(oCountry);
 				Services.loadCountryPermissions(oCountry);
@@ -930,7 +1004,47 @@ sap.ui.define([
 
 			}
 		},
+        //EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
+        setCreatedByList: function (oCountry) {
+           
+            var oDeferred = $.Deferred();
+            //get model for doing the calls to the back-end
+            var oFastDataCalls = this.getView().getModel("fastData");
+            var oFastAppDataModel = Services.getFastAppDataModel();
+           
+            const sUserNamePath = "/PT_TMUSERCTRY";
+            var aFilter = [];
+             aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
+           
+            oFastDataCalls.read(sUserNamePath, {
+                filters: aFilter,
+                urlParameters: {
+                    "$expand": "User",
+                    "$orderby": "User/UserName"
+                },
+                success: function (oData, oResponse) {
 
+                                
+                    var aCountryUserName = oData.results;
+                 
+                                       
+                    if(oData.results.length > 0){
+                        aCountryUserName.unshift({});
+                    }
+                    oFastAppDataModel.setProperty("/Users", aCountryUserName);
+                    
+                    oDeferred.resolve(aCountryUserName);
+                    
+                },
+                error: function (oError) {
+
+                    //show error message
+                    this.showErrorMessage(oError, "No User");
+                    oDeferred.reject(oError);
+                }
+            });
+            return oDeferred.promise();
+        },
 		//when tenders are loaded and displayed, select selected Offer
 		onFinishedBindingTendersTable: function (oEvent) {
 			var that = this;
