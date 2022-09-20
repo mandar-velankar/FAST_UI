@@ -153,6 +153,24 @@ sap.ui.define([
 			}
 			return oValue + " "+ currency;
 		},
+
+        unitPriceMinTwoDec: function(price, currency) {
+			if (!price){
+				return "";
+			}
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: 2,
+                minFractionDigits: 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			var oValue = oNumberFormat.format(parseFloat(price));
+			if (currency === undefined){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
 		
 		packPrice: function(price, currency, unit, packFactor) {
 			if (!price){
@@ -229,6 +247,21 @@ sap.ui.define([
 			return sFocDisplay;
 		
 		},
+        totalAwardedValue: function(PriceCondition, AWARDEDQTY, AWARDEDPRICE){
+            let multiplier = PriceCondition === "Rental" ? 12 : 1;
+            let totalAwardedValue = AWARDEDQTY*AWARDEDPRICE*multiplier;
+            let oLocale = new sap.ui.core.Locale("en-US"); //force the same number format for all countries (also if browser language is german, . will be . as decimal)
+            var oNumberFormat = sap.ui.core.format.NumberFormat.getFloatInstance({
+                maxFractionDigits: 2,
+                minFractionDigits: 2,
+                groupingEnabled: true,
+                groupingSeparator: ",",
+                decimalSeparator: "."
+            },oLocale);
+            var oValue = oNumberFormat.format(parseFloat(totalAwardedValue));
+            return oValue;
+
+        },
 		percentageNoUnit: function(pct){
 			var oNumberFormat = NumberFormat.getFloatInstance({
 				maxFractionDigits: 2,
@@ -433,16 +466,31 @@ sap.ui.define([
 			var resourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			return resourceBundle.getText(description);
 		},
-
-		formatUoMPrice: function(uom="Pack", packFactor=1, price){
-			if(!price) {return};
+        /** Used for formatting prices as well as dividing by packfactor if needed
+         * 
+         * @param {*} ProductCode 
+         * @param {*} ProductPricingView 
+         * @param {*} price 
+         * @param {*} numOfDecimal 
+         * @param {*} ExistingPriceConditionID - This way we can check if the pricecondition is already saved or not
+         */
+		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,ExistingPriceConditionID,ReferencePriceAgreement){
+            if(!price || !ProductPricingView || !ProductCode) {return};
 			let newPrice = Number(price);
-			if(~uom.toLowerCase().indexOf("unit")){ 
-				newPrice = newPrice / packFactor;
-			}
+            let decval = Number(numOfDecimal);
+            // if price condition was saved, do not apply conversion!
+            if( ExistingPriceConditionID == null){
+                let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
+                if(!product) {return};
+                let uom = product.UOM;
+                let packFactor = product.PACKFACTOR;  
+                if(~uom.toLowerCase().indexOf("unit")){ 
+                    newPrice = newPrice / packFactor;
+                }
+            }
 			const floatFormatter = NumberFormat.getFloatInstance({
-				maxFractionDigits: 2,
-				minFractionDigits: 2,
+				maxFractionDigits: decval,
+				minFractionDigits: decval,
 				groupingEnabled: true,
 				groupingSeparator: ",",
 				decimalSeparator: "."
@@ -450,6 +498,8 @@ sap.ui.define([
 			return floatFormatter.format(newPrice);
 		},
 
+       /*
+       // Note: We are passing required number of decimal digits as an input to the formatter, thus we do not need this additional formatter function
         formatUoMPriceExtraDigits: function(uom="Pack", packFactor=1, price){
 			if(!price) {return};
 			let newPrice = Number(price);
@@ -464,7 +514,7 @@ sap.ui.define([
 				decimalSeparator: "."
 			});
 			return floatFormatter.format(newPrice);
-		},
+		}, */
 
 		hasAdditionalCondition: function(sorter, additionalConditions){
 			if(!sorter || !additionalConditions) return 'No';

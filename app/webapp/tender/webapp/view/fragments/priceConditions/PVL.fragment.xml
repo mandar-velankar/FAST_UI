@@ -22,30 +22,50 @@
         <form:content>
             <Label text="{i18n>PVL}" required="true"/>
             <Input 
-                value="{
-                    parts: [
-                        {path:'fastAppData>/ProductPricingView/0/UOM'},
-                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                        {path:'fastAppData>PVL'}
-                    ],
-                    formatter: '.formatter.formatUoMPrice'
-                }"
-                description="{fastAppData>Currency}" 
+                value="{= !${fastAppData>/EditMode} 
+                        ? ${parts: [
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>PriceConditionPVL'},
+                            {value: 2},
+                            {path: 'fastAppData>ExistingPriceConditionID'},
+                            {path: 'fastAppData>ReferencePriceAgreement'}
+                        ],
+                        formatter: '.formatter.formatUoMPrice'}
+                        : ${parts: [
+                                {path:'fastAppData>ProductCode'},
+                                {path:'fastAppData>/ProductPricingView'},
+                                {path:'fastAppData>PVL'},
+                                {value: 2}
+                            ],
+                            formatter: '.formatter.formatUoMPrice'}
+                        }"
+                description="{fastAppData>masterPriceCurrency}" 
                 enabled="false" 
                 fieldWidth="80%"
             />
             <Label text="{i18n>ConfidentialPrice}" required="true" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
             <Input 
-                value="{
-                    parts: [
-                        {path:'fastAppData>/ProductPricingView/0/UOM'},
-                        {path:'fastAppData>/ProductPricingView/0/PACKFACTOR'},
-                        {path:'fastAppData>YLAP'}
-                    ],
-                    formatter: '.formatter.formatUoMPrice'
-                }" 
+                value="{= !${fastAppData>/EditMode}
+                        ? ${parts: [
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>ConfidentialPrice'},
+                            {value: 2},
+                            {path: 'fastAppData>ExistingPriceConditionID'},
+                            {path: 'fastAppData>ReferencePriceAgreement'}
+                        ],
+                        formatter: '.formatter.formatUoMPrice'}
+                        : ${parts: [
+                            {path:'fastAppData>ProductCode'},
+                            {path:'fastAppData>/ProductPricingView'},
+                            {path:'fastAppData>YLAP'},
+                            {value: 2}
+                        ],
+                        formatter: '.formatter.formatUoMPrice'}
+                        }" 
                 visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
-                description="{fastAppData>Currency}" 
+                description="{fastAppData>masterPriceCurrency}" 
                 enabled="false" fieldWidth="80%"/>   
         </form:content>
     </form:SimpleForm>

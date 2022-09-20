@@ -116,6 +116,13 @@
 							<ObjectIdentifier title="{i18n>ID}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
+
+					<!-- Classification -->
+					<Column id="idClassification" minScreenWidth="920px" width="7rem">
+						<header>
+							<ObjectIdentifier title="{i18n>clasficn}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
 					
 					<!-- tender name -->
 					<Column minScreenWidth="920px" width="12rem">

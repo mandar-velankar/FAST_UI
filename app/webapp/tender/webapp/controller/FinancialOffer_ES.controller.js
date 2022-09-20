@@ -9,10 +9,11 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
 	"sap/ui/model/Filter",
+    "sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterOperator, BusyIndicator,Sorter) {
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	var bundle;
@@ -31,6 +32,7 @@ sap.ui.define([
 			const oViewModel = new sap.ui.model.json.JSONModel({
 				delay: 0,
 				selectedProductUoM: "",
+                FinPricingOfferSubsectionisBusy: false,
 			});
 
 			this.getView().setModel(oViewModel, "finOfferView");
@@ -46,7 +48,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this._oRouter = this._oOwnerComponent.getRouter();
 			this._oModel = this._oOwnerComponent.getModel();
-			bundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+			bundle = this.getOwnerComponent().getModel("i18n").getResourceBundle(); // why do we have this two times ?
 
 			this._DetailView = sap.ui.getCore().byId(this.getView().getId().split("---")[0] + "---tenderManagementDetailId");
 			this._DetailController = this._DetailView.getController();
@@ -123,12 +125,14 @@ sap.ui.define([
 
             // get price conditions
             const priceConditionViews = await this.getPriceConditionView();
+            const tenderHistorySpain = await this.getTenderHistorySpain();
             const descuentoEspecial = priceConditionViews.find(pc => pc.ConditionType === "Descuento Especial");
             if(descuentoEspecial && !descuentoEspecial.Discount){
                 descuentoEspecial.Discount = 1;
                 descuentoEspecial.NetPriceWithoutTax = 0;
             } 
             Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
+            Services.getFastAppDataModel().setProperty("/TenderHistorySpain", tenderHistorySpain);
 
             // Manage financial offer when existing agreement is in place
             const applicableTenderCondition = await this.getApplicableTenderCondition();
@@ -140,15 +144,6 @@ sap.ui.define([
             }else{
                 Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
             }
-            
-
-            //bind Rappel and FOC fragments 
-            const rappelBindingPath = this.bindRappelFragment();
-            const focBindingPath = this.bindFocFragment();
-
-            // add DiscountCondition
-            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
-            focBindingPath && await this.addFOCs(focBindingPath);
 
             // set selected key on idPriceConditionSelect
             const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
@@ -170,9 +165,45 @@ sap.ui.define([
             const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
+            //bind Rappel and FOC fragments 
+            const rappelBindingPath = this.bindRappelFragment();
+            const focBindingPath = this.bindFocFragment();
+            this.bindingCurrentPrices();    
+
+            // add DiscountCondition
+            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
+            focBindingPath && await this.addFOCs(focBindingPath);
+
             BusyIndicator.hide();
         },
 
+        /**
+         * Edit toggle action on the Edit/View mode on the Spain FinancialOfferPage
+         * @param {*} bEditMode 
+         */        
+        editFinancialOfferESToggle: function(bEditMode){
+            if(bEditMode){
+                const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
+                const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+                const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);                
+                if(index < 0) return null;
+                if(sSelectedMainPriceCondition === "Descuento Comercial"){
+                    let newDiscount;
+                    const descuentoComercialbindingPath = "/PriceConditionView/".concat(index);
+                    const dcpriceConditionViewObj = Services.getFastAppDataModel().getProperty(descuentoComercialbindingPath);
+                    newDiscount = Number(dcpriceConditionViewObj.Discount) * 100;
+                    this.calculateNetPricesDescuentoComercial(dcpriceConditionViewObj,newDiscount);
+                }
+                if(sSelectedMainPriceCondition === "Precio Neto"){
+                    const precionetobindingPath = "/PriceConditionView/".concat(index);
+                    const pnpriceConditionViewObj = Services.getFastAppDataModel().getProperty(precionetobindingPath); 
+                    this.calculateDiscountsAndNetPricesPrecioNeto(pnpriceConditionViewObj,pnpriceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);               
+                }
+                
+            }
+            Services.getFastAppDataModel().updateBindings();
+        },
+                    
         /**
          * Copy the existing condition to the main price condition and update the model
          */
@@ -193,6 +224,8 @@ sap.ui.define([
             applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
             applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
             applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
+            applicablePriceConditionView.RoyalDecreeValue = applicableTenderCondition.RoyalDecreeValue;
+            applicablePriceConditionView.RoyalDecreeIncl = applicableTenderCondition.RoyalDecreeIncl;
             applicablePriceConditionView.StandardDiscount = applicableTenderCondition.StandardDiscount;
             applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
             const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
@@ -245,13 +278,83 @@ sap.ui.define([
             const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
             if(rappelIndex < 0) return null;
+            const rappelPriceCondition = priceConditionViews[rappelIndex];
+            let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");            
+            if(classification === "Commercial Agreement") rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';            
             const rappelBindingPath = "/PriceConditionView/".concat(rappelIndex);
             const rappelvBox = this.byId("idRappelVbox");
             rappelvBox.bindElement({ path: rappelBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;
+            const existingPriceCondition = !!priceConditionViews[rappelIndex]?.ExistingPriceConditionID;            
             Services.getFastAppDataModel().setProperty("/RappelRequired", false);
-            if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/RappelRequired", true);
+            if(existingPriceCondition){
+                Services.getFastAppDataModel().setProperty("/RappelRequired", true);                
+                this.calculateRoyalDecreeAppliesAndMainConditionPrice();
+            } 
             return rappelBindingPath;
+        },
+
+        /**
+         * This method  sets the element binding of the Current Prices
+         * @returns {String} - Binding path of the Current Prices
+         */        
+        bindingCurrentPrices: function(){
+            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const currentPricesIndex = priceConditions.findIndex(i => i.isMain);
+            if(currentPricesIndex < 0) return null;
+            const currentPricesBindingPath = "/PriceConditionView/".concat(currentPricesIndex);
+            const currentPricesVbox = this.byId("idCurrentPricesVbox");
+            currentPricesVbox.bindElement({ path: currentPricesBindingPath, model: "fastAppData" });
+            const mainPriceCondition = priceConditions.find(i => i.isMain);
+            if(mainPriceCondition){
+                mainPriceCondition.PVLPercentageChange =  (Number(mainPriceCondition.PVL) - Number(mainPriceCondition.PriceConditionPVL)) / Number(mainPriceCondition.PriceConditionPVL);
+                mainPriceCondition.ConfidentialPricePercentageChange =  (Number(mainPriceCondition.YLAP) - Number(mainPriceCondition.ConfidentialPrice)) / Number(mainPriceCondition.ConfidentialPrice);         
+            }
+            return currentPricesBindingPath;
+        },        
+
+        /**
+         * This method triggers on TenderHistory filter events
+         * @param {*} oEvent 
+         */
+        onHistoryFilterCheck: async function(oEvent){
+            const tenderHistorySpain = await this.getTenderHistorySpain();
+            Services.getFastAppDataModel().setProperty("/TenderHistorySpain", tenderHistorySpain);    
+        }, 
+
+        calculateRoyalDecreeAppliesAndMainConditionPrice: function(){
+            //calculating the RoyalDecreeApplies
+            const priceConditionViews = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const rappelIndex = priceConditionViews.findIndex(item => item.ConditionType === "Rappel");
+            if(rappelIndex < 0) return null;
+            const rappelPriceCondition = priceConditionViews[rappelIndex];
+            let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");            
+            rappelPriceCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && rappelPriceCondition.RoyalDecreePercentage && rappelPriceCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+            //calculating Main Price Condition
+            const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem()?.getText();
+            const mainPriceCondition = priceConditionViews.find(i => i.isMain &&  i.ConditionType === sSelectedMainPriceCondition);
+            if(mainPriceCondition){
+                if(mainPriceCondition.ConditionType === "Precio Neto")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD;
+                }
+
+                if(mainPriceCondition.ConditionType === "Descuento Comercial")
+                {
+                    rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+                }
+
+                if(mainPriceCondition.ConditionType === "Descuento Especial")
+                {
+                    rappelPriceCondition.MainPrice = 0;
+                }
+
+                if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+                {
+                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? mainPriceCondition.YLAP : mainPriceCondition.PVL;                 
+                }
+            }            
+            Services.getFastAppDataModel().updateBindings();
         },
 
         /**
@@ -356,6 +459,59 @@ sap.ui.define([
 
         },
         
+        /**
+         * Get TenderHistory data for Spain using filters
+         */
+        getTenderHistorySpain: async function(){
+
+            BusyIndicator.show();
+            let aFilters = [];
+            let oFilters = [];
+
+            const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+            if(offer){
+                const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+                    if(this.byId("currentInstituteCheckId").getSelected()){                    
+                        aFilters.push(new Filter({
+                            path: 'INSTITUTE_ID',
+                            operator: FilterOperator.EQ,
+                            value1: currentInstituteId
+                        }));
+                    }
+                    if(this.byId("wonCheckId").getSelected()){
+                        oFilters.push(new Filter({
+                            path: 'OUTCOME',
+                            operator: FilterOperator.EQ,
+                            value1: "Won"
+                        }));
+                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
+                    }                        
+                    if(this.byId("lossCheckId").getSelected()){
+                        oFilters.push(new Filter({
+                            path: 'OUTCOME',
+                            operator: FilterOperator.EQ,
+                            value1: "Lost"
+                        }));
+                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
+                    }
+                    //if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){  
+                        if(Services.getSelectedProductID()){             
+                            aFilters.push(new Filter({
+                                path: 'ProductCode',
+                                operator: FilterOperator.EQ,
+                                value1: Services.getSelectedProductID()
+                            }));
+                        }
+                    //}
+                    
+                let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(aFilters);
+                
+                BusyIndicator.hide();
+                return tenderHistorySpain.data.results;
+            } else return null;
+
+        },
+
 		setFinancialOffer: async function(){
 			//Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
@@ -387,7 +543,7 @@ sap.ui.define([
 			if (offerID) {
 				const response = await Services.getFinancialProducts(offerID);
 
-				return response.data && response.data.results.map(item => {
+				return response.data && response.data.results.filter(item => item.ActiveProduct === 1 ).map(item => {
 					
 					item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
 						freeGoods.UOM = item.UOM;
@@ -483,6 +639,7 @@ sap.ui.define([
 
             const selectedPriceConditionViewObjects = this.getSelectedPriceConditionViewObjects();
             const aErroneousConditions = this.checkSaveFinancialOfferSpain(selectedPriceConditionViewObjects);   
+            const selectedProductID = Services.getSelectedProductID();
             if(aErroneousConditions && (aErroneousConditions.length > 0)) {
                 BusyIndicator.hide();                
                 this.byId("ApprovalButtonId").setEnabled(false);
@@ -564,6 +721,11 @@ sap.ui.define([
                     }
                 }
 
+                /* default selected product to the one which was selected */
+                Services.setSelectedProductID(selectedProductID);
+                let aProducts = Services.getFastAppDataModel().getProperty('/SelectedOffer/Product/results');
+                Services.setSelectedProductName(aProducts.find(product => product.ProductCode === selectedProductID)?.SKU?.PRODUCTPACKNAME);
+
                 BusyIndicator.hide();
             } 
 		},
@@ -604,11 +766,25 @@ sap.ui.define([
                         requiredPriceConditionViewObject = priceConditionViewObj;
                     }
                     if(priceConditionViewObj.ConditionType === "FOC" && focRequired){
+                        /**
+                         * Remove non-existent fields from the FreeGoodsOther entity. These fields have been added in the user interface 
+                         * and are needed for calculations. But they do not exist in the FreeGoodsOther entity and cannot be saved.
+                         */
+                         priceConditionViewObj.FreeGoodsOther?.forEach(item => {
+                            delete item.ConfidentialPrice;
+                            delete item.PVL;
+                            delete item.isSameAsMainProduct;
+                            delete item.packFactor;
+                            delete item.UOM;
+                            delete item.ProductPackIdValueState;
+                            delete item.RoyalDecreePercentage;
+                         });
+
                         requiredPriceConditionViewObject = priceConditionViewObj;
                     }
                 }
                 if(requiredPriceConditionViewObject){
-                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(requiredPriceConditionViewObject,"");
+                    const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(requiredPriceConditionViewObject,"FinancialOfferPage");
                     savePriceConditionPromises.push(Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject));
                 }
             });
@@ -627,7 +803,7 @@ sap.ui.define([
                     }
                 }
                 if(requiredPriceConditionViewObject){
-                    const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj);
+                    const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(priceConditionViewObj,"FinancialOfferPage");
                     deletePriceConditionPromises.push(Services.getService("PriceCondition").deletePriceCondition(priceConditionDeleteObject));
                 }
             });
@@ -652,7 +828,7 @@ sap.ui.define([
             const preExistingPriceConditions = allPriceConditionViews.filter(condition => condition.isMain && condition.ExistingPriceConditionID)
                                                                      .filter(condition => condition.ExistingPriceConditionID !== mainSelectedPriceConditionView.ExistingPriceConditionID);
             return preExistingPriceConditions.map(condition => {
-                const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(condition);
+                const priceConditionDeleteObject = Services.getService("PriceCondition").convertToSaveObject(condition,"FinancialOfferPage");
                 return Services.getService("PriceCondition").deletePriceCondition(priceConditionDeleteObject);
             });
         },
@@ -708,8 +884,8 @@ sap.ui.define([
 		getOfferProductPrices: function (oOffer, oProduct, oProductPrice, oMainPriceCondition) {
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
@@ -849,7 +1025,7 @@ sap.ui.define([
                     //no explicit checks needed
                 } else if(oPriceConditions[i].ConditionType === "Rappel"){
                     if(rappelRequired && 
-                        ( !oPriceConditions[i].RoyalDecree || 
+                        ( //!oPriceConditions[i].RoyalDecree || 
                             !oPriceConditions[i].Liquidation || 
                             // !oPriceConditions[i].onVolumeTreshhold || 
                             // !oPriceConditions[i].Discount || 
@@ -929,7 +1105,9 @@ sap.ui.define([
 		},
 
         onFinancialProductPress: async function(oEvent, bBindingFinished){
-            BusyIndicator.show();
+            // BusyIndicator.show();
+            // set the busy indicator on the princing subsection
+            this.getView().getModel("finOfferView").setProperty("/FinPricingOfferSubsectionisBusy", true);
             //get context of selected price product
             let oFastAppDataModel = Services.getFastAppDataModel();
             if (!bBindingFinished) {
@@ -938,6 +1116,9 @@ sap.ui.define([
                 this.selectedProductPricePath = bindingContext.sPath;
             } else {
                 this.selectedProductPricePath = Services.getSelectedProductPath();
+                if(!this.selectedProductPricePath && this.byId("idFinancialOfferViewProduct").getItems()?.length > 0){
+                    this.selectedProductPricePath = '/ProductPricingView/0';
+                }
                 let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
                 this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
             }
@@ -947,6 +1128,7 @@ sap.ui.define([
             //keep selected product ID
             Services.setSelectedProductID(oProductPrice.ProductCode);
             Services.setSelectedProductName(oProductPrice.ProductPackName);
+			Services.setSelectedProductPath(this.selectedProductPricePath);
         
             //Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
@@ -958,9 +1140,8 @@ sap.ui.define([
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
-                       
-            // some magic for just not to break the code. blame the other guy :-)
-            // the magic didn't fix everything. Not blaming anyone ¯\_ (ツ) _/¯
+               
+            // to solve some loading issues this code is needed
             if(!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer")){
                 await this.managePriceConditionClassification();
                 await this.managePriceConditions();
@@ -969,13 +1150,15 @@ sap.ui.define([
             // enable approval button
             this._checkApprovalEnabled();
 
-            BusyIndicator.hide();
+            // BusyIndicator.hide();
 
         },
 
         onPriceConditionChange: function(oEvent){
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
+            const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");            
             this.loadMainPriceConditionFragment(sConditionType);
+            if(classification === "Commercial Agreement") this.calculateRoyalDecreeAppliesAndMainConditionPrice();
         },
 
         loadMainPriceConditionFragment: function(sConditionType){
@@ -987,6 +1170,7 @@ sap.ui.define([
             const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
             const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
             const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
+            const oFastAppDataModel = Services.getFastAppDataModel();
 
             if(selectedPriceConditionsIndex > -1) {
                 const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
@@ -995,8 +1179,19 @@ sap.ui.define([
                 // add RequestedVolume from the selected product to the PriceConditionView entity.
                 const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
                 const maxPrice = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.MaxPrice;
-                Services.getFastAppDataModel().setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
-                if(sConditionType === 'Precio Neto') Services.getFastAppDataModel().setProperty(bindingPath.concat("/MaximumPrice"), maxPrice);
+                oFastAppDataModel.setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
+                if(sConditionType === 'Precio Neto' || sConditionType === 'Descuento Comercial'){
+                    
+                    if(sConditionType === 'Precio Neto'){                        
+                    oFastAppDataModel.setProperty(bindingPath.concat("/MaximumPrice"), maxPrice);}
+
+                    //check if royal decree applies for precio netto and Descuento Comercial
+                    let oPrecioNettoCondition = oFastAppDataModel.getProperty(bindingPath);
+                    let instType = oFastAppDataModel.getProperty('/Tender/Institute/InstituteType');
+                    let discount = oPrecioNettoCondition.Discount ? oPrecioNettoCondition.Discount : 0;
+                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+                    if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
+                } 
                 
                 Services.setSelectedPriceConditionPath(bindingPath);
 
@@ -1011,22 +1206,90 @@ sap.ui.define([
                         vBox.addItem(oFragment);
                     }
                     vBox.bindElement({ path: bindingPath, model: "fastAppData" });
+                    // disable the busy indicator on the pricing subsection
+                    this.getView().getModel("finOfferView").setProperty("/FinPricingOfferSubsectionisBusy", false);
                 }.bind(this));
             }
 
         },
 
-        calculateDiscountsAndNetPricesPrecioNeto: function(oEvent){
+        onLiveChangeNetPricesPrecioNeto: function(oEvent){
             const evt = oEvent;
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
 
+            const newNetPriceWithoutTaxBeforeDeductionRD = oEvent.getSource()?.getValue?.() || priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD;
+             
+            // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
+            /* 
+                NOTE: The if(evt.getSource().openValueStateMessage) check has been added, 
+                    since we are now also calling this method from the "Royal decree included" checkbox.
+                      Also, the code will throw error, as the sap.m.Select Control do not have openValueStateMessage() and closeValueStateMessage() methods. 
+            */
+
+            if(evt.getSource().openValueStateMessage){            
+                if(bindingContext.getProperty('/Tender/Classification') === 'Tender'){
+                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && 
+                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor )) || 
+                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) ))))){
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and PVL.");
+                        evt.getSource().openValueStateMessage();  
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && 
+                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || 
+                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and confidential price.");
+                        evt.getSource().openValueStateMessage();                    
+                    }else{
+                        evt.getSource().setValueState("None");
+                        evt.getSource().setValueStateText("");
+                        evt.getSource().closeValueStateMessage();
+                    }                         
+                } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement'){
+                    if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || 
+                    (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than PVL.");
+                        evt.getSource().openValueStateMessage();
+                    } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && 
+                            (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))){
+                        evt.getSource().setValueState("Error");
+                        evt.getSource().setValueStateText("Net price w/o tax must be lower than the confidential price.");
+                        evt.getSource().openValueStateMessage();
+                    }else{
+                            evt.getSource().setValueState("None");
+                            evt.getSource().setValueStateText("");
+                            evt.getSource().closeValueStateMessage();
+                        }
+
+                }else{
+                        evt.getSource().setValueState("None");
+                        evt.getSource().setValueStateText("");
+                        evt.getSource().closeValueStateMessage(); 
+                    }
+                
+            }
+            this.calculateDiscountsAndNetPricesPrecioNeto(priceConditionViewObj,newNetPriceWithoutTaxBeforeDeductionRD);
+                        
+            bindingContext.getModel().updateBindings();
+        
+        },
+                
+        calculateDiscountsAndNetPricesPrecioNeto: function(priceConditionViewObj,newNetPriceWithoutTaxBeforeDeductionRD){
+            /*const evt = oEvent;
+            const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const priceConditionViewObj = bindingContext.getObject();*/
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
 
-            let newNetP;
-            if (oEvent.getId() === "change"){
+           /* let newNetP;
+            if (oEvent.getId() === "change" || oEvent.getId() === "select"){
                 newNetP = Number(priceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);
             } else {
                  newNetP = Number(oEvent.getSource().getValue());
@@ -1036,11 +1299,15 @@ sap.ui.define([
             const newNetPriceWithoutTaxBeforeDeductionRD = newNetP;
 
             // check that net price w/o tax incl royal decree is equal or lower than newMaximumPrice
-            if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice){
+            /* 
+                NOTE: the evt.getId() === "change" has been added, since we are now also calling this method from the "Royal decree inclusive" checkbox
+                      errors will occur, as the select control does not have a value state message attribute, thus, code will dump 
+            */
+            /*if(bindingContext.getProperty('/Tender/Classification') === 'Tender' && newNetPriceWithoutTaxBeforeDeductionRD > priceConditionViewObj.MaximumPrice && evt.getId() === "change"){
                 evt.getSource().setValueState("Error");
                 evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the maximum price .");
                 evt.getSource().openValueStateMessage();
-            } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement' ){
+            } else if(bindingContext.getProperty('/Tender/Classification') === 'Commercial Agreement' && evt.getId() === "change"){
                 if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && (UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor ) || (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))){
                     evt.getSource().setValueState("Error");
                     evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than PVL.");
@@ -1050,16 +1317,20 @@ sap.ui.define([
                     evt.getSource().setValueStateText("Net price w/o tax incl royal decree must be lower than the confidential price.");
                     evt.getSource().openValueStateMessage();
                 }else{
-                    evt.getSource().setValueState("None");
-                    evt.getSource().setValueStateText("");
-                    evt.getSource().closeValueStateMessage();
+                    if(evt.getId() === "change"){
+                        evt.getSource().setValueState("None");
+                        evt.getSource().setValueStateText("");
+                        evt.getSource().closeValueStateMessage();
+                    }
                 }
 
             }else{
-                evt.getSource().setValueState("None");
-                evt.getSource().setValueStateText("");
-                evt.getSource().closeValueStateMessage();
-            }
+                if(evt.getId() === "change"){
+                    evt.getSource().setValueState("None");
+                    evt.getSource().setValueStateText("");
+                    evt.getSource().closeValueStateMessage(); 
+                }
+            }*/
 
             let correctPrice;
             if(instType === "Private Account"){
@@ -1082,7 +1353,7 @@ sap.ui.define([
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
 
-            if(priceConditionViewObj.RoyalDecree === "IncludeInPrecioNeto"){
+            /*if(priceConditionViewObj.RoyalDecree === "IncludeInPrecioNeto"){
                 newNetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxBeforeDeductionRD * ( 1 - priceConditionViewObj.RoyalDecreePercentage);
             }else {
                 newNetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxBeforeDeductionRD;
@@ -1092,21 +1363,29 @@ sap.ui.define([
                 newNetPriceWithTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD * ( 1 + priceConditionViewObj.Tax) * ( 1 - priceConditionViewObj.RoyalDecreePercentage);
             }else {
                 newNetPriceWithTaxAfterDeductionRD = newNetPriceWithoutTaxAfterDeductionRD * ( 1 + priceConditionViewObj.Tax);
-            }
+            }*/
 
             // set the calcualted field and update the bindings
+            newNetPriceWithoutTaxAfterDeductionRD = priceConditionViewObj.RoyalDecreeIncl === true ? newNetPriceWithoutTaxBeforeDeductionRD : newNetPriceWithoutTaxBeforeDeductionRD * (1 - priceConditionViewObj.RoyalDecreePercentage);
+            if(instType === 'Private Account'){
+                newNetPriceWithoutTaxAfterDeductionRD = newNetPriceWithoutTaxBeforeDeductionRD;
+            }
+            //priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage : newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage / 1 - priceConditionViewObj.RoyalDecreePercentage;
+            priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === true ? Number(newNetPriceWithoutTaxBeforeDeductionRD / (1 - priceConditionViewObj.RoyalDecreePercentage) - newNetPriceWithoutTaxBeforeDeductionRD).toFixed(6) : Number(newNetPriceWithoutTaxBeforeDeductionRD - newNetPriceWithoutTaxAfterDeductionRD).toFixed(6);   
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 + priceConditionViewObj.Tax) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + priceConditionViewObj.Tax);
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
-            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD.toFixed(6));
+            priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD).toFixed(6);
             priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(6));
 
-            bindingContext.getModel().updateBindings();
-            
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice(); 
         },
 
         calculateNetPricesPVL: function (priceConditionObject){
             let oFastAppDataModel = Services.getFastAppDataModel();
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0]?.UOM;
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let factor = UOM === 'Unit' ? packFactor : 1;
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
             let modelPriceCondition = oFastAppDataModel.getProperty('/PriceConditionView')?.find(priceCondition => priceCondition.OfferID === priceConditionObject.OfferID && priceCondition.ProductCode === priceConditionObject.ProductCode && priceCondition.ConditionType === priceConditionObject.ConditionType);
@@ -1120,14 +1399,11 @@ sap.ui.define([
 
             return priceConditionObject;
         },
+        
+        onLiveChangeNetPricesDescuentoComercial: function(oEvent){
 
-        calculateNetPricesDescuentoComercial: function (oEvent){
-
-            
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const priceConditionViewObj = bindingContext.getObject();
-           
-            let newNetPriceWithoutTax = "";
 
             let newDiscount;
             if (oEvent.getId() === "change"){
@@ -1138,10 +1414,33 @@ sap.ui.define([
             }
             const discount = newDiscount;
             
+            this.calculateNetPricesDescuentoComercial(priceConditionViewObj,discount);
 
+            this.calculateRoyalDecreeAppliesAndMainConditionPrice();
+            
+            bindingContext.getModel().updateBindings();
+        },
+
+        calculateNetPricesDescuentoComercial: function (priceConditionViewObj,discount){
+
+            
+            /*const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const priceConditionViewObj = bindingContext.getObject(); */
+           
+            let newNetPriceWithoutTax = "";
+            
+          /*  let newDiscount;
+            if (oEvent.getId() === "change"){
+               newDiscount = Number(priceConditionViewObj.Discount) * 100;
+            } else {
+               newDiscount = Number(oEvent.getSource().getValue());
+
+            }
+            const discount = newDiscount; */
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
@@ -1158,16 +1457,19 @@ sap.ui.define([
             }
 
             if(priceConditionViewObj.RoyalDecree === "Yes"){
-                newNetPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
+                newNetPriceWithoutTax = Number(correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100)).toFixed(2);
+                priceConditionViewObj.RoyalDecreeValue = Number(priceConditionViewObj.YLAP * (1 - discount / 100) * priceConditionViewObj.RoyalDecreePercentage).toFixed(2);            
             }else {
-                newNetPriceWithoutTax = correctPrice * (1 - discount / 100);
+                newNetPriceWithoutTax = Number(correctPrice * (1 - discount / 100)).toFixed(2);
             }
 
             // set the calcualted field and update the bindings
+            //priceConditionViewObj.RoyalDecreeValue = newNetPriceWithoutTax * priceConditionViewObj.RoyalDecreePercentage;
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
             priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
             priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2))
 
-            bindingContext.getModel().updateBindings();
+            //bindingContext.getModel().updateBindings();
         },
 
         calculateProfitability: async function(){
@@ -1194,7 +1496,7 @@ sap.ui.define([
 
             if(oSelectedOffer){
                 if (aOfferProducts && aOfferProducts.length > 0){
-                    productProfitabilityData = aOfferProducts.map(product => {
+                    productProfitabilityData = aOfferProducts.filter(oProduct => oProduct.ActiveProduct !== 2)?.map(product => {
 
                         if(aPriceConditionViews && aPriceConditionViews.length > 0){
                             oProductConditionView = aPriceConditionViews.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID && priceCondition.ExistingPriceConditionID !== null && priceCondition.ConditionType !== 'FOC' && priceCondition.ConditionType !== 'Rappel')[0];
@@ -1230,6 +1532,7 @@ sap.ui.define([
                             }
                             let requestedVolume = product.RequestedVolume;
                             let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                            cogs = oPriceCondition.UOM === "Unit" ? cogs / oPriceCondition.PACKFACTOR : cogs;
 
                             let dPaidVolume = requestedVolume - ((sFOCType === 'FOC 1' ? sFOCBonus : 0));
                             let dTotalVolume = requestedVolume + ((sFOCType === 'FOC 2' ? sFOCBonus : 0));
@@ -1262,6 +1565,7 @@ sap.ui.define([
                             let dMaintenanceCost = Number(oSelectedOffer.ProfitabilityYrlyMntCost);
                             let dDurationAgreementYears = Number(oSelectedOffer.ProfitabilityAgrDur);
                             let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                            cogs = oPriceCondition.UOM === "Unit" ? cogs / oPriceCondition.PACKFACTOR : cogs;
 
                             let dCost_Y1 = cogs * (dAnnualUnits) * (12 - dStartMonth + 1) / (dDurationAgreementYears * 12) + dAnnualUnits * dMaintenanceCost * (12 - dStartMonth + 1) / 12;
                             let dSales_Y1 = (dAnnualValue / 12) * (12 - dStartMonth + 1);
@@ -1318,6 +1622,7 @@ sap.ui.define([
                             let dAnnualUnits = product.RequestedVolume;
                             let dAnnualValue = dAnnualUnits * netPrice;
                             let cogs = product.Cogs ? product.Cogs.COGS : 0;
+                            cogs = oPriceCondition.UOM === "Unit" ? cogs / oPriceCondition.PACKFACTOR : cogs;
                             
                             let dStartMonth = Number(oSelectedOffer.ProfitabilityStartMnth);
                             let dDiscountRate = Number(oSelectedOffer.ProfitabilityDiscRate);
@@ -1384,11 +1689,11 @@ sap.ui.define([
 
                         if(consolidatedEntry.ProductType === 'Contrast Agents' || consolidatedEntry.ProductType === 'Consumables' || consolidatedEntry.ProductType === 'Injectors'){
                             //calculate contract agents, consumables & injectors
-                            let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1));
+                            let aProductsPerType = aOfferProducts.filter(product => product.SKU.ProductType === consolidatedEntry.ProductType.slice(0, -1) && product.ActiveProduct !== 2);
                             oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
                         } else if(consolidatedEntry.ProductType !== 'Contrast Agents' && consolidatedEntry.ProductType !== 'Consumables' && consolidatedEntry.ProductType !== 'Injectors' && consolidatedEntry.ProductType !== 'Total'){
                             //calculate any other product type
-                            let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable'));
+                            let aProductsPerType = aOfferProducts.filter(product => (product.SKU.ProductType !== 'Contrast Agent' && product.SKU.ProductType !== 'Injector' && product.SKU.ProductType !== 'Total' && product.SKU.ProductType !== 'Consumable')  && product.ActiveProduct !== 2);
                             oCalculatedResult = this.getCalculatedProfitability(aProductsPerType, aProductPricingView);
                         } else if(consolidatedEntry.ProductType === 'Total'){
                             //calculate totals
@@ -1437,6 +1742,7 @@ sap.ui.define([
                     npv_grossmargin = npv_grossmargin + oProductPricing.GrossProfit;
                     npv_netsales = npv_netsales + (oProductPricing.Sales_NPV ? oProductPricing.Sales_NPV : 0);
                     npv_cogs = npv_cogs + (oProductPricing.Cost_NPV ? oProductPricing.Cost_NPV : 0);
+
                 }
 
                 profitability = npv_netsales ? npv_grossmargin / npv_netsales : 0;
@@ -1499,8 +1805,19 @@ sap.ui.define([
             this.pDialog.then(function (oDialog) {
                 const bindingPaths = this.getBindingPathsDiscountCondition();
                 const oTable = this.byId("idVolumeTreshold");
+                const priceCondition = Services.getFastAppDataModel().getProperty(bindingPaths.root);
                 const existingDiscountCondition = Services.getFastAppDataModel().getProperty(bindingPaths.dc);
-                const discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
+                let discountConditions = existingDiscountCondition && JSON.parse(JSON.stringify(existingDiscountCondition)) || [];
+
+                if(discountConditions && discountConditions.length > 0){
+                    discountConditions.map((condition) => {
+                        if(!condition.Tax){
+                            condition.Tax = priceCondition.Tax;
+                        }
+
+                        return condition;
+                    });
+                }
                 Services.getFastAppDataModel().setProperty(`${bindingPaths.dc}Temp`, discountConditions);
                 oTable.bindElement({ path: bindingPaths.root, model: "fastAppData" });
                 oDialog.open();
@@ -1586,10 +1903,10 @@ sap.ui.define([
             const discountConditionObj = bindingContext.getObject();
 
             let netPriceWithoutTax = "";
-
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
             let correctPrice;
             if(instType === "Private Account"){
                 if(UOM === "Unit"){
@@ -1605,15 +1922,18 @@ sap.ui.define([
                 }
             }
 
-            if(priceConditionViewObj.RoyalDecree === "Yes"){
+           /* if(priceConditionViewObj.RoyalDecree === "Yes"){
                 netPriceWithoutTax = correctPrice * (1 - priceConditionViewObj.RoyalDecreePercentage) * (1 - discount / 100);
             }else {
                 netPriceWithoutTax = correctPrice * (1 - discount / 100)
-            }
+            } */
+
 
             // set the calcualted field and update the bindings
-            discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
-            discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);
+            discountConditionObj.NetPriceWithoutTax = Number(priceConditionViewObj.MainPrice * (1 - discount / 100)).toFixed(2);
+            discountConditionObj.NetPriceWithTax = Number(discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2);
+            /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
+            discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
 
             bindingContext.getModel().updateBindings();
 
@@ -1709,7 +2029,7 @@ sap.ui.define([
             
             oFastAppDataModel.updateBindings();            
 		},
-        
+
 		onDeleteFreeGoodsOther: function (event) {
            
             const oFastAppDataModel = Services.getFastAppDataModel();
@@ -1723,7 +2043,7 @@ sap.ui.define([
 			oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
 		},
 
-		onProductPackChange: function (event) {
+		/*onProductPackChange: function (event) {
 			var validatedComboBox = event.getSource(),
 				selectedKey = validatedComboBox.getSelectedKey(),
 				value = validatedComboBox.getValue(),
@@ -1738,7 +2058,7 @@ sap.ui.define([
 				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "None");
 				Services.getFastAppDataModel().setProperty(path + "/VAT", vat);
 			}
-		},
+		},*/
         
 		oApplyProducts: function () {
 			const oFastAppDataModel = Services.getFastAppDataModel();
@@ -1820,67 +2140,136 @@ sap.ui.define([
 		},
 
 
-		_handleValueHelpClose: function (oEvent) {
+		_handleValueHelpClose: async function (oEvent) {
 			const oFastAppData = Services.getFastAppDataModel();
+            const oTable = this.getView().byId("FreeGoodsOtherTable");
 			const priceConditions = oFastAppData.getProperty("/PriceConditionView");
             const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
             const sPath = "/PriceConditionView/".concat(focIndex) + "/FreeGoodsOther";
             
 			var oFreeGoodsOther = oFastAppData.getProperty(sPath + "/" + this._focIndex);
-
 			var oSelectedItem = oEvent.getParameter("selectedItem");
+
+            // add PVL, ConfidentialPrice and RoyalDecreePercentage to the selected FOC product
+            // sets isSameAsMainProduct to true if FOC product and main product are the same
 			if (oSelectedItem) {
+                oTable.setBusy(true);
+                const selectedProduct = oSelectedItem.getBindingContext('fastAppData').getObject();
+                let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                const royalDecree =  (await this.getRoyalDecree(selectedProduct.PRODUCT_ID))?.data?.results?.[0];
 				var oInputfield = this.byId('idOtherProducts');
 				oInputfield.setValue(oSelectedItem.getTitle());
-
-				oFreeGoodsOther.ProductPackId = oSelectedItem.getBindingContext('fastAppData').getObject().PRODUCT_ID;
+				oFreeGoodsOther.ProductPackId = selectedProduct.PRODUCT_ID;
 				oFreeGoodsOther.ProductName = oSelectedItem.getTitle();
-				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath))
+                oFreeGoodsOther.RoyalDecree = this.getFOCRoyalDecreeValue(royalDecree?.Percentage);
+                const oMostRecentMasterPrice = (await this.getMostRecentMasterPrices(selectedProduct.COUNTRY_CODE, selectedProduct.PRODUCT_ID))?.data?.results?.[0];
+                if(!oMostRecentMasterPrice){
+                    sap.m.MessageBox.error(`No MasterPrice was found for product: ${selectedProduct.PRODUCT_ID}. \nPlease contact the service desk.`);
+                    oTable.setBusy(false);
+                }
+                oFreeGoodsOther.PVL = oMostRecentMasterPrice.YLLP;
+                oFreeGoodsOther.ConfidentialPrice = oMostRecentMasterPrice.YLAP;
+                oFreeGoodsOther.isSameAsMainProduct = Services.getSelectedProductID() === oFreeGoodsOther.ProductPackId;
+                oFreeGoodsOther.RoyalDecreePercentage = royalDecree?.Percentage;
+                oFreeGoodsOther.packFactor = selectedProduct.PACKFACTOR;
+                oFreeGoodsOther.UOM = oProductPrice.UOM;
+                oFreeGoodsOther.FOCMinAmount = 0;
+                oFreeGoodsOther.FOCBonus = 0;
+                oFreeGoodsOther.PotentialGeneratedSavings = 0;
+				oFastAppData.setProperty(sPath, oFastAppData.getProperty(sPath));
+                oTable.setBusy(false);
 			}
-			oEvent.getSource().getBinding("items").filter([]);
+			// oEvent.getSource().getBinding("items").filter([]); // TODO: check with Joris why this code was needed ?
 		},
+
+        /**
+         * Calculate the value of the FOC Royal Decree based on specific logic
+         * @returns {String} Yes/No
+         */
+        getFOCRoyalDecreeValue: function(royalDecreePercentage){
+            const instituteType = Services.getLoadedTender().Institute.InstituteType;
+            if(instituteType === "Private Account" || instituteType === "Cluster") return "No";
+            if(instituteType === "Public Account" || instituteType === "Region(s)" || instituteType === "National"){
+                if(royalDecreePercentage) return "Yes";
+                else return "No";
+            }
+        },
+
+        
+        getRoyalDecree: async function(productPackID){
+            return Services.getService("PriceCondition").getRoyalDecree(productPackID);
+        },
+
+        getMostRecentMasterPrices: async function(countryCode, productPackID){
+            return Services.getService("PriceCondition").getMostRecentMasterPrices(countryCode, productPackID);
+        },
+            
 
         /*Calculations*/
         calculatePotentialSavings: function(oEvent){
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            const bindingPath = "/PriceConditionView/".concat(focIndex);
-            const priceConditionViewObject = Services.getFastAppDataModel().getProperty(bindingPath);
-
+            // user inserted bonus amount
             const bonusAmount = Number(oEvent.getSource().getValue());
+
+            // selected FOC record that contains MasterPrice info
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             const freeGoodsObject = bindingContext.getObject();
-            
-            let potentialSaving = "";
 
             let instType = this.getView().getModel('fastAppData').getData().Tender.Institute.InstituteType;
-            let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
-            let UOM = this.getView().getModel('fastAppData').getData().ProductPricingView[0].UOM;
-            let correctPrice;
-            if(instType === "Private Account"){
+            //let packFactor =  this.getView().getModel('fastAppData').getData().ProductPricingView[0].PACKFACTOR;
+            let packFactor = freeGoodsObject.packFactor;        
+            let UOM = freeGoodsObject.UOM;
+            const privateCustomer = instType === "Private Account" || instType === "Cluster";
+            const publicCustomer = instType === "Public Account" || instType === "Region(s)" || instType === "National";
+            let mainConditionPrice = this.getMainConditionPrice(freeGoodsObject);
+
+            // calculate potential savings
+            let potentialSaving = "";
+            if(freeGoodsObject.isSameAsMainProduct){
+                potentialSaving = bonusAmount * mainConditionPrice;  
+            }else {
+                let correctedPVL;
+                let correctedConfidentialPrice;                
                 if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObject.PVL / packFactor;
+                    correctedPVL = freeGoodsObject.PVL / packFactor;
+                    correctedConfidentialPrice = freeGoodsObject.ConfidentialPrice / packFactor;
                 } else {
-                    correctPrice = priceConditionViewObject.PVL;
+                    correctedPVL = freeGoodsObject.PVL;
+                    correctedConfidentialPrice = freeGoodsObject.ConfidentialPrice;
                 }
-            } else {
-                if(UOM === "Unit"){
-                    correctPrice = priceConditionViewObject.YLAP / packFactor;
-                } else {
-                    correctPrice = priceConditionViewObject.YLAP;
-                }
+                if(privateCustomer){
+                    potentialSaving = correctedPVL * bonusAmount;
+                }  
+                if(publicCustomer){
+                    if(freeGoodsObject.RoyalDecree === "Yes") potentialSaving = correctedConfidentialPrice * (1 - freeGoodsObject.RoyalDecreePercentage) * bonusAmount;
+                    else potentialSaving = correctedConfidentialPrice * bonusAmount;
+                }  
             }
 
-            if(priceConditionViewObject.RoyalDecree !== null && priceConditionViewObject.RoyalDecree === 'Yes'){
-                potentialSaving = bonusAmount * correctPrice * (1 - freeGoodsObject.RoyalDecreePercentage);                
-            } else {
-                potentialSaving = bonusAmount * correctPrice;
-            }
-
-            freeGoodsObject.PotentialGeneratedSavings = potentialSaving; 
+            freeGoodsObject.PotentialGeneratedSavings = Number(potentialSaving).toFixed(2); 
             bindingContext.getModel().updateBindings();           
         },
 
+        getMainConditionPrice(selectedFOCObject){
+            const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
+            const priceConditionViewObjects = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+            const index = priceConditionViewObjects.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);
+            const mainPriceConditionViewObject = Services.getFastAppDataModel().getProperty("/PriceConditionView/".concat(index));
+            if(mainPriceConditionViewObject.ConditionType === "Descuento Especial") return 0;
+            if(mainPriceConditionViewObject.ConditionType === "Precio Neto"){
+                // if(selectedFOCObject.RoyalDecree === "No")
+                //     return mainPriceConditionViewObject.NetPriceWithoutTax;
+                // else 
+                    return mainPriceConditionViewObject.NetPriceWithoutTaxAfterDeductionRD;
+            }
+            if(mainPriceConditionViewObject.ConditionType === "Descuento Comercial") return mainPriceConditionViewObject.NetPriceWithoutTax;
+            if(mainPriceConditionViewObject.ConditionType === "Rental" || mainPriceConditionViewObject.ConditionType === "PVL"){
+                if(selectedFOCObject.RoyalDecree === "No")
+                    return mainPriceConditionViewObject.PVL;
+                else 
+                    return mainPriceConditionViewObject.ConfidentialPrice * (1 - mainPriceConditionViewObject.RoyalDecreePercentage);
+            }
+        },
+        
         onMonthlyRentPerUnitChange: function(oEvent){
             this.calculateAnnualValue(oEvent);
         },
@@ -1898,12 +2287,45 @@ sap.ui.define([
             const isRequired = Services.getFastAppDataModel().getProperty(`/${switchName}Required`);
             Services.getFastAppDataModel().setProperty(`/${switchName}Expanded`, isRequired);
             if(!isRequired && switchName === 'Rappel'){
+                
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RoyalDecree`,"");
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Liquidation`,"");
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/Settlement_ID`,"");
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/RefundDate`,null);
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/DiscountConditions`,[]);
             }
+
+
+            if(isRequired && switchName === 'Rappel') this.calculateRoyalDecreeAppliesAndMainConditionPrice();
+            // if(isRequired && switchName === 'Rappel'){ 
+
+            //     // const oFastAppDataModel = Services.getFastAppDataModel();
+            //     // const priceConditionView = oFastAppDataModel.getProperty("/PriceConditionView");
+            //     // const mainPriceCondition = priceConditionView.find(i => i.isMain && i.ExistingPriceConditionID);
+            //     // const rappelPriceCondition = priceConditionView.find(item => item.ConditionType === switchName);
+
+            //     // if(mainPriceCondition.ConditionType === "Precio Neto")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ?  mainPriceCondition.NetPriceWithoutTaxAfterDeductionRD : mainPriceCondition.NetPriceWithoutTax;
+            //     // }
+
+            //     // if(mainPriceCondition.ConditionType === "Descuento Comercial")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.NetPriceWithoutTax;
+            //     // }
+
+            //     // if(mainPriceCondition.ConditionType === "Descuento Especial")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = 0;
+            //     // }
+
+            //     // if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
+            //     // {
+            //     //     rappelPriceCondition.MainPrice = mainPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.ConfidentialPrice * (1 - mainPriceCondition.RoyalDecree) : mainPriceCondition.PVL;                 
+            //     // }
+
+            //     // oFastAppDataModel.updateBindings();
+            // }         
             if(!isRequired && switchName === 'FOC'){
                 Services.getFastAppDataModel().setProperty(`/PriceConditionView/${rappelIndex}/FreeGoodsOther`,[]);
             }

@@ -9,7 +9,8 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator) {
+    "sap/ui/core/BusyIndicator",
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, Filter, FilterOperator, BusyIndicator) {
 	"use strict";
 	
 	var bundle;
@@ -102,6 +103,53 @@ sap.ui.define([
 			// Services.setSelectedOfferID(sOfferID);
 
 		},
+
+        /**
+         * This method triggers on TenderHistory filter events
+         * @param {*} oEvent 
+         */
+        onHistoryFilterCheck: async function(oEvent){
+            const tenderHistoryItaly = await this.getTenderHistoryItaly();
+            Services.getFastAppDataModel().setProperty("/TenderHistory", tenderHistoryItaly);    
+        },
+
+        /**
+         * Method to call and pass filter values to TenderHistoryService for the selected tenderhistory filters
+         */
+        getTenderHistoryItaly: async function(){
+            
+            const oHistoryTable = this.getView().byId("tenderHistoryId");
+            oHistoryTable.setBusyIndicatorDelay(0);
+            oHistoryTable.setBusy(true);
+
+            const filter = {
+                InstituteId:"",
+                Outcome:[],
+                ProductId:"",
+                CountryCode:""
+            }
+
+            const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+            if(offer){
+                const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+                filter.CountryCode = Services.getSelectedCountry();
+                filter.ProductId = Services.getSelectedProductID();
+                    if(this.byId("currentInstituteCheckId").getSelected()){                    
+                        filter.InstituteId = currentInstituteId;
+                    }
+                    if(this.byId("wonCheckId").getSelected()){
+                        filter.Outcome.push("Won");
+                    }                        
+                    if(this.byId("lossCheckId").getSelected()){
+                        filter.Outcome.push("Lost");
+                    } 
+                let tenderHistoryItaly = await Services.getService("TenderHistory").getTenderHistoryItaly(filter);
+                
+                oHistoryTable.setBusy(false);
+                return tenderHistoryItaly.data.results;
+            } else return null;            
+        },
+
 		getCountryBrandProductsCombined: async function(){
 			//load products
 			let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
@@ -117,6 +165,12 @@ sap.ui.define([
 				}) || [];
 				return product;
 			});
+
+            //load tenderhistory
+            const tenderHistoryItaly = await this.getTenderHistoryItaly();
+
+            //bind tenderhistory to fastAppDataModel 
+            Services.getFastAppDataModel().setProperty("/TenderHistory", tenderHistoryItaly);
 
 			//set to fastappdata model for easy access on the view
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -212,7 +266,7 @@ sap.ui.define([
 			if (offerID) {
 				const response = await Services.getFinancialProducts(offerID);
 
-				return response.data && response.data.results.map(item => {
+				return response.data && response.data.results.filter(item => item.ActiveProduct === 1 ).map(item => {
 					
 					item.FreeGoodsOther = item.FreeGoodsOther && item.FreeGoodsOther.results.map(freeGoods => {
 						freeGoods.UOM = item.UOM;
@@ -236,7 +290,7 @@ sap.ui.define([
 		 * Event handler for the OfferProductsItaly
 		 * @param {Object} event - An instance of event object
 		 */
-		onFinancialProductPress: function (oEvent, bBindingFinished) {
+		onFinancialProductPress: async function (oEvent, bBindingFinished) {
 
 			//get context of selected price product
 			let oFastAppDataModel = Services.getFastAppDataModel();
@@ -271,6 +325,11 @@ sap.ui.define([
             //TEMP SOLUTION            
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
+
+            //load tenderhistory
+            const tenderHistoryItaly = await this.getTenderHistoryItaly();
+            //bind tenderhistory to the FASTAppDataModel
+            Services.getFastAppDataModel().setProperty("/TenderHistory", tenderHistoryItaly); 
 
 			let oSelectedProduct = oOffer.Product && oOffer.Product.results.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
 			if(oSelectedProduct){
@@ -654,7 +713,7 @@ sap.ui.define([
 
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/FreeGoodsOther", freeGoodsOther.filter(freeGoods => freeGoods.ProductPackId !== productPackId));
 		},
-		onProductPackChange: function (event) {
+		/*onProductPackChange: function (event) {
 			var validatedComboBox = event.getSource(),
 				selectedKey = validatedComboBox.getSelectedKey(),
 				value = validatedComboBox.getValue(),
@@ -669,7 +728,7 @@ sap.ui.define([
 				Services.getFastAppDataModel().setProperty(path + "/ProductPackIdValueState", "None");
 				Services.getFastAppDataModel().setProperty(path + "/VAT", vat);
 			}
-		},
+		},*/
 		oApplyProducts: function () {
 			const oFastAppDataModel = Services.getFastAppDataModel();
 
