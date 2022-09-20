@@ -4464,9 +4464,15 @@ sap.ui.define([
 
 			//get & keep offerPath
 			//var sOfferPath = oEvent.getSource().getBindingContext("fastAppData").getPath(); //oEvent.getSource().getBindingContext("fastData").getPath();
-			var sOfferPath = Services.getLoadedOfferPath(sOfferID);
-			Services.setSelectedOfferPath(sOfferPath);
-
+            //EHQUT-INC16347164-Issue with offer validity field
+            var sOfferPathnew = Services.getSelectedOfferPath();
+            var sOfferPath = Services.getLoadedOfferPath(sOfferID);
+            if(!sOfferPathnew)
+            {
+                
+                Services.setSelectedOfferPath(sOfferPath);
+            }
+            //EHQUT-INC16347164-Issue with offer validity field
 			//keep the selected offerID so we have it on the financial offer tab as well
 			//var oOffer = oFastAppDataModel.getProperty(sOfferPath); //before oDefaultModel
 			var oOffer = Services.getLoadedOffer(sOfferID)
@@ -5949,7 +5955,15 @@ sap.ui.define([
 			oOfferSaveInfo.SellingCompany = that.byId("idSellingCompany").getSelectedKey(); //NILS_CHECK:that.byId("idSellingCompany").getValue();
 
 			oOfferSaveInfo.ProductCount = "3"; //No. of products in product table
-			oOfferSaveInfo.Currency = oFastAppDataModel.getProperty("/EditOffer/Currency");
+           //EHQUT-INC16393796-Offer creation - issue with delete material function
+           if(that._country=='IT'){
+            oOfferSaveInfo.Currency = oFastAppDataModel.getProperty("/CurrencyTEMP");
+             }
+            else{
+            oOfferSaveInfo.Currency = oFastAppDataModel.getProperty("/EditOffer/Currency");
+            }
+          //EHQUT-INC16393796-Offer creation - issue with delete material function
+			
 			oOfferSaveInfo.ManualSaveStatus = "Yes";
 			oOfferSaveInfo.WholesaleOffer = that.byId("idWhleSle").getSelectedItem().getKey();
 			//oOfferSaveInfo.Comment = that.byId("idComment").getValue();
