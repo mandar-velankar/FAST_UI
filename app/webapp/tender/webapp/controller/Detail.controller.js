@@ -73,6 +73,8 @@ sap.ui.define([
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 
+			this.accessModel = Services.getAccessModel();
+			this.getView().setModel(this.accessModel, "access");
 			// Responsibility Assignment Model - this model can be used to set the visibility of the controls for a specific country in the user interface
 			/*this._oRaModel = new sap.ui.model.json.JSONModel({
 				visibleCountry: ""
@@ -1455,9 +1457,9 @@ sap.ui.define([
 				//reselect same offer if it exists, otherwise clear offer selected
 				//that._selectOfferInOfferTable("tenderResultsOfferTableViewID","tenderResultsOfferTableOfferID");
 				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
-
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", true);
 					//Tender Results - subsection
-					var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
+					/*var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oFinHistorySubSection) {
 						oFinHistorySubSection.setVisible(false);
 					}
@@ -1472,13 +1474,13 @@ sap.ui.define([
 					var oFinNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oFinNoOfferSubsection) {
 						oFinNoOfferSubsection.setVisible(false);
-					}
+					}*/
 
 					that.onTenderResultsOfferPress();
 				} else {
 
 					//Tender Results - subsection
-					var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
+					/*var oTenderResOfferSubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oTenderResOfferSubSection) {
 						oTenderResOfferSubSection.setVisible(false);
 					}
@@ -1493,8 +1495,8 @@ sap.ui.define([
 					var oTenderResNoOfferSubsection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResNoOfferSubsection");
 					if (oTenderResNoOfferSubsection) {
 						oTenderResNoOfferSubsection.setVisible(true);
-					}
-
+					}*/
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
 				}
 				break;
 
@@ -1898,7 +1900,7 @@ sap.ui.define([
 						} else {
 							that.byId("ApprovalButtonId").setEnabled(false);
 						}
-	
+                        that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode()); 
 						break;
 				case Services.getQuotationPageSectionID():
 							
@@ -2100,7 +2102,7 @@ sap.ui.define([
 						that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderType2Edit").setEnabled(false);
-                        that.getView().byId("idContentEdit").setEnabled(false);
+                        that.getView().byId("idContentEdit").setEnabled(true);
                         that.getView().byId("idPortalEdit").setEnabled(false);
                         that.getView().byId("idInstituteCode").setEnabled(false);
                         that.getView().byId("idInstituteProvince").setEnabled(false);
@@ -2390,6 +2392,7 @@ sap.ui.define([
 						//Edit offer copy to move back to original values during cancel
 						var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
 						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+                        that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode());
 						break;
 					case Services.getQuotationPageSectionID():
 									
@@ -2535,9 +2538,10 @@ sap.ui.define([
 
 			//that is this, to keep reference to controller
 			var that = this;
-
+            let oTender = Services.getFastAppDataModel().getProperty('/Tender');
+            let oMsg = oTender.CountryCode === 'ES' ? `Are you sure you want to delete the ${oTender.Classification.toLowerCase()}?` : `Are you sure you want to delete the tender?`
 			//successfully created clone
-			sap.m.MessageBox.warning("Are you sure you want to delete the tender?", {
+			sap.m.MessageBox.warning(oMsg, {
 				actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.ABORT],
 				styleClass: "sapUiSizeCompact",
 				onClose: function (sAction) {
@@ -7863,7 +7867,8 @@ sap.ui.define([
 									path: "fastData>SKU/PACKFACTOR"
 								}],
 								formatter: formatter.cogs
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"	
 						}),
 						//gross sales
 						new sap.m.ObjectNumber({
@@ -7876,7 +7881,7 @@ sap.ui.define([
 									path: "fastAppData>EditOffer/Currency"
 								}],
 								formatter: formatter.grossSales
-							}
+							}	
 						}),
 						//net sales
 						new sap.m.ObjectNumber({
@@ -7895,7 +7900,8 @@ sap.ui.define([
 									path: "fastData>Price/FOCType"
 								}],
 								formatter: formatter.netSales
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"
 						}),
 						//Profitability
 						new sap.m.ObjectNumber({
@@ -7963,7 +7969,8 @@ sap.ui.define([
 									path: "fastData>Price/Bundled_1_SKU/PACKFACTOR"
 								}],
 								formatter: formatter.profitState
-							}
+							},
+							visible:"{access>/tenderAccess/COGS}"
 						})
 					]
 				});
@@ -8159,7 +8166,7 @@ sap.ui.define([
 						IS_LOWEST: prd.IS_LOWEST,
 						REQ_PRICE_PACK_OFFER_CURRENCY: prd.REQ_PRICE_PACK_OFFER_CURRENCY,
 						GROSS_SALES_OFFER_CURRENCY: prd.GROSS_SALES_OFFER_CURRENCY,
-						TOTAL_QUANTITY_UNITS: prd.TOTAL_QUANTITY_UNITS,
+						PAID_VOLUME: prd.PAID_VOLUME,
 						UNIT: prd.UNIT,
 						PriceCondition: pc
 					};
@@ -8329,6 +8336,13 @@ sap.ui.define([
 		onSaveDefaultQuotation: function (oEvent) {
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
+
+            // make sure selectedOfferPath is correctly set
+            if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
 
 			$.when(Services.checkOfferStatus()).done(function (oData) {
 				var sStatus = oData.STATUS;
@@ -8716,7 +8730,7 @@ sap.ui.define([
 			//get model & selected row
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
-			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
 			const offerValidation = oFastAppDataModel.getProperty("/OfferValidation/");
 
@@ -8738,7 +8752,9 @@ sap.ui.define([
 
 			
 			// TODO: check if this only applies to Spain
-			if (oSelectedProduct.CountryCode === "ES" && selectedProductType === "Injector"){
+            // CHANGE: instead of checking on selectedProductType, the check should check whether or not the main price condition is "Rental"
+            //         if it's a rental condition, the error should be shown. Otherwise, the PA can be created
+			if (oSelectedProduct.CountryCode === "ES" && oSelectedProduct.PriceCondition.results.find(condition => condition.PriceConditionClassification.ConditionType === "Rental")){
 				sap.m.MessageToast.show("No price agreement can be created for Rental");
 				return;
 			}
@@ -8785,7 +8801,7 @@ sap.ui.define([
 						const priceConditions = offerProduct.PriceCondition.results
 						const savePriceConditionPromises = priceConditions.map(condition => {
 							condition.PriceAgreement_ID = priceAgreementID;
-							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"PA");
+							const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
 							return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
 						});
 						await Promise.all(savePriceConditionPromises);
@@ -8952,7 +8968,14 @@ sap.ui.define([
 			//if it comes at this place, we already checked if dates are in error or not correct match
 			//this allows us to just check for the warning: if expiry date is more than 12 months after effective date. 
 			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
-			warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
+            warningDate = new Date(warningDate.setFullYear(warningDate.getFullYear() + 1));
+			if(warningDate < quotationFields.ExpiryDate && warningDate.getMonth() < quotationFields.ExpiryDate.getMonth() && Services.getLoadedTender().Classification === "Commercial Agreement"){
+				MessageBox.error("Agreement is set for more than 12 months");
+				return;
+			}
+
+            //old code wouter - replaced for ticket https://trello.com/c/svXScOwQ
+			/*warningDate = warningDate.setFullYear(warningDate.getFullYear() + 1);
 			if(warningDate < quotationFields.ExpiryDate){
 				MessageBox.warning("Warning, agreement is set for more than 12 months", {
 					actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
@@ -8962,12 +8985,19 @@ sap.ui.define([
 					}
 				});
 				return;
-			}
+			}*/
 			this._onSaveQuotationToBackend(quotationFields);
 
 		},
 		_onSaveQuotationToBackend:function(quotationFields){
 			var that = this;
+             // make sure selectedOfferPath is correctly set
+             if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
+
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
 				//Refresh (beceause offer is reselected in onRefresh as well)
@@ -9222,9 +9252,39 @@ sap.ui.define([
 
 									//offerprice not always existing
 									var iAwardedPrice = null;
+                                    let iPriceCondition = null;
 									if (oProduct && oProduct.Price && oProduct.Price.OfferPrice) {
 										iAwardedPrice = oProduct.Price.OfferPrice;
 									}
+                                    if(Services.getSelectedCountry().indexOf("ES") > -1){
+
+                                        let priceConditionObject = oProduct?.PriceCondition?.results?.find( cond => cond?.PriceConditionClassification?.isMain);
+                                        iPriceCondition = priceConditionObject?.PriceConditionClassification?.ConditionType;
+                                        switch(iPriceCondition) {
+                                            case "PVL":
+                                                let instType = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteType");
+
+                                                if (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National'){
+
+                                                    iAwardedPrice = priceConditionObject.ConfidentialPrice * ( 1- (priceConditionObject.RoyalDecreePercentage?.Percentage || 0));
+
+                                                } else {
+                                                    iAwardedPrice = priceConditionObject.PVL;
+                                                }
+
+                                              break;
+                                            case "Rental":
+                                                iAwardedPrice = priceConditionObject.MonthlyRentPerUnit;
+                                              break;
+                                            default:
+                                              // code block
+                                          }
+    
+
+                                    }
+                                    
+                                    
+
                                     //EHQUT-OTT-118849-Making decision pending as default
                                     if(oResult.Outcome=='' && sCountry=='IT')
                                     {
@@ -9267,11 +9327,12 @@ sap.ui.define([
 										AwardDate: oResult.AwardDate,
 										AwardActing: oResult.AwardActing,
 										PriceAgreement: oProduct.PriceAgreement,
-                                        APPEAL: oResult.Appeal,
-                                        INFONEEDED: oResult.InfoNeeded,
+                                        APPEAL:(!oResult.Appeal ? "No" : oResult.Appeal) ,
+                                        INFONEEDED:(!oResult.InfoNeeded ? "No" : oResult.InfoNeeded),
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
-										_sOperation: oResult._sOperation //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
-									}
+										_sOperation: oResult._sOperation, //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
+                                        PriceCondition: iPriceCondition
+                                    }
 
 									var oResultsForTree = {
 										OutcomeLevel: oBayerProduct
@@ -9307,7 +9368,6 @@ sap.ui.define([
 			}
 
 		},
-
 		//collapse hyrarchie of tree table
 		onCollapseOutcome: function () {
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
@@ -9593,6 +9653,36 @@ sap.ui.define([
 
 				missingFields.clear();
 				
+                //Check missing mandatory fields for only Spain, as there are no mandatory fields for Italy
+                if(sCountryCode === 'ES'){
+                    
+				    if (oResultForTree) {
+                                        
+                        if(oResultForTree.PriceAgreement === null){
+                                
+                            if(!oResultForTree.OUTCOME){
+                                missingFields.add("Outcome");
+                            }
+                            if(oResultForTree.PRODUCT === "Other" && !oResultForTree.AWARDEDPRICE){
+                                missingFields.add("Awarded Price");
+                            }
+                            if(!oResultForTree.AWARDEDQTY){
+                                missingFields.add("Awarded Quantity");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.INFONEEDED){
+                                missingFields.add("Information Needed");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.APPEAL){
+                                missingFields.add("Appeal");
+                            }
+                            if((oResultForTree.OUTCOME && (oResultForTree.OUTCOME === 'Won' || oResultForTree.OUTCOME === 'Lost')) && !oResultForTree.REASON){
+                                missingFields.add("Reason");
+                            }                        
+                        }
+                    }
+                }                
+
+                                
 				//loop at competitors awarded results
 				if (oResultForTree.OutcomeLevel && oResultForTree.OutcomeLevel.length > 0) {
 					oResultForTree.OutcomeLevel.forEach(function(oOutcomeLevel, iIndexLevel) {
@@ -9617,17 +9707,11 @@ sap.ui.define([
                                 if(!oOutcomeLevel.AWARDEDQTY){
                                     missingFields.add("Awarded Quantity");
                                 }
-                                if(!oOutcomeLevel.TOTALAWARDEDVALUE){
-                                    missingFields.add("Total Awarded Value");
-                                }
                                 if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.INFONEEDED){
                                     missingFields.add("Information Needed?");
                                 }
                                 if(oOutcomeLevel.AWARDEDCOMPANY === "Bayer" && !oOutcomeLevel.APPEAL){
                                     missingFields.add("Appeal");
-                                }
-                                if(!oOutcomeLevel.COMMENT){
-                                    missingFields.add("Comment");
                                 }
                                 if((oOutcomeLevel.OUTCOME && (oOutcomeLevel.OUTCOME === 'Won' || oOutcomeLevel.OUTCOME === 'Lost')) && !oOutcomeLevel.REASON){
                                     missingFields.add("Reason");

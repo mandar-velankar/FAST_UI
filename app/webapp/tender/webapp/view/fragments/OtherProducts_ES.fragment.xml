@@ -4,8 +4,8 @@
 
 	<Dialog id="OtherProducts" title="Products" >
 		<buttons>
-			<Button text="Cancel" press=".oCancelProducts" />
 			<Button text="Apply" press=".oApplyProducts" />
+			<Button text="Cancel" press=".oCancelProducts" />
 		</buttons>
 
         <Table id="FreeGoodsOtherTable" items="{path:'fastAppData>FreeGoodsOther'}">
@@ -40,7 +40,7 @@
             <ColumnListItem>
                 <cells>
                     <Input id="idOtherProducts" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp" value="{fastAppData>ProductName}" enabled="true" visible="true"/>
-                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}" visible="true">
+                    <Select forceSelection="false" selectedKey="{fastAppData>RoyalDecree}" visible="true" enabled="false">
                         <core:Item key="" text="" />
                         <core:Item key="Yes" text="Yes" />
                         <core:Item key="No" text="No" />
@@ -49,7 +49,7 @@
                         <Input type="Number" value="{path:'fastAppData>FOCMinAmount'}" valueState="{fastAppData>FOCMinAmountValueState}" visible="true"/>
                     </HBox>
                     <Input type="Number" value="{path:'fastAppData>FOCBonus'}" valueState="{fastAppData>FOCBonusValueState}" enabled="true" visible="true" liveChange=".calculatePotentialSavings"/>
-                    <Input value="{path:'fastAppData>PotentialGeneratedSavings', type:'sap.ui.model.type.Float', formatOptions: {  maxFractionDigits: 2, minFractionDigits: 2}}" enabled="false" visible="true"/>
+                    <Input value="{path:'fastAppData>PotentialGeneratedSavings', type:'sap.ui.model.type.Float', formatOptions: {  maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" enabled="false" visible="true"/>
                     
                     <Button icon="sap-icon://delete" press=".onDeleteFreeGoodsOther" visible="true"/>
                 </cells>

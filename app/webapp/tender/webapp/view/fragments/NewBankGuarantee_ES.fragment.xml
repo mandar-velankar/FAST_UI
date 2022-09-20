@@ -92,7 +92,7 @@
 					enabled="true"/>
 					
 				<!-- Shipping Date -->
-				<Label text="{i18n>shippingDate}" required="true"/>
+				<Label text="{i18n>shippingDate}" required="false"/>
 				<DatePicker
 					value="{
 						path :'fastAppData>/newBankGuarantee/ShippingDate', 
@@ -104,7 +104,7 @@
 				<!-- Status -->
 				<Label text="{i18n>Status}"/>
 				<Input value="{fastAppData>/newBankGuarantee/BankStatus}"
-					   required="true"/>
+					   required="true"  visible="false"/>
 
 				<!-- Expected Expiry Date-->
 				<!-- <Label text="{i18n>expectedExpiryDate}" required="true"/> -->
@@ -116,7 +116,7 @@
 						type: 'sap.ui.model.type.Date', 
 						formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
 					}" 
-					enabled="true"/>
+					enabled="true"  visible="false"/>
 
                 <Label text="{i18n>comment}"/>
 				<TextArea value="{fastAppData>/newBankGuarantee/Comment}" 

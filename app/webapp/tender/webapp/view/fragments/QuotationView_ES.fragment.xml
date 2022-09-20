@@ -242,8 +242,8 @@
                     path : 'fastAppData>/QuotationPriceConditionTableSpain/pvl', 
                     sorter: [{path: 'SORTER', descending: false}]
                 }"
-                inset="false" class="sapFDynamicPageAlignContent" width="auto"
-                alternateRowColors="true" fixedLayout="true">
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
                 <m:headerToolbar>
                     <m:OverflowToolbar>
                         <m:content>
@@ -254,57 +254,57 @@
                 </m:headerToolbar>
                 <m:columns>
                     <!-- Contract ID -->
-                    <m:Column width="4%">
+                    <m:Column width="2rem">
                         <m:Text text="{i18n>TenderItemSorter}"/>
                     </m:Column>
 
                     <!-- Article Name -->
-                    <m:Column width="12%">
+                    <m:Column width="10rem">
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
                     <!-- Pack Factor -->
-                    <m:Column width="5%">
+                    <m:Column width="4rem">
                         <m:Text text="{i18n>PackFactor}"/>
                     </m:Column>
 
                     <!-- Quantity -->
-                    <m:Column width="13%">
+                    <m:Column width="3rem">
                         <m:Text text="{i18n>qQuantity}"/>
                     </m:Column>
 
-                    <!-- PVL -->
-                    <m:Column width="13%">
-                        <m:Text text="{i18n>PVL}"/>
-                    </m:Column>
-
                     <!-- Unit Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>UnitPrice}"/>
                     </m:Column>
 
                     <!-- Pack Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>PackPrice}"/>
                     </m:Column>
 
+                    <!-- PVL -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>PVL}"/>
+                    </m:Column>
+
                     <!-- Price Condition -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Price Condition}"/>
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>PriceCondition}"/>
                     </m:Column>
 
                     <!-- Rappel -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="25%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>Rappel}"/>
                     </m:Column>
 
                     <!-- FOC -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="25%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>FOC}"/>
                     </m:Column>
 
                     <!-- Total -->
-                    <m:Column width="12%">
+                    <m:Column width="100%">
                         <m:Text text="{i18n>Total}"/>
                     </m:Column>
 
@@ -322,13 +322,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
-
-                            <!-- PVL -->
-                            <m:Text text="{parts: [
-                                {path: 'fastAppData>PriceCondition/PVL'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -343,6 +337,12 @@
                             <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
+
+                            <!-- PVL -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PVL'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
 
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
@@ -384,8 +384,8 @@
                     path : 'fastAppData>/QuotationPriceConditionTableSpain/precioNeto', 
                     sorter: [{path: 'SORTER', descending: false}]
                 }"
-                inset="false" class="sapFDynamicPageAlignContent" width="auto"
-                alternateRowColors="true" fixedLayout="true">
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
                 <m:headerToolbar>
                     <m:OverflowToolbar>
                         <m:content>
@@ -396,48 +396,48 @@
                 </m:headerToolbar>
                 <m:columns>
                     <!-- Contract ID -->
-                    <m:Column width="4%">
+                    <m:Column width="2rem">
                         <m:Text text="{i18n>TenderItemSorter}"/>
                     </m:Column>
 
                     <!-- Article Name -->
-                    <m:Column width="12%">
+                    <m:Column width="10rem">
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
                     <!-- Pack Factor -->
-                    <m:Column width="5%">
+                    <m:Column width="4rem">
                         <m:Text text="{i18n>PackFactor}"/>
                     </m:Column>
 
                     <!-- Quantity -->
-                    <m:Column width="13%">
+                    <m:Column width="3rem">
                         <m:Text text="{i18n>qQuantity}"/>
                     </m:Column>
 
                     <!-- Unit Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>UnitPrice}"/>
                     </m:Column>
 
                     <!-- Pack Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>PackPrice}" visible="true"/>
                     </m:Column>
 
                     <!-- PVL -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>PVL}" visible="true"/>
                     </m:Column>
 
                     <!-- Price Condition -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Royal Decree -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- VAT -->
@@ -447,21 +447,21 @@
 
                     <!-- NetPriceWithoutTaxAfterRD -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Net Price Without Tax After RD}"/>
+                        <m:Text text="{i18n>NetPriceWithoutTaxAfterRD}"/>
                     </m:Column>
 
                     <!-- NetPriceWithTaxAfterRD -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Net Price With Tax After RD}"/>
+                        <m:Text text="{i18n>NetPriceWithTaxAfterRD}"/>
                     </m:Column>
 
                     <!-- Rappel -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="10%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>Rappel}"/>
                     </m:Column>
 
                     <!-- FOC -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="10%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>FOC}"/>
                     </m:Column>
 
@@ -484,7 +484,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -513,7 +513,7 @@
                             <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
 
                             <!-- VAT -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'}"/>
+                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'} %"/>
 
                             <!-- NetPriceWithoutTaxAfterRD -->
                             <m:Text text="{parts: [
@@ -565,8 +565,8 @@
                     path : 'fastAppData>/QuotationPriceConditionTableSpain/descuentoComercial', 
                     sorter: [{path: 'SORTER', descending: false}]
                 }"
-                inset="false" class="sapFDynamicPageAlignContent" width="auto"
-                alternateRowColors="true" fixedLayout="true">
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
                 <m:headerToolbar>
                     <m:OverflowToolbar>
                         <m:content>
@@ -577,53 +577,48 @@
                 </m:headerToolbar>
                 <m:columns>
                     <!-- Contract ID -->
-                    <m:Column width="4%">
+                    <m:Column width="2rem">
                         <m:Text text="{i18n>TenderItemSorter}"/>
                     </m:Column>
 
                     <!-- Article Name -->
-                    <m:Column width="12%">
+                    <m:Column width="10rem">
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
                     <!-- Pack Factor -->
-                    <m:Column width="5%">
+                    <m:Column width="4rem">
                         <m:Text text="{i18n>PackFactor}"/>
                     </m:Column>
 
                     <!-- Quantity -->
-                    <m:Column width="13%">
+                    <m:Column width="3rem">
                         <m:Text text="{i18n>qQuantity}"/>
                     </m:Column>
 
                     <!-- Unit Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>UnitPrice}"/>
                     </m:Column>
 
                     <!-- Pack Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>PackPrice}" visible="true"/>
                     </m:Column>
 
                     <!-- PVL -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>PVL}" visible="true"/>
                     </m:Column>
 
                     <!-- Price Condition -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
-                    </m:Column>
-
-                    <!-- Discount -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Discount}" visible="true"/>
+                    <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Royal Decree -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- VAT -->
@@ -633,27 +628,32 @@
 
                     <!-- NetPriceWithoutTaxAfter -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Net Price Without Tax}"/>
+                        <m:Text text="{i18n>NetPriceWithoutTax}"/>
                     </m:Column>
 
                     <!-- NetPriceWithTaxAfterRD -->
                     <m:Column width="12%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
-                        <m:Text text="{i18n>Net Price With Tax After RD}"/>
+                        <m:Text text="{i18n>NetPriceWithTaxAfterRD}"/>
+                    </m:Column>
+                    
+                    <!-- Discount -->
+                    <m:Column width="10%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>Discount}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Monthly Rent -->
+                    <m:Column width="10%" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}">
+                        <m:Text text="{i18n>MonthlyRent}" visible="true"/>
                     </m:Column>
 
                     <!-- Rappel -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="10%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>Rappel}"/>
                     </m:Column>
 
                     <!-- FOC -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="10%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>FOC}"/>
-                    </m:Column>
-
-                    <!-- Monthly Rent -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}">
-                        <m:Text text="{i18n>MonthlyRent}" visible="true"/>
                     </m:Column>
 
                     <!-- Total -->
@@ -675,7 +675,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
                             <m:ObjectStatus
@@ -700,14 +700,11 @@
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
 
-                            <!-- Discount -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} %"/>
-
                             <!-- Royal Decree -->
                             <m:Text text="{path :'fastAppData>PriceCondition/RoyalDecree'}"/>
 
                             <!-- VAT -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'}"/>
+                            <m:Text text="{path :'fastAppData>PriceCondition/Tax', type:'.types.percent'} %"/>
 
                             <!-- NetPriceWithoutTax -->
                             <m:Text text="{parts: [
@@ -720,6 +717,14 @@
                                 {path: 'fastAppData>PriceCondition/NetPriceWithTax'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
+
+                            <!-- Discount -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} %"/>
+
+                            <!-- Monthly Rent -->
+                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />
 
                             <!-- Rappel -->
                             <m:Text text="{ 
@@ -741,11 +746,6 @@
                                 }"
                             />
 
-                            <!-- Monthly Rent -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
-                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
-
                             <!-- Total -->
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
@@ -764,8 +764,8 @@
                     path : 'fastAppData>/QuotationPriceConditionTableSpain/descuentoEspecial', 
                     sorter: [{path: 'SORTER', descending: false}]
                 }"
-                inset="false" class="sapFDynamicPageAlignContent" width="auto"
-                alternateRowColors="true" fixedLayout="true">
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
                 <m:headerToolbar>
                     <m:OverflowToolbar>
                         <m:content>
@@ -776,62 +776,67 @@
                 </m:headerToolbar>
                 <m:columns>
                     <!-- Contract ID -->
-                    <m:Column width="4%">
+                    <m:Column width="2rem">
                         <m:Text text="{i18n>TenderItemSorter}"/>
                     </m:Column>
 
                     <!-- Article Name -->
-                    <m:Column width="12%">
+                    <m:Column width="10rem">
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
                     <!-- Pack Factor -->
-                    <m:Column width="5%">
+                    <m:Column width="4rem">
                         <m:Text text="{i18n>PackFactor}"/>
                     </m:Column>
 
                     <!-- Quantity -->
-                    <m:Column width="13%">
+                    <m:Column width="3rem">
                         <m:Text text="{i18n>qQuantity}"/>
                     </m:Column>
 
                     <!-- Unit Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>UnitPrice}"/>
                     </m:Column>
 
                     <!-- Pack Price -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>PackPrice}" visible="true"/>
                     </m:Column>
 
                     <!-- PVL -->
-                    <m:Column width="8%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>PVL}" visible="true"/>
                     </m:Column>
 
-                    <!-- Discount -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Discount}" visible="true"/>
+                    <!-- Price Condition -->
+                    <m:Column width="6rem" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Net Price without Tax -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Net Price Without Tax}" visible="true"/>
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>NetPriceWithoutTax}" visible="true"/>
+                    </m:Column>
+
+                     <!-- Discount -->
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>Discount}" visible="true"/>
                     </m:Column>
 
                     <!-- Rappel -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="20%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>Rappel}"/>
                     </m:Column>
 
                     <!-- FOC -->
-                    <m:Column width="8%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
+                    <m:Column width="20%" visible="{= ${fastAppData>/Tender/Classification} === 'Commercial Agreement'}">
                         <m:Text text="{i18n>FOC}"/>
                     </m:Column>
 
                     <!-- Total -->
-                    <m:Column width="12%">
+                    <m:Column width="20%">
                         <m:Text text="{i18n>Total}"/>
                     </m:Column>
 
@@ -849,7 +854,7 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price    -->                        
                             <m:ObjectStatus
@@ -882,15 +887,22 @@
                                 {path: 'fastAppData>PriceCondition/PVL'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
-                            
-                            <!-- Discount -->
-                            <m:Text text="{= ${fastAppData>PriceCondition/Discount} ? ${path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} + '%' : Number(100).toFixed(2) + '%'}"/>
 
+                            <!-- Price Condition -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
+                            
                             <!-- NetPriceWithoutTax -->
-                            <m:Text text="{= ${fastAppData>PriceCondition/NetPriceWithoutTax} ? {parts: [
+                            <!-- <m:Text text="{= ${fastAppData>PriceCondition/NetPriceWithoutTax} ? {parts: [
                                 {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'} : Number(0).toFixed(2) + ' ' + ${path: 'fastAppData>CURRENCY'}}"/>
+                            ], formatter:'.formatter.price'} : Number(0).toFixed(2) + ' ' + ${path: 'fastAppData>CURRENCY'}}"/> -->
+                             <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/NetPriceWithoutTax'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <!-- Discount -->
+                            <m:Text text="{= ${fastAppData>PriceCondition/Discount} ? ${path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} + '%' : Number(100).toFixed(2) + '%'}"/>
 
                             <!-- Rappel -->
                             <m:Text text="{ 
@@ -930,8 +942,8 @@
                     path : 'fastAppData>/QuotationPriceConditionTableSpain/rental', 
                     sorter: [{path: 'SORTER', descending: false}]
                 }"
-                inset="false" class="sapFDynamicPageAlignContent" width="auto"
-                alternateRowColors="true" fixedLayout="true">
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
                 <m:headerToolbar>
                     <m:OverflowToolbar>
                         <m:content>
@@ -942,53 +954,48 @@
                 </m:headerToolbar>
                 <m:columns>
                     <!-- Contract ID -->
-                    <m:Column width="4%">
+                    <m:Column width="2rem">
                         <m:Text text="{i18n>TenderItemSorter}"/>
                     </m:Column>
 
                     <!-- Article Name -->
-                    <m:Column width="12%">
+                    <m:Column width="10rem">
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
                     <!-- Pack Factor -->
-                    <m:Column width="5%">
+                    <m:Column width="4rem">
                         <m:Text text="{i18n>PackFactor}"/>
                     </m:Column>
 
                     <!-- Quantity -->
-                    <m:Column width="13%">
+                    <m:Column width="3rem">
                         <m:Text text="{i18n>qQuantity}"/>
                     </m:Column>
 
                     <!-- Unit Price -->
-                    <m:Column width="8%">
+                    <!-- <m:Column width="6rem">
                         <m:Text text="{i18n>UnitPrice}"/>
-                    </m:Column>
+                    </m:Column> -->
 
                     <!-- Pack Price -->
-                    <m:Column width="8%">
+                    <!-- <m:Column width="6rem">
                         <m:Text text="{i18n>PackPrice}" visible="true"/>
-                    </m:Column>
+                    </m:Column> -->
 
                     <!-- Price Condition -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Price Condition}" visible="true"/>
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>PriceCondition}" visible="true"/>
                     </m:Column>
 
                     <!-- Monthly Rent -->
-                    <m:Column width="8%">
+                    <m:Column width="33%">
                         <m:Text text="{i18n>MonthlyRent}" visible="true"/>
                     </m:Column>
 
                     <!-- Annual Value -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Annual Value}" visible="true"/>
-                    </m:Column>
-
-                    <!-- Total -->
-                    <m:Column width="12%">
-                        <m:Text text="{i18n>Total}"/>
+                    <m:Column width="33%">
+                        <m:Text text="{i18n>AnnualValue}" visible="true"/>
                     </m:Column>
 
                 </m:columns>
@@ -1005,21 +1012,21 @@
                             <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
 
                             <!-- Quantity -->
-                            <m:Text text="{fastAppData>TOTAL_QUANTITY_UNITS} {fastAppData>UNIT}"/>
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
 
                             <!-- Unit Price -->
-                            <m:ObjectStatus
+                            <!-- <m:ObjectStatus
                                 text="{parts: [
                                     {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
                                     {path: 'fastAppData>CURRENCY'}
                                 ], formatter:'.formatter.priceTwoOrFour'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
+                            /> -->
 
                             <!-- Pack Price -->
-                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                            <!-- <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
-                            />
+                            /> -->
 
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/PriceConditionClassification/ConditionType'}"/>
@@ -1035,12 +1042,6 @@
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
 
-                            <!-- Total -->
-                            <m:Text text="{parts: [
-                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
-
                         </m:cells>
                     </m:ColumnListItem>
                 </m:items>
@@ -1053,8 +1054,8 @@
                     path : 'fastAppData>/QuotationPriceConditionTableSpain/rappel', 
                     sorter: [{path: 'SORTER', descending: false}]
                 }"
-                inset="false" class="sapFDynamicPageAlignContent" width="auto"
-                alternateRowColors="true" fixedLayout="true">
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
                 <m:headerToolbar>
                     <m:OverflowToolbar>
                         <m:content>
@@ -1065,38 +1066,38 @@
                 </m:headerToolbar>
                 <m:columns>
                     <!-- Contract ID -->
-                    <m:Column width="4%">
+                    <m:Column width="2rem">
                         <m:Text text="{i18n>TenderItemSorter}"/>
                     </m:Column>
 
                     <!-- Article Name -->
-                    <m:Column width="12%">
+                    <m:Column width="10rem">
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
                     <!-- PVL -->
-                    <m:Column width="5%">
+                    <m:Column width="6rem">
                         <m:Text text="{i18n>PVL}"/>
                     </m:Column>
 
                     <!-- Royal Decree -->
-                    <m:Column width="13%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- Liquidation -->
-                    <m:Column width="8%">
+                    <m:Column width="25%">
                         <m:Text text="{i18n>Liquidation}"/>
                     </m:Column>
 
                     <!-- Payment Back date -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Payment Back date}"/>
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>PaymentBackDate}"/>
                     </m:Column>
 
                     <!-- Volume Threshold -->
-                    <m:Column width="12%">
-                        <m:Text text="{i18n>Volume Threshold}"/>
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>VolumeThreshold}"/>
                     </m:Column>
 
                 </m:columns>
@@ -1150,8 +1151,8 @@
                     path : 'fastAppData>/QuotationPriceConditionTableSpain/foc', 
                     sorter: [{path: 'SORTER', descending: false}]
                 }"
-                inset="false" class="sapFDynamicPageAlignContent" width="auto"
-                alternateRowColors="true" fixedLayout="true">
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
                 <m:headerToolbar>
                     <m:OverflowToolbar>
                         <m:content>
@@ -1162,38 +1163,38 @@
                 </m:headerToolbar>
                 <m:columns>
                     <!-- Contract ID -->
-                    <m:Column width="4%">
+                    <m:Column width="2rem">
                         <m:Text text="{i18n>TenderItemSorter}"/>
                     </m:Column>
 
                     <!-- Article Name -->
-                    <m:Column width="12%">
+                    <m:Column width="10rem">
                         <m:Text text="{i18n>BayerProductDescription}"/>
                     </m:Column>
 
                     <!-- FOC Product -->
-                    <m:Column width="14%">
-                        <m:Text text="{i18n>FOC Product}"/>
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>FOCProduct}"/>
                     </m:Column>
 
                      <!-- Royal Decree -->
-                    <m:Column width="13%">
-                        <m:Text text="{i18n>Royal Decree}"/>
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>RoyalDecree}"/>
                     </m:Column>
 
                     <!-- FOC Min Amount -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>FOC Min Amount}"/>
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>FOCMinAmount}"/>
                     </m:Column>
 
                     <!-- FOC Bonus -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>FOC Bonus}"/>
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>FOCBonus}"/>
                     </m:Column>
 
                     <!-- Potential Savings Generated -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>Potential Savings Generated}"/>
+                    <m:Column width="20%">
+                        <m:Text text="{i18n>PotentialSavingsGenerated}"/>
                     </m:Column>
 
 
@@ -1219,8 +1220,12 @@
                             <!-- FOC Bonus -->
                             <m:Text text="{path :'fastAppData>FOCBonus'}"/>
 
-                            <!-- Potential Savings Generated -->
-                            <m:Text text="{path :'fastAppData>PotentialGeneratedSavings'}"/>
+                            <!-- Potential Savings Generated 
+                            <m:Text text="{path :'fastAppData>PotentialGeneratedSavings'}"/>-->
+                            <m:Text text="{parts: [
+                                    {path: 'fastAppData>PotentialGeneratedSavings'}, 
+                                    {path: 'fastAppData>/OfferValidation/CURRENCY'}
+                                ], formatter:'.formatter.unitPriceMinTwoDec'}" class="sapUiSmallMarginEnd"/>	
 
                         </m:cells>
                     </m:ColumnListItem>

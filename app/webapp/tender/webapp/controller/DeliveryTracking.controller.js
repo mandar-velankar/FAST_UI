@@ -451,6 +451,8 @@ sap.ui.define([
 			var sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID);
 
+            if(oOffer.CountryCode === 'ES' || oOffer.CountryCode === 'IT') return;
+
 			//Get selected ProductPath
 			var oTable = this.byId("idDeliveryTrackViewProduct");
 			var sPathSelectedItem = oTable.getSelectedContextPaths()[0];

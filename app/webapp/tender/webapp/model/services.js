@@ -29,6 +29,7 @@ sap.ui.define([
 
 			//one model for the seperation layer
 			this._oFastAppDataModel = new JSONModel();
+			this._accessModel = new JSONModel();
 			this._oAllServices = {};
 
 		},
@@ -104,6 +105,9 @@ sap.ui.define([
 		//TODO move to financial tab logic
 		getFinancialModel: function () {
 			return this._oFinancialModel;
+		},
+		getAccessModel:function(){
+			return this._accessModel;
 		},
 
 		//TODO move to financial tab logic
@@ -360,6 +364,15 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			//return oDeferred.promise();
 
+		},
+		getAccess:function(){
+			const accessService = this.getService("Access");
+			const accessModel = this.getAccessModel();
+
+			return accessService.getAccess().then(result=>{
+				accessModel.setData(result.data);
+				return result.data;
+			});
 		},
 		//get offer path from fastappdata
 		getLoadedOfferPath: function (sOfferID) {
@@ -2441,10 +2454,9 @@ sap.ui.define([
 			oFastDataCalls.read(sOfferProductsPath, {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition" //added from results on
+					"$expand": "SKU/Product/ProductPacks/ProductPackSKUs,SKU/ProductPackSKUs,Price,RegisteredPrice,Cogs,Results/CompetitorResult,Deliveries,Letters,Scenario,SKUCountry/ProductPack/ProductPackSKUs,Offer,GroupPurchasing/Institute,PriceAgreement,PriceCondition/PriceConditionClassification,PriceCondition/DiscountCondition,PriceCondition/FreeGoodsOther,PriceCondition/RoyalDecreePercentage" //added from results on
 				},
 				success: function (oDataProducts, oResponse) {
-
 					if (oDataProducts.results[0]) { //if products are found add them to the Model
 
 						//offers from application model
@@ -2514,14 +2526,26 @@ sap.ui.define([
 
 								//check if other price agreements exist, not associated to the given tender / offer
 								let oPriceAgreement = await that.getProductPriceAgreement(oProduct.CountryCode, oProduct.ProductCode);
+                                let agreementExists = false;
+
 								if(oPriceAgreement.data && oPriceAgreement.data.results.length > 0){
-									oProduct.OtherPriceAgreementsExist = 'Yes';
+                                    let oTomorrowsDate = new Date();
+                                    oTomorrowsDate.setDate(oTomorrowsDate.getDate() + 1);
+                                    let aPriceAgreements = oPriceAgreement.data.results;
+                                    aPriceAgreements = aPriceAgreements.filter(priceAgreement => priceAgreement.ExpiryDate && priceAgreement.ExpiryDate.toISOString() > oTomorrowsDate.toISOString());
+
+                                    for (let i = 0; i < aPriceAgreements.length; i++) {
+                                        let candidates = aPriceAgreements[i].Candidates?.results;
+                                        if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
+                                            agreementExists = true; 
+                                            break;
+                                        } 
+                                    }
 								} else {
-									oProduct.OtherPriceAgreementsExist = 'No';
+									agreementExists = false;
 								}
 
-
-
+                                oProduct.OtherPriceAgreementsExist = agreementExists ? 'Yes' : 'No';
 							});
 						}
 
@@ -3584,7 +3608,7 @@ sap.ui.define([
 				var bInistituteChilderen = false;
 
 				//check count results
-				if (oData.Children && oData.Children.results) {
+				if (oData.Children && oData.Children.results && oData.CountryCode !== 'ES') {
 					if (oData.Children.results.length > 0) {
 						//institute has childeren
 						bInistituteChilderen = true;
@@ -5171,6 +5195,7 @@ sap.ui.define([
 						var sTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 						var sSellingCompany = oCopyExistingOfferInfo.SellingCompany; //that.getFastAppDataModel().getProperty(that.getSelectedOfferPath()).SellingCompany;
 						var aCommercialAgreement = that.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
+						const priceConditions = oCopyExistingOfferInfo.Product.results[index].PriceCondition?.results;
 
 						//check if product is still valid
 						promises.push(that.checkProductValidForOffer(sProductCode, sInstituteID, sCountryCode, sDistributorID, sTenderChannel,
@@ -5189,6 +5214,29 @@ sap.ui.define([
 										oPrice.PRICE_UPDATE = 0;
 									});
 								}
+
+								// clone PriceConditions
+								const clonedPriceConditions = priceConditions.map(pc => {
+									const clone = Object.assign({},pc);
+									// clone DiscountConditions
+									if(pc.DiscountCondition.results.length){
+										delete clone.DiscountCondition; // to align the naming and type with the PriceConditionService:convertToSaveObject DiscountCondition
+										clone.DiscountConditions = pc.DiscountCondition.results.map(dc => {
+											const dcClone = Object.assign({},dc);
+											return dcClone.ID && delete dcClone.ID && dcClone;
+										});
+									} 
+									// clone FreeGoodsOther
+									if(pc.FreeGoodsOther.results.length){
+										clone.FreeGoodsOther = pc.FreeGoodsOther.results.map(foc => {
+											const focClone = Object.assign({},foc);
+											return focClone.ID && delete focClone.ID && focClone;
+										});
+									} 
+									return clone.ID && delete clone.ID && clone;
+								});
+								clonedPriceConditions && (oCopyExistingOfferInfo.Product.results[index].PriceCondition.results = clonedPriceConditions);
+
 								//we use POST to indicate that these products do not exist yet in the database
 								that.addProductsSaveInfo(oCopyExistingOfferInfo.Product.results[index], "POST");
 							} else {
@@ -6582,6 +6630,15 @@ sap.ui.define([
 									});
 							}));
 						}
+
+						//for the reviewed or continued offer, the products of the original offer can have price condition data as well
+						if(oProductSaveInfo.PriceCondition?.results?.length){
+							// update offerID
+							oProductSaveInfo.PriceCondition.results.forEach(pc => pc.OfferID = that.getSelectedOfferID());
+							const priceConditionSaveObjects = oProductSaveInfo.PriceCondition.results.map(pc => that.getService("PriceCondition").convertToSaveObject(pc,"offerProductsPage"));
+							const savePriceConditionPromises = priceConditionSaveObjects.map(pc => that.getService("PriceCondition").upsertPriceCondition(pc))
+							promises.concat(savePriceConditionPromises);
+						}
 					}
 
 					//Save the group purchasing for each product
@@ -7188,9 +7245,9 @@ sap.ui.define([
 				(this.getSelectedCountry() !== 'ES' || 
 					(this.getSelectedCountry() === 'ES' && 
 					oBankGuarantee.BankRequestDate &&
-					oBankGuarantee.BankName &&
-					oBankGuarantee.BankStatus &&
-					oBankGuarantee.ShippingDate))){
+					oBankGuarantee.BankName))){
+					//oBankGuarantee.BankStatus &&
+					//oBankGuarantee.ShippingDate
 				//oBankGuarantee.ClosingDate
 					 bValid = true;
 			 }
