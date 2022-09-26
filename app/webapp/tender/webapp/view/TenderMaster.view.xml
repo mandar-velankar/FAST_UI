@@ -51,8 +51,8 @@
 						</Select>
                         <!--EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page -->
 						<!-- Filter for CreatedBy -->
-                        <Select id="idSlctCreatedBy" change=".setFilter" width="200px"   items="{ path: 'fastAppData>/Users/'}" visible="true" >
-                        <core:Item  key="{fastAppData>/User/UserID}" text="{fastAppData>User/UserName}" />
+                        <Select id="idSlctCreatedBy" change=".setFilter" width="200px"   items="{ path: 'fastAppData>/CountryApprovers'}" visible="true" >
+                        <core:Item  key="{fastAppData>ApproverID}" text="{fastAppData>ApproverName}" />
                          </Select> 
 
                         <!-- Filter for Institute -->
