@@ -153,7 +153,12 @@ sap.ui.define([
                 this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
                 // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
                 if(existingMainPriceCondition.ExistingPriceConditionID === "99999999"){
-                    existingMainPriceCondition.ExistingPriceConditionID = null; 
+                    existingMainPriceCondition.ExistingPriceConditionID = null;
+                    
+                    if(existingMainPriceCondition.UnsavedCondition === true){
+                        existingMainPriceCondition.Conversion = true;
+                    }
+
                 }
             }else if(PVLPriceCondition){
                 this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
@@ -220,7 +225,7 @@ sap.ui.define([
             applicablePriceConditionView.NetPriceWithoutTax = applicableTenderCondition.NetPriceWithoutTax;
             applicablePriceConditionView.NetPriceWithoutTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithoutTaxAfterDeductionRD;
             applicablePriceConditionView.NetPriceWithoutTaxBeforeDeductionRD = applicableTenderCondition.NetPriceWithoutTaxBeforeDeductionRD;
-            applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
+            //applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
             applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
             applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
             applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
@@ -230,6 +235,7 @@ sap.ui.define([
             applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
             const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
             applicablePriceConditionView.PriceConditionClassificationID = classification.ID;
+            if(applicablePriceConditionView.ExistingPriceConditionID === null) applicablePriceConditionView.UnsavedCondition = true;
             applicablePriceConditionView.ExistingPriceConditionID = "99999999"; // set dummy reference needed for the UI flow
         },
 
