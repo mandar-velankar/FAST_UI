@@ -1012,28 +1012,38 @@ sap.ui.define([
             var oFastDataCalls = this.getView().getModel("fastData");
             var oFastAppDataModel = Services.getFastAppDataModel();
            
-            const sUserNamePath = "/PT_TMUSERCTRY";
+            //const sUserNamePath = "/PT_TMUSERCTRY";
+            const sUserNamePath = "/CountryApprovers"
             var aFilter = [];
              aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
+             aFilter.push(new Filter("ApproverName", FilterOperator.NE, "Dummy"));
            
             oFastDataCalls.read(sUserNamePath, {
                 filters: aFilter,
-                urlParameters: {
-                    "$expand": "User",
-                    "$orderby": "User/UserName"
-                },
+                
                 success: function (oData, oResponse) {
 
                                 
-                    var aCountryUserName = oData.results;
-                 
+                    //var aCountryUserName = oData.results;
+                    var aUniqueName = Array.from(new Set(oData.results.map(x => x.ApproverID)))
+                    .map(ApproverID => {
+                        return {
+                            ApproverID: ApproverID,
+                            ApproverName: oData.results.find(x => x.ApproverID === ApproverID).ApproverName
+                        };
+                    });
+
+                    aUniqueName = Services.sortByKeyAsc(aUniqueName, "ApproverName");
                                        
                     if(oData.results.length > 0){
-                        aCountryUserName.unshift({});
+                       // aCountryUserName.unshift({});
+                       aUniqueName.unshift({});
                     }
-                    oFastAppDataModel.setProperty("/Users", aCountryUserName);
+                   // oFastAppDataModel.setProperty("/Users", aCountryUserName);
+                   oFastAppDataModel.setProperty("/CountryApprovers", aUniqueName);
                     
-                    oDeferred.resolve(aCountryUserName);
+                   
+                    oDeferred.resolve(aUniqueName);
                     
                 },
                 error: function (oError) {
