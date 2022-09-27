@@ -1530,8 +1530,8 @@ sap.ui.define([
                                 sFOCType = oPriceCondition.FOCType;
                                 sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
                                 if (oProductConditionView.ConditionType === 'PVL'){
-                                    let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                    netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
+                                    //let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                                    netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice ) : (+oProductConditionView.PVL );
                                 } else {
                                     netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                                 }
