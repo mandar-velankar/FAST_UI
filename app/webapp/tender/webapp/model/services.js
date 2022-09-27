@@ -2661,7 +2661,7 @@ sap.ui.define([
                     var convertofferprice=parseFloat(oProduct.Price.OfferPrice).toFixed(3);
                     var convertminunitprice=parseFloat(oBackendcall.MIN_UNIT_PRICE).toFixed(3);
 
-                if(oProduct.ProductCode==oBackendcall.PRODUCT_ID &&(convertofferprice==convertminunitprice||convertofferprice==oBackendcall.MIN_PACK_PRICE
+                if(oProduct.ProductCode==oBackendcall.PRODUCT_ID &&(convertofferprice==convertminunitprice||oProduct.Price.OfferPrice==oBackendcall.MIN_PACK_PRICE
                     )){
                         AutoApprovalflag=true;
 
