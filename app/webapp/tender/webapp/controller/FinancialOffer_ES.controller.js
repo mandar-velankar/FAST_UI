@@ -1620,8 +1620,8 @@ sap.ui.define([
 
                             let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                             if (oProductConditionView.ConditionType === 'PVL'){
-                                let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
+                                //let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                                netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice) : (+oProductConditionView.PVL);
                             } else {
                                 netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                             }
