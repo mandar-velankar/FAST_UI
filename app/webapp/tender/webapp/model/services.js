@@ -2576,7 +2576,29 @@ sap.ui.define([
 			return oDeferred.promise();
 
 		},
+        //EHQUT-167489-Auto Approval in Thailand
+        loadPreApprovedprice: function (sInstituteID, SCountryCode) {
 
+            var sPath = "/AccountPreApprovedPrices";
+
+            var oTenderFilter = new Filter({
+                path: 'COUNTRY_CODE',
+                operator: FilterOperator.EQ,
+                value1: SCountryCode
+            });
+            var oInstituteFilter = new Filter({
+                path: 'INSTITUTE_ID',
+                operator: FilterOperator.EQ,
+                value1: sInstituteID
+            });
+
+            var mParameters = {
+                filters: [oTenderFilter, oInstituteFilter]
+            };
+
+            return this.odata(sPath).get(mParameters);
+        },
+         //EHQUT-167489-Auto Approval in Thailand
 		//Load 1 product
 		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
 
@@ -2607,7 +2629,7 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 		},
-
+         //EHQUT-167489-Auto Approval in Thailand
 		//loading approvals for offer
 		loadApprovalsForOffer: function (sOfferID) {
 
@@ -2618,6 +2640,37 @@ sap.ui.define([
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
+
+            var AutoApprovalflag=true;
+            var Instituteid=this.getInstituteIDofSelectedTender();
+            var countrycode=this.getSelectedCountry();
+
+            $.when(this.loadPreApprovedprice(Instituteid, countrycode)).done(function (oData) {
+                if(countrycode=='TH'){
+               var aProducts = [];
+               var Preapproveddatas=[];
+               aProducts = oFastAppDataModel.oData.SelectedOffer.Product.results;
+               Preapproveddatas=oData.data.results;   
+
+                //check for each product
+                aProducts.forEach(function (oProduct) {
+                 if(AutoApprovalflag)   {
+
+                   AutoApprovalflag=false;
+                   Preapproveddatas.forEach(function (oBackendcall) {
+                    var convertofferprice=parseFloat(oProduct.Price.OfferPrice).toFixed(3);
+                    var convertminunitprice=parseFloat(oBackendcall.MIN_UNIT_PRICE).toFixed(3);
+
+                if(oProduct.ProductCode==oBackendcall.PRODUCT_ID &&(convertofferprice==convertminunitprice||oProduct.Price.OfferPrice==oBackendcall.MIN_PACK_PRICE
+                    )){
+                        AutoApprovalflag=true;
+
+                    } 
+
+                    })
+                }
+                })
+            }
 
 			// instantiate loading dialog
 			if (!that._LoadingDialog) {
@@ -2667,6 +2720,23 @@ sap.ui.define([
 				success: function (oData, oResponse) {
 
 					if (oData.results) { //if offers are found add them to the Model
+
+
+                        if(AutoApprovalflag==false){
+
+                            var length=oData.results;
+
+                            length.forEach(function (oProduct) {
+                               var total= oProduct.ApproverList.results.length;
+                               for(var i=0; i<total;i++){
+                                   if(oProduct.ApproverList.results[i].ApproverName=='Auto Approval'){
+                                    oProduct.ApproverList.results.splice(i,1);
+                                   }
+                               }
+
+
+                            })
+                        }
 
 						//path where the products should be stored
 						var sPathApprovalsOfSelectedOffer = "/ApprovalsSelectedOffer";
@@ -2731,7 +2801,7 @@ sap.ui.define([
 
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
-
+        })
 		},
 
 		//load offer validation  for offer
