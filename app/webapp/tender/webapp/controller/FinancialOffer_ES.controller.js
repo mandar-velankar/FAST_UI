@@ -357,7 +357,21 @@ sap.ui.define([
 
                 if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
                 {
-                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? mainPriceCondition.YLAP : mainPriceCondition.PVL;                 
+                    let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                    let packFactor =  oProductPrice.PACKFACTOR;
+                    let UOM = oProductPrice.UOM;
+                    let ConfidentialPrice;
+                    let PVL;
+                    if (mainPriceCondition.ExistingPriceConditionID === null && UOM === "Unit"){
+                        ConfidentialPrice = mainPriceCondition.ConfidentialPrice / packFactor;
+                        PVL = mainPriceCondition.PriceConditionPVL /packFactor;
+                    } else {
+                        ConfidentialPrice = mainPriceCondition.ConfidentialPrice ;
+                        PVL = mainPriceCondition.PriceConditionPVL;
+                    }
+        
+                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? ConfidentialPrice * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? ConfidentialPrice : PVL;     
+
                 }
             }            
             Services.getFastAppDataModel().updateBindings();
