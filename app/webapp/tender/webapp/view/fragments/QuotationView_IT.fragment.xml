@@ -154,7 +154,8 @@
                                                             <m:VBox width="10%">
                                                             </m:VBox>
                                                             <!-- Offer Date -->
-                                                            <m:VBox width="20%">
+                                                            <!-- EHQUT-175596-Increase size of offer validity and offer date -->
+                                                            <m:VBox width="100%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>OfferDate}" design="Bold"/>
                                                                     <!--<m:DatePicker id="idQofferDate" value="{path :'fastAppData>/OfferValidation/OFFERDATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
@@ -164,7 +165,7 @@
                                                             <m:VBox width="10%">
                                                             </m:VBox>
                                                             <!-- Offer Validity -->
-                                                            <m:VBox width="20%">
+                                                            <m:VBox width="100%">
                                                                 <m:items>
                                                                     <m:Label text="{i18n>OfferValidity}" design="Bold"/>
                                                                     <!--<m:DatePicker id="idQofferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
