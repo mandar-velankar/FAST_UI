@@ -10211,8 +10211,9 @@ sap.ui.define([
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
             aRAMs = oFastAppDataModel.getProperty('/CountryApprovers');
-
-            aRAMs = aRAMs.filter(ram => ram.Division === sDivision && ram.ApproverType === 'BU/RAM');
+ 
+//EHQUT-197300-Spain – notification e-mail to RAMs
+            aRAMs = aRAMs.filter(ram => ram.Division === sDivision && ram.ApproverType === 'EmailKAM');
             oFastAppDataModel.setProperty('/CountryApprovers', aRAMs);
 			
 			oEditor.setValue(template.value);

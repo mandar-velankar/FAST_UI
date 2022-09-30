@@ -1016,7 +1016,7 @@ sap.ui.define([
             const sUserNamePath = "/CountryApprovers"
             var aFilter = [];
              aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
-             aFilter.push(new Filter("ApproverName", FilterOperator.NE, "Dummy"));
+             aFilter.push(new Filter("ApproverName", FilterOperator.NE, "Auto Approval"));
            
             oFastDataCalls.read(sUserNamePath, {
                 filters: aFilter,
