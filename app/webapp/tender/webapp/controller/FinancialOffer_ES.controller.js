@@ -2283,10 +2283,29 @@ sap.ui.define([
             }
             if(mainPriceConditionViewObject.ConditionType === "Descuento Comercial") return mainPriceConditionViewObject.NetPriceWithoutTax;
             if(mainPriceConditionViewObject.ConditionType === "Rental" || mainPriceConditionViewObject.ConditionType === "PVL"){
-                if(selectedFOCObject.RoyalDecree === "No")
-                    return mainPriceConditionViewObject.PVL;
-                else 
-                    return mainPriceConditionViewObject.ConfidentialPrice * (1 - mainPriceConditionViewObject.RoyalDecreePercentage);
+
+                let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                let packFactor =  oProductPrice.PACKFACTOR;
+                let UOM = oProductPrice.UOM;
+                let ConfidentialPrice;
+                let PVL;
+                if (mainPriceConditionViewObject.ExistingPriceConditionID === null && UOM === "Unit"){
+                    ConfidentialPrice = mainPriceConditionViewObject.ConfidentialPrice / packFactor;
+                    PVL = mainPriceConditionViewObject.PriceConditionPVL /packFactor;
+                } else {
+                    ConfidentialPrice = mainPriceConditionViewObject.ConfidentialPrice ;
+                    PVL = mainPriceConditionViewObject.PriceConditionPVL;
+                }
+
+                if(selectedFOCObject.RoyalDecree === "No"){
+
+                    return PVL;
+                }
+                    
+                else {
+                    return ConfidentialPrice * (1 - mainPriceConditionViewObject.RoyalDecreePercentage);
+                }
+                    
             }
         },
         
