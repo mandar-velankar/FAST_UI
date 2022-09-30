@@ -181,9 +181,16 @@
 							<ObjectIdentifier title="{i18n>pubcndte}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
-					
+
+					<!--EHQUT-189207-Creation date instead of bid duedate- -->
+                    <Column id="idCreationDate" minScreenWidth="920px" width="6rem">
+                        <header>
+                            <ObjectIdentifier title="{i18n>CreationDate}" titleActive="true" titlePress="onClick"/>
+                        </header>
+                    </Column>
+
 					<!-- bid due date -->
-					<Column minScreenWidth="920px" width="6rem">
+					<Column id="idDueDate" minScreenWidth="920px" width="6rem">
 						<header>
 							<ObjectIdentifier title="{i18n>BidDueDate}" titleActive="true" titlePress="onClick"/>
 						</header>
