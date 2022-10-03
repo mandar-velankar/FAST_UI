@@ -370,7 +370,7 @@ sap.ui.define([
                         PVL = mainPriceCondition.PriceConditionPVL;
                     }
         
-                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? ConfidentialPrice * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? ConfidentialPrice : PVL;     
+                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? Number((ConfidentialPrice * (1 - mainPriceCondition.RoyalDecreePercentage)).toFixed(2)) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? ConfidentialPrice : PVL;     
 
                 }
             }            
