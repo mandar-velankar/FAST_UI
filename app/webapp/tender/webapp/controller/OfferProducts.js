@@ -1396,7 +1396,9 @@ sap.ui.define([
 				path: "OFFER_DATE",
 				descending: true
 			});
-
+            //EHQUT-195982-MEA -Unit Price in Offer History
+             
+            var tenderregion=Services.getFastAppDataModel().oData.Tender.Country.Region;
 			var oTenderHistoryTemplate = new sap.m.ColumnListItem({
 				cells: [
 					new sap.m.Text({
@@ -1427,7 +1429,8 @@ sap.ui.define([
 								path: "CURRENCY",
 								model: "fastData"
 							}],
-							formatter: formatter.price
+							//formatter: formatter.price
+                            formatter: tenderregion== 'MEA' ? formatter.priceTwoOrFour : formatter.price 
 						}
 					}),
 					new sap.m.ObjectNumber({

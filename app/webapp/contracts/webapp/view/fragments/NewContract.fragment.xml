@@ -54,17 +54,13 @@
 				<Select id="idCurrencyNewContract" selectedKey="{ctr>/newContract/currency}" items="{ path: 'ctr>/currencies/', sorter: { path: 'cOUNTRY_CODE' } }">
 					<core:Item key="{ctr>cURRENCY}" text="{ctr>cURRENCY}"/>
 				</Select>
-
+                <!-- EHQUT 192851-Add OTC customer group for "Contract Management" app-->
 				<!-- Contract channel -->
 				<Label text="{i18n>channel}" required="true"/>
 				<Select id="idChannelNewContract"
 						selectedKey="{ctr>/newContract/channelId}" 
-						items="{ 
-							path: 'ctr>/channels',
-							filters: [
-								{path: 'channelName', operator: 'NE', value1: 'Tender'}
-							]
-						}"
+                        change=".onChangeInstituteType" 
+						items="{ path: 'ctr>/CountryChannels'}" 
 						enabled="true"
 				>
 					<items>

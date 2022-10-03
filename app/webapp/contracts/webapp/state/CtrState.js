@@ -285,10 +285,11 @@ sap.ui.define([
 		/**
 		 * get list of institutes
 		 */
-		getInstitutes: function (sCountryCode){
+        // EHQUT 192851-Add OTC customer group for "Contract Management" app
+		getInstitutes: function (sCountryCode,sInstituteType){
 								
 			this.setProperty("institutes", []);
-			const ctrPromise = this.getService().getInstitutes(sCountryCode).then(institutes => {
+			const ctrPromise = this.getService().getInstitutes(sCountryCode,sInstituteType).then(institutes => {
 				institutes = institutes.data.results;
 				return institutes.map(institute => {
 					return new Institute(institute);
@@ -309,6 +310,25 @@ sap.ui.define([
 			});			
 
 		},
+        // EHQUT 192851-Add OTC customer group for "Contract Management" app
+        getInstituteTypeName: function (sCountryCode){
+            this.setProperty("CountryChannels", []);
+            const ctrPromise = this.getService().getInstituteTypeName(sCountryCode).then(CountryChannels => {
+                CountryChannels = CountryChannels.data.results;
+                if(CountryChannels.length>0){
+                    CountryChannels.unshift({});
+                }
+                return CountryChannels.map(CountryChannel => {
+                    return new Channel(CountryChannel);
+                });
+            });
+            return Promise.all([ctrPromise]).then((values) => {
+                const [CountryChannels] = values;
+                this.setProperty("CountryChannels", [...CountryChannels]);
+                return this.getProperty("CountryChannels");
+            });
+        },
+
 
 
 		/**
