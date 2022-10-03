@@ -130,6 +130,9 @@ sap.ui.define([
 
 			that._country = sCountry;
 
+			// set CurrentOfferStatus
+			oFastAppDataModel.setProperty("/CurrentOfferStatus", Services.getCurrentOfferStatus(sTenderID, sOfferID));
+
 
 			// set the visible country
 			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
@@ -5839,6 +5842,9 @@ sap.ui.define([
 						Services.showMessageCompositeView('Warning', aMessages, 'Warning');
 					}
 
+					// Set the OfferProducts Channel for Brazil OfferProducts
+					that.setOfferProductsChannel(aProductsForBinding);
+
 					//close the dialog
 					that._oDialog.close();
 
@@ -5857,6 +5863,41 @@ sap.ui.define([
 				//close the dialog
 				that._oDialog.close();
 			}
+		},
+
+		/**
+		 * This method sets the Channel dropdown default value based on the Distributor Name
+		 * Applicable for Brazil only
+		 * @return - returns true if the channel was set, else false
+		 */
+		setOfferProductsChannel: function(aProducts){
+			const countryCode = Services.getCountryCodeofSelectedTender();
+			if(!countryCode || countryCode.toLowerCase() !== "br"){
+				console.error("The country code does not exist or is not set correctly");
+				return false;
+			}
+
+			const sSelectedDistributorName = this.getView().byId("idDistributorName").getSelectedItem().getText();
+			let sOfferProductsChannel;
+
+			if(!sSelectedDistributorName){
+				console.error("OfferProducts DistributorName could not be determined");
+				return false;
+			}
+
+			if(sSelectedDistributorName && sSelectedDistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil"){
+				sOfferProductsChannel = "Bayer";
+			}else{
+				sOfferProductsChannel = "Distributor";
+			}
+
+			// set the default channel
+			aProducts.forEach(prd => prd.Channel = sOfferProductsChannel);
+
+			// update the bindings
+			const oTable = this.getView().byId("editofferProductId");
+			oTable.getModel("fastAppData").updateBindings();
+			return true;
 		},
 
 		//OFFER PRODUCTS SAVE is clicked
@@ -6159,6 +6200,7 @@ sap.ui.define([
 					oAddProduct.Active = 1;
 					oAddProduct.ProductCode = oProduct.PRODUCT_ID;
 					oAddProduct.Reference = "";
+					oAddProduct.Channel = "";
 					oAddProduct.AlternateOfferYN = "No";
 					oAddProduct.RequestedVolume = "";
 					oAddProduct.UnitPerPack = "Unit";

@@ -187,6 +187,28 @@
 										<Input  id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}"  maxLength="255"/>
 									</t:template>
 								</t:Column>
+								<!-- Channel -->
+								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}">
+									<Label
+									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Channel/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/Channel/required}"
+									/>
+									<t:template>
+										<Select id="idOfferProductsChannel" selectedKey="{fastAppData>Channel}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Bayer" key="Bayer"/>
+												<core:Item text="Distributor" key="Distributor"/>
+												<core:Item text="Decline" key="Decline"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+									</t:template>
+								</t:Column>
 
                                 <t:Column width="200px" visible="{= ${fastAppData>/permissions/tables/editofferProductId/MaxPrice/visible} &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender' ? true : false }">
 									<Label id="idMaxPriceLabel" 
