@@ -196,7 +196,12 @@
 										   required="{fastAppData>/permissions/tables/editofferProductId/Channel/required}"
 									/>
 									<t:template>
-										<Select id="idOfferProductsChannel" selectedKey="{fastAppData>Channel}" width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}">
+										<Select id="idOfferProductsChannel" 
+											selectedKey="{fastAppData>Channel}" 
+											width="250px" 
+											visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}"
+											change=".onOfferProductsChannelChange"
+										>
 											<items>
 												<core:Item text="" key=""/>
 												<core:Item text="Bayer" key="Bayer"/>

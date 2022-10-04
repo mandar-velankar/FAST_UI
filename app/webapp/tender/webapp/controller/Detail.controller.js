@@ -3,6 +3,7 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"../controller/OfferProducts",
 	"sap/m/Button",
+	"sap/m/Text",
 	"sap/m/Dialog",
 	"sap/ui/core/BusyIndicator",
 	"sap/m/Label",
@@ -22,15 +23,26 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/ranking/Ranking",
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
-	"sap/m/MessageBox"
-], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
+	"sap/m/MessageBox",
+	"sap/m/library",
+	"sap/ui/core/library"
+], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
 	var bundle; 
 	var URLHelper = mLib.URLHelper;
+
+	// shortcut for sap.m.ButtonType
+	var ButtonType = mobileLibrary.ButtonType;
+
+	// shortcut for sap.m.DialogType
+	var DialogType = mobileLibrary.DialogType;
+
+	// shortcut for sap.ui.core.ValueState
+	var ValueState = coreLibrary.ValueState;
 
 	return Controller.extend("FAST_NS0FAST0.controller.Detail", {
 
@@ -72,6 +84,11 @@ sap.ui.define([
 				minDate: new Date()
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
+
+			const oViewModel = new sap.ui.model.json.JSONModel({
+				OfferProductsChannelWarningMessage: "",
+			});	
+			this.getView().setModel(oViewModel, "viewModel");
 
 			this.accessModel = Services.getAccessModel();
 			this.getView().setModel(this.accessModel, "access");
@@ -5362,10 +5379,22 @@ sap.ui.define([
 
 
 		//Saving on Offer product tab
-		_onSaveOfferProduct: function (oEvent) {
+		_onSaveOfferProduct: async function (oEvent) {
 
 			var oFastAppData = Services.getFastAppDataModel();
 			var that = this;
+
+			// for Brazil only
+			// Warning message pop up when switching channels at the offer level
+			if(oFastAppData.getProperty('/Tender/CountryCode') === 'BR'){
+				try{
+					await this.showOfferProductsChannelWarningMessage();
+				}
+				catch(error){
+					// user aborted the warning message
+					if(error === "Abort") return;
+				}
+			}
 
 			// open loading indicator (used beceause higher z-index then loading dialog & other dialogs)
 			BusyIndicator.show();
@@ -5553,6 +5582,41 @@ sap.ui.define([
 				// close loading that blocks everything
 				BusyIndicator.hide();
 			});
+
+		},
+
+		showOfferProductsChannelWarningMessage: function(){
+			const sWarningMessage = this.getView().getModel("viewModel").getProperty("/OfferProductsChannelWarningMessage");
+			if(!sWarningMessage) return;
+
+			return new Promise((resolve, reject) => {
+				const oOfferProductsChannelWarningMessageDialog = new Dialog({
+					type: DialogType.Message,
+					title: "Warning",
+					state: ValueState.Warning,
+					content: new Text({ text: sWarningMessage }),
+					beginButton: new Button({
+						type: ButtonType.Emphasized,
+						text: "Yes",
+						press: function () {
+							oOfferProductsChannelWarningMessageDialog.close();
+							oOfferProductsChannelWarningMessageDialog.destroy();
+							resolve("Yes");
+						}.bind(this)
+					}),
+					endButton: new Button({
+						type: ButtonType.Emphasized,
+						text: "Abort",
+						press: function () {
+							oOfferProductsChannelWarningMessageDialog.close();
+							oOfferProductsChannelWarningMessageDialog.destroy();
+							reject("Abort");
+						}.bind(this)
+					})
+				});
+	
+				oOfferProductsChannelWarningMessageDialog.open();
+			  });
 
 		},
 
@@ -5898,6 +5962,43 @@ sap.ui.define([
 			const oTable = this.getView().byId("editofferProductId");
 			oTable.getModel("fastAppData").updateBindings();
 			return true;
+		},
+
+		/**
+		 * Event handler for OfferProducts Channel select change
+		 * @param {Object} - Event obj
+		 */
+		onOfferProductsChannelChange: function(oEvent){
+			const sSelectedChannelText = oEvent.getParameter('selectedItem').getText();
+			const sSelectedDistributorText = this.getView().byId("idDistributorName").getSelectedItem().getText();
+			
+			// set warning message when switching Channels at the offer level
+			const sWarningMessage = this.getOfferProductsChannelWarningMessage(sSelectedChannelText, sSelectedDistributorText);
+			this.getView().getModel("viewModel").setProperty("/OfferProductsChannelWarningMessage", sWarningMessage);
+		
+		},
+
+		getOfferProductsChannelWarningMessage: function(channel, distributor){
+			if(!channel || !distributor) return;
+			const sDistributorToBayerMessage = "You are changing the tender channel. This will inform the distributor that we are" +
+												"refusing the opportunity and will lead to some changes in the FAST process." + 
+												"Once the distributor is informed, you will not be able to change the status again";
+			const sBayerToDistributorMessage = "You are changing the tender channel. This will lead to some changes in the FAST" + 
+												"process and inform the distributor about the opportunity at the end of the process." +
+												"Once you confirmed, you will not be able to change the status again";
+			let sMessage = "";
+			// from Bayer to Distributor
+			if(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "distributor"){
+				sMessage = sBayerToDistributorMessage;
+			}
+			// form Distributor to Bayer
+			else if(!distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "bayer"){
+				sMessage = sDistributorToBayerMessage;
+			}else {
+				sMessage = "";
+			}
+
+			return sMessage;
 		},
 
 		//OFFER PRODUCTS SAVE is clicked
