@@ -10380,6 +10380,62 @@ sap.ui.define([
 			return bEnabled;
 		},
 
+        onNotifyIbiz: function(oEvent){
+            
+            const oView = this.getView();    
+
+            // create NotifyIbiz dialog lazily
+			if (!this.pNotifyIbizDialog) {
+
+				this.pNotifyIbizDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.NotifyIbizDialog",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+
+			}
+
+            this.pNotifyIbizDialog.then(function(oDialog){
+                oDialog.open();
+            }.bind(this));
+
+        },
+
+        onNotifyibizDialog: async function(oEvent){
+
+           //that is this
+            let that = this;
+            BusyIndicator.show();
+			
+            //get user input
+			let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
+
+            //Logic to call the API to Notify about Product Switch
+
+
+			// close loading that blocks everything
+			BusyIndicator.hide();
+
+            //close dialog
+            that.onNotifyibizDialogCancel();
+
+		
+        },
+
+        onNotifyibizDialogCancel: function(oEvent){
+            
+			if(this.pNotifyIbizDialog){
+                this.pNotifyIbizDialog.then(function(oDialog){
+					oDialog.close();
+				});
+
+			}
+		},
+
 
 	});
 });
