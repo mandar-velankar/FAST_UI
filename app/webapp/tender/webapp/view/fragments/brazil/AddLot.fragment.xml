@@ -1,0 +1,36 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog id="AddLots" title="Add/Remove Lot Number" >
+		<buttons>
+			<Button text="Apply" press=".oApplyLots" />
+			<Button text="Cancel" press=".oCancelLots" />
+		</buttons>
+
+        <Table id="LotNumbers" items="{path:'fastAppData>/OfferLots'}">
+		<headerToolbar>
+			<OverflowToolbar>
+				<content>
+					<ToolbarSpacer />
+                    <Button icon="sap-icon://add" press=".onAddNewLot"></Button>
+				</content>
+			</OverflowToolbar>
+		</headerToolbar>
+            <columns>
+                <Column>
+                    <Text text="{i18n>LotNumber}"/>
+                </Column>
+                <Column>
+                    <Text text="{i18n>Action}"/>
+                </Column>           
+            </columns>
+            <ColumnListItem>
+                <cells>
+                    <Input id="idLotNumber" value="{fastAppData>LotID}" enabled="true" visible="true"/>
+                    <Button icon="sap-icon://delete" press=".onDeleteLot" visible="true"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+   	</Dialog>	
+</core:FragmentDefinition>

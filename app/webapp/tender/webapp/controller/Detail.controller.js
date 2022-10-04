@@ -5716,6 +5716,74 @@ sap.ui.define([
 
 		},
 
+        onAddLot: function () {
+
+			var oView = this.getView();
+            
+            //store original freegoodsother for cancellation
+            const oFastAppDataModel = Services.getFastAppDataModel();
+
+			// create dialog lazily
+			if (!this.pDialogAddLots) {
+				this.pDialogAddLots = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.brazil.AddLot",
+					controller: this
+				}).then(function (oDialogAddLots) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialogAddLots);
+					oDialogAddLots.setModel(Services.getFastAppDataModel(), "fastAppData");
+					return oDialogAddLots;
+				});
+			}
+
+			this.pDialogAddLots.then(function (oDialogAddLots) {
+                const oTable = this.byId("LotNumbers");
+                
+                //oTable.bindElement({ path: bindingPath, model: "fastAppData"});
+				//this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
+				oDialogAddLots.open();
+			}.bind(this));
+		},
+
+        onAddNewLot: function (event) {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/OfferLots";
+            
+			let lots = oFastAppDataModel.getProperty(bindingPath) || [];
+			lots.push({
+                LotID: 0,
+                OfferID: Services.getSelectedOfferID(),
+                ProductCode: ""
+			});
+
+			oFastAppDataModel.setProperty(bindingPath, lots);
+            
+            const oTable = this.byId("LotNumbers");
+            oTable.bindElement({ path: bindingPath, model: "fastAppData" });            
+            oFastAppDataModel.updateBindings();            
+		},
+
+        oCancelLots: function () {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            
+            if(this.pDialogAddLots){
+
+                this.pDialogAddLots.then(pDialog => pDialog.close());
+            }
+                
+        },
+
+        oApplyLots: function () {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            
+            if(this.pDialogAddLots){
+
+                this.pDialogAddLots.then(pDialog => pDialog.close());
+            }
+                
+        },
+
 		//when deleting a product
 		onDeleteProductForOffer: function () {
 
