@@ -34,8 +34,9 @@
                             {path:'fastAppData>/ProductPricingView'},
                             {path:'fastAppData>PriceConditionPVL'},
                             {value: 2},
-                            {path: 'fastAppData>ExistingPriceConditionID'},
-                            {path: 'fastAppData>ReferencePriceAgreement'}
+                            {path:'fastAppData>PriceConditionClassificationID'},
+                            {path:'fastAppData>/ExistingAgreementInPlace'},
+                            {path:'fastAppData>Conversion'}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
@@ -44,7 +45,7 @@
                                 {path:'fastAppData>PVL'},
                                 {value: 2}
                             ],
-                            formatter: '.formatter.formatUoMPrice'}
+                            formatter: '.formatter.formatUoMCurrentPrice'}
                         }"
                     description="{fastAppData>masterPriceCurrency}" 
                     enabled="false" 
@@ -59,8 +60,9 @@
                             {path:'fastAppData>/ProductPricingView'},
                             {path:'fastAppData>ConfidentialPrice'},
                             {value: 2},
-                            {path: 'fastAppData>ExistingPriceConditionID'},
-                            {path: 'fastAppData>ReferencePriceAgreement'}
+                            {path:'fastAppData>PriceConditionClassificationID'},
+                            {path:'fastAppData>/ExistingAgreementInPlace'},
+                            {path:'fastAppData>Conversion'}
                         ],
                         formatter: '.formatter.formatUoMPrice'}
                         : ${parts: [
@@ -69,7 +71,7 @@
                             {path:'fastAppData>YLAP'},
                             {value: 2}
                         ],
-                        formatter: '.formatter.formatUoMPrice'}
+                        formatter: '.formatter.formatUoMCurrentPrice'}
                         }"
                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                     description="{fastAppData>masterPriceCurrency}" 
