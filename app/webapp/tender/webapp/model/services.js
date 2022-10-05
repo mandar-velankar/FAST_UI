@@ -5574,6 +5574,12 @@ sap.ui.define([
 			return oNewProductInfo.SUPPLY_UPDATE;
 		},
 
+		getCurrentOfferStatus: function(sTenderID, sOfferID){ 
+			if(!sTenderID) return;
+			let offerId = sOfferID ? `'${sOfferID}'` : `''`;
+			return this.getDefaultModel().getProperty(`/TenderOfferMaster(TENDER_ID='${sTenderID}',OFFER_ID=${offerId})`).STATUS;
+		},
+
 		//check if offer status should be updated or created
 		checkOfferStatus: function (sImportTenderID, sImportOfferID) {
 
