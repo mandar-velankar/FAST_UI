@@ -5992,7 +5992,7 @@ sap.ui.define([
 				sMessage = sBayerToDistributorMessage;
 			}
 			// form Distributor to Bayer
-			else if(!distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "bayer"){
+			else if(!(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil") && channel.toLowerCase() === "bayer"){
 				sMessage = sDistributorToBayerMessage;
 			}else {
 				sMessage = "";
