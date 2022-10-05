@@ -6626,6 +6626,7 @@ sap.ui.define([
 		},
 
 		InstituteName_f4: function (oEvent) {
+            this.getView().setBusy(true);
 			var model_f4 = this.getView().getModel("fastData");
 			var sPath = "/PT_TMINST";
 			var data;
@@ -6682,12 +6683,12 @@ sap.ui.define([
 					});
 					that.valueHelpBasicInsSlctDialog.setModel(stateModel);
 					that.valueHelpBasicInsSlctDialog.open();
+                    that.getView().setBusy(false);
 
 				},
 				error: function (oError) {
-
+                    that.getView().setBusy(false);
 					Services.showErrorMessage(oError, "Institute loading");
-
 				}
 			});
 			var handleCloseInstituteName = async function (oEvent) {
