@@ -71,6 +71,7 @@ sap.ui.define([
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
 		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
         _sFinancialOfferPageSectionID_ES: "---tenderManagementDetailId--financialOfferId_ES",
+        _sFinancialOfferPageSectionID_BR: "---tenderManagementDetailId--financialOfferId_BR",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -173,6 +174,11 @@ sap.ui.define([
 
         getFinancialOfferPageSectionID_ES: function () {
 			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_ES;
+			return sPage;
+		},
+
+        getFinancialOfferPageSectionID_BR: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_BR;
 			return sPage;
 		},
 
@@ -1046,6 +1052,19 @@ sap.ui.define([
 							bVisible = false;
 						}
 						break;
+
+                    case this.getFinancialOfferPageSectionID_BR():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+
 					case this.getQuotationPageSectionID():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
@@ -5577,7 +5596,7 @@ sap.ui.define([
 		getCurrentOfferStatus: function(sTenderID, sOfferID){ 
 			if(!sTenderID) return;
 			let offerId = sOfferID ? `'${sOfferID}'` : `''`;
-			return this.getDefaultModel().getProperty(`/TenderOfferMaster(TENDER_ID='${sTenderID}',OFFER_ID=${offerId})`).STATUS;
+			return this.getDefaultModel().getProperty(`/TenderOfferMaster(TENDER_ID='${sTenderID}',OFFER_ID=${offerId})`)?.STATUS;
 		},
 
 		//check if offer status should be updated or created

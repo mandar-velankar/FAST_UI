@@ -1223,8 +1223,8 @@ sap.ui.define([
 				//only on master list, basic info, offer products it is possible that you don't have an offer selected.
 				//other tabs should always have an offer selected.
 				if (
-					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getQuotationPageSectionID() ||
-					sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
+					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getFinancialOfferPageSectionID_BR() || 
+                    sSelectedSection === Services.getQuotationPageSectionID() || sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
 				)
 				//edit button is disabled
 				MessageToast.show('There is no offer selected. Please first select an offer in left pane...', {
@@ -1406,6 +1406,16 @@ sap.ui.define([
 					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
 				}
 				break;
+
+            case Services.getFinancialOfferPageSectionID_BR():
+
+                //check if offer is valid for selection (within this method we store the result also on the fastappdatamodel/checkOfferVisibleForTab)
+                if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)){
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_BR", true);
+                } else {
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_BR", false);
+                }
+                break;
 
 				//Quotation tab	
 			case Services.getQuotationPageSectionID():
@@ -1744,6 +1754,17 @@ sap.ui.define([
 						oFinOfferController.refreshFinancialTabES();
 					}
 
+                    if (that.getView().getContent()[0].getSelectedSection() == Services.getFinancialOfferPageSectionID_BR() && Services.checkOfferVisibleForTab(
+						Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//FINANCIAL OFFER for BR
+						//select offer again (TODO)
+						//that.onFinancialOfferItemPress();
+						var oView = that.getView().byId("financialOfferViewId_BR");
+						var oFinOfferController = oView.getController();
+						oFinOfferController.refreshFinancialTabES();
+					}
+
 					if (that.getView().getContent()[0].getSelectedSection() == Services.getDeliveryTrackingPageSectionID() && Services.checkOfferVisibleForTab(
 							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
 
@@ -1922,6 +1943,24 @@ sap.ui.define([
 						}
                         that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode()); 
 						break;
+
+                case Services.getFinancialOfferPageSectionID_BR():
+						//FINANCIAL OFFER TAB BR
+						//that._showSectionFragment("FinancialOfferView", "financialOfferId");
+	
+						//check for approval enabled 
+						var sSelectedOfferID = Services.getSelectedOfferID();
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+	
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						if (bEnableApproval && sSelectedOfferID !== '' && oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+							that.byId("ApprovalButtonId").setEnabled(true);
+						} else {
+							that.byId("ApprovalButtonId").setEnabled(false);
+						}
+                        that.getView().byId("financialOfferViewId_BR").getController().editFinancialOfferESToggle(Services.getEditMode()); 
+						break;
+                        
 				case Services.getQuotationPageSectionID():
 							
 					//show fragment for TAB: Quotation
@@ -2015,6 +2054,7 @@ sap.ui.define([
 						Services.getFinancialOfferPageSectionID(),
 						Services.getFinancialOfferPageSectionID_IT(),
 						Services.getFinancialOfferPageSectionID_ES(),
+                        Services.getFinancialOfferPageSectionID_BR(),                        
 						Services.getQuotationPageSectionID(),
 						Services.getTenderResultsPageSectionID(),
 						Services.getDeliveryTrackingPageSectionID()
@@ -2414,6 +2454,13 @@ sap.ui.define([
 						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
                         that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode());
 						break;
+                    case Services.getFinancialOfferPageSectionID_BR():
+                        //FINANCIAL OFFER TAB for BR
+                        //Edit offer copy to move back to original values during cancel
+                        var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+                        Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+                        that.getView().byId("financialOfferViewId_BR").getController().editFinancialOfferESToggle(Services.getEditMode());
+                        break;                        
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
@@ -2681,7 +2728,7 @@ sap.ui.define([
 			//check if selected offer was available in table
 			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable(true);
 
-			if((sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES()) && Services.getSelectedProductID() === ''){
+			if((sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getFinancialOfferPageSectionID_BR()) && Services.getSelectedProductID() === ''){
 
 				sap.m.MessageBox.warning("First select an product to edit.", {});
 
@@ -2946,6 +2993,36 @@ sap.ui.define([
 								break;
 						}
 						break;
+                    case Services.getFinancialOfferPageSectionID_BR():
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelFinancialOfferTableID").setExpanded(true);
+
+						//make sure selected offer & product is still shown
+						Services.setSelectedOfferID(sSelectedOfferID);
+						Services.setSelectedOfferPath(sSelectedOfferPath);
+
+						//check for approval enabled 
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						that.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+						//Italy has its own products table
+						switch (sSelectedSection) {
+							case Services.getFinancialOfferPageSectionID():
+								//select offer again
+								that.onFinancialOfferItemPress();
+								break;
+							case Services.getFinancialOfferPageSectionID_BR():
+								//select offer again
+								var oView = that.getView().byId("financialOfferViewId_BR");
+								var oFinOfferController = oView.getController();
+								oFinOfferController.refreshFinancialTabES();
+								break;
+							default:
+								break;
+						}
+						break;
 					case Services.getQuotationPageSectionID():
 						//show offer table content, so there is more space on the screen
 						//that.getView().byId("panelQuotationOfferTableID").setExpanded(true);
@@ -3071,7 +3148,17 @@ sap.ui.define([
 				oFinOfferController.onSaveFinancialOfferSpain();
 				that.getView().setBusy(false);
 				break;
-				
+
+            case Services.getFinancialOfferPageSectionID_BR():
+
+                    //FINANCIAL OFFER TAB spain specific
+                    that.getView().setBusy(true);
+                    var oView = this.getView().byId("financialOfferViewId_BR");
+                    var oFinOfferController = oView.getController();
+                    //oFinOfferController.onSaveFinancialOfferSpain(); //new method to be created for saveFiancialOfferBrazil
+                    that.getView().setBusy(false);
+                    break;	
+
 			case Services.getQuotationPageSectionID():
 
 				//QUOTATION TAB
