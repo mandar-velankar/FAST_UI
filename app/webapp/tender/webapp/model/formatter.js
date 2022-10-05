@@ -474,20 +474,50 @@ sap.ui.define([
          * @param {*} numOfDecimal 
          * @param {*} ExistingPriceConditionID - This way we can check if the pricecondition is already saved or not
          */
-		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,ExistingPriceConditionID,ReferencePriceAgreement){
-            if(!price || !ProductPricingView || !ProductCode) {return};
+		formatUoMPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,PriceConditionClassificationID,ExistingAgreementInPlace,Conversion){
+            if(!price || !ProductPricingView || !ProductCode) {return}
 			let newPrice = Number(price);
             let decval = Number(numOfDecimal);
-            // if price condition was saved, do not apply conversion!
-            if( ExistingPriceConditionID == null){
+            let applyConversion = false;
+            // if price condition was not saved, apply conversion!
+            if( PriceConditionClassificationID == null ) applyConversion = true;
+  
+            // if there is an agreement in place, but price condition was not saved yet, apply conversion !
+            if( ExistingAgreementInPlace === true && Conversion === true) applyConversion = true;
+
+            if(applyConversion === true){
                 let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
-                if(!product) {return};
+                if(!product) {return}
                 let uom = product.UOM;
                 let packFactor = product.PACKFACTOR;  
                 if(~uom.toLowerCase().indexOf("unit")){ 
                     newPrice = newPrice / packFactor;
                 }
             }
+			const floatFormatter = NumberFormat.getFloatInstance({
+				maxFractionDigits: decval,
+				minFractionDigits: decval,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			return floatFormatter.format(newPrice);
+		},
+
+        formatUoMCurrentPrice: function(ProductCode, ProductPricingView, price, numOfDecimal,event){
+            if(!price || !ProductPricingView || !ProductCode) {return}
+			let newPrice = Number(price);
+            let decval = Number(numOfDecimal);
+            // if price condition was saved, do not apply conversion!
+
+            let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
+            if(!product) {return};
+            let uom = product.UOM;
+            let packFactor = product.PACKFACTOR;  
+            if(~uom.toLowerCase().indexOf("unit")){ 
+                newPrice = newPrice / packFactor;
+            }
+            
 			const floatFormatter = NumberFormat.getFloatInstance({
 				maxFractionDigits: decval,
 				minFractionDigits: decval,

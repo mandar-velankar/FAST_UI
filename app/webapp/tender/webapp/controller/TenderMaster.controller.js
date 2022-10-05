@@ -298,7 +298,9 @@ sap.ui.define([
 				oSel = "STATUS";
 			} else if (this.oSelCol === "Publication Date") {
 				oSel = "PUBLICATION_DATE";
-			} else if (this.oSelCol === "Bid Due Date") {
+			} else if (this.oSelCol === "Creation Date") {
+                oSel = "CREATION_DATE";
+            } else if (this.oSelCol === "Bid Due Date") {
 				oSel = "INTERNAL_BID_DUE_DATE";
 			} else if (this.oSelCol === "Closing Date") {
 				oSel = "CLOSING_DATE";
@@ -369,7 +371,9 @@ sap.ui.define([
 				oSel = "STATUS";
 			} else if (this.oSelCol === "Publication Date") {
 				oSel = "PUBLICATION_DATE";
-			} else if (this.oSelCol === "Bid Due Date") {
+			} else if (this.oSelCol === "Creation Date") {
+                oSel = "CREATION_DATE";
+            } else if (this.oSelCol === "Bid Due Date") {
 				oSel = "INTERNAL_BID_DUE_DATE";
 			} else if (this.oSelCol === "Closing Date") {
 				oSel = "CLOSING_DATE";
@@ -418,7 +422,9 @@ sap.ui.define([
 				oSel = "STATUS";
 			} else if (this.oSelCol === "Bid Due Date") {
 				oSel = "INTERNAL_BID_DUE_DATE";
-			} else if (this.oSelCol === "Publication Date") {
+			} else if (this.oSelCol === "Creation Date") {
+                oSel = "CREATION_DATE";
+            } else if (this.oSelCol === "Publication Date") {
 				oSel = "PUBLICATION_DATE";
 			} else if (this.oSelCol === "Closing Date") {
 				oSel = "CLOSING_DATE";
@@ -591,6 +597,17 @@ sap.ui.define([
                 this.byId("idSlctCreatedBy").setVisible(false);
                
             }
+            //EHQUT-189207-Creation date instead of bid duedate
+            if(oCountry=='IT'){
+                this.byId("idDueDate").setVisible(false);
+                this.byId("idCreationDate").setVisible(true);
+
+            }else{
+                this.byId("idDueDate").setVisible(true);
+                this.byId("idCreationDate").setVisible(false);
+               
+            }
+
             var oBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 
             var oCreatedBy=this.byId("idSlctCreatedBy").getSelectedItem() ? this.byId("idSlctCreatedBy").getSelectedItem().getText() :
@@ -701,6 +718,10 @@ sap.ui.define([
 					new sap.m.Text({
 						text: "{path:'fastData>PUBLICATION_DATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"
 
+					}),
+                    //EHQUT-189207-Creation date instead of bid duedate
+                    new sap.m.Text({
+						text: "{path:'fastData>CREATION_DATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"
 					}),
 					new sap.m.Text({
 						text: "{path:'fastData>INTERNAL_BID_DUE_DATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"
@@ -1016,7 +1037,7 @@ sap.ui.define([
             const sUserNamePath = "/CountryApprovers"
             var aFilter = [];
              aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
-             aFilter.push(new Filter("ApproverName", FilterOperator.NE, "Dummy"));
+             aFilter.push(new Filter("ApproverName", FilterOperator.NE, "Auto Approval"));
            
             oFastDataCalls.read(sUserNamePath, {
                 filters: aFilter,

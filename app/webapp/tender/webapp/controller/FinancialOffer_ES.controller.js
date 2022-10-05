@@ -153,7 +153,12 @@ sap.ui.define([
                 this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
                 // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
                 if(existingMainPriceCondition.ExistingPriceConditionID === "99999999"){
-                    existingMainPriceCondition.ExistingPriceConditionID = null; 
+                    existingMainPriceCondition.ExistingPriceConditionID = null;
+                    
+                    if(existingMainPriceCondition.UnsavedCondition === true){
+                        existingMainPriceCondition.Conversion = true;
+                    }
+
                 }
             }else if(PVLPriceCondition){
                 this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
@@ -220,7 +225,7 @@ sap.ui.define([
             applicablePriceConditionView.NetPriceWithoutTax = applicableTenderCondition.NetPriceWithoutTax;
             applicablePriceConditionView.NetPriceWithoutTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithoutTaxAfterDeductionRD;
             applicablePriceConditionView.NetPriceWithoutTaxBeforeDeductionRD = applicableTenderCondition.NetPriceWithoutTaxBeforeDeductionRD;
-            applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
+            //applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
             applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
             applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
             applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
@@ -230,6 +235,7 @@ sap.ui.define([
             applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
             const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
             applicablePriceConditionView.PriceConditionClassificationID = classification.ID;
+            if(applicablePriceConditionView.ExistingPriceConditionID === null) applicablePriceConditionView.UnsavedCondition = true;
             applicablePriceConditionView.ExistingPriceConditionID = "99999999"; // set dummy reference needed for the UI flow
         },
 
@@ -351,7 +357,21 @@ sap.ui.define([
 
                 if(mainPriceCondition.ConditionType === "Rental" || mainPriceCondition.ConditionType === "PVL")
                 {
-                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? mainPriceCondition.YLAP * (1 - mainPriceCondition.RoyalDecreePercentage) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? mainPriceCondition.YLAP : mainPriceCondition.PVL;                 
+                    let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                    let packFactor =  oProductPrice.PACKFACTOR;
+                    let UOM = oProductPrice.UOM;
+                    let ConfidentialPrice;
+                    let PVL;
+                    if (mainPriceCondition.ExistingPriceConditionID === null && UOM === "Unit"){
+                        ConfidentialPrice = mainPriceCondition.ConfidentialPrice / packFactor;
+                        PVL = mainPriceCondition.PriceConditionPVL /packFactor;
+                    } else {
+                        ConfidentialPrice = mainPriceCondition.ConfidentialPrice ;
+                        PVL = mainPriceCondition.PriceConditionPVL;
+                    }
+        
+                    rappelPriceCondition.MainPrice = rappelPriceCondition.RoyalDecree === "Yes" ? Number((ConfidentialPrice * (1 - mainPriceCondition.RoyalDecreePercentage)).toFixed(2)) : (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') ? ConfidentialPrice : PVL;     
+
                 }
             }            
             Services.getFastAppDataModel().updateBindings();
@@ -1524,8 +1544,8 @@ sap.ui.define([
                                 sFOCType = oPriceCondition.FOCType;
                                 sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
                                 if (oProductConditionView.ConditionType === 'PVL'){
-                                    let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                    netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
+                                    //let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                                    netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice ) : (+oProductConditionView.PVL );
                                 } else {
                                     netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                                 }
@@ -1614,8 +1634,8 @@ sap.ui.define([
 
                             let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                             if (oProductConditionView.ConditionType === 'PVL'){
-                                let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice / factor) : (+oProductConditionView.PVL / factor);
+                                //let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
+                                netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice) : (+oProductConditionView.PVL);
                             } else {
                                 netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                             }
@@ -2263,10 +2283,29 @@ sap.ui.define([
             }
             if(mainPriceConditionViewObject.ConditionType === "Descuento Comercial") return mainPriceConditionViewObject.NetPriceWithoutTax;
             if(mainPriceConditionViewObject.ConditionType === "Rental" || mainPriceConditionViewObject.ConditionType === "PVL"){
-                if(selectedFOCObject.RoyalDecree === "No")
-                    return mainPriceConditionViewObject.PVL;
-                else 
-                    return mainPriceConditionViewObject.ConfidentialPrice * (1 - mainPriceConditionViewObject.RoyalDecreePercentage);
+
+                let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                let packFactor =  oProductPrice.PACKFACTOR;
+                let UOM = oProductPrice.UOM;
+                let ConfidentialPrice;
+                let PVL;
+                if (mainPriceConditionViewObject.ExistingPriceConditionID === null && UOM === "Unit"){
+                    ConfidentialPrice = mainPriceConditionViewObject.ConfidentialPrice / packFactor;
+                    PVL = mainPriceConditionViewObject.PriceConditionPVL /packFactor;
+                } else {
+                    ConfidentialPrice = mainPriceConditionViewObject.ConfidentialPrice ;
+                    PVL = mainPriceConditionViewObject.PriceConditionPVL;
+                }
+
+                if(selectedFOCObject.RoyalDecree === "No"){
+
+                    return PVL;
+                }
+                    
+                else {
+                    return ConfidentialPrice * (1 - mainPriceConditionViewObject.RoyalDecreePercentage);
+                }
+                    
             }
         },
         
