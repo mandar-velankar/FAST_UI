@@ -5754,7 +5754,6 @@ sap.ui.define([
 			lots.push({
                 LotID: 0,
                 OfferID: Services.getSelectedOfferID(),
-                ProductCode: ""
 			});
 
 			oFastAppDataModel.setProperty(bindingPath, lots);

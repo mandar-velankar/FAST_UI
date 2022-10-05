@@ -2340,7 +2340,7 @@ sap.ui.define([
 				oFastDataCalls.read(sAdditionalOfferDataPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Distributor,OfferStatus,Tender,Revision,SellingCompanyDetails/Signatories,Signatories,Quotation" //,Product" --> no product found = product null in enity, which gives problems
+						"$expand": "Distributor,OfferStatus,Tender,Revision,SellingCompanyDetails/Signatories,Signatories,Quotation,Lots" //,Product" --> no product found = product null in enity, which gives problems
 					},
 					success: function (oData, oResponse) {
 
@@ -4774,6 +4774,30 @@ sap.ui.define([
 			const sNextOfferID = oResult && oResult.data && oResult.data.results && oResult.data.results[0].NEXTOFFERID || 1;
 
 			return sNextOfferID;
+
+		},
+
+        getLots: async function (sOfferID) {
+
+			//read service again to get nextOfferID
+			let oFastAppDataModel = this.getFastAppDataModel();
+			const oResult = await this.getService('Offer').getLotProducts(sOfferID);
+			const aLots = oResult && oResult.data && oResult.data.results || [];
+            oFastAppDataModel.setProperty('/OfferLots', aLots);
+
+			return aLots;
+
+		},
+
+        getLotProducts: async function (sOfferID, sLotId) {
+
+			//read service again to get nextOfferID
+			let oFastAppDataModel = this.getFastAppDataModel();
+			const oResult = await this.getService('Offer').getLotProducts(sOfferID, sLotId);
+			const aLots = oResult && oResult.data && oResult.data.results || [];
+            oFastAppDataModel.setProperty('/OfferLots', aLots);
+
+			return aLots;
 
 		},
 
