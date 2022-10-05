@@ -103,11 +103,10 @@
 							   width="100%">
 							<t:toolbar>
 								<Toolbar design="Solid">
-                                    <Label text="{i18n>Lot}"/>
                                     <Select id="idSelectLot" 
 										items="{ path: 'fastAppData>/OfferLots' }"
 										change="onChangeSelectedLot">
-									    <core:Item text="{fastData>LotID}" key="{fastData>LotID}"/>
+									    <core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
 								    </Select>
 									
 									<ToolbarSpacer/>
