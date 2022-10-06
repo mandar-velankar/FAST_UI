@@ -33,6 +33,7 @@ sap.ui.define([
 				delay: 0,
 				selectedProductUoM: "",
                 FinPricingOfferSubsectionisBusy: false,
+                selectedConditionType: "Discount",
 			});
 
 			this.getView().setModel(oViewModel, "finOfferView");
@@ -82,22 +83,22 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty("/FOCRequired", false);
                 Services.getFastAppDataModel().setProperty("/FOCExpanded", false);*/
 
-                //load countryBrandProducts ( needed to get productnames for FOC model)
-			    let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
-                Services.getFastAppDataModel().setProperty("/CountryBrandProducts", aCountryBrandProducts);
+            //load countryBrandProducts ( needed to get productnames for FOC model)
+            let aCountryBrandProducts = await this.getCountryBrandProducts(Services.getSelectedCountry());
+            Services.getFastAppDataModel().setProperty("/CountryBrandProducts", aCountryBrandProducts);
 
-                await this.getProducts();
-                await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
+            await this.getProducts();
+            //await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
 
-				this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
-            
-              /*  if(Services.getFastAppDataModel().getProperty('/SelectedOffer')){
-                    await this.managePriceConditionClassification();
-                    await this.managePriceConditions();
-                    await this.calculateProfitability();
-                }*/
+            this.onBindingItemsFinished(oEvent, true); //TODO: check w/ Wouter if there's a more proper solution to do this, and why this method is not executed every time on view load
+        
+            /*  if(Services.getFastAppDataModel().getProperty('/SelectedOffer')){
+                await this.managePriceConditionClassification();
+                await this.managePriceConditions();
+                await this.calculateProfitability();
+            }*/
 
-                BusyIndicator.hide();
+            BusyIndicator.hide();
 			}
 
 		},
@@ -105,78 +106,78 @@ sap.ui.define([
         /**
          * Fetches PriceConditionClassification and sets it on the model
          */
-        managePriceConditionClassification: async function(){
+        // managePriceConditionClassification: async function(){
             
-            const oFastAppDataModel = Services.getFastAppDataModel();
-            const offer = oFastAppDataModel.getProperty("/SelectedOffer");
-            if(offer){
-                const priceConditionClassification = await this.getPriceConditionClassification();
-                // add empty item
-                priceConditionClassification.push({
-                    "ID": "99999999-9999-9999-9999-999999999999",
-                    "ConditionType": "",
-                    "isMain": true
-                });
-                Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
-            }
-        },
+        //     const oFastAppDataModel = Services.getFastAppDataModel();
+        //     const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+        //     if(offer){
+        //         const priceConditionClassification = await this.getPriceConditionClassification();
+        //         // add empty item
+        //         priceConditionClassification.push({
+        //             "ID": "99999999-9999-9999-9999-999999999999",
+        //             "ConditionType": "",
+        //             "isMain": true
+        //         });
+        //         Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
+        //     }
+        // },
 
-        managePriceConditions: async function(){
-            BusyIndicator.show();
+        // managePriceConditions: async function(){
+        //     BusyIndicator.show();
 
-            // get price conditions
-            const priceConditionViews = await this.getPriceConditionView();
-            const tenderHistorySpain = await this.getTenderHistorySpain();
-            const descuentoEspecial = priceConditionViews.find(pc => pc.ConditionType === "Descuento Especial");
-            if(descuentoEspecial && !descuentoEspecial.Discount){
-                descuentoEspecial.Discount = 1;
-                descuentoEspecial.NetPriceWithoutTax = 0;
-            } 
-            Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
-            Services.getFastAppDataModel().setProperty("/TenderHistorySpain", tenderHistorySpain);
+        //     // get price conditions
+        //     const priceConditionViews = await this.getPriceConditionView();
+        //     const tenderHistorySpain = await this.getTenderHistorySpain();
+        //     const descuentoEspecial = priceConditionViews.find(pc => pc.ConditionType === "Descuento Especial");
+        //     if(descuentoEspecial && !descuentoEspecial.Discount){
+        //         descuentoEspecial.Discount = 1;
+        //         descuentoEspecial.NetPriceWithoutTax = 0;
+        //     } 
+        //     Services.getFastAppDataModel().setProperty("/PriceConditionView", priceConditionViews);
+        //     Services.getFastAppDataModel().setProperty("/TenderHistorySpain", tenderHistorySpain);
 
-            // Manage financial offer when existing agreement is in place
-            const applicableTenderCondition = await this.getApplicableTenderCondition();
-            if(applicableTenderCondition){
-                const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
-                const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
-                this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
-            }else{
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
-            }
+        //     // Manage financial offer when existing agreement is in place
+        //     const applicableTenderCondition = await this.getApplicableTenderCondition();
+        //     if(applicableTenderCondition){
+        //         const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
+        //         const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
+        //         this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
+        //         Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
+        //     }else{
+        //         Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
+        //     }
 
-            // set selected key on idPriceConditionSelect
-            const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
-            const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
-            const PVLPriceCondition = priceConditionClassification.find( pcc => pcc.ConditionType === 'PVL' );
-            if(existingMainPriceCondition){
-                this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
-                // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
-                if(existingMainPriceCondition.ExistingPriceConditionID === "99999999"){
-                    existingMainPriceCondition.ExistingPriceConditionID = null; 
-                }
-            }else if(PVLPriceCondition){
-                this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
-            }else{
-                this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
-            }
+        //     // set selected key on idPriceConditionSelect
+        //     const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
+        //     const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
+        //     const PVLPriceCondition = priceConditionClassification.find( pcc => pcc.ConditionType === 'PVL' );
+        //     if(existingMainPriceCondition){
+        //         this.byId("idPriceConditionSelect").setSelectedKey(existingMainPriceCondition.PriceConditionClassificationID);
+        //         // remove the dummy reference set in copyAndSetApplicableTenderConditionValues
+        //         if(existingMainPriceCondition.ExistingPriceConditionID === "99999999"){
+        //             existingMainPriceCondition.ExistingPriceConditionID = null; 
+        //         }
+        //     }else if(PVLPriceCondition){
+        //         this.byId("idPriceConditionSelect").setSelectedKey(PVLPriceCondition.ID);
+        //     }else{
+        //         this.byId("idPriceConditionSelect").setSelectedKey("99999999-9999-9999-9999-999999999999");
+        //     }
 
-            // load main fragment if main condition already exists
-            const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
-            this.loadMainPriceConditionFragment(existingMainPriceConditionType);
+        //     // load main fragment if main condition already exists
+        //     const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
+        //     this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
-            //bind Rappel and FOC fragments 
-            const rappelBindingPath = this.bindRappelFragment();
-            const focBindingPath = this.bindFocFragment();
-            this.bindingCurrentPrices();    
+        //     //bind Rappel and FOC fragments 
+        //     const rappelBindingPath = this.bindRappelFragment();
+        //     const focBindingPath = this.bindFocFragment();
+        //     this.bindingCurrentPrices();    
 
-            // add DiscountCondition
-            rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
-            focBindingPath && await this.addFOCs(focBindingPath);
+        //     // add DiscountCondition
+        //     rappelBindingPath && await this.addDiscountConditions(rappelBindingPath);
+        //     focBindingPath && await this.addFOCs(focBindingPath);
 
-            BusyIndicator.hide();
-        },
+        //     BusyIndicator.hide();
+        // },
 
         /**
          * Edit toggle action on the Edit/View mode on the Spain FinancialOfferPage
@@ -208,31 +209,31 @@ sap.ui.define([
         /**
          * Copy the existing condition to the main price condition and update the model
          */
-        copyAndSetApplicableTenderConditionValues: function(applicableTenderCondition, applicablePriceConditionView){
-            applicablePriceConditionView.AdditionalDiscount = applicableTenderCondition.AdditionalDiscount;
-            applicablePriceConditionView.AnnualValue = applicableTenderCondition.AnnualValue;
-            applicablePriceConditionView.CountryCode = applicableTenderCondition.CountryCode;
-            applicablePriceConditionView.Discount = applicableTenderCondition.Discount;
-            applicablePriceConditionView.Liquidation = applicableTenderCondition.Liquidation;
-            applicablePriceConditionView.MaximumPrice = applicableTenderCondition.MaximumPrice;
-            applicablePriceConditionView.MonthlyRentPerUnit = applicableTenderCondition.MonthlyRentPerUnit;
-            applicablePriceConditionView.NetPriceWithTax = applicableTenderCondition.NetPriceWithTax;
-            applicablePriceConditionView.NetPriceWithTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithTaxAfterDeductionRD;
-            applicablePriceConditionView.NetPriceWithoutTax = applicableTenderCondition.NetPriceWithoutTax;
-            applicablePriceConditionView.NetPriceWithoutTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithoutTaxAfterDeductionRD;
-            applicablePriceConditionView.NetPriceWithoutTaxBeforeDeductionRD = applicableTenderCondition.NetPriceWithoutTaxBeforeDeductionRD;
-            applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
-            applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
-            applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
-            applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
-            applicablePriceConditionView.RoyalDecreeValue = applicableTenderCondition.RoyalDecreeValue;
-            applicablePriceConditionView.RoyalDecreeIncl = applicableTenderCondition.RoyalDecreeIncl;
-            applicablePriceConditionView.StandardDiscount = applicableTenderCondition.StandardDiscount;
-            applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
-            const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
-            applicablePriceConditionView.PriceConditionClassificationID = classification.ID;
-            applicablePriceConditionView.ExistingPriceConditionID = "99999999"; // set dummy reference needed for the UI flow
-        },
+        // copyAndSetApplicableTenderConditionValues: function(applicableTenderCondition, applicablePriceConditionView){
+        //     applicablePriceConditionView.AdditionalDiscount = applicableTenderCondition.AdditionalDiscount;
+        //     applicablePriceConditionView.AnnualValue = applicableTenderCondition.AnnualValue;
+        //     applicablePriceConditionView.CountryCode = applicableTenderCondition.CountryCode;
+        //     applicablePriceConditionView.Discount = applicableTenderCondition.Discount;
+        //     applicablePriceConditionView.Liquidation = applicableTenderCondition.Liquidation;
+        //     applicablePriceConditionView.MaximumPrice = applicableTenderCondition.MaximumPrice;
+        //     applicablePriceConditionView.MonthlyRentPerUnit = applicableTenderCondition.MonthlyRentPerUnit;
+        //     applicablePriceConditionView.NetPriceWithTax = applicableTenderCondition.NetPriceWithTax;
+        //     applicablePriceConditionView.NetPriceWithTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithTaxAfterDeductionRD;
+        //     applicablePriceConditionView.NetPriceWithoutTax = applicableTenderCondition.NetPriceWithoutTax;
+        //     applicablePriceConditionView.NetPriceWithoutTaxAfterDeductionRD = applicableTenderCondition.NetPriceWithoutTaxAfterDeductionRD;
+        //     applicablePriceConditionView.NetPriceWithoutTaxBeforeDeductionRD = applicableTenderCondition.NetPriceWithoutTaxBeforeDeductionRD;
+        //     applicablePriceConditionView.PVL = applicableTenderCondition.PVL;
+        //     applicablePriceConditionView.ReferencePriceAgreement = applicableTenderCondition.PriceAgreement_ID;
+        //     applicablePriceConditionView.RefundDate = applicableTenderCondition.RefundDate;
+        //     applicablePriceConditionView.RoyalDecree = applicableTenderCondition.RoyalDecree;
+        //     applicablePriceConditionView.RoyalDecreeValue = applicableTenderCondition.RoyalDecreeValue;
+        //     applicablePriceConditionView.RoyalDecreeIncl = applicableTenderCondition.RoyalDecreeIncl;
+        //     applicablePriceConditionView.StandardDiscount = applicableTenderCondition.StandardDiscount;
+        //     applicablePriceConditionView.Tax = applicableTenderCondition.Tax;
+        //     const classification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification")?.find(classification => classification.ConditionType === applicablePriceConditionView.ConditionType);
+        //     applicablePriceConditionView.PriceConditionClassificationID = classification.ID;
+        //     applicablePriceConditionView.ExistingPriceConditionID = "99999999"; // set dummy reference needed for the UI flow
+        // },
 
 
         /**
@@ -362,49 +363,49 @@ sap.ui.define([
          * This method  sets the element binding of the FOC fragment
          * @returns {String} - Binding path of the Rappel price condition
          */
-        bindFocFragment: function(){
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
-            if(focIndex < 0) return null;
-            const focBindingPath = "/PriceConditionView/".concat(focIndex);
-            const focVbox = this.byId("idFOCVbox");
-            focVbox.bindElement({ path: focBindingPath, model: "fastAppData" });
-            const existingPriceCondition = !!priceConditions[focIndex]?.ExistingPriceConditionID;
-            Services.getFastAppDataModel().setProperty("/FOCRequired", false);
-            if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/FOCRequired", true);
-            return focBindingPath;
-        },
+        // bindFocFragment: function(){
+        //     const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+        //     const focIndex = priceConditions.findIndex(item => item.ConditionType === "FOC");
+        //     if(focIndex < 0) return null;
+        //     const focBindingPath = "/PriceConditionView/".concat(focIndex);
+        //     const focVbox = this.byId("idFOCVbox");
+        //     focVbox.bindElement({ path: focBindingPath, model: "fastAppData" });
+        //     const existingPriceCondition = !!priceConditions[focIndex]?.ExistingPriceConditionID;
+        //     Services.getFastAppDataModel().setProperty("/FOCRequired", false);
+        //     if(existingPriceCondition) Services.getFastAppDataModel().setProperty("/FOCRequired", true);
+        //     return focBindingPath;
+        // },
 
-        addDiscountConditions: async function(rappelBindingPath){
-            const rappelPriceCondition = Services.getFastAppDataModel().getProperty(rappelBindingPath);
-            if(rappelPriceCondition && rappelPriceCondition.ExistingPriceConditionID){
-                const discountConditions = (await Services.getService("PriceCondition").getDiscountConditions({
-                    PriceConditionID: rappelPriceCondition.ExistingPriceConditionID
-                })).data.results;
-                Services.getFastAppDataModel().setProperty(rappelBindingPath.concat("/DiscountConditions"), discountConditions);
-            }
-        },
+        // addDiscountConditions: async function(rappelBindingPath){
+        //     const rappelPriceCondition = Services.getFastAppDataModel().getProperty(rappelBindingPath);
+        //     if(rappelPriceCondition && rappelPriceCondition.ExistingPriceConditionID){
+        //         const discountConditions = (await Services.getService("PriceCondition").getDiscountConditions({
+        //             PriceConditionID: rappelPriceCondition.ExistingPriceConditionID
+        //         })).data.results;
+        //         Services.getFastAppDataModel().setProperty(rappelBindingPath.concat("/DiscountConditions"), discountConditions);
+        //     }
+        // },
 
-        addFOCs: async function(focBindingPath){
+        // addFOCs: async function(focBindingPath){
 
-            const focPriceCondition = Services.getFastAppDataModel().getProperty(focBindingPath);
-            if(focPriceCondition && focPriceCondition.ExistingPriceConditionID){
-                let focs = (await Services.getService("PriceCondition").getFocs({
-                    PriceConditionID: focPriceCondition.ExistingPriceConditionID
-                })).data.results;
+        //     const focPriceCondition = Services.getFastAppDataModel().getProperty(focBindingPath);
+        //     if(focPriceCondition && focPriceCondition.ExistingPriceConditionID){
+        //         let focs = (await Services.getService("PriceCondition").getFocs({
+        //             PriceConditionID: focPriceCondition.ExistingPriceConditionID
+        //         })).data.results;
 
-                let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
+        //         let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
 
-                focs = focs.map(freegood => {
-                    var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                    freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
-                    return freegood;
-                });
+        //         focs = focs.map(freegood => {
+        //             var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+        //             freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
+        //             return freegood;
+        //         });
 
 
-                Services.getFastAppDataModel().setProperty(focBindingPath.concat("/FreeGoodsOther"), focs);
-            }   
-        },
+        //         Services.getFastAppDataModel().setProperty(focBindingPath.concat("/FreeGoodsOther"), focs);
+        //     }   
+        // },
 
         getProducts: async function (){ 
             //load products
@@ -415,26 +416,26 @@ sap.ui.define([
 
         },
 
-        getCountryBrandFOCsCombined: async function(){
-            const oFastAppDataModel = Services.getFastAppDataModel();
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const focIndex = priceConditions ? priceConditions.findIndex(item => item.ConditionType === "FOC") : -1;
-            const focBindingPath = "/PriceConditionView/".concat(focIndex) + '/FreeGoodsOther';
-            let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
+        // getCountryBrandFOCsCombined: async function(){
+        //     const oFastAppDataModel = Services.getFastAppDataModel();
+        //     const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+        //     const focIndex = priceConditions ? priceConditions.findIndex(item => item.ConditionType === "FOC") : -1;
+        //     const focBindingPath = "/PriceConditionView/".concat(focIndex) + '/FreeGoodsOther';
+        //     let aFreeGoodsOther = oFastAppDataModel.getProperty(focBindingPath);
 
-			//load countryBrandProducts
-			let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
-            if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
-                aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
-                    var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
-                    freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
-                    return freegood;
-                });
+		// 	//load countryBrandProducts
+		// 	let aCountryBrandProducts = Services.getFastAppDataModel().getProperty("/CountryBrandProducts");
+        //     if(aFreeGoodsOther && aFreeGoodsOther.length > 0){
+        //         aFreeGoodsOther = aFreeGoodsOther.map(freegood => {
+        //             var countryBrandProduct = aCountryBrandProducts.find(countryBrandProduct => countryBrandProduct.PRODUCT_ID === freegood.ProductPackId);
+        //             freegood.ProductName = countryBrandProduct?.PRODUCT_NAME;
+        //             return freegood;
+        //         });
 
-                oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
+        //         oFastAppDataModel.setProperty(focBindingPath, aFreeGoodsOther);
 
-            }
-		},
+        //     }
+		// },
 
         getPriceConditionView: async function(){
 
@@ -463,55 +464,55 @@ sap.ui.define([
         /**
          * Get TenderHistory data for Spain using filters
          */
-        getTenderHistorySpain: async function(){
+        // getTenderHistorySpain: async function(){
 
-            BusyIndicator.show();
-            let aFilters = [];
-            let oFilters = [];
+        //     BusyIndicator.show();
+        //     let aFilters = [];
+        //     let oFilters = [];
 
-            const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
-            if(offer){
-                const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
-                    if(this.byId("currentInstituteCheckId").getSelected()){                    
-                        aFilters.push(new Filter({
-                            path: 'INSTITUTE_ID',
-                            operator: FilterOperator.EQ,
-                            value1: currentInstituteId
-                        }));
-                    }
-                    if(this.byId("wonCheckId").getSelected()){
-                        oFilters.push(new Filter({
-                            path: 'OUTCOME',
-                            operator: FilterOperator.EQ,
-                            value1: "Won"
-                        }));
-                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
-                    }                        
-                    if(this.byId("lossCheckId").getSelected()){
-                        oFilters.push(new Filter({
-                            path: 'OUTCOME',
-                            operator: FilterOperator.EQ,
-                            value1: "Lost"
-                        }));
-                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
-                    }
-                    //if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){  
-                        if(Services.getSelectedProductID()){             
-                            aFilters.push(new Filter({
-                                path: 'ProductCode',
-                                operator: FilterOperator.EQ,
-                                value1: Services.getSelectedProductID()
-                            }));
-                        }
-                    //}
+        //     const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+        //     if(offer){
+        //         const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+        //             if(this.byId("currentInstituteCheckId").getSelected()){                    
+        //                 aFilters.push(new Filter({
+        //                     path: 'INSTITUTE_ID',
+        //                     operator: FilterOperator.EQ,
+        //                     value1: currentInstituteId
+        //                 }));
+        //             }
+        //             if(this.byId("wonCheckId").getSelected()){
+        //                 oFilters.push(new Filter({
+        //                     path: 'OUTCOME',
+        //                     operator: FilterOperator.EQ,
+        //                     value1: "Won"
+        //                 }));
+        //                 aFilters.push(new sap.ui.model.Filter(oFilters, false));
+        //             }                        
+        //             if(this.byId("lossCheckId").getSelected()){
+        //                 oFilters.push(new Filter({
+        //                     path: 'OUTCOME',
+        //                     operator: FilterOperator.EQ,
+        //                     value1: "Lost"
+        //                 }));
+        //                 aFilters.push(new sap.ui.model.Filter(oFilters, false));
+        //             }
+        //             //if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){  
+        //                 if(Services.getSelectedProductID()){             
+        //                     aFilters.push(new Filter({
+        //                         path: 'ProductCode',
+        //                         operator: FilterOperator.EQ,
+        //                         value1: Services.getSelectedProductID()
+        //                     }));
+        //                 }
+        //             //}
                     
-                let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(aFilters);
+        //         let tenderHistorySpain = await Services.getService("PriceCondition").getTenderHistorySpain(aFilters);
                 
-                BusyIndicator.hide();
-                return tenderHistorySpain.data.results;
-            } else return null;
+        //         BusyIndicator.hide();
+        //         return tenderHistorySpain.data.results;
+        //     } else return null;
 
-        },
+        // },
 
 		setFinancialOffer: async function(){
 			//Edit offer copy to move back to original values during cancel
@@ -526,11 +527,11 @@ sap.ui.define([
 		},
 		refreshFinancialTabES: async function () {
 			await this.getProducts();
-            await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
-            await this.managePriceConditionClassification();
-            await this.managePriceConditions();
+            // await this.getProductTypeProfitability(Services.getSelectedOfferID(), Services.getSelectedCountry());
+            // await this.managePriceConditionClassification();
+            // await this.managePriceConditions();
 			this.setFinancialOffer();
-            await this.calculateProfitability();
+            // await this.calculateProfitability();
 		},
 
 		
@@ -564,42 +565,42 @@ sap.ui.define([
 			}
 		},
 
-        getProductTypeProfitability: async function (sOfferId, sCountryCode){
-            const oFastAppDataModel = Services.getFastAppDataModel();
+        // getProductTypeProfitability: async function (sOfferId, sCountryCode){
+        //     const oFastAppDataModel = Services.getFastAppDataModel();
 
-            if (sOfferId, sCountryCode) {
-				const response = await Services.getProductTypeProfitability(sOfferId, sCountryCode);
-                oFastAppDataModel.setProperty("/ProductTypeProfitability", response.data.results);
-				return response.data.results;
-			}
-        },
+        //     if (sOfferId, sCountryCode) {
+		// 		const response = await Services.getProductTypeProfitability(sOfferId, sCountryCode);
+        //         oFastAppDataModel.setProperty("/ProductTypeProfitability", response.data.results);
+		// 		return response.data.results;
+		// 	}
+        // },
 
-        getPriceConditionClassification: async function(){
+        // getPriceConditionClassification: async function(){
 
-            const oFastAppDataModel = Services.getFastAppDataModel();
-            const offer = oFastAppDataModel.getProperty("/SelectedOffer");
-            if(offer){
-                const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
-                const productType = selectedProduct?.SKU?.ProductType;
-                const filter = {
-                    "CountryCode": offer.CountryCode,
-                    "Classification": offer.Tender.Classification,
-                    "Division": offer.Division,
-                    "ProductTypes": ["All"]
-                    // "isMain": true
-                };
+        //     const oFastAppDataModel = Services.getFastAppDataModel();
+        //     const offer = oFastAppDataModel.getProperty("/SelectedOffer");
+        //     if(offer){
+        //         const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
+        //         const productType = selectedProduct?.SKU?.ProductType;
+        //         const filter = {
+        //             "CountryCode": offer.CountryCode,
+        //             "Classification": offer.Tender.Classification,
+        //             "Division": offer.Division,
+        //             "ProductTypes": ["All"]
+        //             // "isMain": true
+        //         };
 
-                // add Injector as filter
-                if(productType === "Injector"){
-                    filter.ProductTypes.push(productType);
-                }
+        //         // add Injector as filter
+        //         if(productType === "Injector"){
+        //             filter.ProductTypes.push(productType);
+        //         }
 
-                const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
-                return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
-            } else {
-                return null;
-            }
-        },
+        //         const priceConditionClassificationResponse = await Services.getService('PriceCondition').getPriceConditionClassification(filter);
+        //         return priceConditionClassificationResponse.data && priceConditionClassificationResponse.data.results;
+        //     } else {
+        //         return null;
+        //     }
+        // },
 
         getPriceConditionViewAllProduts: async function(){
             
@@ -1144,75 +1145,76 @@ sap.ui.define([
                
             // to solve some loading issues this code is needed
             if(!bBindingFinished && oFastAppDataModel.getProperty("/SelectedOffer")){
-                await this.managePriceConditionClassification();
-                await this.managePriceConditions();
+                // await this.managePriceConditionClassification();
+                // await this.managePriceConditions();
             } 
 
             // enable approval button
             this._checkApprovalEnabled();
 
-            // BusyIndicator.hide();
+            this.getView().getModel("finOfferView").setProperty("/FinPricingOfferSubsectionisBusy", false);
 
         },
 
         onPriceConditionChange: function(oEvent){
             const sConditionType = oEvent.getSource().getSelectedItem().getText();
             const classification = Services.getFastAppDataModel().getProperty("/SelectedOffer/Tender/Classification");            
-            this.loadMainPriceConditionFragment(sConditionType);
-            if(classification === "Commercial Agreement") this.calculateRoyalDecreeAppliesAndMainConditionPrice();
+            //this.loadMainPriceConditionFragment(sConditionType);
+            
         },
 
-        loadMainPriceConditionFragment: function(sConditionType){
+        // loadMainPriceConditionFragment: function(sConditionType){
 
-            // clear the VBox first
-            const vBox = this.byId("idPriceConditionVbox");
-            vBox.removeAllItems();
+        //     // clear the VBox first
+        //     const vBox = this.byId("idPriceConditionVbox");
+        //     vBox.removeAllItems();
 
-            const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-            const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
-            const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
-            const oFastAppDataModel = Services.getFastAppDataModel();
+        //     // const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
+        //     // const selectedPriceConditionsIndex = priceConditions.findIndex(item => item.ConditionType === sConditionType);
+        //     const sFragmentPath = "FAST_NS0FAST0.view.fragments.priceConditions"; 
+        //     const oFastAppDataModel = Services.getFastAppDataModel();
+        //     let sFragmentName = sConditionType.split(" ").join("");
 
-            if(selectedPriceConditionsIndex > -1) {
-                const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
-                let sFragmentName = sConditionType.split(" ").join("");
+        //     // if(selectedPriceConditionsIndex > -1) {
+        //     //     const bindingPath = "/PriceConditionView/".concat(selectedPriceConditionsIndex);
+        //     //     let sFragmentName = sConditionType.split(" ").join("");
 
-                // add RequestedVolume from the selected product to the PriceConditionView entity.
-                const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
-                const maxPrice = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.MaxPrice;
-                oFastAppDataModel.setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
-                if(sConditionType === 'Precio Neto' || sConditionType === 'Descuento Comercial'){
+        //     //     // add RequestedVolume from the selected product to the PriceConditionView entity.
+        //     //     const requestedVolume = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.RequestedVolume;
+        //     //     const maxPrice = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID())?.MaxPrice;
+        //     //     oFastAppDataModel.setProperty(bindingPath.concat("/RequestedVolume"), requestedVolume);
+        //     //     if(sConditionType === 'Precio Neto' || sConditionType === 'Descuento Comercial'){
                     
-                    if(sConditionType === 'Precio Neto'){                        
-                    oFastAppDataModel.setProperty(bindingPath.concat("/MaximumPrice"), maxPrice);}
+        //     //         if(sConditionType === 'Precio Neto'){                        
+        //     //         oFastAppDataModel.setProperty(bindingPath.concat("/MaximumPrice"), maxPrice);}
 
-                    //check if royal decree applies for precio netto and Descuento Comercial
-                    let oPrecioNettoCondition = oFastAppDataModel.getProperty(bindingPath);
-                    let instType = oFastAppDataModel.getProperty('/Tender/Institute/InstituteType');
-                    let discount = oPrecioNettoCondition.Discount ? oPrecioNettoCondition.Discount : 0;
-                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
-                    if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
-                } 
+        //     //         //check if royal decree applies for precio netto and Descuento Comercial
+        //     //         let oPrecioNettoCondition = oFastAppDataModel.getProperty(bindingPath);
+        //     //         let instType = oFastAppDataModel.getProperty('/Tender/Institute/InstituteType');
+        //     //         let discount = oPrecioNettoCondition.Discount ? oPrecioNettoCondition.Discount : 0;
+        //     //         if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+        //     //         if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
+        //     //     } 
                 
-                Services.setSelectedPriceConditionPath(bindingPath);
+        //     //     Services.setSelectedPriceConditionPath(bindingPath);
 
-                Fragment.load({
-                    id: this.getView().getId(),
-                    name: sFragmentPath.concat(".",sFragmentName),
-                    controller: this
-                }).then(function (oFragment) {
-                    if(Array.isArray(oFragment)){                
-                        oFragment.forEach(item => vBox.addItem(item));
-                    } else {
-                        vBox.addItem(oFragment);
-                    }
-                    vBox.bindElement({ path: bindingPath, model: "fastAppData" });
-                    // disable the busy indicator on the pricing subsection
-                    this.getView().getModel("finOfferView").setProperty("/FinPricingOfferSubsectionisBusy", false);
-                }.bind(this));
-            }
+        //         Fragment.load({
+        //             id: this.getView().getId(),
+        //             name: sFragmentPath.concat(".",sFragmentName),
+        //             controller: this
+        //         }).then(function (oFragment) {
+        //             if(Array.isArray(oFragment)){                
+        //                 oFragment.forEach(item => vBox.addItem(item));
+        //             } else {
+        //                 vBox.addItem(oFragment);
+        //             }
+        //             vBox.bindElement({ path: bindingPath, model: "fastAppData" });
+        //             // disable the busy indicator on the pricing subsection
+        //             this.getView().getModel("finOfferView").setProperty("/FinPricingOfferSubsectionisBusy", false);
+        //         }.bind(this));
+            
 
-        },
+        // },
 
         onLiveChangeNetPricesPrecioNeto: function(oEvent){
             const evt = oEvent;

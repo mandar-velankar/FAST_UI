@@ -165,108 +165,268 @@
 								visible="{fastAppData>/ExistingAgreementInPlace}">
 							</MessageStrip>
 						</VBox>
-                        <!-- <Panel expandable="true" headerText="Current Prices">
-                            <VBox id="idCurrentPricesVbox">
-                                <Label text="{i18n>PVL}" required="false"/>
-                                <Input 
-                                    value="{
-                                        parts: [
-                                            {path:'fastAppData>ProductCode'},
-                                            {path:'fastAppData>/ProductPricingView'},
-                                            {path:'fastAppData>PVL'},
-                                            {value: 6}
-                                        ],
-                                        formatter: '.formatter.formatUoMPrice'
-                                    }"
-                                    description="{fastAppData>masterPriceCurrency}" 
-                                    enabled="false" 
-                                    fieldWidth="50%"
-                                />
-                                <Label text="{i18n>PriceConditionPVL}" required="false" visible="false"/>
-                                <Input 
-                                    value="{
-                                        parts: [
-                                            {path:'fastAppData>ProductCode'},
-                                            {path:'fastAppData>/ProductPricingView'},
-                                            {path:'fastAppData>PriceConditionPVL'},
-                                            {value: 6}
-                                        ],
-                                        formatter: '.formatter.formatUoMPrice'
-                                    }"
-                                    description="{fastAppData>Currency}" 
-                                    enabled="false" 
-                                    visible="false"
-                                    fieldWidth="50%"
-                                />
-                                <Label text="{i18n>PVLPercentageChange}" visible="false"/>
-                                <Input value="{fastAppData>PVLPercentageChange}" enabled="false" visible="false" fieldWidth="80%"/>
-                                <Label text="{i18n>ConfidentialPrice}" required="false" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
-                                <Input 
-                                    value="{
-                                        parts: [
-                                            {path:'fastAppData>ProductCode'},
-                                            {path:'fastAppData>/ProductPricingView'},
-                                            {path:'fastAppData>YLAP'},
-                                            {value: 6}
-                                        ],
-                                        formatter: '.formatter.formatUoMPrice'
-                                    }"
-                                    visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
-                                    description="{fastAppData>masterPriceCurrency}" 
-                                    enabled="false" 
-                                    fieldWidth="50%"
-                                />
-                                <Label text="{i18n>PriceConditionConfidentialPrice}" required="false" visible="false"/>
-                                <Input 
-                                    value="{
-                                        parts: [
-                                            {path:'fastAppData>ProductCode'},
-                                            {path:'fastAppData>/ProductPricingView'},
-                                            {path:'fastAppData>ConfidentialPrice'},
-                                            {value: 6}
-                                        ],
-                                        formatter: '.formatter.formatUoMPrice'
-                                    }"
-                                    visible="false" 
-                                    description="{fastAppData>Currency}" 
-                                    enabled="false" 
-                                    fieldWidth="50%"
-                                />
-                                <Label text="{i18n>ConfidentialPricePercentageChange}" visible="false"/>
-                                <Input value="{fastAppData>ConfidentialPricePercentageChange}" enabled="false" visible="false" fieldWidth="80%"/>                                                        
-                            </VBox>
-                        </Panel> -->
-						<Panel expandable="true" headerText="Main Price Condition">
+                        <Panel expandable="true" headerText="Main Price Condition">
 							<VBox>
 								<HBox alignItems="Center">
 									<Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
 									<Select
 										id="idPriceConditionSelect"
-										enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
+										enabled="{= ${fastAppData>/EditMode}}"
 										forceSelection="false"
 										change=".onPriceConditionChange"
-										items="{
-											path: 'fastAppData>/PriceConditionClassification',
-											sorter: { path: 'ConditionType' },
-											filters : [
-												{ path : 'isMain', operator : 'EQ', value1 : true}
-											]
-										}">
-										<core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
+                                        selectedKey="{finOfferView>/selectedConditionType}"
+                                        >
+                                        <core:Item key="Discount" text="Discount" />
+                                        <core:Item key="CommercialProposal" text="Commercial Proposal" />
 									</Select>
 								</HBox>
 							</VBox>
 							<VBox id="idPriceConditionVbox">
-								<!-- Fragments of price conditions and its binding context are added/set dynamically from the controller. see 'onPriceConditionChange' method-->
+                                <form:SimpleForm
+                                    title="{finOfferView>/selectedConditionType}"
+                                    editable="false"
+                                    class="editableForm"
+                                    layout="ResponsiveGridLayout"
+                                    labelSpanXL="3"
+                                    labelSpanL="3"
+                                    labelSpanM="3"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="4"
+                                    emptySpanL="4"
+                                    emptySpanM="4"
+                                    emptySpanS="0"
+                                    columnsXL="1"
+                                    columnsL="1"
+                                    columnsM="1"
+                                    singleContainerFullSize="false" >
+                                    <form:content>
+                                    <Label text="{i18n>PriceList}"/>
+                                    <Input  
+                                        value="{= !${fastAppData>/EditMode} 
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>PriceConditionPVL'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                    {path:'fastAppData>ProductCode'},
+                                                    {path:'fastAppData>/ProductPricingView'},
+                                                    {path:'fastAppData>PVL'},
+                                                    {value: 2}
+                                                ],
+                                                formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        description="BRL" 
+                                        enabled="false" 
+                                        fieldWidth="80%"
+                                    />
+                                    <Label text="{i18n>TaxExemption}" required="true"/> 
+                                    <Select selectedKey="{= ${fastAppData>RoyalDecree} ? ${fastAppData>RoyalDecree} : 'No'}" enabled="{fastAppData>/EditMode}"> 
+                                        <items>
+                                            <core:Item key="No" text="No" />
+                                            <core:Item key="Yes" text="Yes" />
+                                        </items>
+                                    </Select>
+                                    <Label text="{i18n>Priceaftertaxexemption}" required="true" visible="{= ${fastAppData>/TaxExemption} !== 'No'}"/>
+                                    <Input 
+                                        value="{= !${fastAppData>/EditMode}
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>ConfidentialPrice'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>YLAP'},
+                                                {value: 2}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        visible="{= ${fastAppData>/TaxExemption} !== 'No'}" 
+                                        description="{fastAppData>masterPriceCurrency}" 
+                                        enabled="false" 
+                                        fieldWidth="80%"
+                                    />  
+                                    <Label text="{i18n>CAP}" required="true"/> 
+                                    <Select selectedKey="{= ${fastAppData>RoyalDecree} ? ${fastAppData>RoyalDecree} : 'No'}" enabled="{fastAppData>/EditMode}"> 
+                                        <items>
+                                            <core:Item key="No" text="No" />
+                                            <core:Item key="Yes" text="Yes" />
+                                        </items>
+                                    </Select>
+                                    <Label text="{i18n>Priceaftercap}" visible="{= ${fastAppData>/CAP} !== 'No'}"/>
+                                    <Input 
+                                        value="{= !${fastAppData>/EditMode}
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>ConfidentialPrice'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>YLAP'},
+                                                {value: 2}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        visible="{= ${fastAppData>/CAP} !== 'No'}" 
+                                        description="{fastAppData>masterPriceCurrency}" 
+                                        enabled="false" 
+                                        fieldWidth="80%"
+                                    /> 
+                                    <Label text="{i18n>StandardDiscount}"/>
+                                    <Input value="{path:'fastAppData>StandardDiscount', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
+                                    <Label text="{i18n>AdditionalDiscount}" required="{= ${finOfferView>/selectedConditionType} === 'Discount'}"/>
+                                    <Input 
+                                        value="{path:'fastAppData>AdditionalDiscount', type:'.types.percent'}" 
+                                        description="%" 
+                                        enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} === 'Discount'}" 
+                                        fieldWidth="80%"
+                                    />
+                                    <Label text="{i18n>CommercialProposal}" required="{= ${finOfferView>/selectedConditionType} !== 'Discount'}"/>
+                                    <Input 
+                                        value="{= !${fastAppData>/EditMode}
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>ConfidentialPrice'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>YLAP'},
+                                                {value: 2}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        
+                                        description="{fastAppData>masterPriceCurrency}" 
+                                        enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} !== 'Discount'}" 
+                                        fieldWidth="80%"
+                                    />
+                                    <Label text="{i18n>TaxEqualization}"/>
+                                    <Input 
+                                        value="{= !${fastAppData>/EditMode}
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>ConfidentialPrice'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>YLAP'},
+                                                {value: 2}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        
+                                        description="{fastAppData>masterPriceCurrency}" 
+                                        enabled="false" 
+                                        fieldWidth="80%"
+                                    />
+                                    <Label text="{i18n>InvoiveNotaFiscal}"/>
+                                    <Input 
+                                        value="{= !${fastAppData>/EditMode}
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>ConfidentialPrice'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>YLAP'},
+                                                {value: 2}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        
+                                        description="{fastAppData>masterPriceCurrency}" 
+                                        enabled="false" 
+                                        fieldWidth="80%"
+                                    />
+                                    <Label text="{i18n>ICMS}"/>
+                                    <Input 
+                                        value="{= !${fastAppData>/EditMode}
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>ConfidentialPrice'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>YLAP'},
+                                                {value: 2}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        
+                                        description="{fastAppData>masterPriceCurrency}" 
+                                        enabled="false" 
+                                        fieldWidth="80%"
+                                    />
+                                    <Label text="{i18n>NetPrice}"/>
+                                    <Input 
+                                        value="{= !${fastAppData>/EditMode}
+                                            ? ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>ConfidentialPrice'},
+                                                {value: 2},
+                                                {path: 'fastAppData>ExistingPriceConditionID'},
+                                                {path: 'fastAppData>ReferencePriceAgreement'}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            : ${parts: [
+                                                {path:'fastAppData>ProductCode'},
+                                                {path:'fastAppData>/ProductPricingView'},
+                                                {path:'fastAppData>YLAP'},
+                                                {value: 2}
+                                            ],
+                                            formatter: '.formatter.formatUoMPrice'}
+                                            }"
+                                        
+                                        description="{fastAppData>masterPriceCurrency}" 
+                                        enabled="false" 
+                                        fieldWidth="80%"
+                                    />
+                                    </form:content>
+                                </form:SimpleForm>
 							</VBox>
 						</Panel>
-						<!-- <VBox id="idRappelVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement'}">
-							<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.Rappel" type="XML" />
-						</VBox>
-						<VBox id="idFOCVbox" visible="{= ${fastAppData>/SelectedOffer/Tender/Classification} === 'Commercial Agreement' &amp;&amp; 
-										(${fastAppData>/SelectedOffer/Division} === 'Pharma' || ${fastAppData>/SelectedOffer/Division} === 'Radiology') }">
-							<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.priceConditions.FOC" type="XML" />
-						</VBox> -->
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>
 			</l:BlockLayout>
