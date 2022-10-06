@@ -222,6 +222,15 @@
 				</subSections>
 			</ObjectPageSection>
 
+            <!-- FINANCIAL OFFER BRAZIL TAB -->
+			<ObjectPageSection id="financialOfferId_BR" title="{i18n>FinancialOffer}" showTitle="true" visible="{fastAppData>/permissions/tabs/financialOfferId_BR/visible}">
+				<subSections>
+					<ObjectPageSubSection id="financialOffer_BR_SubSectionId">
+						<mvc:XMLView id="financialOfferViewId_BR" viewName="FAST_NS0FAST0.view.FinancialOffer_BR"/>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+
 			<!-- QUOTATION TAB -->
 			<ObjectPageSection id="quotationId" title="{i18n>Quotation}" visible="{fastAppData>/permissions/tabs/quotationId/visible}">
 				<subSections>
