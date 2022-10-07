@@ -173,7 +173,8 @@ sap.ui.define([
 			var sPath = oModel.createKey("/PT_TMOFPR", {
 				OfferID: oProductToSave.OfferID,
 				Active: oProductToSave.Active,
-				ProductCode: oProductToSave.ProductCode
+				ProductCode: oProductToSave.ProductCode,
+                LotID: oProductToSave.LotID
 			});
 
 			//Update
@@ -219,7 +220,8 @@ sap.ui.define([
 			var sPath = oModel.createKey("/PT_TMOFPR", {
 				OfferID: oProductToRemove.OfferID,
 				Active: oProductToRemove.Active,
-				ProductCode: oProductToRemove.ProductCode
+				ProductCode: oProductToRemove.ProductCode,
+                LotID: oProductToRemove.LotID
 			});
 
 			//remove
@@ -275,6 +277,7 @@ sap.ui.define([
 			oProductToSave.OfferType = oProductSaveInfo.OfferType;
             oProductToSave.AnticipatedRequestedQuantity = oProductSaveInfo.AnticipatedRequestedQuantity;
             oProductToSave.MaxPrice = oProductSaveInfo.MaxPrice;
+            oProductToSave.LotID = oProductSaveInfo.LotID;
 
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
