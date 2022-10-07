@@ -71,6 +71,7 @@ sap.ui.define([
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
 		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
         _sFinancialOfferPageSectionID_ES: "---tenderManagementDetailId--financialOfferId_ES",
+        _sFinancialOfferPageSectionID_BR: "---tenderManagementDetailId--financialOfferId_BR",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
@@ -173,6 +174,11 @@ sap.ui.define([
 
         getFinancialOfferPageSectionID_ES: function () {
 			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_ES;
+			return sPage;
+		},
+
+        getFinancialOfferPageSectionID_BR: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_BR;
 			return sPage;
 		},
 
@@ -1046,6 +1052,19 @@ sap.ui.define([
 							bVisible = false;
 						}
 						break;
+
+                    case this.getFinancialOfferPageSectionID_BR():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+
 					case this.getQuotationPageSectionID():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
@@ -2578,10 +2597,10 @@ sap.ui.define([
 		},
 
 		//Load 1 product
-		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
+		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo, sLotId) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
 
 			//Load product data
-			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ")";
+			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ",LotID=" + sLotId + ")";
 
 			var oDeferred = $.Deferred();
 			var that = this;
@@ -5574,6 +5593,12 @@ sap.ui.define([
 			return oNewProductInfo.SUPPLY_UPDATE;
 		},
 
+		getCurrentOfferStatus: function(sTenderID, sOfferID){ 
+			if(!sTenderID) return;
+			let offerId = sOfferID ? `'${sOfferID}'` : `''`;
+			return this.getDefaultModel().getProperty(`/TenderOfferMaster(TENDER_ID='${sTenderID}',OFFER_ID=${offerId})`)?.STATUS;
+		},
+
 		//check if offer status should be updated or created
 		checkOfferStatus: function (sImportTenderID, sImportOfferID) {
 
@@ -6481,7 +6506,7 @@ sap.ui.define([
 						break;
 					case "PUT":
 						//https://trello.com/c/np1g69g7
-						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave).then(function (
+						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave, oProductToSave.LotID).then(function (
 							oOriginalProductInfo) {
 
 							//when we are changing a product, we should check if data is changed that impacts the approval proces (supply update 1 or 0 for re-approval)
