@@ -1603,9 +1603,9 @@ sap.ui.define([
 				var oCountryFilter = new sap.ui.model.Filter("ChannelCountry", sap.ui.model.FilterOperator.EQ, sCountry);
 				aFilters.push(oCountryFilter);
 			}
-
-			aFilters.push(new sap.ui.model.Filter("ChannelName", sap.ui.model.FilterOperator.NE, 'OTC')); //exclude OTC
-
+            //EHQUT-196584-Add OTC/Drugstore customer list in "Offer Management" application
+			//aFilters.push(new sap.ui.model.Filter("ChannelName", sap.ui.model.FilterOperator.NE, 'OTC')); //exclude OTC
+            //EHQUT-196584-Add OTC/Drugstore customer list in "Offer Management" application
 			//Reading the back end data from the tender table
 			oFastDataCalls.read(sCountryChannelsPath, {
 				filters: aFilters,
