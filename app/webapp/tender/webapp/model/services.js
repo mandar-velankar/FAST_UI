@@ -2597,10 +2597,10 @@ sap.ui.define([
 		},
 
 		//Load 1 product
-		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
+		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo, sLotId) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
 
 			//Load product data
-			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ")";
+			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ",LotID=" + sLotId + ")";
 
 			var oDeferred = $.Deferred();
 			var that = this;
@@ -6506,7 +6506,7 @@ sap.ui.define([
 						break;
 					case "PUT":
 						//https://trello.com/c/np1g69g7
-						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave).then(function (
+						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave, oProductToSave.LotID).then(function (
 							oOriginalProductInfo) {
 
 							//when we are changing a product, we should check if data is changed that impacts the approval proces (supply update 1 or 0 for re-approval)
