@@ -5748,7 +5748,7 @@ sap.ui.define([
 
         onAddNewLot: function (event) {
             const oFastAppDataModel = Services.getFastAppDataModel();
-            const bindingPath = "/OfferLots";
+            const bindingPath = "/EditOffer/Lots/results";
             
 			let lots = oFastAppDataModel.getProperty(bindingPath) || [];
 			lots.push({
@@ -6247,6 +6247,7 @@ sap.ui.define([
 					oAddProduct.MinInvoiceAmount = "";
 					oAddProduct.DeliveryConditions = "";
 					oAddProduct.SKUS = oProduct.SKUS;
+                    oAddProduct.LotID = oProduct.COUNTRY_CODE === 'BR' ? Number(that.byId('idSelectLot').getSelectedKey()) : 1;
 					
 					oAddProduct.SKU = {
 						PRODUCTPACKNAME: oProduct.PRODUCT_NAME,
@@ -7181,6 +7182,19 @@ sap.ui.define([
 			}
 
 		},
+
+        //change selected lot brazil
+        onChangeSelectedLot: function (oEvent) {
+            const iSelectedLot = oEvent.getSource().getSelectedKey();
+            const oFastAppData = Services.getFastAppDataModel();
+            
+            let oTable = this.byId("editofferProductId");            
+            let aProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+            
+            if(aProducts.length > 0){
+                
+            }
+        },
 
 		//delete requested group purchasing
 		onDeleteRequestedGroupPurchasing: function (oEvent) {

@@ -6211,6 +6211,21 @@ sap.ui.define([
 
 			}
 
+            
+            //Get offer Lots to be saved at the same time
+            const oFastAppDataModel = that.getFastAppDataModel();
+            let aLots = oFastAppDataModel.getProperty('/OfferLots');
+
+            if(aLots.length > 0){
+                aLots.forEach(lot => {
+                    lot.LotID = Number(lot.LotID);
+                    promises.push(that.getService('Offer').createOfferLot(lot).catch(function (oError) {
+                        that.showErrorMessage(oError, "Creation of lot");
+                        throw new Error(oError);
+                    }));
+                });
+            }
+
 			//when finished
 			return Promise.all(promises).then((oResult) => {
 
@@ -6267,6 +6282,13 @@ sap.ui.define([
 		saveOffer: function (offer) {
 
 			const oOfferToSave = this.getService('Offer').getConvertOfferToSave(offer);
+
+			return this.getService('Offer').createOffer(oOfferToSave);
+		},
+
+        saveOfferLots: function (offer) {
+
+			const oLotsToSave = this.getFastAppDataModel.getProperty('/OfferLots');
 
 			return this.getService('Offer').createOffer(oOfferToSave);
 		},

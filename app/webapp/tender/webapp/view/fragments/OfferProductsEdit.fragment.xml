@@ -103,8 +103,8 @@
 							   width="100%">
 							<t:toolbar>
 								<Toolbar design="Solid">
-                                    <Select id="idSelectLot" 
-										items="{ path: 'fastAppData>/OfferLots' }"
+                                    <Select id="idSelectLot" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
+										items="{ path: 'fastAppData>/EditOffer/Lots/results' }"
 										change="onChangeSelectedLot">
 									    <core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
 								    </Select>

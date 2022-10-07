@@ -2,13 +2,13 @@
 	xmlns="sap.m" 
 	xmlns:core="sap.ui.core">
 
-	<Dialog id="AddLots" title="Add/Remove Lot Number" >
+	<Dialog id="AddLots" title="Add/Remove Lot Number" contentWidth="30%">
 		<buttons>
 			<Button text="Apply" press=".oApplyLots" />
 			<Button text="Cancel" press=".oCancelLots" />
 		</buttons>
 
-        <Table id="LotNumbers" items="{path:'fastAppData>/OfferLots'}">
+        <Table id="LotNumbers" items="{path:'fastAppData>/EditOffer/Lots/results'}">
 		<headerToolbar>
 			<OverflowToolbar>
 				<content>

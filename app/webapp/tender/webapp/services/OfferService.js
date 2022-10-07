@@ -332,6 +332,21 @@ sap.ui.define([
 
 		},
 
+        //delete lot
+        deleteOfferLot: function (oLotToSave){
+            //get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/Lots", {
+				OfferID: oLotToSave.OfferID,
+                LotID: oLotToSave.LotID
+			});
+
+			//Update
+			return this.odata(sPath).delete();
+        },
+
         //create lot product
         createLotProduct:function(oLotProductToSave){
 			var sPath = "/LotProduct";
