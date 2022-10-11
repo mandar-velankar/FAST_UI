@@ -112,7 +112,7 @@
 									<ToolbarSpacer/>
                                     <Button text="{i18n>AddLot}" icon="sap-icon://add-product" press="onAddLot" enabled="{= ${fastAppData>/EditOffer/Division} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"/>
 									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
-									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= ${fastAppData>/EditOffer/Division} &amp;&amp; ${fastAppData>/OfferLots/length} > 0 ? true : false }"/>
+									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= ${fastAppData>/EditOffer/Division} &amp;&amp; ${fastAppData>/EditOffer/Lots/results/length} > 0 ? true : false }"/>
 									<Button text="{i18n>Deleteprod}" icon="sap-icon://delete" press="onDeleteProductForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
 								</Toolbar>
 							</t:toolbar>

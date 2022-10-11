@@ -76,6 +76,8 @@ sap.ui.define([
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
 		_sDeliveryTrackingPageSectionID: "---tenderManagementDetailId--deliveryTrackingId",
 
+        _aLotsBeforeEdit: [],
+
 		//different Page sub-sections on detail page
 		_sBasicInformationPageSubSectionID: "---tenderManagementDetailId--basicInformationSubSectionId",
 
@@ -271,6 +273,14 @@ sap.ui.define([
 		getSelectedPriceConditionPath: function () {
 			return this._sSelectedPriceConditionPath;
 		},
+
+        getLotsBeforeEdit: function() {
+            return this._aLotsBeforeEdit;
+        },
+
+        setLotsBeforeEdit: function(aLots) {
+            this._aLotsBeforeEdit = aLots;
+        },
 
 		//get instituteID of selected ProductID
 		getInstituteIDofSelectedTender: function () {

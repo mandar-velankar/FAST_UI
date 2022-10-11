@@ -1853,6 +1853,14 @@ sap.ui.define([
 					//OFFER PRODUCTS TAB
 					that._showSectionFragment("OfferProductsView", "offerProductsId");
 					//TODO reload of data needed?
+
+                    //if we're in brazil, filter the offer products by the selected lot ID 
+                    let sCountryCode = Services.getCountryCodeofSelectedTender();
+                    if(sCountryCode === 'BR'){
+                        let iSelectedLotID = that.getView().byId('idSelectLotView').getSelectedKey();
+                        that.filterBySelectedLot(iSelectedLotID);
+                    }
+
 					break;
 				case Services.getFinancialOfferPageSectionID():
 					//FINANCIAL OFFER TAB
@@ -2373,6 +2381,12 @@ sap.ui.define([
 						if(that.byId('idDistributorName') && that.byId('idDistributorName').getSelectedItem() && that.byId('idDistributorName').getSelectedItem().getProperty('text') === 'No Distributor'){
 							that.byId('idDistributorName').setVisible(false);
 						}
+
+                        //if we're in brazil, filter the offer products by the selected lot ID 
+                        if(sCountryCode === 'BR'){
+                            let iSelectedLotID = that.getView().byId('idSelectLotView').getSelectedKey();
+                            that.filterBySelectedLot(iSelectedLotID);
+                        }
 
 						break;
 
@@ -4517,6 +4531,12 @@ sap.ui.define([
 				sorter: oSorter
 			});
 
+            //if we're in brazil, filter the offer products by the selected lot ID 
+            if(oOffer.CountryCode === 'BR'){
+                let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey();
+                this.filterBySelectedLot(iSelectedLotID);
+            }
+
 		},
 
 		//Delete offer button is clicked
@@ -5709,6 +5729,17 @@ sap.ui.define([
 			that.getView().addDependent(that._oDialog);
 			that._oDialog.open();
 
+            let sCountryCode = Services.getCountryCodeofSelectedTender();
+            if(sCountryCode === 'BR'){
+                let iSelectedLotID = Number(that.getView().byId('idSelectLotView').getSelectedKey());
+                const lotFilter = new Filter({
+                    path: 'LotID',
+                    value1: iSelectedLotID,
+                    operator: sap.ui.model.FilterOperator.EQ
+                });
+                sap.ui.getCore().byId("idListProductsOutput").getBinding("items")?.filter(lotFilter);
+            }
+
 			//Clear all fields
 			var oBrandList = sap.ui.getCore().byId("idBrandList");
 			var aBrandTokens = [];
@@ -5722,6 +5753,13 @@ sap.ui.define([
             
             //store original freegoodsother for cancellation
             const oFastAppDataModel = Services.getFastAppDataModel();
+            
+            //saving original state to  service array object so we can return to it's original state / compare when saving
+            const bindingPath = "/EditOffer/Lots/results";
+            let aLots = oFastAppDataModel.getProperty(bindingPath);
+            Services.setLotsBeforeEdit(aLots?.map(lot => {
+                return Object.create(lot);
+            }));
 
 			// create dialog lazily
 			if (!this.pDialogAddLots) {
@@ -5763,8 +5801,28 @@ sap.ui.define([
             oFastAppDataModel.updateBindings();            
 		},
 
-        oCancelLots: function () {
+        onDeleteLot: function (event) {
             const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/EditOffer/Lots/results";
+
+            //get deleted index
+            let sSelectedPath = event.getSource().getParent().getBindingContext('fastAppData').sPath;
+            let iIndex = parseInt(sSelectedPath.substring(sSelectedPath.lastIndexOf('/') + 1));
+
+            //get current entries
+            let aLots = oFastAppDataModel.getProperty(bindingPath);
+
+            aLots.splice(iIndex, 1);
+            oFastAppDataModel.refresh(true);
+        },
+
+        oCancelLots: function () {
+            //reset previous saved state and close the dialog
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/EditOffer/Lots/results";
+            const aLotsPreviousState = Services.getLotsBeforeEdit();
+			oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState);
+            oFastAppDataModel.refresh(true);
             
             if(this.pDialogAddLots){
 
@@ -6193,7 +6251,11 @@ sap.ui.define([
 
 				//Are there already products added? if yes we should check if this is not a double
 				if (aProducts) {
-					var iIndex = aProducts.findIndex(x => x.ProductCode === oProduct.PRODUCT_ID);
+                    if(Services.getSelectedCountry() === 'BR'){
+                        var iIndex = aProducts.findIndex(x => x.ProductCode === oProduct.PRODUCT_ID && x.LotID === Number(that.getView().byId("idSelectLot").getSelectedKey()));
+                    } else {
+                        iIndex = aProducts.findIndex(x => x.ProductCode === oProduct.PRODUCT_ID);
+                    }
 					if (iIndex === -1) {
 						//not found
 						bExisting = false;
@@ -7185,15 +7247,19 @@ sap.ui.define([
 
         //change selected lot brazil
         onChangeSelectedLot: function (oEvent) {
-            const iSelectedLot = oEvent.getSource().getSelectedKey();
-            const oFastAppData = Services.getFastAppDataModel();
+            const iSelectedLot = Number(oEvent.getSource().getSelectedKey());
+            this.filterBySelectedLot(iSelectedLot);
+        },
+
+        filterBySelectedLot: function(iSelectedLot){
+            const lotFilter = new Filter({
+                path: 'LotID',
+                value1: iSelectedLot,
+                operator: sap.ui.model.FilterOperator.EQ
+            });
             
-            let oTable = this.byId("editofferProductId");            
-            let aProducts = oFastAppData.getProperty("/EditOffer/Product/results");
-            
-            if(aProducts.length > 0){
-                
-            }
+            let oTable = !Services.getEditMode() ? this.byId("offerProductId") : this.byId("editofferProductId");
+            oTable.getBinding("rows").filter(lotFilter);
         },
 
 		//delete requested group purchasing
