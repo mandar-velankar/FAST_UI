@@ -5761,6 +5761,12 @@ sap.ui.define([
                 return Object.create(lot);
             }));
 
+            //get original state of products so we can use these upon cancel
+            let aExistingProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results");
+            this._aExistingProductsLotsEdit = aExistingProducts?.map(product => {
+                return Object.create(product);
+            });
+
 			// create dialog lazily
 			if (!this.pDialogAddLots) {
 				this.pDialogAddLots = Fragment.load({
@@ -5812,6 +5818,11 @@ sap.ui.define([
             //get current entries
             let aLots = oFastAppDataModel.getProperty(bindingPath);
 
+            //remove linked products
+            let aExistingProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results");
+            aExistingProducts = aExistingProducts?.filter(product => product.LotID === oFastAppDataModel.getProperty(sSelectedPath)?.LotID);
+			Services.removeProductsSaveInfo(aExistingProducts);
+
             aLots.splice(iIndex, 1);
             oFastAppDataModel.refresh(true);
         },
@@ -5819,9 +5830,15 @@ sap.ui.define([
         oCancelLots: function () {
             //reset previous saved state and close the dialog
             const oFastAppDataModel = Services.getFastAppDataModel();
+
+            //return lots to their original state
             const bindingPath = "/EditOffer/Lots/results";
             const aLotsPreviousState = Services.getLotsBeforeEdit();
 			oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState);
+
+            //return products to their original state - products can be removed when a lot is being removed
+            oFastAppDataModel.setProperty("/EditOffer/Product/results", this._aExistingProductsLotsEdit);
+
             oFastAppDataModel.refresh(true);
             
             if(this.pDialogAddLots){

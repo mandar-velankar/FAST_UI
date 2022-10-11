@@ -6174,7 +6174,7 @@ sap.ui.define([
 		//------
 
 		//actual saving of the product offer
-		saveProductOffer: function (sPath) {
+		saveProductOffer: async function (sPath) {
 
 			//that is this
 			var that = this;
@@ -6224,8 +6224,21 @@ sap.ui.define([
             
             //Get offer Lots to be saved at the same time
             const oFastAppDataModel = that.getFastAppDataModel();
-            let aLots = oFastAppDataModel.getProperty('/OfferLots');
+            let aLots = oFastAppDataModel.getProperty('/EditOffer/Lots/results');
+            let aExistingLots = await that.getService('Offer').getOfferLots(oOfferToSave.OfferID);
+            aExistingLots = aExistingLots?.data.results;
 
+            //delete removed lots
+            aExistingLots.forEach(lot => {
+                if(aLots.findIndex(editedLot => editedLot.LotID === lot.LotID) === -1){
+                    promises.push(that.getService('Offer').deleteOfferLot(lot).catch(function (oError) {
+                        that.showErrorMessage(oError, "Deletion of lot");
+                        throw new Error(oError);
+                    }));
+                }
+            });
+
+            //create/update new/existing lots
             if(aLots.length > 0){
                 aLots.forEach(lot => {
                     lot.LotID = Number(lot.LotID);
@@ -6298,9 +6311,9 @@ sap.ui.define([
 
         saveOfferLots: function (offer) {
 
-			const oLotsToSave = this.getFastAppDataModel.getProperty('/OfferLots');
+			const oLotsToSave = this.getFastAppDataModel.getProperty('/EditOffer/Lots/results');
 
-			return this.getService('Offer').createOffer(oOfferToSave);
+			return this.getService('Offer').createOffer(oLotsToSave);
 		},
 
 		sendMail: function (mail) {

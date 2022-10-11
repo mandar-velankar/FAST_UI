@@ -261,7 +261,7 @@ sap.ui.define([
             return oConvertedSaveInfo;
 		},
 
-        getOfferLots:function(sOfferID){
+        getOfferLots: async function(sOfferID){
 			
 			var sPath = "/Lots";
 
@@ -310,15 +310,7 @@ sap.ui.define([
         createOfferLot:function(oLotToSave){
 			var sPath = "/Lots";
 
-			//Create
-			return this.odata(sPath).post(oLotToSave);
-			
-		},
-		
-		//update lot
-		updateOfferLot: function (oLotToSave) {
-
-			//get model for calls
+            //get model for calls
 			var oModel = Services.getDefaultModel();
 
 			//path of offer that is selected
@@ -327,9 +319,9 @@ sap.ui.define([
                 LotID: oLotToSave.LotID
 			});
 
-			//Update
+			//Create
 			return this.odata(sPath).put(oLotToSave);
-
+			
 		},
 
         //delete lot
