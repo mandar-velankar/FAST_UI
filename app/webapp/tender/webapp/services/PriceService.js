@@ -45,6 +45,7 @@ sap.ui.define([
 			//path of price
 			var sPath = oModel.createKey("/PT_TMBDPR", {
 				OfferID: oPriceToSave.OfferID,
+				LotID: oPriceToSave.LotID,
 				ProductCode: oPriceToSave.ProductCode,
 				Active: oPriceToSave.Active,
 				ActiveTier: oPriceToSave.ActiveTier
@@ -64,6 +65,7 @@ sap.ui.define([
 			var sPath = oModel.createKey("/ProductPricing", {
 				ID: oProductPrice.ID,
 				OfferID: oProductPrice.OfferID,
+				LotID: oProductPrice.LotID,
 				ProductCode: oProductPrice.ProductCode,
 				CountryCode: oProductPrice.CountryCode
 			});
@@ -114,6 +116,7 @@ sap.ui.define([
 			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
+			oProductPriceToSave.LotID = oProductPriceSaveInfo.LotID;
 
 			if (oProductPriceSaveInfo.FreeGoodsOther) {
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
@@ -283,6 +286,7 @@ sap.ui.define([
 			oPriceToSave.NetPrice = (oPriceSaveInfo.NetPrice === null) ? null : oPriceSaveInfo.NetPrice.toString();
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
+			oPriceToSave.LotID = 1;
 
 			if (oPriceSaveInfo.ID) {
 				oPriceToSave.ID = oPriceSaveInfo.ID;
