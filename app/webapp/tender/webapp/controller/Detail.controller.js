@@ -5855,6 +5855,9 @@ sap.ui.define([
 
                 this.pDialogAddLots.then(pDialog => pDialog.close());
             }
+
+            const iSelectedLot = Number(this.getView().byId('idSelectLotView').getSelectedKey());
+            this.filterBySelectedLot(iSelectedLot);
                 
         },
 
@@ -7265,6 +7268,7 @@ sap.ui.define([
         //change selected lot brazil
         onChangeSelectedLot: function (oEvent) {
             const iSelectedLot = Number(oEvent.getSource().getSelectedKey());
+            //const iSelectedLot = Number(this.getView().byId('idSelectLotView').getSelectedKey());
             this.filterBySelectedLot(iSelectedLot);
         },
 
