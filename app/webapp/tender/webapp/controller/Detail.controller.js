@@ -544,7 +544,6 @@ sap.ui.define([
 			oDetailController.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
 			oDetailController.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
 
-
 		},
 
 		/**
@@ -1848,6 +1847,7 @@ sap.ui.define([
 							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(true);
 						}else{
 							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(bShowTenderType);
+							sCountry === "BR" && that.getView().byId("idSelectTenderType")?.setVisible(bShowTenderType);
 						}
 					});
 
@@ -2582,6 +2582,13 @@ sap.ui.define([
 					Services.loadCountryBiddingTypeLevel2(sCountryCode, sBiddingTypeLevel1Id);
 					Services.loadCountryBiddingTypeLevel3(sCountryCode, sBiddingTypeLevel2Id);
 				}); 
+
+				// Brazil only - Classification should default to Tender
+				const oSelectClassification = that.byId("idClassification");
+				if(Services.getSelectedCountry() === 'BR' && oSelectClassification){
+					oSelectClassification.setSelectedKey('Tender');
+					oSelectClassification.setEnabled(false);
+				};
 				
 			});
 
@@ -4152,6 +4159,9 @@ sap.ui.define([
 							Services.setSelectedProductID("");
 							Services.setSelectedProductName("");
 							Services.setSelectedProductPath("");
+
+							// Brazil only
+							Services.getSelectedCountry() === "BR" && that.getView().byId("idSelectTenderType").setVisible(true);
 						});
 
 					// }
