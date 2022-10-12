@@ -6077,11 +6077,11 @@ sap.ui.define([
 
 		getOfferProductsChannelWarningMessage: function(channel, distributor){
 			if(!channel || !distributor) return;
-			const sDistributorToBayerMessage = "You are changing the tender channel. This will inform the distributor that we are" +
-												"refusing the opportunity and will lead to some changes in the FAST process." + 
+			const sDistributorToBayerMessage = "You are changing the tender channel. This will inform the distributor that we are " +
+												"refusing the opportunity and will lead to some changes in the FAST process. " + 
 												"Once the distributor is informed, you will not be able to change the status again";
-			const sBayerToDistributorMessage = "You are changing the tender channel. This will lead to some changes in the FAST" + 
-												"process and inform the distributor about the opportunity at the end of the process." +
+			const sBayerToDistributorMessage = "You are changing the tender channel. This will lead to some changes in the FAST " + 
+												"process and inform the distributor about the opportunity at the end of the process. " +
 												"Once you confirmed, you will not be able to change the status again";
 			let sMessage = "";
 			// from Bayer to Distributor
