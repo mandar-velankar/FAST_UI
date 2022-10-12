@@ -4535,7 +4535,7 @@ sap.ui.define([
 			});
 
             //if we're in brazil, filter the offer products by the selected lot ID 
-            if(oOffer.CountryCode === 'BR'){
+            if(Services.getSelectedCountry() === 'BR'){
                 let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey();
                 this.filterBySelectedLot(iSelectedLotID);
             }
