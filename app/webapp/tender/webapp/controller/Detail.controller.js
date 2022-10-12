@@ -1847,6 +1847,7 @@ sap.ui.define([
 							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(true);
 						}else{
 							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(bShowTenderType);
+							sCountry === "BR" && that.getView().byId("idSelectTenderType")?.setVisible(bShowTenderType);
 						}
 					});
 
@@ -4158,6 +4159,9 @@ sap.ui.define([
 							Services.setSelectedProductID("");
 							Services.setSelectedProductName("");
 							Services.setSelectedProductPath("");
+
+							// Brazil only
+							Services.getSelectedCountry() === "BR" && that.getView().byId("idSelectTenderType").setVisible(true);
 						});
 
 					// }
