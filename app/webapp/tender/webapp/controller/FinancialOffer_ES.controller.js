@@ -1544,8 +1544,13 @@ sap.ui.define([
                                 sFOCType = oPriceCondition.FOCType;
                                 sFOCBonus = aFreeGoodsOther && aFreeGoodsOther.length > 0 ? +(aFreeGoodsOther[0].FOCBonus) : 0;
                                 if (oProductConditionView.ConditionType === 'PVL'){
-                                    //let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                    netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice ) : (+oProductConditionView.PVL );
+                                    let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
+                                    if( instType === "Private Account" || instType === "Cluster"){
+                                        netPrice = oProductConditionView.PriceConditionPVL;
+                                    } else {
+                                        netPrice = oProductConditionView.ConfidentialPrice;                                        
+                                    }
+
                                 } else {
                                     netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                                 }
@@ -1634,8 +1639,12 @@ sap.ui.define([
 
                             let oPriceCondition = aProductPricingView && aProductPricingView.length > 0 ? aProductPricingView.filter(priceCondition => priceCondition.ProductCode === product.SKU.PRODUCTPACKID)[0] : null;   
                             if (oProductConditionView.ConditionType === 'PVL'){
-                                //let factor = oPriceCondition.UOM === 'Unit' ? oPriceCondition.PACKFACTOR : 1;
-                                netPrice = oProductConditionView.ConfidentialPrice ? (+oProductConditionView.ConfidentialPrice) : (+oProductConditionView.PVL);
+                                let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
+                                    if( instType === "Private Account" || instType === "Cluster"){
+                                        netPrice = oProductConditionView.PriceConditionPVL;
+                                    } else {
+                                        netPrice = oProductConditionView.ConfidentialPrice;
+                                    }
                             } else {
                                 netPrice = oProductConditionView.NetPriceWithoutTaxAfterDeductionRD ? +oProductConditionView.NetPriceWithoutTaxAfterDeductionRD : +oProductConditionView.NetPriceWithoutTax;
                             }
