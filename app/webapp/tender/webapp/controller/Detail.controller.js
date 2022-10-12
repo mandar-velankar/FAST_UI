@@ -2876,6 +2876,9 @@ sap.ui.define([
 					case Services.getOfferProductPageSectionID():
 
 						//if we are on Offer Product Page we should clear the following
+                        const aLotsPreviousState = Services.getLotsBeforeEdit();
+                        const bindingPath = "/EditOffer/Lots/results";
+                        oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState);
 						Services.clearAllForOfferProductPage();
 
 						break;
