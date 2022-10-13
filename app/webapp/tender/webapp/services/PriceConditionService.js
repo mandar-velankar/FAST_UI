@@ -215,13 +215,13 @@ sap.ui.define([
                         convertedConfPrice = oPriceConditionViewObject.YLAP;
                     }
                 
-                let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
+                /*let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
                 
 
                 if(instType === "Private Account"){
                     convertedConfPrice = null;
                     
-                } 
+                } */
             }
                       
             let obj = {

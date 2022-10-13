@@ -51,8 +51,8 @@
 						</Select>
                         <!--EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page -->
 						<!-- Filter for CreatedBy -->
-                        <Select id="idSlctCreatedBy" change=".setFilter" width="200px"   items="{ path: 'fastAppData>/Users/'}" visible="true" >
-                        <core:Item  key="{fastAppData>/User/UserID}" text="{fastAppData>User/UserName}" />
+                        <Select id="idSlctCreatedBy" change=".setFilter" width="200px"   items="{ path: 'fastAppData>/CountryApprovers'}" visible="true" >
+                        <core:Item  key="{fastAppData>ApproverID}" text="{fastAppData>ApproverName}" />
                          </Select> 
 
                         <!-- Filter for Institute -->
@@ -181,9 +181,16 @@
 							<ObjectIdentifier title="{i18n>pubcndte}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
-					
+
+					<!--EHQUT-189207-Creation date instead of bid duedate- -->
+                    <Column id="idCreationDate" minScreenWidth="920px" width="6rem">
+                        <header>
+                            <ObjectIdentifier title="{i18n>CreationDate}" titleActive="true" titlePress="onClick"/>
+                        </header>
+                    </Column>
+
 					<!-- bid due date -->
-					<Column minScreenWidth="920px" width="6rem">
+					<Column id="idDueDate" minScreenWidth="920px" width="6rem">
 						<header>
 							<ObjectIdentifier title="{i18n>BidDueDate}" titleActive="true" titlePress="onClick"/>
 						</header>

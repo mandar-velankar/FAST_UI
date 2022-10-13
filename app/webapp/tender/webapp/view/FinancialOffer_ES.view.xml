@@ -176,30 +176,13 @@
                                             {path:'fastAppData>PVL'},
                                             {value: 6}
                                         ],
-                                        formatter: '.formatter.formatUoMPrice'
+                                        formatter: '.formatter.formatUoMCurrentPrice'
                                     }"
                                     description="{fastAppData>masterPriceCurrency}" 
                                     enabled="false" 
                                     fieldWidth="50%"
                                 />
-                                <Label text="{i18n>PriceConditionPVL}" required="false" visible="false"/>
-                                <Input 
-                                    value="{
-                                        parts: [
-                                            {path:'fastAppData>ProductCode'},
-                                            {path:'fastAppData>/ProductPricingView'},
-                                            {path:'fastAppData>PriceConditionPVL'},
-                                            {value: 6}
-                                        ],
-                                        formatter: '.formatter.formatUoMPrice'
-                                    }"
-                                    description="{fastAppData>Currency}" 
-                                    enabled="false" 
-                                    visible="false"
-                                    fieldWidth="50%"
-                                />
-                                <Label text="{i18n>PVLPercentageChange}" visible="false"/>
-                                <Input value="{fastAppData>PVLPercentageChange}" enabled="false" visible="false" fieldWidth="80%"/>
+                                
                                 <Label text="{i18n>ConfidentialPrice}" required="false" visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}"/>
                                 <Input 
                                     value="{
@@ -209,31 +192,13 @@
                                             {path:'fastAppData>YLAP'},
                                             {value: 6}
                                         ],
-                                        formatter: '.formatter.formatUoMPrice'
+                                        formatter: '.formatter.formatUoMCurrentPrice'
                                     }"
                                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                                     description="{fastAppData>masterPriceCurrency}" 
                                     enabled="false" 
                                     fieldWidth="50%"
-                                />
-                                <Label text="{i18n>PriceConditionConfidentialPrice}" required="false" visible="false"/>
-                                <Input 
-                                    value="{
-                                        parts: [
-                                            {path:'fastAppData>ProductCode'},
-                                            {path:'fastAppData>/ProductPricingView'},
-                                            {path:'fastAppData>ConfidentialPrice'},
-                                            {value: 6}
-                                        ],
-                                        formatter: '.formatter.formatUoMPrice'
-                                    }"
-                                    visible="false" 
-                                    description="{fastAppData>Currency}" 
-                                    enabled="false" 
-                                    fieldWidth="50%"
-                                />
-                                <Label text="{i18n>ConfidentialPricePercentageChange}" visible="false"/>
-                                <Input value="{fastAppData>ConfidentialPricePercentageChange}" enabled="false" visible="false" fieldWidth="80%"/>                                                        
+                                />                                                     
                             </VBox>
                         </Panel>
 						<Panel expandable="true" headerText="Main Price Condition">

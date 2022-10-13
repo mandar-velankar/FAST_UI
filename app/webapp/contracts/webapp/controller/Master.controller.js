@@ -86,7 +86,7 @@ sap.ui.define([
 			this.setModel(this.ctrState.getModel(), "ctr");
             //EHQUT-SCTASK0103493-Update Institute List in Contract Management
             let oModel = this.getModel('ctr');
-            oModel.setSizeLimit(7000);
+            oModel.setSizeLimit(5000);
             //EHQUT-SCTASK0103493-Update Institute List in Contract Management
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().getRoute("object").attachPatternMatched(this._onMasterMatched, this);
@@ -306,6 +306,16 @@ sap.ui.define([
 				groupBy: "None"
 			});
 		},
+        // EHQUT 192851-Add OTC customer group for "Contract Management" app
+        onChangeInstituteType: function(oEvent){
+
+            var result=this.byId("idChannelNewContract").getSelectedItem();
+            var institutetype=result.mProperties.text;
+            this.byId("idInstituteNewContract").setBusy(true, 0);
+			this.getInstitutes(this.ctrState.getNewContract().countryCode,institutetype).then(() => {
+                this.byId("idInstituteNewContract").setBusy(false);
+            });
+        },
 
 		_onMasterMatched :  function() {
 			//Set the layout property of the FCL control to 'OneColumn'
@@ -317,7 +327,7 @@ sap.ui.define([
 						
 				//this.getInstitutes(this.ctrState.getNewContract().countryCode);
 				//this.getDistributors(this.ctrState.getNewContract().countryCode);
-				this.getChannels();
+				//this.getChannels();
 
 				this.setFilter();
 			})
@@ -457,19 +467,20 @@ sap.ui.define([
 		onCancelNewContract: function(oEvent){
 			this._getCreateContractDialog().close();
 		},
-
+        // EHQUT 192851-Add OTC customer group for "Contract Management" app
 		onChangeCountry: function(oEvent){
 
 			//Different distributors for different countries
 			this.getDistributors(this.ctrState.getNewContract().countryCode);
 			this.getSellingCompanies(this.ctrState.getNewContract().countryCode);
 			this.getCountryCurrencies(this.ctrState.getNewContract().countryCode);
-
-			this.byId("idInstituteNewContract").setBusy(true, 0);
-			this.getInstitutes(this.ctrState.getNewContract().countryCode).then(() => {
-				this.byId("idInstituteNewContract").setBusy(false);
-			});
-			this.getChannels();
+            this.getInstituteTypeName(this.ctrState.getNewContract().countryCode);
+           // this.byId("idInstituteNewContract").setSelectedKey="";
+			//this.byId("idInstituteNewContract").setBusy(true, 0);
+			//this.getInstitutes(this.ctrState.getNewContract().countryCode).then(() => {
+				//this.byId("idInstituteNewContract").setBusy(false);
+			//});
+			//this.getChannels();
 		},
 
 		getAppConfig: async function(sCountryCode){
@@ -484,10 +495,10 @@ sap.ui.define([
 		/**
 		 * Get list of institutes 
 		 */
-		getInstitutes: async function(sCountryCode){
+		getInstitutes: async function(sCountryCode,sInstituteType){
 			try{
 
-				await this.ctrState.getInstitutes(sCountryCode);
+				await this.ctrState.getInstitutes(sCountryCode,sInstituteType);
 
 			} catch(error){
 				console.error(error);
@@ -496,6 +507,21 @@ sap.ui.define([
 				this.getOwnerComponent().oListSelector.clearMasterListSelection();
 			}
 		},
+       // EHQUT 192851-Add OTC customer group for "Contract Management" app
+        getInstituteTypeName: function(sCountryCode){
+            this.getView().setBusy(true);
+            this.ctrState.getInstituteTypeName(sCountryCode)
+            .then(() => {
+                this.getView().setBusy(false);
+            })
+            .catch((error) => {
+                console.error(error);
+                this.getView().setBusy(false);
+                this.getRouter().getTargets().display("detailObjectNotFound");
+                this.getOwnerComponent().oListSelector.clearMasterListSelection();
+            });
+        },
+
 
 		/**
 		 * Get list of countries 
@@ -751,7 +777,7 @@ sap.ui.define([
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
 			var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			//var oChannel = this.byId("idSlctChannel").getSelectedItem() ? this.byId("idSlctChannel").getSelectedItem().getKey() : "All";
-			let oChannel = 'OTC';
+			let oChannel = '';
 			var sSearch = this.byId("idSearch").getProperty("value");
 
 			//Add filters if they are set (so not the default, all...)
@@ -774,7 +800,7 @@ sap.ui.define([
 			if (sSearch.length > 0) {
 
 				orFilters.push(new Filter({
-					path: "channel",
+					path: "institutetype",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false
