@@ -5737,6 +5737,7 @@ sap.ui.define([
             let sCountryCode = Services.getCountryCodeofSelectedTender();
             if(sCountryCode === 'BR'){
                 let iSelectedLotID = Number(that.getView().byId('idSelectLotView').getSelectedKey());
+                iSelectedLotID = oFastAppDataModel.getProperty('/SelectedLot');
                 const lotFilter = new Filter({
                     path: 'LotID',
                     value1: iSelectedLotID,
@@ -5788,9 +5789,6 @@ sap.ui.define([
 
 			this.pDialogAddLots.then(function (oDialogAddLots) {
                 const oTable = this.byId("LotNumbers");
-                
-                //oTable.bindElement({ path: bindingPath, model: "fastAppData"});
-				//this.byId("FreeGoodsOtherTable").setBindingContext(this.byId("FinPricingOfferSubsection").getBindingContext("fastAppData"), "fastAppData");
 				oDialogAddLots.open();
 			}.bind(this));
 		},
@@ -5855,13 +5853,16 @@ sap.ui.define([
 
         oApplyLots: function () {
             const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/EditOffer/Lots/results";
+            const aLots = oFastAppDataModel.getProperty(bindingPath);
             
             if(this.pDialogAddLots){
 
                 this.pDialogAddLots.then(pDialog => pDialog.close());
             }
 
-            const iSelectedLot = Number(this.getView().byId('idSelectLotView').getSelectedKey());
+            const iSelectedLot = aLots && aLots.length > 0 ? Number(aLots[0].LotID) : 0;
+            oFastAppDataModel.setProperty('/SelectedLot', iSelectedLot);
             this.filterBySelectedLot(iSelectedLot);
                 
         },
@@ -7273,7 +7274,7 @@ sap.ui.define([
         //change selected lot brazil
         onChangeSelectedLot: function (oEvent) {
             const iSelectedLot = Number(oEvent.getSource().getSelectedKey());
-            //const iSelectedLot = Number(this.getView().byId('idSelectLotView').getSelectedKey());
+            Services.getFastAppDataModel().setProperty('/SelectedLot', iSelectedLot);
             this.filterBySelectedLot(iSelectedLot);
         },
 
