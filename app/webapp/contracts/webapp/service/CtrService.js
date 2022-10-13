@@ -39,7 +39,8 @@ sap.ui.define([
 		/**
 		 * Get a list of institutes
 		 */
-		getInstitutes: function (sCountryCode) {
+        // EHQUT 192851-Add OTC customer group for "Contract Management" app
+		getInstitutes: function (sCountryCode,sInstituteType) {
 			
 			let sPath = "/TenderInstitute";
 
@@ -48,13 +49,37 @@ sap.ui.define([
 				operator: FilterOperator.EQ,
 				value1: sCountryCode
 			});
+            var oInstituteFilter = new Filter({
+                path: 'InstituteType',
+                operator: FilterOperator.EQ,
+                value1: sInstituteType
+            });
 
 			var mParameters = {
-				filters: [oCountryFilter]
+				filters: [oCountryFilter,oInstituteFilter]
 			};
 
 			return this.odata(sPath).get(mParameters);
 		},
+
+        // EHQUT 192851-Add OTC customer group for "Contract Management" app
+        getInstituteTypeName: function (sCountryCode) {
+            
+            let sPath = "/CountryChannels";
+
+            var oCountryFilter = new Filter({
+                path: 'ChannelCountry',
+                operator: FilterOperator.EQ,
+                value1: sCountryCode
+            });
+
+            var mParameters = {
+                filters: [oCountryFilter]
+               
+            };
+
+            return this.odata(sPath).get(mParameters);
+        },
 
 		/**
 		 * Get a list of sellingcompanies 

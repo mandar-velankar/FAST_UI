@@ -6856,6 +6856,7 @@ sap.ui.define([
 		},
 
 		InstituteName_f4: function (oEvent) {
+            this.getView().setBusy(true);
 			var model_f4 = this.getView().getModel("fastData");
 			var sPath = "/PT_TMINST";
 			var data;
@@ -6912,12 +6913,12 @@ sap.ui.define([
 					});
 					that.valueHelpBasicInsSlctDialog.setModel(stateModel);
 					that.valueHelpBasicInsSlctDialog.open();
+                    that.getView().setBusy(false);
 
 				},
 				error: function (oError) {
-
+                    that.getView().setBusy(false);
 					Services.showErrorMessage(oError, "Institute loading");
-
 				}
 			});
 			var handleCloseInstituteName = async function (oEvent) {
@@ -10441,8 +10442,9 @@ sap.ui.define([
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
             aRAMs = oFastAppDataModel.getProperty('/CountryApprovers');
-
-            aRAMs = aRAMs.filter(ram => ram.Division === sDivision && ram.ApproverType === 'BU/RAM');
+ 
+            //EHQUT-197300-Spain – notification e-mail to RAMs
+            aRAMs = aRAMs.filter(ram => ram.Division === sDivision && ram.ApproverType === 'EmailKAM');
             oFastAppDataModel.setProperty('/CountryApprovers', aRAMs);
 			
 			oEditor.setValue(template.value);
