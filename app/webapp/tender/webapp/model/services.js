@@ -6239,7 +6239,7 @@ sap.ui.define([
             });
 
             //create/update new/existing lots
-            if(aLots.length > 0){
+            if(aLots && aLots.length > 0){
                 aLots.forEach(lot => {
                     lot.LotID = Number(lot.LotID);
                     promises.push(that.getService('Offer').createOfferLot(lot).catch(function (oError) {
