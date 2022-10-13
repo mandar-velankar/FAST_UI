@@ -10023,7 +10023,8 @@ sap.ui.define([
 						AwardActing: oResultForTree.AwardActing,
                         Appeal: oResultForTree.APPEAL,
                         TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
-                        InfoNeeded: oResultForTree.INFONEEDED                        
+                        InfoNeeded: oResultForTree.INFONEEDED,
+						LotID: 1 // TODO: for Brazil this value should be dynamic                       
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
