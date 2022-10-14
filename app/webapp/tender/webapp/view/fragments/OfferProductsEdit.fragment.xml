@@ -103,10 +103,16 @@
 							   width="100%">
 							<t:toolbar>
 								<Toolbar design="Solid">
+                                    <Select id="idSelectLot" selectedItem="{fastAppData>/SelectedLot}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
+										items="{ path: 'fastAppData>/EditOffer/Lots/results' }"
+										change="onChangeSelectedLot">
+									    <core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
+								    </Select>
 									
 									<ToolbarSpacer/>
+                                    <Button text="{i18n>AddLot}" icon="sap-icon://add-product" press="onAddLot" enabled="{= ${fastAppData>/EditOffer/Division} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"/>
 									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
-									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= ${fastAppData>/EditOffer/Division} ? true : false }"/>
+									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= (${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/EditOffer/Division}) || ( ${fastAppData>/Tender/CountryCode} === 'BR' &amp;&amp; ${fastAppData>/EditOffer/Division} &amp;&amp; ${fastAppData>/EditOffer/Lots/results/length} > 0) ? true : false }"/>
 									<Button text="{i18n>Deleteprod}" icon="sap-icon://delete" press="onDeleteProductForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
 								</Toolbar>
 							</t:toolbar>
@@ -163,12 +169,23 @@
 												    		     wrapping="true" 
 															     required="{fastAppData>/permissions/tables/editofferProductId/OfferType/required}"/>
 									<t:template>
-										<Select selectedKey="{fastAppData>OfferType}">
+										<Select selectedKey="{fastAppData>OfferType}" visible="{= ${fastAppData>/Tender/CountryCode} !== 'BR'}">
 											<items>
 												<core:Item text="" key=""/>
 												<core:Item text="Selling" key="Selling"/>
 												<core:Item text="Rental" key="Rental" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
 												<core:Item text="Comodato" key="Comodato" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
+
+                                        <Select selectedKey="{fastAppData>OfferType}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR'}">
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Selling" key="Selling"/>
+												<core:Item text="Comodato" key="Comodato"/>
 											</items>
 											<layoutData>
 												<l:GridData span="L6 M6 S6"/>
