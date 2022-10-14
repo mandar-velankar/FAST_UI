@@ -29,7 +29,8 @@ sap.ui.define([
 			//path of price
 			var sPath = oModel.createKey("/PT_TMTRRES", {
 				OfferID: oResultToSave.OfferID,
-				ProductCode: oResultToSave.ProductCode
+				ProductCode: oResultToSave.ProductCode,
+				LotID: oResultToSave.LotID,
 			});
 
 			//oResultToSave.AwardedPrice = parseFloat(oResultToSave.AwardedPrice);

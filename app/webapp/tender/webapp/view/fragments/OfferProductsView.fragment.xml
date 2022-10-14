@@ -168,6 +168,15 @@
 					 width="100%"
 					 noData="There are no products for this offer..."
 					 >
+                <t:toolbar>
+                    <Toolbar design="Solid" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }">
+                        <Select id="idSelectLotView"  visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
+                            items="{ path: 'fastAppData>/SelectedOffer/Lots/results' }"
+                            change="onChangeSelectedLot">
+                            <core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
+                        </Select>
+                    </Toolbar>
+                </t:toolbar>
 				<t:columns>
 					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/Line/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Line/description',
