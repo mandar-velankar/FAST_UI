@@ -164,12 +164,11 @@
 								</t:Column>
 
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferType/visible}">
-									<Label id="idOfferTypeLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description',
-												  					   formatter: '.formatter.offerProductsColumnName' }" 
-												    		     wrapping="true" 
-															     required="{fastAppData>/permissions/tables/editofferProductId/OfferType/required}"/>
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description', formatter: '.formatter.offerProductsColumnName' }" 
+                                           wrapping="true" 
+                                           required="{fastAppData>/permissions/tables/editofferProductId/OfferType/required}"/>
 									<t:template>
-										<Select selectedKey="{fastAppData>OfferType}" visible="{= ${fastAppData>/Tender/CountryCode} !== 'BR'}">
+										<Select selectedKey="{fastAppData>OfferType}">
 											<items>
 												<core:Item text="" key=""/>
 												<core:Item text="Selling" key="Selling"/>
@@ -180,19 +179,9 @@
 												<l:GridData span="L6 M6 S6"/>
 											</layoutData>
 										</Select>
-
-                                        <Select selectedKey="{fastAppData>OfferType}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR'}">
-											<items>
-												<core:Item text="" key=""/>
-												<core:Item text="Selling" key="Selling"/>
-												<core:Item text="Comodato" key="Comodato"/>
-											</items>
-											<layoutData>
-												<l:GridData span="L6 M6 S6"/>
-											</layoutData>
-										</Select>
 									</t:template>
 								</t:Column>
+                                
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">
 									<Label id="idReferenceLabel" 
 									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Reference/description',
