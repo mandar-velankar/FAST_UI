@@ -5960,6 +5960,10 @@ sap.ui.define([
         onAddNewLot: function (event) {
             const oFastAppDataModel = Services.getFastAppDataModel();
             const bindingPath = "/EditOffer/Lots/results";
+
+            if(!oFastAppDataModel.getProperty("/EditOffer/Lots")){
+                oFastAppDataModel.setProperty("/EditOffer/Lots", {});
+            }
             
 			let lots = oFastAppDataModel.getProperty(bindingPath) || [];
 			lots.push({
