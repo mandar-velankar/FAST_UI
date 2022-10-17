@@ -6058,7 +6058,7 @@ sap.ui.define([
 			});
 
 			//loop at selected rows
-			aIndexSelectedRows.forEach(function (iSelectedIndex, iIndex) {
+			aIndexSelectedRows?.forEach(function (iSelectedIndex, iIndex) {
 
 				if (aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex]) {
 
