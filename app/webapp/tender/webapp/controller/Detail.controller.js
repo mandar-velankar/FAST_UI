@@ -2609,6 +2609,7 @@ sap.ui.define([
 			Services.loadCountryChannels(sCountryCode);
 			Services.loadCountryCompetitors(sCountryCode);
 			Services.loadCountryOutcomes(sCountryCode);
+            Services.loadCountryOfferTypes(sCountryCode);
             if(sCountryCode === 'ES') Services.loadCountryApprovers(sCountryCode);
 			that.setCountrySpecificDropDowns();
 

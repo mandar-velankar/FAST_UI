@@ -1958,6 +1958,54 @@ sap.ui.define([
 			return promise;
 		},
 
+        loadCountryOfferTypes: function(sCountry){
+            let oFastAppDataModel = this.getFastAppDataModel();
+            let aOfferTypes = {
+                "Types": [
+                    {
+						"CountryCode": "BR",
+						"OfferType": "",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "BR",
+						"OfferType": "Selling",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "BR",
+						"OfferType": "Comodato",
+                        "Enabled": true
+					},
+                    {
+						"CountryCode": "IT",
+						"OfferType": "",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Selling",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Rental",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Comodato",
+                        "Enabled": true
+					}
+				],
+            }
+
+            
+            let sPath = '/CountrySpecificOfferTypes';
+            aOfferTypes = aOfferTypes.Types.filter(type => type.CountryCode === sCountry);
+            oFastAppDataModel.setProperty(sPath, aOfferTypes);
+        },
+
 		// load CountrySpecifications
 		loadCountryCompetitors: function(sCountry, sProductCode) { 
 
