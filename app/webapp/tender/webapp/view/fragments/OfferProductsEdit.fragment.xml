@@ -174,7 +174,7 @@
 												<core:Item text="Rental" key="Rental" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
 												<core:Item text="Comodato" key="Comodato" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
 											</items>-->
-                                            <core:Item key="{fastAppData>OfferType}" text="{fastAppData>OfferType}" enabled="{= (${fastAppData>/Tender/CountryCode} === 'IT' } &amp;&amp; (${fastAppData>OfferType} === 'Rental' || ${fastAppData>OfferType} === 'Comodato') &amp;&amp; ${fastAppData>/EditOffer/Division} === 'Radiology' }) || ${fastAppData>/Tender/CountryCode} === 'BR' } }"/>
+                                            <core:Item key="{fastAppData>OfferType}" text="{fastAppData>OfferType}" enabled="{= (${fastAppData>/Tender/CountryCode} === 'IT' &amp;&amp; (${fastAppData>OfferType} === 'Selling' || (${fastAppData>OfferType} === 'Rental' || ${fastAppData>OfferType} === 'Comodato') &amp;&amp; ${fastAppData>/EditOffer/Division} === 'Radiology')) || ${fastAppData>/Tender/CountryCode} === 'BR' }"/>
 											<layoutData>
 												<l:GridData span="L6 M6 S6"/>
 											</layoutData>

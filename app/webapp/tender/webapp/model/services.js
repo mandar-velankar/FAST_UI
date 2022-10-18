@@ -2002,8 +2002,10 @@ sap.ui.define([
 
             
             let sPath = '/CountrySpecificOfferTypes';
-            aOfferTypes = aOfferTypes.Types.filter(type => type.CountryCode === sCountry);
-            oFastAppDataModel.setProperty(sPath, aOfferTypes);
+            aOfferTypes = aOfferTypes?.Types?.filter(type => type.CountryCode === sCountry);
+            if(aOfferTypes && aOfferTypes.length > 0){
+                oFastAppDataModel.setProperty(sPath, aOfferTypes);
+            }
         },
 
 		// load CountrySpecifications
