@@ -225,13 +225,8 @@
 							                          		 formatter: '.formatter.offerProductsColumnName' }" 
 							   wrapping="true"/>
 						<t:template>
-							<Select selectedKey="{fastAppData>OfferType}" enabled="false">
-								<items>
-									<core:Item text="" key=""/>
-									<core:Item text="Selling" key="Selling"/>
-									<core:Item text="Rental" key="Rental"/>
-									<core:Item text="Comodato" key="Comodato"/>
-								</items>
+							<Select selectedKey="{fastAppData>OfferType}" enabled="false"  items="{ path: 'fastAppData>/CountrySpecificOfferTypes', sorter: { path: 'OfferType' } }">
+								<core:Item key="{fastAppData>OfferType}" text="{fastAppData>OfferType}" />
 								<layoutData>
 									<l:GridData span="L6 M6 S6"/>
 								</layoutData>

@@ -2609,6 +2609,7 @@ sap.ui.define([
 			Services.loadCountryChannels(sCountryCode);
 			Services.loadCountryCompetitors(sCountryCode);
 			Services.loadCountryOutcomes(sCountryCode);
+            Services.loadCountryOfferTypes(sCountryCode);
             if(sCountryCode === 'ES') Services.loadCountryApprovers(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
@@ -5960,6 +5961,10 @@ sap.ui.define([
         onAddNewLot: function (event) {
             const oFastAppDataModel = Services.getFastAppDataModel();
             const bindingPath = "/EditOffer/Lots/results";
+
+            if(!oFastAppDataModel.getProperty("/EditOffer/Lots")){
+                oFastAppDataModel.setProperty("/EditOffer/Lots", {});
+            }
             
 			let lots = oFastAppDataModel.getProperty(bindingPath) || [];
 			lots.push({
@@ -6054,7 +6059,7 @@ sap.ui.define([
 			});
 
 			//loop at selected rows
-			aIndexSelectedRows.forEach(function (iSelectedIndex, iIndex) {
+			aIndexSelectedRows?.forEach(function (iSelectedIndex, iIndex) {
 
 				if (aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex]) {
 
