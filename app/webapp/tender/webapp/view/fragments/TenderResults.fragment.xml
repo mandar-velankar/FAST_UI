@@ -125,7 +125,7 @@
                                 <t:Column width="13rem"  visible="{= ${fastAppData>/Tender/CountryCode} !== 'IT' }">
                                     <m:Label text="ContractNo" required="false"/>
                                     <t:template>
-                                        <m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' &amp;&amp; !${fastAppData>PriceAgreement}}"/>
+                                        <m:Input id="resultsForTreeContractNo" value="{fastAppData>CONTRACT_NO}" visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} === 'Bayer' &amp;&amp; ${fastAppData>PriceAgreement}}"/>
                                     </t:template>
                                 </t:Column>
             
@@ -133,12 +133,13 @@
                                     <m:Label text="Awarded Company" required="true"/>
                                     <t:template>
                                         <m:VBox>
+                                        <!-- EHQUT-INC16642003-Issue with edit button -->
                                             <m:Input value="{fastAppData>AWARDEDCOMPANY}" 
-                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' &amp;&amp; !${fastAppData>PriceAgreement}}"
                                                         visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
 
                                             <m:Select selectedKey="{fastAppData>AWARDEDCOMPANYCOMP}" 
-                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
                                                         items="{
                                                             path: 'fastAppData>/CountryCompetitorCompanies/', templateShareable:false
                                                         }"
@@ -162,15 +163,16 @@
                                     <t:template>
                                         <m:VBox>
                                             <m:items>
+                                            <!-- EHQUT-INC16642003-Issue with edit button -->
                                                 <m:Input 
                                                         value="{fastAppData>PRODUCT}" 
-                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
                                                         visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? true : false}"/>
 
                                                     <m:Select 
                                                         id="idSelectCompetitorProduct"
                                                         selectedKey="{fastAppData>PRODUCTCOMP}" 
-                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}"
+                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; (!${fastAppData>PriceAgreement} || (${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ))}"
                                                         items="{ path: 'fastAppData>CountryCompetitorProducts/', templateShareable:false}"
                                                         visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true}"
                                                         change="onChangeAwardedProductCompetitor">
@@ -181,7 +183,7 @@
 
                                                 <m:Input 
                                                         value="{fastAppData>OTHERPRODUCT}" 
-                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp;  ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false }"
+                                                        enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; (!${fastAppData>PriceAgreement} || (${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' )) }"
                                                         visible="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? false : true &amp;&amp; ${fastAppData>PRODUCTCOMP} === 'Other' }"/>
                                             </m:items>
                                         </m:VBox>
@@ -190,11 +192,12 @@
                                 </t:Column>
 
                                 <t:Column width="9rem">
+                                <!-- EHQUT-INC16642003-Issue with edit button -->
                                     <m:Label text="Outcome" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                     <t:template>
                                         <!--<m:Input value="{fastAppData>OUTCOME}" editable="false"/>-->
                                         <m:Select id="resultsForTreeOutcome" selectedKey="{fastAppData>OUTCOME}" 
-                                                                                enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}" 
+                                                                                enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; (!${fastAppData>PriceAgreement} || (${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ))}" 
                                                                                 change="onChangeOutcome" 
                                                                                 items="{ path: 'fastAppData>/CountryOutcomes', sorter: { path: 'Sorter' }, templateShareable:false }"
                                                                                 width="20rem">
@@ -204,26 +207,30 @@
                                 </t:Column>
             
                                 <t:Column width="9rem">
+                                <!-- EHQUT-INC16642003-Issue with edit button -->
                                     <m:Label text="Awarded Price" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                     <t:template>
-                                        <m:Input type="Number" id="resultsForTreeAwardedPrice" value="{fastAppData>AWARDEDPRICE}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}" liveChange="onAwardedQtyLiveChange" change="onAwardedQtyChange"/>
+                                        <m:Input type="Number" id="resultsForTreeAwardedPrice" value="{fastAppData>AWARDEDPRICE}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer'}" liveChange="onAwardedQtyLiveChange" change="onAwardedQtyChange"/>
                                     </t:template>
                                 </t:Column>
                                 <t:Column width="7rem">
                                     <m:Label text="Currency"/>
                                     <t:template>
-                                        <m:Select id="resultsForTreeCurrency" selectedKey="{fastAppData>CURRENCY}" items="{ path: 'fastAppData>/CountryCurrency', templateShareable: false, sorter: { path: 'COUNTRY_CODE' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ? true : false}">
+                                    <!-- EHQUT-INC16642003-Issue with edit button -->
+                                        <m:Select id="resultsForTreeCurrency" selectedKey="{fastAppData>CURRENCY}" items="{ path: 'fastAppData>/CountryCurrency', templateShareable: false, sorter: { path: 'COUNTRY_CODE' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' }">
                                             <core:Item key="{fastAppData>CURRENCY}" text="{fastAppData>CURRENCY}"/>
                                         </m:Select>
                                     </t:template>
                                 </t:Column>
                                 <t:Column width="9rem">
+                                <!-- EHQUT-INC16642003-Issue with edit button -->
                                     <m:Label text="Requested Volume"/>
                                     <t:template>
-                                        <m:Input type="Number" id="resultsForTreeRequestedVol" value="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? ${fastAppData>REQUESTEDVOLUME} : ''  }" enabled="false"/>
+                                        <m:Input type="Number" id="resultsForTreeRequestedVol" value="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? ${fastAppData>REQUESTEDVOLUME} : ''  }" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer'}"/>
                                     </t:template>
                                 </t:Column>
                                 <t:Column width="9rem">
+                                <!-- EHQUT-INC16642003-Issue with edit button -->
                                     <m:Label text="FOC"/>
                                     <t:template>
                                         <m:Input id="resultsForTreeFoc" value="{ parts:[ 
@@ -232,13 +239,13 @@
                                                                                     { path: 'fastAppData>FOC_ABS_PCT'},
                                                                                     { path: 'fastAppData>FOCTYPE'}, 
                                                                                     { path: 'fastAppData>UNITPERPACK'} 
-                                                                                    ], formatter: '.formatter.focQuotation'}" enabled="false"/>
+                                                                                    ], formatter: '.formatter.focQuotation'}" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' }"/>
                                     </t:template>
                                 </t:Column>
                                 <t:Column width="7rem">
                                     <m:Label text="Awarded Qty" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                     <t:template>
-                                        <m:Input type="Number" id="resultsForTreeAwardedQty" value="{fastAppData>AWARDEDQTY}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}" />
+                                        <m:Input type="Number" id="resultsForTreeAwardedQty" value="{fastAppData>AWARDEDQTY}" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp;(!${fastAppData>PriceAgreement} || (${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ))}" />
                                     </t:template>
                                 </t:Column>
                                 <t:Column width="9rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }" >
@@ -266,7 +273,8 @@
                                 <t:Column width="6rem">
                                     <m:Label text="UoM"/>
                                     <t:template>
-                                        <m:Select id="resultsForTreeUom" selectedKey="{fastAppData>UOM}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}">
+                                    <!-- EHQUT-INC16642003-Issue with edit button -->
+                                        <m:Select id="resultsForTreeUom" selectedKey="{fastAppData>UOM}" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp;(!${fastAppData>PriceAgreement} || (${fastAppData>PriceAgreement} &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer' ))}" >
                                             <m:items>
                                                 <core:Item text="Unit" key="Unit"/>
                                                 <core:Item text="Pack" key="Pack"/>
@@ -304,7 +312,7 @@
                                 <t:Column width="14rem">
                                     <m:Label text="Reason" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
                                     <t:template>
-                                        <m:Select id="resultsForTreeReason" selectedKey="{fastAppData>REASON}" items="{ path: 'fastAppData>LISTOUTCOMEREASONS/', templateShareable: false, sorter: { path: 'TenderOutcomeReasons' } }" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; !${fastAppData>PriceAgreement} &amp;&amp; (${fastAppData>OUTCOME} === 'Won' || ${fastAppData>OUTCOME} === 'Lost') ? true : false}">
+                                        <m:Select id="resultsForTreeReason" selectedKey="{fastAppData>REASON}" items="{ path: 'fastAppData>LISTOUTCOMEREASONS/', templateShareable: false, sorter: { path: 'TenderOutcomeReasons' } }" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; (${fastAppData>OUTCOME} === 'Won' || ${fastAppData>OUTCOME} === 'Lost') ? true : false}">
                                                 <core:Item key="{fastAppData>TenderOutcomeReasons}" text="{fastAppData>TenderOutcomeReasons}"/>
                                         </m:Select>
                                     </t:template>
@@ -312,7 +320,7 @@
                                 <t:Column width="14rem">
                                     <m:Label text="Comment" required="false"/>
                                     <t:template>
-                                        <m:Input id="resultsForTreeComment" value="{fastAppData>COMMENT}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}"/>
+                                        <m:Input id="resultsForTreeComment" value="{fastAppData>COMMENT}" enabled="{= (${fastAppData>/EditMode} === true ? true : false)}"/>
                                     </t:template>
                                 </t:Column>
 
@@ -321,28 +329,28 @@
                                     <m:Label text="{i18n>ExtensionDate}"/>
                                     <t:template>
                                         <m:DatePicker value="{path :'fastAppData>ExtensionDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-                                                    tooltip="{i18n>ExtensionDate}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}" placeholder="{i18n>Select_date}"/>
+                                                    tooltip="{i18n>ExtensionDate}" enabled="{= ${fastAppData>/EditMode} === true}" placeholder="{i18n>Select_date}"/>
                                     </t:template>
                                 </t:Column>
-
+                                <!-- EHQUT-INC16642003-Issue with edit button -->
                                 <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                     <m:Label text="{i18n>ExtensionNotes}"/>
                                     <t:template>
-                                        <m:Input value="{fastAppData>ExtensionNotes}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}"/>
+                                        <m:Input value="{fastAppData>ExtensionNotes}" enabled="{= ${fastAppData>/EditMode} === true}"/>
                                     </t:template>
                                 </t:Column>
-
+                                 <!-- EHQUT-INC16642003-Issue with edit button -->
                                 <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                     <m:Label text="{i18n>AwardLetterNo}"/>
                                     <t:template>
-                                        <m:Input value="{fastAppData>AwardLetterNo}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}"/>
+                                        <m:Input value="{fastAppData>AwardLetterNo}" enabled="{= ${fastAppData>/EditMode} === true}"/>
                                     </t:template>
                                 </t:Column>
-
+                                <!-- EHQUT-INC16642003-Issue with edit button -->
                                 <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                     <m:Label text="{i18n>AwardDelibNo}"/>
                                     <t:template>
-                                        <m:Input value="{fastAppData>AwardDelibNo}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}"/>
+                                        <m:Input value="{fastAppData>AwardDelibNo}" enabled="{= ${fastAppData>/EditMode} === true}"/>
                                     </t:template>
                                 </t:Column>
 
@@ -350,30 +358,30 @@
                                     <m:Label text="{i18n>DeliveryDate}"/>
                                     <t:template>
                                         <m:DatePicker value="{path :'fastAppData>DeliveryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-                                                    tooltip="{i18n>DeliveryDate}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}" placeholder="{i18n>Select_date}"/>
+                                                    tooltip="{i18n>DeliveryDate}" enabled="{= ${fastAppData>/EditMode} === true}" placeholder="{i18n>Select_date}"/>
                                     </t:template>
                                 </t:Column>
-
+                                 <!-- EHQUT-INC16642003-Issue with edit button -->
                                 <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                     <m:Label text="{i18n>ResultDate}"/>
                                     <t:template>
                                         <m:DatePicker value="{path :'fastAppData>ResultDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-                                                    tooltip="{i18n>ResultDate}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}" placeholder="{i18n>Select_date}"/>
+                                                    tooltip="{i18n>ResultDate}" enabled="{= ${fastAppData>/EditMode} === true}" placeholder="{i18n>Select_date}"/>
                                     </t:template>
                                 </t:Column>
-
+                                 <!-- EHQUT-INC16642003-Issue with edit button -->
                                 <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                     <m:Label text="{i18n>AwardDate}"/>
                                     <t:template>
                                         <m:DatePicker value="{path :'fastAppData>AwardDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
-                                                    tooltip="{i18n>AwardDate}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}" placeholder="{i18n>Select_date}"/>
+                                                    tooltip="{i18n>AwardDate}" enabled="{= ${fastAppData>/EditMode} === true}" placeholder="{i18n>Select_date}"/>
                                     </t:template>
                                 </t:Column>
 
                                 <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
                                     <m:Label text="{i18n>AwardActing}"/>
                                     <t:template>
-                                        <m:Input value="{fastAppData>AwardActing}" enabled="{= (${fastAppData>/EditMode} === true ? true : false) &amp;&amp; !${fastAppData>PriceAgreement}}"/>
+                                        <m:Input value="{fastAppData>AwardActing}" enabled="{= ${fastAppData>/EditMode} === true }"/>
                                     </t:template>
                                 </t:Column> 
                             </t:columns>
