@@ -5967,9 +5967,10 @@ sap.ui.define([
             }
             
 			let lots = oFastAppDataModel.getProperty(bindingPath) || [];
+            //if we're creating a new offer, and adding lots immediately, we do not have the full OfferID at that point. Therefore, we'll have to combine it based on thee tender & next offer ID
 			lots.push({
                 LotID: 0,
-                OfferID: Services.getSelectedOfferID(),
+                OfferID: oFastAppDataModel.getProperty('/NewOfferPressed') ? `${oFastAppDataModel.getProperty('/EditOffer/TenderID')}-${oFastAppDataModel.getProperty('/EditOffer/OfferID')}` : Services.getSelectedOfferID(),
 			});
 
 			oFastAppDataModel.setProperty(bindingPath, lots);
