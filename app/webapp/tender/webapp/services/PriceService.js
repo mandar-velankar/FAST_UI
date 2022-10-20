@@ -45,6 +45,7 @@ sap.ui.define([
 			//path of price
 			var sPath = oModel.createKey("/PT_TMBDPR", {
 				OfferID: oPriceToSave.OfferID,
+				LotID: oPriceToSave.LotID,
 				ProductCode: oPriceToSave.ProductCode,
 				Active: oPriceToSave.Active,
 				ActiveTier: oPriceToSave.ActiveTier
@@ -64,6 +65,7 @@ sap.ui.define([
 			var sPath = oModel.createKey("/ProductPricing", {
 				ID: oProductPrice.ID,
 				OfferID: oProductPrice.OfferID,
+				LotID: oProductPrice.LotID,
 				ProductCode: oProductPrice.ProductCode,
 				CountryCode: oProductPrice.CountryCode
 			});
@@ -114,6 +116,7 @@ sap.ui.define([
 			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
+			oProductPriceToSave.LotID = oProductPriceSaveInfo.LotID;
 
 			if (oProductPriceSaveInfo.FreeGoodsOther) {
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
@@ -174,11 +177,11 @@ sap.ui.define([
 
 			return aInvalidFields;
 		},
-
+//EHQUT-OTT-175585-Status of device" field not mandatory for Radiology
 		validateProductPriceSelling: function (oPriceSaveInfo, aInvalidFields, drug, sFocAbsPct, sNetOfferPrice) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
 				
-				if (((e === 'Warranty' || e === 'StatusOfDevice') && !drug)
+				if (((e === 'Warranty') && !drug)
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
@@ -188,19 +191,19 @@ sap.ui.define([
 				aInvalidFields.push('NetOfferPrice');
 			}
 		},
-
+//EHQUT-OTT-175585-Status of device" field not mandatory for Radiology
 		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if ((e === 'StatusOfDevice' ||  e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
+				if (( e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
 			});
 		},
-
+//EHQUT-OTT-175585-Status of device" field not mandatory for Radiology
 		validateProductPriceComodato: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if ((e === 'StatusOfDevice'  ||  e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
+				if (( e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
@@ -283,6 +286,7 @@ sap.ui.define([
 			oPriceToSave.NetPrice = (oPriceSaveInfo.NetPrice === null) ? null : oPriceSaveInfo.NetPrice.toString();
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
+			oPriceToSave.LotID = 1;
 
 			if (oPriceSaveInfo.ID) {
 				oPriceToSave.ID = oPriceSaveInfo.ID;

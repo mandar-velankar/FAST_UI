@@ -103,10 +103,16 @@
 							   width="100%">
 							<t:toolbar>
 								<Toolbar design="Solid">
+                                    <Select id="idSelectLot" selectedItem="{fastAppData>/SelectedLot}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
+										items="{ path: 'fastAppData>/EditOffer/Lots/results' }"
+										change="onChangeSelectedLot">
+									    <core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
+								    </Select>
 									
 									<ToolbarSpacer/>
+                                    <Button text="{i18n>AddLot}" icon="sap-icon://add-product" press="onAddLot" enabled="{= ${fastAppData>/EditOffer/Division} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"/>
 									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
-									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= ${fastAppData>/EditOffer/Division} ? true : false }"/>
+									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= (${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/EditOffer/Division}) || ( ${fastAppData>/Tender/CountryCode} === 'BR' &amp;&amp; ${fastAppData>/EditOffer/Division} &amp;&amp; ${fastAppData>/EditOffer/Lots/results/length} > 0) ? true : false }"/>
 									<Button text="{i18n>Deleteprod}" icon="sap-icon://delete" press="onDeleteProductForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
 								</Toolbar>
 							</t:toolbar>
@@ -158,24 +164,24 @@
 								</t:Column>
 
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferType/visible}">
-									<Label id="idOfferTypeLabel" text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description',
-												  					   formatter: '.formatter.offerProductsColumnName' }" 
-												    		     wrapping="true" 
-															     required="{fastAppData>/permissions/tables/editofferProductId/OfferType/required}"/>
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferType/description', formatter: '.formatter.offerProductsColumnName' }" 
+                                           wrapping="true" 
+                                           required="{fastAppData>/permissions/tables/editofferProductId/OfferType/required}"/>
 									<t:template>
-										<Select selectedKey="{fastAppData>OfferType}">
-											<items>
-												<core:Item text="" key=""/>
+										<Select selectedKey="{fastAppData>OfferType}" items="{ path: 'fastAppData>/CountrySpecificOfferTypes', sorter: { path: 'OfferType' } }">
+												<!--<core:Item text="" key=""/>
 												<core:Item text="Selling" key="Selling"/>
 												<core:Item text="Rental" key="Rental" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
 												<core:Item text="Comodato" key="Comodato" enabled="{= ${fastAppData>/EditOffer/Division} === 'Radiology' }"/>
-											</items>
+											</items>-->
+                                            <core:Item key="{fastAppData>OfferType}" text="{fastAppData>OfferType}" enabled="{= (${fastAppData>/Tender/CountryCode} === 'IT' &amp;&amp; (${fastAppData>OfferType} === 'Selling' || (${fastAppData>OfferType} === 'Rental' || ${fastAppData>OfferType} === 'Comodato') &amp;&amp; ${fastAppData>/EditOffer/Division} === 'Radiology')) || ${fastAppData>/Tender/CountryCode} === 'BR' }"/>
 											<layoutData>
 												<l:GridData span="L6 M6 S6"/>
 											</layoutData>
 										</Select>
 									</t:template>
 								</t:Column>
+                                
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Reference/visible}">
 									<Label id="idReferenceLabel" 
 									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Reference/description',
@@ -185,6 +191,33 @@
 									/>
 									<t:template>
 										<Input  id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}"  maxLength="255"/>
+									</t:template>
+								</t:Column>
+								<!-- Channel -->
+								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}">
+									<Label
+									       text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Channel/description',
+												   formatter: '.formatter.offerProductsColumnName' }"
+										   wrapping="true" 
+										   required="{fastAppData>/permissions/tables/editofferProductId/Channel/required}"
+									/>
+									<t:template>
+										<Select id="idOfferProductsChannel" 
+											selectedKey="{fastAppData>Channel}" 
+											width="250px" 
+											visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}"
+											change=".onOfferProductsChannelChange"
+										>
+											<items>
+												<core:Item text="" key=""/>
+												<core:Item text="Bayer" key="Bayer"/>
+												<core:Item text="Distributor" key="Distributor"/>
+												<core:Item text="Decline" key="Decline"/>
+											</items>
+											<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+											</layoutData>
+										</Select>
 									</t:template>
 								</t:Column>
 

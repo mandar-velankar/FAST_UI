@@ -3,6 +3,7 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"../controller/OfferProducts",
 	"sap/m/Button",
+	"sap/m/Text",
 	"sap/m/Dialog",
 	"sap/ui/core/BusyIndicator",
 	"sap/m/Label",
@@ -22,15 +23,26 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/ranking/Ranking",
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
-	"sap/m/MessageBox"
-], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
+	"sap/m/MessageBox",
+	"sap/m/library",
+	"sap/ui/core/library"
+], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
 	var bundle; 
 	var URLHelper = mLib.URLHelper;
+
+	// shortcut for sap.m.ButtonType
+	var ButtonType = mobileLibrary.ButtonType;
+
+	// shortcut for sap.m.DialogType
+	var DialogType = mobileLibrary.DialogType;
+
+	// shortcut for sap.ui.core.ValueState
+	var ValueState = coreLibrary.ValueState;
 
 	return Controller.extend("FAST_NS0FAST0.controller.Detail", {
 
@@ -72,6 +84,11 @@ sap.ui.define([
 				minDate: new Date()
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
+
+			const oViewModel = new sap.ui.model.json.JSONModel({
+				OfferProductsChannelWarningMessage: "",
+			});	
+			this.getView().setModel(oViewModel, "viewModel");
 
 			this.accessModel = Services.getAccessModel();
 			this.getView().setModel(this.accessModel, "access");
@@ -129,6 +146,9 @@ sap.ui.define([
 			//var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 
 			that._country = sCountry;
+
+			// set CurrentOfferStatus
+			oFastAppDataModel.setProperty("/CurrentOfferStatus", Services.getCurrentOfferStatus(sTenderID, sOfferID));
 
 
 			// set the visible country
@@ -523,7 +543,6 @@ sap.ui.define([
 			//Default basic information tab is shown + subsection
 			oDetailController.byId("DetailPage").setSelectedSection(Services.getBasicInformationPageSectionID());
 			oDetailController.getView().byId(Services.getBasicInformationPageSectionID()).setSelectedSubSection(Services.getBasicInformationPageSubSectionID());
-
 
 		},
 
@@ -1203,8 +1222,8 @@ sap.ui.define([
 				//only on master list, basic info, offer products it is possible that you don't have an offer selected.
 				//other tabs should always have an offer selected.
 				if (
-					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getQuotationPageSectionID() ||
-					sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
+					sSelectedSection === Services.getFinancialOfferPageSectionID() || sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getFinancialOfferPageSectionID_BR() || 
+                    sSelectedSection === Services.getQuotationPageSectionID() || sSelectedSection === Services.getTenderResultsPageSectionID() || sSelectedSection === Services.getDeliveryTrackingPageSectionID()
 				)
 				//edit button is disabled
 				MessageToast.show('There is no offer selected. Please first select an offer in left pane...', {
@@ -1386,6 +1405,16 @@ sap.ui.define([
 					Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
 				}
 				break;
+
+            case Services.getFinancialOfferPageSectionID_BR():
+
+                //check if offer is valid for selection (within this method we store the result also on the fastappdatamodel/checkOfferVisibleForTab)
+                if(Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)){
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_BR", true);
+                } else {
+                    Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_BR", false);
+                }
+                break;
 
 				//Quotation tab	
 			case Services.getQuotationPageSectionID():
@@ -1724,6 +1753,17 @@ sap.ui.define([
 						oFinOfferController.refreshFinancialTabES();
 					}
 
+                    if (that.getView().getContent()[0].getSelectedSection() == Services.getFinancialOfferPageSectionID_BR() && Services.checkOfferVisibleForTab(
+						Services.getLoadedOffer(sOfferID), sSelectedSection)) {
+
+						//FINANCIAL OFFER for BR
+						//select offer again (TODO)
+						//that.onFinancialOfferItemPress();
+						var oView = that.getView().byId("financialOfferViewId_BR");
+						var oFinOfferController = oView.getController();
+						oFinOfferController.refreshFinancialTabES();
+					}
+
 					if (that.getView().getContent()[0].getSelectedSection() == Services.getDeliveryTrackingPageSectionID() && Services.checkOfferVisibleForTab(
 							Services.getLoadedOffer(sOfferID), sSelectedSection)) {
 
@@ -1807,6 +1847,7 @@ sap.ui.define([
 							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(true);
 						}else{
 							that.getView().byId("idSelectTenderTypeEdit")?.setVisible(bShowTenderType);
+							sCountry === "BR" && that.getView().byId("idSelectTenderType")?.setVisible(bShowTenderType);
 						}
 					});
 
@@ -1853,6 +1894,14 @@ sap.ui.define([
 					//OFFER PRODUCTS TAB
 					that._showSectionFragment("OfferProductsView", "offerProductsId");
 					//TODO reload of data needed?
+
+                    //if we're in brazil, filter the offer products by the selected lot ID 
+                    let sCountryCode = Services.getCountryCodeofSelectedTender();
+                    if(sCountryCode === 'BR'){
+                        let iSelectedLotID = that.getView().byId('idSelectLotView').getSelectedKey();
+                        that.filterBySelectedLot(iSelectedLotID);
+                    }
+
 					break;
 				case Services.getFinancialOfferPageSectionID():
 					//FINANCIAL OFFER TAB
@@ -1902,6 +1951,24 @@ sap.ui.define([
 						}
                         that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode()); 
 						break;
+
+                case Services.getFinancialOfferPageSectionID_BR():
+						//FINANCIAL OFFER TAB BR
+						//that._showSectionFragment("FinancialOfferView", "financialOfferId");
+	
+						//check for approval enabled 
+						var sSelectedOfferID = Services.getSelectedOfferID();
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+	
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						if (bEnableApproval && sSelectedOfferID !== '' && oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
+							that.byId("ApprovalButtonId").setEnabled(true);
+						} else {
+							that.byId("ApprovalButtonId").setEnabled(false);
+						}
+                        that.getView().byId("financialOfferViewId_BR").getController().editFinancialOfferBRToggle(Services.getEditMode()); 
+						break;
+                        
 				case Services.getQuotationPageSectionID():
 							
 					//show fragment for TAB: Quotation
@@ -1995,6 +2062,7 @@ sap.ui.define([
 						Services.getFinancialOfferPageSectionID(),
 						Services.getFinancialOfferPageSectionID_IT(),
 						Services.getFinancialOfferPageSectionID_ES(),
+                        Services.getFinancialOfferPageSectionID_BR(),                        
 						Services.getQuotationPageSectionID(),
 						Services.getTenderResultsPageSectionID(),
 						Services.getDeliveryTrackingPageSectionID()
@@ -2374,6 +2442,12 @@ sap.ui.define([
 							that.byId('idDistributorName').setVisible(false);
 						}
 
+                        //if we're in brazil, filter the offer products by the selected lot ID 
+                        if(sCountryCode === 'BR'){
+                            let iSelectedLotID = that.getView().byId('idSelectLotView').getSelectedKey();
+                            that.filterBySelectedLot(iSelectedLotID);
+                        }
+
 						break;
 
 					case Services.getFinancialOfferPageSectionID():
@@ -2394,6 +2468,13 @@ sap.ui.define([
 						Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
                         that.getView().byId("financialOfferViewId_ES").getController().editFinancialOfferESToggle(Services.getEditMode());
 						break;
+                    case Services.getFinancialOfferPageSectionID_BR():
+                        //FINANCIAL OFFER TAB for BR
+                        //Edit offer copy to move back to original values during cancel
+                        var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+                        Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
+                        that.getView().byId("financialOfferViewId_BR").getController().editFinancialOfferBRToggle(Services.getEditMode());
+                        break;                        
 					case Services.getQuotationPageSectionID():
 									
 						//show fragment for TAB: Quotation
@@ -2515,12 +2596,20 @@ sap.ui.define([
 					Services.loadCountryBiddingTypeLevel2(sCountryCode, sBiddingTypeLevel1Id);
 					Services.loadCountryBiddingTypeLevel3(sCountryCode, sBiddingTypeLevel2Id);
 				}); 
+
+				// Brazil only - Classification should default to Tender
+				const oSelectClassification = that.byId("idClassification");
+				if(Services.getSelectedCountry() === 'BR' && oSelectClassification){
+					oSelectClassification.setSelectedKey('Tender');
+					oSelectClassification.setEnabled(false);
+				};
 				
 			});
 
 			Services.loadCountryChannels(sCountryCode);
 			Services.loadCountryCompetitors(sCountryCode);
 			Services.loadCountryOutcomes(sCountryCode);
+            Services.loadCountryOfferTypes(sCountryCode);
             if(sCountryCode === 'ES') Services.loadCountryApprovers(sCountryCode);
 			that.setCountrySpecificDropDowns();
 
@@ -2661,7 +2750,7 @@ sap.ui.define([
 			//check if selected offer was available in table
 			var bSelectedOfferAvailable = Services.getSelectedOfferAvailable(true);
 
-			if((sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES()) && Services.getSelectedProductID() === ''){
+			if((sSelectedSection === Services.getFinancialOfferPageSectionID_IT() || sSelectedSection === Services.getFinancialOfferPageSectionID_ES() || sSelectedSection === Services.getFinancialOfferPageSectionID_BR()) && Services.getSelectedProductID() === ''){
 
 				sap.m.MessageBox.warning("First select an product to edit.", {});
 
@@ -2862,6 +2951,9 @@ sap.ui.define([
 					case Services.getOfferProductPageSectionID():
 
 						//if we are on Offer Product Page we should clear the following
+                        const aLotsPreviousState = Services.getLotsBeforeEdit();
+                        const bindingPath = "/EditOffer/Lots/results";
+                        oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState);
 						Services.clearAllForOfferProductPage();
 
 						break;
@@ -2919,6 +3011,36 @@ sap.ui.define([
 							case Services.getFinancialOfferPageSectionID_ES():
 								//select offer again
 								var oView = that.getView().byId("financialOfferViewId_ES");
+								var oFinOfferController = oView.getController();
+								oFinOfferController.refreshFinancialTabES();
+								break;
+							default:
+								break;
+						}
+						break;
+                    case Services.getFinancialOfferPageSectionID_BR():
+						//show offer table content, so there is more space on the screen
+						//that.getView().byId("panelFinancialOfferTableID").setExpanded(true);
+
+						//make sure selected offer & product is still shown
+						Services.setSelectedOfferID(sSelectedOfferID);
+						Services.setSelectedOfferPath(sSelectedOfferPath);
+
+						//check for approval enabled 
+						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+
+						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
+						that.byId("ApprovalButtonId").setEnabled(bEnableApproval);
+
+						//Italy has its own products table
+						switch (sSelectedSection) {
+							case Services.getFinancialOfferPageSectionID():
+								//select offer again
+								that.onFinancialOfferItemPress();
+								break;
+							case Services.getFinancialOfferPageSectionID_BR():
+								//select offer again
+								var oView = that.getView().byId("financialOfferViewId_BR");
 								var oFinOfferController = oView.getController();
 								oFinOfferController.refreshFinancialTabES();
 								break;
@@ -3051,7 +3173,17 @@ sap.ui.define([
 				oFinOfferController.onSaveFinancialOfferSpain();
 				that.getView().setBusy(false);
 				break;
-				
+
+            case Services.getFinancialOfferPageSectionID_BR():
+
+                    //FINANCIAL OFFER TAB spain specific
+                    that.getView().setBusy(true);
+                    var oView = this.getView().byId("financialOfferViewId_BR");
+                    var oFinOfferController = oView.getController();
+                    //oFinOfferController.onSaveFinancialOfferSpain(); //new method to be created for saveFiancialOfferBrazil
+                    that.getView().setBusy(false);
+                    break;	
+
 			case Services.getQuotationPageSectionID():
 
 				//QUOTATION TAB
@@ -4045,6 +4177,9 @@ sap.ui.define([
 							Services.setSelectedProductID("");
 							Services.setSelectedProductName("");
 							Services.setSelectedProductPath("");
+
+							// Brazil only
+							Services.getSelectedCountry() === "BR" && that.getView().byId("idSelectTenderType").setVisible(true);
 						});
 
 					// }
@@ -4516,6 +4651,14 @@ sap.ui.define([
 				filters: oFilter,
 				sorter: oSorter
 			});
+
+            //if we're in brazil, filter the offer products by the selected lot ID 
+            if(Services.getSelectedCountry() === 'BR'){
+                let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey();
+                if(iSelectedLotID){
+                    this.filterBySelectedLot(iSelectedLotID);
+                }
+            }
 
 		},
 
@@ -5359,10 +5502,22 @@ sap.ui.define([
 
 
 		//Saving on Offer product tab
-		_onSaveOfferProduct: function (oEvent) {
+		_onSaveOfferProduct: async function (oEvent) {
 
 			var oFastAppData = Services.getFastAppDataModel();
 			var that = this;
+
+			// for Brazil only
+			// Warning message pop up when switching channels at the offer level
+			if(oFastAppData.getProperty('/Tender/CountryCode') === 'BR'){
+				try{
+					await this.showOfferProductsChannelWarningMessage();
+				}
+				catch(error){
+					// user aborted the warning message
+					if(error === "Abort") return;
+				}
+			}
 
 			// open loading indicator (used beceause higher z-index then loading dialog & other dialogs)
 			BusyIndicator.show();
@@ -5553,6 +5708,41 @@ sap.ui.define([
 
 		},
 
+		showOfferProductsChannelWarningMessage: function(){
+			const sWarningMessage = this.getView().getModel("viewModel").getProperty("/OfferProductsChannelWarningMessage");
+			if(!sWarningMessage) return;
+
+			return new Promise((resolve, reject) => {
+				const oOfferProductsChannelWarningMessageDialog = new Dialog({
+					type: DialogType.Message,
+					title: "Warning",
+					state: ValueState.Warning,
+					content: new Text({ text: sWarningMessage }),
+					beginButton: new Button({
+						type: ButtonType.Emphasized,
+						text: "Yes",
+						press: function () {
+							oOfferProductsChannelWarningMessageDialog.close();
+							oOfferProductsChannelWarningMessageDialog.destroy();
+							resolve("Yes");
+						}.bind(this)
+					}),
+					endButton: new Button({
+						type: ButtonType.Emphasized,
+						text: "Abort",
+						press: function () {
+							oOfferProductsChannelWarningMessageDialog.close();
+							oOfferProductsChannelWarningMessageDialog.destroy();
+							reject("Abort");
+						}.bind(this)
+					})
+				});
+	
+				oOfferProductsChannelWarningMessageDialog.open();
+			  });
+
+		},
+
 		//decline all products underneath the offer with 1 reason
 		onDeclineAllProductsForOffer: function (oEvent) {
 			var that = this;
@@ -5709,12 +5899,143 @@ sap.ui.define([
 			that.getView().addDependent(that._oDialog);
 			that._oDialog.open();
 
+            let sCountryCode = Services.getCountryCodeofSelectedTender();
+            if(sCountryCode === 'BR'){
+                let iSelectedLotID = Number(that.getView().byId('idSelectLotView').getSelectedKey());
+                iSelectedLotID = oFastAppDataModel.getProperty('/SelectedLot');
+                const lotFilter = new Filter({
+                    path: 'LotID',
+                    value1: iSelectedLotID,
+                    operator: sap.ui.model.FilterOperator.EQ
+                });
+                sap.ui.getCore().byId("idListProductsOutput").getBinding("items")?.filter(lotFilter);
+            }
+
 			//Clear all fields
 			var oBrandList = sap.ui.getCore().byId("idBrandList");
 			var aBrandTokens = [];
 			oBrandList.setTokens(aBrandTokens);
 
 		},
+
+        onAddLot: function () {
+
+			var oView = this.getView();
+            
+            //store original freegoodsother for cancellation
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            
+            //saving original state to  service array object so we can return to it's original state / compare when saving
+            const bindingPath = "/EditOffer/Lots/results";
+            let aLots = oFastAppDataModel.getProperty(bindingPath);
+            Services.setLotsBeforeEdit(aLots?.map(lot => {
+                return Object.create(lot);
+            }));
+
+            //get original state of products so we can use these upon cancel
+            let aExistingProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results");
+            this._aExistingProductsLotsEdit = aExistingProducts?.map(product => {
+                return Object.create(product);
+            });
+
+			// create dialog lazily
+			if (!this.pDialogAddLots) {
+				this.pDialogAddLots = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.brazil.AddLot",
+					controller: this
+				}).then(function (oDialogAddLots) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialogAddLots);
+					oDialogAddLots.setModel(Services.getFastAppDataModel(), "fastAppData");
+					return oDialogAddLots;
+				});
+			}
+
+			this.pDialogAddLots.then(function (oDialogAddLots) {
+                const oTable = this.byId("LotNumbers");
+				oDialogAddLots.open();
+			}.bind(this));
+		},
+
+        onAddNewLot: function (event) {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/EditOffer/Lots/results";
+
+            if(!oFastAppDataModel.getProperty("/EditOffer/Lots")){
+                oFastAppDataModel.setProperty("/EditOffer/Lots", {});
+            }
+            
+			let lots = oFastAppDataModel.getProperty(bindingPath) || [];
+            //if we're creating a new offer, and adding lots immediately, we do not have the full OfferID at that point. Therefore, we'll have to combine it based on thee tender & next offer ID
+			lots.push({
+                LotID: 0,
+                OfferID: oFastAppDataModel.getProperty('/NewOfferPressed') ? `${oFastAppDataModel.getProperty('/EditOffer/TenderID')}-${oFastAppDataModel.getProperty('/EditOffer/OfferID')}` : Services.getSelectedOfferID(),
+			});
+
+			oFastAppDataModel.setProperty(bindingPath, lots);
+            
+            const oTable = this.byId("LotNumbers");
+            oTable.bindElement({ path: bindingPath, model: "fastAppData" });            
+            oFastAppDataModel.updateBindings();            
+		},
+
+        onDeleteLot: function (event) {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/EditOffer/Lots/results";
+
+            //get deleted index
+            let sSelectedPath = event.getSource().getParent().getBindingContext('fastAppData').sPath;
+            let iIndex = parseInt(sSelectedPath.substring(sSelectedPath.lastIndexOf('/') + 1));
+
+            //get current entries
+            let aLots = oFastAppDataModel.getProperty(bindingPath);
+
+            //remove linked products
+            let aExistingProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results");
+            aExistingProducts = aExistingProducts?.filter(product => product.LotID === oFastAppDataModel.getProperty(sSelectedPath)?.LotID);
+			Services.removeProductsSaveInfo(aExistingProducts);
+
+            aLots.splice(iIndex, 1);
+            oFastAppDataModel.refresh(true);
+        },
+
+        oCancelLots: function () {
+            //reset previous saved state and close the dialog
+            const oFastAppDataModel = Services.getFastAppDataModel();
+
+            //return lots to their original state
+            const bindingPath = "/EditOffer/Lots/results";
+            const aLotsPreviousState = Services.getLotsBeforeEdit();
+			oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState);
+
+            //return products to their original state - products can be removed when a lot is being removed
+            oFastAppDataModel.setProperty("/EditOffer/Product/results", this._aExistingProductsLotsEdit);
+
+            oFastAppDataModel.refresh(true);
+            
+            if(this.pDialogAddLots){
+
+                this.pDialogAddLots.then(pDialog => pDialog.close());
+            }
+                
+        },
+
+        oApplyLots: function () {
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/EditOffer/Lots/results";
+            const aLots = oFastAppDataModel.getProperty(bindingPath);
+            
+            if(this.pDialogAddLots){
+
+                this.pDialogAddLots.then(pDialog => pDialog.close());
+            }
+
+            const iSelectedLot = aLots && aLots.length > 0 ? Number(aLots[0].LotID) : 0;
+            oFastAppDataModel.setProperty('/SelectedLot', iSelectedLot);
+            this.filterBySelectedLot(iSelectedLot);
+                
+        },
 
 		//when deleting a product
 		onDeleteProductForOffer: function () {
@@ -5739,7 +6060,7 @@ sap.ui.define([
 			});
 
 			//loop at selected rows
-			aIndexSelectedRows.forEach(function (iSelectedIndex, iIndex) {
+			aIndexSelectedRows?.forEach(function (iSelectedIndex, iIndex) {
 
 				if (aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex]) {
 
@@ -5839,6 +6160,9 @@ sap.ui.define([
 						Services.showMessageCompositeView('Warning', aMessages, 'Warning');
 					}
 
+					// Set the OfferProducts Channel for Brazil OfferProducts
+					that.setOfferProductsChannel(aProductsForBinding);
+
 					//close the dialog
 					that._oDialog.close();
 
@@ -5857,6 +6181,78 @@ sap.ui.define([
 				//close the dialog
 				that._oDialog.close();
 			}
+		},
+
+		/**
+		 * This method sets the Channel dropdown default value based on the Distributor Name
+		 * Applicable for Brazil only
+		 * @return - returns true if the channel was set, else false
+		 */
+		setOfferProductsChannel: function(aProducts){
+			const countryCode = Services.getCountryCodeofSelectedTender();
+			if(!countryCode || countryCode.toLowerCase() !== "br"){
+				console.error("The country code does not exist or is not set correctly");
+				return false;
+			}
+
+			const sSelectedDistributorName = this.getView().byId("idDistributorName").getSelectedItem().getText();
+			let sOfferProductsChannel;
+
+			if(!sSelectedDistributorName){
+				console.error("OfferProducts DistributorName could not be determined");
+				return false;
+			}
+
+			if(sSelectedDistributorName && sSelectedDistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil"){
+				sOfferProductsChannel = "Bayer";
+			}else{
+				sOfferProductsChannel = "Distributor";
+			}
+
+			// set the default channel
+			aProducts.forEach(prd => prd.Channel = sOfferProductsChannel);
+
+			// update the bindings
+			const oTable = this.getView().byId("editofferProductId");
+			oTable.getModel("fastAppData").updateBindings();
+			return true;
+		},
+
+		/**
+		 * Event handler for OfferProducts Channel select change
+		 * @param {Object} - Event obj
+		 */
+		onOfferProductsChannelChange: function(oEvent){
+			const sSelectedChannelText = oEvent.getParameter('selectedItem').getText();
+			const sSelectedDistributorText = this.getView().byId("idDistributorName").getSelectedItem().getText();
+			
+			// set warning message when switching Channels at the offer level
+			const sWarningMessage = this.getOfferProductsChannelWarningMessage(sSelectedChannelText, sSelectedDistributorText);
+			this.getView().getModel("viewModel").setProperty("/OfferProductsChannelWarningMessage", sWarningMessage);
+		
+		},
+
+		getOfferProductsChannelWarningMessage: function(channel, distributor){
+			if(!channel || !distributor) return;
+			const sDistributorToBayerMessage = "You are changing the tender channel. This will inform the distributor that we are " +
+												"refusing the opportunity and will lead to some changes in the FAST process. " + 
+												"Once the distributor is informed, you will not be able to change the status again";
+			const sBayerToDistributorMessage = "You are changing the tender channel. This will lead to some changes in the FAST " + 
+												"process and inform the distributor about the opportunity at the end of the process. " +
+												"Once you confirmed, you will not be able to change the status again";
+			let sMessage = "";
+			// from Bayer to Distributor
+			if(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "distributor"){
+				sMessage = sBayerToDistributorMessage;
+			}
+			// form Distributor to Bayer
+			else if(!(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil") && channel.toLowerCase() === "bayer"){
+				sMessage = sDistributorToBayerMessage;
+			}else {
+				sMessage = "";
+			}
+
+			return sMessage;
 		},
 
 		//OFFER PRODUCTS SAVE is clicked
@@ -6126,7 +6522,11 @@ sap.ui.define([
 
 				//Are there already products added? if yes we should check if this is not a double
 				if (aProducts) {
-					var iIndex = aProducts.findIndex(x => x.ProductCode === oProduct.PRODUCT_ID);
+                    if(Services.getSelectedCountry() === 'BR'){
+                        var iIndex = aProducts.findIndex(x => x.ProductCode === oProduct.PRODUCT_ID && x.LotID === Number(that.getView().byId("idSelectLot").getSelectedKey()));
+                    } else {
+                        iIndex = aProducts.findIndex(x => x.ProductCode === oProduct.PRODUCT_ID);
+                    }
 					if (iIndex === -1) {
 						//not found
 						bExisting = false;
@@ -6159,6 +6559,7 @@ sap.ui.define([
 					oAddProduct.Active = 1;
 					oAddProduct.ProductCode = oProduct.PRODUCT_ID;
 					oAddProduct.Reference = "";
+					oAddProduct.Channel = "";
 					oAddProduct.AlternateOfferYN = "No";
 					oAddProduct.RequestedVolume = "";
 					oAddProduct.UnitPerPack = "Unit";
@@ -6180,6 +6581,7 @@ sap.ui.define([
 					oAddProduct.MinInvoiceAmount = "";
 					oAddProduct.DeliveryConditions = "";
 					oAddProduct.SKUS = oProduct.SKUS;
+                    oAddProduct.LotID = oProduct.COUNTRY_CODE === 'BR' ? Number(that.byId('idSelectLot').getSelectedKey()) : 1;
 					
 					oAddProduct.SKU = {
 						PRODUCTPACKNAME: oProduct.PRODUCT_NAME,
@@ -7115,6 +7517,24 @@ sap.ui.define([
 			}
 
 		},
+
+        //change selected lot brazil
+        onChangeSelectedLot: function (oEvent) {
+            const iSelectedLot = Number(oEvent.getSource().getSelectedKey());
+            Services.getFastAppDataModel().setProperty('/SelectedLot', iSelectedLot);
+            this.filterBySelectedLot(iSelectedLot);
+        },
+
+        filterBySelectedLot: function(iSelectedLot){
+            const lotFilter = new Filter({
+                path: 'LotID',
+                value1: iSelectedLot,
+                operator: sap.ui.model.FilterOperator.EQ
+            });
+            
+            let oTable = !Services.getEditMode() ? this.byId("offerProductId") : this.byId("editofferProductId");
+            oTable.getBinding("rows").filter(lotFilter);
+        },
 
 		//delete requested group purchasing
 		onDeleteRequestedGroupPurchasing: function (oEvent) {
@@ -9784,7 +10204,8 @@ sap.ui.define([
 						AwardActing: oResultForTree.AwardActing,
                         Appeal: oResultForTree.APPEAL,
                         TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
-                        InfoNeeded: oResultForTree.INFONEEDED                        
+                        InfoNeeded: oResultForTree.INFONEEDED,
+						LotID: 1 // TODO: for Brazil this value should be dynamic                       
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
@@ -10212,8 +10633,9 @@ sap.ui.define([
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
 			const sSubject = 'Notification for offer ' + oFastAppDataModel.getProperty('/Tender/TenderName');
             aRAMs = oFastAppDataModel.getProperty('/CountryApprovers');
-
-            aRAMs = aRAMs.filter(ram => ram.Division === sDivision && ram.ApproverType === 'BU/RAM');
+ 
+            //EHQUT-197300-Spain – notification e-mail to RAMs
+            aRAMs = aRAMs.filter(ram => ram.Division === sDivision && ram.ApproverType === 'EmailKAM');
             oFastAppDataModel.setProperty('/CountryApprovers', aRAMs);
 			
 			oEditor.setValue(template.value);
@@ -10337,6 +10759,62 @@ sap.ui.define([
 			bEnabled = isOutcomeWon;
 			if(isOutcomeWon && referencePriceAgreement) bEnabled = hadAdditionalPriceConditions;
 			return bEnabled;
+		},
+
+        onNotifyIbiz: function(oEvent){
+            
+            const oView = this.getView();    
+
+            // create NotifyIbiz dialog lazily
+			if (!this.pNotifyIbizDialog) {
+
+				this.pNotifyIbizDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.NotifyIbizDialog",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+
+			}
+
+            this.pNotifyIbizDialog.then(function(oDialog){
+                oDialog.open();
+            }.bind(this));
+
+        },
+
+        onNotifyibizDialog: async function(oEvent){
+
+           //that is this
+            let that = this;
+            BusyIndicator.show();
+			
+            //get user input
+			let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
+
+            //Logic to call the API to Notify about Product Switch
+
+
+			// close loading that blocks everything
+			BusyIndicator.hide();
+
+            //close dialog
+            that.onNotifyibizDialogCancel();
+
+		
+        },
+
+        onNotifyibizDialogCancel: function(oEvent){
+            
+			if(this.pNotifyIbizDialog){
+                this.pNotifyIbizDialog.then(function(oDialog){
+					oDialog.close();
+				});
+
+			}
 		},
 
 

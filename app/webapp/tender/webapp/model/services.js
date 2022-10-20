@@ -71,10 +71,13 @@ sap.ui.define([
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
 		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
         _sFinancialOfferPageSectionID_ES: "---tenderManagementDetailId--financialOfferId_ES",
+        _sFinancialOfferPageSectionID_BR: "---tenderManagementDetailId--financialOfferId_BR",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
 		_sDeliveryTrackingPageSectionID: "---tenderManagementDetailId--deliveryTrackingId",
+
+        _aLotsBeforeEdit: [],
 
 		//different Page sub-sections on detail page
 		_sBasicInformationPageSubSectionID: "---tenderManagementDetailId--basicInformationSubSectionId",
@@ -176,6 +179,11 @@ sap.ui.define([
 			return sPage;
 		},
 
+        getFinancialOfferPageSectionID_BR: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_BR;
+			return sPage;
+		},
+
 		getQuotationPageSectionID: function () {
 			var sPage = this.getComponentID() + this._sQuotationPageSectionID;
 			return sPage;
@@ -271,6 +279,14 @@ sap.ui.define([
 		getSelectedPriceConditionPath: function () {
 			return this._sSelectedPriceConditionPath;
 		},
+
+        getLotsBeforeEdit: function() {
+            return this._aLotsBeforeEdit;
+        },
+
+        setLotsBeforeEdit: function(aLots) {
+            this._aLotsBeforeEdit = aLots;
+        },
 
 		//get instituteID of selected ProductID
 		getInstituteIDofSelectedTender: function () {
@@ -1046,6 +1062,19 @@ sap.ui.define([
 							bVisible = false;
 						}
 						break;
+
+                    case this.getFinancialOfferPageSectionID_BR():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+
 					case this.getQuotationPageSectionID():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
@@ -1603,9 +1632,9 @@ sap.ui.define([
 				var oCountryFilter = new sap.ui.model.Filter("ChannelCountry", sap.ui.model.FilterOperator.EQ, sCountry);
 				aFilters.push(oCountryFilter);
 			}
-
-			aFilters.push(new sap.ui.model.Filter("ChannelName", sap.ui.model.FilterOperator.NE, 'OTC')); //exclude OTC
-
+            //EHQUT-196584-Add OTC/Drugstore customer list in "Offer Management" application
+			//aFilters.push(new sap.ui.model.Filter("ChannelName", sap.ui.model.FilterOperator.NE, 'OTC')); //exclude OTC
+            //EHQUT-196584-Add OTC/Drugstore customer list in "Offer Management" application
 			//Reading the back end data from the tender table
 			oFastDataCalls.read(sCountryChannelsPath, {
 				filters: aFilters,
@@ -1928,6 +1957,56 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return promise;
 		},
+
+        loadCountryOfferTypes: function(sCountry){
+            let oFastAppDataModel = this.getFastAppDataModel();
+            let aOfferTypes = {
+                "Types": [
+                    {
+						"CountryCode": "BR",
+						"OfferType": "",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "BR",
+						"OfferType": "Selling",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "BR",
+						"OfferType": "Comodato",
+                        "Enabled": true
+					},
+                    {
+						"CountryCode": "IT",
+						"OfferType": "",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Selling",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Rental",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Comodato",
+                        "Enabled": true
+					}
+				],
+            }
+
+            
+            let sPath = '/CountrySpecificOfferTypes';
+            aOfferTypes = aOfferTypes?.Types?.filter(type => type.CountryCode === sCountry);
+            if(aOfferTypes && aOfferTypes.length > 0){
+                oFastAppDataModel.setProperty(sPath, aOfferTypes);
+            }
+        },
 
 		// load CountrySpecifications
 		loadCountryCompetitors: function(sCountry, sProductCode) { 
@@ -2340,7 +2419,7 @@ sap.ui.define([
 				oFastDataCalls.read(sAdditionalOfferDataPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Distributor,OfferStatus,Tender,Revision,SellingCompanyDetails/Signatories,Signatories,Quotation" //,Product" --> no product found = product null in enity, which gives problems
+						"$expand": "Distributor,OfferStatus,Tender,Revision,SellingCompanyDetails/Signatories,Signatories,Quotation,Lots" //,Product" --> no product found = product null in enity, which gives problems
 					},
 					success: function (oData, oResponse) {
 
@@ -2576,12 +2655,34 @@ sap.ui.define([
 			return oDeferred.promise();
 
 		},
+        //EHQUT-167489-Auto Approval in Thailand
+        loadPreApprovedprice: function (sInstituteID, SCountryCode) {
 
+            var sPath = "/AccountPreApprovedPrices";
+
+            var oTenderFilter = new Filter({
+                path: 'COUNTRY_CODE',
+                operator: FilterOperator.EQ,
+                value1: SCountryCode
+            });
+            var oInstituteFilter = new Filter({
+                path: 'INSTITUTE_ID',
+                operator: FilterOperator.EQ,
+                value1: sInstituteID
+            });
+
+            var mParameters = {
+                filters: [oTenderFilter, oInstituteFilter]
+            };
+
+            return this.odata(sPath).get(mParameters);
+        },
+         //EHQUT-167489-Auto Approval in Thailand
 		//Load 1 product
-		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
+		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo, sLotId) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
 
 			//Load product data
-			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ")";
+			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ",LotID=" + sLotId + ")";
 
 			var oDeferred = $.Deferred();
 			var that = this;
@@ -2607,7 +2708,7 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 		},
-
+         //EHQUT-167489-Auto Approval in Thailand
 		//loading approvals for offer
 		loadApprovalsForOffer: function (sOfferID) {
 
@@ -2618,6 +2719,37 @@ sap.ui.define([
 			//get model for doing the calls to the back-end
 			var oFastDataCalls = this.getDefaultModel();
 			var oFastAppDataModel = this.getFastAppDataModel();
+
+            var AutoApprovalflag=true;
+            var Instituteid=this.getInstituteIDofSelectedTender();
+            var countrycode=this.getSelectedCountry();
+
+            $.when(this.loadPreApprovedprice(Instituteid, countrycode)).done(function (oData) {
+                if(countrycode=='TH'){
+               var aProducts = [];
+               var Preapproveddatas=[];
+               aProducts = oFastAppDataModel.oData.SelectedOffer.Product.results;
+               Preapproveddatas=oData.data.results;   
+
+                //check for each product
+                aProducts.forEach(function (oProduct) {
+                 if(AutoApprovalflag)   {
+
+                   AutoApprovalflag=false;
+                   Preapproveddatas.forEach(function (oBackendcall) {
+                    var convertofferprice=parseFloat(oProduct.Price.OfferPrice).toFixed(3);
+                    var convertminunitprice=parseFloat(oBackendcall.MIN_UNIT_PRICE).toFixed(3);
+
+                if(oProduct.ProductCode==oBackendcall.PRODUCT_ID &&(convertofferprice==convertminunitprice||oProduct.Price.OfferPrice==oBackendcall.MIN_PACK_PRICE
+                    )){
+                        AutoApprovalflag=true;
+
+                    } 
+
+                    })
+                }
+                })
+            }
 
 			// instantiate loading dialog
 			if (!that._LoadingDialog) {
@@ -2667,6 +2799,23 @@ sap.ui.define([
 				success: function (oData, oResponse) {
 
 					if (oData.results) { //if offers are found add them to the Model
+
+
+                        if(AutoApprovalflag==false){
+
+                            var length=oData.results;
+
+                            length.forEach(function (oProduct) {
+                               var total= oProduct.ApproverList.results.length;
+                               for(var i=0; i<total;i++){
+                                   if(oProduct.ApproverList.results[i].ApproverName=='Auto Approval'){
+                                    oProduct.ApproverList.results.splice(i,1);
+                                   }
+                               }
+
+
+                            })
+                        }
 
 						//path where the products should be stored
 						var sPathApprovalsOfSelectedOffer = "/ApprovalsSelectedOffer";
@@ -2731,7 +2880,7 @@ sap.ui.define([
 
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
-
+        })
 		},
 
 		//load offer validation  for offer
@@ -4777,6 +4926,30 @@ sap.ui.define([
 
 		},
 
+        getLots: async function (sOfferID) {
+
+			//read service again to get nextOfferID
+			let oFastAppDataModel = this.getFastAppDataModel();
+			const oResult = await this.getService('Offer').getLotProducts(sOfferID);
+			const aLots = oResult && oResult.data && oResult.data.results || [];
+            oFastAppDataModel.setProperty('/OfferLots', aLots);
+
+			return aLots;
+
+		},
+
+        getLotProducts: async function (sOfferID, sLotId) {
+
+			//read service again to get nextOfferID
+			let oFastAppDataModel = this.getFastAppDataModel();
+			const oResult = await this.getService('Offer').getLotProducts(sOfferID, sLotId);
+			const aLots = oResult && oResult.data && oResult.data.results || [];
+            oFastAppDataModel.setProperty('/OfferLots', aLots);
+
+			return aLots;
+
+		},
+
 		//get all offers to be saved (offer is saved 1 by 1)
 		getOfferSaveInfo: function () {
 			return this._oOfferSaveInfo;
@@ -5424,7 +5597,7 @@ sap.ui.define([
 			//loop over the products and check if they need to be removed from the database
 			aProducts.forEach(function (oProduct, indexCurrentProduct) {
 
-				iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode);
+				iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode && x.LotID === oProduct.LotID);
 
 				if (iIndex !== -1) { //deze staan klaar om verwijderd te worden
 
@@ -5572,6 +5745,12 @@ sap.ui.define([
 			}
 
 			return oNewProductInfo.SUPPLY_UPDATE;
+		},
+
+		getCurrentOfferStatus: function(sTenderID, sOfferID){ 
+			if(!sTenderID) return;
+			let offerId = sOfferID ? `'${sOfferID}'` : `''`;
+			return this.getDefaultModel().getProperty(`/TenderOfferMaster(TENDER_ID='${sTenderID}',OFFER_ID=${offerId})`)?.STATUS;
 		},
 
 		//check if offer status should be updated or created
@@ -6140,7 +6319,7 @@ sap.ui.define([
 		//------
 
 		//actual saving of the product offer
-		saveProductOffer: function (sPath) {
+		saveProductOffer: async function (sPath) {
 
 			//that is this
 			var that = this;
@@ -6186,6 +6365,34 @@ sap.ui.define([
 				}));
 
 			}
+
+            
+            //Get offer Lots to be saved at the same time
+            const oFastAppDataModel = that.getFastAppDataModel();
+            let aLots = oFastAppDataModel.getProperty('/EditOffer/Lots/results');
+            let aExistingLots = await that.getService('Offer').getOfferLots(oOfferToSave.OfferID);
+            aExistingLots = aExistingLots?.data.results;
+
+            //delete removed lots
+            aExistingLots.forEach(lot => {
+                if(aLots.findIndex(editedLot => editedLot.LotID === lot.LotID) === -1){
+                    promises.push(that.getService('Offer').deleteOfferLot(lot).catch(function (oError) {
+                        that.showErrorMessage(oError, "Deletion of lot");
+                        throw new Error(oError);
+                    }));
+                }
+            });
+
+            //create/update new/existing lots
+            if(aLots && aLots.length > 0){
+                aLots.forEach(lot => {
+                    lot.LotID = Number(lot.LotID);
+                    promises.push(that.getService('Offer').createOfferLot(lot).catch(function (oError) {
+                        that.showErrorMessage(oError, "Creation of lot");
+                        throw new Error(oError);
+                    }));
+                });
+            }
 
 			//when finished
 			return Promise.all(promises).then((oResult) => {
@@ -6245,6 +6452,13 @@ sap.ui.define([
 			const oOfferToSave = this.getService('Offer').getConvertOfferToSave(offer);
 
 			return this.getService('Offer').createOffer(oOfferToSave);
+		},
+
+        saveOfferLots: function (offer) {
+
+			const oLotsToSave = this.getFastAppDataModel.getProperty('/EditOffer/Lots/results');
+
+			return this.getService('Offer').createOffer(oLotsToSave);
 		},
 
 		sendMail: function (mail) {
@@ -6481,7 +6695,7 @@ sap.ui.define([
 						break;
 					case "PUT":
 						//https://trello.com/c/np1g69g7
-						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave).then(function (
+						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave, oProductToSave.LotID).then(function (
 							oOriginalProductInfo) {
 
 							//when we are changing a product, we should check if data is changed that impacts the approval proces (supply update 1 or 0 for re-approval)

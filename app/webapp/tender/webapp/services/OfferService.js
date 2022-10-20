@@ -260,6 +260,111 @@ sap.ui.define([
 
             return oConvertedSaveInfo;
 		},
+
+        getOfferLots: async function(sOfferID){
+			
+			var sPath = "/Lots";
+
+			var oOfferIdFilter = new Filter({
+				path: 'OfferID',
+				operator: FilterOperator.EQ,
+				value1: sOfferID
+			});
+
+			var mParameters = {
+				filters: [oOfferIdFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+        getLotProducts:function(sOfferID, sLotId, sProductCode){
+			
+			var sPath = "/LotProduct";
+
+			var oOfferIdFilter = new Filter({
+				path: 'OfferID',
+				operator: FilterOperator.EQ,
+				value1: sOfferID
+			});
+
+            var oLotIdFilter = new Filter({
+				path: 'LotID',
+				operator: FilterOperator.EQ,
+				value1: sLotId
+			});
+
+            var oProductCodeFilter = new Filter({
+				path: 'ProductCode',
+				operator: FilterOperator.EQ,
+				value1: sProductCode
+			});
+
+			var mParameters = {
+				filters: [oOfferIdFilter, oLotIdFilter, oProductCodeFilter]
+			};
+
+			return this.odata(sPath).get(mParameters);
+		},
+
+        createOfferLot:function(oLotToSave){
+			var sPath = "/Lots";
+
+            //get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/Lots", {
+				OfferID: oLotToSave.OfferID,
+                LotID: oLotToSave.LotID
+			});
+
+			//Create
+			return this.odata(sPath).put(oLotToSave);
+			
+		},
+
+        //delete lot
+        deleteOfferLot: function (oLotToSave){
+            //get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/Lots", {
+				OfferID: oLotToSave.OfferID,
+                LotID: oLotToSave.LotID
+			});
+
+			//Update
+			return this.odata(sPath).delete();
+        },
+
+        //create lot product
+        createLotProduct:function(oLotProductToSave){
+			var sPath = "/LotProduct";
+
+			//Create
+			return this.odata(sPath).post(oLotProductToSave);
+			
+		},
+		
+		//update lot product
+		updateLotProduct: function (oLotProductToSave) {
+
+			//get model for calls
+			var oModel = Services.getDefaultModel();
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/Lots", {
+				OfferID: oLotProductToSave.OfferID,
+                LotID: oLotProductToSave.LotID,
+                ProductCode: oLotProductToSave.ProductCode
+			});
+
+			//Update
+			return this.odata(sPath).put(oLotProductToSave);
+
+		},
 	});
 	return OfferService;
 });

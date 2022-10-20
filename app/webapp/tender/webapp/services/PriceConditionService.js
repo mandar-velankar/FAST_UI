@@ -396,6 +396,52 @@ sap.ui.define([
 			return this.odata("/PriceConditionView").get(mParameters);
 		},
 
+        getPriceConditionBrazilView: function(filter){
+            
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: filter.CountryCode
+			}));
+
+			aFilters.push(new Filter({
+				path: 'Classification',
+				operator: FilterOperator.EQ,
+				value1: filter.Classification
+			}));
+
+            aFilters.push(new Filter({
+				path: 'Division',
+				operator: FilterOperator.EQ,
+				value1: filter.Division
+			}));
+
+            if(filter.ProductCode){
+                aFilters.push(new Filter({
+                    path: 'ProductCode',
+                    operator: FilterOperator.EQ,
+                    value1: filter.ProductCode
+                }));
+            }
+            
+            if(filter.OfferID){
+                aFilters.push(new Filter({
+                    path: 'OfferID',
+                    operator: FilterOperator.EQ,
+                    value1: filter.OfferID
+                }));
+            }
+
+			var mParameters = {
+				filters: aFilters
+			};
+
+
+			return this.odata("/PriceConditionBrazilView").get(mParameters);
+		},
+        
         getTenderHistorySpain: function(aFilters){
 
 			var mParameters = {
