@@ -5912,7 +5912,7 @@ sap.ui.define([
 			var oFastDataCalls = this.getDefaultModel();
 
 			//path for product pack read
-			var sProductPackPath = "/PT_TMPRDPCK(PRODUCTPACKID=" + sProductPackID + ",ACTIVERECORD='Yes')";
+			var sProductPackPath = "/PT_TMPRDPCK(PRODUCTPACKID=" + sProductPackID + ")";
 
 			if (sProductPackPath) {
 
