@@ -1422,10 +1422,54 @@ sap.ui.define([
         onLiveChangePriceCondition: function(oEvent){
 
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
+            const conditionType = this.getView().getModel('finOfferView').getProperty('/selectedConditionType')
+            let oPriceCondition = bindingContext.getProperty(bindingContext.sPath);
+            let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? (parseFloat(oEvent.getParameter('newValue')) / 100) : oPriceCondition.AdditionalDiscount;
+            let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? parseFloat(oEvent.getParameter('newValue')) : oPriceCondition.CommercialProposal;
+
+            //calculations
+            oPriceCondition.PriceAfterTaxExemtion = oPriceCondition.TaxExemption === 'Yes' ? oPriceCondition.PriceList * (1 - oPriceCondition.ICMSTax) : null;
+            oPriceCondition.PriceAfterCap         = oPriceCondition.CAP === 'Yes' &&  oPriceCondition.TaxExemption === 'No' ? oPriceCondition.PriceList * (1 - oPriceCondition.CapValue) : 
+                                                    oPriceCondition.CAP === 'Yes' &&  oPriceCondition.TaxExemption === 'Yes' ? oPriceCondition.PriceList * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue) : null;
+            const dBasePrice                      = oPriceCondition.TaxExemption === 'No' && oPriceCondition.CAP === 'No' ? oPriceCondition.PriceList :
+                                                    oPriceCondition.TaxExemption === 'Yes' && oPriceCondition.CAP === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
+
+
+            if(conditionType === 'Discount'){
+                oPriceCondition.CommercialProposal = dBasePrice * (1 - oPriceCondition.StandardDiscount) * (1 - dAdditionalDiscount);
+            } else if(conditionType === 'CommercialProposal'){
+                oPriceCondition.AdditionalDiscount = ((dBasePrice * (1 - oPriceCondition.StandardDiscount) - dCommercialProposal) / dCommercialProposal) / 100;
+            }
+
+            if(oEvent.getParameter('id').includes("idCommercialProposal")){
+                if(parseFloat(oEvent.getParameter('newValue')) > (dBasePrice * (1 - oPriceCondition.StandardDiscount))){
+                    oEvent.getSource().setValueState("Error");
+                    oEvent.getSource().setValueStateText("Commercial proposal value is too high.");
+                    oEvent.getSource().openValueStateMessage();
+                }else{
+                    oEvent.getSource().setValueState("None");
+                    oEvent.getSource().setValueStateText("");
+                    oEvent.getSource().closeValueStateMessage();
+                }
+            }
+
+            if(oEvent.getParameter('id').includes("idAdditionalDiscount")){
+                if(parseFloat(oEvent.getParameter('newValue')) < 0){
+                    oEvent.getSource().setValueState("Error");
+                    oEvent.getSource().setValueStateText("Additional discount value can not be negative.");
+                    oEvent.getSource().openValueStateMessage();
+                }else{
+                    oEvent.getSource().setValueState("None");
+                    oEvent.getSource().setValueStateText("");
+                    oEvent.getSource().closeValueStateMessage();
+                }
+            }
+
 
             bindingContext.getModel().updateBindings();
 
         },
+
         onLiveChangeNetPricesDescuentoComercial: function(oEvent){
 
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
