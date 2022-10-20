@@ -5912,7 +5912,7 @@ sap.ui.define([
 			var oFastDataCalls = this.getDefaultModel();
 
 			//path for product pack read
-			var sProductPackPath = "/PT_TMPRDPCK(PRODUCTPACKID=" + sProductPackID + ",ACTIVERECORD='Yes')";
+			var sProductPackPath = "/PT_TMPRDPCK(PRODUCTPACKID=" + sProductPackID + ")";
 
 			if (sProductPackPath) {
 
@@ -6402,7 +6402,7 @@ sap.ui.define([
 
 					//check offer created
 					var sOfferID = 'Unknown';
-					if (oResult && oResult.length === 1) {
+					if (oResult && oResult.length > 0) {
 						sOfferID = oResult[0].data.OfferID; //there is only 1
 					}
 					

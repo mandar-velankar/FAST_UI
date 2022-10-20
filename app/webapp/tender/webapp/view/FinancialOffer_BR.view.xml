@@ -232,8 +232,24 @@
                                             <core:Item key="Yes" text="Yes" />
                                         </items>
                                     </Select>
-                                    <Label text="{i18n>Priceaftertaxexemption}" required="true" visible="{= ${fastAppData>/TaxExemption} !== 'No'}"/>
-                                    <Input value="{path:'fastAppData>PriceAfterTaxExemtion', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" visible="{= ${fastAppData>/TaxExemption} !== 'No'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/> 
+                                    <Label text="{i18n>Priceaftertaxexemption}" required="true" visible="{= ${fastAppData>TaxExemption} === 'Yes'}"/>
+                                    <Input value="{= !${fastAppData>/EditMode} ? ${parts: [
+                                                    {path:'fastAppData>ProductCode'},
+                                                    {path:'fastAppData>/ProductPricingView'},
+                                                    {path:'fastAppData>PriceAfterTaxExemtion'},
+                                                    {value: 2},
+                                                    {path: 'fastAppData>ExistingPriceConditionID'},
+                                                    {path: 'fastAppData>ReferencePriceAgreement'}
+                                                ],
+                                                formatter: '.formatter.formatUoMPrice'}
+                                                : ${parts: [
+                                                        {path:'fastAppData>ProductCode'},
+                                                        {path:'fastAppData>/ProductPricingView'},
+                                                        {path:'fastAppData>PriceAfterTaxExemtion'},
+                                                        {value: 2}
+                                                    ],
+                                                    formatter: '.formatter.formatUoMPrice'}
+                                                }" visible="{= ${fastAppData>TaxExemption} === 'Yes'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/> 
                                     <Label text="{i18n>CAP}" required="true"/> 
                                     <Select selectedKey="{fastAppData>CAP}" enabled="{fastAppData>/EditMode}" change=".onLiveChangePriceCondition"> 
                                         <items>
@@ -241,8 +257,24 @@
                                             <core:Item key="Yes" text="Yes" />
                                         </items>
                                     </Select>
-                                    <Label text="{i18n>Priceaftercap}" visible="{= ${fastAppData>/CAP} !== 'No'}"/>
-                                    <Input value="{path:'fastAppData>PriceAfterCap', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" visible="{= ${fastAppData>/CAP} !== 'No'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
+                                    <Label text="{i18n>Priceaftercap}" visible="{= ${fastAppData>CAP} === 'Yes'}"/>
+                                    <Input value="{= !${fastAppData>/EditMode} ? ${parts: [
+                                                    {path:'fastAppData>ProductCode'},
+                                                    {path:'fastAppData>/ProductPricingView'},
+                                                    {path:'fastAppData>PriceAfterCap'},
+                                                    {value: 2},
+                                                    {path: 'fastAppData>ExistingPriceConditionID'},
+                                                    {path: 'fastAppData>ReferencePriceAgreement'}
+                                                ],
+                                                formatter: '.formatter.formatUoMPrice'}
+                                                : ${parts: [
+                                                        {path:'fastAppData>ProductCode'},
+                                                        {path:'fastAppData>/ProductPricingView'},
+                                                        {path:'fastAppData>PriceAfterCap'},
+                                                        {value: 2}
+                                                    ],
+                                                    formatter: '.formatter.formatUoMPrice'}
+                                                }" visible="{= ${fastAppData>CAP} === 'Yes'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>StandardDiscount}"/>
                                     <Input value="{= !${fastAppData>/EditMode} 
                                                   ? ${path:'fastAppData>StandardDiscount', type:'.types.percent'} 
@@ -254,6 +286,7 @@
                                     />
                                     <Label text="{i18n>AdditionalDiscount}" required="{= ${finOfferView>/selectedConditionType} === 'Discount'}"/>
                                     <Input 
+                                        id="idAdditionalDiscount"
                                         value="{path:'fastAppData>AdditionalDiscount', type:'.types.percent'}" 
                                         description="%" 
                                         enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} === 'Discount'}" 
@@ -261,7 +294,24 @@
                                         liveChange=".onLiveChangePriceCondition"
                                     />
                                     <Label text="{i18n>CommercialProposal}" required="{= ${finOfferView>/selectedConditionType} !== 'Discount'}"/>
-                                    <Input value="{path:'fastAppData>CommercialProposal', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} !== 'Discount'}" fieldWidth="80%" liveChange=".onLiveChangePriceCondition"/>
+                                    <Input id="idCommercialProposal"
+                                           value="{= !${fastAppData>/EditMode} ? ${parts: [
+                                                    {path:'fastAppData>ProductCode'},
+                                                    {path:'fastAppData>/ProductPricingView'},
+                                                    {path:'fastAppData>CommercialProposal'},
+                                                    {value: 2},
+                                                    {path: 'fastAppData>ExistingPriceConditionID'},
+                                                    {path: 'fastAppData>ReferencePriceAgreement'}
+                                                ],
+                                                formatter: '.formatter.formatUoMPrice'}
+                                                : ${parts: [
+                                                        {path:'fastAppData>ProductCode'},
+                                                        {path:'fastAppData>/ProductPricingView'},
+                                                        {path:'fastAppData>CommercialProposal'},
+                                                        {value: 2}
+                                                    ],
+                                                    formatter: '.formatter.formatUoMPrice'}
+                                                }" description="{fastAppData>masterPriceCurrency}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} !== 'Discount'}" fieldWidth="80%" liveChange=".onLiveChangePriceCondition"/>
                                     <Label text="{i18n>TaxEqualization}"/>
                                     <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>InvoiveNotaFiscal}"/>
