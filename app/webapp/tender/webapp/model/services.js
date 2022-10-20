@@ -6402,7 +6402,7 @@ sap.ui.define([
 
 					//check offer created
 					var sOfferID = 'Unknown';
-					if (oResult && oResult.length === 1) {
+					if (oResult && oResult.length > 0) {
 						sOfferID = oResult[0].data.OfferID; //there is only 1
 					}
 					
