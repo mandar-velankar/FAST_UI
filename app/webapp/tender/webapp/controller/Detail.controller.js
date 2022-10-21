@@ -2951,10 +2951,11 @@ sap.ui.define([
 					case Services.getOfferProductPageSectionID():
 
 						//if we are on Offer Product Page we should clear the following
+						Services.clearAllForOfferProductPage();
                         const aLotsPreviousState = Services.getLotsBeforeEdit();
                         const bindingPath = "/EditOffer/Lots/results";
-                        oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState);
-						Services.clearAllForOfferProductPage();
+                        if(aLotsPreviousState.length != 0) oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState); //having entries here, would imply that we've edited the lots for the selected offer
+                                                                                                                           //if these were not edited, no restore of their original state should happen
 
 						break;
 					case Services.getFinancialOfferPageSectionID():
@@ -7556,6 +7557,8 @@ sap.ui.define([
         },
 
         filterBySelectedLot: function(iSelectedLot){
+            //make sure we always have this as integer
+            iSelectedLot = Number(iSelectedLot);
             const lotFilter = new Filter({
                 path: 'LotID',
                 value1: iSelectedLot,
