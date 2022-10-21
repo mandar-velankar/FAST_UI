@@ -5616,6 +5616,19 @@ sap.ui.define([
 						sErroneousFields = "";
 					}
 
+                    if(oProduct.CountryCode === 'BR'){ //just run this check for brazil products, not needed otherwise
+                        if(aProducts.find(product => product.LotID === oProduct.LotID && product.Line === oProduct.Line && product.ProductCode !== oProduct.ProductCode)){
+                            aMessages.push({
+                                type: 'Error',
+                                title: 'Another product other than' + ' ' + oProduct.SKU.PRODUCTPACKNAME + ' already has the same line number',
+                                subtitle: oProduct.SKU.PRODUCTPACKNAME,
+                                counter: iMsgCount
+                            });
+
+                            iMsgCount = 0;
+                        }
+                    }
+
 					bError = false;
 				});
 
@@ -5902,7 +5915,7 @@ sap.ui.define([
             let sCountryCode = Services.getCountryCodeofSelectedTender();
             if(sCountryCode === 'BR'){
                 let iSelectedLotID = Number(that.getView().byId('idSelectLotView').getSelectedKey());
-                iSelectedLotID = oFastAppDataModel.getProperty('/SelectedLot');
+                iSelectedLotID = oFastAppDataModel.getProperty('/SelectedLot') || 1;
                 const lotFilter = new Filter({
                     path: 'LotID',
                     value1: iSelectedLotID,
@@ -6019,6 +6032,24 @@ sap.ui.define([
                 this.pDialogAddLots.then(pDialog => pDialog.close());
             }
                 
+        },
+
+        onValidateLotLine: function(oEvent){
+            //reset previous saved state and close the dialog
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bindingPath = "/EditOffer/Product";
+            const iSelectedLotID = oFastAppDataModel.getProperty('/SelectedLot') || 1;
+			let aProducts = oFastAppDataModel.getProperty(bindingPath);
+
+            if(aProducts.results.find(product => product.Line === oEvent.getParameter('newValue') && product.LotID === iSelectedLotID)){
+                oEvent.getSource().setValueState("Error");
+                oEvent.getSource().setValueStateText("There already exists a product with the same line number");
+                oEvent.getSource().openValueStateMessage();
+            }else{
+                oEvent.getSource().setValueState("None");
+                oEvent.getSource().setValueStateText("");
+                oEvent.getSource().closeValueStateMessage();
+            }
         },
 
         oApplyLots: function () {
