@@ -123,7 +123,7 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/Line/required}"/>
 									<t:template>
-										<Input value="{fastAppData>Line}" maxLength="100"/>
+										<Input value="{fastAppData>Line}" type="Number" maxLength="100" liveChange="onValidateLotLine"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/Product/visible}">
