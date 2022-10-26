@@ -1761,7 +1761,7 @@ sap.ui.define([
 						//that.onFinancialOfferItemPress();
 						var oView = that.getView().byId("financialOfferViewId_BR");
 						var oFinOfferController = oView.getController();
-						oFinOfferController.refreshFinancialTabES();
+						oFinOfferController.refreshFinancialTabBR();
 					}
 
 					if (that.getView().getContent()[0].getSelectedSection() == Services.getDeliveryTrackingPageSectionID() && Services.checkOfferVisibleForTab(
@@ -3042,7 +3042,7 @@ sap.ui.define([
 								//select offer again
 								var oView = that.getView().byId("financialOfferViewId_BR");
 								var oFinOfferController = oView.getController();
-								oFinOfferController.refreshFinancialTabES();
+								oFinOfferController.refreshFinancialTabBR();
 								break;
 							default:
 								break;
@@ -3180,7 +3180,7 @@ sap.ui.define([
                     that.getView().setBusy(true);
                     var oView = this.getView().byId("financialOfferViewId_BR");
                     var oFinOfferController = oView.getController();
-                    //oFinOfferController.onSaveFinancialOfferSpain(); //new method to be created for saveFiancialOfferBrazil
+                    oFinOfferController.onSaveFinancialOfferBrazil();
                     that.getView().setBusy(false);
                     break;	
 
