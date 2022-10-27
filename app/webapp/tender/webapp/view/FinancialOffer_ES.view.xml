@@ -157,7 +157,7 @@
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
 						<VBox>
 							<MessageStrip
-								text="Existing agreement in place"
+								text="{fastAppData>/ExistingAgreementInPlaceText}"
 								type="Warning"
 								showIcon="false"
 								showCloseButton="false"
