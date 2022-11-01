@@ -5834,7 +5834,9 @@ sap.ui.define([
 							type: 'Warning',
 							title: 'Active agreements exist for products',
 							subtitle: '',
-							description: Array.from(aProductsForBindingFilter.filter((product) => product.OtherPriceAgreementsExist === 'Yes').map((product) => { return product.SKU.PRODUCTPACKNAME})).join("\n")
+							description: Array.from(aProductsForBindingFilter.filter((product) => product.OtherPriceAgreementsExist === 'Yes')
+										.map((product) => { return `${product.SKU.PRODUCTPACKNAME} \nOfferID: ${product.OtherPriceAgreementOfferId} \nClassification: ${product.OtherPriceAgreementTenderClassification}`}))
+										.join("\n")
 						});
 						Services.showMessageCompositeView('Warning', aMessages, 'Warning');
 					}
@@ -6202,6 +6204,8 @@ sap.ui.define([
 					oAddProduct._sOperation = 'POST';
 
 					//get possible price agreement
+					let otherPriceAgreementOfferId = "";
+					let otherPriceAgreementTenderClassification = "";
                     let agreementExists = false;
                     let oTomorrowsDate = new Date();
                     oTomorrowsDate.setDate(oTomorrowsDate.getDate() + 1);
@@ -6214,11 +6218,15 @@ sap.ui.define([
                         let candidates = aPriceAgreements[i].Candidates?.results;
                         if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
                             agreementExists = true; 
+							otherPriceAgreementOfferId = aPriceAgreements[i].OfferId; 
+							otherPriceAgreementTenderClassification = aPriceAgreements[i].Tender?.Classification;
                             break;
                         } 
                     }
 
 					oAddProduct.OtherPriceAgreementsExist = aPriceAgreements.length > 0 && agreementExists ? 'Yes' : 'No';
+					oAddProduct.OtherPriceAgreementOfferId = otherPriceAgreementOfferId;
+					oAddProduct.OtherPriceAgreementTenderClassification = otherPriceAgreementTenderClassification;
 
 					aProducts.push(oAddProduct);
 
