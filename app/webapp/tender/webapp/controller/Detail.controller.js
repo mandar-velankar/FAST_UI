@@ -3955,8 +3955,17 @@ sap.ui.define([
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
 			oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
-			oSaveBasicInfo.BidDueDate = (oTender.BidDueDate) ? oTender.BidDueDate : null;
-			oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
+            oSaveBasicInfo.PublicationDate = this._country === 'ES' && oSaveBasicInfo.Classification === 'Commercial Agreement' ? new Date() : oSaveBasicInfo.PublicationDate;
+			
+            oSaveBasicInfo.BidDueDate = (oTender.BidDueDate) ? oTender.BidDueDate : null;
+            if(this._country === 'ES' && oSaveBasicInfo.Classification === 'Commercial Agreement'){
+                let date = new Date();
+                oSaveBasicInfo.BidDueDate = new Date(date.getFullYear(), date.getMonth() + 2, 0);
+            } else {
+                oSaveBasicInfo.BidDueDate
+            }
+
+            oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
 			oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
 
 			oSaveBasicInfo.TenderStatus = "Open";
@@ -10017,6 +10026,10 @@ sap.ui.define([
                             this.byId("idContractLength").setVisible(true);
                             this.byId("idContractLengthLabel").setVisible(true);
                             this.byId("idContractExtenseionLabel").setVisible(true);
+                            this.byId("idPublicationDateLabel").setVisible(true);
+                            this.byId("idPublicationDate").setVisible(true);
+                            this.byId("idBidDueDateLabel").setVisible(true);
+                            this.byId("idBidDueDate").setVisible(true);
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
@@ -10026,6 +10039,10 @@ sap.ui.define([
                             this.byId("idContractLength").setVisible(false);  
                             this.byId("idContractLengthLabel").setVisible(false);
                             this.byId("idContractExtenseionLabel").setVisible(false);
+                            this.byId("idPublicationDateLabel").setVisible(false);
+                            this.byId("idPublicationDate").setVisible(false);
+                            this.byId("idBidDueDateLabel").setVisible(false);
+                            this.byId("idBidDueDate").setVisible(false);
                         }                  
                     }         
                     //EHQUT-INC0184560-Issue in offer creation

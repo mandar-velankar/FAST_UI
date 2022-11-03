@@ -268,15 +268,15 @@
 				<!-- End Brazil only -->
 
 				<core:Title text="Timeline"/>
-				<Label text="{i18n>pubcndte}" design="Bold" required="true"/>
+				<Label id="idPublicationDateLabel" text="{i18n>pubcndte}" design="Bold" required="true" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 				<!--<DatePicker id="idPublicationDate" value="{path :'fastData>PublicationDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"-->
 				<!--	valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
-				<DatePicker id="idPublicationDate" value="{path :'fastAppData>/EditTender/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
+				<DatePicker id="idPublicationDate" value="{path :'fastAppData>/EditTender/PublicationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 				<!--<Input value="{fastData>PublicationDate}"/>-->
-				<Label text="{i18n>offrdudte}" design="Bold" required="true"/>
+				<Label id="idBidDueDateLabel" text="{i18n>offrdudte}" design="Bold" required="true" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 				<!--<DatePicker id="idBidDueDate" value="{path :'fastData>BidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy"-->
 				<!--	displayFormat="dd.MM.yyyy" />-->
-				<DatePicker id="idBidDueDate" value="{path :'fastAppData>/EditTender/BidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" />
+				<DatePicker id="idBidDueDate" value="{path :'fastAppData>/EditTender/BidDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 				<!--<Input value="{fastData>BidDueDate}"/>-->
 				<Label text="{i18n>expctawdte}" design="Bold"/>
 				<!--<DatePicker id="idAwardDate" value="{path :'fastData>AwardDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy"
