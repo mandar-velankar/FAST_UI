@@ -299,10 +299,10 @@
 				<!-- End Brazil only -->
 
 				<!--<Input value="{fastData>NextPublicationDye}"/>-->
-				<Label text="{i18n>contleng}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES'}"/>
-				<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES'}"/>
-				<Label text="{i18n>contextnprd}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES'}"/>
-				<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES'}"/>
+				<Label id="idContractLengthLabel" text="{i18n>contleng}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
+				<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
+				<Label id="idContractExtenseionLabel" text="{i18n>contextnprd}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
+				<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
                 
                 <!-- Spain only 
                 <Label text="{i18n>CreatedAt}" design="Bold"/>
