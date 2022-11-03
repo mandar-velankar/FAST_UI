@@ -10012,12 +10012,20 @@ sap.ui.define([
                     if(sCountry === 'ES' && sKey === 'Tender' || sCountry === 'IT') {
                         this.byId("idSelectTenderTypeEdit").setVisible(true);
                         if(sCountry === 'ES'){
-                            this.byId("idSelectTenderType2Edit").setVisible(true);     
+                            this.byId("idSelectTenderType2Edit").setVisible(true);  
+                            this.byId("idContractExtenseion").setVisible(true);
+                            this.byId("idContractLength").setVisible(true);
+                            this.byId("idContractLengthLabel").setVisible(true);
+                            this.byId("idContractExtenseionLabel").setVisible(true);
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
                         if(sCountry === 'ES'){
-                            this.byId("idSelectTenderType2Edit").setVisible(false);     
+                            this.byId("idSelectTenderType2Edit").setVisible(false);   
+                            this.byId("idContractExtenseion").setVisible(false);
+                            this.byId("idContractLength").setVisible(false);  
+                            this.byId("idContractLengthLabel").setVisible(false);
+                            this.byId("idContractExtenseionLabel").setVisible(false);
                         }                  
                     }         
                     //EHQUT-INC0184560-Issue in offer creation
