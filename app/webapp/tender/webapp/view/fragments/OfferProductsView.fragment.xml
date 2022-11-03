@@ -170,11 +170,12 @@
 					 >
                 <t:toolbar>
                     <Toolbar design="Solid" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }">
-                        <Select id="idSelectLotView"  visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
-                            items="{ path: 'fastAppData>/SelectedOffer/Lots/results' }"
-                            change="onChangeSelectedLot">
-                            <core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
-                        </Select>
+						<Label text="Lots" showColon="true" vAlign="Middle" labelFor="idSelectLotView"/>
+						<Select id="idSelectLotView"  visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
+							items="{ path: 'fastAppData>/SelectedOffer/Lots/results' }"
+							change="onChangeSelectedLot">
+							<core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
+						</Select>
                     </Toolbar>
                 </t:toolbar>
 				<t:columns>

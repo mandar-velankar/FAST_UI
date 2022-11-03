@@ -191,8 +191,7 @@ sap.ui.define([
 			//path of product
 			var sPath = oModel.createKey("/PT_TMCTPRDPCK", {
 				PRODUCTPACKID: countryProductPack.PRODUCTPACKID,
-				COUNTRYCODE: countryProductPack.COUNTRYCODE,
-				ACTIVERECORD: countryProductPack.ACTIVERECORD
+				COUNTRYCODE: countryProductPack.COUNTRYCODE
 			});
 
             delete countryProductPack["PRODUCTPACKID"];
