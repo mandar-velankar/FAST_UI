@@ -265,7 +265,7 @@
 				<!-- End Brazil only -->
 
 				<Label text="{i18n>contleng}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES'}"/>
-				<Input id="input10" value="{fastData>ContractLength}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES'}"/>
+				<Input id="input10" value="{fastData>ContractLength}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 				<Label text="{i18n>contextnprd}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES'}"/>
 				<Input id="input11" value="{fastData>ContractExtenseion}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} !== 'ES'}"/>
 
