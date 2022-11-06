@@ -2546,6 +2546,7 @@ sap.ui.define([
 								}
 
                                 oProduct.OtherPriceAgreementsExist = agreementExists ? 'Yes' : 'No';
+								oProduct.PrAgrOfferID = agreementExists ? oPriceAgreement.OfferId : null;
 							});
 						}
 

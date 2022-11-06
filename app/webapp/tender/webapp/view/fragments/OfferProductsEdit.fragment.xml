@@ -523,6 +523,24 @@
 										</Select>
 									</t:template>
 								</t:Column>
+
+								<t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Classification/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/Classification/required}"/>
+									<t:template>
+                                        <Input value="{fastAppData>PrAgrClassification}" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}" enabled="false"/>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferID/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/OfferID/required}"/>
+									<t:template>
+                                        <Input value="{fastAppData>PrAgrOfferID}" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}" enabled="false"/>
+									</t:template>
+								</t:Column>
                                 
                                 <t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}">
 									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/BU/description'}" 
