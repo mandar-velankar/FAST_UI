@@ -449,6 +449,22 @@
 						</t:template>
 					</t:Column>
 
+					<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Classification/description',
+                                       formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>OtherPriceAgreementTenderClassification}"/>
+						</t:template>
+					</t:Column>
+
+					<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferID/description',
+                                       formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Link text="{fastAppData>OtherPriceAgreementOfferId}" press="onNavToPa"/>
+						</t:template>
+					</t:Column>
+
                     <t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/BU/description',
                                        formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>

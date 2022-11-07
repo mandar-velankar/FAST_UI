@@ -6264,6 +6264,17 @@ sap.ui.define([
 			this.setScrollProductsOutputContainter();
 		},
 
+		onNavToPa: function (oEvent){
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			const sSelectedRow = oEvent.getSource().getBindingContext('fastAppData').getPath();
+			const oProduct = oFastAppDataModel.getProperty(sSelectedRow);
+
+			if(oProduct){
+				window.open("/app/#/priceagreements&/pa/PriceAgreements/" + oProduct.ExistingPriceAgreementId);
+			}
+
+		},
+
 		//Remove product from output list
 		onPressRemoveProductFromOutputList: function (oEvent) {
 

@@ -2527,6 +2527,9 @@ sap.ui.define([
 								//check if other price agreements exist, not associated to the given tender / offer
 								let oPriceAgreement = await that.getProductPriceAgreement(oProduct.CountryCode, oProduct.ProductCode);
                                 let agreementExists = false;
+								let otherPriceAgreementOfferId = "";
+								let otherPriceAgreementTenderClassification = "";
+								let priceAgreementID = "";
 
 								if(oPriceAgreement.data && oPriceAgreement.data.results.length > 0){
                                     let oTomorrowsDate = new Date();
@@ -2537,7 +2540,10 @@ sap.ui.define([
                                     for (let i = 0; i < aPriceAgreements.length; i++) {
                                         let candidates = aPriceAgreements[i].Candidates?.results;
                                         if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
-                                            agreementExists = true; 
+                                            agreementExists = true;
+											priceAgreementID = aPriceAgreements[i].ID; 
+											otherPriceAgreementOfferId = aPriceAgreements[i].OfferId; 
+											otherPriceAgreementTenderClassification = aPriceAgreements[i].Tender?.Classification; 
                                             break;
                                         } 
                                     }
@@ -2546,6 +2552,9 @@ sap.ui.define([
 								}
 
                                 oProduct.OtherPriceAgreementsExist = agreementExists ? 'Yes' : 'No';
+								oProduct.OtherPriceAgreementOfferId = otherPriceAgreementOfferId;
+								oProduct.OtherPriceAgreementTenderClassification = otherPriceAgreementTenderClassification;
+								oProduct.ExistingPriceAgreementId = priceAgreementID;
 							});
 						}
 
