@@ -529,7 +529,7 @@
 												    		   wrapping="true" 
 															   required="{fastAppData>/permissions/tables/editofferProductId/Classification/required}"/>
 									<t:template>
-                                        <Input value="{fastAppData>PrAgrClassification}" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}" enabled="false"/>
+                                        <Input value="{fastAppData>OtherPriceAgreementTenderClassification}" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}" enabled="false"/>
 									</t:template>
 								</t:Column>
 
@@ -538,7 +538,7 @@
 												    		   wrapping="true" 
 															   required="{fastAppData>/permissions/tables/editofferProductId/OfferID/required}"/>
 									<t:template>
-                                        <Input value="{fastAppData>PrAgrOfferID}" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}" enabled="false"/>
+                                        <Input value="{fastAppData>OtherPriceAgreementOfferId}" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}" enabled="false"/>
 									</t:template>
 								</t:Column>
                                 

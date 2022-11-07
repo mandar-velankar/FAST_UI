@@ -453,7 +453,7 @@
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Classification/description',
                                        formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>PrAgrClassification}"/>
+							<Text text="{fastAppData>OtherPriceAgreementTenderClassification}"/>
 						</t:template>
 					</t:Column>
 
@@ -461,7 +461,7 @@
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferID/description',
                                        formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
-							<Link text="{fastAppData>PrAgrOfferID}" press="onNvavToPa"/>
+							<Link text="{fastAppData>OtherPriceAgreementOfferId}" press="onNavToPa"/>
 						</t:template>
 					</t:Column>
 
