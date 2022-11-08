@@ -2725,15 +2725,16 @@ sap.ui.define([
                         if(AutoApprovalflag==false){
 
                             var length=oData.results;
-
+                    //EHQUT-202292-Offer approval request from 'Offer Management app
                             length.forEach(function (oProduct) {
                                var total= oProduct.ApproverList.results.length;
                                for(var i=0; i<total;i++){
                                    if(oProduct.ApproverList.results[i].ApproverName=='Auto Approval'){
                                     oProduct.ApproverList.results.splice(i,1);
+									total=total-1;
                                    }
                                }
-
+                    //EHQUT-202292-Offer approval request from 'Offer Management app
 
                             })
                         }
