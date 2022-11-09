@@ -60,7 +60,7 @@ sap.ui.define([
 			var mParameters = {
 				filters: aFilters,
 				urlParameters: {
-					$expand: "OfferProduct,Candidates"
+					$expand: "OfferProduct,Candidates,Tender"
 				}
 			};
 
