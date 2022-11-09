@@ -3955,8 +3955,17 @@ sap.ui.define([
 			oSaveBasicInfo.GroupPurchasing = this.byId("idGroupPurchasingEdit").getSelectedKey();
 
 			oSaveBasicInfo.PublicationDate = (oTender.PublicationDate) ? oTender.PublicationDate : null;
-			oSaveBasicInfo.BidDueDate = (oTender.BidDueDate) ? oTender.BidDueDate : null;
-			oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
+            oSaveBasicInfo.PublicationDate = this._country === 'ES' && oSaveBasicInfo.Classification === 'Commercial Agreement' ? new Date() : oSaveBasicInfo.PublicationDate;
+			
+            oSaveBasicInfo.BidDueDate = (oTender.BidDueDate) ? oTender.BidDueDate : null;
+            if(this._country === 'ES' && oSaveBasicInfo.Classification === 'Commercial Agreement'){
+                let date = new Date();
+                oSaveBasicInfo.BidDueDate = new Date(date.getFullYear(), date.getMonth() + 2, 0);
+            } else {
+                oSaveBasicInfo.BidDueDate
+            }
+
+            oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
 			oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
 
 			oSaveBasicInfo.TenderStatus = "Open";
@@ -5834,7 +5843,9 @@ sap.ui.define([
 							type: 'Warning',
 							title: 'Active agreements exist for products',
 							subtitle: '',
-							description: Array.from(aProductsForBindingFilter.filter((product) => product.OtherPriceAgreementsExist === 'Yes').map((product) => { return product.SKU.PRODUCTPACKNAME})).join("\n")
+							description: Array.from(aProductsForBindingFilter.filter((product) => product.OtherPriceAgreementsExist === 'Yes')
+										.map((product) => { return `${product.SKU.PRODUCTPACKNAME} \nOfferID: ${product.OtherPriceAgreementOfferId} \nClassification: ${product.OtherPriceAgreementTenderClassification}`}))
+										.join("\n")
 						});
 						Services.showMessageCompositeView('Warning', aMessages, 'Warning');
 					}
@@ -6202,6 +6213,8 @@ sap.ui.define([
 					oAddProduct._sOperation = 'POST';
 
 					//get possible price agreement
+					let otherPriceAgreementOfferId = "";
+					let otherPriceAgreementTenderClassification = "";
                     let agreementExists = false;
                     let oTomorrowsDate = new Date();
                     oTomorrowsDate.setDate(oTomorrowsDate.getDate() + 1);
@@ -6214,11 +6227,15 @@ sap.ui.define([
                         let candidates = aPriceAgreements[i].Candidates?.results;
                         if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
                             agreementExists = true; 
+							otherPriceAgreementOfferId = aPriceAgreements[i].OfferId; 
+							otherPriceAgreementTenderClassification = aPriceAgreements[i].Tender?.Classification;
                             break;
                         } 
                     }
 
 					oAddProduct.OtherPriceAgreementsExist = aPriceAgreements.length > 0 && agreementExists ? 'Yes' : 'No';
+					oAddProduct.OtherPriceAgreementOfferId = otherPriceAgreementOfferId;
+					oAddProduct.OtherPriceAgreementTenderClassification = otherPriceAgreementTenderClassification;
 
 					aProducts.push(oAddProduct);
 
@@ -6245,6 +6262,17 @@ sap.ui.define([
 			oInfoToolbar.setVisible(false);
 			//oButtonAddSelected.setEnabled(true);
 			this.setScrollProductsOutputContainter();
+		},
+
+		onNavToPa: function (oEvent){
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			const sSelectedRow = oEvent.getSource().getBindingContext('fastAppData').getPath();
+			const oProduct = oFastAppDataModel.getProperty(sSelectedRow);
+
+			if(oProduct){
+				window.open("/app/#/priceagreements&/pa/PriceAgreements/" + oProduct.ExistingPriceAgreementId);
+			}
+
 		},
 
 		//Remove product from output list
@@ -10004,12 +10032,36 @@ sap.ui.define([
                     if(sCountry === 'ES' && sKey === 'Tender' || sCountry === 'IT') {
                         this.byId("idSelectTenderTypeEdit").setVisible(true);
                         if(sCountry === 'ES'){
-                            this.byId("idSelectTenderType2Edit").setVisible(true);     
+                            this.byId("idSelectTenderType2Edit").setVisible(true);  
+                            this.byId("idContractExtenseion").setVisible(true);
+                            this.byId("idContractLength").setVisible(true);
+                            this.byId("idContractLengthLabel").setVisible(true);
+                            this.byId("idContractExtenseionLabel").setVisible(true);
+                            this.byId("idPublicationDateLabel").setVisible(true);
+                            this.byId("idPublicationDate").setVisible(true);
+                            this.byId("idBidDueDateLabel").setVisible(true);
+                            this.byId("idBidDueDate").setVisible(true);
+                            this.byId("idNextPublicationDyeLabel").setVisible(true);
+                            this.byId("idNextPublicationDye").setVisible(true);
+                            this.byId("idAwardDate").setVisible(true);
+                            this.byId("idAwardDateLabel").setVisible(true);
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
                         if(sCountry === 'ES'){
-                            this.byId("idSelectTenderType2Edit").setVisible(false);     
+                            this.byId("idSelectTenderType2Edit").setVisible(false);   
+                            this.byId("idContractExtenseion").setVisible(false);
+                            this.byId("idContractLength").setVisible(false);  
+                            this.byId("idContractLengthLabel").setVisible(false);
+                            this.byId("idContractExtenseionLabel").setVisible(false);
+                            this.byId("idPublicationDateLabel").setVisible(false);
+                            this.byId("idPublicationDate").setVisible(false);
+                            this.byId("idBidDueDateLabel").setVisible(false);
+                            this.byId("idBidDueDate").setVisible(false);
+                            this.byId("idNextPublicationDyeLabel").setVisible(false);
+                            this.byId("idNextPublicationDye").setVisible(false);
+                            this.byId("idAwardDate").setVisible(false);
+                            this.byId("idAwardDateLabel").setVisible(false);
                         }                  
                     }         
                     //EHQUT-INC0184560-Issue in offer creation
