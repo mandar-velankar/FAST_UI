@@ -1,0 +1,43 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+
+	<Dialog id="idPrafdetail" title="PRAF Details" >
+    <buttons>
+            <Button text="OK" press=".onClose"/>
+		</buttons>
+		
+        <Table id="idTablePraf" items="{/ProductCollection}">
+		
+            <columns>
+                <Column width="5rem" >
+                    <Label text="LAP Currency" design="Bold" />
+                </Column>
+                <Column width="5rem">
+                    <Label text="LAP" design="Bold"/>
+                </Column>
+                <Column width="5rem">
+                    <Label text="LAP Unit" design="Bold"/>
+                </Column>
+                  
+                <Column width="18rem">
+                    <Label text="PRAF Comment" design="Bold"/>
+                </Column>
+
+                 <Column width="5rem">
+                    <Label text="PRAF ID" design="Bold"/>
+                </Column> 
+                            
+            </columns>
+            <ColumnListItem>
+                <cells>
+                   <Text text="{LAP_CURRENCY}"/>
+                     <Text text="{LAP}"/>
+                      <Text text="{LAP_UNIT}"/>
+                      <Text text="{PRAF_COMMENTS}"/>
+                        <Text text="{PRAF_ID}"/>
+                </cells>
+            </ColumnListItem>
+        </Table>
+   	</Dialog>	
+</core:FragmentDefinition>
