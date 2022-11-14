@@ -8032,6 +8032,9 @@ sap.ui.define([
 			var data={
 				ProductCollection :[]
 			};
+			
+			if(GPP_Goverened==='Yes'){
+			
 			var ProductDetails={
 				LAP_CURRENCY:aProducts[iIndex].SKUCountry.LAP_CURRENCY,
 				LAP:aProducts[iIndex].SKUCountry.LAP,
@@ -8040,6 +8043,7 @@ sap.ui.define([
 				PRAF_ID:aProducts[iIndex].SKUCountry.PRAF_ID
 			}
 			data.ProductCollection.push(ProductDetails);
+		}
 			if(GPP_Goverened==='Yes' && Region=== 'MEA'){
 				if (!this.oDefaultDialog) {
 				
@@ -8059,10 +8063,13 @@ sap.ui.define([
 					oDialog.open();
 				}.bind(this));
 			}
+			//EHQUT-199080-MEA -Global/local pricing policy identification
 		},
+		//EHQUT-199080-MEA -Global/local pricing policy identification
 		onClose:function(){
             if(this.oDefaultDialog) this.oDefaultDialog.then(dialog => dialog.close());
         },
+		
 		onToggleScenarioPlanner: function (oEvent) {
 			var oScenarioPlanner = this.byId("idScenarioPlanner");
 			var oPricingOffer = this.byId("idPricingOffer");
