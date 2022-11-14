@@ -8021,7 +8021,55 @@ sap.ui.define([
 					template: oFinancialOfferTemplate
 				});
 			}
+			//EHQUT-199080-MEA -Global/local pricing policy identification
+			let ProductCode=that._productCode;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			let Region=oFastAppDataModel.oData.Tender.Country.Region;
+			var aProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results");
+            var iIndex = aProducts.findIndex(x => x.ProductCode === ProductCode);
+            let GPP_Goverened=aProducts[iIndex].SKUCountry.GPP_GOVERNED;
+			const oView=this.getView();
+			var data={
+				ProductCollection :[]
+			};
+			
+			if(GPP_Goverened==='Yes'){
+			
+			var ProductDetails={
+				LAP_CURRENCY:aProducts[iIndex].SKUCountry.LAP_CURRENCY,
+				LAP:aProducts[iIndex].SKUCountry.LAP,
+				LAP_UNIT:aProducts[iIndex].SKUCountry.LAP_UNIT,
+				PRAF_COMMENTS:aProducts[iIndex].SKUCountry.PRAF_COMMENTS,
+				PRAF_ID:aProducts[iIndex].SKUCountry.PRAF_ID
+			}
+			data.ProductCollection.push(ProductDetails);
+		}
+			if(GPP_Goverened==='Yes' && Region=== 'MEA'){
+				if (!this.oDefaultDialog) {
+				
+					this.oDefaultDialog = Fragment.load({
+						id: this.getView().getId(),
+						name: "FAST_NS0FAST0.view.fragments.PrafDetails_MEA",
+						controller: this
+					}).then(function (oDialog) {
+						oView.addDependent(oDialog);
+						return oDialog;
+					});
+					
+				}
+				this.oDefaultDialog.then(function (oDialog) {
+					var oModel=new sap.ui.model.json.JSONModel(data);
+					oDialog.setModel(oModel);
+					oDialog.open();
+				}.bind(this));
+			}
+			//EHQUT-199080-MEA -Global/local pricing policy identification
 		},
+		//EHQUT-199080-MEA -Global/local pricing policy identification
+		onClose:function(){
+            if(this.oDefaultDialog) this.oDefaultDialog.then(dialog => dialog.close());
+        },
+		
 		onToggleScenarioPlanner: function (oEvent) {
 			var oScenarioPlanner = this.byId("idScenarioPlanner");
 			var oPricingOffer = this.byId("idPricingOffer");
