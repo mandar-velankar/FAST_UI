@@ -12,8 +12,9 @@ sap.ui.define([
     "sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
-    "sap/ui/model/Sorter"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
+    "sap/ui/model/Sorter",
+    "sap/ui/core/format/DateFormat"    
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,DateFormat) {
 	"use strict";
 	
 	var bundle;
@@ -136,10 +137,14 @@ sap.ui.define([
 
             // Manage financial offer when existing agreement is in place
             const applicableTenderCondition = await this.getApplicableTenderCondition();
+            const existingPriceAgreement = await this.getExistingPriceAgreement();
+            let sExistingAgreementInPlaceText = '';            
             if(applicableTenderCondition){
                 const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
                 const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
                 this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
+                sExistingAgreementInPlaceText = 'Existing agreement in place for OfferID: ' + existingPriceAgreement.OfferId + ' Expiring on: ' + (DateFormat.getDateInstance({pattern : "dd-MM-yyyy" }).format(existingPriceAgreement.ExpiryDate));
+                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlaceText", sExistingAgreementInPlaceText);
                 Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
             }else{
                 Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
