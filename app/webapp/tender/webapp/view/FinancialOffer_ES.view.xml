@@ -95,6 +95,9 @@
 									<Column visible="{access>/tenderAccess/COGS}">
 										<Text text="{i18n>GrossMargin}"/>
 									</Column>
+                                    <Column>
+										<Text text="{i18n>Outcome}"/>
+									</Column>
 								</columns>
 								<items>
 									<ColumnListItem type="Navigation" press="onFinancialProductPress" detailPress="onDetailPress">
@@ -125,7 +128,12 @@
 										<cells>
 											<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
 										</cells>
-										
+										<cells>
+											<ObjectStatus class="sapUiResponsiveMargin"
+                                                          icon="{= ${path: 'fastAppData>GrossMargin', formatter: '.formatter.outcome'} ? 'sap-icon://sys-enter-2' : 'sap-icon://error'}"  
+                                                          state = "{= ${path: 'fastAppData>GrossMargin', formatter: '.formatter.outcome'} ? 'Success' : 'Error'}" 
+                                            />
+										</cells>
 									</ColumnListItem>
 								</items>
 							</Table>
@@ -157,7 +165,7 @@
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
 						<VBox>
 							<MessageStrip
-								text="Existing agreement in place"
+								text="{fastAppData>/ExistingAgreementInPlaceText}"
 								type="Warning"
 								showIcon="false"
 								showCloseButton="false"

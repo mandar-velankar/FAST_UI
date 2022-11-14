@@ -538,11 +538,12 @@
 									<VBox>
 										<Text text="OTC" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
+                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												fieldGroupIds="MSP,OTC"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/NSMSMFM_OTC', 
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/NSMSMFM_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
@@ -551,9 +552,10 @@
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
 												<Label text="{ppa>/selectedProduct/MspPricePercDiff/NSMSMFM_OTC}" />
 											</VBox>
+                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/NSMSMFM_OTC', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/NSMSMFM_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -562,11 +564,12 @@
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
 										<HBox>
+                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input
 												fieldGroupIds="MSP,OTC" 
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/HBU_OTC', 
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/HBU_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
@@ -575,9 +578,10 @@
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
 												<Label text="{ppa>/selectedProduct/MspPricePercDiff/HBU_OTC}" />
 											</VBox>
+                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/HBU_OTC', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/HBU_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -586,11 +590,12 @@
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
 										<HBox>
+                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												fieldGroupIds="MSP,OTC"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_OTC', 
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
@@ -599,9 +604,10 @@
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
 												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_OTC}" />
 											</VBox>
+                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_OTC', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -896,11 +902,12 @@
 									<VBox>
 										<Text text="OTC" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
+                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												fieldGroupIds="NSP,OTC"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/NSMSMFM_OTC', 
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/NSMSMFM_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
@@ -911,7 +918,7 @@
 											</VBox>
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/NSMSMFM_OTC', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/NSMSMFM_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -920,11 +927,12 @@
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
 										<HBox>
+                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												fieldGroupIds="NSP,OTC"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/HBU_OTC', 
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/HBU_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
@@ -933,9 +941,10 @@
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
 												<Label text="{ppa>/selectedProduct/NspPricePercDiff/HBU_OTC}" />
 											</VBox>
+                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/HBU_OTC', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/HBU_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -948,7 +957,7 @@
 												fieldGroupIds="NSP,OTC"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_OTC', 
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
@@ -959,7 +968,7 @@
 											</VBox>
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_OTC', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Drugstore', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"

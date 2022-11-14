@@ -233,7 +233,7 @@ sap.ui.define([
                 "ProductCode": oPriceConditionViewObject.ProductCode,
                 "PVL": convertedPVL,
                 "ConfidentialPrice":  convertedConfPrice || oPriceConditionViewObject.ConfidentialPrice, // oPriceConditionViewObject.ConfidentialPrice used when creating continued/revised offer
-                "Discount": oPriceConditionViewObject.Discount,
+                "Discount": oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "RoyalDecreeValue": oPriceConditionViewObject.RoyalDecreeValue,
                 "RoyalDecreeIncl": oPriceConditionViewObject.RoyalDecreeIncl,

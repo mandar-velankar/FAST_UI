@@ -550,6 +550,16 @@ sap.ui.define([
 			if(!sorter || !additionalConditions) return 'No';
 			return additionalConditions.some(cond => cond.SORTER === sorter) ? 'Yes' : 'No';
 		},
+
+        outcome: function(grossMargin){
+            if(!grossMargin){return};
+            let newGrossMargin =  grossMargin * 100;
+            if (parseFloat(newGrossMargin) >= parseFloat('40%')) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 		
 	};
 });
