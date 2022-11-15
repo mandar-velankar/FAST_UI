@@ -87,6 +87,9 @@ sap.ui.define([
 
 			const oViewModel = new sap.ui.model.json.JSONModel({
 				OfferProductsChannelWarningMessage: "",
+				NotifyIbizLineNumbers: [],
+				NotifyIbizDirectIndirect: null,
+				NotifyIbizWorkflowID: null,
 			});	
 			this.getView().setModel(oViewModel, "viewModel");
 
@@ -6268,10 +6271,31 @@ sap.ui.define([
 		onOfferProductsChannelChange: function(oEvent){
 			const sSelectedChannelText = oEvent.getParameter('selectedItem').getText();
 			const sSelectedDistributorText = this.getView().byId("idDistributorName").getSelectedItem().getText();
+			const oSelectedObject = oEvent.getParameter('selectedItem').getBindingContext("fastAppData").getObject();
 			
 			// set warning message when switching Channels at the offer level
 			const sWarningMessage = this.getOfferProductsChannelWarningMessage(sSelectedChannelText, sSelectedDistributorText);
 			this.getView().getModel("viewModel").setProperty("/OfferProductsChannelWarningMessage", sWarningMessage);
+
+			// set notifyIbizData
+			this.setNotifyIbizData(sWarningMessage, oSelectedObject,sSelectedDistributorText);
+			
+		},
+
+		setNotifyIbizData: function(sWarningMessage, oObject,sDistributorName){
+			const directIndirect = sDistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? 0 : 1; // (0 = direct; 1 = indirect)
+			const lineNumbers = new Set(this.getView().getModel("viewModel").getProperty("/NotifyIbizLineNumbers"));
+			const ibizWorkflowID = oObject?.Offer?.IbizWorkflowID;
+
+			if(sWarningMessage){ // add
+				lineNumbers.add(Number(oObject?.Line));
+			}else{ // remove
+				lineNumbers.delete(Number(oObject?.Line));
+			}
+			
+			this.getView().getModel("viewModel").setProperty("/NotifyIbizLineNumbers", Array.from(lineNumbers));
+			this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", directIndirect);
+			this.getView().getModel("viewModel").setProperty("/NotifyIbizWorkflowID", ibizWorkflowID);
 		
 		},
 
@@ -10880,17 +10904,29 @@ sap.ui.define([
 			
             //get user input
 			let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
+			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID");
+			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect");
+			const lineNumbers =this.getView().getModel("viewModel").getProperty("/NotifyIbizLineNumbers");
+			
+			try{
+				//Logic to call the API to Notify about Product Switch
+				await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, lineNumbers);
 
-            //Logic to call the API to Notify about Product Switch
-
+			}catch(error){
+				sap.m.MessageBox.error(error.message, {
+					title: "Error",
+					id: "messageBoxId3",
+					details: JSON.parse(error.responseText),
+					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
+				});
+			}
 
 			// close loading that blocks everything
 			BusyIndicator.hide();
 
-            //close dialog
-            that.onNotifyibizDialogCancel();
+			//close dialog
+			that.onNotifyibizDialogCancel();
 
-		
         },
 
         onNotifyibizDialogCancel: function(oEvent){
