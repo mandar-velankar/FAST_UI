@@ -424,9 +424,7 @@ sap.ui.define([
 			let oResourceBundle = oDetailController.getView().getModel("i18n").getResourceBundle();
 
 			oTable.destroyColumns();
-			//EHQUT-202296-MEA -change the formula for the calculation of the GP% to be divided by the Gross sales in Euros
-			var oFastAppdata = Services.getFastAppDataModel();
-			let Region = oFastAppdata.oData.Tender.Country.Region;
+			
 
 			const oNumberFormat = NumberFormat.getFloatInstance({
 				maxFractionDigits: 2,
