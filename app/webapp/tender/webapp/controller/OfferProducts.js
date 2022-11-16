@@ -424,9 +424,7 @@ sap.ui.define([
 			let oResourceBundle = oDetailController.getView().getModel("i18n").getResourceBundle();
 
 			oTable.destroyColumns();
-			//EHQUT-202296-MEA -change the formula for the calculation of the GP% to be divided by the Gross sales in Euros
-			var oFastAppdata = Services.getFastAppDataModel();
-			let Region = oFastAppdata.oData.Tender.Country.Region;
+			
 
 			const oNumberFormat = NumberFormat.getFloatInstance({
 				maxFractionDigits: 2,
@@ -452,8 +450,8 @@ sap.ui.define([
 
 				//changed
 				cogsRel: oCalculatedFields.iSpotCogsRel, //price.cogs / (price.netPrice / price.spotRate),
-				//grossMargin: 1 - oCalculatedFields.iSpotCogsRel, //(price.cogs / (price.netPrice / price.spotRate)),
-				grossMargin: (Region === "MEA") ? (oCalculatedFields.iSpotNetSales - oCalculatedFields.iCombinedCogs) / ((price.offerPrice * price.mainProductQuantity) / price.spotRate) : 1 - oCalculatedFields.iSpotCogsRel,
+				grossMargin: 1 - oCalculatedFields.iSpotCogsRel, //(price.cogs / (price.netPrice / price.spotRate)),
+				
 
 				quantity: price.mainProductQuantity, //price.quantity,
 				foc: (price.focAbsPct === "PCT") ? price.focQuantityRounded : price.foc,
@@ -476,8 +474,8 @@ sap.ui.define([
 
 				//changed
 				cogsRel: oCalculatedFields.iBudgetCogsRel, // price.cogs / (price.netPrice / price.budgetRate),
-				//grossMargin: 1 - oCalculatedFields.iBudgetCogsRel, // (price.cogs / (price.netPrice / price.budgetRate)),
-				grossMargin: (Region === "MEA") ? (oCalculatedFields.iBudgetNetSales - oCalculatedFields.iCombinedCogs) / ((price.offerPrice * price.mainProductQuantity) / price.budgetRate) : (1 - oCalculatedFields.iBudgetCogsRel),
+				grossMargin: 1 - oCalculatedFields.iBudgetCogsRel, // (price.cogs / (price.netPrice / price.budgetRate)),
+				
 
 				quantity: price.mainProductQuantity, //price.quantity,
 				foc: (price.focAbsPct === "PCT") ? price.focQuantityRounded : price.foc,
@@ -499,8 +497,8 @@ sap.ui.define([
 
 				//changed
 				cogsRel: oCalculatedFields.iSpotCogsRel, //price.cogs / (price.netPrice / price.spotRate),
-				//grossMargin: 1 - oCalculatedFields.iSpotCogsRel, //(price.cogs / (price.netPrice / price.spotRate)),
-				grossMargin: (Region === "MEA") ? (oCalculatedFields.iSpotNetSales - oCalculatedFields.iCombinedCogs) / ((price.offerPrice * price.mainProductQuantity) / price.spotRate) : 1 - oCalculatedFields.iSpotCogsRel,
+				grossMargin: 1 - oCalculatedFields.iSpotCogsRel, //(price.cogs / (price.netPrice / price.spotRate)),
+				
 
 				quantity: price.mainProductQuantity, //price.quantity,
 				foc: (price.focAbsPct === "PCT") ? price.focQuantityRounded : price.foc,
