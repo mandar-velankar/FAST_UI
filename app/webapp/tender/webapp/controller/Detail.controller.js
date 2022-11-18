@@ -7501,7 +7501,9 @@ sap.ui.define([
 						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replaceAll(",", "")),
 						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue() / 100,
 						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
-						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
+						//Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
+						//EHQUT-196575- Thailand - Change Request - INC16653808 
+						Deductions:(countryCode !=="TH") ? that.byId("idEditPriceOffer_idDeduction").getValue() / 100 : ((that.byId("idEditPriceOffer_idDeductionAbsPct").getSelectedKey() === "PCT") ? that.byId("idEditPriceOffer_idDeduction").getValue() /100 : that.byId("idEditPriceOffer_idDeduction").getValue()),
 						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replaceAll(",", "")),
 						BusinessCasePrice: parseFloat(that.byId("idEditPriceOffer_idBusinessCasePrice").getValue().replace(",", "")),
 						WholesalePrice: that.byId("idEditPriceOffer_idWhlseofr").getSelectedKey(),
@@ -7517,7 +7519,8 @@ sap.ui.define([
 						ActiveTier: 0,
 						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
-						PRICE_UPDATE: 0
+						PRICE_UPDATE: 0,
+						Deductions_ABS_PCT:(countryCode ==="TH") ? that.byId("idEditPriceOffer_idDeductionAbsPct").getSelectedKey() : " "
 					};
                 //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//check if any of the pricing data is changed
