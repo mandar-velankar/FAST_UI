@@ -287,7 +287,26 @@ sap.ui.define([
 			}
 
 		},
+		//EHQUT-199068-Italy – Tender search by Region
+		getInstituteID: function(oInstituteName){
+			let RegionInstitute=[];
+			if(oInstituteName){
+				let TotalInstitute=this.getFastAppDataModel().getProperty("/PT_TMINST");
+				var iIndex = TotalInstitute.findIndex(x => x.InstituteID == oInstituteName);
+				var RegionInstituteID=TotalInstitute[iIndex].RegionID;
+				
+				//RegionInstitute=TotalInstitute.filter(x => x.RegionID == RegionInstituteID);
+				for (var i=0;i<TotalInstitute.length;i++){
+				if(TotalInstitute[i].RegionID==RegionInstituteID)	{
+					RegionInstitute.push(TotalInstitute[i].InstituteName);
+				}
+				}
 
+					}							   
+				return RegionInstitute;
+			},
+
+		//EHQUT-199068-Italy – Tender search by Region
 		getOfferCompositeMessages: function () {
 			return this._aOfferCompositeMessages;
 		},
