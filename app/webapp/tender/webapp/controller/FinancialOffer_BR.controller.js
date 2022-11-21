@@ -784,9 +784,9 @@ sap.ui.define([
             let UOM = oProductPrice.UOM;
             let correctPrice;
             if(UOM === "Unit"){
-                correctPrice = oPriceCondition.PriceList / packFactor;
+                correctPrice = oPriceCondition.masterPriceList / packFactor;
             }else{
-                correctPrice = oPriceCondition.PriceList;
+                correctPrice = oPriceCondition.masterPriceList;
             }
             let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
             let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
