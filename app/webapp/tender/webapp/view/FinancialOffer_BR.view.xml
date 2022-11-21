@@ -47,7 +47,7 @@
 								<Label text="{i18n>Currency}"/>
 								<!--TEMP solution Currency problem due to IT view financial offer-->  
 									<Select id="idCurrency" selectedKey="{fastAppData>/CurrencyTEMP}" enabled="{fastAppData>/EditMode}" items="{ path: 'fastData>/CountryCurrency', sorter: { path: 'COUNTRY_CODE' }, filters: [
-										{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'IT'}
+										{path: 'COUNTRY_CODE', operator: 'EQ', value1: 'BR'}
 									] }" >					
 										<core:Item key="{fastData>CURRENCY}" text="{fastData>CURRENCY}"/>
 									</Select>
