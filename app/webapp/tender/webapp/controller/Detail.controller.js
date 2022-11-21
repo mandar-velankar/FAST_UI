@@ -87,7 +87,7 @@ sap.ui.define([
 
 			const oViewModel = new sap.ui.model.json.JSONModel({
 				OfferProductsChannelWarningMessage: "",
-				NotifyIbizLineNumbers: [],
+				NotifyIbizWorkflowProductIDs:[],
 				NotifyIbizDirectIndirect: null,
 				NotifyIbizWorkflowID: null,
 			});	
@@ -6283,18 +6283,18 @@ sap.ui.define([
 		},
 
 		setNotifyIbizData: function(sWarningMessage, oObject,sDistributorName){
-			const directIndirect = sDistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? 0 : 1; // (0 = direct; 1 = indirect)
-			const lineNumbers = new Set(this.getView().getModel("viewModel").getProperty("/NotifyIbizLineNumbers"));
+			// const directIndirect = sDistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? 0 : 1; // (0 = direct; 1 = indirect)
+			const workflowproductIDs = new Set(this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs"));
 			const ibizWorkflowID = oObject?.Offer?.IbizWorkflowID;
 
 			if(sWarningMessage){ // add
-				lineNumbers.add(Number(oObject?.Line));
+				workflowproductIDs.add(Number(oObject?.WorkflowProductID));
 			}else{ // remove
-				lineNumbers.delete(Number(oObject?.Line));
+				workflowproductIDs.delete(Number(oObject?.WorkflowProductID));
 			}
 			
-			this.getView().getModel("viewModel").setProperty("/NotifyIbizLineNumbers", Array.from(lineNumbers));
-			this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", directIndirect);
+			this.getView().getModel("viewModel").setProperty("/NotifyIbizWorkflowProductIDs", Array.from(workflowproductIDs));
+			// this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", directIndirect);
 			this.getView().getModel("viewModel").setProperty("/NotifyIbizWorkflowID", ibizWorkflowID);
 		
 		},
@@ -6311,10 +6311,12 @@ sap.ui.define([
 			// from Bayer to Distributor
 			if(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "distributor"){
 				sMessage = sBayerToDistributorMessage;
+				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 1);
 			}
 			// form Distributor to Bayer
 			else if(!(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil") && channel.toLowerCase() === "bayer"){
 				sMessage = sDistributorToBayerMessage;
+				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 0);
 			}else {
 				sMessage = "";
 			}
@@ -10906,11 +10908,11 @@ sap.ui.define([
 			let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
 			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID");
 			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect");
-			const lineNumbers =this.getView().getModel("viewModel").getProperty("/NotifyIbizLineNumbers");
+			const workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs");
 			
 			try{
 				//Logic to call the API to Notify about Product Switch
-				await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, lineNumbers);
+				await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
 
 			}catch(error){
 				sap.m.MessageBox.error(error.message, {
