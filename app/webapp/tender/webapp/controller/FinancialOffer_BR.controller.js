@@ -777,17 +777,28 @@ sap.ui.define([
         onLiveChangePriceCondition: function(oEvent){
 
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-            const conditionType = this.getView().getModel('finOfferView').getProperty('/selectedConditionType')
+            const conditionType = this.getView().getModel('finOfferView').getProperty('/selectedConditionType');
             let oPriceCondition = bindingContext.getProperty(bindingContext.sPath);
-            let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? Number(oEvent.getSource().getValue()) / 100 : oPriceCondition.AdditionalDiscount;
-            let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? parseFloat(oEvent.getParameter('newValue')) : oPriceCondition.CommercialProposal;
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
+            let correctPrice;
+            if(UOM === "Unit"){
+                correctPrice = oPriceCondition.PriceList / packFactor;
+            }else{
+                correctPrice = oPriceCondition.PriceList;
+            }
+            let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
+            let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
+            let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? Number(oEvent.getSource().getValue()) / 100 : oPriceCondition.AdditionalDiscount ? oPriceCondition.AdditionalDiscount : 0;
+            let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? parseFloat(oEvent.getParameter('newValue')) : oPriceCondition.CommercialProposal ? oPriceCondition.CommercialProposal : 0;
 
             //calculations
-            oPriceCondition.PriceAfterTaxExemtion = oPriceCondition.TaxExemption === 'Yes' ? Number(oPriceCondition.PriceList * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
-            oPriceCondition.PriceAfterCap         = oPriceCondition.CAP === 'Yes' &&  oPriceCondition.TaxExemption === 'No' ? Number(oPriceCondition.PriceList * (1 - oPriceCondition.CapValue)).toFixed(2) : 
-                                                    oPriceCondition.CAP === 'Yes' &&  oPriceCondition.TaxExemption === 'Yes' ? Number(oPriceCondition.PriceList * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
-            const dBasePrice                      = oPriceCondition.TaxExemption === 'No' && oPriceCondition.CAP === 'No' ? oPriceCondition.PriceList :
-                                                    oPriceCondition.TaxExemption === 'Yes' && oPriceCondition.CAP === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
+            oPriceCondition.PriceAfterTaxExemtion = dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
+            oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
+                                                    dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
+            const dBasePrice                      = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
+                                                    dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
 
 
             if(conditionType === 'Discount'){
