@@ -1,5 +1,5 @@
 <mvc:View id="TenderDetailViewId" controllerName="FAST_NS0FAST0.controller.Detail" 
-	xmlns="sap.uxap" 
+	xmlns="sap.uxap"
 	xmlns:m="sap.m" 
 	xmlns:f="sap.f"
 	xmlns:form="sap.ui.layout.form" 
@@ -118,11 +118,11 @@
 				<!-- ACTIONS -->
 				<actions>
 					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="true" />
-					<m:Button id="cloneButtonId" icon="sap-icon://copy" text="Clone" enabled="true" type="Accept" press="onCloneButtonPress" visible="{= ${fastAppData>/Tender/CountryCode} !== 'BR' ? true : false }"/>
+					<m:Button id="cloneButtonId" icon="sap-icon://copy" text="Clone" enabled="true" type="Accept" press="onCloneButtonPress" visible="false" />
 					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="{= ${fastData>FoldersCreated} === 1}"/>
 					<m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true"/>
 					<!--<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>-->
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true}"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
