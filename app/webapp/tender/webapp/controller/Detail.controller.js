@@ -535,7 +535,7 @@ sap.ui.define([
 			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
 
 			// for Italy the clone button is not visible
-			if(this._country === 'IT' || this._country === 'ES'){
+			if(this._country === 'IT' || this._country === 'ES' || this._country === 'BR'){
 				oDetailController.getView().byId("cloneButtonId").setVisible(false);
 			}
 
@@ -826,7 +826,7 @@ sap.ui.define([
 				}
 
 				// for Italy the clone button is not visible
-				if(oDetailController._country === 'IT' || oDetailController._country === 'ES'){
+				if(oDetailController._country === 'IT' || oDetailController._country === 'ES' || oDetailController._country === 'BR'){
 					oDetailController.getView().byId("cloneButtonId").setVisible(false);
 				}else {
 					oDetailController.getView().byId("cloneButtonId").setVisible(true);
