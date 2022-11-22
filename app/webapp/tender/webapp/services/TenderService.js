@@ -313,6 +313,21 @@ sap.ui.define([
 
 		},
 
+
+
+		notifyIbiz: function (workflowID, directIndirect, lineNumbers) {
+
+			const payload = {
+				"ibizWorkflowID": workflowID,
+				"directIndirect": directIndirect,
+				"lineNumbers": lineNumbers
+			};
+
+			//Create
+			return this.odata("/notifyIbiz").post(payload);
+
+		},
+
 	});
 	
 	return TenderService;

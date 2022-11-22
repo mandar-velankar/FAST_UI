@@ -123,7 +123,7 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/Line/required}"/>
 									<t:template>
-										<Input value="{fastAppData>Line}" maxLength="100"/>
+										<Input value="{fastAppData>Line}" type="Number" maxLength="100" liveChange="onValidateLotLine"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="400px" visible="{fastAppData>/permissions/tables/editofferProductId/Product/visible}">
@@ -554,6 +554,24 @@
 												<l:GridData span="L6 M6 S6"/>
 											</layoutData>
 										</Select>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Classification/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/Classification/required}"/>
+									<t:template>
+                                        <Input value="{fastAppData>OtherPriceAgreementTenderClassification}" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}" enabled="false"/>
+									</t:template>
+								</t:Column>
+
+								<t:Column width="250px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}">
+									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferID/description'}" 
+												    		   wrapping="true" 
+															   required="{fastAppData>/permissions/tables/editofferProductId/OfferID/required}"/>
+									<t:template>
+                                        <Input value="{fastAppData>OtherPriceAgreementOfferId}" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}" enabled="false"/>
 									</t:template>
 								</t:Column>
                                 

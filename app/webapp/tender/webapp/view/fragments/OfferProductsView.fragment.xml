@@ -170,11 +170,12 @@
 					 >
                 <t:toolbar>
                     <Toolbar design="Solid" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }">
-                        <Select id="idSelectLotView"  visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
-                            items="{ path: 'fastAppData>/SelectedOffer/Lots/results' }"
-                            change="onChangeSelectedLot">
-                            <core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
-                        </Select>
+						<Label text="Lots" showColon="true" vAlign="Middle" labelFor="idSelectLotView"/>
+						<Select id="idSelectLotView"  visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"
+							items="{ path: 'fastAppData>/SelectedOffer/Lots/results' }"
+							change="onChangeSelectedLot">
+							<core:Item text="{= 'Lot #' + ${fastAppData>LotID} }" key="{fastAppData>LotID}"/>
+						</Select>
                     </Toolbar>
                 </t:toolbar>
 				<t:columns>
@@ -460,6 +461,22 @@
 						<Label text="Price Agreement" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>OtherPriceAgreementsExist}"/>
+						</t:template>
+					</t:Column>
+
+					<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/Classification/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Classification/description',
+                                       formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Text text="{fastAppData>OtherPriceAgreementTenderClassification}"/>
+						</t:template>
+					</t:Column>
+
+					<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/OfferID/visible}">
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/OfferID/description',
+                                       formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Link text="{fastAppData>OtherPriceAgreementOfferId}" press="onNavToPa"/>
 						</t:template>
 					</t:Column>
 

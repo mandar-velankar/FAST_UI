@@ -154,6 +154,7 @@ sap.ui.define([
             let priceConditionCode;         
             let convertedPVL;
             let convertedConfPrice;
+            let convertedPriceList;
             if(tab === "ResultsPage"){
             /*During Price Agreement creation we should always take the trasactional PVL/Confidential Price,
                 as Price Agreement should be created using prices saved in the PriceCondition table. */            
@@ -210,9 +211,11 @@ sap.ui.define([
                 } else if(product.UnitPerPack === "Unit"){ // if we are coming from the financial offer page
                         convertedPVL = oPriceConditionViewObject.PVL / product.SKU.PACKFACTOR;
                         convertedConfPrice = oPriceConditionViewObject.YLAP / product.SKU.PACKFACTOR;
+                        convertedPriceList = oPriceConditionViewObject.PriceList / product.SKU.PACKFACTOR;
                     } else {
                         convertedPVL = oPriceConditionViewObject.PVL;
                         convertedConfPrice = oPriceConditionViewObject.YLAP;
+                        convertedPriceList = oPriceConditionViewObject.PriceList;
                     }
                 
                 /*let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
@@ -230,7 +233,7 @@ sap.ui.define([
                 "ProductCode": oPriceConditionViewObject.ProductCode,
                 "PVL": convertedPVL,
                 "ConfidentialPrice":  convertedConfPrice || oPriceConditionViewObject.ConfidentialPrice, // oPriceConditionViewObject.ConfidentialPrice used when creating continued/revised offer
-                "Discount": oPriceConditionViewObject.Discount,
+                "Discount": oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "RoyalDecreeValue": oPriceConditionViewObject.RoyalDecreeValue,
                 "RoyalDecreeIncl": oPriceConditionViewObject.RoyalDecreeIncl,
@@ -247,6 +250,17 @@ sap.ui.define([
                 "RefundDate": oPriceConditionViewObject.RefundDate,
                 "PriceConditionCode": oPriceConditionViewObject.PriceConditionCode,
                 "MonthlyRentPerUnit":oPriceConditionViewObject.MonthlyRentPerUnit,
+                "PriceList":convertedPriceList,
+                "ICMSTax":oPriceConditionViewObject.ICMSTax,
+                "TaxExemption":oPriceConditionViewObject.TaxExemption,
+                "PriceAfterTaxExemtion":oPriceConditionViewObject.PriceAfterTaxExemtion,
+                "CAP":oPriceConditionViewObject.CAP,
+                "PriceAfterCap":oPriceConditionViewObject.PriceAfterCap,
+                "CommercialProposal":oPriceConditionViewObject.CommercialProposal,
+                "TaxEqualization": oPriceConditionViewObject.TaxEqualization,
+                "Invoive":oPriceConditionViewObject.Invoive,
+                "ICMS":oPriceConditionViewObject.ICMS,
+                "NetPrice":oPriceConditionViewObject.NetPrice,
                 "AnnualValue": oPriceConditionViewObject.AnnualValue,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
