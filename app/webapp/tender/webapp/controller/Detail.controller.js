@@ -9317,11 +9317,22 @@ sap.ui.define([
 									//EHQUT-202917-MEA - awarded quantity blank
 									//Bayer product that will be saved in PT_TMTRRES
 									/* when awarded QTY is not yet filled, it will take the requested volume as default value*/
-									if (oResult.AwardedQty === "") {
-										var sAwardedQtyBayer = "";
-									} else {
-										sAwardedQtyBayer = oResult.AwardedQty;
+									var oFastAppDataModel = Services.getFastAppDataModel();
+			                        let Region=oFastAppDataModel.oData.Tender.Country.Region;
+									if(Region === 'MEA'){
+										if (oResult.AwardedQty === "") {
+											var sAwardedQtyBayer = "";
+										} else {
+											sAwardedQtyBayer = oResult.AwardedQty;
+										}
+									}else{
+										if (oResult.AwardedQty === "") {
+											var sAwardedQtyBayer = oProduct.RequestedVolume;
+										} else {
+											sAwardedQtyBayer = oResult.AwardedQty;
+										}
 									}
+									
                                     //EHQUT-202917-MEA - awarded quantity blank
 									//default reason if empty & edit mode
 									/*if( (oResult.Outcome === 'Won' || oResult.Outcome === 'Lost') && (oResult.Reason === '' || oResult.Reason === 'Not Specified') ){
