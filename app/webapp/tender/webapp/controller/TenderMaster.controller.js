@@ -1156,7 +1156,7 @@ sap.ui.define([
 						aCountryChannels.unshift({});
 					 }
 
-					oFastAppDataModel.setProperty("/CountryChannels", aCountryChannels);
+					oFastAppDataModel.setProperty("/Channels", aCountryChannels);
 
 					
 					oDeferred.resolve(aCountryChannels);
