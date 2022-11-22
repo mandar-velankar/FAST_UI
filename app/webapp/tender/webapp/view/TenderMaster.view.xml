@@ -56,7 +56,7 @@
                          </Select> 
                         <!-- Filter for Regions-->
                         <!-- EHQUT-199068-Italy – Tender search by Region -->
-						<Select id="idfltInstituteType" selectedKey="{fastData>Institute/InstituteType}" change="loadInstituteName" enabled="true" items="{ path: 'fastAppData>/CountryChannels'}">
+						<Select id="idfltInstituteType" change="loadInstituteName" enabled="true" items="{ path: 'fastAppData>/CountryChannels'}">
                             <items>
                                 <core:Item text="{fastAppData>ChannelName}" key="{fastAppData>ChannelName}" />
                             </items>
