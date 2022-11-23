@@ -233,12 +233,27 @@ sap.ui.define([
 				enabled: false,
 				visible: sCountryCode === "CL" ? false : true
 			}));
-
+//EHQUT-196575- Thailand - Change Request - INC16653808 
 			//Deductions
 			oForm.addContent(new sap.m.Label({
-				text: "{i18n>Deductions}",
+				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>AdditionalDiscount} : ${i18n>Deductions}}",
 				visible: sCountryCode === "CL" ? false : true
 			}));
+
+			let sDeductionAbsPCT = null;
+            if(sCountryCode ==='TH'){
+           
+				if(price.deductionAbsPct === " " || price.deductionAbsPct === undefined || price.deductionAbsPct === null){
+                    sDeductionAbsPCT="PCT" ;
+                }else{
+                    sDeductionAbsPCT = price.deductionAbsPct;
+                }
+                   
+            
+        }
+		if(sCountryCode!=='TH'){
+
+           
 			oForm.addContent(new sap.m.Input({
 				id: oDetailController.getView().createId(formId + "_idDeduction"),
 				value: formatter.percentageNoUnit(price.deductions),
@@ -247,6 +262,32 @@ sap.ui.define([
 				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
 				visible: sCountryCode === "CL" ? false : true
 			}));
+        }else{
+            oForm.addContent(new sap.m.Select({
+				id: oDetailController.getView().createId(formId + "_idDeductionAbsPct"),
+				items: [{
+					key: "ABS",
+					text: "Absolute"
+				}, {
+					key: "PCT",
+					text: "Percentage"
+				}],
+				selectedKey: sDeductionAbsPCT,
+				maxWidth: "80%",
+				change: oDetailController.onEditFinancialOffer.bind(oDetailController),
+				enabled: forEdit
+				
+			}));
+            oForm.addContent(new sap.m.Input({
+				id: oDetailController.getView().createId(formId + "_idDeduction"),
+				value: (sDeductionAbsPCT === "PCT") ? formatter.percentageNoUnit(price.deductions) : price.deductions,
+				enabled: (forEdit && !forScenario),
+				description: (sDeductionAbsPCT === "PCT") ? "%" : price.uom,
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
+				visible: sCountryCode === "CL" ? false : true
+			}));
+        }
+//EHQUT-196575- Thailand - Change Request - INC16653808 
 
 			//Net price
 			oForm.addContent(new sap.m.Label({
@@ -279,10 +320,13 @@ sap.ui.define([
 			aFilters.push(new sap.ui.model.Filter("CHANNEL", sap.ui.model.FilterOperator.EQ, sTenderChannel));
 			aFilters.push(new sap.ui.model.Filter("LEGAL_ENTITY_CODE", sap.ui.model.FilterOperator.EQ, sLegalEntity));
 			//if(sBrandID !== null){
+				//EHQUT-196575- Thailand - Change Request - INC16653808 
+				if(sCountryCode !== 'TH'){
 			aFilters.push(new sap.ui.model.Filter("BRAND_ID", sap.ui.model.FilterOperator.EQ, sBrandID));
 			//}
 			aFilters.push(new sap.ui.model.Filter("PRODUCT_ID", sap.ui.model.FilterOperator.NE, sProductCode));
-
+				}
+				//EHQUT-196575- Thailand - Change Request - INC16653808 
 			//add origin's to filter
 			if (aCommercialAgreement) {
 				aCommercialAgreement.results.forEach(function (oCommercialAgreement, iIndex) {
@@ -1162,10 +1206,29 @@ sap.ui.define([
 						sPreApprovedPrice = cifPrice - (cifPrice * iStandardDiscount);
 						sDiscount = iStandardDiscount;
 					}
-
+//EHQUT-196575- Thailand - Change Request - INC16653808 
 					//deductions
-					let iDeductions = productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE;
+					//let iDeductions = productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE;
 
+					let iDeductions,sDeductionAbsPct ;
+                        if(sCountryCode !== 'TH'){
+                            iDeductions = productValues.DEFAULT_COMMISSION_RATE === null ? "" : productValues.DEFAULT_COMMISSION_RATE;
+                            sDeductionAbsPct="";
+                        }else{
+                            iDeductions = oDetailController.byId(formId + "_idDeduction") ? oDetailController.byId(formId + "_idDeduction").getValue() : 0 ;
+                            sDeductionAbsPct = oDetailController.byId(formId + "_idDeductionAbsPct") ? oDetailController.byId(formId + "_idDeductionAbsPct").getSelectedKey() : "PCT";
+    
+                           
+                            if(iDeductions !== 0){
+                                if(sDeductionAbsPct === "PCT"){
+                                    iDeductions = parseFloat(oDetailController.byId(formId + "_idDeduction").getValue()) / 100 ;
+                                }else{
+                                    iDeductions = parseFloat(oDetailController.byId(formId + "_idDeduction").getValue());
+                                } 
+                        }
+                         
+                        } 
+					//EHQUT-196575- Thailand - Change Request - INC16653808 
 					//get FOC info
 					var sFocType = oDetailController.byId("idFOCType").getSelectedKey();
 					let iFoc = oDetailController.byId(formId + "_idFoc") ? oDetailController.byId(formId + "_idFoc").getValue() : 0;
@@ -1223,6 +1286,7 @@ sap.ui.define([
 						businessCasePrice: "",
 						netOfferPrice: sNetOfferPrice,
 						deductions: iDeductions,// 0,
+						deductionAbsPct : sDeductionAbsPct,
 						netPrice: sNetPrice,
 						offerCurrency: offerCurrency,
 						spotRate: spotRate,
@@ -1296,6 +1360,10 @@ sap.ui.define([
 							"FOC 1") ? 1 - (productValues.RequestedVolume - price.foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (
 								productValues.RequestedVolume + price.foc));
 						price.deductions = priceValues.Deductions;
+						if(sCountryCode==="TH"){
+                                
+							price.deductionAbsPct = priceValues.Deductions_ABS_PCT;
+						   }
 						if (!scenarioPrice) {
 							price.netOfferPrice = parseFloat(priceValues.NetofferPrice);
 							price.netPrice = parseFloat(priceValues.NetPrice);
@@ -1304,7 +1372,11 @@ sap.ui.define([
 							price.netPrice = (1 - price.deductions) * price.netOfferPrice;
 						} else {
 							price.netOfferPrice = price.offerPrice * (1 - price.focChart);
-							price.netPrice = price.netOfferPrice * (1 - price.deductions);
+							if (price.deductionAbsPct === "ABS") {
+								price.netPrice = price.netOfferPrice * price.deductions;
+							} else {
+								price.netPrice = price.netOfferPrice * (1 - price.deductions);
+							}
 						}
 
 					}
@@ -1943,7 +2015,17 @@ sap.ui.define([
 				//var regPrice = regPriceValues.REGISTERED_PRICE * uFactor * registeredRate;
 				var regPrice = regPriceValues.REGISTERED_PRICE * uFactor;
 				var cifPrice = (productValues.UnitPerPack === "Unit") ? regPrice / skuValues.PACKFACTOR : regPrice;
-				var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue()) / 100 : 0;
+				//var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue()) / 100 : 0;
+
+				if(sCountryCode === 'TH' ){
+                    var deductionAbsPct = oDetailController.byId("idEditPriceOffer_idDeductionAbsPct").getSelectedKey();
+				
+                var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? (deductionAbsPct === "PCT") ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 :parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue()): 0;
+                    }
+                    else{
+                        var deductionAbsPct="";
+                        var deductions = oDetailController.byId("idEditPriceOffer_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOffer_idDeduction").getValue())/100 : 0;
+                    }
 
 				let offerPrice = 0;
 				if (sCountryCode === "AR" || sCountryCode === "BR" || sCountryCode === "CL") {
@@ -1997,10 +2079,13 @@ sap.ui.define([
 						foc));
 				var netOfferPrice = cifPrice !== 0 ? cifPrice * (1 - (discount + additionalDiscount)) * (1 - focChart) : offerPrice * (1 - focChart);//JH changed
 
+				//EHQUT-196575- Thailand - Change Request - INC16653808 
 				let netPrice = "";
 				if (sCountryCode === "AR" || sCountryCode === "BR" || sCountryCode === "CL") {
 					netPrice = (1 - deductions) * netOfferPrice;
-				} else {
+				} else if(deductionAbsPct==="ABS"){
+					netPrice =  netOfferPrice - deductions ;
+				}else {
 					netPrice = (1 - deductions) * netOfferPrice;
 				}
 
@@ -2036,6 +2121,7 @@ sap.ui.define([
 					focChart: focChart,
 					businessCasePrice: businessCasePrice,
 					netOfferPrice: netOfferPrice,
+					deductionAbsPct:deductionAbsPct,
 					deductions: deductions,
 					netPrice: netPrice,
 					offerCurrency: offerCurrency,
@@ -2103,7 +2189,13 @@ sap.ui.define([
 			if (focAbsPct === "PCT") {
 				foc = foc / 100;
 			}
-
+			if(sCountryCode === 'TH'){
+				var deductionAbsPct = oDetailController.byId("idEditPriceOfferScenario"+idScenario+ "_idDeductionAbsPct").getSelectedKey();
+				var deductions = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idDeduction").getValue() != "" ? parseFloat(oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idDeduction").getValue()) : 0;
+				if (deductionAbsPct === "PCT"){
+					deductions = deductions / 100;
+				}
+			   } 
 			//var focType = oDetailController.byId("idEditPriceOfferScenario" + idScenario + "_idFocType").getSelectedKey();
 			var focType = oDetailController.byId("idEditFOCType").getSelectedKey();
 
@@ -2139,7 +2231,16 @@ sap.ui.define([
 				productValues.RequestedVolume - foc) / productValues.RequestedVolume : 1 - productValues.RequestedVolume / (productValues.RequestedVolume +
 					foc));
 			var netOfferPrice = price.cifPrice !== 0 ? price.cifPrice * (1 - (standardDiscount + additionalDiscount)) * (1 - focChart) : offerPrice * (1 - focChart);
-			var netPrice = (1 - price.deductions) * netOfferPrice;
+			//EHQUT-196575- Thailand - Change Request - INC16653808 
+			var netPrice;
+			if(deductionAbsPct === "ABS"){
+				
+				netPrice = netOfferPrice- price.deductions ;
+				
+			}else{
+				netPrice = (1 - price.deductions) * netOfferPrice;
+			}
+
 
 
 			price.offerPrice = offerPrice;
@@ -2158,6 +2259,10 @@ sap.ui.define([
 			price.mainProductQuantity = iMainProductQuantity;
 			price.addFocProductQuantity = iAddFocProductQuantity;
 			price.focQuantityRounded = iFocQuantityRounded;
+			if( sCountryCode==='TH'){
+				price.deductionAbsPct = deductionAbsPct;
+				price.deductions = deductions;
+				}	
 
 			this._setPriceForm(oDetailController, "idEditPriceOfferScenario" + idScenario, price, true, true);
 			this._setProfitTableV(oDetailController, "idEditProfitabilityScenario" + idScenario, price);

@@ -30,17 +30,17 @@ sap.ui.define([
 		 * Called when the master list controller is instantiated. It sets up the event handling for the master/detail communication and other lifecycle tasks.
 		 * @public
 		 */
-		onInit : function () {
-			
+		onInit: function () {
+
 			// Control state model
 			var oList = this.byId("list"),
 				oViewModel = this._createViewModel();
-				this._oList = oList;
+			this._oList = oList;
 
-				// Put down master list's original value for busy indicator delay,
-				// so it can be restored later on. Busy handling on the master list is
-				// taken care of by the master list itself.
-				//iOriginalBusyDelay = oList.getBusyIndicatorDelay();
+			// Put down master list's original value for busy indicator delay,
+			// so it can be restored later on. Busy handling on the master list is
+			// taken care of by the master list itself.
+			//iOriginalBusyDelay = oList.getBusyIndicatorDelay();
 
 			/*this._oGroupFunctions = {
 				stock : function(oContext) {
@@ -84,10 +84,10 @@ sap.ui.define([
 
 			this.ctrState = this.getOwnerComponent().getState(this.getOwnerComponent().CTR);
 			this.setModel(this.ctrState.getModel(), "ctr");
-            //EHQUT-SCTASK0103493-Update Institute List in Contract Management
-            let oModel = this.getModel('ctr');
-            oModel.setSizeLimit(5000);
-            //EHQUT-SCTASK0103493-Update Institute List in Contract Management
+			//EHQUT-SCTASK0103493-Update Institute List in Contract Management
+			let oModel = this.getModel('ctr');
+			oModel.setSizeLimit(5000);
+			//EHQUT-SCTASK0103493-Update Institute List in Contract Management
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().getRoute("object").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
@@ -105,7 +105,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the update finished event
 		 * @public
 		 */
-		onUpdateFinished : function (oEvent) {
+		onUpdateFinished: function (oEvent) {
 			// update the master list object counter after new data is loaded
 			this._updateListItemCount(oEvent.getParameter("total"));
 		},
@@ -118,7 +118,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the search event
 		 * @public
 		 */
-		onSearch : function (oEvent) {
+		onSearch: function (oEvent) {
 			if (oEvent.getParameters().refreshButtonPressed) {
 				// Search field's 'refresh' button has been pressed.
 				// This is visible if you select any master list item.
@@ -144,7 +144,7 @@ sap.ui.define([
 		 * and group settings and refreshes the list binding.
 		 * @public
 		 */
-		onRefresh : function () {
+		onRefresh: function () {
 			this._oList.getBinding("items").refresh();
 		},
 
@@ -153,7 +153,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the button press event
 		 * @public
 		 */
-		onOpenViewSettings : function (oEvent) {
+		onOpenViewSettings: function (oEvent) {
 			var sDialogTab = "filter";
 			if (oEvent.getSource() instanceof sap.m.Button) {
 				var sButtonId = oEvent.getSource().getId();
@@ -169,7 +169,7 @@ sap.ui.define([
 					id: this.getView().getId(),
 					name: "com.bayer.tender.contracts.view.ViewSettingsDialog",
 					controller: this
-				}).then(function(oDialog){
+				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
 					this.getView().addDependent(oDialog);
 					oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
@@ -189,7 +189,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the confirm event
 		 * @public
 		 */
-		onConfirmViewSettingsDialog : function (oEvent) {
+		onConfirmViewSettingsDialog: function (oEvent) {
 			var aFilterItems = oEvent.getParameters().filterItems,
 				aFilters = [],
 				aCaptions = [];
@@ -198,13 +198,13 @@ sap.ui.define([
 			// combine the filter array and the filter string
 			aFilterItems.forEach(function (oItem) {
 				switch (oItem.getKey()) {
-					case "Filter1" :
+					case "Filter1":
 						aFilters.push(new Filter("stock", FilterOperator.LE, 100));
 						break;
-					case "Filter2" :
+					case "Filter2":
 						aFilters.push(new Filter("stock", FilterOperator.GT, 100));
 						break;
-					default :
+					default:
 						break;
 				}
 				aCaptions.push(oItem.getText());
@@ -245,7 +245,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the list selectionChange event
 		 * @public
 		 */
-		onSelectionChange : function (oEvent) {
+		onSelectionChange: function (oEvent) {
 			var oList = oEvent.getSource(),
 				bSelected = oEvent.getParameter("selected");
 
@@ -261,7 +261,7 @@ sap.ui.define([
 		 * If there was an object selected in the master list, that selection is removed.
 		 * @public
 		 */
-		onBypassed : function () {
+		onBypassed: function () {
 			this._oList.removeSelections(true);
 		},
 
@@ -273,10 +273,10 @@ sap.ui.define([
 		 * @public
 		 * @returns {sap.m.GroupHeaderListItem} group header with non-capitalized caption.
 		 */
-		createGroupHeader : function (oGroup) {
+		createGroupHeader: function (oGroup) {
 			return new GroupHeaderListItem({
-				title : oGroup.text,
-				upperCase : false
+				title: oGroup.text,
+				upperCase: false
 			});
 		},
 
@@ -285,7 +285,7 @@ sap.ui.define([
 		 * We navigate back in the browser historz
 		 * @public
 		 */
-		onNavBack : function() {
+		onNavBack: function () {
 			// eslint-disable-next-line
 			history.go(-1);
 		},
@@ -295,7 +295,7 @@ sap.ui.define([
 		/* =========================================================== */
 
 
-		_createViewModel : function() {
+		_createViewModel: function () {
 			return new JSONModel({
 				isFilterBarVisible: false,
 				filterBarLabel: "",
@@ -306,61 +306,61 @@ sap.ui.define([
 				groupBy: "None"
 			});
 		},
-        // EHQUT 192851-Add OTC customer group for "Contract Management" app
-        onChangeInstituteType: function(oEvent){
+		// EHQUT 192851-Add OTC customer group for "Contract Management" app
+		onChangeInstituteType: function (oEvent) {
 
-            var result=this.byId("idChannelNewContract").getSelectedItem();
-            var institutetype=result.mProperties.text;
-            this.byId("idInstituteNewContract").setBusy(true, 0);
-			this.getInstitutes(this.ctrState.getNewContract().countryCode,institutetype).then(() => {
-                this.byId("idInstituteNewContract").setBusy(false);
-            });
-        },
+			var result = this.byId("idChannelNewContract").getSelectedItem();
+			var institutetype = result.mProperties.text;
+			this.byId("idInstituteNewContract").setBusy(true, 0);
+			this.getInstitutes(this.ctrState.getNewContract().countryCode, institutetype).then(() => {
+				this.byId("idInstituteNewContract").setBusy(false);
+			});
+		},
 
-		_onMasterMatched :  function() {
+		_onMasterMatched: function () {
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
-			
+
 			this.getCountries().then(() => {
 				this.getContracts(false);
 				this.ctrState.getPenaltyReasons();
-						
+
 				//this.getInstitutes(this.ctrState.getNewContract().countryCode);
 				//this.getDistributors(this.ctrState.getNewContract().countryCode);
 				//this.getChannels();
 
 				this.setFilter();
 			})
-			.catch((error) => { });
+				.catch((error) => { });
 		},
 
-		onAddNewContract: function (oEvent){
+		onAddNewContract: function (oEvent) {
 
 			this.ctrState.setTemporaryContract();
 			this._getCreateContractDialog().open();
 
 		},
-		
+
 		/**
 		 * New contracting dialog
 		 * @returns {dialog} - oDialog
 		 */
-		_getCreateContractDialog : function () {
+		_getCreateContractDialog: function () {
 
 			//create new dialog if not yet existing
 			if (!this._oAddNewContractDialog) {
 
-					//get dialog
-					this._oAddNewContractDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.contracts.view.fragments.NewContract", this);
-					this.getView().addDependent(this._oAddNewContractDialog);
-					
+				//get dialog
+				this._oAddNewContractDialog = sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.contracts.view.fragments.NewContract", this);
+				this.getView().addDependent(this._oAddNewContractDialog);
+
 			}
 
 			//default the country to the filter country
 			var oCountryNewContract = sap.ui.getCore().byId("idCountryNewContract");
-			if(oCountryNewContract){
+			if (oCountryNewContract) {
 				oCountryNewContract.setSelectedKey(this.byId("idSlctCountry").getSelectedKey());
-				this.onChangeCountry(); 
+				this.onChangeCountry();
 			}
 
 			// var oDistributor = sap.ui.getCore().byId("idDistributorNewContract");
@@ -378,33 +378,33 @@ sap.ui.define([
 		 * Save new contract
 		 * @param {event} oEvent - 
 		 */
-		onSaveNewContract: function(oEvent){
+		onSaveNewContract: function (oEvent) {
 
 			const selectedInstituteItems = this.byId("idInstituteNewContract").getSelectedItems();
 
 			var oContract = this.ctrState.getNewContract();
 
-			this.addInstitutesToContract(selectedInstituteItems,oContract);
+			this.addInstitutesToContract(selectedInstituteItems, oContract);
 
 			oContract.currency = oContract.currency || this.byId("idCurrencyNewContract").getSelectedKey();
-			oContract.distributorId = oContract.distributorId || this.byId("idDistributorNewContract").getSelectedKey() ;
-			oContract.sellingCompanyCode = oContract.sellingCompanyCode || this.byId("idSellingCompanyNewContract").getSelectedKey();	
+			oContract.distributorId = oContract.distributorId || this.byId("idDistributorNewContract").getSelectedKey();
+			oContract.sellingCompanyCode = oContract.sellingCompanyCode || this.byId("idSellingCompanyNewContract").getSelectedKey();
 
 			var sContractID = oContract.contractNumber;
 			//var oRouter = this.getRouter();
 
 			const bValid = this._validateNewContract(oContract);
-			if(bValid){
+			if (bValid) {
 				this.ctrState.createContract(oContract).then((values) => {
-					
+
 					//get contracts with hard refresh
 					this.getContracts(true).then(() => {
 						this._showDetail(undefined, sContractID);
 						this.getView().setBusy(false);
 						var msg = 'Contract is created.';
 						MessageToast.show(msg);
-					}); 
-					
+					});
+
 				});
 
 				// Filter the master page based on the newly created country code
@@ -412,7 +412,7 @@ sap.ui.define([
 				this.setFilter();
 
 				this._getCreateContractDialog().close();
-			}else{
+			} else {
 				sap.m.MessageBox.error("Please enter all the mandatory fields.");
 			}
 		},
@@ -422,7 +422,7 @@ sap.ui.define([
 		 * @param {array<string>} aInstituteIDs A list of Institute ID's 
 		 * @param {object} oContract A contract object
 		 */
-		addInstitutesToContract: function(aSelectedInstituteItems, oContract){
+		addInstitutesToContract: function (aSelectedInstituteItems, oContract) {
 
 			aSelectedInstituteItems.forEach(item => {
 
@@ -433,7 +433,7 @@ sap.ui.define([
 				};
 
 				oContract.addInstitute(institute);
-				
+
 			});
 		},
 
@@ -441,7 +441,7 @@ sap.ui.define([
 		 * Check fields for contract
 		 * @param {*} contract 
 		 */
-		_validateNewContract: function(contract){
+		_validateNewContract: function (contract) {
 
 			//Check for mandatory fields
 			if (!contract.contractNumber ||
@@ -452,7 +452,7 @@ sap.ui.define([
 				!contract.sellingCompanyCode ||
 				!contract.contractDate ||
 				!contract.contractValidUntil
-			){
+			) {
 				return false;
 
 			} else {
@@ -464,84 +464,84 @@ sap.ui.define([
 		 * Cancel contract creation
 		 * @param {} oEvent 
 		 */
-		onCancelNewContract: function(oEvent){
+		onCancelNewContract: function (oEvent) {
 			this._getCreateContractDialog().close();
 		},
-        // EHQUT 192851-Add OTC customer group for "Contract Management" app
-		onChangeCountry: function(oEvent){
+		// EHQUT 192851-Add OTC customer group for "Contract Management" app
+		onChangeCountry: function (oEvent) {
 
 			//Different distributors for different countries
 			this.getDistributors(this.ctrState.getNewContract().countryCode);
 			this.getSellingCompanies(this.ctrState.getNewContract().countryCode);
 			this.getCountryCurrencies(this.ctrState.getNewContract().countryCode);
-            this.getInstituteTypeName(this.ctrState.getNewContract().countryCode);
-           // this.byId("idInstituteNewContract").setSelectedKey="";
+			this.getInstituteTypeName(this.ctrState.getNewContract().countryCode);
+			// this.byId("idInstituteNewContract").setSelectedKey="";
 			//this.byId("idInstituteNewContract").setBusy(true, 0);
 			//this.getInstitutes(this.ctrState.getNewContract().countryCode).then(() => {
-				//this.byId("idInstituteNewContract").setBusy(false);
+			//this.byId("idInstituteNewContract").setBusy(false);
 			//});
 			//this.getChannels();
 		},
 
-		getAppConfig: async function(sCountryCode){
-			try{
-                let sEnvironment = window.location.host.search('dev') > -1 ? 'DEV' : window.location.host.search('qa')  > -1 ? 'QA' : window.location.host.search('sbx')  > -1 ? 'SBX' : window.location.host.search('prod')  > -1 ? 'PRD' : 'LOCL';
-                await this.ctrState.getAppConfig(sCountryCode, sEnvironment);
-			} catch(error){
+		getAppConfig: async function (sCountryCode) {
+			try {
+				let sEnvironment = window.location.host.search('dev') > -1 ? 'DEV' : window.location.host.search('qa') > -1 ? 'QA' : window.location.host.search('sbx') > -1 ? 'SBX' : window.location.host.search('prod') > -1 ? 'PRD' : 'LOCL';
+				await this.ctrState.getAppConfig(sCountryCode, sEnvironment);
+			} catch (error) {
 				console.error(error);
-            }
+			}
 		},
 
 		/**
 		 * Get list of institutes 
 		 */
-		getInstitutes: async function(sCountryCode,sInstituteType){
-			try{
+		getInstitutes: async function (sCountryCode, sInstituteType) {
+			try {
 
-				await this.ctrState.getInstitutes(sCountryCode,sInstituteType);
+				await this.ctrState.getInstitutes(sCountryCode, sInstituteType);
 
-			} catch(error){
+			} catch (error) {
 				console.error(error);
 				this.getView().setBusy(false);
 				this.getRouter().getTargets().display("detailObjectNotFound");
 				this.getOwnerComponent().oListSelector.clearMasterListSelection();
 			}
 		},
-       // EHQUT 192851-Add OTC customer group for "Contract Management" app
-        getInstituteTypeName: function(sCountryCode){
-            this.getView().setBusy(true);
-            this.ctrState.getInstituteTypeName(sCountryCode)
-            .then(() => {
-                this.getView().setBusy(false);
-            })
-            .catch((error) => {
-                console.error(error);
-                this.getView().setBusy(false);
-                this.getRouter().getTargets().display("detailObjectNotFound");
-                this.getOwnerComponent().oListSelector.clearMasterListSelection();
-            });
-        },
+		// EHQUT 192851-Add OTC customer group for "Contract Management" app
+		getInstituteTypeName: function (sCountryCode) {
+			this.getView().setBusy(true);
+			this.ctrState.getInstituteTypeName(sCountryCode)
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				});
+		},
 
 
 		/**
 		 * Get list of countries 
 		 */
-		getCountries: function(){
+		getCountries: function () {
 			this.getView().setBusy(true);
 
 			return this.ctrState.getCountries()
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-				this.getView().setBusy(true);
-				this.showNoAccessMessage("User ID doesn't have access");
-				throw(error);
-			});
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+					this.getView().setBusy(true);
+					this.showNoAccessMessage("User ID doesn't have access");
+					throw (error);
+				});
 		},
 
 		/**
@@ -549,105 +549,105 @@ sap.ui.define([
 		 * @param {String} sCountryCode -  
 		 * @returns {Promise} - 
 		 */
-		getCountryContractBrands: function(sCountryCode){
+		getCountryContractBrands: function (sCountryCode) {
 			this.getView().setBusy(true);
 
 			return this.ctrState.getCountryContractBrands(sCountryCode)
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-				this.getView().setBusy(true);
-				this.showNoAccessMessage("User ID doesn't have access");
-				throw(error);
-			});
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+					this.getView().setBusy(true);
+					this.showNoAccessMessage("User ID doesn't have access");
+					throw (error);
+				});
 		},
 
 		/**
 		 * Get list of distributors based on the country of the selected contract 
 		 * @param {*} sCountryCode 
 		 */
-		getDistributors: function(sCountryCode){
+		getDistributors: function (sCountryCode) {
 			this.getView().setBusy(true);
 			this.ctrState.getDistributors(sCountryCode)
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			});
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				});
 		},
 
-		getCountryCurrencies: function(sCountryCode){
+		getCountryCurrencies: function (sCountryCode) {
 			this.getView().setBusy(true);
 			this.ctrState.getCountryCurrencies(sCountryCode)
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			});
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				});
 		},
 
 		/**
 		 * Get list of selling companies
 		 * @param {*} sObjectPath 
 		 */
-		getSellingCompanies: function(sCountryCode){
+		getSellingCompanies: function (sCountryCode) {
 			this.getView().setBusy(true);
 			this.ctrState.getSellingCompanies(sCountryCode)
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			});
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				});
 		},
 
-		
+
 		/**
 		 * Get list of selling companies
 		 * @param {*} sObjectPath 
 		 */
-		getChannels: function(){
+		getChannels: function () {
 			this.getView().setBusy(true);
 			this.ctrState.getChannels()
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			});
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				});
 		},
 
-		getContracts: function(bHardRefresh){
+		getContracts: function (bHardRefresh) {
 			this.getView().setBusy(true);
 			return this.ctrState.getContracts(bHardRefresh)
-			.then(() => {
-				this.getView().setBusy(false);
-			})
-			.catch((error) => {
-				console.error(error);
-				this.getView().setBusy(false);
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			});
+				.then(() => {
+					this.getView().setBusy(false);
+				})
+				.catch((error) => {
+					console.error(error);
+					this.getView().setBusy(false);
+					this.getRouter().getTargets().display("detailObjectNotFound");
+					this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				});
 		},
 
 		/**
@@ -656,7 +656,7 @@ sap.ui.define([
 		 * @param {sap.m.ObjectListItem} oItem selected Item
 		 * @private
 		 */
-		_showDetail : function (oItem, sContractID) {
+		_showDetail: function (oItem, sContractID) {
 			var bReplace = !Device.system.phone;
 			var oRouter = this.getRouter();
 			var oCtrState = this.ctrState;
@@ -664,10 +664,10 @@ sap.ui.define([
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 
 			//if you pass an selected item
-			if(oItem){
-				if(oCtrState.getProperty("editMode")){
+			if (oItem) {
+				if (oCtrState.getProperty("editMode")) {
 					var that = this;
-	
+
 					sap.m.MessageBox.warning("Are you sure you want to discard your changes?", {
 						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
 						styleClass: "sapUiSizeCompact",
@@ -679,8 +679,8 @@ sap.ui.define([
 								oCtrState.setEditModeDelivery(false);
 								//oCtrState.setSelectedProduct();
 								oRouter.navTo("object", {
-									objectId : oItem.getBindingContext("ctr").getProperty("contractNumber"),
-									section : oCtrState.getContractSectionId(),
+									objectId: oItem.getBindingContext("ctr").getProperty("contractNumber"),
+									section: oCtrState.getContractSectionId(),
 									productId: '',
 								}, bReplace);
 							} else {
@@ -690,24 +690,24 @@ sap.ui.define([
 					});
 				} else {
 					oRouter.navTo("object", {
-						objectId : oItem.getBindingContext("ctr").getProperty("contractNumber"),
-						section : oCtrState.getContractSectionId(),
-						productId : ''
+						objectId: oItem.getBindingContext("ctr").getProperty("contractNumber"),
+						section: oCtrState.getContractSectionId(),
+						productId: ''
 					}, bReplace);
 				}
 			}
 
 			//if you pass the id of the contract you want to navigate to
-			if(sContractID){
+			if (sContractID) {
 				oRouter.navTo("object", {
-					objectId : sContractID,
-					section : oCtrState.getContractSectionId(),
-					productId : ''
-				}, bReplace);				
+					objectId: sContractID,
+					section: oCtrState.getContractSectionId(),
+					productId: ''
+				}, bReplace);
 			}
 
 
-			
+
 		},
 
 		/**
@@ -715,7 +715,7 @@ sap.ui.define([
 		 * @param {integer} iTotalItems the total number of items in the list
 		 * @private
 		 */
-		_updateListItemCount : function (iTotalItems) {
+		_updateListItemCount: function (iTotalItems) {
 			var sTitle;
 			// only update the counter if the length is final
 			if (this._oList.getBinding("items").isLengthFinal()) {
@@ -728,7 +728,7 @@ sap.ui.define([
 		 * Internal helper method to apply both filter and search state together on the list binding
 		 * @private
 		 */
-		_applyFilterSearch : function () {
+		_applyFilterSearch: function () {
 			var aFilters = this._oListFilterState.aSearch.concat(this._oListFilterState.aFilter),
 				oViewModel = this.getModel("masterView");
 			this._oList.getBinding("items").filter(aFilters, "Application");
@@ -747,9 +747,9 @@ sap.ui.define([
 		 * @private
 		 */
 
-		_onValidateContractNo : function (oEvent) {
+		_onValidateContractNo: function (oEvent) {
 			const oInputContractNumber = oEvent.oSource;
-			if(this.ctrState.getContractByNumber(oEvent.getParameter("value"))){
+			if (this.ctrState.getContractByNumber(oEvent.getParameter("value"))) {
 				oInputContractNumber.setValueState("Warning");
 				oInputContractNumber.setValueStateText("This contract number is already being used.");
 			} else {
@@ -763,7 +763,7 @@ sap.ui.define([
 		 * @param {string} sFilterBarText the selected filter value
 		 * @private
 		 */
-		_updateFilterBar : function (sFilterBarText) {
+		_updateFilterBar: function (sFilterBarText) {
 			var oViewModel = this.getModel("masterView");
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
@@ -775,7 +775,7 @@ sap.ui.define([
 
 			//get possible filters
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
-			var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
+			var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getText() : "All";
 			//var oChannel = this.byId("idSlctChannel").getSelectedItem() ? this.byId("idSlctChannel").getSelectedItem().getKey() : "All";
 			let oChannel = '';
 			var sSearch = this.byId("idSearch").getProperty("value");
@@ -787,10 +787,36 @@ sap.ui.define([
 				new sap.ui.model.Filter("enabled", "EQ", true)
 			];
 
-			if (oChannel !== "All"){
-				andFilters.push(new sap.ui.model.Filter("channel", FilterOperator.EQ, oChannel));
+			//EHQUT-215577-I can't create a new record in "Contract Management" application
+
+			// if (oChannel !== "All"){
+			// 	andFilters.push(new sap.ui.model.Filter("channel", FilterOperator.EQ, oChannel));
+			// }
+			//
+			if (sSelectedBrand !== "All") {
+
+
+				var oTable = this._oList;
+
+				var aItems = oTable.getItems();
+
+				// filter based on oBrand
+				aItems.forEach(item => {
+
+					var oCtx = item.getBindingContext("ctr");
+					var sPath = item.getBindingContext("ctr").getPath();
+					var obj = oCtx.getObject(sPath);
+					var aProducts = obj.products;
+
+					var bContainsBrand = aProducts.find(product => product.brandName && product.brandName.lastIndexOf(sSelectedBrand) > -1);
+
+					if (bContainsBrand) {
+						andFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
+
+					}
+				});
 			}
-			
+			//EHQUT-215577-I can't create a new record in "Contract Management" application
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
 			var sIdSource = "";
 			if (oSelection) {
@@ -869,7 +895,7 @@ sap.ui.define([
 			// this.getView().byId("idSlctBrand").getBinding("items").filter(new sap.ui.model.Filter("countryCode", "EQ", oCountry), FilterType.Application);
 
 			this.getCountryContractBrands(oCountry);
-            this.getAppConfig(oCountry);
+			this.getAppConfig(oCountry);
 
 		},
 
@@ -880,9 +906,9 @@ sap.ui.define([
 		 * @param {Object} oEvent - 
 		 */
 		_filterContractsTable: function (oEvent) {
-			
 
-			let sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getText() : "All_Brands";	
+			//EHQUT-215577-I can't create a new record in "Contract Management" application
+			let sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getText() : "All";
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
 
 			// get all table items
@@ -893,16 +919,16 @@ sap.ui.define([
 			andFilters.push(new sap.ui.model.Filter("enabled", "EQ", true));
 
 			oTable.getBinding("items").filter(andFilters, FilterType.Application);
-			
-			if (sSelectedBrand === "All_Brands") {
+
+			if (sSelectedBrand === "All") {
 				return;
 			}
 
 			var aItems = oTable.getItems();
-			
+
 			// filter based on oBrand
 			aItems.forEach(item => {
-				
+
 				var oCtx = item.getBindingContext("ctr");
 				var sPath = item.getBindingContext("ctr").getPath();
 				var obj = oCtx.getObject(sPath);
@@ -912,7 +938,7 @@ sap.ui.define([
 
 				if (bContainsBrand) {
 					andFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
-					
+
 				}
 
 			});
@@ -921,9 +947,9 @@ sap.ui.define([
 
 			//Binding to table with the filters and the sorters
 			oTable.getBinding("items").filter(oFilters, FilterType.Application);
-			
-		},
 
+		},
+		//EHQUT-215577-I can't create a new record in "Contract Management" application
 
 		// /**
 		//  * This method checks whether Offer contains the selected brand
@@ -960,22 +986,22 @@ sap.ui.define([
 		// 	}
 		// },
 
-		onOpenViewSettings: async function(oEvent){ 
+		onOpenViewSettings: async function (oEvent) {
 
 			const oDialog = await this._getViewSettingsDialog();
 			oDialog.open();
 
 		},
 
-		_getViewSettingsDialog : function () { 
+		_getViewSettingsDialog: function () {
 
 			if (!this._oViewSettingsDialog) {
-				  
+
 				return Fragment.load({
 					id: this.getView().getId(),
 					name: "com.bayer.tender.contracts.view.fragments.ViewSettingsDialog",
 					controller: this
-				}).then(function(oDialog){
+				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
 					this.getView().addDependent(oDialog);
 					oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
@@ -983,18 +1009,18 @@ sap.ui.define([
 					return this._oViewSettingsDialog = oDialog;
 				}.bind(this));
 
-			}else {
+			} else {
 				return this._oViewSettingsDialog;
 			}
-		 },
+		},
 
-		 /**
-		 * Event handler called when ViewSettingsDialog has been confirmed, i.e.
-		 * has been closed with 'OK'.
-		 * @param {sap.ui.base.Event} oEvent the confirm event
-		 * @public
-		 */
-		onConfirmViewSettingsDialog : function (oEvent) {
+		/**
+		* Event handler called when ViewSettingsDialog has been confirmed, i.e.
+		* has been closed with 'OK'.
+		* @param {sap.ui.base.Event} oEvent the confirm event
+		* @public
+		*/
+		onConfirmViewSettingsDialog: function (oEvent) {
 			this._applySort(oEvent);
 		},
 
@@ -1067,7 +1093,7 @@ sap.ui.define([
 			sap.m.MessageBox.error(sMessage, {
 				title: "User has no access yet.",
 				id: "msgErrorAccess",
-			//	details: sMessageDetails,
+				//	details: sMessageDetails,
 				styleClass: "sapUiSizeCompact",
 				contentWidth: "100px",
 				actions: ["Request access"],

@@ -114,7 +114,7 @@ sap.ui.define([
 						&& this.floatComparison(oOriginalPrices.SpotRate, oNewPrices.SpotRate)/* 05.03.2020 - https://trello.com/c/5kKb4VhF */
 						//&& oOriginalPrices.BudgetRate === oNewPrices.BudgetRate
 						&& this.floatComparison(oOriginalPrices.BudgetRate, oNewPrices.BudgetRate)/* 05.03.2020 - https://trello.com/c/5kKb4VhF */
-						
+						&& oOriginalPrices.Deductions_ABS_PCT=== oNewPrices.Deductions_ABS_PCT
 						&& oNewPrices.NetPrice >= oOriginalPrices.NetPrice /* 05.03.2020 - https://trello.com/c/5kKb4VhF */
 						&& oNewPrices.NetPrice_OfPaid >= oOriginalPrices.NetPrice_OfPaid /* 05.03.2020 - https://trello.com/c/5kKb4VhF */
 					){
