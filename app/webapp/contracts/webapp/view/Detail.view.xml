@@ -1,81 +1,80 @@
 <mvc:View
-	controllerName="com.bayer.tender.contracts.controller.Detail"
-	xmlns="sap.uxap" 
-	xmlns:m="sap.m" 
-	xmlns:f="sap.f"
-	xmlns:form="sap.ui.layout.form" 
-	xmlns:mvc="sap.ui.core.mvc" 
-	xmlns:t="sap.ui.table" 
-	xmlns:core="sap.ui.core" 
-	xmlns:l="sap.ui.layout"
-	xmlns:viz.data="sap.viz.ui5.data" 
-	xmlns:viz="sap.viz.ui5.controls" 
-	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+    controllerName="com.bayer.tender.contracts.controller.Detail"
+    xmlns="sap.uxap"
+    xmlns:m="sap.m"
+    xmlns:f="sap.f"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:t="sap.ui.table"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:viz.data="sap.viz.ui5.data"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+>
+    <!-- ObjectPage Layout -->
+    <ObjectPageLayout
+        id="DetailPage"
+        showTitleInHeaderContent="true"
+        alwaysShowContentHeader="true"
+        preserveHeaderStateOnScroll="false"
+        headerContentPinnable="true"
+        isChildPage="true"
+        toggleHeaderOnTitleClick="true"
+        showFooter="false"
+        upperCaseAnchorBar="false"
+        enableLazyLoading="false"
+        useIconTabBar="true"
+        navigate="onNavigate"
+        selectedSection="basicInformationId"
+        showAnchorBarPopover="false"
+    >
+        <!-- APP TITLE & NAVIGATION BUTTONS -->
+        <headerTitle>
+            <ObjectPageDynamicHeaderTitle>
+                <!-- Heading part that is used when heading is not collapsed -->
+                <expandedHeading>
+                    <m:Title text="{fastData>TenderID}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd" />
+                </expandedHeading>
 
-	<!-- ObjectPage Layout -->
-	<ObjectPageLayout 
-		id="DetailPage" 
-		showTitleInHeaderContent="true" 
-		alwaysShowContentHeader="true" 
-		preserveHeaderStateOnScroll="false"
-		headerContentPinnable="true" 
-		isChildPage="true" 
-		toggleHeaderOnTitleClick="true" 
-		showFooter="false" 
-		upperCaseAnchorBar="false"
-		enableLazyLoading="false" 
-		useIconTabBar="true" 
-		navigate="onNavigate"
-		selectedSection="basicInformationId"
-		showAnchorBarPopover="false">
-
-	<!-- APP TITLE & NAVIGATION BUTTONS -->
-		<headerTitle>
-			<ObjectPageDynamicHeaderTitle>
-				
-				<!-- Heading part that is used when heading is not collapsed -->
-				<expandedHeading>
-					<m:Title text="{fastData>TenderID}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
-				</expandedHeading>
-				
-				<!-- Heading part that is always visible also when collapsed -->
-				<!-- <snappedHeading>
+                <!-- Heading part that is always visible also when collapsed -->
+                <!-- <snappedHeading>
 					<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Center">
 						<m:FlexBox wrap="NoWrap" fitContainer="true" alignItems="Center" class="sapUiTinyMarginEnd" >
 							 -->
-							<!-- LOGO 
+                <!-- LOGO 
 							<m:VBox fitContainer="true">
 								<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="S" displayShape="Square" class="sapUiTinyMarginEnd"/>
 							</m:VBox>
 							-->
-							
-							<!-- Selected tender ID & offer ID + product Name is always visible -->
-							<!-- <m:VBox alignItems="Start" justifyContent="Start" fitContainer="true">
+
+                <!-- Selected tender ID & offer ID + product Name is always visible -->
+                <!-- <m:VBox alignItems="Start" justifyContent="Start" fitContainer="true">
 								<m:items>
 									
 									<m:Title text="{fastData>TenderID}" wrapping="true"/> -->
-									
-									<!-- Offer & Product next to each other -->
-									<!-- <m:HBox>
+
+                <!-- Offer & Product next to each other -->
+                <!-- <m:HBox>
 										<m:items> -->
-											
-											<!-- Offer -->
-											<!-- <m:VBox> 
+
+                <!-- Offer -->
+                <!-- <m:VBox> 
 												<m:items>
 													<m:Label text="{i18n>offerID}:" labelFor="selectedOfferIDinHeading" />
 													<m:Text id="selectedOfferIDinHeading" text="{= ${fastAppData>/SelectedOfferID} === '' ? 'No offer selected' : ${fastAppData>/SelectedOfferID} }"/>
 												</m:items>
 											</m:VBox> -->
 
-											<!-- Empty -->
-											<!-- <m:VBox> 
+                <!-- Empty -->
+                <!-- <m:VBox> 
 												<m:items>
 													<m:Label text="" width="8rem"/>
 												</m:items>
 											</m:VBox> -->
-											
-											<!-- product -->
-											<!-- <m:VBox>
+
+                <!-- product -->
+                <!-- <m:VBox>
 												<m:items>
 													<m:Label text="{i18n>productnme}:" labelFor="selectedProductNameinHeading"/>
 													<m:Text id="selectedProductNameinHeading" text="{= ${ctr>/currentContract/selectedProduct} ? ${ctr>/currentContract/selectedProduct/product/pRODUCTPACKNAME} : 'No product selected'}"/>													
@@ -91,74 +90,69 @@
 						</m:FlexBox>
 					</m:FlexBox>
 				</snappedHeading> -->
-				
-				<!-- WINDOW ACTIONS -->
-				<navigationActions>
-					<m:OverflowToolbarButton id="enterFullScreenButton" type="Transparent" icon="sap-icon://full-screen" press=".toggleFullScreen"
-						tooltip="Enter Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
-					<m:OverflowToolbarButton id="exitFullScreenButton" type="Transparent" icon="sap-icon://exit-full-screen" press=".toggleFullScreen"
-						tooltip="Exit Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"/>
-					<m:OverflowToolbarButton id="closeScreenButton" type="Transparent" icon="sap-icon://decline" press=".handleClose" tooltip="Close column"
-						visible="true"/>
-				</navigationActions>
-				
-				<!-- ACTIONS -->
-				<actions>
-					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="{= ${ctr>/editMode} === false &amp;&amp; ${ctr>/deleteEnabled} ? true : false }" />
-					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="true"/>
-					<m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true"/>
-					<!--<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>-->
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${ctr>/editMode} === false &amp;&amp; ${ctr>/editEnabled} ? true : false }"/>
-				</actions>
-				
-			</ObjectPageDynamicHeaderTitle>
-		</headerTitle>
 
-		<!-- HEADER INFORMATION: this part will be collapsed when scrolling down -->
-		<headerContent>
-			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
-				
-				<!-- LOGO 
+                <!-- WINDOW ACTIONS -->
+                <navigationActions>
+                    <m:OverflowToolbarButton id="enterFullScreenButton" type="Transparent" icon="sap-icon://full-screen" press=".toggleFullScreen" tooltip="Enter Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
+                    <m:OverflowToolbarButton id="exitFullScreenButton" type="Transparent" icon="sap-icon://exit-full-screen" press=".toggleFullScreen" tooltip="Exit Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
+                    <m:OverflowToolbarButton id="closeScreenButton" type="Transparent" icon="sap-icon://decline" press=".handleClose" tooltip="Close column" visible="true" />
+                </navigationActions>
+
+                <!-- ACTIONS -->
+                <!-- EHQUT-215577-I can't create a new record in "Contract Management" application -->
+                <actions>
+                    <m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="true" />
+                    <m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="true" />
+                    <m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true" />
+                    <!--<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>-->
+                    <m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${ctr>/editMode} === false &amp;&amp; ${ctr>/editEnabled} ? true : false }" />
+                </actions>
+            </ObjectPageDynamicHeaderTitle>
+        </headerTitle>
+        <!-- EHQUT-215577-I can't create a new record in "Contract Management" application -->
+        <!-- HEADER INFORMATION: this part will be collapsed when scrolling down -->
+        <headerContent>
+            <m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+                <!-- LOGO 
 				<f:Avatar src="{imageModel>/path}/Company-Logo-Blue.svg" displaySize="L" displayShape="Square" class="sapUiTinyMarginEnd"></f:Avatar>
 				-->
-				
-				<!-- INSTITUTE INFO -->
-				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<m:Label text="{i18n>institutes}"/>
-					<m:Text id="idhdrInstNme" text="{ctr>/currentContract/instituteNames}"/>
-					<m:Text id="idhdrInstID" text="{ctr>/currentContract/institute/instituteID}" visible="false"/>
-				</m:VBox>
 
-				<!-- SELECTED CONTRACT -->
-				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<m:Label text="{i18n>ContractNumber}"/>
-					<m:Text  text="{ctr>/currentContract/contractNumber}"/>
-				</m:VBox>
+                <!-- INSTITUTE INFO -->
+                <m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+                    <m:Label text="{i18n>institutes}" />
+                    <m:Text id="idhdrInstNme" text="{ctr>/currentContract/instituteNames}" />
+                    <m:Text id="idhdrInstID" text="{ctr>/currentContract/institute/instituteID}" visible="false" />
+                </m:VBox>
 
-				<!-- SELECTED CONTRACT INFO -->
-				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<m:Label text="{i18n>contractName}"/>
-					<m:Text text="{ctr>/currentContract/contractName}"/>
-				</m:VBox>				
-				
-				<!-- SELECTED PRODUCT INFO -->
-				<m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
-					<m:Label text="{i18n>productnme}"/>
-					<m:Text text="{= ${ctr>/currentContract/selectedProduct} ? ${ctr>/currentContract/selectedProduct/product/pRODUCTPACKNAME} : 'No product selected'}"/>
-				</m:VBox>	
-			</m:FlexBox>
-		</headerContent>
+                <!-- SELECTED CONTRACT -->
+                <m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+                    <m:Label text="{i18n>ContractNumber}" />
+                    <m:Text text="{ctr>/currentContract/contractNumber}" />
+                </m:VBox>
 
-		<sections>
-			<!-- CONTRACT INFORMATION TAB -->
-			<ObjectPageSection id="contractInformationId" title="Contract"  visible="{= ${ctr>/editModeDelivery} ? false : true}">
-					<ObjectPageSubSection mode="Expanded">
-						<l:BlockLayout background="Light">
-							<l:BlockLayoutRow>
-								<l:BlockLayoutCell>
+                <!-- SELECTED CONTRACT INFO -->
+                <m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+                    <m:Label text="{i18n>contractName}" />
+                    <m:Text text="{ctr>/currentContract/contractName}" />
+                </m:VBox>
 
-									<!-- WARNINGSTRIP EDIT MODE "{= ${ctr>/currentContract/channel} === 'Other' ? false : true}"-->
-									<!-- <m:MessageStrip
+                <!-- SELECTED PRODUCT INFO -->
+                <m:VBox justifyContent="Center" class="sapUiSmallMarginEnd">
+                    <m:Label text="{i18n>productnme}" />
+                    <m:Text text="{= ${ctr>/currentContract/selectedProduct} ? ${ctr>/currentContract/selectedProduct/product/pRODUCTPACKNAME} : 'No product selected'}" />
+                </m:VBox>
+            </m:FlexBox>
+        </headerContent>
+
+        <sections>
+            <!-- CONTRACT INFORMATION TAB -->
+            <ObjectPageSection id="contractInformationId" title="Contract" visible="{= ${ctr>/editModeDelivery} ? false : true}">
+                <ObjectPageSubSection mode="Expanded">
+                    <l:BlockLayout background="Light">
+                        <l:BlockLayoutRow>
+                            <l:BlockLayoutCell>
+                                <!-- WARNINGSTRIP EDIT MODE "{= ${ctr>/currentContract/channel} === 'Other' ? false : true}"-->
+                                <!-- <m:MessageStrip
 										id="msgWarningEdit"
 										text="You can't edit this contract information. Only contracts created within the contracting app can be changed."
 										type="Warning"
@@ -168,250 +162,195 @@
 										class="sapUiMediumMarginBottom">
 									</m:MessageStrip> -->
 
-									<!-- FORM WITH OFFER DATA -->
-									<form:SimpleForm id="offerDetailForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout"  labelSpanL="12" labelSpanM="12"
-											emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm" visible="true">
-											<form:content>
-												<core:Title/>
+                                <!-- FORM WITH OFFER DATA -->
+                                <form:SimpleForm id="offerDetailForm" editable="true" maxContainerCols="2" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12" emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm" visible="true">
+                                    <form:content>
+                                        <core:Title />
 
-												<!-- Distributor -->
-												<m:Label text="{i18n>didtrbtrnme}" required="true"/>
-												<m:Select id="idDistributor" 
-														selectedKey="{ctr>/currentContract/distributorId}"
-														items="{ path: 'ctr>/distributors', sorter: { path: 'distributorName' } }"
-														change="onChangeDistributor"
-														enabled="{= ${ctr>/editMode} === true ? true : false}">
-													<core:Item text="{ctr>distributorName}" key="{ctr>distributorID}"/>
-												</m:Select>
+                                        <!-- Distributor -->
+                                        <m:Label text="{i18n>didtrbtrnme}" required="true" />
+                                        <m:Select id="idDistributor" selectedKey="{ctr>/currentContract/distributorId}" items="{ path: 'ctr>/distributors', sorter: { path: 'distributorName' } }" change="onChangeDistributor" enabled="{= ${ctr>/editMode} === true ? true : false}">
+                                            <core:Item text="{ctr>distributorName}" key="{ctr>distributorID}" />
+                                        </m:Select>
 
-												<!-- Selling company -->
-												<m:Label text="{i18n>selncmpny}"  required="true"/>
-												<m:Select id="idSellingCompany" 
-														selectedKey="{ctr>/currentContract/sellingCompanyCode}"
-														items="{ path: 'ctr>/sellingCompanies', sorter: { path: 'legalEntityName' } }"
-														change="onChangeSellingCompany"
-														enabled="{= ${ctr>/editMode} === true ? true : false}">
-													<core:Item text="{ctr>legalEntityName}" key="{ctr>legalEntityCode}" />
-												</m:Select>
-												<core:Title/>
+                                        <!-- Selling company -->
+                                        <m:Label text="{i18n>selncmpny}" required="true" />
+                                        <m:Select id="idSellingCompany" selectedKey="{ctr>/currentContract/sellingCompanyCode}" items="{ path: 'ctr>/sellingCompanies', sorter: { path: 'legalEntityName' } }" change="onChangeSellingCompany" enabled="{= ${ctr>/editMode} === true ? true : false}">
+                                            <core:Item text="{ctr>legalEntityName}" key="{ctr>legalEntityCode}" />
+                                        </m:Select>
+                                        <core:Title />
 
-												<!-- Contract Date -->
-												<m:Label text="{i18n>contractdate}" required="true"/>
-												<m:DatePicker 
-													id="idContractDate" 
-													value="{
+                                        <!-- Contract Date -->
+                                        <m:Label text="{i18n>contractdate}" required="true" />
+                                        <m:DatePicker id="idContractDate" value="{
 														path :'ctr>/currentContract/contractDate', 
 														type: 'sap.ui.model.type.Date', 
 														formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
-													}" 
-													enabled="{= ${ctr>/editMode} === true ? true : false}"/>
+													}" enabled="{= ${ctr>/editMode} === true ? true : false}" />
 
-												<!-- Contract Date -->
-												<m:Label text="{i18n>contractvalid}" required="true"/>
-												<m:DatePicker 
-													id="idContractValidDate" 
-													value="{
+                                        <!-- Contract Date -->
+                                        <m:Label text="{i18n>contractvalid}" required="true" />
+                                        <m:DatePicker id="idContractValidDate" value="{
 														path :'ctr>/currentContract/contractValidUntil', 
 														type: 'sap.ui.model.type.Date', 
 														formatOptions: { pattern: 'yyyy-MM-dd' , UTC:true}
-													}" 
-													enabled="{= ${ctr>/editMode} === true ? true : false}"/>
-												<core:Title/>
+													}" enabled="{= ${ctr>/editMode} === true ? true : false}" />
+                                        <core:Title />
 
-												<!-- Channel -->
-												<m:Label text="{i18n>channel}" required="true"/>
-												<m:Select selectedKey="{ctr>/currentContract/channel}" enabled="false">
-													<m:items>
-														<!-- <core:Item text="Tender" key="Tender"/>-->
-														<core:Item text="OTC" key="OTC"/>
-													</m:items>
-												</m:Select>
+                                        <!-- Channel -->
+                                        <m:Label text="{i18n>channel}" required="true" />
+                                        <m:Select selectedKey="{ctr>/currentContract/channel}" enabled="false">
+                                            <m:items>
+                                                <!-- <core:Item text="Tender" key="Tender"/>-->
+                                                <core:Item text="OTC" key="OTC" />
+                                            </m:items>
+                                        </m:Select>
+                                    </form:content>
+                                </form:SimpleForm>
+                            </l:BlockLayoutCell>
+                        </l:BlockLayoutRow>
+                    </l:BlockLayout>
+                </ObjectPageSubSection>
 
-										</form:content>
-									</form:SimpleForm>
-								</l:BlockLayoutCell>
-							</l:BlockLayoutRow>
-						</l:BlockLayout>
-					</ObjectPageSubSection>
-
-					<!-- PRODUCT INFO TABLE -->
-					<ObjectPageSubSection title="{i18n>prodinfo}">
-						<actions>							
-							<m:Button text="{i18n>NewProduct}" enabled="{= ${ctr>/editMode} === true ? true : false}" icon="sap-icon://add" press="onCreateProduct"/>							
-						</actions>
-						<blocks>
-							<m:Table id="ProductsTableID" 
-									mode="{= ${ctr>/editMode} === true ? 'Delete' : 'SingleSelectMaster'}"
-									delete="onDeleteProduct"
-									selectionChange="onProductItemSelect"
-									items="{
+                <!-- PRODUCT INFO TABLE -->
+                <ObjectPageSubSection title="{i18n>prodinfo}">
+                    <actions>
+                        <m:Button text="{i18n>NewProduct}" enabled="{= ${ctr>/editMode} === true ? true : false}" icon="sap-icon://add" press="onCreateProduct" />
+                    </actions>
+                    <blocks>
+                        <m:Table id="ProductsTableID" mode="{= ${ctr>/editMode} === true ? 'Delete' : 'SingleSelectMaster'}" delete="onDeleteProduct" selectionChange="onProductItemSelect" items="{
 										path: 'ctr>/currentContract/products',
 										filters: [
 											{path: 'enabled', operator: 'EQ', value1: true}
 										]
 									}">
-								<m:columns>
-									<m:Column width="8rem">
-										<m:Label text="{i18n>productCode}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="10rem">
-										<m:Label text="{i18n>productName}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="4rem">
-										<m:Label text="{i18n>unit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="4rem">
-										<m:Label text="{i18n>Quantity}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="10rem">
-										<m:Label text="{i18n>mspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="4rem">
-										<m:Label text="{i18n>focIncluded}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="4rem">
-										<m:Label text="{i18n>focPercAbs}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="4rem">
-										<m:Label text="{i18n>focDiscount}" wrapping="true"/>
-									</m:Column>
-									<m:Column width="10rem">
-										<m:Label text="{i18n>nspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
-									</m:Column>
-								</m:columns>
-								<m:items>
-									<m:ColumnListItem id="productTableListID" 
-										type="{= ${ctr>/editMode} === true ? 'DetailAndActive' : 'Navigation'}"
-										press="onProductItemSelect"
-										detailPress="onProductItemSelect">
-										<m:cells>
+                            <m:columns>
+                                <m:Column width="8rem">
+                                    <m:Label text="{i18n>productCode}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="10rem">
+                                    <m:Label text="{i18n>productName}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="4rem">
+                                    <m:Label text="{i18n>unit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="4rem">
+                                    <m:Label text="{i18n>Quantity}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="10rem">
+                                    <m:Label text="{i18n>mspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="4rem">
+                                    <m:Label text="{i18n>focIncluded}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="4rem">
+                                    <m:Label text="{i18n>focPercAbs}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="4rem">
+                                    <m:Label text="{i18n>focDiscount}" wrapping="true" />
+                                </m:Column>
+                                <m:Column width="10rem">
+                                    <m:Label text="{i18n>nspPerUnit}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true" />
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem id="productTableListID" type="{= ${ctr>/editMode} === true ? 'DetailAndActive' : 'Navigation'}" press="onProductItemSelect" detailPress="onProductItemSelect">
+                                    <m:cells>
+                                        <m:Text id="productCodeID" text="{ctr>productPackId}" />
+                                        <m:Text id="productPackNameID" text="{ctr>product/pRODUCTPACKNAME}" />
 
-											<m:Text id="productCodeID" text="{ctr>productPackId}"/> 
-											<m:Text id="productPackNameID" text="{ctr>product/pRODUCTPACKNAME}"/> 
-											
-											<m:Select selectedKey="{ctr>unit}" enabled="false" >
-													<core:Item key="" text="" />
-													<core:Item key="Unit" text="Unit"/>
-													<core:Item key="Pack" text="Pack"/>
-											</m:Select>
-											
-											<m:Input id="idQuantity" 
-													 value="{ctr>quantity}" 
-													 enabled="false" 
-													 valueLiveUpdate="false" liveChange="onCalculateNspPrice"/>
-												
-											<m:Input id="idMspPerUnit" 
-												value="{ctr>mspPerUnit}"
-												enabled="false"
-												description="{ctr>/currentContract/currency}"
-												valueLiveUpdate="false" liveChange="onCalculateNspPrice"/>
+                                        <m:Select selectedKey="{ctr>unit}" enabled="false">
+                                            <core:Item key="" text="" />
+                                            <core:Item key="Unit" text="Unit" />
+                                            <core:Item key="Pack" text="Pack" />
+                                        </m:Select>
 
-											<m:Select selectedKey="{ctr>fOCType}" enabled="false" id="idSelectFocType" change="onCalculateNspPrice">
-													<core:Item key="" text="" />
-													<core:Item key="ADD" text="In addition to requested volume"/>
-													<core:Item key="INCL" text="Part of requested volume"/>
-											</m:Select>
+                                        <m:Input id="idQuantity" value="{ctr>quantity}" enabled="false" valueLiveUpdate="false" liveChange="onCalculateNspPrice" />
 
-											<m:Select selectedKey="{ctr>fOC_ABS_PCT}" enabled="false" id="idSelectFocAbsPct" change="onCalculateNspPrice">
-													<core:Item key="" text="" />
-													<core:Item key="FOC 1" text="Absolute"/>
-													<core:Item key="FOC 2" text="Percentage"/>
-											</m:Select>
+                                        <m:Input id="idMspPerUnit" value="{ctr>mspPerUnit}" enabled="false" description="{ctr>/currentContract/currency}" valueLiveUpdate="false" liveChange="onCalculateNspPrice" />
 
-											<m:Input id="focDiscount" 
-											         value="{ctr>focDiscount}" 
-													 enabled="false" 
-													 valueLiveUpdate="false" liveChange="onCalculateNspPrice"
-													 description="{= ${ctr>fOC_ABS_PCT} === 'FOC 2' ? '%' : '' }"/>
+                                        <m:Select selectedKey="{ctr>fOCType}" enabled="false" id="idSelectFocType" change="onCalculateNspPrice">
+                                            <core:Item key="" text="" />
+                                            <core:Item key="ADD" text="In addition to requested volume" />
+                                            <core:Item key="INCL" text="Part of requested volume" />
+                                        </m:Select>
 
-											<m:Input value="{ctr>nspPerUnit}"
-												id="idNspPerUnit"
-												description="{ctr>/currentContract/currency}"
-												enabled="false"/>
+                                        <m:Select selectedKey="{ctr>fOC_ABS_PCT}" enabled="false" id="idSelectFocAbsPct" change="onCalculateNspPrice">
+                                            <core:Item key="" text="" />
+                                            <core:Item key="FOC 1" text="Absolute" />
+                                            <core:Item key="FOC 2" text="Percentage" />
+                                        </m:Select>
 
-										</m:cells>
-									</m:ColumnListItem>
-								</m:items>
-							</m:Table>
-						</blocks>
-					</ObjectPageSubSection>
+                                        <m:Input id="focDiscount" value="{ctr>focDiscount}" enabled="false" valueLiveUpdate="false" liveChange="onCalculateNspPrice" description="{= ${ctr>fOC_ABS_PCT} === 'FOC 2' ? '%' : '' }" />
 
-					<!-- FORM WITH Product DATA -->
-					<ObjectPageSubSection id="idProductDetailSection" title="Product Details" visible="false">
-						<blocks>
-							<m:VBox width="100%">
-								<form:SimpleForm id="idProductDetailForm" editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1"
-									class="editableForm" visible="true">
-									<form:content>
-										<m:Label text="{i18n>mspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
-										<m:Input 
-											value="{ctr>/currentContract/selectedProduct/mspApprovedByName}" 
-											enabled="{= ${ctr>/editMode} === true ? true : false}"
-											showSuggestion="true"
-											suggestionItems="{ctr>/mspApprovers}">
-											<m:suggestionItems>
-												<core:ListItem text="{ctr>mspApprovedByName}"/>
-											</m:suggestionItems>
-										</m:Input>
-										<m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
-										<m:Select selectedKey="{ctr>/currentContract/selectedProduct/mspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}" >
-													<core:Item key="" text="" />
-													<core:Item key="NSM/SM/FM" text="NSM/SM/FM"/>
-													<core:Item key="HBU" text="HBU"/>
-													<core:Item key="CDH" text="CDH"/>
-											</m:Select>
+                                        <m:Input value="{ctr>nspPerUnit}" id="idNspPerUnit" description="{ctr>/currentContract/currency}" enabled="false" />
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </blocks>
+                </ObjectPageSubSection>
 
-										<m:Label text="{i18n>nspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}"/>
-										<!-- <m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}" items="{ path: 'ctr>/nspApprovers' }" >
+                <!-- FORM WITH Product DATA -->
+                <ObjectPageSubSection id="idProductDetailSection" title="Product Details" visible="false">
+                    <blocks>
+                        <m:VBox width="100%">
+                            <form:SimpleForm id="idProductDetailForm" editable="true" maxContainerCols="1" layout="ColumnLayout" columnsL="1" columnsM="1" class="editableForm" visible="true">
+                                <form:content>
+                                    <m:Label text="{i18n>mspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}" />
+                                    <m:Input value="{ctr>/currentContract/selectedProduct/mspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}" showSuggestion="true" suggestionItems="{ctr>/mspApprovers}">
+                                        <m:suggestionItems>
+                                            <core:ListItem text="{ctr>mspApprovedByName}" />
+                                        </m:suggestionItems>
+                                    </m:Input>
+                                    <m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true" />
+                                    <m:Select selectedKey="{ctr>/currentContract/selectedProduct/mspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}">
+                                        <core:Item key="" text="" />
+                                        <core:Item key="NSM/SM/FM" text="NSM/SM/FM" />
+                                        <core:Item key="HBU" text="HBU" />
+                                        <core:Item key="CDH" text="CDH" />
+                                    </m:Select>
+
+                                    <m:Label text="{i18n>nspApprovedBy}" required="{= ${ctr>/editMode} ? true : false}" />
+                                    <!-- <m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}" items="{ path: 'ctr>/nspApprovers' }" >
 													<core:Item key="{ctr>nspApprovedByName}" text="{ctr>nspApprovedByName}"/>
 										</m:Select>-->
-										<m:Input 
-											value="{ctr>/currentContract/selectedProduct/nspApprovedByName}" 
-											enabled="{= ${ctr>/editMode} === true ? true : false}"
-											showSuggestion="true"
-											suggestionItems="{ctr>/nspApprovers}">
-											<m:suggestionItems>
-												<core:ListItem text="{ctr>nspApprovedByName}"/>
-											</m:suggestionItems>
-										</m:Input>
-										<m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true"/>
-										<m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}" >
-													<core:Item key="" text="" />
-													<core:Item key="NSM/SM/FM" text="NSM/SM/FM"/>
-													<core:Item key="HBU" text="HBU"/>
-													<core:Item key="CDH" text="CDH"/>
-											</m:Select>
-										<m:Label text="{i18n>comment}" required="false" wrapping="true"/>
-										<m:TextArea value="{ctr>/currentContract/selectedProduct/comment}" 
-								          		  showExceededText="true" 
-										  		  maxLength="500" 
-										  		  valueLiveUpdate="false" liveChange="handleLiveChange" 
-												  enabled="{= ${ctr>/editMode} === true ? true : false}" />
-										<m:Label text="" required="false"/>
-										<m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
-											<m:items>
-												<m:SegmentedButtonItem icon="sap-icon://accept" text="Close" press="onConfirmProduct"
-													visible="{= ${ctr>/editMode} === true ? true : false}"/>
-												<!--<m:SegmentedButtonItem icon="sap-icon://sys-cancel" text="Cancel" press="onCancelDeliveryEdit" visible="{= ${ctr>/editMode} === true ? true : false}" />-->
-											</m:items>
-										</m:SegmentedButton>
-									</form:content>
-								</form:SimpleForm>
-							</m:VBox>
-						</blocks>
-					</ObjectPageSubSection>
-			</ObjectPageSection>
+                                    <m:Input value="{ctr>/currentContract/selectedProduct/nspApprovedByName}" enabled="{= ${ctr>/editMode} === true ? true : false}" showSuggestion="true" suggestionItems="{ctr>/nspApprovers}">
+                                        <m:suggestionItems>
+                                            <core:ListItem text="{ctr>nspApprovedByName}" />
+                                        </m:suggestionItems>
+                                    </m:Input>
+                                    <m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true" />
+                                    <m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}">
+                                        <core:Item key="" text="" />
+                                        <core:Item key="NSM/SM/FM" text="NSM/SM/FM" />
+                                        <core:Item key="HBU" text="HBU" />
+                                        <core:Item key="CDH" text="CDH" />
+                                    </m:Select>
+                                    <m:Label text="{i18n>comment}" required="false" wrapping="true" />
+                                    <m:TextArea value="{ctr>/currentContract/selectedProduct/comment}" showExceededText="true" maxLength="500" valueLiveUpdate="false" liveChange="handleLiveChange" enabled="{= ${ctr>/editMode} === true ? true : false}" />
+                                    <m:Label text="" required="false" />
+                                    <m:SegmentedButton selectedKey="competitor" class="sapUiSmallMarginBottom">
+                                        <m:items>
+                                            <m:SegmentedButtonItem icon="sap-icon://accept" text="Close" press="onConfirmProduct" visible="{= ${ctr>/editMode} === true ? true : false}" />
+                                            <!--<m:SegmentedButtonItem icon="sap-icon://sys-cancel" text="Cancel" press="onCancelDeliveryEdit" visible="{= ${ctr>/editMode} === true ? true : false}" />-->
+                                        </m:items>
+                                    </m:SegmentedButton>
+                                </form:content>
+                            </form:SimpleForm>
+                        </m:VBox>
+                    </blocks>
+                </ObjectPageSubSection>
+            </ObjectPageSection>
+        </sections>
 
-		</sections>
-
-		<!-- footer bar-->
-		<footer>
-			<m:OverflowToolbar>
-				<m:ToolbarSpacer />
-				<m:Button type="Accept" text="Save" press="onFooterSavePress()"/>
-				<m:Button type="Reject" text="Cancel" press="onFooterCancelPress()"/>
-			</m:OverflowToolbar>
-		</footer>
-		
-	</ObjectPageLayout>
+        <!-- footer bar-->
+        <footer>
+            <m:OverflowToolbar>
+                <m:ToolbarSpacer />
+                <m:Button type="Accept" text="Save" press="onFooterSavePress()" />
+                <m:Button type="Reject" text="Cancel" press="onFooterCancelPress()" />
+            </m:OverflowToolbar>
+        </footer>
+    </ObjectPageLayout>
 </mvc:View>
