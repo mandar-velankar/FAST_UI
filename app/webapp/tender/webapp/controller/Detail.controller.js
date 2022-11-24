@@ -7981,7 +7981,9 @@ sap.ui.define([
 						OfferPrice: parseFloat(that.byId("idEditPriceOffer_idOfferPrice").getValue().replaceAll(",", "")),
 						StandardDiscount: that.byId("idEditPriceOffer_idStandardDiscount").getValue() / 100,
 						AdditionalDiscount: that.byId("idEditPriceOffer_idAdditionalDiscount").getValue() / 100,
-						Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
+						//Deductions: that.byId("idEditPriceOffer_idDeduction").getValue() / 100,
+						//EHQUT-196575- Thailand - Change Request - INC16653808 
+						Deductions:(countryCode !=="TH") ? that.byId("idEditPriceOffer_idDeduction").getValue() / 100 : ((that.byId("idEditPriceOffer_idDeductionAbsPct").getSelectedKey() === "PCT") ? that.byId("idEditPriceOffer_idDeduction").getValue() /100 : that.byId("idEditPriceOffer_idDeduction").getValue()),
 						NetofferPrice: parseFloat(that.byId("idEditPriceOffer_idNetOfferPrice").getValue().replaceAll(",", "")),
 						BusinessCasePrice: parseFloat(that.byId("idEditPriceOffer_idBusinessCasePrice").getValue().replace(",", "")),
 						WholesalePrice: that.byId("idEditPriceOffer_idWhlseofr").getSelectedKey(),
@@ -7997,7 +7999,8 @@ sap.ui.define([
 						ActiveTier: 0,
 						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
-						PRICE_UPDATE: 0
+						PRICE_UPDATE: 0,
+						Deductions_ABS_PCT:(countryCode ==="TH") ? that.byId("idEditPriceOffer_idDeductionAbsPct").getSelectedKey() : " "
 					};
                 //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//check if any of the pricing data is changed
@@ -8501,7 +8504,55 @@ sap.ui.define([
 					template: oFinancialOfferTemplate
 				});
 			}
+			//EHQUT-199080-MEA -Global/local pricing policy identification
+			let ProductCode=that._productCode;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			let Region=oFastAppDataModel.oData.Tender.Country.Region;
+			var aProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results");
+            var iIndex = aProducts.findIndex(x => x.ProductCode === ProductCode);
+            let GPP_Goverened=aProducts[iIndex].SKUCountry.GPP_GOVERNED;
+			const oView=this.getView();
+			var data={
+				ProductCollection :[]
+			};
+			
+			if(GPP_Goverened==='Yes'){
+			
+			var ProductDetails={
+				LAP_CURRENCY:aProducts[iIndex].SKUCountry.LAP_CURRENCY,
+				LAP:aProducts[iIndex].SKUCountry.LAP,
+				LAP_UNIT:aProducts[iIndex].SKUCountry.LAP_UNIT,
+				PRAF_COMMENTS:aProducts[iIndex].SKUCountry.PRAF_COMMENTS,
+				PRAF_ID:aProducts[iIndex].SKUCountry.PRAF_ID
+			}
+			data.ProductCollection.push(ProductDetails);
+		}
+			if(GPP_Goverened==='Yes' && Region=== 'MEA'){
+				if (!this.oDefaultDialog) {
+				
+					this.oDefaultDialog = Fragment.load({
+						id: this.getView().getId(),
+						name: "FAST_NS0FAST0.view.fragments.PrafDetails_MEA",
+						controller: this
+					}).then(function (oDialog) {
+						oView.addDependent(oDialog);
+						return oDialog;
+					});
+					
+				}
+				this.oDefaultDialog.then(function (oDialog) {
+					var oModel=new sap.ui.model.json.JSONModel(data);
+					oDialog.setModel(oModel);
+					oDialog.open();
+				}.bind(this));
+			}
+			//EHQUT-199080-MEA -Global/local pricing policy identification
 		},
+		//EHQUT-199080-MEA -Global/local pricing policy identification
+		onClose:function(){
+            if(this.oDefaultDialog) this.oDefaultDialog.then(dialog => dialog.close());
+        },
+		
 		onToggleScenarioPlanner: function (oEvent) {
 			var oScenarioPlanner = this.byId("idScenarioPlanner");
 			var oPricingOffer = this.byId("idPricingOffer");
@@ -9743,15 +9794,26 @@ sap.ui.define([
 											aCompetitorResult.push(oCompetitorResultForView);
 										});
 									}
-
+									//EHQUT-202917-MEA - awarded quantity blank
 									//Bayer product that will be saved in PT_TMTRRES
 									/* when awarded QTY is not yet filled, it will take the requested volume as default value*/
-									if (oResult.AwardedQty === "") {
-										var sAwardedQtyBayer = oProduct.RequestedVolume;
-									} else {
-										sAwardedQtyBayer = oResult.AwardedQty;
+									var oFastAppDataModel = Services.getFastAppDataModel();
+			                        let Region=oFastAppDataModel.oData.Tender.Country.Region;
+									if(Region === 'MEA'){
+										if (oResult.AwardedQty === "") {
+											var sAwardedQtyBayer = "";
+										} else {
+											sAwardedQtyBayer = oResult.AwardedQty;
+										}
+									}else{
+										if (oResult.AwardedQty === "") {
+											var sAwardedQtyBayer = oProduct.RequestedVolume;
+										} else {
+											sAwardedQtyBayer = oResult.AwardedQty;
+										}
 									}
-
+									
+                                    //EHQUT-202917-MEA - awarded quantity blank
 									//default reason if empty & edit mode
 									/*if( (oResult.Outcome === 'Won' || oResult.Outcome === 'Lost') && (oResult.Reason === '' || oResult.Reason === 'Not Specified') ){
 										oResult.Reason = 'Not Specified';
