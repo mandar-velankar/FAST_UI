@@ -10873,6 +10873,7 @@ sap.ui.define([
 			return bEnabled;
 		},
 
+
         onNotifyIbiz: function(oEvent){
             
             const oView = this.getView();    
