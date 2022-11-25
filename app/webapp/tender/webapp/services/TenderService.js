@@ -328,6 +328,19 @@ sap.ui.define([
 
 		},
 
+		sendApprovalToIbiz: function (workflowID, offerStatus, comment) {
+
+			const payload = {
+				"ibizWorkflowID": workflowID,
+				"offerStatus": offerStatus,
+				"comment": comment
+			};
+
+			//Create
+			return this.odata("/sendApprovalToIbiz").post(payload);
+
+		},
+
 	});
 	
 	return TenderService;
