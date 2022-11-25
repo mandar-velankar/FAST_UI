@@ -802,10 +802,10 @@ sap.ui.define([
 
 
             if(conditionType === 'Discount'){
-                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount) * (1 - dAdditionalDiscount)).toFixed(2);
+                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
                 
             } else if(conditionType === 'Commercial Proposal'){
-                oPriceCondition.AdditionalDiscount = ((dBasePrice * (1 - oPriceCondition.StandardDiscount) - dCommercialProposal) / dCommercialProposal) / 100;
+                oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
                 
             }
 
