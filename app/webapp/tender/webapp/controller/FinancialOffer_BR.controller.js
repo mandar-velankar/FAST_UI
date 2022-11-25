@@ -637,7 +637,7 @@ sap.ui.define([
 
             for(let i = 0; i < oPriceConditions.length; i++){            
                 if(oPriceConditions[i].ConditionType === "Discount") {
-                    if(!oPriceConditions[i].AdditionalDiscount){
+                    if(oPriceConditions[i].AdditionalDiscount < 0){
                         aErroneousCondition.push(oPriceConditions[i].ConditionType);
                     }
                 } else if(oPriceConditions[i].ConditionType === "Commercial Proposal"){
