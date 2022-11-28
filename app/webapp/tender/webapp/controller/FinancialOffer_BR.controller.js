@@ -637,7 +637,7 @@ sap.ui.define([
 
             for(let i = 0; i < oPriceConditions.length; i++){            
                 if(oPriceConditions[i].ConditionType === "Discount") {
-                    if(!oPriceConditions[i].AdditionalDiscount){
+                    if(oPriceConditions[i].AdditionalDiscount < 0){
                         aErroneousCondition.push(oPriceConditions[i].ConditionType);
                     }
                 } else if(oPriceConditions[i].ConditionType === "Commercial Proposal"){
@@ -802,10 +802,10 @@ sap.ui.define([
 
 
             if(conditionType === 'Discount'){
-                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount) * (1 - dAdditionalDiscount)).toFixed(2);
+                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
                 
             } else if(conditionType === 'Commercial Proposal'){
-                oPriceCondition.AdditionalDiscount = ((dBasePrice * (1 - oPriceCondition.StandardDiscount) - dCommercialProposal) / dCommercialProposal) / 100;
+                oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
                 
             }
 
@@ -844,7 +844,41 @@ sap.ui.define([
 
         getMostRecentMasterPrices: async function(countryCode, productPackID){
             return Services.getService("PriceCondition").getMostRecentMasterPrices(countryCode, productPackID);
-        }
+        },
+
+        onShareApprovalsToIbizPress: async function(oEvent){
+
+            BusyIndicator.show();
+
+            const loadedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+            const loadedOfferStatus = loadedOffer.OfferStatus.STATUS;
+			
+            //get user input
+			let comment = loadedOfferStatus; // will contain the offer status value
+			const workflowID = loadedOffer.IbizWorkflowID;
+			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : 0;
+			
+			try{
+				//Logic to call the API to Notify about Product Switch
+				await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
+
+			}catch(error){
+				sap.m.MessageBox.error(error.message, {
+					title: "Error",
+					id: "messageBoxId3",
+					details: JSON.parse(error.responseText),
+					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
+				});
+			}
+
+			// close loading that blocks everything
+			BusyIndicator.hide();
+
+			//close dialog
+			this.onNotifyibizDialogCancel();
+
+
+		}
 
     });
         
