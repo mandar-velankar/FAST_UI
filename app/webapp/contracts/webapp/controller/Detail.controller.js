@@ -90,8 +90,13 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent pattern match event in route 'object'
 		 * @private
 		 */
+		//EHQUT-215577-Thailand - I can't create a new record in "Contract Management" application
 		_onObjectMatched : function (oEvent) {
-			this.sContractNumber =  oEvent.getParameter("arguments").objectId;
+			var objectId=oEvent.getParameter("arguments").objectId;
+			var contracts=this.getModel("ctr").oData.contracts;
+			var contractdetails=contracts.find(ctr=>ctr.iD===objectId);
+		
+			this.sContractNumber = contractdetails.contractNumber;
 			this.sSectionParameter =  oEvent.getParameter("arguments").section;
 			//this.sSectionParameter = this.ctrState.getSelectedSection();
 			//if(this.sSectionParameter === null){
@@ -146,7 +151,7 @@ sap.ui.define([
 
 
 		},
-		
+		//EHQUT-215577-Thailand - I can't create a new record in "Contract Management" application
 		resetProductTables: function() {
 			//var oDetailView = this.getView("detail");
 			//var oDeliveryView = oDetailView.byId("deliveryTrackingProductsViewId"); //subview of detail view
