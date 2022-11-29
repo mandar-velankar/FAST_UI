@@ -535,9 +535,9 @@ sap.ui.define([
             let UOM = oProductPrice.UOM;
             let correctPrice;
             if(UOM === "Unit"){
-                    correctPrice = oMainPriceCondition.PriceList / packFactor;
+                    correctPrice = oMainPriceCondition.masterPriceList / packFactor;
                 } else {
-                    correctPrice = oMainPriceCondition.PriceList;
+                    correctPrice = oMainPriceCondition.masterPriceList;
                 }
             
 
