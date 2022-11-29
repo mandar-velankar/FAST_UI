@@ -656,6 +656,7 @@ sap.ui.define([
 		 * @param {sap.m.ObjectListItem} oItem selected Item
 		 * @private
 		 */
+		//EHQUT-215577-Thailand - I can't create a new record in "Contract Management" application
 		_showDetail: function (oItem, sContractID) {
 			var bReplace = !Device.system.phone;
 			var oRouter = this.getRouter();
@@ -667,7 +668,7 @@ sap.ui.define([
 			if (oItem) {
 				if (oCtrState.getProperty("editMode")) {
 					var that = this;
-
+					//EHQUT-215577-Thailand - I can't create a new record in "Contract Management" application
 					sap.m.MessageBox.warning("Are you sure you want to discard your changes?", {
 						actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
 						styleClass: "sapUiSizeCompact",
@@ -679,7 +680,8 @@ sap.ui.define([
 								oCtrState.setEditModeDelivery(false);
 								//oCtrState.setSelectedProduct();
 								oRouter.navTo("object", {
-									objectId: oItem.getBindingContext("ctr").getProperty("contractNumber"),
+									//objectId: oItem.getBindingContext("ctr").getProperty("contractNumber"),
+									objectId: oItem.getBindingContext("ctr").getProperty("iD"),
 									section: oCtrState.getContractSectionId(),
 									productId: '',
 								}, bReplace);
@@ -690,7 +692,8 @@ sap.ui.define([
 					});
 				} else {
 					oRouter.navTo("object", {
-						objectId: oItem.getBindingContext("ctr").getProperty("contractNumber"),
+						//objectId: oItem.getBindingContext("ctr").getProperty("contractNumber"),
+						objectId: oItem.getBindingContext("ctr").getProperty("iD"),
 						section: oCtrState.getContractSectionId(),
 						productId: ''
 					}, bReplace);
@@ -709,7 +712,7 @@ sap.ui.define([
 
 
 		},
-
+		//EHQUT-215577-Thailand - I can't create a new record in "Contract Management" application
 		/**
 		 * Sets the item count on the master list header
 		 * @param {integer} iTotalItems the total number of items in the list
@@ -775,7 +778,8 @@ sap.ui.define([
 
 			//get possible filters
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
-			var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getText() : "All";
+			//var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getText() : "All";
+			var sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			//var oChannel = this.byId("idSlctChannel").getSelectedItem() ? this.byId("idSlctChannel").getSelectedItem().getKey() : "All";
 			let oChannel = '';
 			var sSearch = this.byId("idSearch").getProperty("value");
@@ -793,13 +797,13 @@ sap.ui.define([
 			// 	andFilters.push(new sap.ui.model.Filter("channel", FilterOperator.EQ, oChannel));
 			// }
 			//
-			if (sSelectedBrand !== "All") {
+			if (sSelectedBrand !== "All_Brands") {
 
 
 				var oTable = this._oList;
 
 				var aItems = oTable.getItems();
-
+				var orBrandFilters=[];
 				// filter based on oBrand
 				aItems.forEach(item => {
 
@@ -808,13 +812,15 @@ sap.ui.define([
 					var obj = oCtx.getObject(sPath);
 					var aProducts = obj.products;
 
-					var bContainsBrand = aProducts.find(product => product.brandName && product.brandName.lastIndexOf(sSelectedBrand) > -1);
+					//var bContainsBrand = aProducts.find(product => product.brandName && product.brandName.lastIndexOf(sSelectedBrand) > -1);
+					var bContainsBrand = aProducts.find(product => product.brandID === sSelectedBrand);
 
 					if (bContainsBrand) {
-						andFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
+						orBrandFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
 
 					}
 				});
+				andFilters.push(new sap.ui.model.Filter(orBrandFilters,false));
 			}
 			//EHQUT-215577-I can't create a new record in "Contract Management" application
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
@@ -905,10 +911,11 @@ sap.ui.define([
 		 * This is a client side filter.
 		 * @param {Object} oEvent - 
 		 */
+		
 		_filterContractsTable: function (oEvent) {
 
 			//EHQUT-215577-I can't create a new record in "Contract Management" application
-			let sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getText() : "All";
+			let sSelectedBrand = this.byId("idSlctBrand").getSelectedItem() ? this.byId("idSlctBrand").getSelectedItem().getKey() : "All_Brands";
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "TH";
 
 			// get all table items
@@ -920,12 +927,12 @@ sap.ui.define([
 
 			oTable.getBinding("items").filter(andFilters, FilterType.Application);
 
-			if (sSelectedBrand === "All") {
+			if (sSelectedBrand === "All_Brands") {
 				return;
 			}
 
 			var aItems = oTable.getItems();
-
+			var orFilters=[];
 			// filter based on oBrand
 			aItems.forEach(item => {
 
@@ -934,15 +941,16 @@ sap.ui.define([
 				var obj = oCtx.getObject(sPath);
 				var aProducts = obj.products;
 
-				var bContainsBrand = aProducts.find(product => product.brandName && product.brandName.lastIndexOf(sSelectedBrand) > -1);
+				//var bContainsBrand = aProducts.find(product => product.brandName && product.brandName.lastIndexOf(sSelectedBrand) > -1);
+				var bContainsBrand = aProducts.find(product => product.brandID === sSelectedBrand);
 
 				if (bContainsBrand) {
-					andFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
+					orFilters.push(new sap.ui.model.Filter("iD", "EQ", obj.iD));
 
 				}
 
 			});
-
+			andFilters.push(new sap.ui.model.Filter(orFilters,false));
 			var oFilters = new sap.ui.model.Filter(andFilters, true);
 
 			//Binding to table with the filters and the sorters
