@@ -211,11 +211,11 @@ sap.ui.define([
                 } else if(product.UnitPerPack === "Unit"){ // if we are coming from the financial offer page
                         convertedPVL = oPriceConditionViewObject.PVL / product.SKU.PACKFACTOR;
                         convertedConfPrice = oPriceConditionViewObject.YLAP / product.SKU.PACKFACTOR;
-                        convertedPriceList = oPriceConditionViewObject.PriceList / product.SKU.PACKFACTOR;
+                        convertedPriceList = oPriceConditionViewObject.masterPriceList / product.SKU.PACKFACTOR;
                     } else {
                         convertedPVL = oPriceConditionViewObject.PVL;
                         convertedConfPrice = oPriceConditionViewObject.YLAP;
-                        convertedPriceList = oPriceConditionViewObject.PriceList;
+                        convertedPriceList = oPriceConditionViewObject.masterPriceList;
                     }
                 
                 /*let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
