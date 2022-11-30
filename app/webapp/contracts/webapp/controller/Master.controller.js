@@ -378,6 +378,7 @@ sap.ui.define([
 		 * Save new contract
 		 * @param {event} oEvent - 
 		 */
+		//EHQUT-215577-Thailand - I can't create a new record in "Contract Management" application
 		onSaveNewContract: function (oEvent) {
 
 			const selectedInstituteItems = this.byId("idInstituteNewContract").getSelectedItems();
@@ -389,8 +390,9 @@ sap.ui.define([
 			oContract.currency = oContract.currency || this.byId("idCurrencyNewContract").getSelectedKey();
 			oContract.distributorId = oContract.distributorId || this.byId("idDistributorNewContract").getSelectedKey();
 			oContract.sellingCompanyCode = oContract.sellingCompanyCode || this.byId("idSellingCompanyNewContract").getSelectedKey();
-
-			var sContractID = oContract.contractNumber;
+			
+			//var sContractID = oContract.contractNumber;
+			var sContractID = oContract.iD;
 			//var oRouter = this.getRouter();
 
 			const bValid = this._validateNewContract(oContract);

@@ -172,7 +172,9 @@ sap.ui.define([
             }
 
             // load main fragment if main condition already exists
-            const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
+            let existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
+            existingMainPriceCondition.IsPricingUnlocked = existingMainPriceCondition.IsPricingUnlocked === null ? false : existingMainPriceCondition.IsPricingUnlocked;
+            Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', existingMainPriceCondition.IsPricingUnlocked);
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
             //bind Rappel and FOC fragments 
@@ -188,13 +190,22 @@ sap.ui.define([
         },
 
         onUnlockPricing: function(evt){
+            let that = this;
             if(evt.getSource().getSelected()){
-                this.byId("msgStripExistingAgreement").setVisible(false);
-                this.byId("msgStripPriceUnlocked").setVisible(true);
-            } else  {
-                this.byId("msgStripExistingAgreement").setVisible(true);
-                this.byId("msgStripPriceUnlocked").setVisible(false);
+                sap.m.MessageBox.warning("New price will be effective from the day after the active agreement is expired", {
+                    actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
+                    styleClass: "sapUiSizeCompact",
+                    onClose: async function (sAction){
+                        if(sAction === 'OK'){
+                            
+                        } else {
+                            that.byId('unlockPricingCheck').setSelected(false);
+                        }
+                    }
+                });
             }
+
+            Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', that.byId('unlockPricingCheck').getSelected());
         },
 
         /**

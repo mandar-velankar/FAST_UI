@@ -156,10 +156,10 @@ sap.ui.define([
 			var oFastDataCalls = Services.getDefaultModel();
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var Regiontype = this.byId("idfltInstituteType").getSelectedItem() ? this.byId("idfltInstituteType").getSelectedItem().getText() : "";
-			//EHQUT-217122-Spain - Tender search by Region
+			
 			var that = this;
-				//EHQUT-217122-Spain - Tender search by Region
-			if (that._country === 'IT' || that._country === 'ES') {
+	
+			if (that._country === 'IT') {
 				if (Regiontype === "") {
 					this.byId("idfltInstituteName").setVisible(false);
 					this.setFilter();
@@ -640,10 +640,10 @@ sap.ui.define([
 			var oFastAppData = Services.getFastAppDataModel();
 
 
-
+        ////EHQUT-199068-Italy – Tender search by Region
 			//get possible filters
 			let sSelectedCountry = Services.getSelectedCountry() || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
-			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "AR";
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : sSelectedCountry;
 			Services.setSelectedCountry(oCountry);
 			//this.oRouter.getHashChanger().setHash(oCountry + Services.getLayoutType() || "/OneColumn")
 			//EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
@@ -656,9 +656,9 @@ sap.ui.define([
 				this.byId("idSlctCreatedBy").setVisible(false);
 
 			}
-		 	//EHQUT-217122-Spain - Tender search by Region
+		 	
 			//EHQUT-189207-Creation date instead of bid duedate
-			if (oCountry == 'IT' || oCountry == 'ES') {
+			if (oCountry == 'IT') {
 				this.byId("idDueDate").setVisible(false);
 				this.byId("idCreationDate").setVisible(true);
 				this.byId("idfltInstituteType").setVisible(true);
@@ -682,8 +682,8 @@ sap.ui.define([
 				if(Regiontype === ""){
 					this.byId("idfltInstituteName").setSelectedKey("");
 				}
-				//EHQUT-217122-Spain - Tender search by Region
-				if(oCountry=='IT' || oCountry=='ES'){
+				
+				if(oCountry=='IT'){
 
 					
 					if(Regiontype==="Region(s)"){
