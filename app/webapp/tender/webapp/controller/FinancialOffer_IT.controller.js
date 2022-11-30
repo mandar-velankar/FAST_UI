@@ -371,13 +371,25 @@ sap.ui.define([
 			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
 
 		},
-
-		_checkTaxRate: function (oProductPrice){
+		//EHQUT-215457-Italy - Issue with definition of sconto merce omaggio
+		_checkTaxRate: async function (oProductPrice){
 			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== oProductPrice.VatPerPack*100   );
-			var message;
+			var message,freegoodsProducttype;
+			var ProductCode=oProductPrice.ProductCode;
+			var FastAppDataModel = Services.getFastAppDataModel();
+			var productDetails=FastAppDataModel.oData.EditOffer.Product.results;
+		    var iIndex = productDetails.findIndex(x => x.ProductCode === ProductCode);
+			var producttype=FastAppDataModel.oData.EditOffer.Product.results[iIndex].SKU.ProductType;
+			if(oProductPrice.FreeGoodsOther.length >=1){
+			var freegoodsotherproductId=oProductPrice.FreeGoodsOther[0].ProductPackId;
+			freegoodsProducttype=await Services.loadProductPackName(freegoodsotherproductId);
+			}
 			if (differentRates.length === 0){
 				message = "Merce Sconto";
-			} else {
+			}else if(producttype === freegoodsProducttype.ProductType){
+				message = "Merce Sconto";
+			}
+			else {
 				message = "Omaggio";
 			}
 
@@ -385,7 +397,7 @@ sap.ui.define([
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/dynMessage", message);
 			
 		},
-
+		//EHQUT-215457-Italy - Issue with definition of sconto merce omaggio
 
 		/**
 		 * Save financial offer for Italy
