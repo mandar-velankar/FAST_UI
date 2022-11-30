@@ -156,8 +156,9 @@ sap.ui.define([
 			var oFastDataCalls = Services.getDefaultModel();
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var Regiontype = this.byId("idfltInstituteType").getSelectedItem() ? this.byId("idfltInstituteType").getSelectedItem().getText() : "";
-
+			
 			var that = this;
+	
 			if (that._country === 'IT') {
 				if (Regiontype === "") {
 					this.byId("idfltInstituteName").setVisible(false);
@@ -655,6 +656,7 @@ sap.ui.define([
 				this.byId("idSlctCreatedBy").setVisible(false);
 
 			}
+		 	
 			//EHQUT-189207-Creation date instead of bid duedate
 			if (oCountry == 'IT') {
 				this.byId("idDueDate").setVisible(false);
@@ -673,14 +675,14 @@ sap.ui.define([
 
 			var oCreatedBy = this.byId("idSlctCreatedBy").getSelectedItem() ? this.byId("idSlctCreatedBy").getSelectedItem().getText() :
 				"";
-//EHQUT-199068-Italy – Tender search by Region
+				//EHQUT-199068-Italy – Tender search by Region
                 var oInstituteName;
 				var Regiontype=this.byId("idfltInstituteType").getSelectedItem()?this.byId("idfltInstituteType").getSelectedItem().getText() : "";
 
 				if(Regiontype === ""){
 					this.byId("idfltInstituteName").setSelectedKey("");
 				}
-
+				
 				if(oCountry=='IT'){
 
 					
