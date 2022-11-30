@@ -172,9 +172,7 @@ sap.ui.define([
             }
 
             // load main fragment if main condition already exists
-            let existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
-            existingMainPriceCondition.IsPricingUnlocked = existingMainPriceCondition.IsPricingUnlocked === null ? false : existingMainPriceCondition.IsPricingUnlocked;
-            Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', existingMainPriceCondition.IsPricingUnlocked);
+            const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
             //bind Rappel and FOC fragments 
@@ -204,8 +202,6 @@ sap.ui.define([
                     }
                 });
             }
-
-            Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', that.byId('unlockPricingCheck').getSelected());
         },
 
         /**
