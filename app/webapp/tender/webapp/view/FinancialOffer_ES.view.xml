@@ -164,31 +164,17 @@
 				<l:BlockLayoutRow>
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
 						<VBox>
-							<HBox>
-								<MessageStrip
-									id="msgStripExistingAgreement"
-									text="{fastAppData>/ExistingAgreementInPlaceText}"
-									type="Warning"
-									showIcon="false"
-									showCloseButton="false"
-									class="sapUiSmallMarginBottom" 
-									visible="{= ${fastAppData>/ExistingAgreementInPlace} }">
-								</MessageStrip>
-
-								<!--<MessageStrip
-									id="msgStripPriceUnlocked"
-									text="New price will be effective from the day after the active agreement is expired"
-									type="Warning"
-									showIcon="false"
-									showCloseButton="false"
-									class="sapUiSmallMarginBottom" 
-									visible="false">
-								</MessageStrip>-->
-							</HBox>
+							<MessageStrip
+								text="{fastAppData>/ExistingAgreementInPlaceText}"
+								type="Warning"
+								showIcon="false"
+								showCloseButton="false"
+								class="sapUiSmallMarginBottom" 
+								visible="{fastAppData>/ExistingAgreementInPlace}">
+							</MessageStrip>
 						</VBox>
                         <Panel expandable="true" headerText="Current Prices">
                             <VBox id="idCurrentPricesVbox">
-								<CheckBox id="unlockPricingCheck" text="Unlock Pricing" selected="{fastAppData>IsPricingUnlocked}" select=".onUnlockPricing" visible="{fastAppData>/ExistingAgreementInPlace}" enabled="{= ${fastAppData>/EditMode} }"/>    
                                 <Label text="{i18n>PVL}" required="false"/>
                                 <Input 
                                     value="{
@@ -229,7 +215,7 @@
 									<Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
 									<Select
 										id="idPriceConditionSelect"
-										enabled="{= ${fastAppData>/EditMode} &amp;&amp; ( !${fastAppData>/ExistingAgreementInPlace} || (${fastAppData>/ExistingAgreementInPlace} &amp;&amp; ${fastAppData>/IsPricingUnlocked}) ) }"
+										enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace} }"
 										forceSelection="false"
 										change=".onPriceConditionChange"
 										items="{
@@ -240,7 +226,7 @@
 											]
 										}">
 										<core:Item key="{fastAppData>ID}" text="{fastAppData>ConditionType}" />
-									</Select> 
+									</Select>
 								</HBox>
 							</VBox>
 							<VBox id="idPriceConditionVbox">

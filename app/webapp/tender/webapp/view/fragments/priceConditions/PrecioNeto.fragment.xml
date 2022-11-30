@@ -107,12 +107,12 @@
                 <Input 
                     fieldGroupIds="priceInputPrecioNeto"
                     value="{path:'fastAppData>NetPriceWithoutTaxBeforeDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
-                    enabled="{= ${fastAppData>/EditMode} &amp;&amp; ( !${fastAppData>/ExistingAgreementInPlace} || (${fastAppData>/ExistingAgreementInPlace} &amp;&amp; ${fastAppData>IsPricingUnlocked}) ) }" 
+                    enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" 
                     description="{fastAppData>masterPriceCurrency}"
                     fieldWidth="60%" 
                     liveChange=".onLiveChangeNetPricesPrecioNeto"
                 />
-                <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ( !${fastAppData>/ExistingAgreementInPlace} || (${fastAppData>/ExistingAgreementInPlace} &amp;&amp; ${fastAppData>IsPricingUnlocked}) ) }" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" selected="{fastAppData>RoyalDecreeIncl}" select=".onLiveChangeNetPricesPrecioNeto"/>
+                <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}}" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" selected="{fastAppData>RoyalDecreeIncl}" select=".onLiveChangeNetPricesPrecioNeto"/>
                 <Label text="{i18n>RoyalDecreeValue}" required="false" />
                 <Input 
                     value="{path:'fastAppData>RoyalDecreeValue', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}}" 

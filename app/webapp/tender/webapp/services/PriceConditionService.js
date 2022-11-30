@@ -253,8 +253,7 @@ sap.ui.define([
                 "DiscountCondition": tab === "ResultsPage" ? oPriceConditionViewObject.DiscountConditions : this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
                 "FreeGoodsOther": tab === "ResultsPage" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
                 "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement,
-                "Settlement_ID":oPriceConditionViewObject.Settlement_ID,
-                "IsPricingUnlocked": oPriceConditionViewObject.IsPricingUnlocked
+                "Settlement_ID":oPriceConditionViewObject.Settlement_ID
             }
             
             // add the ID if it exists

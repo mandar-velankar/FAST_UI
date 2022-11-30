@@ -172,9 +172,7 @@ sap.ui.define([
             }
 
             // load main fragment if main condition already exists
-            let existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
-            existingMainPriceCondition.IsPricingUnlocked = existingMainPriceCondition.IsPricingUnlocked === null ? false : existingMainPriceCondition.IsPricingUnlocked;
-            Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', existingMainPriceCondition.IsPricingUnlocked);
+            const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
             //bind Rappel and FOC fragments 
@@ -187,25 +185,6 @@ sap.ui.define([
             focBindingPath && await this.addFOCs(focBindingPath);
 
             BusyIndicator.hide();
-        },
-
-        onUnlockPricing: function(evt){
-            let that = this;
-            if(evt.getSource().getSelected()){
-                sap.m.MessageBox.warning("New price will be effective from the day after the active agreement is expired", {
-                    actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
-                    styleClass: "sapUiSizeCompact",
-                    onClose: async function (sAction){
-                        if(sAction === 'OK'){
-                            
-                        } else {
-                            that.byId('unlockPricingCheck').setSelected(false);
-                        }
-                    }
-                });
-            }
-
-            Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', that.byId('unlockPricingCheck').getSelected());
         },
 
         /**
@@ -292,25 +271,13 @@ sap.ui.define([
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
             tomorrow.setHours(0,0,0,0); // we only take the date into account
-            let filter = {};
-
-            if(Services.getSelectedProductID()){
-                filter = {
-                    CountryCode: Services.getSelectedCountry(),
-                    ProductCode: Services.getSelectedProductID(),
-                    TenderClassification: "Tender",
-                    notExpiringBeforeDate: tomorrow,
-                    notEqualTenderId: Services.getSelectedTenderID() // exclude current Tender from the list
-                };
-            } else {
-                //we need this select without product ID for quotation page
-                filter = {
-                    CountryCode: Services.getSelectedCountry(),
-                    TenderClassification: "Tender",
-                    notExpiringBeforeDate: tomorrow,
-                    notEqualTenderId: Services.getSelectedTenderID() // exclude current Tender from the list
-                };
-            }
+            const filter = {
+                CountryCode: Services.getSelectedCountry(),
+                ProductCode: Services.getSelectedProductID(),
+                TenderClassification: "Tender",
+                notExpiringBeforeDate: tomorrow,
+                notEqualTenderId: Services.getSelectedTenderID() // exclude current Tender from the list
+            };
 
             return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results?.filter((result) => {
                 let candidates = result.Candidates?.results;
