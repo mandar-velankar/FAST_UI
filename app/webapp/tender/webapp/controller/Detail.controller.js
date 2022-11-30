@@ -8097,33 +8097,9 @@ sap.ui.define([
 
 		},
 
-		/**
-         * Get the existing price agreement related to a Tender classification "Tender"
-         * which is not expiring before tomorrow for the same product
-         */
-		getExistingPriceAgreement: async function(existingPriceAgreementId){
-		
-			let filter = {};
-
-			if(existingPriceAgreementId){
-				filter = {
-					ID: existingPriceAgreementId,
-				};
-			}
-
-			if(filter){
-				return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results?.filter((result) => {
-					let candidates = result.Candidates?.results;
-					if(candidates.find(candidate => candidate.CandidateID === Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteID'))){
-						return result;
-					}
-				})[0];
-			} else return null;
-		},
-
 		//QUOTATION TAB
 		//-------------
-		onQuotationOfferItemPress: async function (oEvent) {
+		onQuotationOfferItemPress: function (oEvent) {
 
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -8168,24 +8144,9 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
 			//load quotation data
-			$.when(Quotation.loadOfferAndProductValidationInfo()).done(async function (oData) {
+			$.when(Quotation.loadOfferAndProductValidationInfo()).done(function (oData) {
 				if(Services.getSelectedCountry() === "ES"){
-
-					let aUnlockedProductPricing = aProducts.results.filter((product) => {
-						if(product?.PriceCondition?.results.find((pricing) => pricing.IsPricingUnlocked === true)){
-							return product;
-						}
-					});
-		
-					let oExistingAgreement = {};
-					if(aUnlockedProductPricing && aUnlockedProductPricing.length > 0){
-						oExistingAgreement = await this.getExistingPriceAgreement(aUnlockedProductPricing[0].ExistingPriceAgreementId);
-						if(oExistingAgreement){
-							that.setQuotationDateRestrictions(true, oExistingAgreement.ExpiryDate);
-						}
-					} else {
-						that.setQuotationDateRestrictions(false);
-					}
+					that.setQuotationDateRestrictions();
 					that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
 				}
 			});
@@ -8193,6 +8154,7 @@ sap.ui.define([
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
 
 			});*/
+			
 
 			//set to fastappdata model for easy access on the view
 			oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
@@ -8228,7 +8190,7 @@ sap.ui.define([
 			}
 
 			//check if there needs to be an update (already existing and erpost)
-			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(async function (oData) {
+			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(function (oData) {
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
 				var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
@@ -8321,28 +8283,14 @@ sap.ui.define([
 			
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
-		setQuotationDateRestrictions:function(hasExistingPriceAgreement, existingPaExpiryDate){
-
-			let dateRestrictions = {};
-			
-			if(!hasExistingPriceAgreement){
-				let tomorrow = new Date();
-				tomorrow.setDate(tomorrow.getDate() + 1);
-				dateRestrictions = {
-					effectiveDate:{
-						min: tomorrow
-					}
-				};
-			} else {
-				let dateAfterExpiryDate = new Date(existingPaExpiryDate);
-				dateAfterExpiryDate.setDate(dateAfterExpiryDate.getDate() + 1);
-				dateRestrictions = {
-					effectiveDate:{
-						min: dateAfterExpiryDate
-					}
-				};
-
-			}
+		setQuotationDateRestrictions:function(){
+			let tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			const dateRestrictions = {
+				effectiveDate:{
+					min: tomorrow
+				}
+			};
 			Services.getFastAppDataModel().setProperty("/QuotationDateRestrictions", dateRestrictions);
 		},
 		onChangeQuotationDates:function(event,dateType){
@@ -9098,7 +9046,7 @@ sap.ui.define([
 				return;
 			}
 			//if it comes at this place, we already checked if dates are in error or not correct match
-			//this allows us to just check for the warning: if expiry date is more tFhan 12 months after effective date. 
+			//this allows us to just check for the warning: if expiry date is more than 12 months after effective date. 
 			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
             warningDate = new Date(warningDate.setFullYear(warningDate.getFullYear() + 1));
 			if(warningDate < quotationFields.ExpiryDate && warningDate.getMonth() < quotationFields.ExpiryDate.getMonth() && Services.getLoadedTender().Classification === "Commercial Agreement"){
