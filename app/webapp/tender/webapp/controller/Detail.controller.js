@@ -8179,20 +8179,9 @@ sap.ui.define([
 		
 					let oExistingAgreement = {};
 					if(aUnlockedProductPricing && aUnlockedProductPricing.length > 0){
-						oExistingAgreement = await that.getExistingPriceAgreement(aUnlockedProductPricing[0].ExistingPriceAgreementId);
+						oExistingAgreement = await this.getExistingPriceAgreement(aUnlockedProductPricing[0].ExistingPriceAgreementId);
 						if(oExistingAgreement){
 							that.setQuotationDateRestrictions(true, oExistingAgreement.ExpiryDate);
-
-							if(!oFastAppDataModel.getProperty('/QuotationSelectedOffer')){
-								//if we have an active agreement & quotation has not yet been saved, the effective & expiry dates will be calculated in backend
-								//overwriting it here
-								let dateAfterExpiryDate = new Date(oExistingAgreement.ExpiryDate);
-								dateAfterExpiryDate.setDate(dateAfterExpiryDate.getDate() + 1);
-								let newExpiryDate = new Date(dateAfterExpiryDate);
-								newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1);
-								oFastAppDataModel.setProperty('/OfferValidation/EffectiveDate', dateAfterExpiryDate);
-								oFastAppDataModel.setProperty('/OfferValidation/ExpiryDate', newExpiryDate);
-							}
 						}
 					} else {
 						that.setQuotationDateRestrictions(false);
