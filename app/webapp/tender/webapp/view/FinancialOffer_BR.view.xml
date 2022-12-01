@@ -33,6 +33,7 @@
 				<OverflowToolbar>
 					<Title text="{i18n>offersum}"/>
 					<ToolbarSpacer />
+					<Button id="btnShareApprovalToIbizId" text="Share Approval to EBIZ" icon="sap-icon://approvals" press="onShareApprovalsToIbizPress" enabled="{= ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Rejected' }"/>
 					<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
 				</OverflowToolbar>
 			</headerToolbar>
@@ -78,6 +79,9 @@
 										<Text text="{i18n>UoM}"/>
 									</Column>
 									<Column>
+										<Text text="{i18n>CommercialProposal}"/>
+									</Column>
+									<!-- <Column>
 										<Text text="{i18n>NetOfferPrice}"/>
 									</Column>
 									<Column>
@@ -94,7 +98,7 @@
 									</Column>
 									<Column visible="{access>/tenderAccess/COGS}">
 										<Text text="{i18n>GrossMargin}"/>
-									</Column>
+									</Column> -->
 								</columns>
 								<items>
 									<ColumnListItem type="Navigation" press="onFinancialProductPress" detailPress="onDetailPress">
@@ -108,6 +112,9 @@
 											<Text text="{fastAppData>UOM}"/>
 										</cells>
 										<cells>
+											<Text text="{fastAppData>CommercialProposal}"/>
+										</cells>
+										<!-- <cells>
 											<Text text="{path: 'fastAppData>NetofferPrice', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 										</cells>
 										<cells>
@@ -124,7 +131,7 @@
 										</cells>
 										<cells>
 											<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
-										</cells>
+										</cells> -->
 										
 									</ColumnListItem>
 								</items>
