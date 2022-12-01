@@ -278,7 +278,13 @@ sap.ui.define([
                 notExpiringBeforeDate: tomorrow,
                 notEqualTenderId: Services.getSelectedTenderID() // exclude current Tender from the list
             };
-            return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results[0];
+
+            return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results?.filter((result) => {
+                let candidates = result.Candidates?.results;
+                if(candidates.find(candidate => candidate.CandidateID === Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteID'))){
+                    return result;
+                }
+            })[0];
         },
 
         /**
