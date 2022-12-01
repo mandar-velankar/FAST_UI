@@ -142,7 +142,9 @@ sap.ui.define([
             if(applicableTenderCondition){
                 const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
                 const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
-                this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView);
+                if(!priceConditionViews.find(conditionView => conditionView.IsPricingUnlocked === true)){
+                    this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView); //overrule this by checking if there is a condition where we overrule the existing one. If yes, load that one
+                }
                 sExistingAgreementInPlaceText = 'Existing agreement in place for OfferID: ' + existingPriceAgreement.OfferId + ' Expiring on: ' + (DateFormat.getDateInstance({pattern : "dd-MM-yyyy" }).format(existingPriceAgreement.ExpiryDate));
                 Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlaceText", sExistingAgreementInPlaceText);
                 Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
