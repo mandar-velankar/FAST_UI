@@ -229,7 +229,7 @@
 									<Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
 									<Select
 										id="idPriceConditionSelect"
-										enabled="{= (${fastAppData>/EditMode} &amp;&amp; !${fastAppData>/ExistingAgreementInPlace}) || ( ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/ExistingAgreementInPlace} &amp;&amp; ${fastAppData>IsPricingUnlocked} ) }"
+										enabled="{= ${fastAppData>/EditMode} &amp;&amp; ( !${fastAppData>/ExistingAgreementInPlace} || (${fastAppData>/ExistingAgreementInPlace} &amp;&amp; ${fastAppData>/IsPricingUnlocked}) ) }"
 										forceSelection="false"
 										change=".onPriceConditionChange"
 										items="{
