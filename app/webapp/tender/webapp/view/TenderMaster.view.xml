@@ -64,6 +64,11 @@
                         <Select id="idfltInstituteName" change=".setFilter" visible="false" wrapItemsText="true" items="{ path: 'fastAppData>/Institute'}" >
                             <core:Item key="{fastAppData>InstituteID}" text="{fastAppData>InstituteName}" />
                         </Select>
+						<!-- EHQUT-217122-Spain - Tender search by Region -->
+						<Select id="idRegionNameFilter" change=".setFilter" visible="false" wrapItemsText="true" items="{ path: 'fastAppData>/Institute'}" >
+                            <core:Item key="{fastAppData>ID}" text="{fastAppData>Name}" />
+                        </Select>
+						<!-- EHQUT-217122-Spain - Tender search by Region -->
 
 						 <!-- EHQUT-199068-Italy – Tender search by Region -->
                         <!-- Filter for Institute -->
