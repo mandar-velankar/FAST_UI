@@ -100,6 +100,31 @@ sap.ui.define([
 			var oValue = oNumberFormat.format(parseFloat(offerPrice) * volume);
 			return oValue + " "+ currency;
 		},
+		profitability : function(netPrice, cogs, volume, currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1){
+			var oNumberFormat = NumberFormat.getPercentInstance({
+				maxFractionDigits: 2,
+				decimalSeparator: "."
+			});
+			let grosssale, netsale,profitability;
+			if (!netPrice){
+				return "";
+			}else{
+				grosssale= calculateProfit(netPrice, cogs, volume, currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1);
+				
+				volume = (focType === "FOC 2") ? Math.ceil(parseFloat(volume)) :
+				(
+					(focAbsPct === "PCT") ? Math.ceil(parseFloat(volume)) * (1 + parseFloat(foc)) : Math.ceil(parseFloat(volume)) + parseFloat(foc)
+				);
+				netsale = parseFloat(netPrice) * Math.ceil(parseFloat(volume));
+				
+				grosssale=parseFloat(grosssale.replace(/,/g,""));
+				
+				profitability=grosssale/netsale;
+			}
+			
+			return oNumberFormat.format(parseFloat(profitability));
+           
+		},
 		price: function(price, currency) {
 			if (!price){
 				return "";
