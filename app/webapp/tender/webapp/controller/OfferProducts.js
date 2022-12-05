@@ -2475,6 +2475,54 @@ sap.ui.define([
 							], formatter: formatter.profitState
 						},
 						visible: "{access>/tenderAccess/COGS}"
+					}),
+					//EHQUT-197393-MEA – change display in Offer Summary in Financial Offer tab
+					//Budgeted Profitability
+					new sap.m.ObjectNumber({
+						number: {
+							parts: [{
+								path: "fastData>Price/Profitability/PROFITABILITY"
+								
+							}],formatter: formatter.percentage
+						},
+						visible: "{access>/tenderAccess/COGS}"
+					}),
+					//ProfitabilityPercentage
+					new sap.m.ObjectNumber({
+						number: {
+							parts: [{
+								path: "fastData>Price/NetPrice"
+							}, {
+								path: "fastData>Price/COGS"
+							}, {
+								path: "fastData>RequestedVolume"
+							}, {
+								path: "fastAppData>/EditOffer/Currency"
+							}, {
+								path: "fastData>Price/SpotRate"
+							}, {
+								path: "fastData>Price/FOC"
+							}, {
+								path: "fastData>Price/FOC_ABS_PCT"
+							}, {
+								path: "fastData>Price/FOCType"
+							}, {
+								path: "fastData>UnitPerPack"
+							}, {
+								path: "fastData>SKU/PACKFACTOR"
+							}, {
+								path: "fastData>Price/FOC_Bundled_1"
+							}, {
+								path: "fastData>Price/FOC_ABS_PCT_Bundled_1"
+							}, {
+								path: "fastData>Price/Bundled_1_Cogs/COGS"
+							}, {
+								path: "fastData>Price/Bundled_1_SKU/PACKFACTOR"
+							}],
+							formatter: formatter.profitability
+						},
+						visible: "{access>/tenderAccess/COGS}"						
+						
 					})
 				]
 			});
@@ -2492,7 +2540,7 @@ sap.ui.define([
 				],
 				sorter: oSorter,
 				parameters: {
-					expand: "SKU,Price,RegisteredPrice,Cogs,Price/Bundled_1_Cogs,Price/Bundled_1_SKU"
+					expand: "SKU,Price,RegisteredPrice,Cogs,Price/Bundled_1_Cogs,Price/Bundled_1_SKU,Price/Profitability"
 				},
 				template: oFinancialOfferTemplate
 			});

@@ -72,6 +72,14 @@
 								<Column visible="{access>/tenderAccess/COGS}">
 									<Text text="{i18n>Profitability}"/>
 								</Column>
+								<!-- EHQUT-197393-MEA – change display in Offer Summary in Financial Offer tab -->
+								<Column visible="{= ${access>/tenderAccess/COGS} &amp;&amp;(${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false )}">
+									<Text text="{i18n>BudgetedProfitability}" />
+								</Column>
+								<Column visible="{= ${access>/tenderAccess/COGS} &amp;&amp;(${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false )}">
+									<Text text="{i18n>ProfitabilityPercentage}" />
+								</Column>
+   							<!-- EHQUT-197393-MEA – change display in Offer Summary in Financial Offer tab -->
 							</columns>
 						</Table>
 						
