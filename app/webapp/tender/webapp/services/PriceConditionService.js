@@ -155,6 +155,7 @@ sap.ui.define([
             let convertedPVL;
             let convertedConfPrice;
             let convertedPriceList;
+            let lotId;
             if(tab === "ResultsPage"){
             /*During Price Agreement creation we should always take the trasactional PVL/Confidential Price,
                 as Price Agreement should be created using prices saved in the PriceCondition table. */            
@@ -225,6 +226,7 @@ sap.ui.define([
                     convertedConfPrice = null;
                     
                 } */
+                lotId = product.LotID ? product.LotID : 1;
             }
                       
             let obj = {
@@ -267,7 +269,8 @@ sap.ui.define([
                 "DiscountCondition": tab === "ResultsPage" ? oPriceConditionViewObject.DiscountConditions : this.convertToDiscountConditions(oPriceConditionViewObject.DiscountConditions),
                 "FreeGoodsOther": tab === "ResultsPage" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
                 "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement,
-                "Settlement_ID":oPriceConditionViewObject.Settlement_ID
+                "Settlement_ID":oPriceConditionViewObject.Settlement_ID,
+                "LotID":lotId
             }
             
             // add the ID if it exists
