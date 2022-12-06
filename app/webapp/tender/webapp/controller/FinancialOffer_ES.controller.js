@@ -175,8 +175,10 @@ sap.ui.define([
 
             // load main fragment if main condition already exists
             let existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : PVLPriceCondition?PVLPriceCondition.ConditionType:"";
-            existingMainPriceCondition.IsPricingUnlocked = existingMainPriceCondition.IsPricingUnlocked === null ? false : existingMainPriceCondition.IsPricingUnlocked;
-            Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', existingMainPriceCondition.IsPricingUnlocked);
+            if(existingMainPriceCondition){
+                existingMainPriceCondition.IsPricingUnlocked = existingMainPriceCondition.IsPricingUnlocked === null ? false : existingMainPriceCondition.IsPricingUnlocked;
+                Services.getFastAppDataModel().setProperty('/IsPricingUnlocked', existingMainPriceCondition.IsPricingUnlocked);
+            }
             this.loadMainPriceConditionFragment(existingMainPriceConditionType);
 
             //bind Rappel and FOC fragments 
