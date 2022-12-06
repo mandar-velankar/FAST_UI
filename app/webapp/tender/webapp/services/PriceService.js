@@ -286,7 +286,7 @@ sap.ui.define([
 			oPriceToSave.NetPrice = (oPriceSaveInfo.NetPrice === null) ? null : oPriceSaveInfo.NetPrice.toString();
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
-			oPriceToSave.LotID = 1;
+			oPriceToSave.LotID = oPriceSaveInfo.LotID;
 			oPriceToSave.Deductions_ABS_PCT=oPriceSaveInfo.Deductions_ABS_PCT;
 			//EHQUT-196575- Thailand - Change Request - INC16653808 
 			if (oPriceSaveInfo.ID) {
