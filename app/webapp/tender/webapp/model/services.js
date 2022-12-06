@@ -7943,6 +7943,7 @@ sap.ui.define([
 							oApprovalSaveInfo.ApproverType = oApprovalsSelectedOffer.ApproverType;
 							oApprovalSaveInfo.FLOW_ID = oApprovalsSelectedOffer.FLOW_ID;
 							oApprovalSaveInfo.REQUIRED_ACTION = oApprovalsSelectedOffer.REQUIRED_ACTION;
+							oApprovalSaveInfo.LotID = oProduct.LotID;
 							aApprovalsSaveInfo.push(oApprovalSaveInfo);
 
 						}
