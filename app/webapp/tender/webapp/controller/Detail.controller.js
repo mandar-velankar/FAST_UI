@@ -3495,7 +3495,7 @@ sap.ui.define([
 								bCancelEnabled = true;
 							}
 
-							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Appeal in Progress" && oData.STATUS !== "Delivery Ongoing") {
+							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Appeal in Progress" && oData.STATUS !== "Delivery Ongoing" ) {
 								bSendApprovalEnabled = true;
 							}
 

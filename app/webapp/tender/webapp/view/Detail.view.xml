@@ -122,7 +122,7 @@
 					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="{= ${fastData>FoldersCreated} === 1}"/>
 					<m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true"/>
 					<!--<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>-->
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true}"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
