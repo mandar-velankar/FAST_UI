@@ -48,6 +48,7 @@ sap.ui.define([
 			oApprovalToSave.ApproverType = oApprovalSaveInfo.ApproverType;
 			oApprovalToSave.FLOW_ID = oApprovalSaveInfo.FLOW_ID;
 			oApprovalToSave.REQUIRED_ACTION = oApprovalSaveInfo.REQUIRED_ACTION;
+			oApprovalToSave.LotID = oApprovalSaveInfo.LotID;
 			//oApprovalToSave.Statustime = (oApprovalSaveInfo.Statustime) ? moment(moment(oApprovalSaveInfo.Statustime, "YYYY-MM-dd HH:mm:SS").format("YYYY-MM-DD HH:MM:SS:00")).toDate() : null;
 			oApprovalToSave.Statustime = (oApprovalSaveInfo.Statustime) ? oApprovalSaveInfo.Statustime : null;
 
