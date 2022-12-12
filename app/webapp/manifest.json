@@ -328,6 +328,10 @@
 				"priceagreements": {
 					"type": "Component",
 					"usage": "priceagreementsComponent"
+				},
+				"brazilcontracting": {
+					"type": "Component",
+					"usage": "brazilcontractingComponent"
 				}
 			}
 		}
