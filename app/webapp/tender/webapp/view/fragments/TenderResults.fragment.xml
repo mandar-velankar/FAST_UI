@@ -224,9 +224,10 @@
                                 </t:Column>
                                 <t:Column width="9rem">
                                 <!-- EHQUT-INC16642003-Issue with edit button -->
+                                <!-- EHQUT-218727-Requested Volume Field for competitor result -->
                                     <m:Label text="Requested Volume"/>
                                     <t:template>
-                                        <m:Input type="Number" id="resultsForTreeRequestedVol" value="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? ${fastAppData>REQUESTEDVOLUME} : ''  }" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer'  ? true : false}"/>
+                                        <m:Input type="Number" id="resultsForTreeRequestedVol" value="{fastAppData>REQUESTEDVOLUME}" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer'  ? true : false}"/>
                                     </t:template>
                                 </t:Column>
                                 <t:Column width="9rem">
