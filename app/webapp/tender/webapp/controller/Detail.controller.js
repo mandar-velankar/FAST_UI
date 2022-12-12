@@ -9346,6 +9346,10 @@ sap.ui.define([
                                             {
                                                 oCompetitorResult.OUTCOME='Decision Pending';
                                             }
+											//EHQUT-218727-Requested Volume Field for competitor result
+											if(sCountry !== "IT"){
+												oCompetitorResult.REQUESTEDVOLUME =null;
+											}
                                             //EHQUT-OTT-118849-Making decision pending as default
 											var oCompetitorResultForView = {
 												OFFERID: oCompetitorResult.OFFERID,
@@ -9353,7 +9357,7 @@ sap.ui.define([
 												PRODUCT: oCompetitorResult.AWARDEDPRODUCT,
 												OUTCOME: oCompetitorResult.OUTCOME,
 												UOM: oCompetitorResult.UOM,
-												REQUESTEDVOLUME: null,
+												REQUESTEDVOLUME: oCompetitorResult.REQUESTEDVOLUME,
 												AWARDEDQTY: oCompetitorResult.AWARDEDQTY,
                                                 TOTALAWARDEDVALUE: oCompetitorResult.TOTALAWARDEDVALUE,
 												REASON: oCompetitorResult.REASON,
@@ -9978,6 +9982,10 @@ sap.ui.define([
 					if (oResultForTree.OutcomeLevel && oResultForTree.OutcomeLevel.length > 0) {
 						oResultForTree.OutcomeLevel.forEach(function (oCompetitorResult, iIndex) {
 							//competitor results
+							//EHQUT-218727-Requested Volume Field for competitor result
+							if(sCountryCode !== "IT"){
+								oCompetitorResult.REQUESTEDVOLUME=null;
+							}
 							var oCompetitorResultToSave = Services.getService('CompetitorResult').getConvertCompetitorResultToSave(oCompetitorResult);
 							//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
 							switch (oCompetitorResult._sOperation) {
