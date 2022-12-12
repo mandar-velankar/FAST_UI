@@ -105,3 +105,12 @@ resources:
         org: ${org}
         space: ${space}
       version: '>=0.0.0'
+  - name: brazilContractingApp
+    type: configuration
+    parameters:
+      provider-id: FASTPRICEAGREEMENTS:brazilContractingApp
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'

@@ -115,6 +115,12 @@
 				"settings": {},
 				"componentData": {},
 				"lazy": true
+			},
+			"brazilcontractingComponent": {
+				"name": "com.bayer.tender.brazilcontracting",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
 			}
 		},
 		"resourceRoots":{
@@ -126,6 +132,7 @@
 			"com.bayer.tender.createsalesopportunity": "./createsalesopportunity",
 			"com.bayer.tender.bankguarantees": "./bankguarantees",
 			"com.bayer.tender.priceagreements": "./priceagreements",
+			"com.bayer.tender.brazilcontracting": "./brazilcontracting",
 			"FAST_NS0FAST0": "./tender/webapp",
 			"com.bayer.tender.uilib": "./uilib/src/com/bayer/tender/uilib"
 		},
@@ -267,6 +274,14 @@
 					"target": {
 						"name": "priceagreements",
 						"prefix": "pa"
+					}			
+				},
+				{
+					"name": "brazilcontracting",
+					"pattern": "brazilcontracting",
+					"target": {
+						"name": "brazilcontracting",
+						"prefix": "brc"
 					}			
 				}
 			],
