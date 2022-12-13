@@ -143,6 +143,12 @@ sap.ui.define([
 				.getRouter()
 				.navTo("createsalesopportunity");
 		},
+		onTileBrazilContractingPress: function (event) {
+			BusyIndicator.show(0);
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("brazilcontracting");
+		},
 		//Tile tender manager press
 		onTileTenderManagerDashPress: function (oEvent) {
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboard/OfferSubmissions?:iid=2"); //check where to store constants

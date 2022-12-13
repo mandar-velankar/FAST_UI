@@ -48,6 +48,11 @@
       "source": "/bankguarantees/(.*)$",
       "target": "$1",
       "destination": "bankGuaranteesApp"
+    },  
+    {
+      "source": "/brazilcontracting/(.*)$",
+      "target": "$1",
+      "destination": "brazilContractingApp"
     }, 
     {
       "source": "/app/priceagreements/(.*)$",
