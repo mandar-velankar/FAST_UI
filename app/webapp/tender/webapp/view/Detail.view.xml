@@ -117,12 +117,12 @@
 				<!-- EITOG-217330-Only to view commercial offers, NOT to modify. -->
 				<!-- ACTIONS -->
 				<actions>
-					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="{= ${access>/tenderAccess/SPAINTENDERVIEW} ? false : true}" />
+					<m:Button id="deleteTenderButtonId" icon="sap-icon://delete" text="Delete" type="Reject" press="onDeleteTenderPress" enabled="{=!(${access>/tenderAccess/SPAINTENDERVIEW})}" />
 					<m:Button id="cloneButtonId" icon="sap-icon://copy" text="Clone" enabled="true" type="Accept" press="onCloneButtonPress"/>
 					<m:Button id="folderButtonId" icon="sap-icon://browse-folder" text="Documents" type="Emphasized" press="._onFolderButtonPress" visible="{= ${fastData>FoldersCreated} === 1}"/>
 					<m:Button id="refreshButtonId" icon="sap-icon://refresh" type="Emphasized" press="onRefresh" enabled="true"/>
 					<!--<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="true"/>-->
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="{= ${access>/tenderAccess/SPAINTENDERVIEW}? false : true}"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditButtonPress" enabled="{=!(${access>/tenderAccess/SPAINTENDERVIEW})}"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
