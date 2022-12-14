@@ -80,6 +80,7 @@ sap.ui.define([
 				visibleCountry: ""
 			});	
 			this.getView().setModel(this._oRaModel, "raModel");*/
+			
 
 		},
 
@@ -104,7 +105,7 @@ sap.ui.define([
 			//keep this as that
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
-
+			
 			/*
 			//default model keep in service file, if URL routing straight to detail... (for example sending somebody an url to check specific offer)
 			if (!Services.getDefaultModel()){
@@ -797,9 +798,12 @@ sap.ui.define([
 				//make buttons visible when selected existing tender
 				oDetailController.getView().byId("editButtonId").setVisible(true);
 				/*if( Services.getLoadedOffer(Services.getSelectedOfferID()) && (Services.getLoadedOffer(Services.getSelectedOfferID()).Active !== 1 || Services.getLoadedOffer(Services.getSelectedOfferID()).ActiveOffer !== 1)){*/
+				//EITOG-217330-Only to view commercial offers, NOT to modify
 				if (oOffer && (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1)) {
 					oDetailController.getView().byId("editButtonId").setEnabled(false);
-				} else {
+				} else if(oDetailController.accessModel.oData.tenderAccess.SPAINTENDERVIEW === true){
+					oDetailController.getView().byId("editButtonId").setEnabled(false);
+				}else{
 					oDetailController.getView().byId("editButtonId").setEnabled(true);
 				}
 
@@ -810,8 +814,13 @@ sap.ui.define([
 					oDetailController.getView().byId("cloneButtonId").setVisible(true);
 					oDetailController.getView().byId("cloneButtonId").setEnabled(true);
 				}
+				//EITOG-217330-Only to view commercial offers, NOT to modify
+				if(oDetailController.accessModel.oData.tenderAccess.SPAINTENDERVIEW === true){
+					oDetailController.getView().byId("deleteTenderButtonId").setEnabled(false);
+				}else{
+					oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
+				}
 				
-				oDetailController.getView().byId("deleteTenderButtonId").setEnabled(true);
 
 				if (!sTab || sTab === Services.getBasicInformationPageSectionID()) {
 					//Default basic information tab is shown
@@ -1253,7 +1262,13 @@ sap.ui.define([
 
 				//clone button only enabled on basic info page
 				that.getView().byId("cloneButtonId").setEnabled(true);
-				that.getView().byId("deleteTenderButtonId").setEnabled(true);
+				//EITOG-217330-Only to view commercial offers, NOT to modify
+				if(this.accessModel.oData.tenderAccess.SPAINTENDERVIEW === true){
+					this.getView().byId("deleteTenderButtonId").setEnabled(false);
+				}else{
+					that.getView().byId("deleteTenderButtonId").setEnabled(true);
+				}
+				
 				break;
 
 				//Offer products tab
@@ -1893,6 +1908,7 @@ sap.ui.define([
 						//check for approval enabled 
 						var sSelectedOfferID = Services.getSelectedOfferID();
 						var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+						
 	
 						var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
 						if (bEnableApproval && sSelectedOfferID !== '' && oOffer.Active === 1 && oOffer.ActiveOffer === 1) {
@@ -3496,7 +3512,9 @@ sap.ui.define([
 							}
 
 							if (oData.STATUS !== "Quotation Submitted" && oData.STATUS !== "Results Recorded" && oData.STATUS !== "In FOC Negotiation" && oData.STATUS !== "Appeal in Progress" && oData.STATUS !== "Delivery Ongoing" ) {
-								bSendApprovalEnabled = true;
+										bSendApprovalEnabled = true;
+								
+								
 							}
 
 							//load additional approval data
@@ -10443,7 +10461,7 @@ sap.ui.define([
             let aResultsForTree = oFastAppModel.getProperty('/ResultsForTree')?.filter(result => result.PRODUCTCODE === productCode);
             let oTenderResultProduct = aResultsForTree && aResultsForTree.length > 0 ? aResultsForTree[0] : null;
             let oSelectedProduct = oOfferProducts && oOfferProducts.length > 0 ? oOfferProducts[0] : null;
-
+			
             let priceConditions = oSelectedProduct ? oSelectedProduct.PriceCondition : null;
 			let outcome = oTenderResultProduct && oTenderResultProduct.OUTCOME ? oTenderResultProduct.OUTCOME : null;
 
@@ -10453,6 +10471,7 @@ sap.ui.define([
 			if(!isOutcomeWon) return false;
 			if(isOutcomeWon && !isSpain) return true;
 			if(!priceConditions) return false;
+			
 			let bEnabled = false;
 			const mainCondition = priceConditions?.results?.find(condition => condition?.PriceConditionClassification?.isMain);
 			const referencePriceAgreement = mainCondition?.ReferencePriceAgreement ? true : false;
