@@ -43,6 +43,7 @@ sap.ui.define([
 				createopportunity:false,
 				bankguarantees:false,
 				priceagreements:false,
+				brazilcontracting:false,
 				masterdata:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
