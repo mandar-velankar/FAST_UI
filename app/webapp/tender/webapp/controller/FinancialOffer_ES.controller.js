@@ -651,11 +651,15 @@ sap.ui.define([
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID);
 			var bEnableApproval = Financial.checkAllProductPricesSet(oOffer);
-
-			if (oOffer && (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1)) {
+            var accessModel=Services.getAccessModel();
+           	if (oOffer && (oOffer.Active !== 1 || oOffer.ActiveOffer !== 1)) {
+                
 				bEnableApproval = false;
 			}
-
+            //EITOG-217330-Only to view commercial offers, NOT to modify
+            if(accessModel.oData.tenderAccess.SPAINTENDERVIEW === true){
+                bEnableApproval = false;
+            }
 			this.byId("ApprovalButtonId").setEnabled(bEnableApproval);
 
 		},

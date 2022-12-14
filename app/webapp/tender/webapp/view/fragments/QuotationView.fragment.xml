@@ -35,12 +35,13 @@
                     change="onSwitchDelayInSubmission" />
                 
                 <!-- Download Quotation -->	
+                <!-- EITOG-217330-Only to view commercial offers, NOT to modify. -->
                 <m:Button
                     id="btnSaveQuotation"
                     text="{i18n>SaveQuotation}"
                     icon="sap-icon://save"
                     press=".onSaveDefaultQuotation"
-                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 || ${access>/tenderAccess/SPAINTENDERVIEW} ? false : true}"/>
                                             
                 <m:Button
                     id="btnDownloadQuotation"
@@ -287,23 +288,38 @@
                     </m:Column>
 
                     <!-- Quantity -->
-                    <m:Column width="13%">
+                    <m:Column width="10%">
                         <m:Text text="{i18n>qQuantity}"/>
                     </m:Column>
-
+                    <!-- EHQUT-217207-ZA (South Africa) - include Tax (15%) in calculation of prices and total on quotation page (new fields) -->
                     <!-- Unit Price -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>UnitPrice}"/>
+                    <m:Column width="10%">
+                         <m:Text text="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?${i18n>UnitPrice_ZA} : ${i18n>UnitPrice}}"/>
+                    </m:Column>
+
+                     <!-- Unit Price with Tax -->
+                    <m:Column width="10%" visible="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?true : false}">
+                        <m:Text text="{i18n>UnitPriceWithTax_ZA}"/>
                     </m:Column>
 
                     <!-- Pack Price -->
-                    <m:Column width="8%">
-                        <m:Text text="{i18n>PackPrice}" visible="true"/>
+                    <m:Column width="10%">
+                        <m:Text text="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?${i18n>PackPrice_ZA} : ${i18n>PackPrice}}" visible="true"/>
                     </m:Column>
 
-                    <!-- Total -->
+                    <!-- Pack Price with Tax -->
+                    <m:Column width="10%" visible="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?true : false}">
+                        <m:Text text="{i18n>PackPriceWithTax_ZA}"/>
+                    </m:Column>
+
+                   <!-- Total -->
                     <m:Column width="12%">
-                        <m:Text text="{i18n>Total}"/>
+                        <m:Text text="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?${i18n>Total_ZA} : ${i18n>Total}}"/>
+                    </m:Column>
+
+                    <!-- Total With Tax-->
+                    <m:Column width="12%" visible="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?true : false}">
+                        <m:Text text="{i18n>TotalWithTax_ZA}"/>
                     </m:Column>
 
                 </m:columns>
@@ -345,19 +361,35 @@
                                 ], formatter:'.formatter.priceTwoOrFour'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
-
+                            <!-- Unit Price With Tax -->
+                            <m:ObjectStatus
+                                text="{parts: [
+                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY_VAT'}, 
+                                    {path: 'fastAppData>CURRENCY'}
+                                ], formatter:'.formatter.priceTwoOrFour'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />
                             <!-- Pack Price -->
                             <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                                 visible="true"
                             />
-
+                             <!-- Pack Price With Tax -->
+                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},{path: 'fastAppData>VAT'},{path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.pricewithVAT'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                                
+                            />
                             <!-- Total -->
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'}"/>
 
+                            <!-- Total With Tax-->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>GROSS_SALES_OFFER_CURRENCY_VAT'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
                         </m:cells>
                     </m:ColumnListItem>
                 </m:items>
@@ -370,19 +402,24 @@
                             <m:VBox fitContainer="true" alignItems="Stretch">
                                 <m:items>
                                     <m:HBox class="sapUiLargeMarginTop">
-                                        <m:items>
+                                        <m:items >
                                             
                                             <!-- total amount -->
                                             <m:VBox width="50%">
                                                 <m:Label text="{i18n>TotalAmount}" design="Bold"/>
                                             </m:VBox>
-                                            <m:VBox width="50%" alignItems="End">
+                                            <m:VBox width="50%" alignItems="End" >
                                                 <m:items>
                                                     <m:Text text="{parts: [
                                                         {path: 'fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS'}, 
                                                         {path: 'fastAppData>/OfferValidation/CURRENCY'}
-                                                    ], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd"/>	
-                                                    <m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS})" visible="true"/>
+                                                    ], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/SelectedOffer/CountryCode} !== 'ZA'?true : false}"/>	
+                                                    <m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS})" visible="{= ${fastAppData>/SelectedOffer/CountryCode} !== 'ZA'?true : false}"/>
+                                                    <m:Text text="{parts: [
+                                                        {path: 'fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS_VAT'}, 
+                                                        {path: 'fastAppData>/OfferValidation/CURRENCY'}
+                                                    ], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd" visible="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?true : false}"/>	
+                                                    <m:Text text="({fastAppData>/OfferValidation/AMOUNT_IN_WORDS_VAT})" visible="{= ${fastAppData>/SelectedOffer/CountryCode} === 'ZA'?true : false}"/>
                                                 </m:items>
                                             </m:VBox>
 

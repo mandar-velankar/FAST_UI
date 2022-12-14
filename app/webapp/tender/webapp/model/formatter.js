@@ -141,6 +141,23 @@ sap.ui.define([
 			}
 			return oValue + " "+ currency;
 		},
+		//EHQUT-217207-ZA (South Africa) - include Tax (15%) in calculation of prices and total on quotation page (new fields)
+		pricewithVAT: function(price, vat, currency){
+			if (!price){
+				return "";
+			}
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			var oValue = oNumberFormat.format(parseFloat(price)*(1+(vat/100)));
+			if (currency === undefined){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
 		priceTwoOrFour: function(price, currency, unit) {
 			if (!price){
 				return "";
