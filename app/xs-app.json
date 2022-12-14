@@ -50,7 +50,7 @@
       "destination": "bankGuaranteesApp"
     },  
     {
-      "source": "/app/brazilContractingApp/(.*)$",
+      "source": "/app/brazilcontracting/(.*)$",
       "target": "$1",
       "destination": "brazilContractingApp"
     },  
