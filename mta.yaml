@@ -52,6 +52,12 @@ modules:
           forwardAuthToken: true
           name: priceAgreementsApp
           url: '~{url}'
+      - name: brazilContractingApp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: brazilContractingApp
+          url: '~{url}'
       - name: uaa_FAST
 resources:
   - name: uaa_FAST
