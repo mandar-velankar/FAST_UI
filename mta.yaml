@@ -114,7 +114,7 @@ resources:
   - name: brazilContractingApp
     type: configuration
     parameters:
-      provider-id: FASTPRICEAGREEMENTS:brazilContractingApp
+      provider-id: FASTBRCONTRACTING:brazilContractingApp
       provider-nid: mta
       target:
         org: ${org}
