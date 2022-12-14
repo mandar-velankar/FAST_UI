@@ -60,6 +60,7 @@ sap.ui.define([
 		},
 		
 		//convert for saving
+		//EHQUT-218727-Requested Volume Field for competitor result
 		getConvertCompetitorResultToSave: function (oCompetitorResultTree) {
 
 			if (oCompetitorResultTree) {
@@ -69,6 +70,7 @@ sap.ui.define([
 					OUTCOME: oCompetitorResultTree.OUTCOME,
 					AWARDEDCOMPANY: oCompetitorResultTree.AWARDEDCOMPANY !== 'Other' ? oCompetitorResultTree.AWARDEDCOMPANY : oCompetitorResultTree.OTHERCOMPANY,
 					AWARDEDPRODUCT: oCompetitorResultTree.PRODUCT !== 'Other' ? oCompetitorResultTree.PRODUCT : oCompetitorResultTree.OTHERPRODUCT, //beceause bayer product & awarded product both use product on view
+					REQUESTEDVOLUME:oCompetitorResultTree.REQUESTEDVOLUME,
 					AWARDEDPRICE: (oCompetitorResultTree.AWARDEDPRICE === null) ? null : oCompetitorResultTree.AWARDEDPRICE.toString(),
 					CURRENCY: oCompetitorResultTree.CURRENCY,
 					AWARDEDQTY:(oCompetitorResultTree.AWARDEDQTY !== "") ? Number(oCompetitorResultTree.AWARDEDQTY) : 0,

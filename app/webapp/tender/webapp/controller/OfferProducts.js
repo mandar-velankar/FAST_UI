@@ -251,6 +251,7 @@ sap.ui.define([
                    
             
         }
+		//EHQUT-196575- Thailand - Change Request - INC16653808 
 		if(sCountryCode!=='TH'){
 
            
@@ -282,7 +283,7 @@ sap.ui.define([
 				id: oDetailController.getView().createId(formId + "_idDeduction"),
 				value: (sDeductionAbsPCT === "PCT") ? formatter.percentageNoUnit(price.deductions) : price.deductions,
 				enabled: (forEdit && !forScenario),
-				description: (sDeductionAbsPCT === "PCT") ? "%" : price.uom,
+				description: (sDeductionAbsPCT === "PCT") ? "%" : "THB",
 				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
 				visible: sCountryCode === "CL" ? false : true
 			}));
