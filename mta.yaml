@@ -52,6 +52,12 @@ modules:
           forwardAuthToken: true
           name: priceAgreementsApp
           url: '~{url}'
+      - name: brazilContractingApp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: brazilContractingApp
+          url: '~{url}'
       - name: uaa_FAST
 resources:
   - name: uaa_FAST
@@ -100,6 +106,15 @@ resources:
     type: configuration
     parameters:
       provider-id: FASTPRICEAGREEMENTS:priceAgreementsApp
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: brazilContractingApp
+    type: configuration
+    parameters:
+      provider-id: FASTBRCONTRACTING:brazilContractingApp
       provider-nid: mta
       target:
         org: ${org}

@@ -43,6 +43,7 @@ sap.ui.define([
 				createopportunity:false,
 				bankguarantees:false,
 				priceagreements:false,
+				brazilcontracting:false,
 				masterdata:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
@@ -142,6 +143,12 @@ sap.ui.define([
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("createsalesopportunity");
+		},
+		onTileBrazilContractingPress: function (event) {
+			BusyIndicator.show(0);
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("brazilcontracting");
 		},
 		//Tile tender manager press
 		onTileTenderManagerDashPress: function (oEvent) {
