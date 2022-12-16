@@ -71,7 +71,7 @@
 								<DatePicker id="idNewOfferDate" minDate="{dateModel>/minDate}" required="true" value="{path :'fastAppData>/EditOffer/NewOfferDueDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= (${fastAppData>/NewOfferPressed} === false &amp;&amp; ((${fastAppData>/ReviewedOfferPressed} === true || ${fastAppData>/ContinuedOfferPressed} === true) || ( (${fastAppData>/ReviewedOfferPressed} === false &amp;&amp; ${fastAppData>/ContinuedOfferPressed} === false) &amp;&amp; (${fastAppData>/EditOffer/RevisedOfferNo} !== 0 || ${fastAppData>/EditOffer/ContinuationOfferNo} !== 0)))) ? true : false }"/>
 
 								<Label text="{i18n>Division}" required="true"/>
-								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? false : true}" change="onChangeDivision">
+								<Select id="idProductOfferDivision" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/Tender/CountryCode} === 'BR' ? false : true}" change="onChangeDivision">
 										<items>
 											<core:Item text="" key=""/>
 											<core:Item text="Pharma" key="Pharma"/>
@@ -80,7 +80,7 @@
 								</Select>	
                                 <!-- Spain only --> <!-- TODO: this is not a scalable solution. We should consider using a service to get the item values for Division -->
                                 <Label text="{i18n>Division}" required="true"/>
-                                <Select id="idProductOfferDivisionES" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}" change="onChangeDivision">
+                                <Select id="idProductOfferDivisionES" selectedKey="{fastAppData>/EditOffer/Division}" enabled="true" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' || ${fastAppData>/Tender/CountryCode} === 'BR' ? true : false}" change="onChangeDivision">
                                     <items>
                                         <core:Item text="" key=""/>
                                         <core:Item text="Pharma" key="Pharma"/>
