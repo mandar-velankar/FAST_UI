@@ -2959,7 +2959,11 @@ sap.ui.define([
                         const bindingPath = "/EditOffer/Lots/results";
                         if(aLotsPreviousState.length != 0) oFastAppDataModel.setProperty(bindingPath, aLotsPreviousState); //having entries here, would imply that we've edited the lots for the selected offer
                                                                                                                            //if these were not edited, no restore of their original state should happen
-
+						const financialOfferViewBrazil = that.getView().byId("financialOfferViewId_BR");
+						if(financialOfferViewBrazil){
+							// clear the channel change warning message
+							financialOfferViewBrazil.getModel("viewModel").setProperty("/OfferProductsChannelWarningMessage","");
+						}
 						break;
 					case Services.getFinancialOfferPageSectionID():
 					case Services.getFinancialOfferPageSectionID_IT():
