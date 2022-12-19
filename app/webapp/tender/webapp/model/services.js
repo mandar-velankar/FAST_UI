@@ -281,7 +281,7 @@ sap.ui.define([
 		},
 
         getLotsBeforeEdit: function() {
-            return this._aLotsBeforeEdit;
+            return this._aLotsBeforeEdit || [];
         },
 
         setLotsBeforeEdit: function(aLots) {
