@@ -6103,13 +6103,14 @@ sap.ui.define([
 
 		//Add product to output list
 		onPressAddProductToOutputList: async function (oEvent) {
-
+			//EHQUT-RITM12706398-SEWA Change Request
 			//get input & output list for products
 			var that = this;
 			var oListInput = sap.ui.getCore().byId("idListProductsInput");
 			var oListOutput = sap.ui.getCore().byId("idListProductsOutput");
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var sPathProducts = "/EditOffer/Product/results/";
+			var Regionname=oFastAppDataModel.oData.EditTender.Country.Region;
 			var aProducts = oFastAppDataModel.getProperty(sPathProducts);
 			var bExisting = false;
 			var oInfoToolbar = sap.ui.getCore().byId("idInfoToolbarInput");
@@ -6180,6 +6181,7 @@ sap.ui.define([
 					var oAddProduct = {};
 
 					//filling the data available
+					//EHQUT-RITM12706398-SEWA Change Request
 					oAddProduct.TenderID = Services.getSelectedTenderID(); //that.getView().byId("tenderId").getProperty("text");
 					oAddProduct.OfferID = sOfferID;
 					oAddProduct.CountryCode = oProduct.COUNTRY_CODE;
@@ -6194,7 +6196,7 @@ sap.ui.define([
 					oAddProduct.SampleYN = "No";
 					oAddProduct.SampleQuantity = 0;
 					oAddProduct.DocumentsRequired = "No";
-					oAddProduct.FirstShipment = "";
+					oAddProduct.FirstShipment = Regionname ==='SEWA' ? "14 days from receipt of order" : "";
 					oAddProduct.NoofLots = "";
 					oAddProduct.IntervalBetweenShipments = "";
 					oAddProduct.NoOfTier = 0;
