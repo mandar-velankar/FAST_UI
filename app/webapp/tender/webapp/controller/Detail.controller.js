@@ -3450,6 +3450,10 @@ sap.ui.define([
                 if(this._pageFragments.QuotationView_ES){
 					this._pageFragments.QuotationView_ES = null;
 				}
+
+				if(this._pageFragments.QuotationView_BR){
+					this._pageFragments.QuotationView_BR = null;
+				}
 			}
 
 			let oQuotationNoOfferSubsection = this.byId('QuotationNoOfferSubsection');
@@ -8651,6 +8655,11 @@ sap.ui.define([
 					that.setQuotationDateRestrictions();
 					that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
 				}
+
+				if(Services.getSelectedCountry() === "BR"){
+					that.setQuotationDateRestrictions();
+					that._createPriceConditionTableEntitiesOnQuotationTabForBrazil();
+				}
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -8785,6 +8794,47 @@ sap.ui.define([
 			
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
+
+		_createPriceConditionTableEntitiesOnQuotationTabForBrazil: function(){ 
+			const aOfferProductValidation = Services.getFastAppDataModel().getProperty("/OfferProductValidation");
+			const tableData = {
+				commercialProposal: [],
+				discount: []
+			};
+
+			// create PriceConditionTableEntities
+			aOfferProductValidation.forEach(prd => {
+				const priceConditions = prd.PriceCondition.results;
+				priceConditions.forEach(pc => {
+					const data = {
+						SORTER: prd.SORTER,
+						PRODUCTNAME: prd.PRODUCTNAME,
+						PACKSIZE: prd.PACKSIZE,
+						REQUESTED_QUANTITY: prd.REQUESTED_QUANTITY,
+						REQ_PRICE_UNIT_OFFER_CURRENCY: prd.REQ_PRICE_UNIT_OFFER_CURRENCY,
+						CURRENCY: prd.CURRENCY,
+						IS_LOWEST: prd.IS_LOWEST,
+						REQ_PRICE_PACK_OFFER_CURRENCY: prd.REQ_PRICE_PACK_OFFER_CURRENCY,
+						GROSS_SALES_OFFER_CURRENCY: prd.GROSS_SALES_OFFER_CURRENCY,
+						PAID_VOLUME: prd.PAID_VOLUME,
+						UNIT: prd.UNIT,
+						PriceCondition: pc
+					};
+					const conditionType = pc.PriceConditionClassification.ConditionType;
+					switch(conditionType){
+						case "Commercial Proposal": tableData.commercialProposal.push(data);
+									break;
+						case "Discount": tableData.discount.push(data);
+									break;
+						default : console.error(`ConditionType ${conditionType} does not exist`); 
+									break;
+					}
+				});
+			});
+
+			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableBrazil", tableData);
+		},
+
 		setQuotationDateRestrictions:function(){
 			let tomorrow = new Date();
 			tomorrow.setDate(tomorrow.getDate() + 1);
