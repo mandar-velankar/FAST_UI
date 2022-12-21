@@ -78,6 +78,8 @@ sap.ui.define([
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboardv1_1_20181127/OfferSubmissions?:iid=4"); //check where to store constants
 		},
 
-
+		onTileFastDashboardsPress: function(oEvent){
+			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/FASTDashboards/ExecutiveSummary?:iid=1"); //check where to store constants
+		}
 	});
 });
