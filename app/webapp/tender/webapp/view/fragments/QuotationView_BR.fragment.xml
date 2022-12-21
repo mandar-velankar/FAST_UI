@@ -1,0 +1,541 @@
+<core:FragmentDefinition controllerName="FAST_NS0FAST0.controller.Detail" 
+    xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz="sap.viz.ui5.controls" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+
+    <!-- QUOTATION TAB -->        
+        <!-- TENDER OFFER TABLE -->
+        <ObjectPageSubSection id="QuotationNoOfferSubsection" title="{i18n>Quotation}">
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow>
+                    <l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
+                        <m:VBox>
+                            <m:FormattedText htmlText="Offer not available for quotation..."/>
+                        </m:VBox>
+                    </l:BlockLayoutCell>
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+        
+        <ObjectPageSubSection id="QuotationOfferSubsection" title="{i18n>Quotation}">
+            <actions>               
+                <!-- Download Quotation -->	
+                <m:Button
+                    id="btnSaveQuotation"
+                    text="{i18n>SaveQuotation}"
+                    icon="sap-icon://save"
+                    press=".onSaveDefaultQuotation"
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>                                       
+
+                <m:MenuButton text="Download Word" id="btnDownloadWordQuotation" visible="{= ${fastAppData>/WordTemplates}.length > 0 }">
+                    <m:menu>
+                        <m:Menu itemSelected="onMenuAction" items="{fastAppData>/WordTemplates}">
+                            <m:MenuItem text="{fastAppData>WordTemplates/name}" icon="sap-icon://download" press=".onDownloadWord"/>
+                        </m:Menu>
+                    </m:menu>
+                </m:MenuButton>
+
+                <!-- Submit Quotation -->	
+                <m:Button
+                    id="btnSubmitQuotation"
+                    text="{i18n>SubmitQuotation}"
+                    icon="sap-icon://sys-enter"
+                    press=".onSubmitQuotation"
+                    enabled="false"/>
+
+            </actions>
+            <l:BlockLayout background="Light">
+                <l:BlockLayoutRow>
+                    <l:BlockLayoutCell>
+                        <m:VBox>                            
+                            <m:Label/>
+                    
+                    <form:SimpleForm id="IdQuotationInfo" editable="false" maxContainerCols="3" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+                        emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm" visible="true">
+                        <form:content>
+                            
+                            <m:VBox fitContainer="true" alignItems="Stretch">
+                                <m:items>
+                                    <m:HBox>
+                                        <m:items>
+                                            <!-- Offer Party -->
+                                            <m:VBox width="50%">
+                                                <m:items>
+                                                    <m:HBox width="50%">
+                                                        <m:items>
+                                                            <m:Label text="{i18n>OfferParty}" width="6rem" design="Bold"/>
+                                                            <m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORNAME}"/>
+                                                        </m:items>
+                                                    </m:HBox>
+                                                    <m:HBox width="50%">
+                                                        <m:items>
+                                                            <m:Label text="{i18n>Address}" width="6rem"  design="Bold" visible="true"/>
+                                                            <m:VBox width="40rem" >
+                                                                <m:items>
+                                                                    <!-- Address -->
+                                                                    <m:FormattedText htmlText="{fastAppData>/OfferValidation/DISTRIBUTORADDRESS}" width="10rem" class="sapMText" visible="true"/>
+                                                                    
+                                                                    <!-- Tel-->
+                                                                    <m:HBox width="40rem" visible="true">
+                                                                        <m:items>
+                                                                            <m:Label text="{i18n>ContactNo}" class="sapUiSmallMarginEnd" design="Bold"/>
+                                                                            <m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORPHONE}"/>
+                                                                        </m:items>
+                                                                    </m:HBox>
+                                                                    
+                                                                    <!-- Fax -->
+                                                                    <m:HBox width="40rem" visible="true">
+                                                                        <m:items>
+                                                                            <m:Label text="{i18n>ContactFax}" class="sapUiSmallMarginEnd" design="Bold"/>
+                                                                            <m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORFAX}"/>
+                                                                        </m:items>
+                                                                    </m:HBox>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                        </m:items>
+                                                    </m:HBox>
+                                                    <m:HBox width="50%" visible="true">
+                                                        <m:items>
+                                                            <m:Label text="{i18n>Attention}" width="6rem" design="Bold" visible="true"/>
+                                                            <m:Text text="{fastAppData>/OfferValidation/DISTRIBUTORCONTACT}" visible="true"/>
+                                                        </m:items>
+                                                    </m:HBox>
+                                                </m:items>
+                                            </m:VBox>
+                                        </m:items>
+                                    </m:HBox>
+                                    <m:Toolbar width="100%" height="1px"/>
+                                    <!-- 4th row -->
+                                    <m:HBox class="sapUiSmallMarginBottom">
+                                        <m:items>
+                                            <m:VBox width="73%">
+                                                <m:items>
+                                                    <m:HBox>
+                                                        <m:items>
+                                                            <!-- Tender refrence -->
+                                                            <m:VBox width="28%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>reference}" design="Bold"/>
+                                                                    <m:Text text="{fastAppData>/OfferValidation/TENDER_REFERENCE}"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="10%">
+                                                            </m:VBox>
+                                                            <!-- Offer Date -->
+                                                            <m:VBox width="20%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>OfferDate}" design="Bold"/>
+                                                                    <!--<m:DatePicker id="idQofferDate" value="{path :'fastAppData>/OfferValidation/OFFERDATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
+                                                                    <m:DatePicker id="idQofferDate" value="{path :'fastAppData>/OfferValidation/OFFERDATE', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="10%">
+                                                            </m:VBox>
+                                                            <!-- Offer Validity -->
+                                                            <m:VBox width="20%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>OfferValidity}" design="Bold"/>
+                                                                    <!--<m:DatePicker id="idQofferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}" valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" enabled="false"/>-->
+                                                                    <m:DatePicker id="idQofferValidity" value="{path :'fastAppData>/OfferValidation/OFFERVALIDITY', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="10%">
+                                                            </m:VBox>
+                                                        </m:items>
+                                                    </m:HBox>
+                                                    <m:HBox>
+                                                        <m:items>
+                                                            <!-- Effective Date -->
+                                                            <m:VBox width="20%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>EffectiveDate}" design="Bold"/>
+                                                                    <m:DatePicker id="idQofferEffectiveDate" 
+										                            valueState="{fastAppData>/OfferValidation/EffectiveDateValueState}" 
+                                                                    minDate="{fastAppData>/QuotationDateRestrictions/effectiveDate/min}"
+                                                                    maxDate="{fastAppData>/OfferValidation/ExpiryDate}"
+										                            change=".onChangeQuotationDates($event,'EffectiveDate')"
+                                                                    value="{path :'fastAppData>/OfferValidation/EffectiveDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                            <m:VBox width="10%">
+                                                            </m:VBox>
+                                                            <!-- Expiry Date -->
+                                                            <m:VBox width="20%">
+                                                                <m:items>
+                                                                    <m:Label text="{i18n>ExpiryDate}" design="Bold"/>
+                                                                    <m:DatePicker id="idQofferExpiryDate"
+										                            valueState="{fastAppData>/OfferValidation/ExpiryDateValueState}" 
+                                                                    minDate="{fastAppData>/OfferValidation/EffectiveDate}"
+										                            change=".onChangeQuotationDates($event,'EffectiveDate')"
+                                                                    value="{path :'fastAppData>/OfferValidation/ExpiryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
+                                                                </m:items>
+                                                            </m:VBox>
+                                                        </m:items>
+                                                    </m:HBox>
+                                                </m:items>
+                                            </m:VBox>
+                                        </m:items>
+                                    </m:HBox>
+                                    <m:Toolbar width="100%" height="1px"/>
+                                </m:items>
+                            </m:VBox>
+                            
+                        </form:content>
+                    </form:SimpleForm>
+                </m:VBox>
+
+            <!-- The following tables are generated in Detail.controller:_createPriceConditionTableEntitiesOnQuotationTabForSpain() -->
+            <!-- commercial proposal Table -->
+             <m:Table 
+                visible="{= ${fastAppData>/QuotationPriceConditionTableBrazil/commercialProposal}.length > 0}"
+                items="{
+                    path : 'fastAppData>/QuotationPriceConditionTableBrazil/commercialProposal', 
+                    sorter: [{path: 'SORTER', descending: false}]
+                }"
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
+                <m:headerToolbar>
+                    <m:OverflowToolbar>
+                        <m:content>
+                            <m:Title text="Commercial Proposal" level="H2"/>
+                            <m:ToolbarSpacer />
+                        </m:content>
+                    </m:OverflowToolbar>
+                </m:headerToolbar>
+                <m:columns>
+                    <!-- Contract ID -->
+                    <m:Column width="2rem">
+                        <m:Text text="{i18n>TenderItemSorter}"/>
+                    </m:Column>
+
+                    <!-- Article Name -->
+                    <m:Column width="10rem">
+                        <m:Text text="{i18n>BayerProductDescription}"/>
+                    </m:Column>
+
+                    <!-- Pack Factor -->
+                    <m:Column width="4rem">
+                        <m:Text text="{i18n>PackFactor}"/>
+                    </m:Column>
+
+                    <!-- Quantity -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>qQuantity}"/>
+                    </m:Column>
+
+                    <!-- Unit Price -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>UnitPrice}"/>
+                    </m:Column>
+
+                    <!-- Pack Price -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>PackPrice}"/>
+                    </m:Column>
+
+                    <!-- PVL -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>ListPrice}"/>
+                    </m:Column>
+
+                    <!-- Price Condition -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>TaxExemption}"/>
+                    </m:Column>
+
+                    <!-- Rappel -->
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>Priceaftertaxexemption}"/>
+                    </m:Column>
+
+                    <!-- FOC -->
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>CAP}"/>
+                    </m:Column>
+
+                    <!-- Total -->
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>Priceaftercap}"/>
+                    </m:Column>
+
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>StandardDiscount}"/>
+                    </m:Column>
+
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>AdditionalDiscount}"/>
+                    </m:Column>
+
+                    <m:Column width="25%">
+                        <m:Text text="{i18n>CommercialProposal}"/>
+                    </m:Column>
+
+                </m:columns>
+                <m:items>
+                    <m:ColumnListItem>
+                        <m:cells>
+                            <!-- Contract ID -->
+                            <m:Text text="{path :'fastAppData>SORTER'}"/>
+                            
+                            <!-- Article Name -->
+                            <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
+
+                            <!-- Pack Factor -->
+                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+
+                            <!-- Quantity -->
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
+
+                            <!-- Unit Price -->
+                            <m:ObjectStatus
+                                text="{parts: [
+                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>CURRENCY'}
+                                ], formatter:'.formatter.priceTwoOrFour'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />
+
+                            <!-- Pack Price -->
+                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />
+
+                            <!-- PVL -->
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PriceList'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <!-- Price Condition -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/TaxExemption'}"/>
+
+                           <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PriceAfterTaxExemtion'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{fastAppData>PriceCondition/CAP}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PriceAfterCap'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/StandardDiscount'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/AdditionalDiscount'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/CommercialProposal'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+                        </m:cells>
+                    </m:ColumnListItem>
+                </m:items>
+            </m:Table>
+
+            <!-- discount Table -->
+             <m:Table 
+                visible="{= ${fastAppData>/QuotationPriceConditionTableBrazil/discount}.length > 0}"
+                items="{
+                    path : 'fastAppData>/QuotationPriceConditionTableBrazil/discount', 
+                    sorter: [{path: 'SORTER', descending: false}]
+                }"
+                inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
+                alternateRowColors="true" fixedLayout="Strict">
+                <m:headerToolbar>
+                    <m:OverflowToolbar>
+                        <m:content>
+                            <m:Title text="Discount" level="H2"/>
+                            <m:ToolbarSpacer />
+                        </m:content>
+                    </m:OverflowToolbar>
+                </m:headerToolbar>
+                <m:columns>
+                    <!-- Contract ID -->
+                    <m:Column width="2rem">
+                        <m:Text text="{i18n>TenderItemSorter}"/>
+                    </m:Column>
+
+                    <!-- Article Name -->
+                    <m:Column width="10rem">
+                        <m:Text text="{i18n>BayerProductDescription}"/>
+                    </m:Column>
+
+                    <!-- Pack Factor -->
+                    <m:Column width="4rem">
+                        <m:Text text="{i18n>PackFactor}"/>
+                    </m:Column>
+
+                    <!-- Quantity -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>qQuantity}"/>
+                    </m:Column>
+
+                    <!-- Unit Price -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>UnitPrice}"/>
+                    </m:Column>
+
+                    <!-- Pack Price -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>PackPrice}" visible="true"/>
+                    </m:Column>
+
+                    <!-- PVL -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>ListPrice}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Price Condition -->
+                    <m:Column width="6rem">
+                        <m:Text text="{i18n>TaxExemption}" visible="true"/>
+                    </m:Column>
+
+                    <!-- Royal Decree -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>Priceaftertaxexemption}"/>
+                    </m:Column>
+
+                    <!-- VAT -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>CAP}"/>
+                    </m:Column>
+
+                    <!-- NetPriceWithoutTaxAfterRD -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>Priceaftercap}"/>
+                    </m:Column>
+
+                    <!-- NetPriceWithTaxAfterRD -->
+                    <m:Column width="12%">
+                        <m:Text text="{i18n>StandardDiscount}"/>
+                    </m:Column>
+
+                    <!-- Rappel -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>AdditionalDiscount}"/>
+                    </m:Column>
+
+                    <!-- FOC -->
+                    <m:Column width="10%">
+                        <m:Text text="{i18n>CommercialProposal}"/>
+                    </m:Column>
+                </m:columns>
+                <m:items>
+                    <m:ColumnListItem>
+                        <m:cells>
+                            <!-- Contract ID -->
+                            <m:Text text="{path :'fastAppData>SORTER'}"/>
+                            
+                            <!-- Article Name -->
+                            <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
+
+                            <!-- Pack Factor -->
+                            <m:Text text="{path :'fastAppData>PACKSIZE'}"/>
+
+                            <!-- Quantity -->
+                            <m:Text text="{fastAppData>PAID_VOLUME} {fastAppData>UNIT}"/>
+
+                            <!-- Unit Price -->
+                            <m:ObjectStatus
+                                text="{parts: [
+                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>CURRENCY'}
+                                ], formatter:'.formatter.priceTwoOrFour'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />
+
+                            <!-- Pack Price -->
+                            <m:ObjectStatus text="{parts: [ {path: 'fastAppData>REQ_PRICE_PACK_OFFER_CURRENCY'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
+                                state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
+                            />
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PriceList'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <!-- Price Condition -->
+                            <m:Text text="{path :'fastAppData>PriceCondition/TaxExemption'}"/>
+
+                           <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PriceAfterTaxExemtion'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{fastAppData>PriceCondition/CAP}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/PriceAfterCap'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/StandardDiscount'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/AdditionalDiscount'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                            <m:Text text="{parts: [
+                                {path: 'fastAppData>PriceCondition/CommercialProposal'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'}"/>
+
+                        </m:cells>
+                    </m:ColumnListItem>
+                </m:items>
+            </m:Table>
+                    
+                    <form:SimpleForm id="IdQuotationInfo2" editable="false" maxContainerCols="3" layout="ResponsiveGridLayout" labelSpanL="12" labelSpanM="12"
+                        emptySpanL="0" emptySpanM="0" columnsL="3" columnsM="3" class="editableForm" visible="false">
+                        <form:content>
+                            
+                            <m:VBox fitContainer="true" alignItems="Stretch">
+                                <m:items>
+                                    <m:HBox class="sapUiLargeMarginTop">
+                                        <m:items>
+                                            
+                                            <!-- total amount -->
+                                            <m:VBox width="50%">
+                                                <m:Label text="{i18n>TotalAmount}" design="Bold"/>
+                                            </m:VBox>
+                                            <m:VBox width="50%" alignItems="End">
+                                                <m:items>
+                                                    <m:Text text="{parts: [
+                                                        {path: 'fastAppData>/OfferValidation/AMOUNT_IN_NUMBERS'}, 
+                                                        {path: 'fastAppData>/OfferValidation/CURRENCY'}
+                                                    ], formatter:'.formatter.price'}" class="sapUiSmallMarginEnd"/>	
+                                                </m:items>
+                                            </m:VBox>
+
+                                        </m:items>
+                                    </m:HBox>
+                                    
+                                </m:items>
+                            </m:VBox>
+                            
+                        </form:content>
+                    </form:SimpleForm>
+                    
+                    </l:BlockLayoutCell >
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+        </ObjectPageSubSection>
+</core:FragmentDefinition>
