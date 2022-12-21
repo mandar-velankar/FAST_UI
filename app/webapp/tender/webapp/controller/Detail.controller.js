@@ -8848,6 +8848,58 @@ sap.ui.define([
 		onChangeQuotationDates:function(event,dateType){
 			Services.getFastAppDataModel().setProperty(`/OfferValidation/${dateType}ValueState`,event.getSource().isValidValue()?"None":"Error");
 		},
+
+		onCreateContractBR: function (oEvent) {
+
+			this._getCreateContractDialog().open();
+
+		},
+
+		/**
+		 * New contracting dialog
+		 * @returns {dialog} - oDialog
+		 */
+		 _getCreateContractDialog: function () {
+
+			const oFastAppDataModel = Services.getFastAppDataModel();
+
+			//create new dialog if not yet existing
+			if (!this._oAddNewContractDialog) {
+
+				//get dialog
+				this._oAddNewContractDialog = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.brazil.CreateContract", this);
+				this.getView().addDependent(this._oAddNewContractDialog);
+
+				if(oFastAppDataModel.getProperty('/SelectedOffer/Distributor/DistributorName') === 'Bayer Brazil'){
+					this.getView().byId('idNewContractCustomerInstitute')?.setVisible(true);
+					this.getView().byId('idNewContractCustomerDistributor')?.setVisible(false);
+				} else {
+					this.getView().byId('idNewContractCustomerInstitute')?.setVisible(false);
+					this.getView().byId('idNewContractCustomerDistributor')?.setVisible(true);
+				}
+			}
+
+			return this._oAddNewContractDialog;
+		},
+
+		onSaveNewContract: function (){
+
+		},
+
+		onCancelNewContract: function (){
+			this._oAddNewContractDialog.close();
+		},
+
+		onChangeContractType: function (evt){
+			if(evt.getSource().getSelectedItem().getKey() !== 'From Offer' && evt.getSource().getSelectedItem().getKey() !== '') {
+				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(true);
+				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(true);
+			} else {
+				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(false);
+				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(false);
+			}
+		},
+
 		/**
 		 * Click handler for VolumeTreshhold fragment on the Quotation page
 		 * @param {*} oEvent 

@@ -1,0 +1,53 @@
+<!-- Fragment for Creating a new contract -->
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+
+	<Dialog title="Create Contract"  contentWidth="30%">
+		<buttons>
+			<Button text="Create" press="onSaveNewContract" />
+			<Button text="Cancel" press="onCancelNewContract" />
+		</buttons>
+
+
+		<!-- FORM WITH OFFER DATA -->
+		<form:SimpleForm editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="3"
+			adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="1" columnsL="1" columnsM="1"
+			singleContainerFullSize="true" backgroundDesign="Solid">
+
+			<form:content>
+			<core:Title/>
+
+				<!-- Contract Type -->
+				<Label text="{i18n>ContractType}" required="true"/>
+				<Select id="idNewContractType" 
+						change=".onChangeContractType"
+						enabled="true">
+					<core:Item text="" key=""/>
+					<core:Item text="From Offer" key="From Offer"/>
+					<core:Item text="Additional Customer" key="Additional Customer"/>
+					<core:Item text="Adhesion Contract" key="Adhesion Contract"/>
+				</Select>
+
+				<!-- Customer -->
+				<Label text="{i18n>Customer}" required="true"/>
+				<Select id="idNewContractCustomerInstitute"  
+						visible="false"
+						items="{ path: 'fastAppData>/PT_TMINST/', templateShareable:false }"
+						enabled="false">
+					<core:Item text="{fastAppData>InstituteName}" key="{fastAppData>InstituteID}"/>
+				</Select>
+				<Label text="{i18n>Customer}" required="true" />
+				<Select id="idNewContractCustomerDistributor"
+						visible="false"
+						items="{ path: 'fastAppData>/PT_TMDIST/', templateShareable:false }"
+						enabled="false">
+					<core:Item text="{fastAppData>DistributorName}" key="{fastAppData>DistributorID}"/>
+				</Select>
+			</form:content>
+		</form:SimpleForm>
+   	</Dialog>	
+</core:FragmentDefinition>
