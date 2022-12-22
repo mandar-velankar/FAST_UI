@@ -267,6 +267,42 @@ sap.ui.define([
 
 		},
 
+		setDistributorList: function (oCountry) {
+			var oDeferred = $.Deferred();
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getView().getModel("fastData");
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			const sInstitutesPath = "/PT_TMDIST";
+			var aFilter = [];
+			aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
+
+			oFastDataCalls.read(sInstitutesPath, {
+				filters: aFilter,
+
+				success: function (oData, oResponse) {
+
+					var aCountryDistributor = oData.results;
+					aCountryDistributor = Services.sortByKeyAsc(aCountryDistributor, "DistributorName");
+
+					if (oData.results.length > 0) {
+						aCountryDistributor.unshift({});
+					}
+					oFastAppDataModel.setProperty("/PT_TMDIST", aCountryDistributor);
+
+					oDeferred.resolve(aCountryDistributor);
+
+				},
+				error: function (oError) {
+					//show error message
+					this.showErrorMessage(oError, "No Distributor");
+					oDeferred.reject(oError);
+				}
+			});
+			return oDeferred.promise();
+
+
+		},
 
 		//routing for tender Master view is matched
 		_onTenderMatched: function (oEvent) {
@@ -1033,6 +1069,7 @@ sap.ui.define([
 				Services.setSelectedCountry(oCountry);
 				this.setBrandsList();
 				this.setInstituteList(oCountry);
+				this.setDistributorList(oCountry);
 				this.setCreatedByList(oCountry);
 				this.setTenderOrigins();
 				this.setCountryStatusses(oCountry);
