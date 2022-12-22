@@ -373,6 +373,7 @@ sap.ui.define([
 		},
 		//EHQUT-215457-Italy - Issue with definition of sconto merce omaggio
 		_checkTaxRate: async function (oProductPrice){
+			/*
 			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== oProductPrice.VatPerPack*100   );
 			var message,freegoodsProducttype;
 			var ProductCode=oProductPrice.ProductCode;
@@ -395,7 +396,7 @@ sap.ui.define([
 
 			const oFastAppDataModel = Services.getFastAppDataModel();
 			oFastAppDataModel.setProperty(this.selectedProductPricePath + "/dynMessage", message);
-			
+			*/
 		},
 		//EHQUT-215457-Italy - Issue with definition of sconto merce omaggio
 
