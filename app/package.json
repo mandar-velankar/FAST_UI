@@ -11,7 +11,7 @@
     "start:dev": "serve dist",
     "lint": "eslint webapp",
     "serve": "ui5 serve",
-    "build": "ui5 build --clean-dest"
+    "build": "ui5 -v && ui5 build --clean-dest "
   },
   "engines": {
     "node": "^14"
@@ -19,10 +19,10 @@
   "dependencies": {
     "@sap/approuter": "^10",
     "@ui5/builder": "2.8.2",
-    "@ui5/cli": "2.10.2",
+    "@ui5/cli": "^2.14.17",
+    "serve": "11.3.2",
     "ui5-middleware-simpleproxy": "^0.6.0",
-    "ui5-task-transpile": "0.3.0",
-    "serve": "11.3.2"
+    "ui5-task-transpile": "^0.3.0"
   },
   "ui5": {
     "dependencies": [
