@@ -53,16 +53,6 @@ builder:
     excludes:
       - "/templates/**"
   customTasks:
-  - name: ui5-task-transpile
-    afterTask: replaceVersion
-    configuration:
-      debug: false
-      removeConsoleStatements: true
-      transpileAsync: true
-      excludePatterns:
-      - "lib"
-      - "libs"
-      - "themes"
   - name: ui5-task-cachebuster-indexing
     afterTask: generateVersionInfo
   bundles:
