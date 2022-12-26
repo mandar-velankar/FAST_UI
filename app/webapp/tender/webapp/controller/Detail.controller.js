@@ -8870,13 +8870,14 @@ sap.ui.define([
 				this._oAddNewContractDialog = sap.ui.xmlfragment(this.getView().getId(), "FAST_NS0FAST0.view.fragments.brazil.CreateContract", this);
 				this.getView().addDependent(this._oAddNewContractDialog);
 
-				if(oFastAppDataModel.getProperty('/SelectedOffer/Distributor/DistributorName') === 'Bayer Brazil'){
-					this.getView().byId('idNewContractCustomerInstitute')?.setVisible(true);
-					this.getView().byId('idNewContractCustomerDistributor')?.setVisible(false);
-				} else {
-					this.getView().byId('idNewContractCustomerInstitute')?.setVisible(false);
-					this.getView().byId('idNewContractCustomerDistributor')?.setVisible(true);
-				}
+			}
+
+			if(oFastAppDataModel.getProperty('/SelectedOffer/Distributor/DistributorName') === 'Bayer Brazil'){
+				this.getView().byId('idNewContractCustomerInstitute')?.setVisible(true);
+				this.getView().byId('idNewContractCustomerDistributor')?.setVisible(false);
+			} else {
+				this.getView().byId('idNewContractCustomerInstitute')?.setVisible(false);
+				this.getView().byId('idNewContractCustomerDistributor')?.setVisible(true);
 			}
 			
 			this.getView().byId('idNewContractType')?.setSelectedKey("");	
