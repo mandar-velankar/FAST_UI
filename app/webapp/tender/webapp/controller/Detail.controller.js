@@ -466,7 +466,7 @@ sap.ui.define([
 			oProcurementMethod.setEnabled(true);
 			oProducrementReason.setEnabled(true);
             // Thailand word templates 
-            if (Services.getSelectedCountry() === "TH"){
+            if (Services.getSelectedCountry() === "TH" || Services.getSelectedCountry() === "BR"){
                 Services.getWordTemplates(Services.getSelectedCountry());
             }
 
@@ -759,7 +759,7 @@ sap.ui.define([
 				}
 
                 // Thailand word templates 
-				if (Services.getSelectedCountry() === "TH"){
+				if (Services.getSelectedCountry() === "TH" || Services.getSelectedCountry() === "BR"){
 					Services.getWordTemplates(Services.getSelectedCountry());
                 }
 			
