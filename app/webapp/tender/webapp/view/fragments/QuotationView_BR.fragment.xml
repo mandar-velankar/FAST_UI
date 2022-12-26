@@ -330,12 +330,12 @@
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/StandardDiscount'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            ], formatter:'.formatter.percentage'}"/>
 
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/AdditionalDiscount'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            ], formatter:'.formatter.percentage'}"/>
 
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/CommercialProposal'}, 
@@ -486,12 +486,12 @@
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/StandardDiscount'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            ], formatter:'.formatter.percentage'}"/>
 
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/AdditionalDiscount'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            ], formatter:'.formatter.percentage'}"/>
 
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/CommercialProposal'}, 
