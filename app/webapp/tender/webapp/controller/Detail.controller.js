@@ -466,7 +466,7 @@ sap.ui.define([
 			oProcurementMethod.setEnabled(true);
 			oProducrementReason.setEnabled(true);
             // Thailand word templates 
-            if (Services.getSelectedCountry() === "TH"){
+            if (Services.getSelectedCountry() === "TH" || Services.getSelectedCountry() === "BR"){
                 Services.getWordTemplates(Services.getSelectedCountry());
             }
 
@@ -759,7 +759,7 @@ sap.ui.define([
 				}
 
                 // Thailand word templates 
-				if (Services.getSelectedCountry() === "TH"){
+				if (Services.getSelectedCountry() === "TH" || Services.getSelectedCountry() === "BR"){
 					Services.getWordTemplates(Services.getSelectedCountry());
                 }
 			
@@ -8878,6 +8878,10 @@ sap.ui.define([
 					this.getView().byId('idNewContractCustomerDistributor')?.setVisible(true);
 				}
 			}
+			
+			this.getView().byId('idNewContractType')?.setSelectedKey("");	
+			this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey("");
+			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
 
 			return this._oAddNewContractDialog;
 		},
@@ -8891,6 +8895,8 @@ sap.ui.define([
 		},
 
 		onChangeContractType: function (evt){
+			this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey("");
+			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
 			if(evt.getSource().getSelectedItem().getKey() !== 'From Offer' && evt.getSource().getSelectedItem().getKey() !== '') {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(true);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(true);
