@@ -7066,6 +7066,53 @@ sap.ui.define([
 
 		},
 
+			//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
+			loadOtherCompetitorresult :function(productcodecollection,sSelectedOfferID){
+
+				const filters = [];
+				const orFilter =[];
+				
+				var product=productcodecollection.length;
+				for(var i=0;i<product;i++){
+					orFilter.push(new sap.ui.model.Filter("PRODUCTCODE",sap.ui.model.FilterOperator.NE, productcodecollection[i]));
+				}
+				filters.push(new sap.ui.model.Filter(orFilter, true));
+		
+				  filters.push(
+					new sap.ui.model.Filter("OFFERID", sap.ui.model.FilterOperator.EQ, sSelectedOfferID),
+					
+				);
+				
+				return this.odata("/TransCompetitorResult").get({ filters: filters });
+	
+			},
+	
+			loadCompetitorProductID : function(productname){
+				const filters = [];
+				filters.push(new Filter({
+					path: 'CountryCode',
+					operator: FilterOperator.EQ,
+					value1: 'IT'
+				}));
+				
+				
+				return this.odata("/MasterCompetitors").get({ filters: filters });
+			},
+			
+			loadProductPackID: function () {
+	
+				//set filters
+				const filters = [];
+				filters.push(
+					new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, 'IT'),
+					
+				);
+				
+				return this.odata("/CountryBrandProducts").get({ filters: filters });
+				
+	
+			},
+		//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
 		loadCompetitorResults: function (iIndex) {
 
 			//lets work with callbacks: this way we only load the product data in case the offers of the selected tender are loaded
