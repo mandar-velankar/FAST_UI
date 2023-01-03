@@ -2577,7 +2577,23 @@ sap.ui.define([
                                     let aPriceAgreements = oPriceAgreement.data.results;
                                     aPriceAgreements = aPriceAgreements.filter(priceAgreement => priceAgreement.ExpiryDate && priceAgreement.ExpiryDate.toISOString() > oTomorrowsDate.toISOString());
 
-                                    for (let i = 0; i < aPriceAgreements.length; i++) {
+									let oPriceAgreementFiltered = aPriceAgreements.filter((result) => {
+										let candidates = result.Candidates?.results;
+										if(candidates.find(candidate => candidate.CandidateID === Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteID'))){
+											return result;
+										}
+									})[0];
+
+									if(oPriceAgreementFiltered){
+										agreementExists = true;
+										priceAgreementID = oPriceAgreementFiltered.ID; 
+										otherPriceAgreementOfferId = oPriceAgreementFiltered.OfferId; 
+										otherPriceAgreementTenderClassification = oPriceAgreementFiltered.Tender?.Classification; 
+									} else {
+										agreementExists = false;
+									}
+
+                                    /*for (let i = 0; i < aPriceAgreements.length; i++) {
                                         let candidates = aPriceAgreements[i].Candidates?.results;
                                         if(candidates.find(candidate => candidate.CandidateID === oFastAppDataModel.getProperty('/Tender/Institute/InstituteID'))){
                                             agreementExists = true;
@@ -2586,10 +2602,7 @@ sap.ui.define([
 											otherPriceAgreementTenderClassification = aPriceAgreements[i].Tender?.Classification; 
                                             break;
                                         } 
-                                    }
-								} else {
-									agreementExists = false;
-								}
+                                    }*/
 
                                 oProduct.OtherPriceAgreementsExist = agreementExists ? 'Yes' : 'No';
 								oProduct.OtherPriceAgreementOfferId = otherPriceAgreementOfferId;
