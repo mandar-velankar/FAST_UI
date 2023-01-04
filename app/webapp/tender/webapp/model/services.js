@@ -2604,10 +2604,11 @@ sap.ui.define([
                                         } 
                                     }*/
 
-                                oProduct.OtherPriceAgreementsExist = agreementExists ? 'Yes' : 'No';
-								oProduct.OtherPriceAgreementOfferId = otherPriceAgreementOfferId;
-								oProduct.OtherPriceAgreementTenderClassification = otherPriceAgreementTenderClassification;
-								oProduct.ExistingPriceAgreementId = priceAgreementID;
+									oProduct.OtherPriceAgreementsExist = agreementExists ? 'Yes' : 'No';
+									oProduct.OtherPriceAgreementOfferId = otherPriceAgreementOfferId;
+									oProduct.OtherPriceAgreementTenderClassification = otherPriceAgreementTenderClassification;
+									oProduct.ExistingPriceAgreementId = priceAgreementID;
+								}
 							});
 						}
 
