@@ -9168,7 +9168,7 @@ sap.ui.define([
 			//this allows us to just check for the warning: if expiry date is more tFhan 12 months after effective date. 
 			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
             warningDate = new Date(warningDate.setFullYear(warningDate.getFullYear() + 1));
-			if(warningDate < quotationFields.ExpiryDate && Services.getLoadedTender().Classification === "Commercial Agreement"){
+			if(warningDate < quotationFields.ExpiryDate && ( warningDate.getMonth() < quotationFields.ExpiryDate.getMonth() || warningDate.getFullYear() < quotationFields.ExpiryDate.getFullYear() ) && Services.getLoadedTender().Classification === "Commercial Agreement"){
 				MessageBox.error("Agreement is set for more than 12 months");
 				return;
 			}
