@@ -31,7 +31,7 @@
                     text="{i18n>SaveQuotation}"
                     icon="sap-icon://save"
                     press=".onSaveDefaultQuotation"
-                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 ? false : true}"/>                                       
+                    enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 || ${access>/tenderAccess/SPAINTENDERVIEW} ? false : true}"/>                                       
 
                 <m:MenuButton text="Download Word" id="btnDownloadWordQuotation" visible="{= ${fastAppData>/WordTemplates}.length > 0 }">
                     <m:menu>

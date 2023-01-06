@@ -75,7 +75,7 @@
                                     <m:Button id="btnDeleteAwardProduct" text="Remove awarded product" icon="sap-icon://delete" press="onDeleteAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 
                                     <!--<m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
-                                    <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                    <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }" >
                                         <m:menu>
                                             <m:Menu itemSelected="onUpdateBankGuarantee">
                                                 <m:MenuItem text="Impegno" icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}"/>
@@ -84,7 +84,7 @@
                                             </m:Menu>
                                         </m:menu>
                                     </m:MenuButton>
-                                    <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }">
+                                    <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }" enabled="{=!(${access>/tenderAccess/SPAINTENDERVIEW})}">
                                         <m:menu>
                                             <m:Menu itemSelected="onBankGuarantee">
                                                 <m:MenuItem text="Final"    icon="{path: 'fastAppData>/BankGuarantees',formatter: 'FAST_NS0FAST0.utils.Formatter.bgrIcon'}" />
@@ -95,6 +95,7 @@
                                     <!--<m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>PriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
 
                                     <m:ToolbarSpacer/>
+                                    <m:Button text="Create contract" press="onCreateContractBR" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"/>
                                     <m:Button text="Collapse all" press="onCollapseOutcome"/>
                                     <m:Button text="Expand all" press="onExpandOutcome"/>
                                 </m:OverflowToolbar>
@@ -103,7 +104,7 @@
                                 <t:Column width="10rem"  visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' || ${fastAppData>/Tender/CountryCode} === 'ES'}">
                                     <m:Label text="Price Agreement" />
                                     <t:template>
-                                        <m:Button 
+                                       <m:Button 
                                             id="btnCreatePriceAgreement" 
                                             text="" 
                                             icon="{= ${fastAppData>PriceAgreement} ? 'sap-icon://display' : 'sap-icon://create' }" 
@@ -224,9 +225,10 @@
                                 </t:Column>
                                 <t:Column width="9rem">
                                 <!-- EHQUT-INC16642003-Issue with edit button -->
+                                <!-- EHQUT-218727-Requested Volume Field for competitor result -->
                                     <m:Label text="Requested Volume"/>
                                     <t:template>
-                                        <m:Input type="Number" id="resultsForTreeRequestedVol" value="{= ${fastAppData>AWARDEDCOMPANY} === 'Bayer' ? ${fastAppData>REQUESTEDVOLUME} : ''  }" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer'  ? true : false}"/>
+                                        <m:Input type="Number" id="resultsForTreeRequestedVol" value="{fastAppData>REQUESTEDVOLUME}" enabled="{= ${fastAppData>/EditMode} === true  &amp;&amp; ${fastAppData>AWARDEDCOMPANY} !== 'Bayer'  ? true : false}"/>
                                     </t:template>
                                 </t:Column>
                                 <t:Column width="9rem">

@@ -33,7 +33,7 @@
 				<OverflowToolbar>
 					<Title text="{i18n>offersum}"/>
 					<ToolbarSpacer />
-					<Button id="btnShareApprovalToIbizId" text="Share Approval to EBIZ" icon="sap-icon://approvals" press="onShareApprovalsToIbizPress" enabled="{= ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Rejected' }"/>
+					<Button id="btnShareApprovalToIbizId" text="Share Approval to IBIZ" icon="sap-icon://approvals" press="onShareApprovalsToIbizPress" enabled="{= ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected' }"/>
 					<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
 				</OverflowToolbar>
 			</headerToolbar>

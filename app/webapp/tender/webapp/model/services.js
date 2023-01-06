@@ -281,7 +281,7 @@ sap.ui.define([
 		},
 
         getLotsBeforeEdit: function() {
-            return this._aLotsBeforeEdit;
+            return this._aLotsBeforeEdit || [];
         },
 
         setLotsBeforeEdit: function(aLots) {
@@ -323,6 +323,27 @@ sap.ui.define([
 			},
 
 		//EHQUT-199068-Italy – Tender search by Region
+
+		//EHQUT-217122-Spain - Tender search by Region
+
+		getRegionID: function(oInstituteName){
+			let RegionInstitute=[];
+			if(oInstituteName){
+				let TotalInstitute=this.getFastAppDataModel().getProperty("/PT_TMINST");
+				var iIndex = TotalInstitute.findIndex(x => x.RegionID == oInstituteName);
+				var RegionInstituteID=TotalInstitute[iIndex].RegionID;
+				
+				//RegionInstitute=TotalInstitute.filter(x => x.RegionID == RegionInstituteID);
+				for (var i=0;i<TotalInstitute.length;i++){
+				if(TotalInstitute[i].RegionID==RegionInstituteID)	{
+					RegionInstitute.push(TotalInstitute[i].InstituteName);
+				}
+				}
+
+					}							   
+				return RegionInstitute;
+			},
+			
 		getOfferCompositeMessages: function () {
 			return this._aOfferCompositeMessages;
 		},

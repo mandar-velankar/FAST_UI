@@ -151,6 +151,7 @@ sap.ui.define([
 
 		},
 		//EHQUT-199068-Italy – Tender search by Region
+		//EHQUT-217122-Spain - Tender search by Region
 		loadInstituteName: function (sCountry) {
 			var oDeferred = $.Deferred();
 			var oFastDataCalls = Services.getDefaultModel();
@@ -159,7 +160,7 @@ sap.ui.define([
 			
 			var that = this;
 	
-			if (that._country === 'IT') {
+			if (that._country === "IT" || that._country === "ES") {
 				if (Regiontype === "") {
 					this.byId("idfltInstituteName").setVisible(false);
 					this.setFilter();
@@ -167,20 +168,39 @@ sap.ui.define([
 					this.byId("idfltInstituteName").setVisible(true);
 				}
 			}
-			var sCountryChannelsPath = "/PT_TMINST";
+
+			//var sCountryChannelsPath = "/PT_TMINST";
 			const instituteType = this.byId("idfltInstituteType").getProperty("selectedKey");
+			if(instituteType === "Region(s)" && that._country=== "ES"){
+				this.byId("idfltInstituteName").setVisible(false);
+				this.byId("idRegionNameFilter").setVisible(true);
+			}else{
+				this.byId("idRegionNameFilter").setVisible(false);
+			}
 			var aFilters = [];
-			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, that._country),
-				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
-			);
-
-
-
+			var sCountryChannelsPath;
+			if(instituteType === "Region(s)" && that._country=== "ES"){
+				sCountryChannelsPath = "/CountryRegions";
+			
+				aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, that._country)
+				);
+			}else{
+			sCountryChannelsPath = "/PT_TMINST";
+						aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, that._country),
+					new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
+				);
+			}
+			
 			oFastDataCalls.read(sCountryChannelsPath, {
 				filters: aFilters,
 				success: function (oData, oResponse) {
 					var aCountryChannels = oData.results;
+					if(instituteType === "Region(s)" && that._country === "ES"){
+						aCountryChannels = Services.sortByKeyAsc(aCountryChannels, "Name");
+					}else{
 					aCountryChannels = Services.sortByKeyAsc(aCountryChannels, "InstituteName");
+					}
+					
 					if (oData.results.length > 0) {
 						aCountryChannels.unshift({});
 					}
@@ -247,6 +267,42 @@ sap.ui.define([
 
 		},
 
+		setDistributorList: function (oCountry) {
+			var oDeferred = $.Deferred();
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getView().getModel("fastData");
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			const sInstitutesPath = "/PT_TMDIST";
+			var aFilter = [];
+			aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
+
+			oFastDataCalls.read(sInstitutesPath, {
+				filters: aFilter,
+
+				success: function (oData, oResponse) {
+
+					var aCountryDistributor = oData.results;
+					aCountryDistributor = Services.sortByKeyAsc(aCountryDistributor, "DistributorName");
+
+					if (oData.results.length > 0) {
+						aCountryDistributor.unshift({});
+					}
+					oFastAppDataModel.setProperty("/PT_TMDIST", aCountryDistributor);
+
+					oDeferred.resolve(aCountryDistributor);
+
+				},
+				error: function (oError) {
+					//show error message
+					this.showErrorMessage(oError, "No Distributor");
+					oDeferred.reject(oError);
+				}
+			});
+			return oDeferred.promise();
+
+
+		},
 
 		//routing for tender Master view is matched
 		_onTenderMatched: function (oEvent) {
@@ -658,7 +714,8 @@ sap.ui.define([
 			}
 		 	
 			//EHQUT-189207-Creation date instead of bid duedate
-			if (oCountry == 'IT') {
+			//EHQUT-217122-Spain - Tender search by Region
+			if (oCountry === "IT" || oCountry === "ES") {
 				this.byId("idDueDate").setVisible(false);
 				this.byId("idCreationDate").setVisible(true);
 				this.byId("idfltInstituteType").setVisible(true);
@@ -682,15 +739,22 @@ sap.ui.define([
 				if(Regiontype === ""){
 					this.byId("idfltInstituteName").setSelectedKey("");
 				}
-				
-				if(oCountry=='IT'){
+				//EHQUT-217122-Spain - Tender search by Region
+				if(oCountry==="IT" || oCountry==="ES"){
 
 					
 					if(Regiontype==="Region(s)"){
+
+						if(oCountry==="IT"){
 						
 						oInstituteName=this.byId("idfltInstituteName").getSelectedItem() ? this.byId("idfltInstituteName").getSelectedItem().getKey(): "";
 						let InstituteIDList=Services.getInstituteID(oInstituteName);
 						oInstituteName=InstituteIDList;
+						}else{
+							oInstituteName=this.byId("idRegionNameFilter").getSelectedItem() ? this.byId("idRegionNameFilter").getSelectedItem().getKey(): "";
+							let RegionList=Services.getRegionID(oInstituteName);
+						oInstituteName=RegionList;
+						}
 						
 					}else{
 						oInstituteName=this.byId("idfltInstituteName").getSelectedItem() ? this.byId("idfltInstituteName").getSelectedItem().getText(): "";
@@ -1005,6 +1069,7 @@ sap.ui.define([
 				Services.setSelectedCountry(oCountry);
 				this.setBrandsList();
 				this.setInstituteList(oCountry);
+				this.setDistributorList(oCountry);
 				this.setCreatedByList(oCountry);
 				this.setTenderOrigins();
 				this.setCountryStatusses(oCountry);
