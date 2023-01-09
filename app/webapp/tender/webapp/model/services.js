@@ -2579,7 +2579,7 @@ sap.ui.define([
 
 									let oPriceAgreementFiltered = aPriceAgreements.filter((result) => {
 										let candidates = result.Candidates?.results;
-										if(candidates.find(candidate => candidate.CandidateID === Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteID'))){
+										if(candidates.find(candidate => candidate.CandidateID === that.getFastAppDataModel().getProperty('/Tender/Institute/InstituteID'))){
 											return result;
 										}
 									})[0];
