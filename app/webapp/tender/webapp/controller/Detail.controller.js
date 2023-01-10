@@ -8239,7 +8239,6 @@ sap.ui.define([
 								//overwriting it here
 								let dateAfterExpiryDate = new Date(oExistingAgreement.ExpiryDate);
 								dateAfterExpiryDate.setDate(dateAfterExpiryDate.getDate() + 1);
-								dateAfterExpiryDate.setFullYear(dateAfterExpiryDate.getFullYear() + 1);
 								let newExpiryDate = new Date(dateAfterExpiryDate);
 								newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1);
 								oFastAppDataModel.setProperty('/OfferValidation/EffectiveDate', dateAfterExpiryDate);
@@ -8401,7 +8400,6 @@ sap.ui.define([
 			} else {
 				let dateAfterExpiryDate = new Date(existingPaExpiryDate);
 				dateAfterExpiryDate.setDate(dateAfterExpiryDate.getDate() + 1);
-				dateAfterExpiryDate.setFullYear(dateAfterExpiryDate.getFullYear() + 1);
 				dateRestrictions = {
 					effectiveDate:{
 						min: dateAfterExpiryDate
