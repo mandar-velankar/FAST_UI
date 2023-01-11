@@ -279,7 +279,38 @@ sap.ui.define([
 
 			return biddingTypeLevel1Id;
 		},
+	//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
+	onAddCompetitorProduct: function (oEvent) {
 
+		//get model & selected row
+		var oFastAppDataModel = Services.getFastAppDataModel();
+		var oNewAwardedProduct = Services.getService('Product').getEmptyProductResult();
+		var Resulttree=oFastAppDataModel.getProperty("/ResultsForTree");
+		
+		var oProductResult = {
+			OFFERID: oFastAppDataModel.oData.SelectedOfferID,
+			PRODUCTCODE: null,
+			PRODUCT:'Other',
+			ERRORINSUBMISSION: null,
+			OUTCOME: null,
+			UOM: null,
+			AWARDEDQTY: null,
+			REASON: null,
+			COMMENT: null,
+			AWARDEDCOMPANY: null,
+			AWARDEDPRICE: null,
+			CURRENCY: null,
+			OutcomeLevel: null,
+			APPEAL: null,
+			INFONEEDED: null,                                                
+			_sOperation: "POST"
+		};
+		oNewAwardedProduct.PRODUCT='Other';
+		oNewAwardedProduct.OFFERID=oFastAppDataModel.oData.SelectedOfferID;
+		Resulttree.push(oNewAwardedProduct);
+		oFastAppDataModel.setProperty("/ResultsForTree", Resulttree);
+	
+	},
 
 		/**
 		 * @return {String} Returns biddingTypeLevel2Id from FastAppDataModel
@@ -8117,9 +8148,33 @@ sap.ui.define([
 
 		},
 
+		/**
+         * Get the existing price agreement related to a Tender classification "Tender"
+         * which is not expiring before tomorrow for the same product
+         */
+		getExistingPriceAgreement: async function(existingPriceAgreementId){
+		
+			let filter = {};
+
+			if(existingPriceAgreementId){
+				filter = {
+					ID: existingPriceAgreementId,
+				};
+			}
+
+			if(filter){
+				return (await Services.getService("PriceAgreement").getPriceAgreements(filter))?.data?.results?.filter((result) => {
+					let candidates = result.Candidates?.results;
+					if(candidates.find(candidate => candidate.CandidateID === Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteID'))){
+						return result;
+					}
+				})[0];
+			} else return null;
+		},
+
 		//QUOTATION TAB
 		//-------------
-		onQuotationOfferItemPress: function (oEvent) {
+		onQuotationOfferItemPress: async function (oEvent) {
 
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -8164,9 +8219,37 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
 
 			//load quotation data
-			$.when(Quotation.loadOfferAndProductValidationInfo()).done(function (oData) {
+			$.when(Quotation.loadOfferAndProductValidationInfo()).done(async function (oData) {
 				if(Services.getSelectedCountry() === "ES"){
-					that.setQuotationDateRestrictions();
+
+					let aUnlockedProductPricing = aProducts.results.filter((product) => {
+						if(product?.PriceCondition?.results.find((pricing) => pricing.IsPricingUnlocked === true)){
+							return product;
+						}
+					});
+		
+					let oExistingAgreement = {};
+					if(aUnlockedProductPricing && aUnlockedProductPricing.length > 0){
+						oExistingAgreement = await that.getExistingPriceAgreement(aUnlockedProductPricing[0].ExistingPriceAgreementId);
+						if(oExistingAgreement){
+							that.setQuotationDateRestrictions(true, oExistingAgreement.ExpiryDate);
+
+							if(!oFastAppDataModel.getProperty('/QuotationSelectedOffer')){
+								//if we have an active agreement & quotation has not yet been saved, the effective & expiry dates will be calculated in backend
+								//overwriting it here
+								let dateAfterExpiryDate = new Date(oExistingAgreement.ExpiryDate);
+								dateAfterExpiryDate.setDate(dateAfterExpiryDate.getDate() + 1);
+								let newExpiryDate = new Date(dateAfterExpiryDate);
+								newExpiryDate.setFullYear(newExpiryDate.getFullYear() + 1);
+								oFastAppDataModel.setProperty('/OfferValidation/EffectiveDate', dateAfterExpiryDate);
+								oFastAppDataModel.setProperty('/OfferValidation/ExpiryDate', newExpiryDate);
+
+								that.setQuotationDateRestrictions(true, oExistingAgreement.ExpiryDate);
+							}
+						}
+					} else {
+						that.setQuotationDateRestrictions(false);
+					}
 					that._createPriceConditionTableEntitiesOnQuotationTabForSpain();
 				}
 			});
@@ -8174,7 +8257,6 @@ sap.ui.define([
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
 
 			});*/
-			
 
 			//set to fastappdata model for easy access on the view
 			oFastAppDataModel.setProperty("/ProductsForOffer/", aProducts);
@@ -8210,7 +8292,7 @@ sap.ui.define([
 			}
 
 			//check if there needs to be an update (already existing and erpost)
-			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(function (oData) {
+			$.when(Quotation.loadQuotationForSelectedOffer(sOfferDate)).done(async function (oData) {
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
 				var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
@@ -8303,14 +8385,28 @@ sap.ui.define([
 			
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableSpain", tableData);
 		},
-		setQuotationDateRestrictions:function(){
-			let tomorrow = new Date();
-			tomorrow.setDate(tomorrow.getDate() + 1);
-			const dateRestrictions = {
-				effectiveDate:{
-					min: tomorrow
-				}
-			};
+		setQuotationDateRestrictions:function(hasExistingPriceAgreement, existingPaExpiryDate){
+
+			let dateRestrictions = {};
+			
+			if(!hasExistingPriceAgreement){
+				let tomorrow = new Date();
+				tomorrow.setDate(tomorrow.getDate() + 1);
+				dateRestrictions = {
+					effectiveDate:{
+						min: tomorrow
+					}
+				};
+			} else {
+				let dateAfterExpiryDate = new Date(existingPaExpiryDate);
+				dateAfterExpiryDate.setDate(dateAfterExpiryDate.getDate() + 1);
+				dateRestrictions = {
+					effectiveDate:{
+						min: dateAfterExpiryDate
+					}
+				};
+
+			}
 			Services.getFastAppDataModel().setProperty("/QuotationDateRestrictions", dateRestrictions);
 		},
 		onChangeQuotationDates:function(event,dateType){
@@ -8825,6 +8921,7 @@ sap.ui.define([
 			return oPriceAgreementSaveInfo;
 		},
 
+		//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
 		onCreatePriceAgreement: async function (oEvent) {
 
 			//get model & selected row
@@ -8845,7 +8942,7 @@ sap.ui.define([
 				sap.m.MessageToast.show("Select an awarded product to create a price agreement");
 				return;
 			}
-
+			if(oRowContext.AWARDEDCOMPANY==='Bayer'){
 			const oSelectedProduct = offerProducts[iRowIndex];
 			const selectedProductType = oSelectedProduct.SKU.ProductType;
 			var oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
@@ -8916,58 +9013,62 @@ sap.ui.define([
 					BusyIndicator.hide();
 				}
 			}
+		}else{
+			sap.m.MessageBox.error("No price agreement can be created for this product");
+		}
 		},
+    //EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
 
-		onSubmitQuotation: function (oEvent) {
+	onSubmitQuotation: function (oEvent) {
 
-			//that is this
-			var that = this;
-			var oFastAppDataModel = Services.getFastAppDataModel();
+		//that is this
+		var that = this;
+		var oFastAppDataModel = Services.getFastAppDataModel();
 
-			$.when(Services.checkOfferStatus()).done(function (oData) {
-				var aStatusNoEdit = [
-					"Awaiting Approval" //,
-				];
-				if ($.inArray(oData.STATUS, aStatusNoEdit) !== -1) {
-					sap.m.MessageBox.warning("Quotation cannot be submitted, offer is awating approval.", {});
-				} else {
-					//keep the latest state of switch delay in submission
-					let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
-					if(oDelayInSubmission){
-						var bDelayInSubmission = oDelayInSubmission.getState();
-					}
-
-					//keep delay in submission (needed when you don't click on the switch first)
-					if (bDelayInSubmission) {
-						//true
-						Quotation.setDelayInSubmission('Yes');
-					} else {
-						//false
-						Quotation.setDelayInSubmission('No');
-					}
-
-					let oCustomRemark = that.byId("idCustomRemark");
-					let oSelectIssuedBy = that.byId("idSelectIssuedBy");
-					let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
-
-					var quotationFields = {
-						OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
-						OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
-						EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
-						ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
-						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
-						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
-						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
-					};
-
-					//do the save of the quotation
-					$.when(Quotation.submitQuotation(quotationFields)).done(function (oSaveStatus) {
-						//refresh everything
-						that.onRefresh();
-					});
+		$.when(Services.checkOfferStatus()).done(function (oData) {
+			var aStatusNoEdit = [
+				"Awaiting Approval" //,
+			];
+			if ($.inArray(oData.STATUS, aStatusNoEdit) !== -1) {
+				sap.m.MessageBox.warning("Quotation cannot be submitted, offer is awating approval.", {});
+			} else {
+				//keep the latest state of switch delay in submission
+				let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
+				if(oDelayInSubmission){
+					var bDelayInSubmission = oDelayInSubmission.getState();
 				}
-			});
-		},
+
+				//keep delay in submission (needed when you don't click on the switch first)
+				if (bDelayInSubmission) {
+					//true
+					Quotation.setDelayInSubmission('Yes');
+				} else {
+					//false
+					Quotation.setDelayInSubmission('No');
+				}
+
+				let oCustomRemark = that.byId("idCustomRemark");
+				let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+				let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
+				var quotationFields = {
+					OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
+					OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+					EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+					ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
+					CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
+					IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
+					CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
+				};
+
+				//do the save of the quotation
+				$.when(Quotation.submitQuotation(quotationFields)).done(function (oSaveStatus) {
+					//refresh everything
+					that.onRefresh();
+				});
+			}
+		});
+	},
 
 		onEmailQuotation: function (oEvent) {	
 			BusyIndicator.show(0);		
@@ -9066,10 +9167,10 @@ sap.ui.define([
 				return;
 			}
 			//if it comes at this place, we already checked if dates are in error or not correct match
-			//this allows us to just check for the warning: if expiry date is more than 12 months after effective date. 
+			//this allows us to just check for the warning: if expiry date is more tFhan 12 months after effective date. 
 			let warningDate = new Date(quotationFields.EffectiveDate.getTime());
             warningDate = new Date(warningDate.setFullYear(warningDate.getFullYear() + 1));
-			if(warningDate < quotationFields.ExpiryDate && warningDate.getMonth() < quotationFields.ExpiryDate.getMonth() && Services.getLoadedTender().Classification === "Commercial Agreement"){
+			if(warningDate < quotationFields.ExpiryDate && ( warningDate.getMonth() < quotationFields.ExpiryDate.getMonth() || warningDate.getFullYear() < quotationFields.ExpiryDate.getFullYear() ) && Services.getLoadedTender().Classification === "Commercial Agreement"){
 				MessageBox.error("Agreement is set for more than 12 months");
 				return;
 			}
@@ -9160,15 +9261,12 @@ sap.ui.define([
 		//Method for loading products for offer + so edit can be done for PT_TMTRRES
 		//TODO: remove logic to retrieve data for original outcome table 
 
-		onTenderResultsOfferPress: function (oEvent) {
+		  //EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
+		  onTenderResultsOfferPress: async function (oEvent) {
 
 			//that = this
 			var that = this;
 
-			//var oModel = that.getView().getModel("fastData");
-			//var aFilters = [];
-
-			//get & keep the path of the offer we selected
 			if (oEvent) { //if you enter this method from the edit button, the oEvent is empty & offer path is already set
 				var sSelectedOfferPath = oEvent.getSource().getBindingContext("fastData").getPath();
 				Services.setSelectedOfferPath(sSelectedOfferPath);
@@ -9207,6 +9305,14 @@ sap.ui.define([
 
 				//get products that are loaded
 				var aProducts = Services.getLoadedProductsForOffer(sSelectedOfferID);
+				var ProductCodeCollection=[];
+				for (var i=0;i<aProducts.results.length; i++){
+					
+					ProductCodeCollection.push(aProducts.results[i].ProductCode);
+				}
+				
+
+				var CompetitorData=await Services.loadOtherCompetitorresult(ProductCodeCollection,sSelectedOfferID);
 
 				//catch all promises in an array
 				let promises = [];
@@ -9246,7 +9352,17 @@ sap.ui.define([
 					});
 
 				});
+				CompetitorData.data.results.forEach(function (oProduct, iIndex) {
 
+					
+						promises.push($.when(Services.loadOutcomeReasons(oProduct.OUTCOME, iIndex)).done(function (oOutcomeReasonsComp) {
+							//keep list of outcome reasons with the correct product (Product & Results = 1 to 1)
+							oProduct.ListOutcomeReasons = oOutcomeReasonsComp.results;
+
+						}));
+					
+					
+		})
 				//load currency for country (dropdown)
 				var sCountry = Services.getSelectedCountry();
 				promises.push($.when(Services.loadCountryCurrency(sCountry)).done(function (oTenderData) {
@@ -9262,7 +9378,8 @@ sap.ui.define([
 					//empty array 
 					var aResultsForProducts = [];
 					var aResultsForTree = [];
-					
+					let aCountryCompetitors = oFastAppDataModel.getProperty('/CountryCompetitors');
+					let aCountryCompetitorProducts = oFastAppDataModel.getProperty('/CountryCompetitorProducts')
 
 					aProducts.results.forEach(function (oProduct, iIndex) {
 
@@ -9290,8 +9407,7 @@ sap.ui.define([
 										oResult.CompetitorResult.results.forEach(function (oCompetitorResult) {
 
 											let oFastAppDataModel = Services.getFastAppDataModel();
-											let aCountryCompetitors = oFastAppDataModel.getProperty('/CountryCompetitors');
-											let aCountryCompetitorProducts = oFastAppDataModel.getProperty('/CountryCompetitorProducts')
+											
 											//default reason if empty & edit mode
 											/*if( (oCompetitorResult.OUTCOME === 'Won' || oCompetitorResult.OUTCOME === 'Lost') && (oCompetitorResult.REASON === '' || oCompetitorResult.REASON === 'Not Specified') ){
 												oCompetitorResult.REASON = 'Not Specified';
@@ -9454,6 +9570,7 @@ sap.ui.define([
 									}
 
 									aResultsForTree.push(oResultsForTree.OutcomeLevel);
+									
 
 								});
 
@@ -9464,7 +9581,49 @@ sap.ui.define([
 						}
 
 					});
+					
 
+					
+					for (var i=0;i<CompetitorData.data.results.length; i++){
+
+						var value =CompetitorData.data.results[i];
+						if((value.OUTCOME ===null || value.OUTCOME ==='') && sCountry=='IT')
+						{
+							value.OUTCOME='Decision Pending';
+						}
+						
+						var oCompetitorResult = {
+							OFFERID: value.OFFERID,
+							PRODUCTCODE: value.PRODUCTCODE,
+							PRODUCT: value.AWARDEDPRODUCT,
+							OUTCOME: value.OUTCOME,
+							UOM: value.UOM,
+							REQUESTEDVOLUME: value.REQUESTEDVOLUME,
+							AWARDEDQTY: value.AWARDEDQTY,
+							TOTALAWARDEDVALUE: value.TOTALAWARDEDVALUE,
+							REASON: value.REASON,
+							COMMENT: value.COMMENT,
+							AWARDEDCOMPANY: value.AWARDEDCOMPANY,
+							AWARDEDCOMPANYCOMP: aCountryCompetitors.find(company => company.CompetitorCompany === value.AWARDEDCOMPANY) ? value.AWARDEDCOMPANY : 'Other',
+							OTHERCOMPANY: value.AWARDEDCOMPANY,
+							AWARDEDPRODUCT: value.AWARDEDPRODUCT,
+							PRODUCTCOMP: aCountryCompetitors.find(product => product.CompetitorProduct === value.AWARDEDPRODUCT) ? value.AWARDEDPRODUCT : 'Other',
+							OTHERPRODUCT: value.AWARDEDPRODUCT,
+							AWARDEDPRICE: value.AWARDEDPRICE,
+							FOC: '',
+							FOCTYPE: '',
+							FOC_ABS_PCT: '',
+							UNITPERPACK: '',
+							CURRENCY: value.CURRENCY,
+							LISTOUTCOMEREASONS: value.ListOutcomeReasons,
+							CountryCompetitorProducts: aCountryCompetitorProducts,
+							_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
+						}
+						
+						aResultsForTree.push(oCompetitorResult);
+					}
+					console.log(aResultsForTree);
+	               
 					oFastAppDataModel.setProperty("/ResultsForProducts/", aResultsForProducts);
 					oFastAppDataModel.setProperty("/ResultsForTree/", aResultsForTree);
 
@@ -9732,9 +9891,10 @@ sap.ui.define([
 
 		},
 
+		  //EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
 		//saving the tender results page
 		//TODO move to services file (refactoring)
-		_onSaveTenderResults: function (sPathIn, oModelrf) {
+		_onSaveTenderResults: async function (sPathIn, oModelrf) {
 
 			//FastAppDataModel
 			var oFastAppDataModel = Services.getFastAppDataModel();
@@ -9761,7 +9921,8 @@ sap.ui.define([
 			//products of offer
 			var aResultsForProducts = oFastAppDataModel.getProperty("/ResultsForProducts");
 			var aResultsForTree = oFastAppDataModel.getProperty("/ResultsForTree");
-
+			var competitorproductcode=await Services.loadCompetitorProductID();
+			var otherproduct=await Services.loadProductPackID();
 			const missingFields = new Set();
 			
 			aResultsForTree.forEach(function(oResultForTree, iIndex) {
@@ -9862,6 +10023,9 @@ sap.ui.define([
 
 				//only if we are in a cell with a product
 				if (oResultForTree) {
+
+					//EHQUT
+					if(oResultForTree.AWARDEDCOMPANY === "Bayer"){
 
 					//push data for saving
 					oBayerResultToSave = {
@@ -9984,10 +10148,93 @@ sap.ui.define([
 							}
 						});
 					}
+				}else{
+					var oCompetitorResult=[];
+					if(oResultForTree.PRODUCTCODE === null){
 
+					
+					var productcode=otherproduct.data.results.findIndex(x => x.PRODUCT_NAME === oResultForTree.OTHERPRODUCT);
+					
+					
+					if(productcode === -1 || productcode === null){
+						
+						var otherproductcode=competitorproductcode.data.results.findIndex(x => x.CompetitorProduct === oResultForTree.PRODUCTCOMP);
+						var code=competitorproductcode.data.results[otherproductcode];
+						if(otherproductcode !== -1){
+							oResultForTree.PRODUCTCODE=code.ProductCode;
+						}else{
+							missingFields.add("Please Enter Valid Product");
+											
+						}
+					}else{
+						
+						oResultForTree.PRODUCTCODE=otherproduct.data.results[productcode].PRODUCT_ID;
+						
+					}
 				}
-
+				
+	
+				if(oResultForTree.PRODUCTCODE !== null){
+					oCompetitorResult.push(oResultForTree);
+										
+					var oCompetitorResultToSave = Services.getService('CompetitorResult').getConvertCompetitorResultToSave(oResultForTree);
+							//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
+							switch (oCompetitorResult[0]._sOperation) {
+							case "POST":
+								//create Result (Competitor)
+								promises.push(Services.getService('CompetitorResult').createCompetitorResult(oCompetitorResultToSave).catch(function (
+									oError) {
+									//show error message
+									Services.showErrorMessage(oError, "Create Result");
+									//promises must fail as well
+									throw oError;
+								}));
+								oCompetitorResultToSave = {};
+								break;
+							case "PUT":
+								//update Result (Competitor)
+								promises.push(Services.getService('CompetitorResult').updateCompetitorResult(oCompetitorResultToSave).catch(function (
+									oError) {
+									//show error message
+									Services.showErrorMessage(oError, "Updating of Competitor Result");
+									//promises must fail as well
+									throw oError;
+								}));
+								oCompetitorResultToSave = {};
+								break;
+							case "DELETE":
+								//remove Result (Competitor)
+								promises.push(Services.getService('CompetitorResult').removeCompetitorResult(oCompetitorResultToSave).catch(function (
+									oError) {
+									//show error message
+									Services.showErrorMessage(oError, "Removing of Competitor Result");
+									//promises must fail as well
+									throw oError;
+								}));
+								oCompetitorResultToSave = {};
+								break;
+							default:
+								break;
+							}
+						}
+				}
+				}
+			
 			});
+			if(missingFields.size > 0){
+				var oMessage = {
+					type: 'Error',
+					title: `Please enter all mandatory fields.`,
+					description: Array.from(missingFields).join("\n")
+				};
+
+				aMessages.push(oMessage);
+				bError = true;
+			}
+			if(bError){
+				Services.showMessageCompositeView('Error', aMessages, 'Error');
+				return;
+			}
 
 			//DOING THE ACCUAL SAVE
 			Promise.all(promises).then((result) => {
@@ -10044,7 +10291,7 @@ sap.ui.define([
 
 				
 			});
-
+		
 		},
 
 		onChangeSampleYN: function (oEvent) {
