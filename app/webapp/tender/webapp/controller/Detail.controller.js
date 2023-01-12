@@ -8893,12 +8893,18 @@ sap.ui.define([
 			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
 			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts);
 			try {
-				BusyIndicator.show();
+				BusyIndicator.show(0);
 				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
 				BusyIndicator.hide();
+				MessageBox.success("Contract and Contract Products are created successfully");
 			} catch (error) {
 				console.log(error);
 				BusyIndicator.hide();
+				if (error.statusCode && (error.statusCode == 400 || error.statusCode == 404)) {
+					const oError = JSON.parse(error.responseText);
+					const sErrorMsg = oError["error"]["message"]["value"];
+					MessageBox.error(sErrorMsg);
+				}
 			}
 		},
 
@@ -8906,34 +8912,34 @@ sap.ui.define([
 			const contractStatus = Services.getFastAppDataModel().getProperty("/BrazilContractStatuses");
 			const statusID = (contractStatus.find(el => el.Status.toLowerCase() === "new fast"))?.ID;
 			return {
-				"TENDERID": selectedOffer.TenderID,
-				"OFFERID": selectedOffer.OfferID,
-				"INSTITUTEID": contractUserInput.InstituteID,
-				"DISTRIBUTORID": contractUserInput.DistributorID,
-				"CONTRACTNUMBER": null, 
-				"IBIZPROCESSNUMBER": null,
-				"CONTRACTTYPE": contractUserInput.ContractType,
+				"TenderID": selectedOffer.TenderID,
+				"OfferID": selectedOffer.OfferID,
+				"InstituteID": contractUserInput.InstituteID,
+				"DistributorID": contractUserInput.DistributorID,
+				"ContractNumber": null, 
+				"IbizProcessNumber": null,
+				"ContractType": contractUserInput.ContractType,
 				"OBS": null,
-				"IBIZCONTRACTID": null,
-				"IBIZCONTRACTNUMBER": null,
-				"IBIZCONTRACTSIGNDATE": null,
-				"STARTDATE": selectedOffer.Quotation.EffectiveDate,
-				"ENDDATE": selectedOffer.Quotation.ExpiryDate,
-				"STATUSID": statusID
+				"IbizContractID": null,
+				"IbizContractNumber": null,
+				"IbizContractSignDate": null,
+				"StartDate": selectedOffer.Quotation.EffectiveDate,
+				"EndDate": selectedOffer.Quotation.ExpiryDate,
+				"StatusID": statusID
 			}
 		},
 
 		getMappedContractProducts: function (selectedOfferProducts) {
 			return selectedOfferProducts.results.map(product => {
 				return {
-					"PRODUCTPACKID": product.ProductCode,
-					"IBIZCONTRACTPRODUCTID": null,
-					"OFFERID": product.OfferID,
-					"REQUESTEDVOLUME": product.RequestedVolume,
-					"IBIZITEMTYPE": null,
-					"LOTID": product.LotID,
-					"CONTRACTPRICE": product.PriceCondition.results[0].CommercialProposal,
-					"CONTRACT_ID": ""
+					"ProductPackID": product.ProductCode,
+					"IbizContractProductID": null,
+					"OfferID": product.OfferID,
+					"RequestedVolume": product.RequestedVolume,
+					"IbizItemType": null,
+					"LotID": product.LotID,
+					"ContractPrice": product.PriceCondition.results[0].CommercialProposal,
+					"Contract_ID": ""
 				}
 			})
 			

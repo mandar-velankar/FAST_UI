@@ -2191,8 +2191,8 @@ sap.ui.define([
 		},
 		saveBrazilContract: function (mappedContract, mappedContractProducts) {
 			return this.createBrazilContract(mappedContract).then((response) => {
-				const contractID = response.data.results;
-				mappedContractProducts.forEach(product => product.CONTRACT_ID = contractID);
+				const contractID = response.data.ID;
+				mappedContractProducts.forEach(product => product.Contract_ID = contractID);
 				return this.createBrazilContractProducts(mappedContractProducts);
 			});
 		},
