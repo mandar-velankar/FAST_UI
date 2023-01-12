@@ -35,6 +35,7 @@
 				<!-- Customer -->
 				<Label text="{i18n>Customer}" required="true"/>
 				<Select id="idNewContractCustomerInstitute"  
+						change=".onChangeContractCustomer($event,'Institute')"
 						visible="false"
 						items="{ path: 'fastAppData>/PT_TMINST/', templateShareable:false }"
 						enabled="false">
@@ -42,6 +43,7 @@
 				</Select>
 				<Label text="{i18n>Customer}" required="true" />
 				<Select id="idNewContractCustomerDistributor"
+						change=".onChangeContractCustomer($event,'Distributor')"
 						visible="false"
 						items="{ path: 'fastAppData>/PT_TMDIST/', templateShareable:false }"
 						enabled="false">

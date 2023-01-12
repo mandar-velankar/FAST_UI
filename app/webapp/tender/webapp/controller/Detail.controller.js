@@ -90,6 +90,7 @@ sap.ui.define([
 				NotifyIbizWorkflowProductIDs:[],
 				NotifyIbizDirectIndirect: null,
 				NotifyIbizWorkflowID: null,
+				BrazilContract: {}
 			});	
 			this.getView().setModel(oViewModel, "viewModel");
 
@@ -8885,26 +8886,102 @@ sap.ui.define([
 			return this._oAddNewContractDialog;
 		},
 
-		onSaveNewContract: function (){
+		onSaveNewContract: async function (oEvent){
+			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			const selectedOfferProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
+			const contractUserInput = this.getView().getModel("viewModel").getProperty("/BrazilContract");
+			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
+			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts);
+			try {
+				BusyIndicator.show();
+				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
+				BusyIndicator.hide();
+			} catch (error) {
+				console.log(error);
+				BusyIndicator.hide();
+			}
+		},
 
+		getMappedContract: function (selectedOffer, contractUserInput) {
+			const contractStatus = Services.getFastAppDataModel().getProperty("/BrazilContractStatuses");
+			const statusID = (contractStatus.find(el => el.Status.toLowerCase() === "new fast"))?.ID;
+			return {
+				"TENDERID": selectedOffer.TenderID,
+				"OFFERID": selectedOffer.OfferID,
+				"INSTITUTEID": contractUserInput.InstituteID,
+				"DISTRIBUTORID": contractUserInput.DistributorID,
+				"CONTRACTNUMBER": null, 
+				"IBIZPROCESSNUMBER": null,
+				"CONTRACTTYPE": contractUserInput.ContractType,
+				"OBS": null,
+				"IBIZCONTRACTID": null,
+				"IBIZCONTRACTNUMBER": null,
+				"IBIZCONTRACTSIGNDATE": null,
+				"STARTDATE": selectedOffer.Quotation.EffectiveDate,
+				"ENDDATE": selectedOffer.Quotation.ExpiryDate,
+				"STATUSID": statusID
+			}
+		},
+
+		getMappedContractProducts: function (selectedOfferProducts) {
+			return selectedOfferProducts.results.map(product => {
+				return {
+					"PRODUCTPACKID": product.ProductCode,
+					"IBIZCONTRACTPRODUCTID": null,
+					"OFFERID": product.OfferID,
+					"REQUESTEDVOLUME": product.RequestedVolume,
+					"IBIZITEMTYPE": null,
+					"LOTID": product.LotID,
+					"CONTRACTPRICE": product.PriceCondition.results[0].CommercialProposal,
+					"CONTRACT_ID": ""
+				}
+			})
+			
 		},
 
 		onCancelNewContract: function (){
 			this._oAddNewContractDialog.close();
 		},
-
+		/**
+		 * Event handler for when the user changes ContractType in the UI
+		 * @param {*} evt 
+		 */
 		onChangeContractType: function (evt){
+			this.getView().getModel("viewModel").setProperty("/BrazilContract/ContractType", evt.getSource().getSelectedKey());
 			this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey("");
 			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
 			if(evt.getSource().getSelectedItem().getKey() !== 'From Offer' && evt.getSource().getSelectedItem().getKey() !== '') {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(true);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(true);
+				//Set BrazilContract InstituteID and DistributorID from Offer
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", "");
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", "");
 			} else {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(false);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(false);
+				//Set BrazilContract InstituteID and DistributorID from Offer
+				const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedOffer.Tender.InstituteID);
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedOffer.DistributorID);
 			}
 		},
-
+		/**
+		 * Event handler for when the user changes Customer in the UI
+		 * @param {*} evt 
+		 */
+		onChangeContractCustomer: function (evt, customerType) {
+			const selectedValue = evt.getSource().getSelectedKey();
+			if (customerType === "Institute") {
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Institute");
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedValue);
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", "");
+			} 
+			if (customerType === "Distributor") {
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Distributor");
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedValue);
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", "");
+			} 
+		},
 		/**
 		 * Click handler for VolumeTreshhold fragment on the Quotation page
 		 * @param {*} oEvent 
