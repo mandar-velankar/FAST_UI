@@ -1299,6 +1299,11 @@ sap.ui.define([
 				}else{
 					that.getView().byId("deleteTenderButtonId").setEnabled(true);
 				}
+				if(this.accessModel.oData.tenderAccess.MEATENDERVIEW === true){
+					this.getView().byId("editButtonId").setEnabled(false);
+				}else{
+					that.getView().byId("editButtonId").setEnabled(true);
+				}
 				
 				break;
 
@@ -1308,7 +1313,11 @@ sap.ui.define([
 				//Offer details form: first hide, beceause if offer selected is not selectable for this tab, it should not be visible
 				var oOfferProducts = that.getView().byId("offerDetailForm");
 				oOfferProducts.setVisible(false);
-
+				if(this.accessModel.oData.tenderAccess.MEATENDERVIEW === true){
+					this.getView().byId("editButtonId").setEnabled(false);
+				}else{
+					that.getView().byId("editButtonId").setEnabled(true);
+				}
 				//Offer Products: clear previously selected (.unbindRows method gives an error in console, so we could not use this, thats why we bind empty model)
 				var oTable = that.byId("offerProductId");
 				if (oTable) {
@@ -1449,6 +1458,11 @@ sap.ui.define([
 				if(oQofferValidity){
 					oQofferValidity.setEnabled(false);
 				}
+				if(this.accessModel.oData.tenderAccess.MEATENDERVIEW === true){
+					this.getView().byId("editButtonId").setEnabled(false);
+				}else{
+					that.getView().byId("editButtonId").setEnabled(true);
+				}
 				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 				let oCustomRemark = that.byId("idCustomRemark");
@@ -1504,6 +1518,7 @@ sap.ui.define([
 				//that._selectOfferInOfferTable("tenderResultsOfferTableViewID","tenderResultsOfferTableOfferID");
 				if (Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
                     Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", true);
+					
 					//Tender Results - subsection
 					/*var oFinHistorySubSection = that.byId("__component0---tenderManagementDetailId--tenderResultsFragmentId--TenderResOfferSubsection");
 					if (oFinHistorySubSection) {
@@ -1543,6 +1558,7 @@ sap.ui.define([
 						oTenderResNoOfferSubsection.setVisible(true);
 					}*/
                     Services.getFastAppDataModel().setProperty("/CheckOfferVisibleForTab_ES", false);
+				
 				}
 				break;
 
@@ -9622,7 +9638,7 @@ sap.ui.define([
 						
 						aResultsForTree.push(oCompetitorResult);
 					}
-					console.log(aResultsForTree);
+				
 	               
 					oFastAppDataModel.setProperty("/ResultsForProducts/", aResultsForProducts);
 					oFastAppDataModel.setProperty("/ResultsForTree/", aResultsForTree);
@@ -9653,7 +9669,46 @@ sap.ui.define([
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			oOutcomeTreeTable.expandToLevel(1);
 		},
+		//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers 
+		onDeleteCompetitorProduct: function (oEvent) {
 
+			//get model & selected row
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
+			var iRowIndex = oOutcomeTreeTable.getSelectedIndex();
+			var oRowContext = oOutcomeTreeTable.getContextByIndex(iRowIndex);
+			
+			//check if a product is selected
+			if (oRowContext === null) {
+				sap.m.MessageToast.show("Select an awarded product to delete");
+				return;
+			}
+
+			var sPathSelectedRow = oRowContext.getPath();
+			var iRowIndexParent = sPathSelectedRow.split('/')[2];
+
+			var sPathResultsForTree = "/ResultsForTree";
+			
+			var oAwardedProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
+			
+			if (oAwardedProduct._sOperation === "PUT") {
+				
+				oAwardedProduct._sOperation = "DELETE";
+				oFastAppDataModel.setProperty(sPathSelectedRow, oAwardedProduct);
+			} else {
+				
+				var aResultsForTreeAwarded = oFastAppDataModel.getProperty(sPathResultsForTree);
+					
+				aResultsForTreeAwarded.splice(iRowIndexParent, 1);
+					
+				oFastAppDataModel.setProperty(sPathResultsForTree, aResultsForTreeAwarded);
+			}
+					
+				
+
+			
+
+		},
 		//add awarded company results
 		onAddAwardedProduct: function (oEvent) {
 
