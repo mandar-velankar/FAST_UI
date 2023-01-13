@@ -8895,6 +8895,8 @@ sap.ui.define([
 			try {
 				BusyIndicator.show(0);
 				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
+				this._getCreateContractDialog().close();
+				this.getView().getModel("viewModel").setProperty("/BrazilContract", {});
 				BusyIndicator.hide();
 				MessageBox.success("Contract and Contract Products are created successfully");
 			} catch (error) {
@@ -8946,6 +8948,7 @@ sap.ui.define([
 		},
 
 		onCancelNewContract: function (){
+			this.getView().getModel("viewModel").setProperty("/BrazilContract", {});
 			this._oAddNewContractDialog.close();
 		},
 		/**
@@ -8956,19 +8959,16 @@ sap.ui.define([
 			this.getView().getModel("viewModel").setProperty("/BrazilContract/ContractType", evt.getSource().getSelectedKey());
 			this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey("");
 			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
+			//Set BrazilContract InstituteID and DistributorID from Offer
+			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedOffer.Tender.InstituteID);
+			this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedOffer.DistributorID);
 			if(evt.getSource().getSelectedItem().getKey() !== 'From Offer' && evt.getSource().getSelectedItem().getKey() !== '') {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(true);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(true);
-				//Set BrazilContract InstituteID and DistributorID from Offer
-				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", "");
-				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", "");
 			} else {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(false);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(false);
-				//Set BrazilContract InstituteID and DistributorID from Offer
-				const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
-				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedOffer.Tender.InstituteID);
-				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedOffer.DistributorID);
 			}
 		},
 		/**
@@ -8980,12 +8980,10 @@ sap.ui.define([
 			if (customerType === "Institute") {
 				this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Institute");
 				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedValue);
-				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", "");
 			} 
 			if (customerType === "Distributor") {
 				this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Distributor");
 				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedValue);
-				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", "");
 			} 
 		},
 		/**
