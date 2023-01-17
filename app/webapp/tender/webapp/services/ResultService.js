@@ -1,7 +1,9 @@
 sap.ui.define([
 	"FAST_NS0FAST0/services/BaseService",
-	"FAST_NS0FAST0/model/services"
-], function (BaseService, Services) {
+	"FAST_NS0FAST0/model/services",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseService, Services, Filter, FilterOperator) {
 	"use strict";
 
 	var ResultService = BaseService.extend("FAST_NS0FAST0.services.ResultService", {
@@ -38,6 +40,18 @@ sap.ui.define([
 			//Create
 			return this.odata(sPath).put(oResultToSave);
 
+		},
+
+		getBrazilContractStatuses: function () {
+			return this.odata("/ContractStatuses").get();
+		},
+
+		createBrazilContract: function (contract) {
+			return this.odata("/Contracts").post(contract);
+		},
+
+		createBrazilContractProduct: function (product) {
+			return this.odata("/ContractProducts").post(product);
 		}
 	});
 	return ResultService;

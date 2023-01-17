@@ -2183,6 +2183,29 @@ sap.ui.define([
 
 		},
 
+		loadBrazilContractStatuses: function () {
+			const oFastAppDataModel = this.getFastAppDataModel();
+			return this.getService('Result').getBrazilContractStatuses().then((response) => {
+				oFastAppDataModel.setProperty("/BrazilContractStatuses", response.data.results);
+			});
+		},
+		saveBrazilContract: function (mappedContract, mappedContractProducts) {
+			return this.createBrazilContract(mappedContract).then((response) => {
+				const contractID = response.data.ID;
+				mappedContractProducts.forEach(product => product.Contract_ID = contractID);
+				return this.createBrazilContractProducts(mappedContractProducts);
+			});
+		},
+		createBrazilContract: async function (contract) {
+			return this.getService('Result').createBrazilContract(contract);
+		},
+		createBrazilContractProducts: function (products) {
+			const promises = products.map(product => {
+				return this.getService('Result').createBrazilContractProduct(product);
+			});
+			return Promise.all(promises);
+		},
+
 		//load country channels
 		loadCountryOutcomes: function (sCountry) {
 
