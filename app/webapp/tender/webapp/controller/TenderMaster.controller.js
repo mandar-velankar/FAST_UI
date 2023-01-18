@@ -324,7 +324,7 @@ sap.ui.define([
 			this._bindUserCountries();
 			this.setTenderOrigins();
 			this.setCountryStatusses();
-
+			this.setBrazilContractStatuses();
 			//get the tenderID/country from the navigation parameters
 			/*
 			var sTenderID = oEvent.getParameter("arguments").tender;
@@ -667,7 +667,10 @@ sap.ui.define([
 				});
 			});
 		},
-
+		setBrazilContractStatuses: function () {
+			// const sCountry = Services.getSelectedCountry();
+			Services.loadBrazilContractStatuses();
+		},
 		//setting the tender origins
 		setTenderOrigins: function () {
 
@@ -1073,6 +1076,7 @@ sap.ui.define([
 				this.setCreatedByList(oCountry);
 				this.setTenderOrigins();
 				this.setCountryStatusses(oCountry);
+				this.setBrazilContractStatuses();
 				Services.loadCountryPermissions(oCountry);
 				this.loadCountryChannels(oCountry);
 				Services.loadAppConfig(oCountry, sEnvironment);

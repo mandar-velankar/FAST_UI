@@ -90,6 +90,7 @@ sap.ui.define([
 				NotifyIbizWorkflowProductIDs:[],
 				NotifyIbizDirectIndirect: null,
 				NotifyIbizWorkflowID: null,
+				BrazilContract: {}
 			});	
 			this.getView().setModel(oViewModel, "viewModel");
 
@@ -101,7 +102,7 @@ sap.ui.define([
 			});	
 			this.getView().setModel(this._oRaModel, "raModel");*/
 			
-
+			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -153,8 +154,6 @@ sap.ui.define([
 
 			// set CurrentOfferStatus
 			oFastAppDataModel.setProperty("/CurrentOfferStatus", Services.getCurrentOfferStatus(sTenderID, sOfferID));
-
-
 			// set the visible country
 			/*this._oRaModel.setProperty("/visibleCountry", sCountry);*/
 
@@ -8850,7 +8849,7 @@ sap.ui.define([
 		},
 
 		onCreateContractBR: function (oEvent) {
-
+			
 			this._getCreateContractDialog().open();
 
 		},
@@ -8887,17 +8886,83 @@ sap.ui.define([
 			return this._oAddNewContractDialog;
 		},
 
-		onSaveNewContract: function (){
+		onSaveNewContract: async function (oEvent){
+			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			const selectedOfferProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
+			const contractUserInput = this.getView().getModel("viewModel").getProperty("/BrazilContract");
+			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
+			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts);
+			try {
+				BusyIndicator.show(0);
+				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
+				this._getCreateContractDialog().close();
+				this.getView().getModel("viewModel").setProperty("/BrazilContract", {});
+				BusyIndicator.hide();
+				MessageBox.success("Contract and Contract Products are created successfully");
+			} catch (error) {
+				console.log(error);
+				BusyIndicator.hide();
+				if (error.statusCode && (error.statusCode == 400 || error.statusCode == 404)) {
+					const oError = JSON.parse(error.responseText);
+					const sErrorMsg = oError["error"]["message"]["value"];
+					MessageBox.error(sErrorMsg);
+				}
+			}
+		},
 
+		getMappedContract: function (selectedOffer, contractUserInput) {
+			const contractStatus = Services.getFastAppDataModel().getProperty("/BrazilContractStatuses");
+			const statusID = (contractStatus.find(el => el.Status.toLowerCase() === "new fast"))?.ID;
+			return {
+				"TenderID": selectedOffer.TenderID,
+				"OfferID": selectedOffer.OfferID,
+				"InstituteID": contractUserInput.InstituteID,
+				"DistributorID": contractUserInput.DistributorID,
+				"ContractNumber": null, 
+				"IbizProcessNumber": null,
+				"ContractType": contractUserInput.ContractType,
+				"OBS": null,
+				"IbizContractID": null,
+				"IbizContractNumber": null,
+				"IbizContractSignDate": null,
+				"StartDate": selectedOffer.Quotation.EffectiveDate,
+				"EndDate": selectedOffer.Quotation.ExpiryDate,
+				"StatusID": statusID
+			}
+		},
+
+		getMappedContractProducts: function (selectedOfferProducts) {
+			return selectedOfferProducts.results.map(product => {
+				return {
+					"ProductPackID": product.ProductCode,
+					"IbizContractProductID": null,
+					"OfferID": product.OfferID,
+					"RequestedVolume": product.RequestedVolume,
+					"IbizItemType": null,
+					"LotID": product.LotID,
+					"ContractPrice": product.PriceCondition.results[0].CommercialProposal,
+					"Contract_ID": ""
+				}
+			})
+			
 		},
 
 		onCancelNewContract: function (){
+			this.getView().getModel("viewModel").setProperty("/BrazilContract", {});
 			this._oAddNewContractDialog.close();
 		},
-
+		/**
+		 * Event handler for when the user changes ContractType in the UI
+		 * @param {*} evt 
+		 */
 		onChangeContractType: function (evt){
+			this.getView().getModel("viewModel").setProperty("/BrazilContract/ContractType", evt.getSource().getSelectedKey());
 			this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey("");
 			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
+			//Set BrazilContract InstituteID and DistributorID from Offer
+			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedOffer.Tender.InstituteID);
+			this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedOffer.DistributorID);
 			if(evt.getSource().getSelectedItem().getKey() !== 'From Offer' && evt.getSource().getSelectedItem().getKey() !== '') {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(true);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(true);
@@ -8906,7 +8971,21 @@ sap.ui.define([
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(false);
 			}
 		},
-
+		/**
+		 * Event handler for when the user changes Customer in the UI
+		 * @param {*} evt 
+		 */
+		onChangeContractCustomer: function (evt, customerType) {
+			const selectedValue = evt.getSource().getSelectedKey();
+			if (customerType === "Institute") {
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Institute");
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedValue);
+			} 
+			if (customerType === "Distributor") {
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Distributor");
+				this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedValue);
+			} 
+		},
 		/**
 		 * Click handler for VolumeTreshhold fragment on the Quotation page
 		 * @param {*} oEvent 
@@ -10058,6 +10137,10 @@ sap.ui.define([
 
 					oFastAppDataModel.setProperty("/ResultsForProducts/", aResultsForProducts);
 					oFastAppDataModel.setProperty("/ResultsForTree/", aResultsForTree);
+
+					//Enable Create contract button only for Brazil
+					const enableCreateContractButton = aResultsForTree.some((elem) => elem.OUTCOME === "Won");
+					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", enableCreateContractButton);
 
 					//apply filter for outcome tree table
 					oOutcomeTreeTable.getBinding("rows").filter(
