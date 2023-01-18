@@ -9690,6 +9690,7 @@ sap.ui.define([
 			var sPathResultsForTree = "/ResultsForTree";
 			
 			var oAwardedProduct = Services.getFastAppDataModel().getProperty(sPathSelectedRow);
+			if(oAwardedProduct.AWARDEDCOMPANY !== "Bayer"){
 			
 			if (oAwardedProduct._sOperation === "PUT") {
 				
@@ -9704,7 +9705,10 @@ sap.ui.define([
 				oFastAppDataModel.setProperty(sPathResultsForTree, aResultsForTreeAwarded);
 			}
 					
-				
+		}else{
+			sap.m.MessageToast.show("Select an awarded product other than bayer to delete");
+				return;
+		}	
 
 			
 
