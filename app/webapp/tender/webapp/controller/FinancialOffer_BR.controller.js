@@ -857,7 +857,7 @@ sap.ui.define([
             //get user input
 			let comment = loadedOfferStatus; // will contain the offer status value
 			const workflowID = loadedOffer.IbizWorkflowID;
-			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : 0;
+			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : -1;
 			
 			try{
 				//Logic to call the API to Notify about Product Switch

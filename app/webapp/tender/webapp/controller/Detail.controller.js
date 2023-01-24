@@ -6355,7 +6355,7 @@ sap.ui.define([
 			//get fast app data model
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var oOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
-            let Division = this._country === "ES" ? this.getView().byId("idProductOfferDivisionES").getSelectedItem().getKey() : this.getView().byId("idProductOfferDivision").getSelectedItem().getKey();
+            let Division = this._country === "ES" || this._country === "BR" ? this.getView().byId("idProductOfferDivisionES").getSelectedItem().getKey() : this.getView().byId("idProductOfferDivision").getSelectedItem().getKey();
 
 			//check on mandatory fields
 			if (
