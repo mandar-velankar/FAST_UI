@@ -5565,7 +5565,20 @@ sap.ui.define([
 
 			//products to save that are visible in the table
 			var aProducts = oFastAppData.getProperty("/EditOffer/Product/results");
-
+			//Brazil
+			if (oFastAppData.getProperty('/Tender/CountryCode') === 'BR') {
+				const isInDirectOffer = oFastAppData.getProperty("/isInDirectOffer");
+				const isDirectOffer = oFastAppData.getProperty("/isDirectOffer");
+				aProducts = aProducts.map(product => {
+					if (product.Channel.toLowerCase() === "bayer" && isInDirectOffer) {
+						product.ActiveProduct = 0;
+					}
+					if (product.Channel.toLowerCase() === "distributor" && isDirectOffer) {
+						product.ActiveProduct = 0;
+					}
+					return product
+				});
+			}
 			//TODO: we could do it in the same way we do it for Deliveries, Letters, GroupPurchasing - PUT when loaded, POST when we add, DELETE when PUT becomes DELETE
 			//add products again that were ready to be deleted (they are not visible on EditOffer/product/results)
 			//they should be added again, beceause they still need to be saved (as deleted)
@@ -6337,11 +6350,15 @@ sap.ui.define([
 			if(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "distributor"){
 				sMessage = sBayerToDistributorMessage;
 				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 1);
+				Services.getFastAppDataModel().setProperty("/isDirectOffer", true);
+				Services.getFastAppDataModel().setProperty("/isInDirectOffer", false);
 			}
 			// form Distributor to Bayer
 			else if(!(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil") && channel.toLowerCase() === "bayer"){
 				sMessage = sDistributorToBayerMessage;
 				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 0);
+				Services.getFastAppDataModel().setProperty("/isInDirectOffer", true);
+				Services.getFastAppDataModel().setProperty("/isDirectOffer", false);
 			}else {
 				sMessage = "";
 			}
