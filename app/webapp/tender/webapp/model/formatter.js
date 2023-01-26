@@ -601,7 +601,13 @@ sap.ui.define([
             } else {
                 return false;
             }
-        }
+        },
+		formatTotalDiscount: function (value) {
+			if (!isNaN(parseFloat(value))) {
+				return value * 100 + "%";
+			}
+			return value
+		}
 		
 	};
 });
