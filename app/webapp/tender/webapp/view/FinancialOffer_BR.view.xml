@@ -35,6 +35,7 @@
 					<ToolbarSpacer />
 					<Button id="btnShareApprovalToIbizId" text="Share Approval to IBIZ" icon="sap-icon://approvals" press="onShareApprovalsToIbizPress" enabled="{= ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected' }"/>
 					<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
+					<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onBrazilTenderOverviewPress"/>
 				</OverflowToolbar>
 			</headerToolbar>
 			<l:BlockLayout background="Light" >
