@@ -80,7 +80,7 @@ sap.ui.define([
 			});
 
 		},
-		
+		//EFRCL-217931-Italy - Tender expiry date field
 		//basic info for tender to save
 		getConvertTenderToSave: function (oTenderSaveInfo) {
 
@@ -111,6 +111,8 @@ sap.ui.define([
 			oTenderToSave.BidDueDate = oTenderSaveInfo.BidDueDate;
 			oTenderToSave.AwardDate = oTenderSaveInfo.AwardDate;
 			oTenderToSave.NextPublicationDye = oTenderSaveInfo.NextPublicationDye;
+			//EFRCL-217931-Italy - Tender expiry date field
+			oTenderToSave.TerminationDate = oTenderSaveInfo.TerminationDate;
 			oTenderToSave.ContractLength = Number(oTenderSaveInfo.ContractLength);
 			oTenderToSave.ContractExtenseion = Number(oTenderSaveInfo.ContractExtenseion);
 			oTenderToSave.TenderStatus = oTenderSaveInfo.TenderStatus;
@@ -160,6 +162,7 @@ sap.ui.define([
 			oNewTender.TenderChannel = "";
 			oNewTender.GroupPurchasing = "";
 			oNewTender.PublicationDate = "";
+			oNewTender.TerminationDate = "";
 			oNewTender.BidDueDate = "";
 			oNewTender.AwardDate = "";
 			oNewTender.NextPublicationDye = "";

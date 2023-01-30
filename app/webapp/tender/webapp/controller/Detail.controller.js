@@ -2805,6 +2805,9 @@ sap.ui.define([
 				oTenderToClone.NextPublicationDye = null;
 			}
 
+			if (moment(oTenderToClone.TerminationDate).year() < 1900) {
+				oTenderToClone.TerminationDate = null;
+			}
 			//check if original data is valid (could be invalid due to data inconcistancy)
 			//if data of origanal clone is not valid, end-user should fix original Tender data first
 			var oTenderToCheck = Services.getService('Tender').getConvertTenderToSave(oTenderToClone);
@@ -3865,6 +3868,8 @@ sap.ui.define([
 				oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
 				oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
 
+				//EFRCL-217931-Italy - Tender expiry date field
+				oSaveBasicInfo.TerminationDate = (oTender.TerminationDate) ? oTender.TerminationDate : null;
 				oSaveBasicInfo.TenderStatus = this.byId("idTenderStatus").getSelectedKey();
 
 				/* Mexico */
@@ -4029,7 +4034,8 @@ sap.ui.define([
             } else {
                 oSaveBasicInfo.BidDueDate
             }
-
+			//EFRCL-217931-Italy - Tender expiry date field
+			oSaveBasicInfo.TerminationDate = (oTender.TerminationDate) ? oTender.TerminationDate : null;oSaveBasicInfo.TerminationDate = this._country === 'IT' ? new Date() : oSaveBasicInfo.TerminationDate;
             oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
 			oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
 
@@ -10424,6 +10430,11 @@ sap.ui.define([
 					if(aSpecifications.length > 0){
 						this.byId("idSpecifications").setVisible(true);
 					}
+
+					// if(sCountry === "IT"){
+					// 	this.byId("idTerminationDate").setVisible(true);
+					// 	this.byId("idTerminationDateLabel").setVisible(true);
+					// }
                     //EHQUT-INC0184560-Issue in offer creation
                     if(sCountry === 'ES' && sKey === 'Tender' || sCountry === 'IT') {
                         this.byId("idSelectTenderTypeEdit").setVisible(true);
