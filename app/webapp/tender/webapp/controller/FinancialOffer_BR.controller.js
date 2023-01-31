@@ -123,7 +123,9 @@ sap.ui.define([
 
             // get price conditions
             const priceConditionBrazilViews = await this.getPriceConditionBrazilView();
+            const tenderHistoryBrazil = await this.getTenderHistoryBrazil();
             Services.getFastAppDataModel().setProperty("/PriceConditionBrazilView", priceConditionBrazilViews);
+            Services.getFastAppDataModel().setProperty("/TenderHistoryBrazil", tenderHistoryBrazil);
 
             const existingMainPriceCondition = priceConditionBrazilViews.find(item => item.isMain && item.ExistingPriceConditionID);
             const sConditionType = this.getView().getModel("finOfferView").getProperty("/selectedConditionType");
@@ -166,6 +168,68 @@ sap.ui.define([
             }
             return null;
          },
+
+         /**
+         * This method triggers on TenderHistory filter events
+         * @param {*} oEvent 
+         */
+        onHistoryFilterCheck: async function(oEvent){
+            const tenderHistoryBrazil = await this.getTenderHistoryBrazil();
+            Services.getFastAppDataModel().setProperty("/TenderHistoryBrazil", tenderHistoryBrazil);    
+        }, 
+
+        /**
+         * Get TenderHistory data for Spain using filters
+         */
+        getTenderHistoryBrazil: async function(){
+
+            BusyIndicator.show();
+            let aFilters = [];
+            let oFilters = [];
+
+            const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+            if(offer){
+                const currentInstituteId = Services.getFastAppDataModel().getProperty("/Tender/Institute/InstituteID");
+                    if(this.byId("currentInstituteCheckId").getSelected()){                    
+                        aFilters.push(new Filter({
+                            path: 'INSTITUTE_ID',
+                            operator: FilterOperator.EQ,
+                            value1: currentInstituteId
+                        }));
+                    }
+                    if(this.byId("wonCheckId").getSelected()){
+                        oFilters.push(new Filter({
+                            path: 'OUTCOME',
+                            operator: FilterOperator.EQ,
+                            value1: "Won"
+                        }));
+                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
+                    }                        
+                    if(this.byId("lossCheckId").getSelected()){
+                        oFilters.push(new Filter({
+                            path: 'OUTCOME',
+                            operator: FilterOperator.EQ,
+                            value1: "Lost"
+                        }));
+                        aFilters.push(new sap.ui.model.Filter(oFilters, false));
+                    }
+                    //if(!(this.byId("currentInstituteCheckId").getSelected()) && !(this.byId("wonCheckId").getSelected()) && !(this.byId("lossCheckId").getSelected())){  
+                        if(Services.getSelectedProductID()){             
+                            aFilters.push(new Filter({
+                                path: 'ProductCode',
+                                operator: FilterOperator.EQ,
+                                value1: Services.getSelectedProductID()
+                            }));
+                        }
+                    //}
+                    
+                let tenderHistoryBrazil = await Services.getService("PriceCondition").getTenderHistoryBrazil(aFilters);
+                
+                BusyIndicator.hide();
+                return tenderHistoryBrazil.data.results;
+            } else return null;
+
+        },
 
 
          /**

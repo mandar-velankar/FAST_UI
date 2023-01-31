@@ -468,6 +468,15 @@ sap.ui.define([
             return this.odata("/TenderHistorySpain").get(mParameters);
 		},
 
+        getTenderHistoryBrazil: function(aFilters){
+
+			var mParameters = {
+				filters: aFilters
+			};
+
+            return this.odata("/TenderHistoryBrazil").get(mParameters);
+		},
+
         getDiscountConditions: function(filter){
             
 			let aFilters = [];
