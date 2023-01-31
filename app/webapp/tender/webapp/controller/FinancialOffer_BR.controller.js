@@ -879,7 +879,128 @@ sap.ui.define([
 			this.onNotifyibizDialogCancel();
 
 
-		}
+		},
+        onBrazilTenderOverviewPress: async function () {
+            BusyIndicator.show(0);
+
+			const oTenderOverviewObject = await this._createTenderOverviewModelStructure();
+			Services.getFastAppDataModel().setProperty("/TenderOverview", oTenderOverviewObject);
+
+			const oView = this.getView();
+
+			// create TenderOverview dialog lazily
+			if (!this.pTenderOverviewDialog) {
+
+				this.pTenderOverviewDialog = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.TenderOverviewDialog_BR",
+					controller: this
+				}).then(function (oDialog) {
+					// connect dialog to the root view of this component (models, lifecycle)
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+
+			}
+
+
+			this.pTenderOverviewDialog.then(oDialog => oDialog.open() && BusyIndicator.hide());
+        },
+        _createTenderOverviewModelStructure: async function(){
+
+			// get data
+			const expandFields = "Product/PriceCondition,Distributor";
+			const allTenderOffers = await this.getTenderOffers(expandFields);
+			const allTenderProducts = await this.getTenderProducts(Services.getSelectedTenderID());
+			const uniqueTenderProductCodes = Array.from(new Set(allTenderProducts.map(product => product.ProductCode)));
+
+			// create rows
+			const productTotalDiscounts = uniqueTenderProductCodes.map(productCode => {
+
+				let row = allTenderOffers.map(offer => {
+					const product = offer.Product.results.find(prd => prd.ProductCode === productCode);
+					let totalDiscount = "NA";
+					
+                    // If product, Additional and Standart discounts exist take sum of two discounts
+					if(product && product.PriceCondition.results.length > 0){
+						const priceCondition = product.PriceCondition.results[0];
+						totalDiscount = Math.round((Number(priceCondition.AdditionalDiscount) + Number(priceCondition.StandardDiscount) + Number.EPSILON) * 100) / 100;
+                        totalDiscount = totalDiscount == 0 ? "NA" : totalDiscount
+					}
+                    
+                    // Add percent sign to totalDiscount
+					return {
+						value: totalDiscount
+					};
+				});
+
+				row.forEach((item, index, arr) => {
+					arr[index] = {
+						value: item.value,
+                        bSmallerDiscount: false
+					}
+				});
+
+
+				// add product name at the beginning of the row
+				const oProduct = allTenderProducts.find(prd => prd.ProductCode === productCode);
+
+                //Check minimal discount in row items
+                let discounts = row.map(prod => {
+                   if (prod.value !== "NA")  return prod.value;
+                });
+                discounts = discounts.filter(discount => parseFloat(discount));
+                
+                // Check if product has totalDiscount take minimal discount
+                // if discount is empty array Math.min() return infinity
+                if (discounts.length > 0) {
+                    let minDiscount = Math.min(...discounts); 
+                    row.find(prod => {
+                        if (prod.value == minDiscount) {
+                            prod.bSmallerDiscount = true
+                        }
+                    })
+                }
+				row.unshift({
+					value: oProduct.SKU.PRODUCTPACKNAME
+				});
+
+				return {
+					product: productCode,
+					totalDiscounts: row
+				};
+					
+			});
+			
+
+			// adds an empty object at the beginning of the array before adding it to the model
+			// first column must be empty
+			allTenderOffers.unshift({}); 
+
+			const oTenderOverview = {
+				columns : allTenderOffers,
+				rows    : productTotalDiscounts
+			};
+
+			return oTenderOverview;
+		},
+        onBrazilTenderOverviewDialogClose: function(){
+			if(this.pTenderOverviewDialog){
+				this.pTenderOverviewDialog.then( oDialog => oDialog.close());
+			}
+		},
+        getTenderOffers: async function(sExpand) { 
+
+			const { data: {results: offers} } = await Services.getOffers(Services.getSelectedTenderID(), Services.getSelectedCountry(), sExpand);
+
+			return offers;
+		},
+        getTenderProducts: async function(sTenderID) { 
+
+			const { data: {results: products} } = await Services.getTenderProducts(sTenderID);
+
+			return products;
+		},
 
     });
         
