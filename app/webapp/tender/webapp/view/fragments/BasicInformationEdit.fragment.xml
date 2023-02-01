@@ -288,6 +288,11 @@
 					<!--valueFormat="dd-MM-yyyy" displayFormat="dd.MM.yyyy" />-->
 				<DatePicker id="idNextPublicationDye" value="{path :'fastAppData>/EditTender/NextPublicationDye', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 
+				<!-- EFRCL-217931-Italy - Tender expiry date field -->
+				<Label id="idTerminationDateLabel" text="{i18n>trmndte}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'IT'}"/>
+			    <DatePicker id="idTerminationDate" value="{path :'fastAppData>/EditTender/TerminationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'IT'}"/>
+				<!-- EFRCL-217931-Italy - Tender expiry date field -->
+
 				<!-- Brazil only -->
 				<Label text="{i18n>OfferStartDate}" design="Bold"/>
 				<DatePicker id="idOfferStartDateEdit" 
