@@ -477,8 +477,10 @@ sap.ui.define([
 		},
 
 		//get all products loaded for a specific offer from the fast app data model
-		getLoadedProductsForOffer: function (sOfferID, sProductCode) {
-
+		getLoadedProductsForOffer: function (sOfferID, sProductCode, sLotID) {
+			if (!sLotID) {
+				sLotID = 1;
+			}
 			//if no offer ID
 			if (!sOfferID) {
 				return []; //return no products
@@ -542,14 +544,13 @@ sap.ui.define([
 				}
 				//Deep copying not to keep reference to existing object
 				aProducts = $.extend(true, {}, aProducts);
-
 				//do we return only 1 specific product of all loaded products for the offer
 				if (sProductCode) {
 
 					if (aProducts && aProducts.results) {
 						//only 1 product
 						var aProductsFiltered = aProducts.results.filter(function (oProduct) {
-							if (oProduct.ProductCode === sProductCode) {
+							if (oProduct.ProductCode == sProductCode && oProduct.LotID == sLotID) {
 								return oProduct;
 							}
 						});
@@ -562,7 +563,7 @@ sap.ui.define([
 						return [];
 					}
 
-				} else {
+				}else {
 					return aProducts;
 				}
 
