@@ -126,16 +126,14 @@ sap.ui.define([
             const tenderHistoryBrazil = await this.getTenderHistoryBrazil();
             Services.getFastAppDataModel().setProperty("/PriceConditionBrazilView", priceConditionBrazilViews);
             Services.getFastAppDataModel().setProperty("/TenderHistoryBrazil", tenderHistoryBrazil);
-
+            
             const existingMainPriceCondition = priceConditionBrazilViews.find(item => item.isMain && item.ExistingPriceConditionID);
-            const sConditionType = this.getView().getModel("finOfferView").getProperty("/selectedConditionType");
-
+            const sConditionType = "Discount";
             //bind MainPriceCondition
             const existingMainPriceConditionType = existingMainPriceCondition ? existingMainPriceCondition.ConditionType : sConditionType;
             this.bindingMainPriceCondition(existingMainPriceConditionType);
             this.getView().getModel("finOfferView").setProperty("/selectedConditionType", existingMainPriceConditionType);
       
-            BusyIndicator.hide();
         },
 
         /**
@@ -283,15 +281,17 @@ sap.ui.define([
             BusyIndicator.show();
 
             const offer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+            const selectedProductLotID = Services.getFastAppDataModel().getProperty("/EditSelectedProduct/LotID");
             if(offer){
-                const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID());
+                const selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(),Services.getSelectedProductID(), selectedProductLotID);
 
                 const filter = {
                     "CountryCode": offer.CountryCode,
                     "Classification": offer.Tender.Classification,
                     "Division": offer.Division,
                     "OfferID": offer.OfferID,
-                    "ProductCode": selectedProduct.ProductCode
+                    "ProductCode": selectedProduct.ProductCode,
+                    "LotID": selectedProduct.LotID
                 };
 
                 let priceConditionBrazilViews = await Services.getService("PriceCondition").getPriceConditionBrazilView(filter);
@@ -762,8 +762,8 @@ sap.ui.define([
 							Services.setSelectedProductPath(aItems[0].getBindingContextPath());
                             Services.setSelectedProductName(prdObj.ProductPackName);
                             Services.setSelectedProductID(prdObj.ProductCode);
-
-                            let selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID());
+                            const selectedProductLotID = Services.getFastAppDataModel().getProperty("/EditSelectedProduct/LotID");
+                            let selectedProduct = Services.getLoadedProductsForOffer(Services.getSelectedOfferID(), Services.getSelectedProductID(), selectedProductLotID);
                             Services.getFastAppDataModel().setProperty("/SelectedOffer/SelectedProduct",selectedProduct);
 						}
                             
