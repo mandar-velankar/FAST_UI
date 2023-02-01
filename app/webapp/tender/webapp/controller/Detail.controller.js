@@ -4035,7 +4035,7 @@ sap.ui.define([
                 oSaveBasicInfo.BidDueDate
             }
 			//EFRCL-217931-Italy - Tender expiry date field
-			oSaveBasicInfo.TerminationDate = (oTender.TerminationDate) ? oTender.TerminationDate : null;oSaveBasicInfo.TerminationDate = this._country === 'IT' ? new Date() : oSaveBasicInfo.TerminationDate;
+			oSaveBasicInfo.TerminationDate = (oTender.TerminationDate) ? oTender.TerminationDate : null;
             oSaveBasicInfo.AwardDate = (oTender.AwardDate) ? oTender.AwardDate : null;
 			oSaveBasicInfo.NextPublicationDye = (oTender.NextPublicationDye) ? oTender.NextPublicationDye : null;
 
