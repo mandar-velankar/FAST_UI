@@ -8908,7 +8908,7 @@ sap.ui.define([
 			const selectedOfferProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
 			const contractUserInput = this.getView().getModel("viewModel").getProperty("/BrazilContract");
 			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
-			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts);
+			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts, contractUserInput);
 			try {
 				BusyIndicator.show(0);
 				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
@@ -8948,13 +8948,14 @@ sap.ui.define([
 			}
 		},
 
-		getMappedContractProducts: function (selectedOfferProducts) {
+		getMappedContractProducts: function (selectedOfferProducts, contractUserInput) {
 			return selectedOfferProducts.results.map(product => {
+				const requestedVolume = contractUserInput.ContractType === "Adhesion Contract" ? 0 : product.RequestedVolume
 				return {
 					"ProductPackID": product.ProductCode,
 					"IbizContractProductID": null,
 					"OfferID": product.OfferID,
-					"RequestedVolume": 0,
+					"RequestedVolume": requestedVolume,
 					"IbizItemType": null,
 					"LotID": product.LotID,
 					"ContractPrice": product.PriceCondition.results[0].CommercialProposal,
