@@ -8820,7 +8820,7 @@ sap.ui.define([
 
 			// create PriceConditionTableEntities
 			aOfferProductValidation.forEach(prd => {
-				const priceConditions = prd.PriceCondition.results;
+				const priceConditions = prd.PriceCondition.results.filter(el => el.LotID == prd.LOTID);
 				priceConditions.forEach(pc => {
 					const data = {
 						SORTER: prd.SORTER,
