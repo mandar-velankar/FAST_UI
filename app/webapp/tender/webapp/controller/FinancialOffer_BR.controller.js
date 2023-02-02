@@ -922,15 +922,9 @@ sap.ui.define([
 			let comment = loadedOfferStatus; // will contain the offer status value
 			const workflowID = loadedOffer.IbizWorkflowID;
 			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : -1;
-            let saved = this._DetailController.onSaveDefaultQuotation();
-			this._DetailController.onSubmitQuotation();
 			try{
 				//Logic to call the API to Notify about Product Switch
 				await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
-                if (offerStatus == 1) {
-                    
-                    
-                }
 			}catch(error){
 				sap.m.MessageBox.error(error.message, {
 					title: "Error",
