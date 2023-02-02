@@ -22,10 +22,11 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/ranking/Ranking",
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"sap/m/MessageBox"
 ], function (Controller, MessageToast, OfferProducts, Button, Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,MessageBox) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -39,7 +40,8 @@ sap.ui.define([
 		//Formatting functions
 		formatter: formatter,
 		types: {
-			percent: PercentageType
+			percent: PercentageType,
+			percentdecimal :PercentageTypeDecimal
 		},
 
 
