@@ -922,11 +922,9 @@ sap.ui.define([
 			let comment = loadedOfferStatus; // will contain the offer status value
 			const workflowID = loadedOffer.IbizWorkflowID;
 			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : -1;
-			
 			try{
 				//Logic to call the API to Notify about Product Switch
 				await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
-
 			}catch(error){
 				sap.m.MessageBox.error(error.message, {
 					title: "Error",
@@ -988,7 +986,7 @@ sap.ui.define([
                     // If product, Additional and Standart discounts exist take sum of two discounts
 					if(product && product.PriceCondition.results.length > 0){
 						const priceCondition = product.PriceCondition.results[0];
-						totalDiscount = Math.round((Number(priceCondition.AdditionalDiscount) + Number(priceCondition.StandardDiscount) + Number.EPSILON) * 100) / 100;
+						totalDiscount = Number(priceCondition.AdditionalDiscount) + Number(priceCondition.StandardDiscount) + Number.EPSILON;
                         totalDiscount = totalDiscount == 0 ? "NA" : totalDiscount
 					}
                     
