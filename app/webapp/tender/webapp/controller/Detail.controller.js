@@ -6149,6 +6149,7 @@ sap.ui.define([
 					//Add selected products so they can be removed from the database
 					oProductToRemove = {};
 					oProductToRemove.ProductCode = aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex].ProductCode;
+					oProductToRemove.LotID = aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex].LotID;
 					aProductsToRemove.push(oProductToRemove);
 
 				}
