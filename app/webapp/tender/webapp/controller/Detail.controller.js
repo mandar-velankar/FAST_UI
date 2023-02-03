@@ -10085,6 +10085,12 @@ sap.ui.define([
     
 
                                     }
+
+									// Brazil only
+									if(Services.getSelectedCountry().indexOf("BR") > -1){
+										const commercialProposal = oProduct.PriceCondition.results[0].CommercialProposal;
+										iAwardedPrice = commercialProposal; 
+                                    }
                                     
                                     
 
@@ -10134,7 +10140,8 @@ sap.ui.define([
                                         INFONEEDED:(!oResult.InfoNeeded ? "No" : oResult.InfoNeeded),
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation, //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
-                                        PriceCondition: iPriceCondition
+                                        PriceCondition: iPriceCondition,
+										LotID: oProduct.LotID
                                     }
 
 									var oResultsForTree = {
