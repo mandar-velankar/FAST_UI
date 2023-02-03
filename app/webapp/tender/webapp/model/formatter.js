@@ -604,7 +604,7 @@ sap.ui.define([
         },
 		formatTotalDiscount: function (value) {
 			if (!isNaN(parseFloat(value))) {
-				return value * 100 + "%";
+				return (value * 100).toFixed(2) + "%";
 			}
 			return value
 		}

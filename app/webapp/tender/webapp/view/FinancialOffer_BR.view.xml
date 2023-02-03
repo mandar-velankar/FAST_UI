@@ -300,7 +300,7 @@
 			<l:BlockLayout background="Light">
 				<l:BlockLayoutRow>
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA">
-						<Table id="tenderHistoryId" inset="false">
+						<Table id="tenderHistoryId" items="{path : 'fastAppData>/TenderHistoryBrazil'}" inset="false">
 							<headerToolbar>
 								<Toolbar>
 									<content>
@@ -333,40 +333,31 @@
 									<Text text="{i18n>Product}"/>
 								</Column>
 								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>UnitPrice}"/>
+									<Text text="{i18n>didtrbtrnme}"/>
 								</Column>
 								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>PackPrice}"/>
+									<Text text="{i18n>PriceList}"/>
 								</Column>
 								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>PVL}"/>
+									<Text text="{i18n>TaxExemption}"/>
 								</Column>
 								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>ConfidentialPrice}"/>
-								</Column>
-								<!-- <Column minScreenWidth="Tablet" demandPopin="true" visible="false">
-									<Text text="{i18n>UnitPack}" visible="false"/>
-								</Column> -->
-                                <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>PriceCondition}"/>
+									<Text text="{i18n>CAP}"/>
 								</Column>
                                 <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>RoyalDecree}"/>
+									<Text text="{i18n>TotalDiscount}"/>
 								</Column>
                                 <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>Discount}"/>
-								</Column>
-								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>FOC}"/>
+									<Text text="{i18n>CommercialProposal}"/>
 								</Column>
                                 <Column minScreenWidth="Tablet" width="10%" demandPopin="true">
-									<Text text="{i18n>Rappel}"/>
-								</Column>                                
+									<Text text="{i18n>Adhesion}"/>
+								</Column>                               
 								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>Status}"/>
 								</Column>
 							</columns>
-                            <!-- <items>
+                             <items>
 									<ColumnListItem highlight="Indication04">
 										<cells>
 											<Text text="{fastAppData>TenderID}"/>
@@ -387,37 +378,31 @@
 											<Text text="{fastAppData>PRODUCT_NAME}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>UNIT_PRICE}"/>
+											<Text text="{fastAppData>DISTRIBUTOR_NAME}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>PACK_PRICE}"/>
+											<Text text="{fastAppData>PRICE_LIST}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>PVL}"/>
+											<Text text="{fastAppData>TAX_EXEMPTION}"/>
 										</cells>
                                         <cells>
-											<Text text="{fastAppData>CONFIDENTIAL_PRICE}"/>
+											<Text text="{fastAppData>CAP}"/>
 										</cells>
                                         <cells>
-											<Text text="{fastAppData>PRICE_CONDITION}"/>
+											<Text text="{fastAppData>TOTAL_DISCOUNT}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>ROYALDECREE}"/>
+											<Text text="{fastAppData>COMM_PROPOSAL}"/>
 										</cells>
                                         <cells>
-											<Text text="{fastAppData>DISCOUNT}"/>
-										</cells>
-                                        <cells>
-											<Text text="{fastAppData>FOC}"/>
-										</cells>
-                                        <cells>
-											<Text text="{fastAppData>RAPPEL}"/>
+											<Text text="{fastAppData>ADHESION}"/>
 										</cells>
                                          <cells>
 											<Text text="{fastAppData>OUTCOME}"/>
 										</cells>
 									</ColumnListItem>
-								</items>                             -->
+								</items>
 						</Table>
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>

@@ -188,7 +188,7 @@ sap.ui.define([
                 oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
                 let oFastAppDataModel = Services.getFastAppDataModel();
                 let offerID = tab === "offerProductsPage" ? oFastAppDataModel.getProperty("/EditOffer/OfferStatus/OFFER_ID") : oPriceConditionViewObject.OfferID;
-                let product = Services.getLoadedProductsForOffer(offerID).results.find(prd => prd.ProductCode === oPriceConditionViewObject.ProductCode);
+                let product = Services.getLoadedProductsForOffer(offerID, oPriceConditionViewObject.ProductCode, oPriceConditionViewObject.LotID);
 
                 // when this method is being called from Continued Offer, oProductPrice is null
                 // because of this we will get some info from the product table of the EditOffer page.
@@ -451,6 +451,14 @@ sap.ui.define([
                 }));
             }
 
+            if(filter.LotID){
+                aFilters.push(new Filter({
+                    path: 'LotID',
+                    operator: FilterOperator.EQ,
+                    value1: filter.LotID
+                }));
+            }
+
 			var mParameters = {
 				filters: aFilters
 			};
@@ -466,6 +474,15 @@ sap.ui.define([
 			};
 
             return this.odata("/TenderHistorySpain").get(mParameters);
+		},
+
+        getTenderHistoryBrazil: function(aFilters){
+
+			var mParameters = {
+				filters: aFilters
+			};
+
+            return this.odata("/TenderHistoryBrazil").get(mParameters);
 		},
 
         getDiscountConditions: function(filter){
