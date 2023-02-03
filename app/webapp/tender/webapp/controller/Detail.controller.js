@@ -9960,7 +9960,15 @@ sap.ui.define([
 
 							//are there results
 							if (oProduct.Results && oProduct.Results.results.length > 0) {
-								oProduct.Results.results.forEach(function (oResult) {
+								
+								let results = oProduct.Results.results;
+
+								// Brazil - Filter for LotID if it exists
+								if(sCountry === "BR" && oProduct.Results.results[0].LotID){
+									results = results.filter(r => r.LotID == oProduct.LotID);
+								}
+
+								results.forEach(function (oResult) {
 									//Results, repeat product for each result
 									var oResultsForProducts = {
 										oProduct: {},
@@ -10599,7 +10607,7 @@ sap.ui.define([
                         Appeal: oResultForTree.APPEAL,
                         TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
                         InfoNeeded: oResultForTree.INFONEEDED,
-						LotID: 1 // TODO: for Brazil this value should be dynamic                       
+						LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1                     
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
