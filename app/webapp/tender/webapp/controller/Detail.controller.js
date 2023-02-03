@@ -8954,7 +8954,7 @@ sap.ui.define([
 					"ProductPackID": product.ProductCode,
 					"IbizContractProductID": null,
 					"OfferID": product.OfferID,
-					"RequestedVolume": 0,
+					"RequestedVolume": product.RequestedVolume,
 					"IbizItemType": null,
 					"LotID": product.LotID,
 					"ContractPrice": product.PriceCondition.results[0].CommercialProposal,
