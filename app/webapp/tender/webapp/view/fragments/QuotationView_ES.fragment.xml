@@ -719,7 +719,7 @@
                             ], formatter:'.formatter.price'}"/>
 
                             <!-- Discount -->
-                            <m:Text text="{path :'fastAppData>PriceCondition/Discount', type:'.types.percent'} %"/>
+                            <m:Text text="{path :'fastAppData>PriceCondition/Discount', type:'.types.percentdecimal'} %"/>
 
                             <!-- Monthly Rent -->
                             <m:ObjectStatus text="{parts: [ {path: 'fastAppData>PriceCondition/results/0/MonthlyRentPerUnit'},  {path: 'fastAppData>CURRENCY'} ], formatter:'.formatter.price'}"
