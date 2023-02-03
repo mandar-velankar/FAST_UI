@@ -5,6 +5,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/userinfo",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
 	"FAST_NS0FAST0/model/financial",
+    "FAST_NS0FAST0/model/quotation",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
@@ -12,8 +13,8 @@ sap.ui.define([
     "sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
-    "sap/ui/model/Sorter"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
+    "sap/ui/model/Sorter",
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	//var bundle;
@@ -925,6 +926,7 @@ sap.ui.define([
 			try{
 				//Logic to call the API to Notify about Product Switch
 				await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
+                if (offerStatus == 1) await this._saveAndSubmitQuotation();
 			}catch(error){
 				sap.m.MessageBox.error(error.message, {
 					title: "Error",
@@ -938,10 +940,59 @@ sap.ui.define([
 			BusyIndicator.hide();
 
 			//close dialog
-			this.onNotifyibizDialogCancel();
+			// this.onNotifyibizDialogCancel();
 
 
 		},
+        _saveAndSubmitQuotation: async function () {
+            var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+            // make sure selectedOfferPath is correctly set
+            if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
+            const offerStatus = await Services.checkOfferStatus();
+            if (!offerStatus) return;
+			var sStatus = offerStatus.STATUS;
+			var aStatusNoEdit = [
+				"Awaiting Approval" //,
+			];
+			if ($.inArray(sStatus, aStatusNoEdit) !== -1) {
+				sap.m.MessageBox.warning("Quotation cannot be saved, offer is in status Awating approval.", {});
+			} else {
+
+				let oCustomRemark = that.byId("idCustomRemark");
+				let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+				let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
+                await Services.loadOfferValidation(Services.getSelectedOfferID());
+
+				const quotationFields = {
+					OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
+					OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+					EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+					ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
+					CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
+					IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
+					CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
+				};
+
+				//do the save of the quotation with UPDATED to 1
+                const bSave = await Quotation.saveQuotation(quotationFields, 1)
+
+                if (bSave) {
+					//check if there needs to be an update (already existing and erpost)
+                    const qoutationForSelectedOffer = await Quotation.loadQuotationForSelectedOffer(quotationFields.OfferDate);
+                    if (qoutationForSelectedOffer) {
+                        //do the save of the quotation
+                        await Quotation.submitQuotation(quotationFields);
+                    }
+                }		
+			}
+        },
         onBrazilTenderOverviewPress: async function () {
             BusyIndicator.show(0);
 
