@@ -8991,6 +8991,7 @@ sap.ui.define([
 				};
 
 			}
+			Services.getFastAppDataModel().setProperty("/QuotationDateRestrictions", dateRestrictions);
 		},
 
 		onChangeQuotationDates:function(event,dateType){
