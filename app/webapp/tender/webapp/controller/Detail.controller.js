@@ -8958,17 +8958,6 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/QuotationPriceConditionTableBrazil", tableData);
 		},
 
-		setQuotationDateRestrictions:function(){
-			let tomorrow = new Date();
-			tomorrow.setDate(tomorrow.getDate() + 1);
-			const dateRestrictions = {
-				effectiveDate:{
-					min: tomorrow
-				}
-			};
-			Services.getFastAppDataModel().setProperty("/QuotationDateRestrictions", dateRestrictions);
-		},
-
 		setQuotationDateRestrictions:function(hasExistingPriceAgreement, existingPaExpiryDate){
 
 			let dateRestrictions = {};
