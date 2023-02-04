@@ -6149,6 +6149,7 @@ sap.ui.define([
 					//Add selected products so they can be removed from the database
 					oProductToRemove = {};
 					oProductToRemove.ProductCode = aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex].ProductCode;
+					oProductToRemove.LotID = aExistingProductsWhithoutAlreadyDeleted[iSelectedIndex].LotID;
 					aProductsToRemove.push(oProductToRemove);
 
 				}
@@ -8820,7 +8821,7 @@ sap.ui.define([
 
 			// create PriceConditionTableEntities
 			aOfferProductValidation.forEach(prd => {
-				const priceConditions = prd.PriceCondition.results;
+				const priceConditions = prd.PriceCondition.results.filter(el => el.LotID == prd.LOTID);
 				priceConditions.forEach(pc => {
 					const data = {
 						SORTER: prd.SORTER,
@@ -8908,7 +8909,7 @@ sap.ui.define([
 			const selectedOfferProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
 			const contractUserInput = this.getView().getModel("viewModel").getProperty("/BrazilContract");
 			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
-			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts);
+			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts, contractUserInput);
 			try {
 				BusyIndicator.show(0);
 				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
@@ -8948,13 +8949,14 @@ sap.ui.define([
 			}
 		},
 
-		getMappedContractProducts: function (selectedOfferProducts) {
+		getMappedContractProducts: function (selectedOfferProducts, contractUserInput) {
 			return selectedOfferProducts.results.map(product => {
+				const requestedVolume = contractUserInput.ContractType === "Adhesion Contract" ? 0 : product.RequestedVolume
 				return {
 					"ProductPackID": product.ProductCode,
 					"IbizContractProductID": null,
 					"OfferID": product.OfferID,
-					"RequestedVolume": product.RequestedVolume,
+					"RequestedVolume": requestedVolume,
 					"IbizItemType": null,
 					"LotID": product.LotID,
 					"ContractPrice": product.PriceCondition.results[0].CommercialProposal,
@@ -9958,7 +9960,15 @@ sap.ui.define([
 
 							//are there results
 							if (oProduct.Results && oProduct.Results.results.length > 0) {
-								oProduct.Results.results.forEach(function (oResult) {
+								
+								let results = oProduct.Results.results;
+
+								// Brazil - Filter for LotID if it exists
+								if(sCountry === "BR" && oProduct.Results.results[0].LotID){
+									results = results.filter(r => r.LotID == oProduct.LotID);
+								}
+
+								results.forEach(function (oResult) {
 									//Results, repeat product for each result
 									var oResultsForProducts = {
 										oProduct: {},
@@ -10084,6 +10094,12 @@ sap.ui.define([
     
 
                                     }
+
+									// Brazil only
+									if(Services.getSelectedCountry().indexOf("BR") > -1){
+										const commercialProposal = oProduct.PriceCondition.results[0].CommercialProposal;
+										iAwardedPrice = commercialProposal; 
+                                    }
                                     
                                     
 
@@ -10133,7 +10149,8 @@ sap.ui.define([
                                         INFONEEDED:(!oResult.InfoNeeded ? "No" : oResult.InfoNeeded),
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation, //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
-                                        PriceCondition: iPriceCondition
+                                        PriceCondition: iPriceCondition,
+										LotID: oProduct.LotID
                                     }
 
 									var oResultsForTree = {
@@ -10590,7 +10607,7 @@ sap.ui.define([
                         Appeal: oResultForTree.APPEAL,
                         TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
                         InfoNeeded: oResultForTree.INFONEEDED,
-						LotID: 1 // TODO: for Brazil this value should be dynamic                       
+						LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1                     
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
