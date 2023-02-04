@@ -73,7 +73,22 @@
 									</TileContent>
 								</GenericTile>
 							</l:HorizontalLayout>
-						</l:VerticalLayout>						
+						</l:VerticalLayout>	
+
+						<!-- FAST Dashboards -->
+						<l:VerticalLayout>
+							<l:HorizontalLayout id="idFastDashboards" allowWrapping="true">
+								<GenericTile 
+									class="sapUiTinyMarginBegin 
+									sapUiTinyMarginTop tileLayout" 
+									header="FAST Dashboards" 
+									press="onTileFastDashboardsPress">
+									<TileContent footer="Go to tableau...">
+										<ImageContent src="{imageModel>/path}/tableau_logo.jpg"/>
+									</TileContent>
+								</GenericTile>
+							</l:HorizontalLayout>
+						</l:VerticalLayout>					
 					</Panel>
 				
 				</ScrollContainer>

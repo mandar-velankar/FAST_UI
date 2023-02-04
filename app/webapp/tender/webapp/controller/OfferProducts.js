@@ -288,11 +288,11 @@ sap.ui.define([
 				visible: sCountryCode === "CL" ? false : true
 			}));
         }
-//EHQUT-196575- Thailand - Change Request - INC16653808 
-
+			//EHQUT-196575- Thailand - Change Request - INC16653808 
+			//EHQUT-INC18040340-Please change price approval authority tracking system - Offer Management Application (FAST)
 			//Net price
 			oForm.addContent(new sap.m.Label({
-				text: "{i18n>NetPrice}"
+				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>NetPrice_TH} : ${i18n>NetPrice}}" 
 			}));
 			oForm.addContent(new sap.m.Input({
 				id: oDetailController.getView().createId(formId + "_idNetPrice"),

@@ -198,7 +198,8 @@
 			</ObjectPageSection>
 			
 			<!-- FINANCIAL OFFER TAB -->
-			<ObjectPageSection id="financialOfferId" title="{i18n>FinancialOffer}" showTitle="true" visible="{fastAppData>/permissions/tabs/financialOfferId/visible}">
+			<ObjectPageSection id="financialOfferId" title="{i18n>FinancialOffer}" visible="{=!(${access>/tenderAccess/MEATENDERVIEW}) &amp;&amp; ${fastAppData>/permissions/tabs/financialOfferId/visible} ? true : false}" >
+			
 				<subSections>
 					<core:Fragment fragmentName="FAST_NS0FAST0.view.fragments.FinancialOfferView" type="XML" id="financialOfferFragmentId"/>
 				</subSections>
