@@ -6176,14 +6176,24 @@ sap.ui.define([
 		onDeleteProductForOffer: function () {
 
 			let oFastAppData = Services.getFastAppDataModel();
-
+			const sCountryCode = Services.getCountryCodeofSelectedTender();
 			//Deleting products
 			var oTableProducts = this.byId("editofferProductId");
 			var aIndexSelectedRows = oTableProducts.getSelectedIndices();
-
 			var aProductsToRemove = [];
 			var oProductToRemove = {};
 			let aExistingProducts = Services.getProductsSaveInfo();
+			let selectedLotID = 1; // Default LotID. Not for Brazil
+			let bBrazilDivisionChanged = oFastAppData.getProperty("/bBrazilDivisionChanged");
+			if (sCountryCode === "BR" && !bBrazilDivisionChanged) {
+				selectedLotID = oFastAppData.getProperty("/SelectedLot") || Number(this.byId("idSelectLotView").getSelectedKey());
+			}
+			if (sCountryCode === "BR" && bBrazilDivisionChanged) {
+				oFastAppData.setProperty("/bBrazilDivisionChanged", false);
+				Services.removeProductsSaveInfo(aExistingProducts, sCountryCode, bBrazilDivisionChanged);
+				oTableProducts.clearSelection();
+				return;
+			}
 			if(!aExistingProducts || aExistingProducts.length === 0){ 
 				aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
 			}
@@ -6191,9 +6201,8 @@ sap.ui.define([
 			//already deleted products are not visible in table, so indexselectedrows should ignore these products
 			//but they still need to be available for saving
 			var aExistingProductsWhithoutAlreadyDeleted = aExistingProducts.filter(function (oCurrent) {
-				return oCurrent._sOperation !== 'DELETE';
+				return oCurrent._sOperation !== 'DELETE' && oCurrent.LotID === selectedLotID;
 			});
-
 			//loop at selected rows
 			aIndexSelectedRows?.forEach(function (iSelectedIndex, iIndex) {
 
@@ -7377,7 +7386,7 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
             var that = this;
             let oDivisionSelect = that._country === "ES" ? that.getView().byId("idProductOfferDivisionES") : that.getView().byId("idProductOfferDivision");
-
+			const sCountryCode = Services.getCountryCodeofSelectedTender();
 			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
 				sap.m.MessageBox.warning("Are you sure you want to change the Division? Existing products will be removed.", {
 					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
@@ -7385,6 +7394,7 @@ sap.ui.define([
 					onClose: function (sAction) {
 						if (sAction === "YES") {
 							var oTableProducts = that.byId("editofferProductId");
+							if (sCountryCode === "BR") oFastAppDataModel.setProperty("/bBrazilDivisionChanged", true);// If you change division it will remove all products from offer using this property. For Brazil
 							oTableProducts.selectAll();
 							that.onDeleteProductForOffer();
 							Services.setSelectedDivisionID(oDivisionSelect.getSelectedKey());
