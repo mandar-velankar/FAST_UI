@@ -235,7 +235,7 @@ sap.ui.define([
                 "ProductCode": oPriceConditionViewObject.ProductCode,
                 "PVL": convertedPVL,
                 "ConfidentialPrice":  convertedConfPrice || oPriceConditionViewObject.ConfidentialPrice, // oPriceConditionViewObject.ConfidentialPrice used when creating continued/revised offer
-                "Discount": oPriceConditionViewObject.CountryCode === 'BR' ? (parseFloat(oPriceConditionViewObject.StandardDiscount + oPriceConditionViewObject.AdditionalDiscount)) : oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
+                "Discount": oPriceConditionViewObject.CountryCode === 'BR' ? (parseFloat(oPriceConditionViewObject.StandardDiscount) + parseFloat(oPriceConditionViewObject.AdditionalDiscount)).toFixed(2) : oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "RoyalDecreeValue": oPriceConditionViewObject.RoyalDecreeValue,
                 "RoyalDecreeIncl": oPriceConditionViewObject.RoyalDecreeIncl,
