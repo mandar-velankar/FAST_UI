@@ -7386,6 +7386,7 @@ sap.ui.define([
 			var oFastAppDataModel = Services.getFastAppDataModel();
             var that = this;
             let oDivisionSelect = that._country === "ES" ? that.getView().byId("idProductOfferDivisionES") : that.getView().byId("idProductOfferDivision");
+			const sCountryCode = Services.getCountryCodeofSelectedTender();
 			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
 				sap.m.MessageBox.warning("Are you sure you want to change the Division? Existing products will be removed.", {
 					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
@@ -7393,7 +7394,7 @@ sap.ui.define([
 					onClose: function (sAction) {
 						if (sAction === "YES") {
 							var oTableProducts = that.byId("editofferProductId");
-							if (that._country === "BR") oFastAppDataModel.setProperty("/bBrazilDivisionChanged", true);// If you change division it will remove all products from offer using this property. For Brazil
+							if (sCountryCode === "BR") oFastAppDataModel.setProperty("/bBrazilDivisionChanged", true);// If you change division it will remove all products from offer using this property. For Brazil
 							oTableProducts.selectAll();
 							that.onDeleteProductForOffer();
 							Services.setSelectedDivisionID(oDivisionSelect.getSelectedKey());
