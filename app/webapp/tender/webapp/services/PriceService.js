@@ -266,7 +266,7 @@ sap.ui.define([
 			oPriceToSave.FOC = (oPriceSaveInfo.FOC === null) ? null : oPriceSaveInfo.FOC.toString();
 			oPriceToSave.FOCStep = (oPriceSaveInfo.FOCStep === undefined || oPriceSaveInfo.FOCStep === null) ? null : oPriceSaveInfo.FOCStep.toString();
 			oPriceToSave.FOCType = oPriceSaveInfo.FOCType;
-			oPriceToSave.Discount = (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
+			oPriceToSave.Discount = oPriceSaveInfo.CountryCode === 'BR' ? (parseFloat(oPriceSaveInfo.AdditionalDiscount + oPriceSaveInfo.StandardDiscount)) : (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
 			oPriceToSave.OfferPrice = (oPriceSaveInfo.OfferPrice === null) ? null : oPriceSaveInfo.OfferPrice.toString();
 			oPriceToSave.Deductions = (oPriceSaveInfo.Deductions === null) ? null : oPriceSaveInfo.Deductions.toString();
 			oPriceToSave.StandardDiscount = (oPriceSaveInfo.StandardDiscount === null) ? null : oPriceSaveInfo.StandardDiscount.toString();
