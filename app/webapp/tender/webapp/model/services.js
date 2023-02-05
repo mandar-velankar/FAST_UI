@@ -5654,7 +5654,7 @@ sap.ui.define([
 
 		//REMOVING
 		//--------
-		removeProductsSaveInfo: function (aProductsToRemove) {
+		removeProductsSaveInfo: function (aProductsToRemove, sCountryCode, bBrazilDivisionChanged) {
 
 			var that = this;
 			var oFastAppDataModel = this.getFastAppDataModel();
@@ -5670,8 +5670,11 @@ sap.ui.define([
 
 			//loop over the products and check if they need to be removed from the database
 			aProducts.forEach(function (oProduct, indexCurrentProduct) {
-
-				iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode && x.LotID === oProduct.LotID);
+				if (sCountryCode === "BR" && bBrazilDivisionChanged) {
+					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode);
+				}else {
+					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode && x.LotID === oProduct.LotID);
+				}
 
 				if (iIndex !== -1) { //deze staan klaar om verwijderd te worden
 
