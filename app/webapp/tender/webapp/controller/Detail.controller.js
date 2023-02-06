@@ -41,7 +41,7 @@ sap.ui.define([
 		formatter: formatter,
 		types: {
 			percent: PercentageType,
-			percentdecimal :PercentageTypeDecimal
+			percentdecimal : PercentageTypeDecimal
 		},
 
 
