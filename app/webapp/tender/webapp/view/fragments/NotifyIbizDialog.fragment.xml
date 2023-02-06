@@ -6,17 +6,20 @@
 	<Dialog
 		id="idNotifyIbizDialog"
 		title="Notify IBIZ"
-		contentWidth="200px"
-		contentHeight="100px">
+		contentWidth="700px"
+		contentHeight="100px"
+		state="Warning"
+		class="sapUiResponsiveMargin">
 		<content>
-			<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+			<!-- <form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 				adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
 				singleContainerFullSize="false" backgroundDesign="Solid">
 				<form:content>
 					<Label text="{i18n>Comment}"/>
                     <Input id="idNotifyIbizComments" value="Price Refused" fieldWidth="80%"/>
 				</form:content>
-			</form:SimpleForm>
+			</form:SimpleForm> -->
+			<Text text="This will notify IBIZ of direct/Indirect changes you made. Please note that, if you choose to notify, this action cannot be undone" class="sapUiMediumMargin"/>
 		</content>
 		<beginButton>
 			<Button text="{i18n>Notify}" press=".onNotifyibizDialog" />

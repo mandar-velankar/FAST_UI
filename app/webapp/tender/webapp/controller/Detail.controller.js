@@ -11555,7 +11555,7 @@ sap.ui.define([
             BusyIndicator.show();
 			
             //get user input
-			let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
+			// let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
 			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID");
 			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect");
 			const workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs");
