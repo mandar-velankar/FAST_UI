@@ -84,6 +84,14 @@ sap.ui.define([
                 }));
             }
 
+			if(filter.ID){
+				aFilters.push(new Filter({
+					path: 'ID',
+					operator: FilterOperator.EQ,
+					value1: filter.ID
+				}))
+			}
+
 			var mParameters = {
 				filters: aFilters,
 				urlParameters: {

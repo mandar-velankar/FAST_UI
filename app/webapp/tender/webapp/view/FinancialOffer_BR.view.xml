@@ -33,7 +33,7 @@
 				<OverflowToolbar>
 					<Title text="{i18n>offersum}"/>
 					<ToolbarSpacer />
-					<Button id="btnShareApprovalToIbizId" text="Share Approval to IBIZ" icon="sap-icon://approvals" press="onShareApprovalsToIbizPress" enabled="{= ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected' }"/>
+					<Button id="btnShareApprovalToIbizId" text="Share Decision with IBIZ" icon="sap-icon://approvals" press="onShareApprovalsToIbizPress" enabled="{= ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected' }"/>
 					<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
 					<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onBrazilTenderOverviewPress"/>
 				</OverflowToolbar>
@@ -74,6 +74,9 @@
 										<Text text="{i18n>Product}"/>
 									</Column>
 									<Column>
+										<Text text="{i18n>LotID}"></Text>
+									</Column>
+									<Column>
 										<Text text="{i18n>Volume}"/>
 									</Column>
 									<Column>
@@ -105,6 +108,9 @@
 									<ColumnListItem type="Navigation" press="onFinancialProductPress" detailPress="onDetailPress">
 										<cells>
 											<Text text="{fastAppData>ProductPackName}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>LotID}"/>
 										</cells>
 										<cells>
 											<Text text="{fastAppData>RequestedVolume}"/>

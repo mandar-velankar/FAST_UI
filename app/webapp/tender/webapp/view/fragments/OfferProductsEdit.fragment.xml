@@ -405,6 +405,7 @@
 										</Select>
 									</t:template>
 								</t:Column>
+								<!-- EHQUT-RITM12706398-SEWA Change Request -->
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/FirstShipment/visible}">
 									<Label id="idFirstShipmentLabel"
 										   text="{ path: 'fastAppData>/permissions/tables/editofferProductId/FirstShipment/description',
@@ -412,7 +413,7 @@
 									       wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/FirstShipment/required}"/>
 									<t:template>
-										<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true"/>
+										<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/Country/Region} === 'SEWA' ? false : true }"/>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/NoLots/visible}">

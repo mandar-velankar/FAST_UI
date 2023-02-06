@@ -174,6 +174,11 @@ sap.ui.define([
 		//Tile analytics press
 		onTileAnalyticsDashPress: function(oEvent) {
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/FASTAnalytics/ExecutiveSummary?:iid=1"); //check where to store constants
+		},
+
+		//Tile FAST Dashboards
+		onTileFastDashboardsPress: function(oEvent){
+			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/FASTDashboards/ExecutiveSummary?:iid=1"); //check where to store constants
 		}
 		
 	});

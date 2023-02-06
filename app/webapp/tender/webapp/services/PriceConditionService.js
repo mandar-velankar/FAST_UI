@@ -235,7 +235,7 @@ sap.ui.define([
                 "ProductCode": oPriceConditionViewObject.ProductCode,
                 "PVL": convertedPVL,
                 "ConfidentialPrice":  convertedConfPrice || oPriceConditionViewObject.ConfidentialPrice, // oPriceConditionViewObject.ConfidentialPrice used when creating continued/revised offer
-                "Discount": oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
+                "Discount": oPriceConditionViewObject.CountryCode === 'BR' ? (parseFloat(oPriceConditionViewObject.StandardDiscount) + parseFloat(oPriceConditionViewObject.AdditionalDiscount)).toFixed(2) : oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "RoyalDecreeValue": oPriceConditionViewObject.RoyalDecreeValue,
                 "RoyalDecreeIncl": oPriceConditionViewObject.RoyalDecreeIncl,
@@ -270,7 +270,8 @@ sap.ui.define([
                 "FreeGoodsOther": tab === "ResultsPage" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
                 "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement,
                 "Settlement_ID":oPriceConditionViewObject.Settlement_ID,
-                "LotID":lotId
+                "LotID":lotId,
+                "IsPricingUnlocked": oPriceConditionViewObject.IsPricingUnlocked
             }
             
             // add the ID if it exists
