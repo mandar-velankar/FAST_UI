@@ -216,41 +216,23 @@ sap.ui.define([
          * Edit toggle action on the Edit/View mode on the Spain FinancialOfferPage
          * @param {*} bEditMode 
          */        
-        editFinancialOfferESToggle: async function(bEditMode){
+        editFinancialOfferESToggle: function(bEditMode){
             if(bEditMode){
                 const sSelectedMainPriceCondition = this.getView().byId('idPriceConditionSelect').getSelectedItem().getText();
                 const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionView");
-                const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);  
-                
-                //get the actual price condition from the product
-                /*const aProducts = Services.getFastAppDataModel().getProperty('/SelectedOffer/Product/results');
-                const oSelectedProduct = aProducts.filter(product => product.ProductCode === Services.getSelectedProductID())[0]; //there will always be only one selected product, so can be defaulted to 0
-                const oSelProductPriceCondition = oSelectedProduct.PriceCondition?.results?.filter(item => item.ConditionType === sSelectedMainPriceCondition); 
-
-                //IF we have an existing price agreement, AND the price condition is not existing on the selected product, we should display the data from the existing price agreement. Just as we do in display mode.
-                if(Services.getFastAppDataModel().getProperty('/ExistingAgreementInPlace') && (!oSelProductPriceCondition || (oSelProductPriceCondition && oSelProductPriceCondition.length === 0))){
-
-                    const applicableTenderCondition = await this.getApplicableTenderCondition();
-                    const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
-                    const applicablePriceConditionView = priceConditions.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
-                    if(!priceConditions.find(conditionView => conditionView.IsPricingUnlocked === true)){
-                        this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView); //overrule this by checking if there is a condition where we overrule the existing one. If yes, load that one
-                    }
-                } else {*/
-
-                    if(index < 0) return null;
-                    if(sSelectedMainPriceCondition === "Descuento Comercial"){
-                        let newDiscount;
-                        const descuentoComercialbindingPath = "/PriceConditionView/".concat(index);
-                        const dcpriceConditionViewObj = Services.getFastAppDataModel().getProperty(descuentoComercialbindingPath);
-                        newDiscount = Number(dcpriceConditionViewObj.Discount) * 100;
-                        this.calculateNetPricesDescuentoComercial(dcpriceConditionViewObj,newDiscount);
-                    }
-                    if(sSelectedMainPriceCondition === "Precio Neto"){
-                        const precionetobindingPath = "/PriceConditionView/".concat(index);
-                        const pnpriceConditionViewObj = Services.getFastAppDataModel().getProperty(precionetobindingPath); 
-                        this.calculateDiscountsAndNetPricesPrecioNeto(pnpriceConditionViewObj,pnpriceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);               
-                    //}
+                const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);                
+                if(index < 0) return null;
+                if(sSelectedMainPriceCondition === "Descuento Comercial"){
+                    let newDiscount;
+                    const descuentoComercialbindingPath = "/PriceConditionView/".concat(index);
+                    const dcpriceConditionViewObj = Services.getFastAppDataModel().getProperty(descuentoComercialbindingPath);
+                    newDiscount = Number(dcpriceConditionViewObj.Discount) * 100;
+                    this.calculateNetPricesDescuentoComercial(dcpriceConditionViewObj,newDiscount);
+                }
+                if(sSelectedMainPriceCondition === "Precio Neto"){
+                    const precionetobindingPath = "/PriceConditionView/".concat(index);
+                    const pnpriceConditionViewObj = Services.getFastAppDataModel().getProperty(precionetobindingPath); 
+                    this.calculateDiscountsAndNetPricesPrecioNeto(pnpriceConditionViewObj,pnpriceConditionViewObj.NetPriceWithoutTaxBeforeDeductionRD);               
                 }
                 
             }
@@ -1279,7 +1261,7 @@ sap.ui.define([
                     let oPrecioNettoCondition = oFastAppDataModel.getProperty(bindingPath);
                     let instType = oFastAppDataModel.getProperty('/Tender/Institute/InstituteType');
                     let discount = oPrecioNettoCondition.Discount ? oPrecioNettoCondition.Discount : 0;
-                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 && oPrecioNettoCondition.RoyalDecreePercentage !== "0" ? 'Yes' : 'No';
+                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
                     if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
                 } 
                 
@@ -1462,8 +1444,8 @@ sap.ui.define([
             }
             //priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage : newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage / 1 - priceConditionViewObj.RoyalDecreePercentage;
             priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === true ? Number(newNetPriceWithoutTaxBeforeDeductionRD / (1 - priceConditionViewObj.RoyalDecreePercentage) - newNetPriceWithoutTaxBeforeDeductionRD).toFixed(6) : Number(newNetPriceWithoutTaxBeforeDeductionRD - newNetPriceWithoutTaxAfterDeductionRD).toFixed(6);   
-            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 && priceConditionViewObj.RoyalDecreePercentage !== "0" ? 'Yes' : 'No';
-            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 + parseFloat(priceConditionViewObj.Tax)) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + parseFloat(priceConditionViewObj.Tax));
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 + priceConditionViewObj.Tax) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + priceConditionViewObj.Tax);
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
             priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD).toFixed(6);
             priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(6));
@@ -1555,9 +1537,9 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             //priceConditionViewObj.RoyalDecreeValue = newNetPriceWithoutTax * priceConditionViewObj.RoyalDecreePercentage;
-            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 && priceConditionViewObj.RoyalDecreePercentage !== "0" ? 'Yes' : 'No';
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
             priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
-            priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + parseFloat(priceConditionViewObj.Tax)).toFixed(2))
+            priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2))
 
             //bindingContext.getModel().updateBindings();
         },
@@ -2030,7 +2012,7 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             discountConditionObj.NetPriceWithoutTax = Number(priceConditionViewObj.MainPrice * (1 - discount / 100)).toFixed(2);
-            discountConditionObj.NetPriceWithTax = Number(discountConditionObj.NetPriceWithoutTax * (1 + parseFloat(priceConditionViewObj.Tax))).toFixed(2);
+            discountConditionObj.NetPriceWithTax = Number(discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2);
             /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
             discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
 
