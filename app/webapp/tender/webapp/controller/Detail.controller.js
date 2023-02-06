@@ -9036,14 +9036,20 @@ sap.ui.define([
 		},
 
 		onSaveNewContract: async function (oEvent){
+			let oFastAppDataModel = Services.getFastAppDataModel();
 			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			const selectedOfferProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
 			const contractUserInput = this.getView().getModel("viewModel").getProperty("/BrazilContract");
 			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
 			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts, contractUserInput);
+			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+			const wonProductIds = (tenderResults.filter(t => t.OUTCOME === 'Won')).map(t => t.PRODUCTCODE);
+			const wonmappedContractProducts = mappedContractProducts.filter((item)=>{
+				return wonProductIds.includes(item.ProductPackID)
+			  });
 			try {
 				BusyIndicator.show(0);
-				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
+				await Services.saveBrazilContract(mappedContract, wonmappedContractProducts);
 				this._getCreateContractDialog().close();
 				this.getView().getModel("viewModel").setProperty("/BrazilContract", {});
 				BusyIndicator.hide();
