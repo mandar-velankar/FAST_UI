@@ -925,8 +925,10 @@ sap.ui.define([
 			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : -1;
 			try{
 				//Logic to call the API to Notify about Product Switch
-				await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
+				const response = await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
                 if (offerStatus == 1) await this._saveAndSubmitQuotation();
+                const res_msg = response.data;
+				MessageToast.show(res_msg);
 			}catch(error){
 				sap.m.MessageBox.error(error.message, {
 					title: "Error",
