@@ -11562,8 +11562,9 @@ sap.ui.define([
 			
 			try{
 				//Logic to call the API to Notify about Product Switch
-				await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
-
+				const response = await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
+				const res_msg = response.data;
+				MessageToast.show(res_msg);
 			}catch(error){
 				sap.m.MessageBox.error(error.message, {
 					title: "Error",
