@@ -74,6 +74,9 @@
 										<Text text="{i18n>Product}"/>
 									</Column>
 									<Column>
+										<Text text="{i18n>LotID}"></Text>
+									</Column>
+									<Column>
 										<Text text="{i18n>Volume}"/>
 									</Column>
 									<Column>
@@ -105,6 +108,9 @@
 									<ColumnListItem type="Navigation" press="onFinancialProductPress" detailPress="onDetailPress">
 										<cells>
 											<Text text="{fastAppData>ProductPackName}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>LotID}"/>
 										</cells>
 										<cells>
 											<Text text="{fastAppData>RequestedVolume}"/>
