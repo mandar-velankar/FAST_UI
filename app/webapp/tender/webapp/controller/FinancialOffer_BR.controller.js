@@ -147,7 +147,25 @@ sap.ui.define([
                 const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionBrazilView");
                 const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);                
                 if(index < 0) return null;
-               
+                if(sSelectedMainPriceCondition === "Discount"){
+                    const bindingPath = "/PriceConditionBrazilView/".concat(index);
+                    const oPriceCondition = Services.getFastAppDataModel().getProperty(bindingPath);
+                    let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                    let packFactor =  oProductPrice.PACKFACTOR;
+                    let UOM = oProductPrice.UOM;
+                    let correctPrice;
+                    if(UOM === "Unit"){
+                        correctPrice = oPriceCondition.masterPriceList / packFactor;
+                    }else{
+                        correctPrice = oPriceCondition.masterPriceList;
+                    }
+                    let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
+                    let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
+                    const dBasePrice                      = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
+                                                            dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
+                    this.calculateMainPriceCondition(oPriceCondition,oPriceCondition.AdditionalDiscount,oPriceCondition.CommercialProposal,dBasePrice);
+                }
+
             }
             Services.getFastAppDataModel().updateBindings();
         },
@@ -843,7 +861,6 @@ sap.ui.define([
         onLiveChangePriceCondition: function(oEvent){
 
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-            const conditionType = this.getView().getModel('finOfferView').getProperty('/selectedConditionType');
             let oPriceCondition = bindingContext.getProperty(bindingContext.sPath);
             let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let packFactor =  oProductPrice.PACKFACTOR;
@@ -859,21 +876,8 @@ sap.ui.define([
             let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? Number(oEvent.getSource().getValue()) / 100 : oPriceCondition.AdditionalDiscount ? oPriceCondition.AdditionalDiscount : 0;
             let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? parseFloat(oEvent.getParameter('newValue')) : oPriceCondition.CommercialProposal ? oPriceCondition.CommercialProposal : 0;
 
-            //calculations
-            oPriceCondition.PriceAfterTaxExemtion = dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
-            oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
-                                                    dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
             const dBasePrice                      = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
                                                     dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
-
-
-            if(conditionType === 'Discount'){
-                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
-                
-            } else if(conditionType === 'Commercial Proposal'){
-                oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
-                
-            }
 
             if(oEvent.getParameter('id').includes("idCommercialProposal")){
                 if(Number(oEvent.getSource().getValue()) > (dBasePrice * (1 - oPriceCondition.StandardDiscount))){
@@ -899,9 +903,36 @@ sap.ui.define([
                 }
             }
 
-
+            this.calculateMainPriceCondition(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice);
             bindingContext.getModel().updateBindings();
 
+        },
+
+        calculateMainPriceCondition: function(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice){
+            const conditionType = this.getView().getModel('finOfferView').getProperty('/selectedConditionType');
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
+            let correctPrice;
+            if(UOM === "Unit"){
+                correctPrice = oPriceCondition.masterPriceList / packFactor;
+            }else{
+                correctPrice = oPriceCondition.masterPriceList;
+            }
+            let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
+            let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
+            
+            oPriceCondition.PriceAfterTaxExemtion = dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
+            oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
+                                                    dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
+
+            if(conditionType === 'Discount'){
+                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
+                
+            } else if(conditionType === 'Commercial Proposal'){
+                oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
+                
+            }
         },
       
 		getRoyalDecree: async function(productPackID){
