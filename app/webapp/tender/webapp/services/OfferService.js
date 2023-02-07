@@ -168,6 +168,7 @@ sap.ui.define([
             oOfferToSave.ProfitabilityYrlyMntCost = oOfferSaveInfo.ProfitabilityYrlyMntCost;
             oOfferToSave.ProfitabilityDiscRate = oOfferSaveInfo.ProfitabilityDiscRate;
             oOfferToSave.ProfitabilityGrowthRate = oOfferSaveInfo.ProfitabilityGrowthRate;
+			oOfferToSave.ChannelSwitched = oOfferSaveInfo.ChannelSwitched;
 
 			return oOfferToSave;
 

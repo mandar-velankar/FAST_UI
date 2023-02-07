@@ -16,7 +16,7 @@
 	<!-- TENDER OFFER -->
 	<u:ObjectPageSubSection title="{i18n>tendrofr}" mode="Expanded">
 		<u:actions>
-			<Button text="Notify IBIZ" icon="sap-icon://marketing-campaign" press="onNotifyIbiz" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }" enabled="{= ${fastAppData>/CurrentOfferStatus} === 'Offer Created' }"/>
+			<Button text="Notify IBIZ" icon="sap-icon://marketing-campaign" press="onNotifyIbiz" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }" enabled="{= ${fastAppData>/CurrentOfferStatus} === 'Offer Created' &amp;&amp; ${fastAppData>/SelectedOffer/IbizWorkflowID} &amp;&amp; ${fastAppData>/SelectedOffer/ChannelSwitched} === true }"/>
 			<Button text="Delete Offer" icon="sap-icon://delete" press="onDeleteProductOffer" enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 || ${access>/tenderAccess/SPAINTENDERVIEW} ? false : true}"/>
 			<Button text="New Offer" icon="sap-icon://add" press="onCreateProductOffer" enabled="{= ${access>/tenderAccess/SPAINTENDERVIEW} ? false : true}"/>
 			<Button text="Revised Offer" icon="sap-icon://add" press="onReviewProductOffer" enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 || ${access>/tenderAccess/SPAINTENDERVIEW} || ${fastAppData>/SelectedOffer/IbizWorkflowID} ? false : true}"/>
