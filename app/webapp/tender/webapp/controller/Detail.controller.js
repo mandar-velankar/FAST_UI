@@ -9046,14 +9046,20 @@ sap.ui.define([
 		},
 
 		onSaveNewContract: async function (oEvent){
+			let oFastAppDataModel = Services.getFastAppDataModel();
 			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
 			const selectedOfferProducts = Services.getLoadedProductsForOffer(Services.getSelectedOfferID());
 			const contractUserInput = this.getView().getModel("viewModel").getProperty("/BrazilContract");
 			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
 			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts, contractUserInput);
+			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+			const wonProductIds = (tenderResults.filter(t => t.OUTCOME === 'Won')).map(t => t.PRODUCTCODE);
+			const wonmappedContractProducts = mappedContractProducts.filter((item)=>{
+				return wonProductIds.includes(item.ProductPackID)
+			  });
 			try {
 				BusyIndicator.show(0);
-				await Services.saveBrazilContract(mappedContract, mappedContractProducts);
+				await Services.saveBrazilContract(mappedContract, wonmappedContractProducts);
 				this._getCreateContractDialog().close();
 				this.getView().getModel("viewModel").setProperty("/BrazilContract", {});
 				BusyIndicator.hide();
@@ -11565,7 +11571,7 @@ sap.ui.define([
             BusyIndicator.show();
 			
             //get user input
-			let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
+			// let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
 			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID");
 			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect");
 			const workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs");
@@ -11575,6 +11581,9 @@ sap.ui.define([
 				await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
 				Services.getFastAppDataModel().setProperty('/SelectedOffer/ChannelSwitched', true);
 
+				const response = await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
+				const res_msg = response.data;
+				MessageToast.show(res_msg);
 			}catch(error){
 				Services.getFastAppDataModel().setProperty('/SelectedOffer/ChannelSwitched', false);
 				sap.m.MessageBox.error(error.message, {
