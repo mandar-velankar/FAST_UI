@@ -6381,6 +6381,15 @@ sap.ui.define([
 			// set notifyIbizData
 			this.setNotifyIbizData(sWarningMessage, oSelectedObject,sSelectedDistributorText);
 			
+			/*enable notify ibiz button functionality
+			when the channel is switched
+				from Bayer to Distributor on a Direct Tender and the Offer status created so that I can notify the changes to distributors.
+				from Distributor to Bayer
+				from either Distributor to Decline or Bayer to Decline*/
+			
+			if(Services.getFastAppDataModel().getProperty('/CurrentOfferStatus') === 'Offer Created' && (sSelectedChannelText === 'Distributor' && sSelectedDistributorText.replace(/\s/g, '').toLowerCase() === "bayerbrazil" || sSelectedChannelText === 'Bayer' || sSelectedChannelText === 'Decline')) {
+				Services.getFastAppDataModel().setProperty('/EditOffer/ChannelSwitched', true);
+			}
 		},
 
 		setNotifyIbizData: function(sWarningMessage, oObject,sDistributorName){
@@ -6542,6 +6551,7 @@ sap.ui.define([
 			if(oOffer){
 				oOfferSaveInfo.FOCType = oOffer.FOCType;
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = oOffer.DEFAULT_FOC_ABS_PCT;
+				oOfferSaveInfo.ChannelSwitched = oOffer.ChannelSwitched;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
@@ -11561,17 +11571,21 @@ sap.ui.define([
             BusyIndicator.show();
 			
             //get user input
-			let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
+			// let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
 			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID");
 			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect");
 			const workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs");
 			
 			try{
 				//Logic to call the API to Notify about Product Switch
+				await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
+				Services.getFastAppDataModel().setProperty('/SelectedOffer/ChannelSwitched', true);
+
 				const response = await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
 				const res_msg = response.data;
 				MessageToast.show(res_msg);
 			}catch(error){
+				Services.getFastAppDataModel().setProperty('/SelectedOffer/ChannelSwitched', false);
 				sap.m.MessageBox.error(error.message, {
 					title: "Error",
 					id: "messageBoxId3",
@@ -11579,6 +11593,16 @@ sap.ui.define([
 					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
 				});
 			}
+
+			var oOfferSaveInfo = {};
+			oOfferSaveInfo.OfferID = Services.getSelectedOfferID();
+			oOfferSaveInfo.ChannelSwitched = Services.getFastAppDataModel().getProperty('/SelectedOffer/ChannelSwitched');
+			Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) { 
+				//show error message
+				Services.showErrorMessage(oError, "Update of offer");
+				//promises must fail as well
+				throw new Error(oError);
+			});
 
 			// close loading that blocks everything
 			BusyIndicator.hide();
