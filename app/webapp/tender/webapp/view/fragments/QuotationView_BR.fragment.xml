@@ -315,7 +315,7 @@
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/TaxExemption'}"/>
 
-                           <m:Text text="{= ${fastAppData>PriceCondition/TaxExemption'} === 'Yes' ? ${parts: [
+                           <m:Text text="{= ${fastAppData>PriceCondition/TaxExemption} === 'Yes' ? ${parts: [
                                 {path: 'fastAppData>PriceCondition/PriceAfterTaxExemtion'}, 
                                 {path: 'fastAppData>CURRENCY'}
                             ], formatter:'.formatter.price'} : ${parts: [
@@ -325,7 +325,7 @@
 
                             <m:Text text="{fastAppData>PriceCondition/CAP}"/>
 
-                            <m:Text text="{= ${fastAppData>PriceCondition/CAP'} === 'Yes' 
+                            <m:Text text="{= ${fastAppData>PriceCondition/CAP} === 'Yes' 
                                     ? ${parts: [
                                         {path: 'fastAppData>PriceCondition/PriceAfterCap'}, 
                                         {path: 'fastAppData>CURRENCY'}
