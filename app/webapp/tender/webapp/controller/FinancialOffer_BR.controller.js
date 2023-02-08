@@ -1148,6 +1148,19 @@ sap.ui.define([
 			return products;
 		},
 
+        onSimulateTaxes: async function(oEvent) {
+            const selectedProductLotID = Services.getFastAppDataModel().getProperty("/EditSelectedProduct/LotID");
+            const body = {
+                offerID: Services.getSelectedOfferID(), 
+                productCode: Services.getSelectedProductID(), 
+                lotID: selectedProductLotID, 
+                conditionType: this.getSelectedPriceConditionTypes()[0]
+            };
+            BusyIndicator.show();
+            await Services.simulateTaxes(body);
+            BusyIndicator.hide();
+		}
+
     });
         
 });

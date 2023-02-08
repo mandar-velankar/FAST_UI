@@ -179,7 +179,18 @@
 								visible="{fastAppData>/ExistingAgreementInPlace}">
 							</MessageStrip>
 						</VBox>
-                        <Panel expandable="true" headerText="Main Price Condition">
+                        <Panel expandable="true">
+							<headerToolbar>
+								<OverflowToolbar style="Clear">
+									<Title text="Main Price Condition" />
+									<ToolbarSpacer />
+									<Button 
+										enabled="{fastAppData>/EditMode}" 
+										text="Simulate Taxes"
+										press=".onSimulateTaxes"
+									/>
+								</OverflowToolbar>
+							</headerToolbar>
 							<VBox>
 								<HBox alignItems="Center">
 									<Label text="Price Condition:" class="sapUiTinyMarginEnd"/>
