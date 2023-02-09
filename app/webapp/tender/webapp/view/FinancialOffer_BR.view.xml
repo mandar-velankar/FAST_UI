@@ -293,13 +293,25 @@
                                            value="{path:'fastAppData>CommercialProposal', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}"
                                             description="{fastAppData>masterPriceCurrency}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} !== 'Discount'}" fieldWidth="80%" liveChange=".onLiveChangePriceCondition"/>
                                     <Label text="{i18n>TaxEqualization}"/>
-                                    <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
+                                    <Input value="0" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>InvoiveNotaFiscal}"/>
-                                    <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
+                                    <Input 
+										value="{
+											path:'fastAppData>CommercialProposal', 
+											type:'sap.ui.model.type.Float', 
+											formatOptions: { 
+												maxFractionDigits: 2, 
+												minFractionDigits: 2, 
+												groupingEnabled: true, 
+												groupingSeparator: ',', 
+												decimalSeparator: '.' 
+											}
+										}" 
+										description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>ICMS}"/>
-                                    <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
+                                    <Input value="{path:'fastAppData>ICMS', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>NetPrice}"/>
-                                    <Input value="{path:'fastAppData>NetPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
+                                    <Input value="{path:'fastAppData>NetPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     </form:content>
                                 </form:SimpleForm>
 							</VBox>

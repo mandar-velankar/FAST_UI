@@ -1149,16 +1149,22 @@ sap.ui.define([
 		},
 
         onSimulateTaxes: async function(oEvent) {
+            const selectedConditionType = this.getSelectedPriceConditionTypes()[0];
             const selectedProductLotID = Services.getFastAppDataModel().getProperty("/EditSelectedProduct/LotID");
+            const priceConditionBrazilView = Services.getFastAppDataModel().getProperty("/PriceConditionBrazilView");
+            const selectedPriceCondition = priceConditionBrazilView.find(p => p.ProductCode == Services.getSelectedProductID() && p.ConditionType == selectedConditionType && p.LotID == selectedProductLotID);
             const body = {
                 offerID: Services.getSelectedOfferID(), 
                 productCode: Services.getSelectedProductID(), 
                 lotID: selectedProductLotID, 
-                conditionType: this.getSelectedPriceConditionTypes()[0]
+                conditionType: selectedConditionType
             };
             BusyIndicator.show();
             try {
-                await Services.simulateTaxes(body);
+                const result = await Services.simulateTaxes(body);
+                selectedPriceCondition.NetPrice = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["TAX_AMOUNT"];
+                selectedPriceCondition.ICMS = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["NET_VALUE"];
+                Services.getFastAppDataModel().refresh()
             } catch (error) {
                 const responseText = JSON.parse(error.responseText);
                 sap.m.MessageBox.error("Tax simulation failed!", {
