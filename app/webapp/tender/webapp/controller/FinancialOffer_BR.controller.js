@@ -1157,8 +1157,19 @@ sap.ui.define([
                 conditionType: this.getSelectedPriceConditionTypes()[0]
             };
             BusyIndicator.show();
-            await Services.simulateTaxes(body);
-            BusyIndicator.hide();
+            try {
+                await Services.simulateTaxes(body);
+            } catch (error) {
+                const responseText = JSON.parse(error.responseText);
+                sap.m.MessageBox.error("Tax simulation failed!", {
+					title: "Error",
+					details: responseText?.error?.message?.value,
+					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
+				});
+            } finally {
+                BusyIndicator.hide();
+            }
+            
 		}
 
     });
