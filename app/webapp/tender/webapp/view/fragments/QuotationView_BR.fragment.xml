@@ -315,17 +315,26 @@
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/TaxExemption'}"/>
 
-                           <m:Text text="{parts: [
+                           <m:Text text="{= ${fastAppData>PriceCondition/TaxExemption} === 'Yes' ? ${parts: [
                                 {path: 'fastAppData>PriceCondition/PriceAfterTaxExemtion'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            ], formatter:'.formatter.price'} : ${parts: [
+                                {path: 'fastAppData>PriceCondition/PriceList'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'} }"/>
 
                             <m:Text text="{fastAppData>PriceCondition/CAP}"/>
 
-                            <m:Text text="{parts: [
-                                {path: 'fastAppData>PriceCondition/PriceAfterCap'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            <m:Text text="{= ${fastAppData>PriceCondition/CAP} === 'Yes' 
+                                    ? ${parts: [
+                                        {path: 'fastAppData>PriceCondition/PriceAfterCap'}, 
+                                        {path: 'fastAppData>CURRENCY'}
+                                    ], formatter:'.formatter.price'} 
+                                    : ${parts: [
+                                        {path: 'fastAppData>PriceCondition/PriceList'}, 
+                                        {path: 'fastAppData>CURRENCY'}
+                                    ], formatter:'.formatter.price'} 
+                            }"/>
 
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/StandardDiscount'}, 
@@ -471,17 +480,26 @@
                             <!-- Price Condition -->
                             <m:Text text="{path :'fastAppData>PriceCondition/TaxExemption'}"/>
 
-                           <m:Text text="{parts: [
+                           <m:Text text="{= ${fastAppData>PriceCondition/TaxExemption} === 'Yes' ? ${parts: [
                                 {path: 'fastAppData>PriceCondition/PriceAfterTaxExemtion'}, 
                                 {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            ], formatter:'.formatter.price'} : ${parts: [
+                                {path: 'fastAppData>PriceCondition/PriceList'}, 
+                                {path: 'fastAppData>CURRENCY'}
+                            ], formatter:'.formatter.price'} }"/>
 
                             <m:Text text="{fastAppData>PriceCondition/CAP}"/>
 
-                            <m:Text text="{parts: [
-                                {path: 'fastAppData>PriceCondition/PriceAfterCap'}, 
-                                {path: 'fastAppData>CURRENCY'}
-                            ], formatter:'.formatter.price'}"/>
+                            <m:Text text="{= ${fastAppData>PriceCondition/CAP} === 'Yes' 
+                                    ? ${parts: [
+                                        {path: 'fastAppData>PriceCondition/PriceAfterCap'}, 
+                                        {path: 'fastAppData>CURRENCY'}
+                                    ], formatter:'.formatter.price'} 
+                                    : ${parts: [
+                                        {path: 'fastAppData>PriceCondition/PriceList'}, 
+                                        {path: 'fastAppData>CURRENCY'}
+                                    ], formatter:'.formatter.price'} 
+                            }"/>
 
                             <m:Text text="{parts: [
                                 {path: 'fastAppData>PriceCondition/StandardDiscount'}, 

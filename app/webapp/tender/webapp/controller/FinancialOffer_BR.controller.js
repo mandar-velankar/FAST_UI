@@ -5,6 +5,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/userinfo",
 	"FAST_NS0FAST0/libs/momentjs/moment.min",
 	"FAST_NS0FAST0/model/financial",
+    "FAST_NS0FAST0/model/quotation",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
@@ -12,8 +13,8 @@ sap.ui.define([
     "sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
-    "sap/ui/model/Sorter"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
+    "sap/ui/model/Sorter",
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
 	"use strict";
 	
 	//var bundle;
@@ -146,7 +147,25 @@ sap.ui.define([
                 const priceConditions = Services.getFastAppDataModel().getProperty("/PriceConditionBrazilView");
                 const index = priceConditions.findIndex(item => item.ConditionType === sSelectedMainPriceCondition);                
                 if(index < 0) return null;
-               
+                if(sSelectedMainPriceCondition === "Discount"){
+                    const bindingPath = "/PriceConditionBrazilView/".concat(index);
+                    const oPriceCondition = Services.getFastAppDataModel().getProperty(bindingPath);
+                    let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+                    let packFactor =  oProductPrice.PACKFACTOR;
+                    let UOM = oProductPrice.UOM;
+                    let correctPrice;
+                    if(UOM === "Unit"){
+                        correctPrice = oPriceCondition.masterPriceList / packFactor;
+                    }else{
+                        correctPrice = oPriceCondition.masterPriceList;
+                    }
+                    let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
+                    let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
+                    const dBasePrice                      = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
+                                                            dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
+                    this.calculateMainPriceCondition(oPriceCondition,oPriceCondition.AdditionalDiscount,oPriceCondition.CommercialProposal,dBasePrice);
+                }
+
             }
             Services.getFastAppDataModel().updateBindings();
         },
@@ -842,7 +861,6 @@ sap.ui.define([
         onLiveChangePriceCondition: function(oEvent){
 
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
-            const conditionType = this.getView().getModel('finOfferView').getProperty('/selectedConditionType');
             let oPriceCondition = bindingContext.getProperty(bindingContext.sPath);
             let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
             let packFactor =  oProductPrice.PACKFACTOR;
@@ -858,21 +876,8 @@ sap.ui.define([
             let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? Number(oEvent.getSource().getValue()) / 100 : oPriceCondition.AdditionalDiscount ? oPriceCondition.AdditionalDiscount : 0;
             let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? parseFloat(oEvent.getParameter('newValue')) : oPriceCondition.CommercialProposal ? oPriceCondition.CommercialProposal : 0;
 
-            //calculations
-            oPriceCondition.PriceAfterTaxExemtion = dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
-            oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
-                                                    dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
             const dBasePrice                      = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
                                                     dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
-
-
-            if(conditionType === 'Discount'){
-                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
-                
-            } else if(conditionType === 'Commercial Proposal'){
-                oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
-                
-            }
 
             if(oEvent.getParameter('id').includes("idCommercialProposal")){
                 if(Number(oEvent.getSource().getValue()) > (dBasePrice * (1 - oPriceCondition.StandardDiscount))){
@@ -898,9 +903,36 @@ sap.ui.define([
                 }
             }
 
-
+            this.calculateMainPriceCondition(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice);
             bindingContext.getModel().updateBindings();
 
+        },
+
+        calculateMainPriceCondition: function(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice){
+            const conditionType = this.getView().getModel('finOfferView').getProperty('/selectedConditionType');
+            let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
+            let packFactor =  oProductPrice.PACKFACTOR;
+            let UOM = oProductPrice.UOM;
+            let correctPrice;
+            if(UOM === "Unit"){
+                correctPrice = oPriceCondition.masterPriceList / packFactor;
+            }else{
+                correctPrice = oPriceCondition.masterPriceList;
+            }
+            let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
+            let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
+            
+            oPriceCondition.PriceAfterTaxExemtion = dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
+            oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
+                                                    dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
+
+            if(conditionType === 'Discount'){
+                oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
+                
+            } else if(conditionType === 'Commercial Proposal'){
+                oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
+                
+            }
         },
       
 		getRoyalDecree: async function(productPackID){
@@ -924,7 +956,10 @@ sap.ui.define([
 			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : -1;
 			try{
 				//Logic to call the API to Notify about Product Switch
-				await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
+				const response = await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
+                if (offerStatus == 1) await this._saveAndSubmitQuotation();
+                const res_msg = response.data;
+				MessageToast.show(res_msg);
 			}catch(error){
 				sap.m.MessageBox.error(error.message, {
 					title: "Error",
@@ -938,10 +973,59 @@ sap.ui.define([
 			BusyIndicator.hide();
 
 			//close dialog
-			this.onNotifyibizDialogCancel();
+			// this.onNotifyibizDialogCancel();
 
 
 		},
+        _saveAndSubmitQuotation: async function () {
+            var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+            // make sure selectedOfferPath is correctly set
+            if(Services.getSelectedOfferPath() === "" || Services.getSelectedOfferPath().includes("results")){
+                Services.setSelectedOfferPath(Services.getDefaultModel().createKey("/PT_TMOFRS", {
+                    OfferID: Services.getSelectedOfferID()
+                }))
+            }
+            const offerStatus = await Services.checkOfferStatus();
+            if (!offerStatus) return;
+			var sStatus = offerStatus.STATUS;
+			var aStatusNoEdit = [
+				"Awaiting Approval" //,
+			];
+			if ($.inArray(sStatus, aStatusNoEdit) !== -1) {
+				sap.m.MessageBox.warning("Quotation cannot be saved, offer is in status Awating approval.", {});
+			} else {
+
+				let oCustomRemark = that.byId("idCustomRemark");
+				let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+				let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+
+                await Services.loadOfferValidation(Services.getSelectedOfferID());
+
+				const quotationFields = {
+					OfferDate: oFastAppDataModel.getProperty("/OfferValidation/OFFERDATE"),
+					OfferValidity: oFastAppDataModel.getProperty("/OfferValidation/OFFERVALIDITY"),
+					EffectiveDate: oFastAppDataModel.getProperty("/OfferValidation/EffectiveDate"),
+					ExpiryDate: oFastAppDataModel.getProperty("/OfferValidation/ExpiryDate"),
+					CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
+					IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
+					CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
+				};
+
+				//do the save of the quotation with UPDATED to 1
+                const bSave = await Quotation.saveQuotation(quotationFields, 1)
+
+                if (bSave) {
+					//check if there needs to be an update (already existing and erpost)
+                    const qoutationForSelectedOffer = await Quotation.loadQuotationForSelectedOffer(quotationFields.OfferDate);
+                    if (qoutationForSelectedOffer) {
+                        //do the save of the quotation
+                        await Quotation.submitQuotation(quotationFields);
+                    }
+                }		
+			}
+        },
         onBrazilTenderOverviewPress: async function () {
             BusyIndicator.show(0);
 

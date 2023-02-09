@@ -74,6 +74,11 @@
                                     <m:Button id="btnAddAwardProduct" text="Add awarded product" icon="sap-icon://add" press="onAddAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
                                     <m:Button id="btnDeleteAwardProduct" text="Remove awarded product" icon="sap-icon://delete" press="onDeleteAwardedProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}"/>
 
+                                     <!-- EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers -->
+                                    <m:Button id="btnCompetitorAwardProduct" text="Add Competitor product" icon="sap-icon://add" press="onAddCompetitorProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}"/>
+                                    <!-- EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers -->
+                                     <m:Button id="btnDeleteCompetitorAwardProduct" text="Delete Competitor product" icon="sap-icon://delete" press="onDeleteCompetitorProduct" enabled="{= ${fastAppData>/EditMode} === true ? true : false}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT'}"/>
+
                                     <!--<m:Button id="btnUpdateBankGuarantee" text="Update Bank Guarantee" icon="sap-icon://complete" press="onUpdateBankGuarantee" enabled="{= ${fastAppData>/newBankGuarantee/Status} ? true : false }" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
                                     <m:MenuButton text="{i18n>BankGuarantee}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }" >
                                         <m:menu>
