@@ -1148,6 +1148,38 @@ sap.ui.define([
 			return products;
 		},
 
+        onSimulateTaxes: async function(oEvent) {
+            const selectedConditionType = this.getSelectedPriceConditionTypes()[0];
+            const selectedProductLotID = Services.getFastAppDataModel().getProperty("/EditSelectedProduct/LotID");
+            const priceConditionBrazilView = Services.getFastAppDataModel().getProperty("/PriceConditionBrazilView");
+            const selectedPriceCondition = priceConditionBrazilView.find(p => p.ProductCode == Services.getSelectedProductID() && p.ConditionType == selectedConditionType && p.LotID == selectedProductLotID);
+            const body = {
+                offerID: Services.getSelectedOfferID(), 
+                productCode: Services.getSelectedProductID(), 
+                lotID: selectedProductLotID, 
+                conditionType: selectedConditionType
+            };
+            BusyIndicator.show();
+            try {
+                const result = await Services.simulateTaxes(body);
+                selectedPriceCondition.NetPrice = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["TAX_AMOUNT"];
+                selectedPriceCondition.ICMS = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["NET_VALUE"];
+                selectedPriceCondition.Invoive = selectedPriceCondition.CommercialProposal;
+                selectedPriceCondition.TaxEqualization = 0;
+                Services.getFastAppDataModel().refresh()
+            } catch (error) {
+                const responseText = JSON.parse(error.responseText);
+                sap.m.MessageBox.error("Tax simulation failed!", {
+					title: "Error",
+					details: responseText?.error?.message?.value,
+					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
+				});
+            } finally {
+                BusyIndicator.hide();
+            }
+            
+		}
+
     });
         
 });

@@ -2207,6 +2207,10 @@ sap.ui.define([
 			return Promise.all(promises);
 		},
 
+		simulateTaxes: function (payload) {
+			return this.getService('Result').simulateTaxes(payload);
+		},
+
 		//load country channels
 		loadCountryOutcomes: function (sCountry) {
 
