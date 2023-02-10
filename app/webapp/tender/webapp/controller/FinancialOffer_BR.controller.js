@@ -1164,6 +1164,8 @@ sap.ui.define([
                 const result = await Services.simulateTaxes(body);
                 selectedPriceCondition.NetPrice = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["TAX_AMOUNT"];
                 selectedPriceCondition.ICMS = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["NET_VALUE"];
+                selectedPriceCondition.Invoive = selectedPriceCondition.CommercialProposal;
+                selectedPriceCondition.TaxEqualization = 0;
                 Services.getFastAppDataModel().refresh()
             } catch (error) {
                 const responseText = JSON.parse(error.responseText);

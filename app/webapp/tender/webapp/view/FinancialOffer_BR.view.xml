@@ -293,11 +293,11 @@
                                            value="{path:'fastAppData>CommercialProposal', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}"
                                             description="{fastAppData>masterPriceCurrency}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} !== 'Discount'}" fieldWidth="80%" liveChange=".onLiveChangePriceCondition"/>
                                     <Label text="{i18n>TaxEqualization}"/>
-                                    <Input value="0" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
+                                    <Input value="{fastAppData>TaxEqualization}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>InvoiveNotaFiscal}"/>
                                     <Input 
 										value="{
-											path:'fastAppData>CommercialProposal', 
+											path:'fastAppData>Invoive', 
 											type:'sap.ui.model.type.Float', 
 											formatOptions: { 
 												maxFractionDigits: 2, 
