@@ -396,13 +396,13 @@
 											<Text text="{fastAppData>CAP}"/>
 										</cells>
                                         <cells>
-											<Text text="{fastAppData>TOTAL_DISCOUNT}"/>
+											<Text text="{path:'fastAppData>TOTAL_DISCOUNT', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
 										</cells>
 										<cells>
 											<Text text="{fastAppData>COMM_PROPOSAL}"/>
 										</cells>
                                         <cells>
-											<Text text="{fastAppData>ADHESION}"/>
+											<Text text="{path:'fastAppData>ADHESION', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
 										</cells>
                                          <cells>
 											<Text text="{fastAppData>OUTCOME}"/>
