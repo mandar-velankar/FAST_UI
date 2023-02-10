@@ -52,6 +52,10 @@ sap.ui.define([
 
 		createBrazilContractProduct: function (product) {
 			return this.odata("/ContractProducts").post(product);
+		},
+
+		simulateTaxes: function ({ offerID, productCode, lotID, conditionType }) {
+			return this.odata("/simulateTaxes").post({ offerID, productCode, lotID, conditionType });
 		}
 	});
 	return ResultService;
