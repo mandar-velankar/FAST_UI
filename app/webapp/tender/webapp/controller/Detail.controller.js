@@ -2625,6 +2625,12 @@ sap.ui.define([
 				"refreshButtonId"
 			];
 
+			// remove Clone button for Brazil
+			if(Services.getSelectedCountry() === 'BR'){
+				const index = ToggleEnabledButtons.indexOf('cloneButtonId');
+				ToggleEnabledButtons.splice(index, 1);
+			}
+
 			//enable, disable each action button
 			ToggleEnabledButtons.forEach(function (updateButtonId) {
 				var updateButton = that.byId(updateButtonId);
