@@ -837,9 +837,16 @@ sap.ui.define([
 					// new sap.m.Text({
 					// 	text: "{fastData>OFFER_ID}"
 					// }),
-					new sap.m.ObjectIdentifier({
-						text: "{fastData>PFI_NO}",
-						title: "{fastData>OFFER_ID}"
+					new sap.m.VBox({
+						items: [
+							new sap.m.ObjectIdentifier({
+								text: "{fastData>PFI_NO}",
+								title: "{fastData>OFFER_ID}"
+							}),
+							new sap.m.Text({
+								text: "{fastData>IbizWorkflowID}"
+							}),
+						]
 					}),
 					new sap.m.ObjectNumber({
 						number: {
@@ -987,6 +994,13 @@ sap.ui.define([
 				orFilters.push(new Filter({
 					path: "OFFER_ID",
 					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "IbizWorkflowID",
+					operator: FilterOperator.EQ,
 					value1: sSearch,
 					caseSensitive: false
 				}));
