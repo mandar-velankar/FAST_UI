@@ -7409,6 +7409,7 @@ sap.ui.define([
             var that = this;
             let oDivisionSelect = that._country === "ES" ? that.getView().byId("idProductOfferDivisionES") : that.getView().byId("idProductOfferDivision");
 			const sCountryCode = Services.getCountryCodeofSelectedTender();
+			this.updateBrazilOfferTypes(oEvent.getParameter("selectedItem").getText());
 			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
 				sap.m.MessageBox.warning("Are you sure you want to change the Division? Existing products will be removed.", {
 					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
@@ -7424,6 +7425,7 @@ sap.ui.define([
 							oDivisionSelect.setSelectedKey(Services.getSelectedDivisionID());
 						} else {
 							oDivisionSelect.setSelectedKey(Services.getPrevSelectedDivisionID());
+							that.updateBrazilOfferTypes(Services.getPrevSelectedDivisionID());
 						}
 					}
 				});
@@ -7432,6 +7434,35 @@ sap.ui.define([
 				Services.setPrevSelectedDivisionID(Services.getSelectedDivisionID());
 			}
 		},
+
+		/**
+         * Only allow comodato for radiology products
+         */
+        updateBrazilOfferTypes:function(division){
+
+            const sCountryCode = Services.getCountryCodeofSelectedTender();
+			if(sCountryCode !== "BR") return;
+
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bRadiology = division === "Radiology";
+            let aOfferTypes = oFastAppDataModel.getProperty("/CountrySpecificOfferTypes");
+
+            // Only allow comodato for radiology products
+            if(bRadiology){
+				const comodato = aOfferTypes.find(ot => ot.OfferType === "Comodato");
+				if(!comodato){
+					aOfferTypes.push({
+						"CountryCode": "BR",
+						"OfferType": "Comodato",
+						"Enabled": true
+					});
+				}
+			}else{
+				aOfferTypes = aOfferTypes.filter(ot => ot.OfferType !== "Comodato");
+			}
+			oFastAppDataModel.setProperty("/CountrySpecificOfferTypes", aOfferTypes);
+
+        },
 
 		//when selecting a new selling company
 		onChangeSellingCompany: function (oEvent) {
