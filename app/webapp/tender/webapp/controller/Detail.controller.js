@@ -8765,6 +8765,19 @@ sap.ui.define([
 			} else return null;
 		},
 
+		getExistingContracts: async function(){
+			let filter = {};
+
+			filter = {
+				TenderID: Services.getSelectedTenderID(),
+				OfferID: Services.getSelectedOfferID()
+			}
+
+			if(filter){
+				return await Services.getService('BrazilContract').getContracts(filter);
+			}
+		},
+
 		//QUOTATION TAB
 		//-------------
 		onQuotationOfferItemPress: async function (oEvent) {
@@ -9057,6 +9070,15 @@ sap.ui.define([
 			
 			this._getCreateContractDialog().open();
 
+		},
+
+		onViewContractBR: function (oEvent) {
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			const aContracts = oFastAppDataModel.getProperty('/BrazilContractsForOffer');
+			aContracts.sort((a, b) => a.createdAt - b.createdAt); //sort by putting the lowest date first - the oldest contract should be opened
+			if(aContracts?.length > 0){
+				window.open(`/app/#/brazilcontracting&/brc/Contract/${aContracts[0].ID}/TwoColumnsMidExpanded`);
+			}
 		},
 
 		/**
@@ -10062,6 +10084,9 @@ sap.ui.define([
 
 			//getting selected offer on the new way.
 			var sSelectedOfferID = Services.getSelectedOfferID(); //this.getView().getModel("fastData").getProperty(sSelectedOfferPath).OfferID;
+			
+			let aContracts = await this.getExistingContracts();
+			Services.getFastAppDataModel().setProperty("/BrazilContractsForOffer", aContracts?.data?.results);
 
 			//Get offer table + column from where we can check if offer is valid for tab
 			//var oOffersTable = that.getView().byId("tenderResultsOfferTableViewID");
