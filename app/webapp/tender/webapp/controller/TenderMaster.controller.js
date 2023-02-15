@@ -724,8 +724,12 @@ sap.ui.define([
 				this.byId("idfltInstituteType").setVisible(true);
 
 			} else {
+				if(oCountry === 'BR'){
+					this.byId("idCreationDate").setVisible(true);
+				} else {
+					this.byId("idCreationDate").setVisible(false);
+				}
 				this.byId("idDueDate").setVisible(true);
-				this.byId("idCreationDate").setVisible(false);
 				this.byId("idfltInstituteType").setVisible(false);
 				this.byId("idfltInstituteName").setVisible(false);
 
