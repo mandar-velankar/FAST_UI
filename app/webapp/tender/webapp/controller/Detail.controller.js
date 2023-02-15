@@ -2497,9 +2497,12 @@ sap.ui.define([
 
 						//only in creation modus of an offer we will be able to set the distributor id
 						var oDistributor = that.getView().byId("idDistributorName");
-						if (Services.getCreationModusOffer()) {
+						if (Services.getCreationModusOffer() && sCountryCode !== 'BR') {
 							oDistributor.setEnabled(true);
 						} else {
+							if(sCountryCode === 'BR'){
+								that.getView().byId("idDistributorName").setSelectedKey(that.getView().byId("idDistributorName").getItems()?.find(distributor => distributor.getProperty('text') === 'Bayer Brazil')?.getProperty('key'));
+							}
 							oDistributor.setEnabled(false);
 						}
 
