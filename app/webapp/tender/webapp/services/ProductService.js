@@ -278,7 +278,8 @@ sap.ui.define([
             oProductToSave.MaxPrice = oProductSaveInfo.MaxPrice;
             oProductToSave.LotID = oProductSaveInfo.LotID;
             oProductToSave.Channel = oProductSaveInfo.Channel;
-
+			oProductToSave.IbizWorkflowID = oProductSaveInfo.IbizWorkflowID;
+			oProductToSave.WorkflowProductID = oProductSaveInfo.WorkflowProductID;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;
