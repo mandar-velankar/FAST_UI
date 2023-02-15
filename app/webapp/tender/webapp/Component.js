@@ -33,6 +33,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/services/DeliveryService",
 	"FAST_NS0FAST0/services/BankGuaranteeService",
 	"FAST_NS0FAST0/services/PriceAgreementService",
+	"FAST_NS0FAST0/services/BrazilContractService",
 	"FAST_NS0FAST0/services/LetterService",
 	"FAST_NS0FAST0/services/GroupPurchasingService",
 	"FAST_NS0FAST0/services/PriceService",
@@ -51,7 +52,7 @@ sap.ui.define([
     "FAST_NS0FAST0/services/TenderHistoryService"
 ], function (UIComponent, JSONModel, fioriLibrary, FlexibleColumnLayoutSemanticHelper, Button, Dialog, Label, MessageToast, Text,
 	TextArea, ODataModel, Services, OfferService, TenderService, ApprovalService, AwardCriteriaService, CompetitorResultService, 
-	DeliveryService, BankGuaranteeService, PriceAgreementService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, SalesOpportunityService, ScenarioService, QuotationService, SpecificationService,AccessService, Device, MailService, PriceConditionService, TenderHistoryService) {
+	DeliveryService, BankGuaranteeService, PriceAgreementService, BrazilContractService, LetterService, GroupPurchasingService, PriceService, DistributorBrandPolicyService, ChannelProductPolicyService, ProductService, ResultService, SalesOpportunityService, ScenarioService, QuotationService, SpecificationService,AccessService, Device, MailService, PriceConditionService, TenderHistoryService) {
 	"use strict";
 
 	return UIComponent.extend("FAST_NS0FAST0.Component", {
@@ -102,6 +103,7 @@ sap.ui.define([
 			this.DeliveryService = new DeliveryService(oDefaultModel);
 			this.BankGuaranteeService = new BankGuaranteeService(oDefaultModel);
 			this.PriceAgreementService = new PriceAgreementService(oDefaultModel);
+			this.BrazilContractService = new BrazilContractService(oDefaultModel);
 			this.LetterService = new LetterService(oDefaultModel);
 			this.GroupPurchasingService = new GroupPurchasingService(oDefaultModel);
 			this.PriceService = new PriceService(oDefaultModel);
@@ -127,6 +129,7 @@ sap.ui.define([
 				DeliveryService:this.DeliveryService,
 				BankGuaranteeService:this.BankGuaranteeService,
 				PriceAgreementService:this.PriceAgreementService,
+				BrazilContractService:this.BrazilContractService,
 				LetterService:this.LetterService,
 				GroupPurchasingService:this.GroupPurchasingService,
 				PriceService:this.PriceService,
