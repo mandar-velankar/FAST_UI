@@ -1339,7 +1339,8 @@ sap.ui.define([
 				if (sOfferID) {
 					//Select same offer again
 					aItems.forEach(function (oItem) {
-						if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+						//if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+						if(oItem.getCells()[iIndexColumnOfferID].getItems()[0].getTitle() === sOfferID) {
 							oItem.setActive(true);
 						}
 					});

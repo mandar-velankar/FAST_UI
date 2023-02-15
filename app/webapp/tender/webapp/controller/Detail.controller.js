@@ -1172,8 +1172,8 @@ sap.ui.define([
 
 			//Select again the same offer
 			aItems.forEach(function (oItem) {
-				if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
-
+				//if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+				if(oItem.getCells()[iIndexColumnOfferID].getItems()[0].getTitle() === sOfferID) {
 					oTendersMasterTable.setSelectedItem(oItem, true);
 					oItem.setSelected(true);
 					oItem.setActive(true);
@@ -1221,7 +1221,8 @@ sap.ui.define([
 
 				//Select again the same offer
 				aItems.forEach(function (oItem) {
-					if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+					//if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+					if(oItem.getCells()[iIndexColumnOfferID].getItems()[0].getTitle() === sOfferID) {
 						oOffersTable.setSelectedItem(oItem, true);
 						oItem.setSelected(true);
 						oItem.setActive(true);
