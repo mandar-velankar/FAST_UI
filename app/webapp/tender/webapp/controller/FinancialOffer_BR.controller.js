@@ -573,7 +573,8 @@ sap.ui.define([
 			let sOfferPath = Services.getSelectedOfferPath();
 			let sProductId = Services.getSelectedProductID();
 			let aProducts = Services.getLoadedProductsForOffer(sOfferID);
-			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId);
+            const oEditProduct = oFastAppDataModel.getProperty("/EditProduct");
+			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId && prod.LotID == oEditProduct.LotID);
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 			// let aMessages = [];
 
