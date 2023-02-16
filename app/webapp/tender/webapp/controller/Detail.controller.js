@@ -9024,6 +9024,8 @@ sap.ui.define([
 						GROSS_SALES_OFFER_CURRENCY: prd.GROSS_SALES_OFFER_CURRENCY,
 						PAID_VOLUME: prd.PAID_VOLUME,
 						UNIT: prd.UNIT,
+						LOTID: prd.LOTID,
+						LINE: prd.LINE,
 						PriceCondition: pc
 					};
 					const conditionType = pc.PriceConditionClassification.ConditionType;
