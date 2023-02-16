@@ -5691,7 +5691,7 @@ sap.ui.define([
 				if (sCountryCode === "BR" && bBrazilDivisionChanged) {
 					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode);
 				}else {
-					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode && x.LotID === oProduct.LotID);
+					iIndex = aProductsToRemove.findIndex(x => x?.ProductCode === oProduct.ProductCode && x?.LotID === oProduct.LotID);
 				}
 
 				if (iIndex !== -1) { //deze staan klaar om verwijderd te worden
@@ -5721,9 +5721,8 @@ sap.ui.define([
 				} else {
 					aChangedProducts.push(oProduct);
 				}
-
+				
 			});
-
 			if (aChangedProducts.length > 0) {
 
 				this.setProductsSaveInfo(aChangedProducts);

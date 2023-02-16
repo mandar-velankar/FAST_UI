@@ -6185,6 +6185,10 @@ sap.ui.define([
 			let aExistingProducts = Services.getProductsSaveInfo();
 			let selectedLotID = 1; // Default LotID. Not for Brazil
 			let bBrazilDivisionChanged = oFastAppData.getProperty("/bBrazilDivisionChanged");
+
+			if(!aExistingProducts || aExistingProducts.length === 0){ 
+				aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+			}
 			if (sCountryCode === "BR" && !bBrazilDivisionChanged) {
 				selectedLotID = oFastAppData.getProperty("/SelectedLot") || Number(this.byId("idSelectLotView").getSelectedKey());
 			}
@@ -6194,9 +6198,7 @@ sap.ui.define([
 				oTableProducts.clearSelection();
 				return;
 			}
-			if(!aExistingProducts || aExistingProducts.length === 0){ 
-				aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
-			}
+			
 
 			//already deleted products are not visible in table, so indexselectedrows should ignore these products
 			//but they still need to be available for saving
