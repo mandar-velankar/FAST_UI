@@ -6569,9 +6569,11 @@ sap.ui.define([
 				oOfferSaveInfo.DistributorDeadline = oOffer.DistributorDeadline;
 				oOfferSaveInfo.DistributorComments = oOffer.DistributorComments;
 				oOfferSaveInfo.TenderDistributorID = oOffer.TenderDistributorID;
+				oOfferSaveInfo.Comment = oOffer.Comment;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
+				oOfferSaveInfo.Comment = oFastAppDataModel.getProperty("/EditOffer/Comment");
                 if(this._country === "ES"){
                     oOfferSaveInfo.ProfitabilityStartMnth = 1;
                     oOfferSaveInfo.ProfitabilityAgrDur = 5;

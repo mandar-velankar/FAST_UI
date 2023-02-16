@@ -174,7 +174,7 @@ sap.ui.define([
 			oOfferToSave.DistributorDeadline = oOfferSaveInfo.DistributorDeadline;
 			oOfferToSave.DistributorComments = oOfferSaveInfo.DistributorComments;
 			oOfferToSave.TenderDistributorID = oOfferSaveInfo.TenderDistributorID;
-
+			oOfferToSave.Comment = oOfferSaveInfo.Comment;
 			return oOfferToSave;
 
 		},
