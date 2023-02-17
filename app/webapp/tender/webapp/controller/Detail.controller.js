@@ -2130,6 +2130,10 @@ sap.ui.define([
 					if (sOfferID && !Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
 						bEditAllowed = false;
 					}
+				//EFRCL-268219- Change Additional Remarks to Editable
+					if (Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted') {
+						bEditAllowed = true;
+					}
 
 					//if editing is not allowed (combination status, page, creation modus yes/no..)
 					if (!bEditAllowed) {
@@ -2467,8 +2471,18 @@ sap.ui.define([
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
+						// if(oQofferValidity){
+						// 	oQofferValidity.setEnabled(true);
+						// }
+						
+					//EFRCL-268219- Change Additional Remarks to Editable
 						if(oQofferValidity){
-							oQofferValidity.setEnabled(true);
+							if(Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted'){
+								oQofferValidity.setEnabled(false);
+							}
+							else{
+								oQofferValidity.setEnabled(true);
+							}
 						}
 						that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
 						that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
@@ -2477,12 +2491,28 @@ sap.ui.define([
 							oCustomRemark.setEnabled(true);
 						}
 						let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+						// if (oSelectIssuedBy){
+						// 	oSelectIssuedBy.setEnabled(true);
+						// }
 						if (oSelectIssuedBy){
-							oSelectIssuedBy.setEnabled(true);
+							if(Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted'){
+								oSelectIssuedBy.setEnabled(false);
+							}
+							else{
+								oSelectIssuedBy.setEnabled(true);
+							}
 						}
 						let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+						// if(oSelectCompanyStamp){
+						// 	oSelectCompanyStamp.setEnabled(true);
+						// }
 						if(oSelectCompanyStamp){
-							oSelectCompanyStamp.setEnabled(true);
+							if(Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted'){
+								oSelectCompanyStamp.setEnabled(false);
+							}
+							else{
+								ooSelectCompanyStamp.setEnabled(true);
+							}
 						}
 						let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
 						if(oDelayInSubmission){
