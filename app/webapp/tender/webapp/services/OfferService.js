@@ -169,6 +169,11 @@ sap.ui.define([
             oOfferToSave.ProfitabilityDiscRate = oOfferSaveInfo.ProfitabilityDiscRate;
             oOfferToSave.ProfitabilityGrowthRate = oOfferSaveInfo.ProfitabilityGrowthRate;
 			oOfferToSave.ChannelSwitched = oOfferSaveInfo.ChannelSwitched;
+			oOfferToSave.IbizWorkflowID = oOfferSaveInfo.IbizWorkflowID;
+			oOfferToSave.PreviousIbizWorkflowID = oOfferSaveInfo.PreviousIbizWorkflowID;
+			oOfferToSave.DistributorDeadline = oOfferSaveInfo.DistributorDeadline;
+			oOfferToSave.DistributorComments = oOfferSaveInfo.DistributorComments;
+			oOfferToSave.TenderDistributorID = oOfferSaveInfo.TenderDistributorID;
 
 			return oOfferToSave;
 

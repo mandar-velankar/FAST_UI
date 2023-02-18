@@ -837,9 +837,16 @@ sap.ui.define([
 					// new sap.m.Text({
 					// 	text: "{fastData>OFFER_ID}"
 					// }),
-					new sap.m.ObjectIdentifier({
-						text: "{fastData>PFI_NO}",
-						title: "{fastData>OFFER_ID}"
+					new sap.m.VBox({
+						items: [
+							new sap.m.ObjectIdentifier({
+								text: "{fastData>PFI_NO}",
+								title: "{fastData>OFFER_ID}"
+							}),
+							new sap.m.Text({
+								text: "{fastData>IbizWorkflowID}"
+							}),
+						]
 					}),
 					new sap.m.ObjectNumber({
 						number: {
@@ -990,6 +997,15 @@ sap.ui.define([
 					value1: sSearch,
 					caseSensitive: false
 				}));
+
+				if(Number.isInteger(Number(sSearch))){
+					orFilters.push(new Filter({
+						path: "IbizWorkflowID",
+						operator: FilterOperator.EQ,
+						value1: sSearch,
+						caseSensitive: false
+					}));
+				}
 
 				orFilters.push(new Filter({
 					path: "INSTITUTE",
@@ -1325,7 +1341,8 @@ sap.ui.define([
 				if (sOfferID) {
 					//Select same offer again
 					aItems.forEach(function (oItem) {
-						if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+						//if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+						if(oItem.getCells()[iIndexColumnOfferID].getItems()[0].getTitle() === sOfferID) {
 							oItem.setActive(true);
 						}
 					});

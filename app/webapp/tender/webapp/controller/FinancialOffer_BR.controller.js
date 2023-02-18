@@ -573,7 +573,8 @@ sap.ui.define([
 			let sOfferPath = Services.getSelectedOfferPath();
 			let sProductId = Services.getSelectedProductID();
 			let aProducts = Services.getLoadedProductsForOffer(sOfferID);
-			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId);
+            const oEditProduct = oFastAppDataModel.getProperty("/EditProduct");
+			let oProduct = aProducts && aProducts.results && aProducts.results.find(prod => prod.ProductCode == sProductId && prod.LotID == oEditProduct.LotID);
 			let oProductPrice = oFastAppDataModel.getProperty(this.selectedProductPricePath);
 			// let aMessages = [];
 
@@ -961,12 +962,21 @@ sap.ui.define([
                 const res_msg = response.data;
 				MessageToast.show(res_msg);
 			}catch(error){
-				sap.m.MessageBox.error(error.message, {
-					title: "Error",
-					id: "messageBoxId3",
-					details: JSON.parse(error.responseText),
-					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
-				});
+                try{
+                    sap.m.MessageBox.error(error.message, {
+                        title: "Error",
+                        id: "messageBoxId3",
+                        details: JSON.parse(error.responseText),
+                        styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
+                    });
+                } catch(exception){
+                    sap.m.MessageBox.error(error.message, {
+                        title: "Error",
+                        id: "messageBoxId4",
+                        details: "Error occurred when sending approval to IBIZ",
+                        styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer"
+                    });
+                }
 			}
 
 			// close loading that blocks everything

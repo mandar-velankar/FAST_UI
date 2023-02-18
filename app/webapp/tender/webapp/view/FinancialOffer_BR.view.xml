@@ -33,7 +33,17 @@
 				<OverflowToolbar>
 					<Title text="{i18n>offersum}"/>
 					<ToolbarSpacer />
-					<Button id="btnShareApprovalToIbizId" text="Share Decision with IBIZ" icon="sap-icon://approvals" press="onShareApprovalsToIbizPress" enabled="{= ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected' }"/>
+					<Button 
+						id="btnShareApprovalToIbizId" 
+						text="Share Decision with IBIZ" 
+						icon="sap-icon://approvals" 
+						press="onShareApprovalsToIbizPress" 
+						enabled="{= 
+							(${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  
+							${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected') &amp;&amp; 
+							${fastAppData>/SelectedOffer/Tender/createdBy} === 'IBIZ'
+						}"
+					/>
 					<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>
 					<Button text="Tender Overview" icon="sap-icon://manager-insight" press="onBrazilTenderOverviewPress"/>
 				</OverflowToolbar>

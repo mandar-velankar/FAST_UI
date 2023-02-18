@@ -1172,8 +1172,8 @@ sap.ui.define([
 
 			//Select again the same offer
 			aItems.forEach(function (oItem) {
-				if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
-
+				//if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+				if(oItem.getCells()[iIndexColumnOfferID].getItems()[0].getTitle() === sOfferID) {
 					oTendersMasterTable.setSelectedItem(oItem, true);
 					oItem.setSelected(true);
 					oItem.setActive(true);
@@ -1221,7 +1221,8 @@ sap.ui.define([
 
 				//Select again the same offer
 				aItems.forEach(function (oItem) {
-					if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+					//if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+					if(oItem.getCells()[iIndexColumnOfferID].getItems()[0].getTitle() === sOfferID) {
 						oOffersTable.setSelectedItem(oItem, true);
 						oItem.setSelected(true);
 						oItem.setActive(true);
@@ -2624,6 +2625,12 @@ sap.ui.define([
 				"cloneButtonId",
 				"refreshButtonId"
 			];
+
+			// remove Clone button for Brazil
+			if(Services.getSelectedCountry() === 'BR'){
+				const index = ToggleEnabledButtons.indexOf('cloneButtonId');
+				ToggleEnabledButtons.splice(index, 1);
+			}
 
 			//enable, disable each action button
 			ToggleEnabledButtons.forEach(function (updateButtonId) {
@@ -6552,6 +6559,11 @@ sap.ui.define([
 				oOfferSaveInfo.FOCType = oOffer.FOCType;
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = oOffer.DEFAULT_FOC_ABS_PCT;
 				oOfferSaveInfo.ChannelSwitched = oOffer.ChannelSwitched;
+				oOfferSaveInfo.IbizWorkflowID = oOffer.IbizWorkflowID
+				oOfferSaveInfo.PreviousIbizWorkflowID = oOffer.PreviousIbizWorkflowID;
+				oOfferSaveInfo.DistributorDeadline = oOffer.DistributorDeadline;
+				oOfferSaveInfo.DistributorComments = oOffer.DistributorComments;
+				oOfferSaveInfo.TenderDistributorID = oOffer.TenderDistributorID;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
@@ -10264,7 +10276,7 @@ sap.ui.define([
 
 									// Brazil only
 									if(Services.getSelectedCountry().indexOf("BR") > -1){
-										const commercialProposal = oProduct.PriceCondition.results[0].CommercialProposal;
+										const commercialProposal = oProduct.PriceCondition?.results[0]?.CommercialProposal;
 										iAwardedPrice = commercialProposal; 
                                     }
                                     
