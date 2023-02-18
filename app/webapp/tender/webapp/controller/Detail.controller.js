@@ -10341,7 +10341,7 @@ sap.ui.define([
 
 									// Brazil only
 									if(Services.getSelectedCountry().indexOf("BR") > -1){
-										const commercialProposal = oProduct.PriceCondition.results[0].CommercialProposal;
+										const commercialProposal = oProduct.PriceCondition?.results[0]?.CommercialProposal;
 										iAwardedPrice = commercialProposal; 
                                     }
                                     

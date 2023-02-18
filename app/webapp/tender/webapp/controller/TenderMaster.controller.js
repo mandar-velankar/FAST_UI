@@ -1002,12 +1002,14 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
-				orFilters.push(new Filter({
-					path: "IbizWorkflowID",
-					operator: FilterOperator.EQ,
-					value1: sSearch,
-					caseSensitive: false
-				}));
+				if(Number.isInteger(Number(sSearch))){
+					orFilters.push(new Filter({
+						path: "IbizWorkflowID",
+						operator: FilterOperator.EQ,
+						value1: sSearch,
+						caseSensitive: false
+					}));
+				}
 
 				orFilters.push(new Filter({
 					path: "INSTITUTE",
