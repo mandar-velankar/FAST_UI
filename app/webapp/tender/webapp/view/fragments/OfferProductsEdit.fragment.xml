@@ -89,7 +89,8 @@
                                     </items>
                                 </Select>		
 								<!-- <Text id="idDistID" text="{fastAppData>/EditOffer/Distributor/DistributorID}" visible="false"/> -->
-								
+								<Label text="{i18n>Comment}"/>
+								<Input value="{fastAppData>/EditOffer/Comment}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR'}"/>
 							</form:content>
 						</form:SimpleForm>
 						

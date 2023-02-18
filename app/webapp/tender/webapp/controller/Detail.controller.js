@@ -2497,9 +2497,12 @@ sap.ui.define([
 
 						//only in creation modus of an offer we will be able to set the distributor id
 						var oDistributor = that.getView().byId("idDistributorName");
-						if (Services.getCreationModusOffer()) {
+						if (Services.getCreationModusOffer() && sCountryCode !== 'BR') {
 							oDistributor.setEnabled(true);
 						} else {
+							if(sCountryCode === 'BR'){
+								that.getView().byId("idDistributorName").setSelectedKey(that.getView().byId("idDistributorName").getItems()?.find(distributor => distributor.getProperty('text') === 'Bayer Brazil')?.getProperty('key'));
+							}
 							oDistributor.setEnabled(false);
 						}
 
@@ -6192,6 +6195,10 @@ sap.ui.define([
 			let aExistingProducts = Services.getProductsSaveInfo();
 			let selectedLotID = 1; // Default LotID. Not for Brazil
 			let bBrazilDivisionChanged = oFastAppData.getProperty("/bBrazilDivisionChanged");
+
+			if(!aExistingProducts || aExistingProducts.length === 0){ 
+				aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+			}
 			if (sCountryCode === "BR" && !bBrazilDivisionChanged) {
 				selectedLotID = oFastAppData.getProperty("/SelectedLot") || Number(this.byId("idSelectLotView").getSelectedKey());
 			}
@@ -6201,9 +6208,7 @@ sap.ui.define([
 				oTableProducts.clearSelection();
 				return;
 			}
-			if(!aExistingProducts || aExistingProducts.length === 0){ 
-				aExistingProducts = oFastAppData.getProperty("/EditOffer/Product/results");
-			}
+			
 
 			//already deleted products are not visible in table, so indexselectedrows should ignore these products
 			//but they still need to be available for saving
@@ -6564,9 +6569,11 @@ sap.ui.define([
 				oOfferSaveInfo.DistributorDeadline = oOffer.DistributorDeadline;
 				oOfferSaveInfo.DistributorComments = oOffer.DistributorComments;
 				oOfferSaveInfo.TenderDistributorID = oOffer.TenderDistributorID;
+				oOfferSaveInfo.Comment = oOffer.Comment;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
+				oOfferSaveInfo.Comment = oFastAppDataModel.getProperty("/EditOffer/Comment");
                 if(this._country === "ES"){
                     oOfferSaveInfo.ProfitabilityStartMnth = 1;
                     oOfferSaveInfo.ProfitabilityAgrDur = 5;
@@ -7409,6 +7416,7 @@ sap.ui.define([
             var that = this;
             let oDivisionSelect = that._country === "ES" ? that.getView().byId("idProductOfferDivisionES") : that.getView().byId("idProductOfferDivision");
 			const sCountryCode = Services.getCountryCodeofSelectedTender();
+			this.updateBrazilOfferTypes(oEvent.getParameter("selectedItem").getText());
 			if (oFastAppDataModel.getProperty("/EditOffer/Product/results/length") >= 1) {
 				sap.m.MessageBox.warning("Are you sure you want to change the Division? Existing products will be removed.", {
 					actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
@@ -7424,6 +7432,7 @@ sap.ui.define([
 							oDivisionSelect.setSelectedKey(Services.getSelectedDivisionID());
 						} else {
 							oDivisionSelect.setSelectedKey(Services.getPrevSelectedDivisionID());
+							that.updateBrazilOfferTypes(Services.getPrevSelectedDivisionID());
 						}
 					}
 				});
@@ -7432,6 +7441,35 @@ sap.ui.define([
 				Services.setPrevSelectedDivisionID(Services.getSelectedDivisionID());
 			}
 		},
+
+		/**
+         * Only allow comodato for radiology products
+         */
+        updateBrazilOfferTypes:function(division){
+
+            const sCountryCode = Services.getCountryCodeofSelectedTender();
+			if(sCountryCode !== "BR") return;
+
+            const oFastAppDataModel = Services.getFastAppDataModel();
+            const bRadiology = division === "Radiology";
+            let aOfferTypes = oFastAppDataModel.getProperty("/CountrySpecificOfferTypes");
+
+            // Only allow comodato for radiology products
+            if(bRadiology){
+				const comodato = aOfferTypes.find(ot => ot.OfferType === "Comodato");
+				if(!comodato){
+					aOfferTypes.push({
+						"CountryCode": "BR",
+						"OfferType": "Comodato",
+						"Enabled": true
+					});
+				}
+			}else{
+				aOfferTypes = aOfferTypes.filter(ot => ot.OfferType !== "Comodato");
+			}
+			oFastAppDataModel.setProperty("/CountrySpecificOfferTypes", aOfferTypes);
+
+        },
 
 		//when selecting a new selling company
 		onChangeSellingCompany: function (oEvent) {
@@ -8731,6 +8769,19 @@ sap.ui.define([
 			} else return null;
 		},
 
+		getExistingContracts: async function(){
+			let filter = {};
+
+			filter = {
+				TenderID: Services.getSelectedTenderID(),
+				OfferID: Services.getSelectedOfferID()
+			}
+
+			if(filter){
+				return await Services.getService('BrazilContract').getContracts(filter);
+			}
+		},
+
 		//QUOTATION TAB
 		//-------------
 		onQuotationOfferItemPress: async function (oEvent) {
@@ -8973,6 +9024,8 @@ sap.ui.define([
 						GROSS_SALES_OFFER_CURRENCY: prd.GROSS_SALES_OFFER_CURRENCY,
 						PAID_VOLUME: prd.PAID_VOLUME,
 						UNIT: prd.UNIT,
+						LOTID: prd.LOTID,
+						LINE: prd.LINE,
 						PriceCondition: pc
 					};
 					const conditionType = pc.PriceConditionClassification.ConditionType;
@@ -9023,6 +9076,15 @@ sap.ui.define([
 			
 			this._getCreateContractDialog().open();
 
+		},
+
+		onViewContractBR: function (oEvent) {
+			const oFastAppDataModel = Services.getFastAppDataModel();
+			const aContracts = oFastAppDataModel.getProperty('/BrazilContractsForOffer');
+			aContracts.sort((a, b) => a.createdAt - b.createdAt); //sort by putting the lowest date first - the oldest contract should be opened
+			if(aContracts?.length > 0){
+				window.open(`/app/#/brazilcontracting&/brc/Contract/${aContracts[0].ID}/TwoColumnsMidExpanded`);
+			}
 		},
 
 		/**
@@ -10028,6 +10090,9 @@ sap.ui.define([
 
 			//getting selected offer on the new way.
 			var sSelectedOfferID = Services.getSelectedOfferID(); //this.getView().getModel("fastData").getProperty(sSelectedOfferPath).OfferID;
+			
+			let aContracts = await this.getExistingContracts();
+			Services.getFastAppDataModel().setProperty("/BrazilContractsForOffer", aContracts?.data?.results);
 
 			//Get offer table + column from where we can check if offer is valid for tab
 			//var oOffersTable = that.getView().byId("tenderResultsOfferTableViewID");

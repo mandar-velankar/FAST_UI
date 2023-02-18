@@ -5689,9 +5689,9 @@ sap.ui.define([
 			//loop over the products and check if they need to be removed from the database
 			aProducts.forEach(function (oProduct, indexCurrentProduct) {
 				if (sCountryCode === "BR" && bBrazilDivisionChanged) {
-					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode);
+					iIndex = aProductsToRemove.findIndex(x => x?.ProductCode === oProduct.ProductCode);
 				}else {
-					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode && x.LotID === oProduct.LotID);
+					iIndex = aProductsToRemove.findIndex(x => x?.ProductCode === oProduct.ProductCode && x?.LotID === oProduct.LotID);
 				}
 
 				if (iIndex !== -1) { //deze staan klaar om verwijderd te worden

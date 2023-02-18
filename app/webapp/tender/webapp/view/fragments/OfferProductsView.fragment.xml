@@ -152,6 +152,8 @@
                                             <core:Item text="Consumer Health" key="Consumer Health"/>
 										</items>
 									</Select>
+									<Label text="{i18n>Comment}"/>
+									<Text text="{fastAppData>Comment}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR'}"/>
 							</form:content>
 						</form:SimpleForm>
 					

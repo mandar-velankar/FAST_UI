@@ -196,7 +196,7 @@
                 visible="{= ${fastAppData>/QuotationPriceConditionTableBrazil/commercialProposal}.length > 0}"
                 items="{
                     path : 'fastAppData>/QuotationPriceConditionTableBrazil/commercialProposal', 
-                    sorter: [{path: 'SORTER', descending: false}]
+                    sorter: [{path: 'LOTID', descending: false}]
                 }"
                 inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
                 alternateRowColors="true" fixedLayout="Strict">
@@ -209,9 +209,14 @@
                     </m:OverflowToolbar>
                 </m:headerToolbar>
                 <m:columns>
-                    <!-- Contract ID -->
-                    <m:Column width="2rem">
-                        <m:Text text="{i18n>TenderItemSorter}"/>
+                    <!-- Lot Number -->
+                    <m:Column width="8rem">
+                        <m:Text text="{i18n>LotNumber}"/>
+                    </m:Column>
+
+                    <!-- Line Lot Number -->
+                    <m:Column width="5rem">
+                        <m:Text text="{i18n>Line}"/>
                     </m:Column>
 
                     <!-- Article Name -->
@@ -280,8 +285,10 @@
                 <m:items>
                     <m:ColumnListItem>
                         <m:cells>
-                            <!-- Contract ID -->
-                            <m:Text text="{path :'fastAppData>SORTER'}"/>
+                            <!-- Lot ID -->
+                            <m:Text text="{path :'fastAppData>LOTID'}"/>
+                            <!-- Lot Line -->
+                            <m:Text text="{path :'fastAppData>LINE'}"/>
                             
                             <!-- Article Name -->
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
@@ -360,7 +367,7 @@
                 visible="{= ${fastAppData>/QuotationPriceConditionTableBrazil/discount}.length > 0}"
                 items="{
                     path : 'fastAppData>/QuotationPriceConditionTableBrazil/discount', 
-                    sorter: [{path: 'SORTER', descending: false}]
+                    sorter: [{path: 'LOTID', descending: false}]
                 }"
                 inset="false" class="sapFDynamicPageAlignContent" contextualWidth="auto"
                 alternateRowColors="true" fixedLayout="Strict">
@@ -373,9 +380,14 @@
                     </m:OverflowToolbar>
                 </m:headerToolbar>
                 <m:columns>
-                    <!-- Contract ID -->
-                    <m:Column width="2rem">
-                        <m:Text text="{i18n>TenderItemSorter}"/>
+                    <!-- Lot Number -->
+                    <m:Column width="8rem">
+                        <m:Text text="{i18n>LotNumber}"/>
+                    </m:Column>
+
+                    <!-- Line Lot Number -->
+                    <m:Column width="5rem">
+                        <m:Text text="{i18n>Line}"/>
                     </m:Column>
 
                     <!-- Article Name -->
@@ -446,8 +458,10 @@
                 <m:items>
                     <m:ColumnListItem>
                         <m:cells>
-                            <!-- Contract ID -->
-                            <m:Text text="{path :'fastAppData>SORTER'}"/>
+                           <!-- Lot ID -->
+                            <m:Text text="{path :'fastAppData>LOTID'}"/>
+                            <!-- Lot Line -->
+                            <m:Text text="{path :'fastAppData>LINE'}"/>
                             
                             <!-- Article Name -->
                             <m:Text text="{path :'fastAppData>PRODUCTNAME'}"/>
