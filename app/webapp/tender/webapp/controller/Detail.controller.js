@@ -2855,6 +2855,12 @@ sap.ui.define([
 
 		}
 
+			// Brazil only
+			const loadedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			if(Services.getSelectedCountry() === "BR" && loadedOffer?.Division){
+				this.updateBrazilOfferTypes(loadedOffer?.Division);
+			}
+
 		},
 
 		//Clone action button on top of the screen
