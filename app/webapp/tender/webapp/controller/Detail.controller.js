@@ -4698,6 +4698,9 @@ sap.ui.define([
 
 			var sOfferID = Services.getSelectedOfferID();
 			var that = this;
+		//EFRCL-276438- Revised offer for wholesale price
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var Regionname=oFastAppDataModel.oData.EditTender.Country.Region;
 
 			//keep track from where we are entering
 			Services.setReviewedOfferPressed(true);
@@ -4722,7 +4725,8 @@ sap.ui.define([
 						oData.STATUS === "Quotation Submitted" ||
 						oData.STATUS === "In FOC Negotiation" ||
 						oData.STATUS === "Appeal in Progress" ||
-						oData.STATUS === "Results Recorded"
+						oData.STATUS === "Results Recorded" ||
+						oData.STATUS === "Wholesale Offer" && Regionname === "MEA"
 					) {
 
 						//Show a different view depending on what is
