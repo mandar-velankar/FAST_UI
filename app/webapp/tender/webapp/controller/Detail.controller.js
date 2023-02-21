@@ -5668,7 +5668,7 @@ sap.ui.define([
 				var aMessages = [];
 				var iMsgCount = 0;
 				var sErroneousFields = "";
-                
+                const aNotDeletedProducts = aProducts.filter(prod => prod._sOperation !== "DELETE");
                 //maxPrice should not be mandatory for commercial agreement in spain
                 if(oFastAppData.getProperty('/Tender/CountryCode') === 'ES' && oFastAppData.getProperty('/Tender/Classification') === 'Commercial Agreement'){
                     let index = aMandatoryFields.findIndex(field => field.Column === 'MaxPrice');
@@ -5676,7 +5676,7 @@ sap.ui.define([
                 }
                 
 				// TODO: as discussed with Wouter: these kind of validation logic should be done in the backend and the back-end should throw an error 
-				aProducts.forEach(function (oProduct, index) {
+				aNotDeletedProducts.forEach(function (oProduct, index) {
 					if (aMandatoryFields.length > 0) {
 
 						for (var i = 0; i < aMandatoryFields.length; i++) {
@@ -5737,7 +5737,8 @@ sap.ui.define([
 					}
 
                     if(oProduct.CountryCode === 'BR'){ //just run this check for brazil products, not needed otherwise
-                        if(aProducts.find(product => product.LotID === oProduct.LotID && product.Line === oProduct.Line && product.ProductCode !== oProduct.ProductCode)){
+						const bHasSameLine = aNotDeletedProducts.find(product => product.LotID === oProduct.LotID && product.Line === oProduct.Line && product.ProductCode !== oProduct.ProductCode);
+                        if(bHasSameLine){
                             aMessages.push({
                                 type: 'Error',
                                 title: 'Another product other than' + ' ' + oProduct.SKU.PRODUCTPACKNAME + ' already has the same line number',
