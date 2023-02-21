@@ -505,6 +505,7 @@ sap.ui.define([
 		},
 
 		offerProductsColumnName: function(description){
+			description = description?.replace(/\s/g, '');
 			var resourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			return resourceBundle.getText(description);
 		},
