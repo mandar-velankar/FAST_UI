@@ -926,6 +926,11 @@ sap.ui.define([
             oPriceCondition.PriceAfterTaxExemtion = dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
             oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
                                                     dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
+     
+            if(dBasePrice === null){
+                dBasePrice = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
+                             dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
+            }
 
             if(conditionType === 'Discount'){
                 oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
@@ -1167,13 +1172,14 @@ sap.ui.define([
                 offerID: Services.getSelectedOfferID(), 
                 productCode: Services.getSelectedProductID(), 
                 lotID: selectedProductLotID, 
-                conditionType: selectedConditionType
+                conditionType: selectedConditionType,
+                commercialProposal: (selectedPriceCondition.CommercialProposal)?.toString()
             };
             BusyIndicator.show();
             try {
                 const result = await Services.simulateTaxes(body);
-                selectedPriceCondition.NetPrice = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["TAX_AMOUNT"];
-                selectedPriceCondition.ICMS = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["NET_VALUE"];
+                selectedPriceCondition.NetPrice = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["NET_VALUE"];
+                selectedPriceCondition.ICMS = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["TAX_AMOUNT"];
                 selectedPriceCondition.Invoive = selectedPriceCondition.CommercialProposal;
                 selectedPriceCondition.TaxEqualization = 0;
                 Services.getFastAppDataModel().refresh()
