@@ -2096,7 +2096,7 @@ sap.ui.define([
 				//We are currently in display mode and go to edit mode
 
 				//check the offer status
-				$.when(Services.checkOfferStatus()).done(function (oData) {
+				$.when(Services.checkOfferStatus()).done(async function (oData) {
 
 					//Functional description: https://trello.com/c/BCDzFpd0 + https://trello.com/c/F9OEyemn
 
@@ -2466,6 +2466,27 @@ sap.ui.define([
 						oBinding.filter(aFilter);
 
 						//oList.getItems()[0]
+						//only in creation modus of an offer we will be able to set the distributor id
+						var oDistributor = that.getView().byId("idDistributorName");
+						if (Services.getCreationModusOffer() && sCountryCode !== 'BR') {
+							oDistributor.setEnabled(true);
+						} else {
+							let sDistrKey;
+							if(sCountryCode === 'BR'){
+								if(oList.getItems().length === 0){
+									// add distributors to the FastAppDataModel
+									const distributors = await Services.readInstituteDistributor(sCountryCode, sInstituteId, sChannel, sSellingCompanyID);
+									Services.getFastAppDataModel().setProperty("/InstituteDistributor", distributors.results);
+									sDistrKey = distributors.results.find(item => item.DISTRIBUTOR_NAME === 'Bayer Brazil')?.DISTRIBUTOR_ID;;
+								} else {
+									sDistrKey = oList.getItems().find(item => item.getProperty('text') === 'Bayer Brazil')?.getProperty('key');
+								}
+								if(sDistrKey){
+									that.getView().byId("idDistributorName").setSelectedKey(sDistrKey);
+								}
+							}
+							oDistributor.setEnabled(false);
+						}
 
 						//keep default selected distributor
 						var sDistributorID = that.getView().byId("idDistributorName").getSelectedKey();
@@ -2493,17 +2514,6 @@ sap.ui.define([
 							// for (var i = 0; i < aMandatoryFields.length; i++) {
 							// 	that.getView().byId(aMandatoryFields[i].Column).setProperty("required", aMandatoryFields[i].Required);
 							// }
-						}
-
-						//only in creation modus of an offer we will be able to set the distributor id
-						var oDistributor = that.getView().byId("idDistributorName");
-						if (Services.getCreationModusOffer() && sCountryCode !== 'BR') {
-							oDistributor.setEnabled(true);
-						} else {
-							if(sCountryCode === 'BR'){
-								that.getView().byId("idDistributorName").setSelectedKey(that.getView().byId("idDistributorName").getItems()?.find(distributor => distributor.getProperty('text') === 'Bayer Brazil')?.getProperty('key'));
-							}
-							oDistributor.setEnabled(false);
 						}
 
 						//distributor selector should not be shown if there's no given distributor for the selected country
