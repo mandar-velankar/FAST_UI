@@ -6072,6 +6072,9 @@ sap.ui.define([
             //saving original state to  service array object so we can return to it's original state / compare when saving
             const bindingPath = "/EditOffer/Lots/results";
             let aLots = oFastAppDataModel.getProperty(bindingPath);
+
+			aLots.map(lot => lot.editable = false);
+			oFastAppDataModel.setProperty(bindingPath, aLots)
             Services.setLotsBeforeEdit(aLots?.map(lot => {
                 return Object.create(lot);
             }));
@@ -6134,7 +6137,8 @@ sap.ui.define([
 
             //get current entries
             let aLots = oFastAppDataModel.getProperty(bindingPath);
-
+			// remove editable field. This field used in order to make lot inputs not editable  
+			delete aLots[iIndex].editable;
             //remove linked products
             let aExistingProducts = oFastAppDataModel.getProperty("/EditOffer/Product/results");
             aExistingProducts = aExistingProducts?.filter(product => product.LotID === oFastAppDataModel.getProperty(sSelectedPath)?.LotID);
@@ -6196,7 +6200,8 @@ sap.ui.define([
             const iSelectedLot = aLots && aLots.length > 0 ? Number(aLots[0].LotID) : 0;
             oFastAppDataModel.setProperty('/SelectedLot', iSelectedLot);
             this.filterBySelectedLot(iSelectedLot);
-                
+            aLots.map(lot => delete lot.editable);
+			oFastAppDataModel.setProperty(bindingPath, aLots);
         },
 
 		//when deleting a product
