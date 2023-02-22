@@ -6073,7 +6073,7 @@ sap.ui.define([
             const bindingPath = "/EditOffer/Lots/results";
             let aLots = oFastAppDataModel.getProperty(bindingPath);
 
-			aLots.map(lot => lot.editable = false);
+			aLots?.map(lot => lot.editable = false);
 			oFastAppDataModel.setProperty(bindingPath, aLots)
             Services.setLotsBeforeEdit(aLots?.map(lot => {
                 return Object.create(lot);
@@ -6200,7 +6200,7 @@ sap.ui.define([
             const iSelectedLot = aLots && aLots.length > 0 ? Number(aLots[0].LotID) : 0;
             oFastAppDataModel.setProperty('/SelectedLot', iSelectedLot);
             this.filterBySelectedLot(iSelectedLot);
-            aLots.map(lot => delete lot.editable);
+            aLots?.map(lot => delete lot.editable);
 			oFastAppDataModel.setProperty(bindingPath, aLots);
         },
 
@@ -9149,10 +9149,16 @@ sap.ui.define([
 			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
 			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts, contractUserInput);
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
-			const wonProductIds = (tenderResults.filter(t => t.OUTCOME === 'Won')).map(t => t.PRODUCTCODE);
+			const wonProductIds = (tenderResults.filter(t => t.OUTCOME === 'Won')).map(t => {
+				return {
+					ProductCode: t.PRODUCTCODE,
+					LotID: t.LotID
+				}
+			});
 			const wonmappedContractProducts = mappedContractProducts.filter((item)=>{
-				return wonProductIds.includes(item.ProductPackID)
-			  });
+				const iIndex = wonProductIds.findIndex(wp => wp.ProductCode == item.ProductPackID && wp.LotID == item.LotID);
+				if (iIndex !== -1) return item;
+			});
 			try {
 				BusyIndicator.show(0);
 				await Services.saveBrazilContract(mappedContract, wonmappedContractProducts);
