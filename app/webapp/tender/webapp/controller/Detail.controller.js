@@ -6073,7 +6073,7 @@ sap.ui.define([
             const bindingPath = "/EditOffer/Lots/results";
             let aLots = oFastAppDataModel.getProperty(bindingPath);
 
-			aLots.map(lot => lot.editable = false);
+			aLots?.map(lot => lot.editable = false);
 			oFastAppDataModel.setProperty(bindingPath, aLots)
             Services.setLotsBeforeEdit(aLots?.map(lot => {
                 return Object.create(lot);
@@ -6200,7 +6200,7 @@ sap.ui.define([
             const iSelectedLot = aLots && aLots.length > 0 ? Number(aLots[0].LotID) : 0;
             oFastAppDataModel.setProperty('/SelectedLot', iSelectedLot);
             this.filterBySelectedLot(iSelectedLot);
-            aLots.map(lot => delete lot.editable);
+            aLots?.map(lot => delete lot.editable);
 			oFastAppDataModel.setProperty(bindingPath, aLots);
         },
 
