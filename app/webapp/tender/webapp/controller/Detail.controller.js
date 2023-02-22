@@ -9149,10 +9149,16 @@ sap.ui.define([
 			const mappedContract = this.getMappedContract(selectedOffer, contractUserInput);
 			const mappedContractProducts = this.getMappedContractProducts(selectedOfferProducts, contractUserInput);
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
-			const wonProductIds = (tenderResults.filter(t => t.OUTCOME === 'Won')).map(t => t.PRODUCTCODE);
+			const wonProductIds = (tenderResults.filter(t => t.OUTCOME === 'Won')).map(t => {
+				return {
+					ProductCode: t.PRODUCTCODE,
+					LotID: t.LotID
+				}
+			});
 			const wonmappedContractProducts = mappedContractProducts.filter((item)=>{
-				return wonProductIds.includes(item.ProductPackID)
-			  });
+				const iIndex = wonProductIds.findIndex(wp => wp.ProductCode == item.ProductPackID && wp.LotID == item.LotID);
+				if (iIndex !== -1) return item;
+			});
 			try {
 				BusyIndicator.show(0);
 				await Services.saveBrazilContract(mappedContract, wonmappedContractProducts);
