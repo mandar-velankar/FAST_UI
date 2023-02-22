@@ -35,7 +35,7 @@ sap.ui.define([
 			//get table with tenders
 			that.oProductsTable = that.oView.byId("tendersMasterTable");
 			Services.setTendersMasterTable(that.oProductsTable);
-
+			this.accessModel = Services.getAccessModel();
 			//load the external ID of the USER
 			$.when(Services.loadUserInfo()).done(function () {
 
@@ -897,7 +897,11 @@ sap.ui.define([
 			if (oStatus !== "All") {
 				andFilters.push(new sap.ui.model.Filter("STATUS", "EQ", oStatus));
 			}
-
+			//EHQUT-197392-MEA - additional edit access to Tender Results and Delivery Tracking tabs
+			if(this.accessModel.oData.tenderAccess.PHARMATENDERVIEW === true){
+			andFilters.push(new sap.ui.model.Filter("DIVISION", "EQ", 'Pharma'));
+			}
+			
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
 			var sIdSource = "";
 			if (oSelection) {

@@ -468,14 +468,33 @@ sap.ui.define([
 					$.when(Services.checkOfferStatus()).done(function(oData){
 
 						//re-submitting should be prevented when status is "Quotation Submitted" and beyond
-						var aStatusNoReSubmitting = [
+						// var aStatusNoReSubmitting = [
+						// 	"Quotation Submitted",
+						// 	"In FOC Negotiation",
+						// 	"Appeal in Progress",
+						// 	"Results Recorded",
+						// 	"Delivery Ongoing"
+						// ];
+					//EFRCL-268219- Change Additional Remarks to Editable	
+						var aStatusNoReSubmitting;
+						if(Services.getSelectedCountry() === 'IT'){
+							aStatusNoReSubmitting = [
+							"In FOC Negotiation",
+							"Appeal in Progress",
+							"Results Recorded",
+							"Delivery Ongoing"];
+						}
+						else{
+
+						//re-saving should be prevented when status is "Quotation Submitted" and beyond
+						aStatusNoReSubmitting = [
 							"Quotation Submitted",
 							"In FOC Negotiation",
 							"Appeal in Progress",
 							"Results Recorded",
 							"Delivery Ongoing"
 						];
-						
+					}
 						//check if status is allowing delete,
 						if($.inArray( oData.STATUS, aStatusNoReSubmitting ) !== -1){
 							sap.m.MessageBox.warning("We can not re-submit the offer.", {});
@@ -767,13 +786,33 @@ sap.ui.define([
 					$.when(Services.checkOfferStatus()).done(function(oData){
 
 						//re-saving should be prevented when status is "Quotation Submitted" and beyond
-						var aStatusNoReSubmitting = [
+						// var aStatusNoReSubmitting = [
+						// 	"Quotation Submitted",
+						// 	"In FOC Negotiation",
+						// 	"Appeal in Progress",
+						// 	"Results Recorded",
+						// 	"Delivery Ongoing"
+						// ];
+					//EFRCL-268219- Change Additional Remarks to Editable
+						var aStatusNoReSubmitting;
+						if(Services.getSelectedCountry() === 'IT'){
+							aStatusNoReSubmitting = [
+							"In FOC Negotiation",
+							"Appeal in Progress",
+							"Results Recorded",
+							"Delivery Ongoing"];
+						}
+						else{
+
+						//re-saving should be prevented when status is "Quotation Submitted" and beyond
+						aStatusNoReSubmitting = [
 							"Quotation Submitted",
 							"In FOC Negotiation",
 							"Appeal in Progress",
 							"Results Recorded",
 							"Delivery Ongoing"
 						];
+					}
 						
 						//check if status is allowing delete,
 						if($.inArray( oData.STATUS, aStatusNoReSubmitting ) !== -1){
