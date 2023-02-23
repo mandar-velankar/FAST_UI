@@ -5957,14 +5957,15 @@ sap.ui.define([
 		/**
 		* Load all country specific Permissions
 		*/
-		loadCountryPermissions: function(sCountry){
+		//EHQUT-SCTASK14166747-In Price Agreement marks back To Offer
+		loadCountryPermissions:async function(sCountry){
 
 			if(!sCountry || sCountry.indexOf("NA") > -1 ){
 				return;
 			}
 
-			const tabPermissions = this.loadTabPermissions(sCountry);
-			const fragmentPermissions = this.loadFragmentPermissions(sCountry);
+			const tabPermissions =await this.loadTabPermissions(sCountry);
+			const fragmentPermissions =await this.loadFragmentPermissions(sCountry);
 
 			return Promise.all([tabPermissions, fragmentPermissions]);
 		},
