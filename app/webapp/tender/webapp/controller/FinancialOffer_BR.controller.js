@@ -9,13 +9,14 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
+    "com/bayer/tender/uilib/datatypes/CustomDecimalType",
 	"sap/ui/model/Filter",
     "sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter",
     "sap/ui/core/format/NumberFormat"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,NumberFormat) {
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, CustomDecimalType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,NumberFormat) {
 	"use strict";
 	
 	//var bundle;
@@ -26,7 +27,8 @@ sap.ui.define([
 		formatter: formatter,
 		types: {
 			percent: PercentageType,
-            uomPrice: UoMPriceType
+            uomPrice: UoMPriceType,
+            customDecimal: CustomDecimalType
 		},
 
 		onInit: function (oEvent) {
@@ -853,8 +855,7 @@ sap.ui.define([
             // oPriceCondition.ConditionType = oEvent.getSource().getSelectedItem().getText();  
            
         },
-
-               
+             
         /**
          * Live Change method to calculate Brazil Price Condition
          * @param {*} oEvent 
@@ -869,8 +870,6 @@ sap.ui.define([
                 decimalSeparator: "."
               });
 
-            const additionalDiscountInputValue = oNumberFormat.parse(oEvent.getSource().getValue().replace(",","."));
-
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             let oPriceCondition = bindingContext.getProperty(bindingContext.sPath);
             let oProductPrice = Services.getFastAppDataModel().getProperty(Services.getSelectedProductPath());
@@ -884,14 +883,16 @@ sap.ui.define([
             }
             let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
             let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
-            let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? additionalDiscountInputValue / 100 : oPriceCondition.AdditionalDiscount ? oPriceCondition.AdditionalDiscount : 0;
-            let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? parseFloat(oEvent.getParameter('newValue')) : oPriceCondition.CommercialProposal ? oPriceCondition.CommercialProposal : 0;
+
+            const userInputValue = oEvent.getSource().getValue ? oNumberFormat.parse(oEvent.getSource().getValue().replace(",",".")) : 0;
+            let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? userInputValue / 100 : oPriceCondition.AdditionalDiscount ? oPriceCondition.AdditionalDiscount : 0;
+            let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? oNumberFormat.parse(oEvent.getParameter('newValue').replace(",",".")) : oPriceCondition.CommercialProposal ? oPriceCondition.CommercialProposal : 0;
 
             const dBasePrice                      = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
                                                     dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
 
             if(oEvent.getParameter('id').includes("idCommercialProposal")){
-                if(additionalDiscountInputValue > (dBasePrice * (1 - oPriceCondition.StandardDiscount))){
+                if(userInputValue > (dBasePrice * (1 - oPriceCondition.StandardDiscount))){
                     oEvent.getSource().setValueState("Error");
                     oEvent.getSource().setValueStateText("Commercial proposal value is too high.");
                     oEvent.getSource().openValueStateMessage();
@@ -916,7 +917,6 @@ sap.ui.define([
 
             this.calculateMainPriceCondition(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice);
             bindingContext.getModel().updateBindings();
-
         },
 
         calculateMainPriceCondition: function(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice){
@@ -947,6 +947,7 @@ sap.ui.define([
                 
             } else if(conditionType === 'Commercial Proposal'){
                 oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
+                // oPriceCondition.CommercialProposal = dCommercialProposal;
                 
             }
         },
