@@ -56,6 +56,20 @@ sap.ui.define([
 
 		},
 
+		//Remove price
+		deleteProductPrice: function (oPriceToRemove) {
+			const that = this;
+			const oModel = Services.getDefaultModel();
+			const sKey = oModel.createKey("/PT_TMBDPR", {
+				OfferID: oPriceToRemove.OfferID,
+				ProductCode: oPriceToRemove.ProductCode,
+				Active: oPriceToRemove.Active,
+				ActiveTier: oPriceToRemove.ActiveTier,
+				LotID: oPriceToRemove.LotID
+			})
+			return that.odata(sKey).delete();
+		},
+
 		updateProductPrice: function (oProductPrice) {
 			var that = this;
 

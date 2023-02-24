@@ -6847,6 +6847,17 @@ sap.ui.define([
 							throw new Error(oError);
 						}));
 
+						// If product has price remove it
+						const oProductPrice = oProductSaveInfo.Price;
+						if (oProductPrice) {
+							//Remove the price of product
+							promises.push(that.getService('Price').deleteProductPrice(oProductPrice).catch(function (oError) {
+								//show error message
+								that.showErrorMessage(oError, "Removing of price");
+								throw new Error(oError);
+							}));
+						}
+						
 						break;
 
 					default:
