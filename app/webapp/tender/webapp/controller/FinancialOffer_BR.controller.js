@@ -809,7 +809,7 @@ sap.ui.define([
                 if(!this.selectedProductPricePath && this.byId("idFinancialOfferViewProduct").getItems()?.length > 0){
                     this.selectedProductPricePath = '/ProductPricingView/0';
                 }
-                let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+                let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))]?.getBindingContext('fastAppData');
                 this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
             }
             
