@@ -9,12 +9,14 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
+    "com/bayer/tender/uilib/datatypes/CustomDecimalType",
 	"sap/ui/model/Filter",
     "sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter",
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter) {
+    "sap/ui/core/format/NumberFormat"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, CustomDecimalType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,NumberFormat) {
 	"use strict";
 	
 	//var bundle;
@@ -25,7 +27,8 @@ sap.ui.define([
 		formatter: formatter,
 		types: {
 			percent: PercentageType,
-            uomPrice: UoMPriceType
+            uomPrice: UoMPriceType,
+            customDecimal: CustomDecimalType
 		},
 
 		onInit: function (oEvent) {
@@ -808,7 +811,7 @@ sap.ui.define([
                 if(!this.selectedProductPricePath && this.byId("idFinancialOfferViewProduct").getItems()?.length > 0){
                     this.selectedProductPricePath = '/ProductPricingView/0';
                 }
-                let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+                let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))]?.getBindingContext('fastAppData');
                 this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
             }
             
@@ -852,14 +855,20 @@ sap.ui.define([
             // oPriceCondition.ConditionType = oEvent.getSource().getSelectedItem().getText();  
            
         },
-
-               
+             
         /**
          * Live Change method to calculate Brazil Price Condition
          * @param {*} oEvent 
          */
         
         onLiveChangePriceCondition: function(oEvent){
+
+            const oNumberFormat = NumberFormat.getFloatInstance({
+                maxFractionDigits: 2,
+                groupingEnabled: true,
+                groupingSeparator: ",",
+                decimalSeparator: "."
+              });
 
             const bindingContext = oEvent.getSource().getBindingContext("fastAppData");
             let oPriceCondition = bindingContext.getProperty(bindingContext.sPath);
@@ -874,14 +883,16 @@ sap.ui.define([
             }
             let dTaxExemption = oPriceCondition.TaxExemption ? oPriceCondition.TaxExemption : "No";
             let dCap = oPriceCondition.CAP ? oPriceCondition.CAP : "No";
-            let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? Number(oEvent.getSource().getValue()) / 100 : oPriceCondition.AdditionalDiscount ? oPriceCondition.AdditionalDiscount : 0;
-            let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? parseFloat(oEvent.getParameter('newValue')) : oPriceCondition.CommercialProposal ? oPriceCondition.CommercialProposal : 0;
+
+            const userInputValue = oEvent.getSource().getValue ? oNumberFormat.parse(oEvent.getSource().getValue().replace(",",".")) : 0;
+            let dAdditionalDiscount = oEvent.getParameter('id').includes("idAdditionalDiscount") ? userInputValue / 100 : oPriceCondition.AdditionalDiscount ? oPriceCondition.AdditionalDiscount : 0;
+            let dCommercialProposal = oEvent.getParameter('id').includes("idCommercialProposal") ? oNumberFormat.parse(oEvent.getParameter('newValue').replace(",",".")) : oPriceCondition.CommercialProposal ? oPriceCondition.CommercialProposal : 0;
 
             const dBasePrice                      = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
                                                     dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
 
             if(oEvent.getParameter('id').includes("idCommercialProposal")){
-                if(Number(oEvent.getSource().getValue()) > (dBasePrice * (1 - oPriceCondition.StandardDiscount))){
+                if(userInputValue > (dBasePrice * (1 - oPriceCondition.StandardDiscount))){
                     oEvent.getSource().setValueState("Error");
                     oEvent.getSource().setValueStateText("Commercial proposal value is too high.");
                     oEvent.getSource().openValueStateMessage();
@@ -906,7 +917,6 @@ sap.ui.define([
 
             this.calculateMainPriceCondition(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice);
             bindingContext.getModel().updateBindings();
-
         },
 
         calculateMainPriceCondition: function(oPriceCondition,dAdditionalDiscount,dCommercialProposal,dBasePrice){
@@ -926,12 +936,18 @@ sap.ui.define([
             oPriceCondition.PriceAfterTaxExemtion = dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax)).toFixed(2) : null;
             oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
                                                     dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
+     
+            if(dBasePrice === null){
+                dBasePrice = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
+                             dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
+            }
 
             if(conditionType === 'Discount'){
                 oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
                 
             } else if(conditionType === 'Commercial Proposal'){
                 oPriceCondition.AdditionalDiscount = 1 - oPriceCondition.StandardDiscount - dCommercialProposal/dBasePrice;
+                // oPriceCondition.CommercialProposal = dCommercialProposal;
                 
             }
         },
@@ -1167,13 +1183,14 @@ sap.ui.define([
                 offerID: Services.getSelectedOfferID(), 
                 productCode: Services.getSelectedProductID(), 
                 lotID: selectedProductLotID, 
-                conditionType: selectedConditionType
+                conditionType: selectedConditionType,
+                commercialProposal: (selectedPriceCondition.CommercialProposal)?.toString()
             };
             BusyIndicator.show();
             try {
                 const result = await Services.simulateTaxes(body);
-                selectedPriceCondition.NetPrice = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["TAX_AMOUNT"];
-                selectedPriceCondition.ICMS = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["NET_VALUE"];
+                selectedPriceCondition.NetPrice = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["NET_VALUE"];
+                selectedPriceCondition.ICMS = result.data['_-BAY3_-8B_SD_RFC_TBN_CONTRACTFT.Response']['TT_CONTRACT_DETAILS']['item']["TAX_AMOUNT"];
                 selectedPriceCondition.Invoive = selectedPriceCondition.CommercialProposal;
                 selectedPriceCondition.TaxEqualization = 0;
                 Services.getFastAppDataModel().refresh()

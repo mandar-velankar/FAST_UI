@@ -5689,9 +5689,9 @@ sap.ui.define([
 			//loop over the products and check if they need to be removed from the database
 			aProducts.forEach(function (oProduct, indexCurrentProduct) {
 				if (sCountryCode === "BR" && bBrazilDivisionChanged) {
-					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode);
+					iIndex = aProductsToRemove.findIndex(x => x?.ProductCode === oProduct.ProductCode);
 				}else {
-					iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode && x.LotID === oProduct.LotID);
+					iIndex = aProductsToRemove.findIndex(x => x?.ProductCode === oProduct.ProductCode && x?.LotID === oProduct.LotID);
 				}
 
 				if (iIndex !== -1) { //deze staan klaar om verwijderd te worden
@@ -6847,6 +6847,17 @@ sap.ui.define([
 							throw new Error(oError);
 						}));
 
+						// If product has price remove it
+						const oProductPrice = oProductSaveInfo.Price;
+						if (oProductPrice) {
+							//Remove the price of product
+							promises.push(that.getService('Price').deleteProductPrice(oProductPrice).catch(function (oError) {
+								//show error message
+								that.showErrorMessage(oError, "Removing of price");
+								throw new Error(oError);
+							}));
+						}
+						
 						break;
 
 					default:

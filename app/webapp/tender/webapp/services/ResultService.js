@@ -54,8 +54,8 @@ sap.ui.define([
 			return this.odata("/ContractProducts").post(product);
 		},
 
-		simulateTaxes: function ({ offerID, productCode, lotID, conditionType }) {
-			return this.odata("/simulateTaxes").post({ offerID, productCode, lotID, conditionType });
+		simulateTaxes: function ({ offerID, productCode, lotID, conditionType, commercialProposal }) {
+			return this.odata("/simulateTaxes").post({ offerID, productCode, lotID, conditionType, commercialProposal });
 		}
 	});
 	return ResultService;

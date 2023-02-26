@@ -300,7 +300,7 @@ sap.ui.define([
 				this.selectedProductPricePath = bindingContext.sPath;
 			} else {
 				this.selectedProductPricePath = Services.getSelectedProductPath();
-				let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+				let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))]?.getBindingContext('fastAppData');
 				this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
 			}
 

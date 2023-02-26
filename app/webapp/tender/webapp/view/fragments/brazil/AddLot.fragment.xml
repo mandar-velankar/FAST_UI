@@ -27,7 +27,7 @@
             </columns>
             <ColumnListItem>
                 <cells>
-                    <Input id="idLotNumber" value="{fastAppData>LotID}" enabled="true" visible="true"/>
+                    <Input id="idLotNumber" value="{fastAppData>LotID}" enabled="{= ${fastAppData>editable}}" visible="true"/>
                     <Button icon="sap-icon://delete" press=".onDeleteLot" visible="true"/>
                 </cells>
             </ColumnListItem>

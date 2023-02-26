@@ -306,8 +306,15 @@
                                     />
                                     <Label text="{i18n>CommercialProposal}" required="{= ${finOfferView>/selectedConditionType} !== 'Discount'}"/>
                                     <Input id="idCommercialProposal"
-                                           value="{path:'fastAppData>CommercialProposal', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}"
-                                            description="{fastAppData>masterPriceCurrency}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} !== 'Discount'}" fieldWidth="80%" liveChange=".onLiveChangePriceCondition"/>
+                                        value="{
+											path:'fastAppData>CommercialProposal', 
+											type:'.types.customDecimal'
+										}"
+                                        description="{fastAppData>masterPriceCurrency}"
+										enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${finOfferView>/selectedConditionType} !== 'Discount'}" 
+										fieldWidth="80%" 
+										liveChange=".onLiveChangePriceCondition"
+									/>
                                     <Label text="{i18n>TaxEqualization}"/>
                                     <Input value="{fastAppData>TaxEqualization}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>InvoiveNotaFiscal}"/>
