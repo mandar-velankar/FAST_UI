@@ -15,8 +15,9 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter",
-    "sap/ui/core/format/NumberFormat"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, CustomDecimalType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,NumberFormat) {
+    "sap/ui/core/format/NumberFormat",
+    "sap/m/MessageToast"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, CustomDecimalType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,NumberFormat, MessageToast) {
 	"use strict";
 	
 	//var bundle;
