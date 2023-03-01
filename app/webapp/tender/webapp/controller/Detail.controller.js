@@ -159,8 +159,8 @@ sap.ui.define([
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
 			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
-			
-			//Services.loadCountryPermissions(sCountry);
+			//EHQUT-SCTASK14166747-In Price Agreement marks back To Offer
+			Services.loadCountryPermissions(sCountry);
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
 				// TODO:
 			});

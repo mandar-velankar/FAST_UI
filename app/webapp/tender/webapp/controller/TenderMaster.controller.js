@@ -377,6 +377,9 @@ sap.ui.define([
 				oSel = "STATUS";
 			} else if (this.oSelCol === "Publication Date") {
 				oSel = "PUBLICATION_DATE";
+		//EFRCL-283873- Italy replace Publication date with Termination date
+			} else if (this.oSelCol === "Termination Date") {
+				oSel = "TERMINATION_DATE";
 			} else if (this.oSelCol === "Creation Date") {
 				oSel = "CREATION_DATE";
 			} else if (this.oSelCol === "Bid Due Date") {
@@ -450,6 +453,9 @@ sap.ui.define([
 				oSel = "STATUS";
 			} else if (this.oSelCol === "Publication Date") {
 				oSel = "PUBLICATION_DATE";
+		//EFRCL-283873- Italy replace Publication date with Termination date
+			} else if (this.oSelCol === "Termination Date") {
+				oSel = "TERMINATION_DATE";
 			} else if (this.oSelCol === "Creation Date") {
 				oSel = "CREATION_DATE";
 			} else if (this.oSelCol === "Bid Due Date") {
@@ -505,6 +511,9 @@ sap.ui.define([
 				oSel = "CREATION_DATE";
 			} else if (this.oSelCol === "Publication Date") {
 				oSel = "PUBLICATION_DATE";
+		//EFRCL-283873- Italy replace Publication date with Termination date
+			} else if (this.oSelCol === "Termination Date") {
+				oSel = "TERMINATION_DATE";
 			} else if (this.oSelCol === "Closing Date") {
 				oSel = "CLOSING_DATE";
 			} else if (this.oSelCol === "Offer ID") {
@@ -679,14 +688,41 @@ sap.ui.define([
 		 	
 			//EHQUT-189207-Creation date instead of bid duedate
 			//EHQUT-217122-Spain - Tender search by Region
+			// if (oCountry === "IT" || oCountry === "ES") {
+			// 	this.byId("idDueDate").setVisible(false);
+			// 	this.byId("idCreationDate").setVisible(true);
+			// 	this.byId("idfltInstituteType").setVisible(true);
+
+			// } else {
+			// 	this.byId("idDueDate").setVisible(true);
+			// 	this.byId("idCreationDate").setVisible(false);
+			// 	this.byId("idfltInstituteType").setVisible(false);
+			// 	this.byId("idfltInstituteName").setVisible(false);
+
+			// }
+			
+			//EFRCL-283873- Italy replace Publication date with Termination date
 			if (oCountry === "IT" || oCountry === "ES") {
+				if(oCountry==="IT"){
+				this.byId("idDueDate").setVisible(false);
+				this.byId("idTerminationDate").setVisible(true);
+				this.byId("idCreationDate").setVisible(true);
+				this.byId("idPublicationDate").setVisible(false);
+				this.byId("idfltInstituteType").setVisible(true);
+				}
+				else{
 				this.byId("idDueDate").setVisible(false);
 				this.byId("idCreationDate").setVisible(true);
+				this.byId("idTerminationDate").setVisible(false);
+				this.byId("idPublicationDate").setVisible(true);
 				this.byId("idfltInstituteType").setVisible(true);
-
-			} else {
+				}
+			}
+			else {
 				this.byId("idDueDate").setVisible(true);
 				this.byId("idCreationDate").setVisible(false);
+				this.byId("idTerminationDate").setVisible(false);
+				this.byId("idPublicationDate").setVisible(true);
 				this.byId("idfltInstituteType").setVisible(false);
 				this.byId("idfltInstituteName").setVisible(false);
 
@@ -835,6 +871,10 @@ sap.ui.define([
 					new sap.m.Text({
 						text: "{path:'fastData>PUBLICATION_DATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"
 
+					}),
+					//EFRCL-283873- Italy replace Publication date with Termination date
+					new sap.m.Text({
+						text: "{path:'fastData>TERMINATION_DATE',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"
 					}),
 					//EHQUT-189207-Creation date instead of bid duedate
 					new sap.m.Text({
