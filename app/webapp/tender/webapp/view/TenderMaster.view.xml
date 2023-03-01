@@ -192,9 +192,16 @@
                      <!-- EHQUT-OTT-123341-Italy Customer Code in Tender Page -->
 					
 					<!-- publication date -->
-					<Column minScreenWidth="920px" width="6rem">
+					<Column id="idPublicationDate" minScreenWidth="920px" width="6rem">
 						<header>
 							<ObjectIdentifier title="{i18n>pubcndte}" titleActive="true" titlePress="onClick"/>
+						</header>
+					</Column>
+
+					<!-- EFRCL-283873- Italy replace Publication date with Termination date -->
+					<Column id="idTerminationDate" minScreenWidth="920px" width="6rem">
+						<header>
+							<ObjectIdentifier title="{i18n>trmndte}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
 
