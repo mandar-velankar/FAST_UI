@@ -10488,8 +10488,8 @@ sap.ui.define([
 					oFastAppDataModel.setProperty("/ResultsForTree/", aResultsForTree);
 
 					//Enable Create contract button only for Brazil
-					const enableCreateContractButton = aResultsForTree.some((elem) => elem.OUTCOME === "Won");
-					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", enableCreateContractButton);
+					const enableCreateContractButton = aResultsForTree.some((elem) => elem.OUTCOME === "");
+					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", !enableCreateContractButton);
 
 					//apply filter for outcome tree table
 					oOutcomeTreeTable.getBinding("rows").filter(
