@@ -641,7 +641,7 @@ sap.ui.define([
 					additionalDiscount= 0;
 				}
 			else{
-				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPU);
+				additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPU);
 				}
 				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPU);
 			} 
@@ -650,7 +650,7 @@ sap.ui.define([
 					additionalDiscount= 0;
 				}
 			else{
-				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPP);
+				additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPP);
 			}
 				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPP);
 			}
