@@ -539,7 +539,7 @@ sap.ui.define([
 			const floatFormatter = NumberFormat.getFloatInstance({
 				maxFractionDigits: decval,
 				minFractionDigits: decval,
-				groupingEnabled: true,
+				groupingEnabled: false,
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
@@ -564,6 +564,30 @@ sap.ui.define([
 				maxFractionDigits: decval,
 				minFractionDigits: decval,
 				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			return floatFormatter.format(newPrice);
+		},
+
+		formatUoMCurrentPriceEsIt: function(ProductCode, ProductPricingView, price, numOfDecimal,event){
+            if(!price || !ProductPricingView || !ProductCode) {return}
+			let newPrice = Number(price);
+            let decval = Number(numOfDecimal);
+            // if price condition was saved, do not apply conversion!
+
+            let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
+            if(!product) {return};
+            let uom = product.UOM;
+            let packFactor = product.PACKFACTOR;  
+            if(~uom.toLowerCase().indexOf("unit")){ 
+                newPrice = newPrice / packFactor;
+            }
+            
+			const floatFormatter = NumberFormat.getFloatInstance({
+				maxFractionDigits: decval,
+				minFractionDigits: decval,
+				groupingEnabled: false,
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});

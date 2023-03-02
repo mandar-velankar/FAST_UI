@@ -27,7 +27,7 @@
                 <Label text="{i18n>AgreementDuration}" required="true"/>
                 <Input  value="{fastAppData>/SelectedOffer/ProfitabilityAgrDur}" type="Number" description="Years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
                 <Label text="{i18n>YearlyMaintenanceCostPerUnit}" required="true"/>
-                <Input  value="{fastAppData>/SelectedOffer/ProfitabilityYrlyMntCost}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+                <Input  value="{path: 'fastAppData>/SelectedOffer/ProfitabilityYrlyMntCost', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
                 <Label text="{i18n>NPVInterestRate}" required="true"/>
                 <Input  value="{path:'fastAppData>/SelectedOffer/ProfitabilityDiscRate', formatter:'.formatter.percentageNoUnit'}" type="Number" liveChange="onChangeDiscountRate" description="%" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
                 <Label text="{i18n>GrowthRate}" required="true"/>
