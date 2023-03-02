@@ -152,6 +152,8 @@ sap.ui.define([
 
 			that._country = sCountry;
 
+			this.hideNotRelevantFragments(sCountry);
+
 			// set CurrentOfferStatus
 			oFastAppDataModel.setProperty("/CurrentOfferStatus", Services.getCurrentOfferStatus(sTenderID, sOfferID));
 			// set the visible country
@@ -256,6 +258,25 @@ sap.ui.define([
 					//init selected section (tab) (for if we navigate directly to a specific tab)
 					//that._initSection(sTab);
 				}
+			}
+
+		},
+
+		hideNotRelevantFragments: function(sCountry){
+
+			if(!sCountry) return;
+
+			if(sCountry === "IT" || sCountry === "ES" || sCountry === "BR"){
+				this.getView().byId("financialOfferId")?.setVisible(false);
+			}
+			if(sCountry !== "IT"){
+				this.getView().byId("financialOfferId_IT")?.setVisible(false);
+			}
+			if(sCountry !== "ES"){
+				this.getView().byId("financialOfferId_ES")?.setVisible(false);
+			}
+			if(sCountry !== "BR"){
+				this.getView().byId("financialOfferId_BR")?.setVisible(false);
 			}
 
 		},
@@ -10488,8 +10509,8 @@ sap.ui.define([
 					oFastAppDataModel.setProperty("/ResultsForTree/", aResultsForTree);
 
 					//Enable Create contract button only for Brazil
-					const enableCreateContractButton = aResultsForTree.some((elem) => elem.OUTCOME === "Won");
-					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", enableCreateContractButton);
+					const enableCreateContractButton = aResultsForTree.some((elem) => elem.OUTCOME === "");
+					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", !enableCreateContractButton);
 
 					//apply filter for outcome tree table
 					oOutcomeTreeTable.getBinding("rows").filter(
