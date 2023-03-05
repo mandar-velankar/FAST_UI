@@ -15,8 +15,9 @@ sap.ui.define([
 	"sap/ui/model/FilterOperator",
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter",
-    "sap/ui/core/format/NumberFormat"
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, CustomDecimalType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,NumberFormat) {
+    "sap/ui/core/format/NumberFormat",
+    "sap/m/MessageToast"
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Quotation, Fragment, PercentageType, UoMPriceType, CustomDecimalType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,NumberFormat, MessageToast) {
 	"use strict";
 	
 	//var bundle;
@@ -291,7 +292,8 @@ sap.ui.define([
         getProducts: async function (){ 
             //load products
 		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
-            aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
+            aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1);
+            aProducts = aProducts?.filter(prod => prod.Channel !== "Decline");
             let oFastAppDataModel = Services.getFastAppDataModel();
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 
@@ -793,6 +795,10 @@ sap.ui.define([
                         that.onFinancialProductPress(oEvent, true);
                         this.selectedProductPricePath = Services.getSelectedProductPath();
 				}
+                // else {
+                //     // Disable approval button when financial offer table is empty
+                //     this.byId("ApprovalButtonId").setEnabled(false);
+                // }
 			}
 		},
 
@@ -825,10 +831,13 @@ sap.ui.define([
             //Edit offer copy to move back to original values during cancel
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
+            let aOfferProducts = oOffer?.Product?.results;
+            aOfferProducts = aOfferProducts?.filter(prod => prod.Channel !== "Decline");
+
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
 
-			let oSelectedProduct = oOffer?.Product && oOffer?.Product?.results?.length > 0 ? oOffer.Product.results[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
+			let oSelectedProduct = aOfferProducts && aOfferProducts.length > 0 ? aOfferProducts[this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1)] : null;
 			if(oSelectedProduct){
 				Services.getFastAppDataModel().setProperty("/EditSelectedProduct/", oSelectedProduct);
 			}
