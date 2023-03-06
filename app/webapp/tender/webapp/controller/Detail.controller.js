@@ -28,7 +28,7 @@ sap.ui.define([
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox,mobileLibrary,coreLibrary) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -104,6 +104,7 @@ sap.ui.define([
 			this.getView().setModel(this._oRaModel, "raModel");*/
 			
 			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
+			Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -9174,6 +9175,7 @@ sap.ui.define([
 		 _getCreateContractDialog: function () {
 
 			const oFastAppDataModel = Services.getFastAppDataModel();
+			const aContracts = oFastAppDataModel.getProperty('/BrazilContractsForOffer');
 
 			//create new dialog if not yet existing
 			if (!this._oAddNewContractDialog) {
@@ -9183,6 +9185,9 @@ sap.ui.define([
 				this.getView().addDependent(this._oAddNewContractDialog);
 
 			}
+			const bCreateContractFromOffer = aContracts.some(i => i.ContractType === "From Offer");
+			bCreateContractFromOffer ? Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", false) : Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
+
 
 			if(oFastAppDataModel.getProperty('/SelectedOffer/Distributor/DistributorName') === 'Bayer Brazil'){
 				this.getView().byId('idNewContractCustomerInstitute')?.setVisible(true);
