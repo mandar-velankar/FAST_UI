@@ -27,7 +27,7 @@
 						change=".onChangeContractType"
 						enabled="true">
 					<core:Item text="" key=""/>
-					<core:Item text="From Offer" key="From Offer"/>
+					<core:Item text="From Offer" key="From Offer" enabled="{fastAppData>/CreateContractFromOfferEnabled_BR}"/>
 					<core:Item text="Additional Customer" key="Additional Customer"/>
 					<core:Item text="Adhesion Contract" key="Adhesion Contract"/>
 				</Select>
