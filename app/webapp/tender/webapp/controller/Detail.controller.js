@@ -8981,6 +8981,65 @@ sap.ui.define([
 			return oPriceAgreementSaveInfo;
 		},
 
+		onCreatePriceAgreementAll: async function (oEvent){
+
+			BusyIndicator.show();
+
+			//get model & selected row
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			let sOfferID = oFastAppDataModel.getProperty("/SelectedOffer/OfferID");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
+			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+
+			await Promise.all(tenderResults.map(async (result, index) => {
+				if(result.AWARDEDCOMPANY === 'Bayer'){
+					const oSelectedProduct = offerProducts[index];
+					let oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
+
+					if(!oLoadedPriceAgreement && !oSelectedProduct.PriceCondition.results.find(condition => condition.PriceConditionClassification.ConditionType === "Rental")){
+						const rowProductCode = result.PRODUCTCODE;
+						const offerProduct = offerProducts.find(prd => prd.ProductCode === rowProductCode);
+						const offerType = offerProduct.OfferType;
+
+						if(offerType === "Selling" && result.OUTCOME === 'Won'){
+							var oPriceAgreementSaveInfo = oSelectedProduct.PriceAgreement;
+
+							if(!oPriceAgreementSaveInfo){
+								oPriceAgreementSaveInfo = await that.preparePriceAgreementSaveInfo(result);
+								oPriceAgreementSaveInfo._sOperation = "POST";
+							} else {
+								oPriceAgreementSaveInfo._sOperation = "PUT";
+							}
+
+							const priceAgreement = await Services.savePriceAgreementWithoutMessages(oPriceAgreementSaveInfo);
+							const priceAgreementID = priceAgreement[0].ID;
+
+							// add PriceAgreementID to PriceCondtions
+							if(priceAgreementID){
+								const priceConditions = offerProduct.PriceCondition.results
+								const savePriceConditionPromises = priceConditions.map(condition => {
+									condition.PriceAgreement_ID = priceAgreementID;
+									const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
+									return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+								});
+							}
+						}
+					}
+				}
+			}));
+
+			sap.m.MessageBox.success("Price agreements have been created for applicable products.", {});
+
+			//reload offer data
+			await Services.loadProductDataForOffer(sOfferID);
+
+			//refresh everything
+			that.onRefresh();
+
+			BusyIndicator.hide();
+		},
+
 		//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
 		onCreatePriceAgreement: async function (oEvent) {
 
