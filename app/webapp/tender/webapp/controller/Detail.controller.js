@@ -23,6 +23,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/libs/ranking/Ranking",
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"sap/m/MessageBox",
 	"sap/m/library",
 	"sap/ui/core/library"
