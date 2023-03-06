@@ -28,7 +28,7 @@ sap.ui.define([
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,MessageBox,mobileLibrary,coreLibrary) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
