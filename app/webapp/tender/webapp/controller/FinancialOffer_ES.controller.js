@@ -7,6 +7,7 @@ sap.ui.define([
 	"FAST_NS0FAST0/model/financial",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+    "com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
 	"sap/ui/model/Filter",
     "sap/ui/model/FilterType",
@@ -14,7 +15,7 @@ sap.ui.define([
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter",
     "sap/ui/core/format/DateFormat"    
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType, UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,DateFormat) {
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType,PercentageTypeDecimal,UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,DateFormat) {
 	"use strict";
 	
 	var bundle;
@@ -25,6 +26,7 @@ sap.ui.define([
 		formatter: formatter,
 		types: {
 			percent: PercentageType,
+            percentdecimal: PercentageTypeDecimal,
             uomPrice: UoMPriceType
 		},
 
@@ -1262,7 +1264,7 @@ sap.ui.define([
                     let oPrecioNettoCondition = oFastAppDataModel.getProperty(bindingPath);
                     let instType = oFastAppDataModel.getProperty('/Tender/Institute/InstituteType');
                     let discount = oPrecioNettoCondition.Discount ? oPrecioNettoCondition.Discount : 0;
-                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+                    if(oPrecioNettoCondition && !oPrecioNettoCondition.RoyalDecree) oPrecioNettoCondition.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && oPrecioNettoCondition.RoyalDecreePercentage && oPrecioNettoCondition.RoyalDecreePercentage !== 0 && oPrecioNettoCondition.RoyalDecreePercentage !== "0" ? 'Yes' : 'No';
                     if(sConditionType === 'Descuento Comercial' && !oPrecioNettoCondition.RoyalDecreeValue && !oPrecioNettoCondition.ExistingPriceConditionID) this.calculateNetPricesDescuentoComercial(oPrecioNettoCondition,discount);
                 } 
                 
@@ -1445,8 +1447,8 @@ sap.ui.define([
             }
             //priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === false ? newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage : newNetPriceWithoutTaxBeforeDeductionRD * priceConditionViewObj.RoyalDecreePercentage / 1 - priceConditionViewObj.RoyalDecreePercentage;
             priceConditionViewObj.RoyalDecreeValue = priceConditionViewObj.RoyalDecreeIncl === true ? Number(newNetPriceWithoutTaxBeforeDeductionRD / (1 - priceConditionViewObj.RoyalDecreePercentage) - newNetPriceWithoutTaxBeforeDeductionRD).toFixed(6) : Number(newNetPriceWithoutTaxBeforeDeductionRD - newNetPriceWithoutTaxAfterDeductionRD).toFixed(6);   
-            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
-            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 + priceConditionViewObj.Tax) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + priceConditionViewObj.Tax);
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 && priceConditionViewObj.RoyalDecreePercentage !== "0" ? 'Yes' : 'No';
+            newNetPriceWithTaxAfterDeductionRD = priceConditionViewObj.RoyalDecree === "Yes"  ? newNetPriceWithoutTaxAfterDeductionRD * (1 + parseFloat(priceConditionViewObj.Tax)) : newNetPriceWithoutTaxBeforeDeductionRD * (1 + parseFloat(priceConditionViewObj.Tax));
             priceConditionViewObj.AdditionalDiscount = additionalDiscount;
             priceConditionViewObj.NetPriceWithoutTaxAfterDeductionRD = Number(newNetPriceWithoutTaxAfterDeductionRD).toFixed(6);
             priceConditionViewObj.NetPriceWithTaxAfterDeductionRD = Number(newNetPriceWithTaxAfterDeductionRD.toFixed(6));
@@ -1538,9 +1540,9 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             //priceConditionViewObj.RoyalDecreeValue = newNetPriceWithoutTax * priceConditionViewObj.RoyalDecreePercentage;
-            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 ? 'Yes' : 'No';
+            priceConditionViewObj.RoyalDecree = (instType === 'Public Account' || instType === 'Region(s)' || instType === 'National') && priceConditionViewObj.RoyalDecreePercentage && priceConditionViewObj.RoyalDecreePercentage !== 0 && priceConditionViewObj.RoyalDecreePercentage !== "0"? 'Yes' : 'No';
             priceConditionViewObj.NetPriceWithoutTax = newNetPriceWithoutTax;
-            priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2))
+            priceConditionViewObj.NetPriceWithTax = Number((newNetPriceWithoutTax * (1 + parseFloat(priceConditionViewObj.Tax)).toFixed(2)))
 
             //bindingContext.getModel().updateBindings();
         },
@@ -2013,7 +2015,7 @@ sap.ui.define([
 
             // set the calcualted field and update the bindings
             discountConditionObj.NetPriceWithoutTax = Number(priceConditionViewObj.MainPrice * (1 - discount / 100)).toFixed(2);
-            discountConditionObj.NetPriceWithTax = Number(discountConditionObj.NetPriceWithoutTax * (1 + priceConditionViewObj.Tax)).toFixed(2);
+            discountConditionObj.NetPriceWithTax = Number(discountConditionObj.NetPriceWithoutTax * (1 + parseFloat(priceConditionViewObj.Tax))).toFixed(2);
             /*discountConditionObj.NetPriceWithoutTax = netPriceWithoutTax;
             discountConditionObj.NetPriceWithTax = netPriceWithoutTax * (1 + priceConditionViewObj.Tax);*/
 
