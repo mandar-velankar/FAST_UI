@@ -51,7 +51,8 @@ sap.ui.define([
 		//Formatting functions
 		formatter: formatter,
 		types: {
-			percent: PercentageType
+			percent: PercentageType,
+			percentdecimal : PercentageTypeDecimal
 		},
 
 
@@ -181,8 +182,8 @@ sap.ui.define([
 			Services.setSelectedCountry(sCountry);
 			Services.setSelectedOfferID(sOfferID);
 			Services.loadMandatoryFields(sCountry); // todo: add this function to loadCountryPermissions and remove it
-			
-			//Services.loadCountryPermissions(sCountry);
+			//EHQUT-SCTASK14166747-In Price Agreement marks back To Offer
+			Services.loadCountryPermissions(sCountry);
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
 				// TODO:
 			});
@@ -586,6 +587,7 @@ sap.ui.define([
 			oDetailController.getView().byId("editButtonId").setEnabled(false);
 			oDetailController.getView().byId("cloneButtonId").setEnabled(false);
 
+			//EHQUT-RITM12875754-FAST Tool Service Request 
 			// for Italy the clone button is not visible
 			if(this._country === 'IT' || this._country === 'ES' || this._country === 'BR'){
 				oDetailController.getView().byId("cloneButtonId").setVisible(false);
@@ -879,7 +881,7 @@ sap.ui.define([
 				}else{
 					oDetailController.getView().byId("editButtonId").setEnabled(true);
 				}
-
+				//EHQUT-RITM12875754-FAST Tool Service Request 
 				// for Italy the clone button is not visible
 				if(oDetailController._country === 'IT' || oDetailController._country === 'ES' || oDetailController._country === 'BR'){
 					oDetailController.getView().byId("cloneButtonId").setVisible(false);
@@ -2219,6 +2221,10 @@ sap.ui.define([
 					if (sOfferID && !Services.checkOfferVisibleForTab(Services.getLoadedOffer(Services.getSelectedOfferID()), sSelectedSection)) {
 						bEditAllowed = false;
 					}
+				//EFRCL-268219- Change Additional Remarks to Editable
+					if (Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted') {
+						bEditAllowed = true;
+					}
 
 					//if editing is not allowed (combination status, page, creation modus yes/no..)
 					if (!bEditAllowed) {
@@ -2582,8 +2588,18 @@ sap.ui.define([
 
 						//that.getView().byId("idQofferDate").setEnabled(true);
 						let oQofferValidity = that.byId("idQofferValidity");
+						// if(oQofferValidity){
+						// 	oQofferValidity.setEnabled(true);
+						// }
+						
+					//EFRCL-268219- Change Additional Remarks to Editable
 						if(oQofferValidity){
-							oQofferValidity.setEnabled(true);
+							if(Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted'){
+								oQofferValidity.setEnabled(false);
+							}
+							else{
+								oQofferValidity.setEnabled(true);
+							}
 						}
 						that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
 						that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
@@ -2592,12 +2608,28 @@ sap.ui.define([
 							oCustomRemark.setEnabled(true);
 						}
 						let oSelectIssuedBy = that.byId("idSelectIssuedBy");
+						// if (oSelectIssuedBy){
+						// 	oSelectIssuedBy.setEnabled(true);
+						// }
 						if (oSelectIssuedBy){
-							oSelectIssuedBy.setEnabled(true);
+							if(Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted'){
+								oSelectIssuedBy.setEnabled(false);
+							}
+							else{
+								oSelectIssuedBy.setEnabled(true);
+							}
 						}
 						let oSelectCompanyStamp = that.byId("idSelectCompanyStamp");
+						// if(oSelectCompanyStamp){
+						// 	oSelectCompanyStamp.setEnabled(true);
+						// }
 						if(oSelectCompanyStamp){
-							oSelectCompanyStamp.setEnabled(true);
+							if(Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted'){
+								oSelectCompanyStamp.setEnabled(false);
+							}
+							else{
+								ooSelectCompanyStamp.setEnabled(true);
+							}
 						}
 						let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
 						if(oDelayInSubmission){
@@ -2672,7 +2704,8 @@ sap.ui.define([
 				updateButton.setEnabled(bCurrentShowFooterState);
 				updateButton.setVisible(true);
 
-				if(updateButtonId === 'cloneButtonId' && (Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES')){
+				//EHQUT-RITM12875754-FAST Tool Service Request 
+				if(updateButtonId === 'cloneButtonId' && Services.getSelectedCountry() === 'ES'){
 				updateButton.setVisible(false);
 				}
 			});
@@ -4865,6 +4898,9 @@ sap.ui.define([
 
 			var sOfferID = Services.getSelectedOfferID();
 			var that = this;
+		//EFRCL-276438- Revised offer for wholesale price
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var Regionname=oFastAppDataModel.oData.EditTender.Country.Region;
 
 			//keep track from where we are entering
 			Services.setReviewedOfferPressed(true);
@@ -4889,7 +4925,8 @@ sap.ui.define([
 						oData.STATUS === "Quotation Submitted" ||
 						oData.STATUS === "In FOC Negotiation" ||
 						oData.STATUS === "Appeal in Progress" ||
-						oData.STATUS === "Results Recorded"
+						oData.STATUS === "Results Recorded" ||
+						oData.STATUS === "Wholesale Offer" && Regionname === "MEA"
 					) {
 
 						//Show a different view depending on what is
