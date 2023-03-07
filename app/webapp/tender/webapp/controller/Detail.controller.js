@@ -9226,6 +9226,8 @@ sap.ui.define([
 			try {
 				BusyIndicator.show(0);
 				await Services.saveBrazilContract(mappedContract, wonmappedContractProducts);
+				let aContracts = await this.getExistingContracts();
+				Services.getFastAppDataModel().setProperty("/BrazilContractsForOffer", aContracts?.data?.results);
 				this._getCreateContractDialog().close();
 				this.getView().getModel("viewModel").setProperty("/BrazilContract", {});
 				BusyIndicator.hide();
