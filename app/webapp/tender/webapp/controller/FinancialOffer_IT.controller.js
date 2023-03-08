@@ -626,16 +626,34 @@ sap.ui.define([
 			} else {
 				netOfferPrice = consumerPrice.NetofferPrice;
 			}
-			
-			if(sSelectedRbtn === 'Unit'){
-				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPU);
-				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPU);
+		// EFRCL- INC18434831- Italy infinity as additional discount
+			var additionalDiscount;
+			// if(sSelectedRbtn === 'Unit'){
+			// 	var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPU);
+			// 	var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPU);
 
-			} else if(sSelectedRbtn === 'Pack'){
-				var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPP);
+			// } else if(sSelectedRbtn === 'Pack'){
+			// 	var additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPP);
+			// 	var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPP);
+			// }
+			if(sSelectedRbtn === 'Unit'){
+				if(consumerPrice.MaxPriceNhsPU === "0") {
+					additionalDiscount= 0;
+				}
+			else{
+				additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPU);
+				}
+				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPU);
+			} 
+			else if(sSelectedRbtn === 'Pack'){
+				if(consumerPrice.MaxPriceNhsPP === "0") {
+					additionalDiscount= 0;
+				}
+			else{
+				additionalDiscount = 1 - (netOfferPrice / consumerPrice.MaxPriceNhsPP);
+			}
 				var totalDiscount = 1 - (netOfferPrice / consumerPrice.ConsumerPriceExclPP);
 			}
-			
 
 			this.byId("idFinalDiscount").setValue((totalDiscount*100).toFixed(2));
 			this.byId("addDiscount").setValue((additionalDiscount*100).toFixed(2));
