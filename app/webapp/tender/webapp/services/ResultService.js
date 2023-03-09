@@ -1,7 +1,9 @@
 sap.ui.define([
 	"FAST_NS0FAST0/services/BaseService",
-	"FAST_NS0FAST0/model/services"
-], function (BaseService, Services) {
+	"FAST_NS0FAST0/model/services",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseService, Services, Filter, FilterOperator) {
 	"use strict";
 
 	var ResultService = BaseService.extend("FAST_NS0FAST0.services.ResultService", {
@@ -29,7 +31,8 @@ sap.ui.define([
 			//path of price
 			var sPath = oModel.createKey("/PT_TMTRRES", {
 				OfferID: oResultToSave.OfferID,
-				ProductCode: oResultToSave.ProductCode
+				ProductCode: oResultToSave.ProductCode,
+				LotID: oResultToSave.LotID,
 			});
 
 			//oResultToSave.AwardedPrice = parseFloat(oResultToSave.AwardedPrice);
@@ -37,6 +40,22 @@ sap.ui.define([
 			//Create
 			return this.odata(sPath).put(oResultToSave);
 
+		},
+
+		getBrazilContractStatuses: function () {
+			return this.odata("/ContractStatuses").get();
+		},
+
+		createBrazilContract: function (contract) {
+			return this.odata("/Contracts").post(contract);
+		},
+
+		createBrazilContractProduct: function (product) {
+			return this.odata("/ContractProducts").post(product);
+		},
+
+		simulateTaxes: function ({ offerID, productCode, lotID, conditionType, commercialProposal }) {
+			return this.odata("/simulateTaxes").post({ offerID, productCode, lotID, conditionType, commercialProposal });
 		}
 	});
 	return ResultService;

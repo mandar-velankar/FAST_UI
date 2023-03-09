@@ -1010,7 +1010,8 @@ sap.ui.define([
 				ActiveTier: 0,
 				NetPrice: oMainPriceCondition.NetPriceWithoutTaxAfterDeductionRD || oMainPriceCondition.NetPriceWithoutTax,
 				NetPrice_OfPaid: 0,
-				PRICE_UPDATE: oOffer.APPROVALS_SENT // Mechanism to identify that approval is required again is based on this field
+				PRICE_UPDATE: oOffer.APPROVALS_SENT, // Mechanism to identify that approval is required again is based on this field,
+                LotID: oProductPrice.LotID
 			};
 
 			return oNewPriceInfo;

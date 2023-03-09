@@ -71,10 +71,13 @@ sap.ui.define([
 		_sOfferProductPageSectionID: "---tenderManagementDetailId--offerProductsId",
 		_sFinancialOfferPageSectionID_IT: "---tenderManagementDetailId--financialOfferId_IT",
         _sFinancialOfferPageSectionID_ES: "---tenderManagementDetailId--financialOfferId_ES",
+        _sFinancialOfferPageSectionID_BR: "---tenderManagementDetailId--financialOfferId_BR",
 		_sFinancialOfferPageSectionID: "---tenderManagementDetailId--financialOfferId",
 		_sQuotationPageSectionID: "---tenderManagementDetailId--quotationId",
 		_sTenderResultsPageSectionID: "---tenderManagementDetailId--tenderResultsId",
 		_sDeliveryTrackingPageSectionID: "---tenderManagementDetailId--deliveryTrackingId",
+
+        _aLotsBeforeEdit: [],
 
 		//different Page sub-sections on detail page
 		_sBasicInformationPageSubSectionID: "---tenderManagementDetailId--basicInformationSubSectionId",
@@ -176,6 +179,11 @@ sap.ui.define([
 			return sPage;
 		},
 
+        getFinancialOfferPageSectionID_BR: function () {
+			var sPage = this.getComponentID() + this._sFinancialOfferPageSectionID_BR;
+			return sPage;
+		},
+
 		getQuotationPageSectionID: function () {
 			var sPage = this.getComponentID() + this._sQuotationPageSectionID;
 			return sPage;
@@ -271,6 +279,14 @@ sap.ui.define([
 		getSelectedPriceConditionPath: function () {
 			return this._sSelectedPriceConditionPath;
 		},
+
+        getLotsBeforeEdit: function() {
+            return this._aLotsBeforeEdit || [];
+        },
+
+        setLotsBeforeEdit: function(aLots) {
+            this._aLotsBeforeEdit = aLots;
+        },
 
 		//get instituteID of selected ProductID
 		getInstituteIDofSelectedTender: function () {
@@ -461,8 +477,10 @@ sap.ui.define([
 		},
 
 		//get all products loaded for a specific offer from the fast app data model
-		getLoadedProductsForOffer: function (sOfferID, sProductCode) {
-
+		getLoadedProductsForOffer: function (sOfferID, sProductCode, sLotID) {
+			if (!sLotID) {
+				sLotID = 1;
+			}
 			//if no offer ID
 			if (!sOfferID) {
 				return []; //return no products
@@ -526,14 +544,13 @@ sap.ui.define([
 				}
 				//Deep copying not to keep reference to existing object
 				aProducts = $.extend(true, {}, aProducts);
-
 				//do we return only 1 specific product of all loaded products for the offer
 				if (sProductCode) {
 
 					if (aProducts && aProducts.results) {
 						//only 1 product
 						var aProductsFiltered = aProducts.results.filter(function (oProduct) {
-							if (oProduct.ProductCode === sProductCode) {
+							if (oProduct.ProductCode == sProductCode && oProduct.LotID == sLotID) {
 								return oProduct;
 							}
 						});
@@ -546,7 +563,7 @@ sap.ui.define([
 						return [];
 					}
 
-				} else {
+				}else {
 					return aProducts;
 				}
 
@@ -1086,6 +1103,19 @@ sap.ui.define([
 							bVisible = false;
 						}
 						break;
+
+                    case this.getFinancialOfferPageSectionID_BR():
+						//The offer should be shown for all statuses, except for:
+						//	- 'Wholesale Offer' 
+						//  - 'Offer Declined'
+						if (oOffer.OfferStatus.STATUS !== 'Wholesale Offer' &&
+							oOffer.OfferStatus.STATUS !== 'Offer Declined') {
+							bVisible = true;
+						} else {
+							bVisible = false;
+						}
+						break;
+
 					case this.getQuotationPageSectionID():
 						//The offer should be shown for all statuses, except for:
 						//	- 'Wholesale Offer' 
@@ -1969,6 +1999,56 @@ sap.ui.define([
 			return promise;
 		},
 
+        loadCountryOfferTypes: function(sCountry){
+            let oFastAppDataModel = this.getFastAppDataModel();
+            let aOfferTypes = {
+                "Types": [
+                    {
+						"CountryCode": "BR",
+						"OfferType": "",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "BR",
+						"OfferType": "Selling",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "BR",
+						"OfferType": "Comodato",
+                        "Enabled": true
+					},
+                    {
+						"CountryCode": "IT",
+						"OfferType": "",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Selling",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Rental",
+                        "Enabled": true
+					},
+					{
+						"CountryCode": "IT",
+						"OfferType": "Comodato",
+                        "Enabled": true
+					}
+				],
+            }
+
+            
+            let sPath = '/CountrySpecificOfferTypes';
+            aOfferTypes = aOfferTypes?.Types?.filter(type => type.CountryCode === sCountry);
+            if(aOfferTypes && aOfferTypes.length > 0){
+                oFastAppDataModel.setProperty(sPath, aOfferTypes);
+            }
+        },
+
 		// load CountrySpecifications
 		loadCountryCompetitors: function(sCountry, sProductCode) { 
 
@@ -2102,6 +2182,33 @@ sap.ui.define([
 			//return promise so the function can check if execution is done
 			return oDeferred.promise();
 
+		},
+
+		loadBrazilContractStatuses: function () {
+			const oFastAppDataModel = this.getFastAppDataModel();
+			return this.getService('Result').getBrazilContractStatuses().then((response) => {
+				oFastAppDataModel.setProperty("/BrazilContractStatuses", response.data.results);
+			});
+		},
+		saveBrazilContract: function (mappedContract, mappedContractProducts) {
+			return this.createBrazilContract(mappedContract).then((response) => {
+				const contractID = response.data.ID;
+				mappedContractProducts.forEach(product => product.Contract_ID = contractID);
+				return this.createBrazilContractProducts(mappedContractProducts);
+			});
+		},
+		createBrazilContract: async function (contract) {
+			return this.getService('Result').createBrazilContract(contract);
+		},
+		createBrazilContractProducts: function (products) {
+			const promises = products.map(product => {
+				return this.getService('Result').createBrazilContractProduct(product);
+			});
+			return Promise.all(promises);
+		},
+
+		simulateTaxes: function (payload) {
+			return this.getService('Result').simulateTaxes(payload);
 		},
 
 		//load country channels
@@ -2380,7 +2487,7 @@ sap.ui.define([
 				oFastDataCalls.read(sAdditionalOfferDataPath, {
 					filters: aFilters,
 					urlParameters: {
-						"$expand": "Distributor,OfferStatus,Tender,Revision,SellingCompanyDetails/Signatories,Signatories,Quotation" //,Product" --> no product found = product null in enity, which gives problems
+						"$expand": "Distributor,OfferStatus,Tender,Revision,SellingCompanyDetails/Signatories,Signatories,Quotation,Lots" //,Product" --> no product found = product null in enity, which gives problems
 					},
 					success: function (oData, oResponse) {
 
@@ -2663,10 +2770,10 @@ sap.ui.define([
         },
          //EHQUT-167489-Auto Approval in Thailand
 		//Load 1 product
-		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
+		loadProduct: function (sOfferID, sActive, sProductCode, oNewProductInfo, sLotId) { //TODO we keep oNewProductInfo beceause of promise in for loop, where we don't have the latest object
 
 			//Load product data
-			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ")";
+			var sPath = "/PT_TMOFPR(OfferID='" + sOfferID + "',Active=" + sActive + ",ProductCode=" + sProductCode + ",LotID=" + sLotId + ")";
 
 			var oDeferred = $.Deferred();
 			var that = this;
@@ -4911,6 +5018,30 @@ sap.ui.define([
 
 		},
 
+        getLots: async function (sOfferID) {
+
+			//read service again to get nextOfferID
+			let oFastAppDataModel = this.getFastAppDataModel();
+			const oResult = await this.getService('Offer').getLotProducts(sOfferID);
+			const aLots = oResult && oResult.data && oResult.data.results || [];
+            oFastAppDataModel.setProperty('/OfferLots', aLots);
+
+			return aLots;
+
+		},
+
+        getLotProducts: async function (sOfferID, sLotId) {
+
+			//read service again to get nextOfferID
+			let oFastAppDataModel = this.getFastAppDataModel();
+			const oResult = await this.getService('Offer').getLotProducts(sOfferID, sLotId);
+			const aLots = oResult && oResult.data && oResult.data.results || [];
+            oFastAppDataModel.setProperty('/OfferLots', aLots);
+
+			return aLots;
+
+		},
+
 		//get all offers to be saved (offer is saved 1 by 1)
 		getOfferSaveInfo: function () {
 			return this._oOfferSaveInfo;
@@ -5541,7 +5672,7 @@ sap.ui.define([
 
 		//REMOVING
 		//--------
-		removeProductsSaveInfo: function (aProductsToRemove) {
+		removeProductsSaveInfo: function (aProductsToRemove, sCountryCode, bBrazilDivisionChanged) {
 
 			var that = this;
 			var oFastAppDataModel = this.getFastAppDataModel();
@@ -5557,8 +5688,11 @@ sap.ui.define([
 
 			//loop over the products and check if they need to be removed from the database
 			aProducts.forEach(function (oProduct, indexCurrentProduct) {
-
-				iIndex = aProductsToRemove.findIndex(x => x.ProductCode === oProduct.ProductCode);
+				if (sCountryCode === "BR" && bBrazilDivisionChanged) {
+					iIndex = aProductsToRemove.findIndex(x => x?.ProductCode === oProduct.ProductCode);
+				}else {
+					iIndex = aProductsToRemove.findIndex(x => x?.ProductCode === oProduct.ProductCode && x?.LotID === oProduct.LotID);
+				}
 
 				if (iIndex !== -1) { //deze staan klaar om verwijderd te worden
 
@@ -5706,6 +5840,12 @@ sap.ui.define([
 			}
 
 			return oNewProductInfo.SUPPLY_UPDATE;
+		},
+
+		getCurrentOfferStatus: function(sTenderID, sOfferID){ 
+			if(!sTenderID) return;
+			let offerId = sOfferID ? `'${sOfferID}'` : `''`;
+			return this.getDefaultModel().getProperty(`/TenderOfferMaster(TENDER_ID='${sTenderID}',OFFER_ID=${offerId})`)?.STATUS;
 		},
 
 		//check if offer status should be updated or created
@@ -5867,7 +6007,7 @@ sap.ui.define([
 			var oFastDataCalls = this.getDefaultModel();
 
 			//path for product pack read
-			var sProductPackPath = "/PT_TMPRDPCK(PRODUCTPACKID=" + sProductPackID + ",ACTIVERECORD='Yes')";
+			var sProductPackPath = "/PT_TMPRDPCK(PRODUCTPACKID=" + sProductPackID + ")";
 
 			if (sProductPackPath) {
 
@@ -6275,7 +6415,7 @@ sap.ui.define([
 		//------
 
 		//actual saving of the product offer
-		saveProductOffer: function (sPath) {
+		saveProductOffer: async function (sPath) {
 
 			//that is this
 			var that = this;
@@ -6322,6 +6462,34 @@ sap.ui.define([
 
 			}
 
+            
+            //Get offer Lots to be saved at the same time
+            const oFastAppDataModel = that.getFastAppDataModel();
+            let aLots = oFastAppDataModel.getProperty('/EditOffer/Lots/results');
+            let aExistingLots = await that.getService('Offer').getOfferLots(oOfferToSave.OfferID);
+            aExistingLots = aExistingLots?.data.results;
+
+            //delete removed lots
+            aExistingLots.forEach(lot => {
+                if(aLots.findIndex(editedLot => editedLot.LotID === lot.LotID) === -1){
+                    promises.push(that.getService('Offer').deleteOfferLot(lot).catch(function (oError) {
+                        that.showErrorMessage(oError, "Deletion of lot");
+                        throw new Error(oError);
+                    }));
+                }
+            });
+
+            //create/update new/existing lots
+            if(aLots && aLots.length > 0){
+                aLots.forEach(lot => {
+                    lot.LotID = Number(lot.LotID);
+                    promises.push(that.getService('Offer').createOfferLot(lot).catch(function (oError) {
+                        that.showErrorMessage(oError, "Creation of lot");
+                        throw new Error(oError);
+                    }));
+                });
+            }
+
 			//when finished
 			return Promise.all(promises).then((oResult) => {
 
@@ -6330,7 +6498,7 @@ sap.ui.define([
 
 					//check offer created
 					var sOfferID = 'Unknown';
-					if (oResult && oResult.length === 1) {
+					if (oResult && oResult.length > 0) {
 						sOfferID = oResult[0].data.OfferID; //there is only 1
 					}
 					
@@ -6380,6 +6548,13 @@ sap.ui.define([
 			const oOfferToSave = this.getService('Offer').getConvertOfferToSave(offer);
 
 			return this.getService('Offer').createOffer(oOfferToSave);
+		},
+
+        saveOfferLots: function (offer) {
+
+			const oLotsToSave = this.getFastAppDataModel.getProperty('/EditOffer/Lots/results');
+
+			return this.getService('Offer').createOffer(oLotsToSave);
 		},
 
 		sendMail: function (mail) {
@@ -6616,7 +6791,7 @@ sap.ui.define([
 						break;
 					case "PUT":
 						//https://trello.com/c/np1g69g7
-						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave).then(function (
+						promises.push(that.loadProduct(oProductToSave.OfferID, 1, oProductToSave.ProductCode, oProductToSave, oProductToSave.LotID).then(function (
 							oOriginalProductInfo) {
 
 							//when we are changing a product, we should check if data is changed that impacts the approval proces (supply update 1 or 0 for re-approval)
@@ -6673,6 +6848,17 @@ sap.ui.define([
 							throw new Error(oError);
 						}));
 
+						// If product has price remove it
+						const oProductPrice = oProductSaveInfo.Price;
+						if (oProductPrice) {
+							//Remove the price of product
+							promises.push(that.getService('Price').deleteProductPrice(oProductPrice).catch(function (oError) {
+								//show error message
+								that.showErrorMessage(oError, "Removing of price");
+								throw new Error(oError);
+							}));
+						}
+						
 						break;
 
 					default:
@@ -7913,6 +8099,7 @@ sap.ui.define([
 							oApprovalSaveInfo.ApproverType = oApprovalsSelectedOffer.ApproverType;
 							oApprovalSaveInfo.FLOW_ID = oApprovalsSelectedOffer.FLOW_ID;
 							oApprovalSaveInfo.REQUIRED_ACTION = oApprovalsSelectedOffer.REQUIRED_ACTION;
+							oApprovalSaveInfo.LotID = oProduct.LotID;
 							aApprovalsSaveInfo.push(oApprovalSaveInfo);
 
 						}

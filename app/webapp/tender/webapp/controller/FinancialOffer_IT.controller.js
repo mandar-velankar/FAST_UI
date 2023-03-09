@@ -300,7 +300,7 @@ sap.ui.define([
 				this.selectedProductPricePath = bindingContext.sPath;
 			} else {
 				this.selectedProductPricePath = Services.getSelectedProductPath();
-				let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))].getBindingContext('fastAppData');
+				let oBindingContext = this.byId("idFinancialOfferViewProduct").getItems()[parseInt(this.selectedProductPricePath.substring(this.selectedProductPricePath.lastIndexOf('/') + 1))]?.getBindingContext('fastAppData');
 				this.byId("FinPricingOfferSubsection").setBindingContext(oBindingContext, "fastAppData");
 			}
 
@@ -373,6 +373,7 @@ sap.ui.define([
 		},
 		//EHQUT-215457-Italy - Issue with definition of sconto merce omaggio
 		_checkTaxRate: async function (oProductPrice){
+			
 			var differentRates = oProductPrice.FreeGoodsOther.filter(freeGoods =>   freeGoods.VAT !== oProductPrice.VatPerPack*100   );
 			var message,freegoodsProducttype;
 			var ProductCode=oProductPrice.ProductCode;
@@ -597,7 +598,8 @@ sap.ui.define([
 				ActiveTier: 0,
 				NetPrice: oProductPrice.NetofferPrice,
 				NetPrice_OfPaid: 0,
-				PRICE_UPDATE: oOffer.APPROVALS_SENT // Mechanism to identify that approval is required again is based on this field
+				PRICE_UPDATE: oOffer.APPROVALS_SENT, // Mechanism to identify that approval is required again is based on this field
+				LotID: oProductPrice.LotID
 			};
 
 			/*if(oProductPrice.ID !== null){
