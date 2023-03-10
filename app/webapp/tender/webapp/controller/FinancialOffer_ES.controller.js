@@ -478,6 +478,7 @@ sap.ui.define([
         getProducts: async function (){ 
             //load products
 		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
+            aProducts = aProducts.filter(product => product.ConditionType === "PVL" || product.ConditionType === "Precio Neto" || product.ConditionType === "Descuento Comercial");
             aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
             let oFastAppDataModel = Services.getFastAppDataModel();
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
