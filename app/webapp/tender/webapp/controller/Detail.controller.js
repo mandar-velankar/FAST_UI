@@ -591,7 +591,7 @@ sap.ui.define([
 
 			//EHQUT-RITM12875754-FAST Tool Service Request 
 			// for Italy the clone button is not visible
-			if(this._country === 'IT' || this._country === 'ES' || this._country === 'BR'){
+			if(this._country === 'ES' || this._country === 'BR'){
 				oDetailController.getView().byId("cloneButtonId").setVisible(false);
 			}
 
@@ -885,7 +885,7 @@ sap.ui.define([
 				}
 				//EHQUT-RITM12875754-FAST Tool Service Request 
 				// for Italy the clone button is not visible
-				if(oDetailController._country === 'IT' || oDetailController._country === 'ES' || oDetailController._country === 'BR'){
+				if(oDetailController._country === 'ES' || oDetailController._country === 'BR'){
 					oDetailController.getView().byId("cloneButtonId").setVisible(false);
 				}else {
 					oDetailController.getView().byId("cloneButtonId").setVisible(true);
