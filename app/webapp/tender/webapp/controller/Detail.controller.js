@@ -10366,7 +10366,7 @@ sap.ui.define([
 												CURRENCY: oCompetitorResult.CURRENCY,
 												LISTOUTCOMEREASONS: oCompetitorResult.ListOutcomeReasons,
 												CountryCompetitorProducts: aCountryCompetitorProducts,
-												LotID: oProduct.LotID,
+												LOTID: oProduct.LotID,
 												_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
 											}
 											aCompetitorResult.push(oCompetitorResultForView);
@@ -10542,6 +10542,7 @@ sap.ui.define([
 							CURRENCY: value.CURRENCY,
 							LISTOUTCOMEREASONS: value.ListOutcomeReasons,
 							CountryCompetitorProducts: aCountryCompetitorProducts,
+							LOTID: value.LOTID,
 							_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
 						}
 						
