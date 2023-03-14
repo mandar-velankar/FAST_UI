@@ -126,6 +126,7 @@ sap.ui.define([
 				CountryCode: "",
 				InstituteID: sInstituteId,
 				SKUCode: null,
+				LotID: 1,
 				SubmittedOn: moment().utc().toDate(),
 				SubmittedBy: UserInfo.getCWID(),
 				Active: 1,
