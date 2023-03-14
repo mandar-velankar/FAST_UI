@@ -33,7 +33,7 @@ sap.ui.define([
 				OFFERID: oLetterToSave.OFFERID,
 				SKUCODE: oLetterToSave.SKUCODE,
 				SNO: oLetterToSave.SNO,
-				LOTID: oDeliveryToSave.LotID
+				LOTID: oLetterToSave.LotID
 			});
 
 			//Update
@@ -48,7 +48,8 @@ sap.ui.define([
 			var sPath = Services.getDefaultModel().createKey("/PT_TMUDLTRS", {
 				OFFERID: oLetterToSave.OFFERID,
 				SKUCODE: oLetterToSave.SKUCODE,
-				SNO: oLetterToSave.SNO
+				SNO: oLetterToSave.SNO,
+				LOTID: oLetterToSave.LotID
 			});
 
 			//Update
