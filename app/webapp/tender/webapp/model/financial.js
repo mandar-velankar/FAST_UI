@@ -43,10 +43,10 @@ sap.ui.define([
 		//-------
 				
 				//load Price of product again from database
-				loadProductPrice: function (sOfferID, sProductCode, sActive, sActiveTier){
+				loadProductPrice: function (sOfferID, sProductCode, sActive, sActiveTier, sLotID){
 					
 					//Rates for country from offer currency to EUR
-					var sPath = "/PT_TMBDPR(OfferID='" + sOfferID + "',ProductCode=" + sProductCode + ",Active=" + sActive + ",ActiveTier=" + sActiveTier + ")";
+					var sPath = "/PT_TMBDPR(OfferID='" + sOfferID + "',ProductCode=" + sProductCode + ",Active=" + sActive + ",ActiveTier=" + sActiveTier + ",LotID=" + sLotID + "  )";
 
 					var oDeferred = $.Deferred();
 					var that = this;
