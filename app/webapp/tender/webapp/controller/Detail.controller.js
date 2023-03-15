@@ -591,7 +591,7 @@ sap.ui.define([
 
 			//EHQUT-RITM12875754-FAST Tool Service Request 
 			// for Italy the clone button is not visible
-			if(this._country === 'IT' || this._country === 'ES' || this._country === 'BR'){
+			if(this._country === 'ES' || this._country === 'BR'){
 				oDetailController.getView().byId("cloneButtonId").setVisible(false);
 			}
 
@@ -885,7 +885,7 @@ sap.ui.define([
 				}
 				//EHQUT-RITM12875754-FAST Tool Service Request 
 				// for Italy the clone button is not visible
-				if(oDetailController._country === 'IT' || oDetailController._country === 'ES' || oDetailController._country === 'BR'){
+				if(oDetailController._country === 'ES' || oDetailController._country === 'BR'){
 					oDetailController.getView().byId("cloneButtonId").setVisible(false);
 				}else {
 					oDetailController.getView().byId("cloneButtonId").setVisible(true);
@@ -8250,11 +8250,12 @@ sap.ui.define([
 						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						PRICE_UPDATE: 0,
+						LotID: oProduct.LotID,
 						Deductions_ABS_PCT:(countryCode ==="TH") ? that.byId("idEditPriceOffer_idDeductionAbsPct").getSelectedKey() : " "
 					};
                 //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//check if any of the pricing data is changed
-					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
+					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0, oProduct.LotID)).done(function (oOriginalPrices) {
 
 						//convert price to save
 						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
@@ -10368,6 +10369,7 @@ sap.ui.define([
 												CURRENCY: oCompetitorResult.CURRENCY,
 												LISTOUTCOMEREASONS: oCompetitorResult.ListOutcomeReasons,
 												CountryCompetitorProducts: aCountryCompetitorProducts,
+												LOTID: oProduct.LotID,
 												_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
 											}
 											aCompetitorResult.push(oCompetitorResultForView);
@@ -10543,6 +10545,7 @@ sap.ui.define([
 							CURRENCY: value.CURRENCY,
 							LISTOUTCOMEREASONS: value.ListOutcomeReasons,
 							CountryCompetitorProducts: aCountryCompetitorProducts,
+							LOTID: value.LOTID,
 							_sOperation: "PUT", //PUT beceause its an existing competitor result in the back-end
 						}
 						
