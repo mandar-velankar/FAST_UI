@@ -33,7 +33,8 @@ sap.ui.define([
 				OFFERID: oResultToSave.OFFERID,
 				PRODUCTCODE: oResultToSave.PRODUCTCODE,
 				AWARDEDCOMPANY: oResultToSave.AWARDEDCOMPANY,
-				AWARDEDPRODUCT: oResultToSave.AWARDEDPRODUCT
+				AWARDEDPRODUCT: oResultToSave.AWARDEDPRODUCT,
+				LOTID: oResultToSave.LOTID
 			});
 
 			//update
@@ -51,7 +52,8 @@ sap.ui.define([
 				OFFERID: oResultToSave.OFFERID,
 				PRODUCTCODE: oResultToSave.PRODUCTCODE,
 				AWARDEDCOMPANY: oResultToSave.AWARDEDCOMPANY,
-				AWARDEDPRODUCT: oResultToSave.AWARDEDPRODUCT
+				AWARDEDPRODUCT: oResultToSave.AWARDEDPRODUCT,
+				LOTID: oResultToSave.LOTID
 			});
 
 			//remove
@@ -67,6 +69,7 @@ sap.ui.define([
 				var oCompetitorResult = {
 					OFFERID: oCompetitorResultTree.OFFERID,
 					PRODUCTCODE: oCompetitorResultTree.PRODUCTCODE,
+					LOTID: oCompetitorResultTree.LOTID,
 					OUTCOME: oCompetitorResultTree.OUTCOME,
 					AWARDEDCOMPANY: oCompetitorResultTree.AWARDEDCOMPANY !== 'Other' ? oCompetitorResultTree.AWARDEDCOMPANY : oCompetitorResultTree.OTHERCOMPANY,
 					AWARDEDPRODUCT: oCompetitorResultTree.PRODUCT !== 'Other' ? oCompetitorResultTree.PRODUCT : oCompetitorResultTree.OTHERPRODUCT, //beceause bayer product & awarded product both use product on view
