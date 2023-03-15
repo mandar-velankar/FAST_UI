@@ -7343,6 +7343,7 @@ sap.ui.define([
 			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
 				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
 			);
+
 			var that = this;
 			model_f4.read(sPath, {
 				filters: aFilters,
@@ -7366,7 +7367,7 @@ sap.ui.define([
 							path: "/results",
 							template: new sap.m.StandardListItem({
 								title: "{InstituteName}",
-								info:"{= ${CustomerID} && ${CustomerID}!=='0'?${CustomerID}:''}",
+								info:"{= ${CountryCode} !== 'BR' && ${CustomerID} && ${CustomerID} !== '0' ? ${CustomerID} : ${CountryCode} === 'BR' && ${CustomerID} && ${CustomerID} !== '0' ? ${CustomerID} + ' ' + ${CNPJ} : ${CountryCode} === 'BR' && (!${CustomerID} || ${CustomerID} === '0') ? ${CNPJ} : ''}",
 								//description: "{InstituteID}",
 								//active: true,
 								//beceause we no longer have the selected instituteID visible, we keep it in the customData of the list item
@@ -7378,10 +7379,21 @@ sap.ui.define([
 						},
 						liveChange: function (oEvent) {
 							var sValue = oEvent.getParameter("value");
-							var oFilters = [new sap.ui.model.Filter([
-												new sap.ui.model.Filter("InstituteName", sap.ui.model.FilterOperator.Contains, sValue),
-												new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue)],
-											false)];
+							var oFilters;
+
+							if(Services.getSelectedCountry() !== 'BR'){
+								oFilters = [new sap.ui.model.Filter([
+													new sap.ui.model.Filter("InstituteName", sap.ui.model.FilterOperator.Contains, sValue),
+													new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue)],
+												false)];
+							} else {	
+								oFilters = [new sap.ui.model.Filter([
+									new sap.ui.model.Filter("InstituteName", sap.ui.model.FilterOperator.Contains, sValue),
+									new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue),
+									new sap.ui.model.Filter("CNPJ", sap.ui.model.FilterOperator.Contains, sValue)],
+								false)];						
+								oFilters.push();
+							}
 							oEvent.getSource().getBinding("items").filter(oFilters);
 						},
 						confirm: handleCloseInstituteName,
