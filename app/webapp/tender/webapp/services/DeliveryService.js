@@ -32,7 +32,8 @@ sap.ui.define([
 			var sPath = oModel.createKey("/PT_TMDLVTR", {
 				OfferID: oDeliveryToSave.OfferID,
 				ProductCode: oDeliveryToSave.ProductCode,
-				SNo: oDeliveryToSave.SNo
+				SNo: oDeliveryToSave.SNo,
+				LotID: oDeliveryToSave.LotID
 			});
 
 			//Update
@@ -50,7 +51,8 @@ sap.ui.define([
 			var sPath = oModel.createKey("/PT_TMDLVTR", {
 				OfferID: oDeliveryToSave.OfferID,
 				ProductCode: oDeliveryToSave.ProductCode,
-				SNo: oDeliveryToSave.SNo
+				SNo: oDeliveryToSave.SNo,
+				LotID: oDeliveryToSave.LotID
 			});
 
 			//Update
@@ -97,6 +99,7 @@ sap.ui.define([
 			oDeliverieToSave.InvoiceNo = oDeliverySaveInfo.InvoiceNo;
 			oDeliverieToSave.Contract = oDeliverySaveInfo.Contract;
 			oDeliverieToSave.PoDate = oDeliverySaveInfo.PoDate;
+			oDeliverieToSave.LotID = oDeliverySaveInfo.LotID;
 
 			return oDeliverieToSave;
 
@@ -123,6 +126,7 @@ sap.ui.define([
 				CountryCode: "",
 				InstituteID: sInstituteId,
 				SKUCode: null,
+				LotID: 1,
 				SubmittedOn: moment().utc().toDate(),
 				SubmittedBy: UserInfo.getCWID(),
 				Active: 1,

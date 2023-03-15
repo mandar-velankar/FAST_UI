@@ -267,6 +267,42 @@ sap.ui.define([
 
 		},
 
+		setDistributorList: function (oCountry) {
+			var oDeferred = $.Deferred();
+			//get model for doing the calls to the back-end
+			var oFastDataCalls = this.getView().getModel("fastData");
+			var oFastAppDataModel = Services.getFastAppDataModel();
+
+			const sInstitutesPath = "/PT_TMDIST";
+			var aFilter = [];
+			aFilter.push(new Filter("CountryCode", FilterOperator.EQ, oCountry));
+
+			oFastDataCalls.read(sInstitutesPath, {
+				filters: aFilter,
+
+				success: function (oData, oResponse) {
+
+					var aCountryDistributor = oData.results;
+					aCountryDistributor = Services.sortByKeyAsc(aCountryDistributor, "DistributorName");
+
+					if (oData.results.length > 0) {
+						aCountryDistributor.unshift({});
+					}
+					oFastAppDataModel.setProperty("/PT_TMDIST", aCountryDistributor);
+
+					oDeferred.resolve(aCountryDistributor);
+
+				},
+				error: function (oError) {
+					//show error message
+					this.showErrorMessage(oError, "No Distributor");
+					oDeferred.reject(oError);
+				}
+			});
+			return oDeferred.promise();
+
+
+		},
 
 		//routing for tender Master view is matched
 		_onTenderMatched: function (oEvent) {
@@ -288,7 +324,7 @@ sap.ui.define([
 			this._bindUserCountries();
 			this.setTenderOrigins();
 			this.setCountryStatusses();
-
+			this.setBrazilContractStatuses();
 			//get the tenderID/country from the navigation parameters
 			/*
 			var sTenderID = oEvent.getParameter("arguments").tender;
@@ -640,7 +676,10 @@ sap.ui.define([
 				});
 			});
 		},
-
+		setBrazilContractStatuses: function () {
+			// const sCountry = Services.getSelectedCountry();
+			Services.loadBrazilContractStatuses();
+		},
 		//setting the tender origins
 		setTenderOrigins: function () {
 
@@ -719,8 +758,12 @@ sap.ui.define([
 				}
 			}
 			else {
+				if(oCountry === 'BR'){
+					this.byId("idCreationDate").setVisible(true);
+				} else {
+					this.byId("idCreationDate").setVisible(false);
+				}
 				this.byId("idDueDate").setVisible(true);
-				this.byId("idCreationDate").setVisible(false);
 				this.byId("idTerminationDate").setVisible(false);
 				this.byId("idPublicationDate").setVisible(true);
 				this.byId("idfltInstituteType").setVisible(false);
@@ -834,9 +877,16 @@ sap.ui.define([
 					// new sap.m.Text({
 					// 	text: "{fastData>OFFER_ID}"
 					// }),
-					new sap.m.ObjectIdentifier({
-						text: "{fastData>PFI_NO}",
-						title: "{fastData>OFFER_ID}"
+					new sap.m.VBox({
+						items: [
+							new sap.m.ObjectIdentifier({
+								text: "{fastData>PFI_NO}",
+								title: "{fastData>OFFER_ID}"
+							}),
+							new sap.m.Text({
+								text: "{fastData>IbizWorkflowID}"
+							}),
+						]
 					}),
 					new sap.m.ObjectNumber({
 						number: {
@@ -996,6 +1046,15 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
+				if(Number.isInteger(Number(sSearch))){
+					orFilters.push(new Filter({
+						path: "IbizWorkflowID",
+						operator: FilterOperator.EQ,
+						value1: sSearch,
+						caseSensitive: false
+					}));
+				}
+
 				orFilters.push(new Filter({
 					path: "INSTITUTE",
 					operator: FilterOperator.Contains,
@@ -1077,9 +1136,11 @@ sap.ui.define([
 				Services.setSelectedCountry(oCountry);
 				this.setBrandsList();
 				this.setInstituteList(oCountry);
+				this.setDistributorList(oCountry);
 				this.setCreatedByList(oCountry);
 				this.setTenderOrigins();
 				this.setCountryStatusses(oCountry);
+				this.setBrazilContractStatuses();
 				Services.loadCountryPermissions(oCountry);
 				this.loadCountryChannels(oCountry);
 				Services.loadAppConfig(oCountry, sEnvironment);
@@ -1328,7 +1389,8 @@ sap.ui.define([
 				if (sOfferID) {
 					//Select same offer again
 					aItems.forEach(function (oItem) {
-						if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+						//if (oItem.getCells()[iIndexColumnOfferID].getTitle() === sOfferID) {
+						if(oItem.getCells()[iIndexColumnOfferID].getItems()[0].getTitle() === sOfferID) {
 							oItem.setActive(true);
 						}
 					});

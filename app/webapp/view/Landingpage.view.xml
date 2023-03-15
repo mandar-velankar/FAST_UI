@@ -82,7 +82,16 @@
 									</TileContent>
 								</GenericTile>
 								
-								
+								<!-- Brazil Contracting -->
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Brazil Contracting" 
+									press="onTileBrazilContractingPress" 
+									visible="{tiles>/brazilcontracting}">
+									<TileContent>
+										<ImageContent src="sap-icon://decision"/>
+									</TileContent>
+								</GenericTile>
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
 					</Panel>

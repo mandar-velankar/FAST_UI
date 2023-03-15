@@ -478,6 +478,14 @@ sap.ui.define([
         getProducts: async function (){ 
             //load products
 		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
+            
+            //This code is needed to show only main conditions
+            aProducts = aProducts.filter(product => {
+                if (product.ConditionType) {
+                    return product.ConditionType === "PVL" || product.ConditionType === "Precio Neto" || product.ConditionType === "Descuento Comercial" || product.ConditionType === "Descuento Especial";
+                } 
+                return product;
+            });
             aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1)
             let oFastAppDataModel = Services.getFastAppDataModel();
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
@@ -1010,7 +1018,8 @@ sap.ui.define([
 				ActiveTier: 0,
 				NetPrice: oMainPriceCondition.NetPriceWithoutTaxAfterDeductionRD || oMainPriceCondition.NetPriceWithoutTax,
 				NetPrice_OfPaid: 0,
-				PRICE_UPDATE: oOffer.APPROVALS_SENT // Mechanism to identify that approval is required again is based on this field
+				PRICE_UPDATE: oOffer.APPROVALS_SENT, // Mechanism to identify that approval is required again is based on this field,
+                LotID: oProductPrice.LotID
 			};
 
 			return oNewPriceInfo;

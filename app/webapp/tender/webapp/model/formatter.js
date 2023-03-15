@@ -505,6 +505,7 @@ sap.ui.define([
 		},
 
 		offerProductsColumnName: function(description){
+			description = description?.replace(/\s/g, '');
 			var resourceBundle = this.getView().getModel("i18n").getResourceBundle();
 			return resourceBundle.getText(description);
 		},
@@ -601,7 +602,13 @@ sap.ui.define([
             } else {
                 return false;
             }
-        }
+        },
+		formatTotalDiscount: function (value) {
+			if (!isNaN(parseFloat(value))) {
+				return (value * 100).toFixed(2) + "%";
+			}
+			return value
+		}
 		
 	};
 });

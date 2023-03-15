@@ -100,6 +100,8 @@
                                     <!--<m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>PriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
 
                                     <m:ToolbarSpacer/>
+                                    <m:Button text="View contract" press="onViewContractBR" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }" enabled="{= ${fastAppData>/BrazilContractsForOffer/length} > 0}"/>
+                                    <m:Button text="Create contract" press="onCreateContractBR" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }" enabled="{fastAppData>/CreateContractButtonEnabled_BR}"/>
                                     <m:Button text="Collapse all" press="onCollapseOutcome"/>
                                     <m:Button text="Expand all" press="onExpandOutcome"/>
                                 </m:OverflowToolbar>
