@@ -8250,6 +8250,7 @@ sap.ui.define([
 						NetPrice: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						NetPrice_OfPaid: parseFloat(that.byId("idEditPriceOffer_idNetPrice").getValue().replaceAll(",", "")),
 						PRICE_UPDATE: 0,
+						LotID: oProduct.LotID,
 						Deductions_ABS_PCT:(countryCode ==="TH") ? that.byId("idEditPriceOffer_idDeductionAbsPct").getSelectedKey() : " "
 					};
                 //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
