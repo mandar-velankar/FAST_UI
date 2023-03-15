@@ -45,6 +45,7 @@ sap.ui.define([
 			//path of price
 			var sPath = oModel.createKey("/PT_TMBDPR", {
 				OfferID: oPriceToSave.OfferID,
+				LotID: oPriceToSave.LotID,
 				ProductCode: oPriceToSave.ProductCode,
 				Active: oPriceToSave.Active,
 				ActiveTier: oPriceToSave.ActiveTier
@@ -53,6 +54,20 @@ sap.ui.define([
 			//Create
 			return that.odata(sPath).put(oPriceToSave);
 
+		},
+
+		//Remove price
+		deleteProductPrice: function (oPriceToRemove) {
+			const that = this;
+			const oModel = Services.getDefaultModel();
+			const sKey = oModel.createKey("/PT_TMBDPR", {
+				OfferID: oPriceToRemove.OfferID,
+				ProductCode: oPriceToRemove.ProductCode,
+				Active: oPriceToRemove.Active,
+				ActiveTier: oPriceToRemove.ActiveTier,
+				LotID: oPriceToRemove.LotID
+			})
+			return that.odata(sKey).delete();
 		},
 
 		updateProductPrice: function (oProductPrice) {
@@ -64,6 +79,7 @@ sap.ui.define([
 			var sPath = oModel.createKey("/ProductPricing", {
 				ID: oProductPrice.ID,
 				OfferID: oProductPrice.OfferID,
+				LotID: oProductPrice.LotID,
 				ProductCode: oProductPrice.ProductCode,
 				CountryCode: oProductPrice.CountryCode
 			});
@@ -114,6 +130,7 @@ sap.ui.define([
 			oProductPriceToSave.StatusOfDevice = (oProductPriceSaveInfo.StatusOfDevice === null) ? null : oProductPriceSaveInfo.StatusOfDevice.toString();
 			oProductPriceToSave.MinContractual = (oProductPriceSaveInfo.MinContractual === null) ? null : oProductPriceSaveInfo.MinContractual.toString();
 			oProductPriceToSave.MinAnnPurch = (oProductPriceSaveInfo.MinAnnPurch === null) ? null : oProductPriceSaveInfo.MinAnnPurch.toString();
+			oProductPriceToSave.LotID = oProductPriceSaveInfo.LotID;
 
 			if (oProductPriceSaveInfo.FreeGoodsOther) {
 				oProductPriceToSave.FreeGoodsOther = oProductPriceSaveInfo.FreeGoodsOther.map(freeGoodsOther => ({
@@ -263,7 +280,7 @@ sap.ui.define([
 			oPriceToSave.FOC = (oPriceSaveInfo.FOC === null) ? null : oPriceSaveInfo.FOC.toString();
 			oPriceToSave.FOCStep = (oPriceSaveInfo.FOCStep === undefined || oPriceSaveInfo.FOCStep === null) ? null : oPriceSaveInfo.FOCStep.toString();
 			oPriceToSave.FOCType = oPriceSaveInfo.FOCType;
-			oPriceToSave.Discount = (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
+			oPriceToSave.Discount = oPriceSaveInfo.CountryCode === 'BR' ? (parseFloat(oPriceSaveInfo.StandardDiscount) + parseFloat(oPriceSaveInfo.AdditionalDiscount)).toFixed(2) : (oPriceSaveInfo.Discount === null) ? null : oPriceSaveInfo.Discount.toString();
 			oPriceToSave.OfferPrice = (oPriceSaveInfo.OfferPrice === null) ? null : oPriceSaveInfo.OfferPrice.toString();
 			oPriceToSave.Deductions = (oPriceSaveInfo.Deductions === null) ? null : oPriceSaveInfo.Deductions.toString();
 			oPriceToSave.StandardDiscount = (oPriceSaveInfo.StandardDiscount === null) ? null : oPriceSaveInfo.StandardDiscount.toString();
@@ -283,6 +300,7 @@ sap.ui.define([
 			oPriceToSave.NetPrice = (oPriceSaveInfo.NetPrice === null) ? null : oPriceSaveInfo.NetPrice.toString();
 			oPriceToSave.NetPrice_OfPaid = (oPriceSaveInfo.NetPrice_OfPaid === null) ? null : oPriceSaveInfo.NetPrice_OfPaid.toString();
 			oPriceToSave.PRICE_UPDATE = Number(oPriceSaveInfo.PRICE_UPDATE);
+			oPriceToSave.LotID = oPriceSaveInfo.LotID;
 			oPriceToSave.Deductions_ABS_PCT=oPriceSaveInfo.Deductions_ABS_PCT;
 			//EHQUT-196575- Thailand - Change Request - INC16653808 
 			if (oPriceSaveInfo.ID) {

@@ -154,6 +154,8 @@ sap.ui.define([
             let priceConditionCode;         
             let convertedPVL;
             let convertedConfPrice;
+            let convertedPriceList;
+            let lotId;
             if(tab === "ResultsPage"){
             /*During Price Agreement creation we should always take the trasactional PVL/Confidential Price,
                 as Price Agreement should be created using prices saved in the PriceCondition table. */            
@@ -186,7 +188,7 @@ sap.ui.define([
                 oPriceConditionViewObject.PriceConditionCode = priceConditionCode;
                 let oFastAppDataModel = Services.getFastAppDataModel();
                 let offerID = tab === "offerProductsPage" ? oFastAppDataModel.getProperty("/EditOffer/OfferStatus/OFFER_ID") : oPriceConditionViewObject.OfferID;
-                let product = Services.getLoadedProductsForOffer(offerID).results.find(prd => prd.ProductCode === oPriceConditionViewObject.ProductCode);
+                let product = Services.getLoadedProductsForOffer(offerID, oPriceConditionViewObject.ProductCode, oPriceConditionViewObject.LotID);
 
                 // when this method is being called from Continued Offer, oProductPrice is null
                 // because of this we will get some info from the product table of the EditOffer page.
@@ -210,9 +212,11 @@ sap.ui.define([
                 } else if(product.UnitPerPack === "Unit"){ // if we are coming from the financial offer page
                         convertedPVL = oPriceConditionViewObject.PVL / product.SKU.PACKFACTOR;
                         convertedConfPrice = oPriceConditionViewObject.YLAP / product.SKU.PACKFACTOR;
+                        convertedPriceList = oPriceConditionViewObject.masterPriceList / product.SKU.PACKFACTOR;
                     } else {
                         convertedPVL = oPriceConditionViewObject.PVL;
                         convertedConfPrice = oPriceConditionViewObject.YLAP;
+                        convertedPriceList = oPriceConditionViewObject.masterPriceList;
                     }
                 
                 /*let instType = Services.getFastAppDataModel().getData().Tender.Institute.InstituteType;
@@ -222,6 +226,7 @@ sap.ui.define([
                     convertedConfPrice = null;
                     
                 } */
+                lotId = product.LotID ? product.LotID : 1;
             }
                       
             let obj = {
@@ -230,7 +235,7 @@ sap.ui.define([
                 "ProductCode": oPriceConditionViewObject.ProductCode,
                 "PVL": convertedPVL,
                 "ConfidentialPrice":  convertedConfPrice || oPriceConditionViewObject.ConfidentialPrice, // oPriceConditionViewObject.ConfidentialPrice used when creating continued/revised offer
-                "Discount": oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
+                "Discount": oPriceConditionViewObject.CountryCode === 'BR' ? (parseFloat(oPriceConditionViewObject.StandardDiscount) + parseFloat(oPriceConditionViewObject.AdditionalDiscount)).toFixed(2) : oPriceConditionViewObject.Discount ? oPriceConditionViewObject.Discount : 0,
                 "RoyalDecree": oPriceConditionViewObject.RoyalDecree,
                 "RoyalDecreeValue": oPriceConditionViewObject.RoyalDecreeValue,
                 "RoyalDecreeIncl": oPriceConditionViewObject.RoyalDecreeIncl,
@@ -247,6 +252,17 @@ sap.ui.define([
                 "RefundDate": oPriceConditionViewObject.RefundDate,
                 "PriceConditionCode": oPriceConditionViewObject.PriceConditionCode,
                 "MonthlyRentPerUnit":oPriceConditionViewObject.MonthlyRentPerUnit,
+                "PriceList":convertedPriceList,
+                "ICMSTax":oPriceConditionViewObject.ICMSTax,
+                "TaxExemption":oPriceConditionViewObject.TaxExemption ? oPriceConditionViewObject.TaxExemption : 'No',
+                "PriceAfterTaxExemtion":oPriceConditionViewObject.PriceAfterTaxExemtion ? oPriceConditionViewObject.PriceAfterTaxExemtion : 0,
+                "CAP":oPriceConditionViewObject.CAP ? oPriceConditionViewObject.CAP : 'No',
+                "PriceAfterCap":oPriceConditionViewObject.PriceAfterCap ? oPriceConditionViewObject.PriceAfterCap : 0,
+                "CommercialProposal":oPriceConditionViewObject.CommercialProposal,
+                "TaxEqualization": oPriceConditionViewObject.TaxEqualization,
+                "Invoive":oPriceConditionViewObject.Invoive,
+                "ICMS":oPriceConditionViewObject.ICMS,
+                "NetPrice":oPriceConditionViewObject.NetPrice,
                 "AnnualValue": oPriceConditionViewObject.AnnualValue,
                 "PriceConditionClassification_ID": oPriceConditionViewObject.PriceConditionClassification_ID,
                 "PriceAgreement_ID": oPriceConditionViewObject.PriceAgreement_ID,
@@ -254,6 +270,7 @@ sap.ui.define([
                 "FreeGoodsOther": tab === "ResultsPage" ? oPriceConditionViewObject.FreeGoodsOther : this.convertToFreeGood(oPriceConditionViewObject.FreeGoodsOther),
                 "ReferencePriceAgreement": oPriceConditionViewObject.ReferencePriceAgreement,
                 "Settlement_ID":oPriceConditionViewObject.Settlement_ID,
+                "LotID":lotId,
                 "IsPricingUnlocked": oPriceConditionViewObject.IsPricingUnlocked
             }
             
@@ -397,6 +414,60 @@ sap.ui.define([
 			return this.odata("/PriceConditionView").get(mParameters);
 		},
 
+        getPriceConditionBrazilView: function(filter){
+            
+			let aFilters = [];
+
+			aFilters.push(new Filter({
+				path: 'CountryCode',
+				operator: FilterOperator.EQ,
+				value1: filter.CountryCode
+			}));
+
+			aFilters.push(new Filter({
+				path: 'Classification',
+				operator: FilterOperator.EQ,
+				value1: filter.Classification
+			}));
+
+            aFilters.push(new Filter({
+				path: 'Division',
+				operator: FilterOperator.EQ,
+				value1: filter.Division
+			}));
+
+            if(filter.ProductCode){
+                aFilters.push(new Filter({
+                    path: 'ProductCode',
+                    operator: FilterOperator.EQ,
+                    value1: filter.ProductCode
+                }));
+            }
+            
+            if(filter.OfferID){
+                aFilters.push(new Filter({
+                    path: 'OfferID',
+                    operator: FilterOperator.EQ,
+                    value1: filter.OfferID
+                }));
+            }
+
+            if(filter.LotID){
+                aFilters.push(new Filter({
+                    path: 'LotID',
+                    operator: FilterOperator.EQ,
+                    value1: filter.LotID
+                }));
+            }
+
+			var mParameters = {
+				filters: aFilters
+			};
+
+
+			return this.odata("/PriceConditionBrazilView").get(mParameters);
+		},
+        
         getTenderHistorySpain: function(aFilters){
 
 			var mParameters = {
@@ -404,6 +475,15 @@ sap.ui.define([
 			};
 
             return this.odata("/TenderHistorySpain").get(mParameters);
+		},
+
+        getTenderHistoryBrazil: function(aFilters){
+
+			var mParameters = {
+				filters: aFilters
+			};
+
+            return this.odata("/TenderHistoryBrazil").get(mParameters);
 		},
 
         getDiscountConditions: function(filter){

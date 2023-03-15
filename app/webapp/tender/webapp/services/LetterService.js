@@ -32,7 +32,8 @@ sap.ui.define([
 			var sPath = Services.getDefaultModel().createKey("/PT_TMUDLTRS", {
 				OFFERID: oLetterToSave.OFFERID,
 				SKUCODE: oLetterToSave.SKUCODE,
-				SNO: oLetterToSave.SNO
+				SNO: oLetterToSave.SNO,
+				LOTID: oLetterToSave.LotID
 			});
 
 			//Update
@@ -47,7 +48,8 @@ sap.ui.define([
 			var sPath = Services.getDefaultModel().createKey("/PT_TMUDLTRS", {
 				OFFERID: oLetterToSave.OFFERID,
 				SKUCODE: oLetterToSave.SKUCODE,
-				SNO: oLetterToSave.SNO
+				SNO: oLetterToSave.SNO,
+				LOTID: oLetterToSave.LotID
 			});
 
 			//Update
@@ -79,6 +81,8 @@ sap.ui.define([
 			oLetterToSave.RETURNDATE = oLetterSaveInfo.RETURNDATE;
 			oLetterToSave.RETURNEDQTY = Number(oLetterSaveInfo.RETURNEDQTY.toString());
 			oLetterToSave.UOM = oLetterSaveInfo.UOM;
+			oLetterToSave.LOTID = oLetterSaveInfo.LotID;
+
 
 			return oLetterToSave;
 
@@ -106,6 +110,7 @@ sap.ui.define([
 				COUNTRYCODE: "",
 				INSTITUTEID: sInstituteId,
 				SKUCODE: null,
+				LOTID: 1,
 				SUBMITTEDON: moment().utc().toDate(),
 				SUBMITTEDBY: UserInfo.getCWID(),
 				ACTIVE: 1,

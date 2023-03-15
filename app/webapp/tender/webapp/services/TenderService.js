@@ -316,6 +316,34 @@ sap.ui.define([
 
 		},
 
+
+
+		notifyIbiz: function (workflowID, directIndirect, lineNumbers) {
+
+			const payload = {
+				"ibizWorkflowID": workflowID,
+				"directIndirect": directIndirect,
+				"lineNumbers": lineNumbers
+			};
+
+			//Create
+			return this.odata("/notifyIbiz").post(payload);
+
+		},
+
+		sendApprovalToIbiz: function (workflowID, offerStatus, comment) {
+
+			const payload = {
+				"ibizWorkflowID": workflowID,
+				"offerStatus": offerStatus,
+				"comment": comment
+			};
+
+			//Create
+			return this.odata("/sendApprovalToIbiz").post(payload);
+
+		},
+
 	});
 	
 	return TenderService;

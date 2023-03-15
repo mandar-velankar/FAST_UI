@@ -36,6 +36,12 @@ server:
       removeETag: true
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
+    mountPath: /brazilcontracting
+    configuration:
+      baseUri: "http://localhost:8088/"
+      removeETag: true
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
     mountPath: /app
     configuration:
       baseUri: "http://localhost:8080/landingspage/webapp/"

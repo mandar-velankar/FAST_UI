@@ -43,10 +43,10 @@ sap.ui.define([
 		//-------
 				
 				//load Price of product again from database
-				loadProductPrice: function (sOfferID, sProductCode, sActive, sActiveTier){
+				loadProductPrice: function (sOfferID, sProductCode, sActive, sActiveTier, sLotID){
 					
 					//Rates for country from offer currency to EUR
-					var sPath = "/PT_TMBDPR(OfferID='" + sOfferID + "',ProductCode=" + sProductCode + ",Active=" + sActive + ",ActiveTier=" + sActiveTier + ")";
+					var sPath = "/PT_TMBDPR(OfferID='" + sOfferID + "',ProductCode=" + sProductCode + ",Active=" + sActive + ",ActiveTier=" + sActiveTier + ",LotID=" + sLotID + "  )";
 
 					var oDeferred = $.Deferred();
 					var that = this;
@@ -144,6 +144,16 @@ sap.ui.define([
 						//products
 						aProducts = oOffer.Product.results;
 						
+						// For Brazil we don't show declined products in Financial Offer page
+						// In that case we are not able to create pricecondtion for declined product
+						// this filter is needed in order to check prices of the products which channel is not Decline 
+						if (oOffer.CountryCode === "BR") {
+							aProducts = aProducts.filter(prod => prod.Channel !== "Decline");
+							if (aProducts.length == 0) {
+								_allProductPricesSet = false;
+							}
+						}
+
 						//check for each product
 						aProducts.forEach(function (oProduct) {
 							

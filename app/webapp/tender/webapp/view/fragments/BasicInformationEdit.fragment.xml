@@ -120,7 +120,7 @@
 				</MultiComboBox>
 				<!-- /Italy only -->
 				<Label text="{i18n>typechnl}" design="Bold" required="true"/>
-				<Select id="idTenderChannel" selectedKey="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Direct' : ${fastData>TenderChannel} }" enabled="false" change="onTenderChannelChange">
+				<Select id="idTenderChannel" selectedKey="{= ${fastAppData>/Tender/CountryCode} === 'CL' ? 'Direct' : ${fastData>TenderChannel} }" enabled="false" change="onTenderChannelChange" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'BR'}">
 					<items>
 						<core:Item text="Distributor" key="Distributor"/>
 						<core:Item text="Direct" key="Direct"/>
