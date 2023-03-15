@@ -8254,7 +8254,7 @@ sap.ui.define([
 					};
                 //EHQUT-SCTASK0105431-Issue in Whole price of Nexavar
 					//check if any of the pricing data is changed
-					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0)).done(function (oOriginalPrices) {
+					$.when(Financial.loadProductPrice(offerId, that._productCode, 1, 0, oProduct.LotID)).done(function (oOriginalPrices) {
 
 						//convert price to save
 						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
