@@ -97,7 +97,7 @@
                                             </m:Menu>
                                         </m:menu>
                                     </m:MenuButton>
-                                    <!--<m:Button id="btnCreatePriceAgreement" text="{= ${fastAppData>PriceAgreement} ? 'Go to Price Agreement' : 'Create Price Agreement' }" icon="sap-icon://create" press="onCreatePriceAgreement" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }"/>-->
+                                    <m:Button id="btnCreatePriceAgreementAll" text='Create All Price Agreements' icon="sap-icon://create" press="onCreatePriceAgreementAll" enabled="{= ${fastAppData>/EditMode} === true ? false : true}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES' }"/>
 
                                     <m:ToolbarSpacer/>
                                     <m:Button text="View contract" press="onViewContractBR" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }" enabled="{= ${fastAppData>/BrazilContractsForOffer/length} > 0}"/>
