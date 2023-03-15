@@ -384,6 +384,9 @@
 								<Column minScreenWidth="Tablet" width="6rem" demandPopin="true">
 									<Text text="{i18n>Product}"/>
 								</Column>
+								<Column minScreenWidth="Tablet" width="4rem" demandPopin="true">
+									<Text text="{i18n>LotID}"/>
+								</Column>
 								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>didtrbtrnme}"/>
 								</Column>
@@ -428,6 +431,9 @@
 										</cells>
 										<cells>
 											<Text text="{fastAppData>PRODUCT_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>LotID}"/>
 										</cells>
 										<cells>
 											<Text text="{fastAppData>DISTRIBUTOR_NAME}"/>
