@@ -9002,7 +9002,7 @@ sap.ui.define([
 						const offerProduct = offerProducts.find(prd => prd.ProductCode === rowProductCode);
 						const offerType = offerProduct.OfferType;
 
-						if(offerType === "Selling" && result.OUTCOME === 'Won'){
+						if(result.OUTCOME === 'Won'){
 							var oPriceAgreementSaveInfo = oSelectedProduct.PriceAgreement;
 
 							if(!oPriceAgreementSaveInfo){
