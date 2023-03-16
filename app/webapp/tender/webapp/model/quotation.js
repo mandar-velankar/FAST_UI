@@ -554,7 +554,7 @@ sap.ui.define([
 							}
 	
 							Promise.all(promises).then((result) =>{
-									sap.m.MessageBox.success("Quotation succesfully saved..", {});
+									sap.m.MessageBox.success("Quotation succesfully saved", {});
 	
 									$.when(Services.saveOfferSubmissionDate(oQuotationSaveInfo.SubmittedOn)).done(function(oSaveSubmissionDate){
 										
@@ -876,7 +876,7 @@ sap.ui.define([
 							}
 	
 							Promise.all(promises).then((result) =>{
-									sap.m.MessageBox.success("Quotation succesfully saved..", {});
+									sap.m.MessageBox.success("Quotation succesfully saved", {});
 	
 									//update the status of the offer accordingly
 									$.when(Services.saveOfferStatus("Offer Created")).done(function(oSaveStatus){
@@ -932,7 +932,7 @@ sap.ui.define([
 									
 								} else { 
 									
-									sap.m.MessageBox.success("Quotation succesfully saved..", {});
+									sap.m.MessageBox.success("Quotation succesfully saved", {});
 
 									//update the status of the offer accordingly
 									$.when(Services.saveOfferStatus("Offer Created")).done(function(oSaveStatus){
