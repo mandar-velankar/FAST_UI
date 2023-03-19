@@ -267,12 +267,12 @@
                                             <core:Item key="Yes" text="Yes" />
                                         </items>
                                     </Select>
-                                    <Label text="{i18n>Priceaftertaxexemption}" required="true" visible="{= ${fastAppData>TaxExemption} === 'Yes'}"/>
-                                    <Input value="{path:'fastAppData>PriceAfterTaxExemtion', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
-                                                 visible="{= ${fastAppData>TaxExemption} === 'Yes'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
 									<Label text="{i18n>ICMSPercentage}" visible="{= ${fastAppData>TaxExemption} === 'Yes'}"/>
                                     <Input value="{path:'fastAppData>ICMSTax', type:'.types.percent', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
                                                  visible="{= ${fastAppData>TaxExemption} === 'Yes'}" description="%" enabled="false" fieldWidth="80%"/>
+									<Label text="{i18n>Priceaftertaxexemption}" required="true" visible="{= ${fastAppData>TaxExemption} === 'Yes'}"/>
+                                    <Input value="{path:'fastAppData>PriceAfterTaxExemtion', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
+                                                 visible="{= ${fastAppData>TaxExemption} === 'Yes'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>CAP}" required="true"/> 
                                     <Select selectedKey="{fastAppData>CAP}" enabled="{fastAppData>/EditMode}" change=".onLiveChangePriceCondition"> 
                                         <items>
@@ -280,12 +280,12 @@
                                             <core:Item key="Yes" text="Yes" />
                                         </items>
                                     </Select>
-                                    <Label text="{i18n>Priceaftercap}" visible="{= ${fastAppData>CAP} === 'Yes'}"/>
-                                    <Input value="{path:'fastAppData>PriceAfterCap', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
-                                                visible="{= ${fastAppData>CAP} === 'Yes'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
 									<Label text="{i18n>CAPPercentage}" visible="{= ${fastAppData>CAP} === 'Yes'}"/>
                                     <Input value="{path:'fastAppData>CapValue', type:'.types.percent', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
                                                 visible="{= ${fastAppData>CAP} === 'Yes'}" description="%"  enabled="false" fieldWidth="80%"/>
+									<Label text="{i18n>Priceaftercap}" visible="{= ${fastAppData>CAP} === 'Yes'}"/>
+                                    <Input value="{path:'fastAppData>PriceAfterCap', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
+                                                visible="{= ${fastAppData>CAP} === 'Yes'}" description="{fastAppData>masterPriceCurrency}" enabled="false" fieldWidth="80%"/>
                                     <Label text="{i18n>StandardDiscount}"/>
                                     <Input value="{= !${fastAppData>/EditMode} 
                                                   ? ${path:'fastAppData>StandardDiscount', type:'.types.percent'} 
@@ -384,6 +384,9 @@
 								<Column minScreenWidth="Tablet" width="6rem" demandPopin="true">
 									<Text text="{i18n>Product}"/>
 								</Column>
+								<Column minScreenWidth="Tablet" width="4rem" demandPopin="true">
+									<Text text="{i18n>LotID}"/>
+								</Column>
 								<Column minScreenWidth="Tablet" width="10%" demandPopin="true">
 									<Text text="{i18n>didtrbtrnme}"/>
 								</Column>
@@ -428,6 +431,9 @@
 										</cells>
 										<cells>
 											<Text text="{fastAppData>PRODUCT_NAME}"/>
+										</cells>
+										<cells>
+											<Text text="{fastAppData>LotID}"/>
 										</cells>
 										<cells>
 											<Text text="{fastAppData>DISTRIBUTOR_NAME}"/>
