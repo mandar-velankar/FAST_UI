@@ -6372,9 +6372,7 @@ sap.ui.define([
 
 			// EFRCL-305270-Spain - Adding default value of volume and UOM for consumer Health in Offer Product Tab
 			var SelectedDivision=oFastAppDataModel.oData.EditOffer.Division;
-			console.log(SelectedDivision);
 			var SelectedCountry=oFastAppDataModel.oData.EditTender.CountryCode;
-			console.log(SelectedCountry);
 
 			//add productpack sku after product is added to the fastappdatamodel
 			//otherwise the structure of the object is not correct to use in the save
