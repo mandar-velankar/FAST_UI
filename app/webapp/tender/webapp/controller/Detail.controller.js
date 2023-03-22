@@ -6370,6 +6370,10 @@ sap.ui.define([
 			var that = this;
 			var aMessages = [];
 
+			// EFRCL-305270-Spain - Adding default value of volume and UOM for consumer Health in Offer Product Tab
+			var SelectedDivision=oFastAppDataModel.oData.EditOffer.Division;
+			var SelectedCountry=oFastAppDataModel.oData.EditTender.CountryCode;
+
 			//add productpack sku after product is added to the fastappdatamodel
 			//otherwise the structure of the object is not correct to use in the save
 			//these are not saved to the database (not existing in PT_TMOFPR) but still displayed in the product table in edit mode
@@ -6381,6 +6385,14 @@ sap.ui.define([
 			var aProductsAfterAdd = oFastAppDataModel.getProperty(sPath);
 
 			if (aProductsAfterAdd) {
+				if(SelectedCountry === 'ES' && SelectedDivision === 'Consumer Health'){
+					var length=aProductsAfterAdd.length;
+					for (var i=0;i<length;i++){
+						aProductsAfterAdd[i].UnitPerPack='Pack';
+						aProductsAfterAdd[i].RequestedVolume =1;
+					}
+				}
+		
 				$.when(Services.convProductsForBinding(aProductsAfterAdd)).done(function (aProductsForBinding) {
 
 					//Bind the product objects (including the newly added & extended product)
