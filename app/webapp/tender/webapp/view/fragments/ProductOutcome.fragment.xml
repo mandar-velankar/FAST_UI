@@ -1,0 +1,13 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <ActionSheet id="idProductOutcome"
+        title="Choose Your Action"
+        showCancelButton="true"
+        placement="Bottom">
+        <Button
+            text="Won"
+            press=".onSetAllProductstoWon" />
+        <Button
+            text="Lost"
+            press=".onSetAllProductstoLost" />
+    </ActionSheet>
+</core:FragmentDefinition>
