@@ -39,7 +39,7 @@
                                 {path:'fastAppData>PVL'},
                                 {value: 6}
                             ],
-                            formatter: '.formatter.formatUoMCurrentPrice'}
+                            formatter: '.formatter.formatUoMCurrentPriceEsIt'}
                         }"
                     description="{fastAppData>masterPriceCurrency}" 
                     enabled="false" 
@@ -64,7 +64,7 @@
                             {path:'fastAppData>YLAP'},
                             {value: 6}
                         ],
-                        formatter: '.formatter.formatUoMCurrentPrice'}
+                        formatter: '.formatter.formatUoMCurrentPriceEsIt'}
                         }"
                     visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                     description="{fastAppData>masterPriceCurrency}" 
@@ -106,7 +106,8 @@
                 <Label text="{i18n>NetPriceBeforeRC}" required="true"/>
                 <Input 
                     fieldGroupIds="priceInputPrecioNeto"
-                    value="{path:'fastAppData>NetPriceWithoutTaxBeforeDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" 
+                    value="{path:'fastAppData>NetPriceWithoutTaxBeforeDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}"
+                    type="Number" 
                     enabled="{= ${fastAppData>/EditMode} &amp;&amp; ( !${fastAppData>/ExistingAgreementInPlace} || (${fastAppData>/ExistingAgreementInPlace} &amp;&amp; (${fastAppData>/IsPricingUnlocked} !== undefined &amp;&amp; ${fastAppData>/IsPricingUnlocked} ) ) ) }"  
                     description="{fastAppData>masterPriceCurrency}"
                     fieldWidth="60%" 
@@ -115,7 +116,8 @@
                 <CheckBox text="{i18n>royalDecreeIncl}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ( !${fastAppData>/ExistingAgreementInPlace} || (${fastAppData>/ExistingAgreementInPlace} &amp;&amp; (${fastAppData>/IsPricingUnlocked} !== undefined &amp;&amp; ${fastAppData>/IsPricingUnlocked} ) ) ) }" visible="{= ${fastAppData>RoyalDecree} === 'Yes'}" selected="{fastAppData>RoyalDecreeIncl}" select=".onLiveChangeNetPricesPrecioNeto"/>
                 <Label text="{i18n>RoyalDecreeValue}" required="false" />
                 <Input 
-                    value="{path:'fastAppData>RoyalDecreeValue', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}}" 
+                    value="{path:'fastAppData>RoyalDecreeValue', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.'}}" 
+                    type="Number"
                     enabled="false" 
                     description="{fastAppData>masterPriceCurrency}"
                     fieldWidth="80%"
@@ -123,18 +125,19 @@
                 />
                 <Label text="{i18n>NetPriceAfterRC}" required="true"/>
                 <Input 
-                    value="{path:'fastAppData>NetPriceWithoutTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}}" 
+                    value="{path:'fastAppData>NetPriceWithoutTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.'}}" 
+                    type="Number"
                     enabled="false" 
                     description="{fastAppData>masterPriceCurrency}"
                     fieldWidth="80%"
                     visible="{= ${fastAppData>RoyalDecree} === 'Yes'}"
                 />
                 <Label text="{i18n>MaximumPrice}" required="true"/>
-                <Input fieldGroupIds="priceInputPrecioNeto" value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}" enabled="false" description="{fastAppData>masterPriceCurrency}" fieldWidth="80%" liveChange=".validateMaximumPrice" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}"/>
+                <Input fieldGroupIds="priceInputPrecioNeto" value="{path:'fastAppData>MaximumPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" enabled="false" description="{fastAppData>masterPriceCurrency}" fieldWidth="80%" liveChange=".validateMaximumPrice" visible="{= ${fastAppData>/Tender/Classification} === 'Tender'}" type="Number"/>
                 <Label text="{i18n>Tax}" required="true"/>
                 <Input value="{path:'fastAppData>Tax', type:'.types.percent'}" description="%" enabled="false" fieldWidth="80%"/>
                 <Label text="{i18n>NetPriceWtax}" required="true"/>
-                <Input value="{path:'fastAppData>NetPriceWithTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.'}}" enabled="false" description="{fastAppData>masterPriceCurrency}" fieldWidth="80%"/>
+                <Input value="{path:'fastAppData>NetPriceWithTaxAfterDeductionRD', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.'}}" enabled="false" description="{fastAppData>masterPriceCurrency}" fieldWidth="80%" type="Number"/>
             </form:content>
         </form:SimpleForm>
 
