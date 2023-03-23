@@ -2510,7 +2510,12 @@ sap.ui.define([
 									Services.getFastAppDataModel().setProperty("/InstituteDistributor", distributors.results);
 									sDistrKey = distributors.results.find(item => item.DISTRIBUTOR_NAME === 'Bayer Brazil')?.DISTRIBUTOR_ID;;
 								} else {
-									sDistrKey = oList.getItems().find(item => item.getProperty('text') === 'Bayer Brazil')?.getProperty('key');
+									const oEditOffer = oFastAppDataModel.getProperty("/EditOffer");
+									if (!oEditOffer.DistributorID) {
+										sDistrKey = oList.getItems().find(item => item.getProperty('text') === 'Bayer Brazil')?.getProperty('key');
+									}else {
+										sDistrKey = oList.getItems().find(item => item.getProperty('text') === oEditOffer.Distributor.DistributorName)?.getProperty('key');
+									}	
 								}
 								if(sDistrKey){
 									that.getView().byId("idDistributorName").setSelectedKey(sDistrKey);
