@@ -26,6 +26,7 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"sap/m/MessageBox",
 	"sap/m/library",
+	"sap/m/ActionSheet",
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
@@ -106,6 +107,7 @@ sap.ui.define([
 			
 			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
 			Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
+			Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", false);
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -9167,6 +9169,59 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty(`/OfferValidation/${dateType}ValueState`,event.getSource().isValidValue()?"None":"Error");
 		},
 
+		onSetAllProducts: function(oEvent) {
+			let oButton = oEvent.getSource(),
+				oView = this.getView();
+
+			if (!this._pActionSheet) {
+				this._pActionSheet = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.ProductOutcome",
+					controller: this
+				}).then(function(oActionSheet){
+					oView.addDependent(oActionSheet);
+					return oActionSheet;
+				});
+			}
+
+			this._pActionSheet.then(function(oActionSheet){
+				oActionSheet.openBy(oButton);
+			});
+		},
+
+		onSetAllProductstoWon: function(oEvent){
+			
+            let aResultsForTree = Services.getFastAppDataModel().getProperty("/ResultsForTree/");
+			
+			aResultsForTree.forEach(function(oResultForTree, iIndex) {	
+                                   
+				if (oResultForTree) {
+					oResultForTree.OUTCOME = "Won";
+				}   
+			});
+
+			Services.getFastAppDataModel().updateBindings();
+            
+		},
+
+
+		onSetAllProductstoLost: function(oEvent){
+
+			let aResultsForTree = Services.getFastAppDataModel().getProperty("/ResultsForTree/");
+			
+			aResultsForTree.forEach(function(oResultForTree, iIndex) {	
+                                   
+				if (oResultForTree) {
+					oResultForTree.OUTCOME = "Lost";
+				}   
+			});
+
+			Services.getFastAppDataModel().updateBindings();
+
+		},
+
+
+
 		onCreateContractBR: function (oEvent) {
 			
 			this._getCreateContractDialog().open();
@@ -10573,8 +10628,12 @@ sap.ui.define([
 					let bCheckOutcome = false;
 					if (iEmptyOutcomeIndex < 0) {
 						bCheckOutcome = aResultsForTree.some((elem) => elem.OUTCOME === "Won"); 
-					}
+					}									
 					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", bCheckOutcome); 
+
+					//Enable/Disable SetAllProductsOutcometoWonLost Button
+					let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== ""); 
+					Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
 
 					//apply filter for outcome tree table
 					oOutcomeTreeTable.getBinding("rows").filter(
