@@ -129,7 +129,10 @@
 											<Text text="{fastAppData>UOM}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>CommercialProposal}"/>
+											<Text text="{
+												path: 'fastAppData>CommercialProposal',
+												type:'.types.customDecimal'	
+											}"/>
 										</cells>
 										<!-- <cells>
 											<Text text="{path: 'fastAppData>NetofferPrice', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
