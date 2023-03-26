@@ -129,7 +129,10 @@
 											<Text text="{fastAppData>UOM}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>CommercialProposal}"/>
+											<Text text="{
+												path: 'fastAppData>CommercialProposal',
+												type:'.types.customDecimal'	
+											}"/>
 										</cells>
 										<!-- <cells>
 											<Text text="{path: 'fastAppData>NetofferPrice', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
@@ -451,7 +454,7 @@
 											<Text text="{path:'fastAppData>TOTAL_DISCOUNT', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>COMM_PROPOSAL}"/>
+											<Text text="{path:'fastAppData>COMM_PROPOSAL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.' }}"/>
 										</cells>
                                         <cells>
 											<Text text="{path:'fastAppData>ADHESION', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>

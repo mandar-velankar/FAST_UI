@@ -26,6 +26,7 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"sap/m/MessageBox",
 	"sap/m/library",
+	"sap/m/ActionSheet",
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
@@ -106,6 +107,7 @@ sap.ui.define([
 			
 			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
 			Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
+			Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", false);
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -189,6 +191,7 @@ sap.ui.define([
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
 				// TODO:
 			});
+			oFastAppDataModel.refresh();
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
 			if (sTenderPath !== "/PT_TMTEND('1')") {
@@ -2508,7 +2511,12 @@ sap.ui.define([
 									Services.getFastAppDataModel().setProperty("/InstituteDistributor", distributors.results);
 									sDistrKey = distributors.results.find(item => item.DISTRIBUTOR_NAME === 'Bayer Brazil')?.DISTRIBUTOR_ID;;
 								} else {
-									sDistrKey = oList.getItems().find(item => item.getProperty('text') === 'Bayer Brazil')?.getProperty('key');
+									const oEditOffer = oFastAppDataModel.getProperty("/EditOffer");
+									if (!oEditOffer.DistributorID) {
+										sDistrKey = oList.getItems().find(item => item.getProperty('text') === 'Bayer Brazil')?.getProperty('key');
+									}else {
+										sDistrKey = oList.getItems().find(item => item.getProperty('text') === oEditOffer.Distributor.DistributorName)?.getProperty('key');
+									}	
 								}
 								if(sDistrKey){
 									that.getView().byId("idDistributorName").setSelectedKey(sDistrKey);
@@ -4784,7 +4792,7 @@ sap.ui.define([
 			//keep the selected offerID so we have it on the financial offer tab as well
 			//var oOffer = oFastAppDataModel.getProperty(sOfferPath); //before oDefaultModel
 			var oOffer = Services.getLoadedOffer(sOfferID)
-
+			Services.setSelectedOfferID(oOffer.OfferID);
 			//var sOfferID = oOffer.OfferID;
 			//Services.setSelectedOfferID(sOfferID);
 
@@ -4826,8 +4834,8 @@ sap.ui.define([
 			});
 
             //if we're in brazil, filter the offer products by the selected lot ID 
-            if(Services.getSelectedCountry() === 'BR'){
-                let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey();
+            if(oOffer.CountryCode === 'BR'){
+                let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey() || oOffer.Lots.results[0].LotID;
                 if(iSelectedLotID){
                     this.filterBySelectedLot(iSelectedLotID);
                 }
@@ -9167,6 +9175,59 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty(`/OfferValidation/${dateType}ValueState`,event.getSource().isValidValue()?"None":"Error");
 		},
 
+		onSetAllProducts: function(oEvent) {
+			let oButton = oEvent.getSource(),
+				oView = this.getView();
+
+			if (!this._pActionSheet) {
+				this._pActionSheet = Fragment.load({
+					id: oView.getId(),
+					name: "FAST_NS0FAST0.view.fragments.ProductOutcome",
+					controller: this
+				}).then(function(oActionSheet){
+					oView.addDependent(oActionSheet);
+					return oActionSheet;
+				});
+			}
+
+			this._pActionSheet.then(function(oActionSheet){
+				oActionSheet.openBy(oButton);
+			});
+		},
+
+		onSetAllProductstoWon: function(oEvent){
+			
+            let aResultsForTree = Services.getFastAppDataModel().getProperty("/ResultsForTree/");
+			
+			aResultsForTree.forEach(function(oResultForTree, iIndex) {	
+                                   
+				if (oResultForTree) {
+					oResultForTree.OUTCOME = "Won";
+				}   
+			});
+
+			Services.getFastAppDataModel().updateBindings();
+            
+		},
+
+
+		onSetAllProductstoLost: function(oEvent){
+
+			let aResultsForTree = Services.getFastAppDataModel().getProperty("/ResultsForTree/");
+			
+			aResultsForTree.forEach(function(oResultForTree, iIndex) {	
+                                   
+				if (oResultForTree) {
+					oResultForTree.OUTCOME = "Lost";
+				}   
+			});
+
+			Services.getFastAppDataModel().updateBindings();
+
+		},
+
+
+
 		onCreateContractBR: function (oEvent) {
 			
 			this._getCreateContractDialog().open();
@@ -10573,8 +10634,12 @@ sap.ui.define([
 					let bCheckOutcome = false;
 					if (iEmptyOutcomeIndex < 0) {
 						bCheckOutcome = aResultsForTree.some((elem) => elem.OUTCOME === "Won"); 
-					}
+					}									
 					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", bCheckOutcome); 
+
+					//Enable/Disable SetAllProductsOutcometoWonLost Button
+					let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== ""); 
+					Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
 
 					//apply filter for outcome tree table
 					oOutcomeTreeTable.getBinding("rows").filter(
