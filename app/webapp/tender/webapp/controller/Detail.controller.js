@@ -2508,8 +2508,15 @@ sap.ui.define([
 								if(oList.getItems().length === 0){
 									// add distributors to the FastAppDataModel
 									const distributors = await Services.readInstituteDistributor(sCountryCode, sInstituteId, sChannel, sSellingCompanyID);
+									const oEditOffer = oFastAppDataModel.getProperty("/EditOffer");
 									Services.getFastAppDataModel().setProperty("/InstituteDistributor", distributors.results);
-									sDistrKey = distributors.results.find(item => item.DISTRIBUTOR_NAME === 'Bayer Brazil')?.DISTRIBUTOR_ID;;
+									
+									if (!oEditOffer.DistributorID) {
+										sDistrKey = distributors.results.find(item => item.DISTRIBUTOR_NAME === 'Bayer Brazil')?.DISTRIBUTOR_ID;
+									}else {
+										sDistrKey = distributors.results.find(item => item.DISTRIBUTOR_NAME === oEditOffer.Distributor.DistributorName)?.DISTRIBUTOR_ID;
+									}
+									// sDistrKey = distributors.results.find(item => item.DISTRIBUTOR_NAME === 'Bayer Brazil')?.DISTRIBUTOR_ID;;
 								} else {
 									const oEditOffer = oFastAppDataModel.getProperty("/EditOffer");
 									if (!oEditOffer.DistributorID) {
