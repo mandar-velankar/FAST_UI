@@ -4799,7 +4799,8 @@ sap.ui.define([
 			//keep the selected offerID so we have it on the financial offer tab as well
 			//var oOffer = oFastAppDataModel.getProperty(sOfferPath); //before oDefaultModel
 			var oOffer = Services.getLoadedOffer(sOfferID)
-			Services.setSelectedOfferID(oOffer.OfferID);
+			// Services.setSelectedOfferID(oOffer.OfferID);
+			Services.setSelectedOfferID(sOfferID);
 			//var sOfferID = oOffer.OfferID;
 			//Services.setSelectedOfferID(sOfferID);
 
@@ -4841,7 +4842,7 @@ sap.ui.define([
 			});
 
             //if we're in brazil, filter the offer products by the selected lot ID 
-            if(oOffer.CountryCode === 'BR'){
+            if(oOffer?.CountryCode === 'BR'){
                 let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey() || oOffer.Lots.results[0].LotID;
                 if(iSelectedLotID){
                     this.filterBySelectedLot(iSelectedLotID);
