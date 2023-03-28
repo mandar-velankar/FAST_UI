@@ -216,7 +216,6 @@
 											width="250px" 
 											visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}"
 											change=".onOfferProductsChannelChange"
-											enabled = "{= !${fastAppData>/SelectedOffer/ChannelSwitched}}"
 										>
 											<items>
 												<core:Item text="" key=""/>
