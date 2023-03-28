@@ -9884,6 +9884,7 @@ sap.ui.define([
 									const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
 									return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
 								});
+								await Promise.all(savePriceConditionPromises);
 							}
 						}
 					}
