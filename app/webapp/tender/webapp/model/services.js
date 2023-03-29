@@ -2075,8 +2075,9 @@ sap.ui.define([
 				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
 				aFilters.push(oCountryFilter);
 			}
-
-			if (sProductCode) {
+			
+			//EFRCL- 308719- Italy-competitors DB is empty
+			if (sProductCode && sCountry !=='IT') {
 				let oFilter = new sap.ui.model.Filter("ProductCode", sap.ui.model.FilterOperator.EQ, sProductCode);
 				aFilters.push(oFilter);
 			}
