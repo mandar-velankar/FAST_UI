@@ -8,6 +8,7 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
     "com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
+    "com/bayer/tender/uilib/datatypes/PercentageTypeDecimalDiscount",
 	"com/bayer/tender/uilib/datatypes/UoMPriceType",
 	"sap/ui/model/Filter",
     "sap/ui/model/FilterType",
@@ -15,7 +16,7 @@ sap.ui.define([
     "sap/ui/core/BusyIndicator",
     "sap/ui/model/Sorter",
     "sap/ui/core/format/DateFormat"    
-], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType,PercentageTypeDecimal,UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,DateFormat) {
+], function (Controller, formatter, Services, UserInfo, MomentJS, Financial, Fragment, PercentageType,PercentageTypeDecimal,PercentageTypeDecimalDiscount,UoMPriceType, Filter, FilterType, FilterOperator, BusyIndicator,Sorter,DateFormat) {
 	"use strict";
 	
 	var bundle;
@@ -27,6 +28,7 @@ sap.ui.define([
 		types: {
 			percent: PercentageType,
             percentdecimal: PercentageTypeDecimal,
+            percentdecimaldiscount: PercentageTypeDecimalDiscount,
             uomPrice: UoMPriceType
 		},
 
