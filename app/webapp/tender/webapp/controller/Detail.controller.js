@@ -6671,7 +6671,7 @@ sap.ui.define([
 			if(oOffer){
 				oOfferSaveInfo.FOCType = oOffer.FOCType;
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = oOffer.DEFAULT_FOC_ABS_PCT;
-				oOfferSaveInfo.ChannelSwitched = oOffer.ChannelSwitched;
+				if (oOffer.ChannelSwitched) oOfferSaveInfo.ChannelSwitched = oOffer.ChannelSwitched;
 				oOfferSaveInfo.IbizWorkflowID = oOffer.IbizWorkflowID
 				oOfferSaveInfo.PreviousIbizWorkflowID = oOffer.PreviousIbizWorkflowID;
 				oOfferSaveInfo.DistributorDeadline = oOffer.DistributorDeadline;
