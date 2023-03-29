@@ -9864,27 +9864,29 @@ sap.ui.define([
 						const offerType = offerProduct.OfferType;
 
 						if(result.OUTCOME === 'Won'){
-							var oPriceAgreementSaveInfo = oSelectedProduct.PriceAgreement;
+							if(Services.getSelectedCountry() === 'ES' || (offerType && offerType === "Selling" && Services.getSelectedCountry() !== 'ES')){
+								var oPriceAgreementSaveInfo = oSelectedProduct.PriceAgreement;
 
-							if(!oPriceAgreementSaveInfo){
-								oPriceAgreementSaveInfo = await that.preparePriceAgreementSaveInfo(result);
-								oPriceAgreementSaveInfo._sOperation = "POST";
-							} else {
-								oPriceAgreementSaveInfo._sOperation = "PUT";
-							}
+								if(!oPriceAgreementSaveInfo){
+									oPriceAgreementSaveInfo = await that.preparePriceAgreementSaveInfo(result);
+									oPriceAgreementSaveInfo._sOperation = "POST";
+								} else {
+									oPriceAgreementSaveInfo._sOperation = "PUT";
+								}
 
-							const priceAgreement = await Services.savePriceAgreementWithoutMessages(oPriceAgreementSaveInfo);
-							const priceAgreementID = priceAgreement[0].ID;
+								const priceAgreement = await Services.savePriceAgreementWithoutMessages(oPriceAgreementSaveInfo);
+								const priceAgreementID = priceAgreement[0].ID;
 
-							// add PriceAgreementID to PriceCondtions
-							if(priceAgreementID){
-								const priceConditions = offerProduct.PriceCondition.results
-								const savePriceConditionPromises = priceConditions.map(condition => {
-									condition.PriceAgreement_ID = priceAgreementID;
-									const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
-									return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
-								});
-								await Promise.all(savePriceConditionPromises);
+								// add PriceAgreementID to PriceCondtions
+								if(priceAgreementID){
+									const priceConditions = offerProduct.PriceCondition.results
+									const savePriceConditionPromises = priceConditions.map(condition => {
+										condition.PriceAgreement_ID = priceAgreementID;
+										const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
+										return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+									});
+									await Promise.all(savePriceConditionPromises);
+								}
 							}
 						}
 					}
