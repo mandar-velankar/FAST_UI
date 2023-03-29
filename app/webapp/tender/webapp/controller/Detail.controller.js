@@ -6480,12 +6480,14 @@ sap.ui.define([
 		 * @param {Object} - Event obj
 		 */
 		onOfferProductsChannelChange: function(oEvent){
+			const oFastAppDataModel = Services.getFastAppDataModel();
 			const sSelectedChannelText = oEvent.getParameter('selectedItem').getText();
 			const sSelectedDistributorText = this.getView().byId("idDistributorName").getSelectedItem().getText();
 			const oSelectedObject = oEvent.getParameter('selectedItem').getBindingContext("fastAppData").getObject();
+			const oOffer = oFastAppDataModel.getProperty("/EditOffer");;
 			
 			// set warning message when switching Channels at the offer level
-			const sWarningMessage = this.getOfferProductsChannelWarningMessage(sSelectedChannelText, sSelectedDistributorText);
+			const sWarningMessage = this.getOfferProductsChannelWarningMessage(sSelectedChannelText, sSelectedDistributorText, oOffer);
 			this.getView().getModel("viewModel").setProperty("/OfferProductsChannelWarningMessage", sWarningMessage);
 
 			// set notifyIbizData
@@ -6497,8 +6499,16 @@ sap.ui.define([
 				from Distributor to Bayer
 				from either Distributor to Decline or Bayer to Decline*/
 			
-			if(Services.getFastAppDataModel().getProperty('/CurrentOfferStatus') === 'Offer Created' && (sSelectedChannelText === 'Distributor' && sSelectedDistributorText.replace(/\s/g, '').toLowerCase() === "bayerbrazil" || sSelectedChannelText === 'Bayer' || sSelectedChannelText === 'Decline')) {
+			if(Services.getFastAppDataModel().getProperty('/CurrentOfferStatus') === 'Offer Created' && (sSelectedDistributorText.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && (sSelectedChannelText === 'Distributor' || sSelectedChannelText === 'Decline'))) {
 				Services.getFastAppDataModel().setProperty('/EditOffer/ChannelSwitched', true);
+			}else if (Services.getFastAppDataModel().getProperty('/CurrentOfferStatus') === 'Offer Created' && (sSelectedChannelText === 'Bayer' && sSelectedDistributorText.replace(/\s/g, '').toLowerCase() === "bayerbrazil")) {
+				Services.getFastAppDataModel().setProperty('/EditOffer/ChannelSwitched', false);
+			}
+
+			if(Services.getFastAppDataModel().getProperty('/CurrentOfferStatus') === 'Offer Created' && (sSelectedDistributorText.replace(/\s/g, '').toLowerCase() !== "bayerbrazil" && (sSelectedChannelText === 'Bayer' || sSelectedChannelText === 'Decline'))) {
+				Services.getFastAppDataModel().setProperty('/EditOffer/ChannelSwitched', true);
+			}else if (Services.getFastAppDataModel().getProperty('/CurrentOfferStatus') === 'Offer Created' && (sSelectedChannelText === 'Distributor' && sSelectedDistributorText.replace(/\s/g, '').toLowerCase() !== "bayerbrazil")) {
+				Services.getFastAppDataModel().setProperty('/EditOffer/ChannelSwitched', false);
 			}
 		},
 
@@ -6519,7 +6529,7 @@ sap.ui.define([
 		
 		},
 
-		getOfferProductsChannelWarningMessage: function(channel, distributor){
+		getOfferProductsChannelWarningMessage: function(channel, distributor, oOffer){
 			if(!channel || !distributor) return;
 			const sDistributorToBayerMessage = "You are changing the tender channel. This will inform the distributor that we are " +
 												"refusing the opportunity and will lead to some changes in the FAST process. " + 
@@ -6529,14 +6539,14 @@ sap.ui.define([
 												"Once you confirmed, you will not be able to change the status again";
 			let sMessage = "";
 			// from Bayer to Distributor
-			if(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "distributor"){
+			if(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "distributor" && !oOffer.isIBIZNotified){
 				sMessage = sBayerToDistributorMessage;
 				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 1);
 				Services.getFastAppDataModel().setProperty("/isDirectOffer", true);
 				Services.getFastAppDataModel().setProperty("/isInDirectOffer", false);
 			}
 			// form Distributor to Bayer
-			else if(!(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil") && channel.toLowerCase() === "bayer"){
+			else if(!(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil") && (channel.toLowerCase() === "bayer" || channel.toLowerCase() === "decline") && !oOffer.isIBIZNotified){
 				sMessage = sDistributorToBayerMessage;
 				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 0);
 				Services.getFastAppDataModel().setProperty("/isInDirectOffer", true);
@@ -6661,7 +6671,7 @@ sap.ui.define([
 			if(oOffer){
 				oOfferSaveInfo.FOCType = oOffer.FOCType;
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = oOffer.DEFAULT_FOC_ABS_PCT;
-				oOfferSaveInfo.ChannelSwitched = oOffer.ChannelSwitched;
+				if (oOffer.ChannelSwitched) oOfferSaveInfo.ChannelSwitched = oOffer.ChannelSwitched;
 				oOfferSaveInfo.IbizWorkflowID = oOffer.IbizWorkflowID
 				oOfferSaveInfo.PreviousIbizWorkflowID = oOffer.PreviousIbizWorkflowID;
 				oOfferSaveInfo.DistributorDeadline = oOffer.DistributorDeadline;

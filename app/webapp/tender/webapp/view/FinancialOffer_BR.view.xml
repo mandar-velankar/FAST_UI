@@ -40,8 +40,8 @@
 						press="onShareApprovalsToIbizPress" 
 						enabled="{= 
 							(${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  
-							${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected') &amp;&amp; 
-							${fastAppData>/SelectedOffer/Tender/createdBy} === 'IBIZ'
+							(${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected' &amp;&amp; !${fastAppData>/SelectedOffer/DecisionSharedWithIBIZ})) &amp;&amp; 
+							${fastAppData>/SelectedOffer/Tender/createdBy} === 'IBIZ' 
 						}"
 					/>
 					<Button id="ApprovalButtonId" text="Approvals" icon="sap-icon://validate" press="onApprovalsPress" enabled="false" visible="{= !${fastAppData>/EditMode} }"/>

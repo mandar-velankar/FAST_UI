@@ -984,6 +984,23 @@ sap.ui.define([
 				//Logic to call the API to Notify about Product Switch
 				const response = await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
                 if (offerStatus == 1) await this._saveAndSubmitQuotation();
+                if (loadedOfferStatus === "Offer Rejected") {
+                    Services.getFastAppDataModel().setProperty("/SelectedOffer/DecisionSharedWithIBIZ", true);
+                    let oOfferSaveInfo = {
+                        OfferID: loadedOffer.OfferID,
+                        DecisionSharedWithIBIZ: true
+                    }
+                    //update offer
+                    await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+
+                        //show error message
+                        Services.showErrorMessage(oError, "Update of offer");
+
+                        //promises must fail as well
+                        throw new Error(oError);
+
+                    });
+                }
                 const res_msg = response.data;
 				MessageToast.show(res_msg);
 			}catch(error){
