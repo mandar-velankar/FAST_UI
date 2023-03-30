@@ -9387,14 +9387,26 @@ sap.ui.define([
 			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
 			//Set BrazilContract InstituteID and DistributorID from Offer
 			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+			const distributor = selectedOffer?.Distributor?.DistributorName;
+			const isDirectOffer = distributor?.replace(/\s/g, '')?.toLowerCase() === "bayerbrazil";
 			this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedOffer.Tender.InstituteID);
 			this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedOffer.DistributorID);
-			if(evt.getSource().getSelectedItem().getKey() !== 'From Offer' && evt.getSource().getSelectedItem().getKey() !== '') {
+			if(evt.getSource().getSelectedItem().getKey() !== '') {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(true);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(true);
 			} else {
 				this.getView().byId('idNewContractCustomerInstitute')?.setEnabled(false);
 				this.getView().byId('idNewContractCustomerDistributor')?.setEnabled(false);
+			}
+
+			// set default customer value for "From Offer" contract
+			if(evt.getSource().getSelectedItem().getKey() === 'From Offer'){
+				if(isDirectOffer){
+					const institudeID = selectedOffer.Tender.InstituteID;
+					this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey(institudeID);
+				}else{
+					this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey(distributor.DistributorID);
+				}
 			}
 		},
 		/**
