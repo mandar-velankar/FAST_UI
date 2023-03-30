@@ -7363,9 +7363,14 @@ sap.ui.define([
 			var sPath = "/PT_TMINST";
 			var data;
 			var aFilters = [];
-			const regionMCB = this.getView().byId("idRegionEdit");
-			const instituteType = this.byId("idInstituteType").getProperty("selectedKey");
+			let instituteType;
 
+			const regionMCB = this.getView().byId("idRegionEdit");
+			if(this.byId('idInstituteType')){
+				instituteType = this.byId("idInstituteType").getProperty("selectedKey");
+			} else {
+				instituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
+			}
 			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
 				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
 			);
@@ -7381,7 +7386,7 @@ sap.ui.define([
 					data.results = Services.sortByKeyAsc(data.results, "InstituteName");
 					//convert customer id to string to enable contains filter
 					data.results = data.results.map(item=>{
-						item.CustomerID = item.CustomerID.toString();
+						item.CustomerID = item.CustomerID?.toString();
 						return item;
 					});
 
@@ -7439,7 +7444,7 @@ sap.ui.define([
 				var oSelectedItem = oEvent.getParameter("selectedItem");
                 const oFastAppDataModel = Services.getFastAppDataModel();
                 const event = oEvent.getSource();
-				if (oSelectedItem) {
+				if (oSelectedItem && !Services.getSelectedTab().includes('tenderResultsId')) { //this implies we are on the basic information page
 					const regionId = oEvent.getParameter("selectedContexts")[0].getObject().RegionID;
 					that.byId("idInstituteName").setValue(oSelectedItem.getTitle());
 					//that.byId("idInstituteID").setValue(oSelectedItem.getDescription());
@@ -7488,6 +7493,10 @@ sap.ui.define([
 						}
 					});
                     // oFastAppDataModel.refresh(true); // this is causing issues and hinding the Regions field
+				} else if(oSelectedItem && Services.getSelectedTab().includes('tenderResultsId')) { //this implies we are on the tender results page
+					that.byId("idNewContractCustomerInstitute").setValue(oSelectedItem.getTitle());
+					that.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Institute");
+					that.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", oSelectedItem.data('InstituteID'));
 				}
 				// event.getBinding("items").filter([]); // is this needed ?
 			};
@@ -7498,6 +7507,89 @@ sap.ui.define([
 				// regionMCB.getSelectedItems()[0].setEnabled(false); // the UI5 API has changed and thus setEnabled does not provided the required result
 			}
 
+		},
+
+		DistributorName_f4: function (oEvent) {
+            this.getView().setBusy(true);
+			var model_f4 = this.getView().getModel("fastData");
+			var sPath = "/PT_TMDIST";
+			var data;
+			var aFilters = [];
+
+			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country));
+
+			var that = this;
+			model_f4.read(sPath, {
+				filters: aFilters,
+				success: function (OData, oResponse) {
+					data = OData;
+					var stateModel = new sap.ui.model.json.JSONModel();
+
+					//sort on institute name
+					data.results = Services.sortByKeyAsc(data.results, "DistributorName");
+					//convert customer id to string to enable contains filter
+					data.results = data.results.map(item=>{
+						item.CustomerID = item.CustomerID?.toString();
+						return item;
+					});
+
+					stateModel.setData(data);
+					that.valueHelpBasicDistrSlctDialog = new sap.m.SelectDialog({
+						title: bundle.getText("distrnme"),
+						multiSelect: false,
+						items: {
+							path: "/results",
+							template: new sap.m.StandardListItem({
+								title: "{DistributorName}",
+								info:"{= ${CountryCode} !== 'BR' && ${CustomerID} && ${CustomerID} !== '0' ? ${CustomerID} : ${CountryCode} === 'BR' && ${CustomerID} && ${CustomerID} !== '0' ? ${CustomerID} + ' ' + ${CNPJ} : ${CountryCode} === 'BR' && (!${CustomerID} || ${CustomerID} === '0') ? ${CNPJ} : ''}",
+								//description: "{InstituteID}",
+								//active: true,
+								//beceause we no longer have the selected instituteID visible, we keep it in the customData of the list item
+								customData: new sap.ui.core.CustomData({
+									key: "DistributorID",
+									value: "{DistributorID}"
+								})
+							})
+						},
+						liveChange: function (oEvent) {
+							var sValue = oEvent.getParameter("value");
+							var oFilters;
+
+							if(Services.getSelectedCountry() !== 'BR'){
+								oFilters = [new sap.ui.model.Filter([
+													new sap.ui.model.Filter("DistributorName", sap.ui.model.FilterOperator.Contains, sValue),
+													new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue)],
+												false)];
+							} else {	
+								oFilters = [new sap.ui.model.Filter([
+									new sap.ui.model.Filter("DistributorName", sap.ui.model.FilterOperator.Contains, sValue),
+									new sap.ui.model.Filter("CustomerID", sap.ui.model.FilterOperator.Contains, sValue),
+									new sap.ui.model.Filter("CNPJ", sap.ui.model.FilterOperator.Contains, sValue)],
+								false)];						
+								oFilters.push();
+							}
+							oEvent.getSource().getBinding("items").filter(oFilters);
+						},
+						confirm: handleCloseDistributorName,
+					});
+					that.valueHelpBasicDistrSlctDialog.setModel(stateModel);
+					that.valueHelpBasicDistrSlctDialog.open();
+                    that.getView().setBusy(false);
+
+				},
+				error: function (oError) {
+                    that.getView().setBusy(false);
+					Services.showErrorMessage(oError, "Distributor loading");
+				}
+			});
+			var handleCloseDistributorName = async function (oEvent) {
+				var oSelectedItem = oEvent.getParameter("selectedItem");
+				if(oSelectedItem && Services.getSelectedTab().includes('tenderResultsId')) { //this implies we are on the tender results page
+					that.byId("idNewContractCustomerDistributor").setValue(oSelectedItem.getTitle());
+					that.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Distributor");
+					that.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", oSelectedItem.data('DistributorID'));
+				}
+			};
 		},
 
 		//ProductOfferEdit fragment: Value help for Distriubtor name 
@@ -9291,8 +9383,8 @@ sap.ui.define([
 			}
 			
 			this.getView().byId('idNewContractType')?.setSelectedKey("");	
-			this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey("");
-			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
+			this.getView().byId('idNewContractCustomerInstitute')?.setValue("");
+			this.getView().byId('idNewContractCustomerDistributor')?.setValue("");
 
 			return this._oAddNewContractDialog;
 		},
@@ -9383,12 +9475,13 @@ sap.ui.define([
 		 */
 		onChangeContractType: function (evt){
 			this.getView().getModel("viewModel").setProperty("/BrazilContract/ContractType", evt.getSource().getSelectedKey());
-			this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey("");
-			this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey("");
+			this.getView().byId('idNewContractCustomerInstitute')?.setValue("");
+			this.getView().byId('idNewContractCustomerDistributor')?.setValue("");
 			//Set BrazilContract InstituteID and DistributorID from Offer
 			const selectedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
-			const distributor = selectedOffer?.Distributor?.DistributorName;
-			const isDirectOffer = distributor?.replace(/\s/g, '')?.toLowerCase() === "bayerbrazil";
+			const distributor = selectedOffer?.Distributor;
+			const institute = Services.getFastAppDataModel().getProperty('/Tender/Institute');
+			const isDirectOffer = distributor?.DistributorName?.replace(/\s/g, '')?.toLowerCase() === "bayerbrazil";
 			this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", selectedOffer.Tender.InstituteID);
 			this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", selectedOffer.DistributorID);
 			if(evt.getSource().getSelectedItem().getKey() !== '') {
@@ -9402,10 +9495,13 @@ sap.ui.define([
 			// set default customer value for "From Offer" contract
 			if(evt.getSource().getSelectedItem().getKey() === 'From Offer'){
 				if(isDirectOffer){
-					const institudeID = selectedOffer.Tender.InstituteID;
-					this.getView().byId('idNewContractCustomerInstitute')?.setSelectedKey(institudeID);
+					this.getView().byId('idNewContractCustomerInstitute')?.setValue(institute.InstituteName);
+					this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Institute");
+					this.getView().getModel("viewModel").setProperty("/BrazilContract/InstituteID", institute.InstituteID);
 				}else{
-					this.getView().byId('idNewContractCustomerDistributor')?.setSelectedKey(distributor.DistributorID);
+					this.getView().byId('idNewContractCustomerDistributor')?.setValue(distributor.DistributorName);
+					this.getView().getModel("viewModel").setProperty("/BrazilContract/CustomerType", "Distributor");
+					this.getView().getModel("viewModel").setProperty("/BrazilContract/DistributorID", distributor.DistributorID);
 				}
 			}
 		},
