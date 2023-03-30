@@ -5726,10 +5726,10 @@ sap.ui.define([
 				const isDirectOffer = oFastAppData.getProperty("/isDirectOffer");
 				aProducts = aProducts.map(product => {
 					if (product.Channel.toLowerCase() === "bayer" && isInDirectOffer) {
-						product.ActiveProduct = 0;
+						product.ActiveProduct = 2;
 					}
 					if (product.Channel.toLowerCase() === "distributor" && isDirectOffer) {
-						product.ActiveProduct = 0;
+						product.ActiveProduct = 2;
 					}
 					return product
 				});
