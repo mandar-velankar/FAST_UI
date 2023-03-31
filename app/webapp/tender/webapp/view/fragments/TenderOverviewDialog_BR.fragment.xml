@@ -5,8 +5,8 @@
 	<Dialog
 		id="idTenderOverviewDialogBrazil"
 		title="Tender Overview"
-		contentWidth="50%"
-		contentHeight="50%">
+		contentWidth="100%"
+		contentHeight="100%">
 		<content>
 			<Table id="idTenderOverviewTableBrazil"
 				inset="false"
@@ -27,7 +27,7 @@
 									path: 'fastAppData>value',
 									formatter:'.formatter.formatTotalDiscount'
 								}"
-								state="{= ${fastAppData>bSmallerDiscount} === true ? 'Error' : 'None'  }" />
+								state="{= ${fastAppData>existsSimilarValueInProd} === true ? 'Error' : 'None'  }" />
 						</cells>
 					</ColumnListItem>
 				</items>
