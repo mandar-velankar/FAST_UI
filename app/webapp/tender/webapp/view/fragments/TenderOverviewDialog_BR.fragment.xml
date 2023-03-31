@@ -27,7 +27,7 @@
 									path: 'fastAppData>value',
 									formatter:'.formatter.formatTotalDiscount'
 								}"
-								state="{= ${fastAppData>bSmallerDiscount} === true ? 'Error' : 'None'  }" />
+								state="{= ${fastAppData>existsSimilarValueInProd} === true ? 'Error' : 'None'  }" />
 						</cells>
 					</ColumnListItem>
 				</items>
