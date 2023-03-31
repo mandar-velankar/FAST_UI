@@ -5,8 +5,8 @@
 	<Dialog
 		id="idTenderOverviewDialogBrazil"
 		title="Tender Overview"
-		contentWidth="50%"
-		contentHeight="50%">
+		contentWidth="100%"
+		contentHeight="100%">
 		<content>
 			<Table id="idTenderOverviewTableBrazil"
 				inset="false"
