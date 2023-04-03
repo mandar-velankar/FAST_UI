@@ -22,7 +22,10 @@
 				press="onNotifyIbiz" 
 				visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }" 
 				enabled="{
-					path:'fastAppData>/SelectedOffer',
+					parts: [
+						{path:'fastAppData>/SelectedOffer'},
+						{path:'fastAppData>/CurrentOfferStatus'}
+					],
                     formatter: '.formatter.isNotifyIBIZButtonEnabled'
 				}"/>
 			<Button text="Delete Offer" icon="sap-icon://delete" press="onDeleteProductOffer" enabled="{= ${fastAppData>/SelectedOfferID} === '' || ${fastAppData>/SelectedOffer/ActiveOffer} !== 1 || ${fastAppData>/SelectedOffer/Active} !== 1 || ${access>/tenderAccess/SPAINTENDERVIEW} ? false : true}"/>

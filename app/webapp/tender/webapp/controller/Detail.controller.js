@@ -11959,10 +11959,10 @@ sap.ui.define([
 			
 			try{
 				//Logic to call the API to Notify about Product Switch
-				await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
-				Services.getFastAppDataModel().setProperty('/SelectedOffer/ChannelSwitched', true);
-
 				const response = await Services.getService("Tender").notifyIbiz(workflowID, directIndirect, workflowproductIDs);
+				Services.getFastAppDataModel().setProperty('/SelectedOffer/ChannelSwitched', true);
+				Services.getFastAppDataModel().setProperty('/SelectedOffer/isIBIZNotified', true);
+				this.byId("ibizNotifyBtn").setEnabled(false);
 				const res_msg = response.data;
 				MessageToast.show(res_msg);
 			}catch(error){
