@@ -1154,22 +1154,10 @@ sap.ui.define([
                 // Check if product has totalDiscount take minimal discount
                 // if discount is empty array Math.min() return infinity
                 if (discounts.length > 0) {
-                    let filteringRow = row;
+                    let maxDiscount = Math.max(...discounts); 
                     row.map(el => {
-                        let filteredDiscounts = filteringRow.filter(prod => {
-                            if (prod.value != "NA" && el.value != "NA") return prod.value == el.value
-                        });
-                        if (filteredDiscounts.length == 1) {
-                            el.existsSimilarValueInProd = true;
-                        }
+                        if (el.value != "NA" && el.value != maxDiscount) el.existsSimilarValueInProd = true;
                     })
-                    // let minDiscount = Math.min(...discounts); 
-                    // row.find(prod => {
-                    //     if (prod.value == minDiscount) {
-                    //         prod.existsSimilarValueInProd = true
-                    //     }
-                    // })
-                    
                 }
 				row.unshift({
 					value: oProduct.SKU.PRODUCTPACKNAME
