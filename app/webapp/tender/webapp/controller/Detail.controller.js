@@ -24,12 +24,13 @@ sap.ui.define([
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
+	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimalDiscount",
 	"sap/m/MessageBox",
 	"sap/m/library",
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,MessageBox,mobileLibrary,coreLibrary) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,PercentageTypeDecimalDiscount,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -53,7 +54,8 @@ sap.ui.define([
 		formatter: formatter,
 		types: {
 			percent: PercentageType,
-			percentdecimal : PercentageTypeDecimal
+			percentdecimal : PercentageTypeDecimal,
+			percentdecimaldiscount : PercentageTypeDecimalDiscount
 		},
 
 
@@ -9838,6 +9840,68 @@ sap.ui.define([
 
 
 			return oPriceAgreementSaveInfo;
+		},
+
+		onCreatePriceAgreementAll: async function (oEvent){
+
+			BusyIndicator.show();
+
+			//get model & selected row
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			let sOfferID = oFastAppDataModel.getProperty("/SelectedOffer/OfferID");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
+			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+
+			await Promise.all(tenderResults.map(async (result, index) => {
+				if(result.AWARDEDCOMPANY === 'Bayer'){
+					const oSelectedProduct = offerProducts[index];
+					let oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
+
+					if(!oLoadedPriceAgreement && !oSelectedProduct.PriceCondition.results.find(condition => condition.PriceConditionClassification.ConditionType === "Rental")){
+						const rowProductCode = result.PRODUCTCODE;
+						const offerProduct = offerProducts.find(prd => prd.ProductCode === rowProductCode);
+						const offerType = offerProduct.OfferType;
+
+						if(result.OUTCOME === 'Won'){
+							if(Services.getSelectedCountry() === 'ES' || (offerType && offerType === "Selling" && Services.getSelectedCountry() !== 'ES')){
+								var oPriceAgreementSaveInfo = oSelectedProduct.PriceAgreement;
+
+								if(!oPriceAgreementSaveInfo){
+									oPriceAgreementSaveInfo = await that.preparePriceAgreementSaveInfo(result);
+									oPriceAgreementSaveInfo._sOperation = "POST";
+								} else {
+									oPriceAgreementSaveInfo._sOperation = "PUT";
+								}
+
+								const priceAgreement = await Services.savePriceAgreementWithoutMessages(oPriceAgreementSaveInfo);
+								const priceAgreementID = priceAgreement[0].ID;
+
+								// add PriceAgreementID to PriceCondtions
+								if(priceAgreementID){
+									const priceConditions = offerProduct.PriceCondition.results
+									const savePriceConditionPromises = priceConditions.map(condition => {
+										condition.PriceAgreement_ID = priceAgreementID;
+										const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
+										return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+									});
+									await Promise.all(savePriceConditionPromises);
+								}
+							}
+						}
+					}
+				}
+			}));
+
+			sap.m.MessageBox.success("Price agreements have been created for applicable products.", {});
+
+			//reload offer data
+			await Services.loadProductDataForOffer(sOfferID);
+
+			//refresh everything
+			that.onRefresh();
+
+			BusyIndicator.hide();
 		},
 
 		//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
