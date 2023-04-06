@@ -4843,7 +4843,13 @@ sap.ui.define([
 
             //if we're in brazil, filter the offer products by the selected lot ID 
             if(oOffer?.CountryCode === 'BR'){
-                let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey() || oOffer.Lots.results[0].LotID;
+                let iSelectedLotID = this.getView().byId('idSelectLotView').getSelectedKey();
+				 
+				const iSelectedLotIndex = oOffer.Lots?.results?.findIndex(lot => lot.LotID == iSelectedLotID);
+				if (iSelectedLotIndex == -1) {
+					iSelectedLotID = oOffer.Lots?.results[0]?.LotID;
+				}
+
                 if(iSelectedLotID){
                     this.filterBySelectedLot(iSelectedLotID);
                 }
