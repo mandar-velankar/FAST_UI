@@ -609,9 +609,9 @@ sap.ui.define([
 			}
 			return value
 		},
-		isNotifyIBIZButtonEnabled: function (selectedOffer) {
+		isNotifyIBIZButtonEnabled: function (selectedOffer, currentOfferStatus) {
 			if (!selectedOffer) return false;
-			const offerStatus = selectedOffer.OfferStatus.STATUS;
+			const offerStatus = selectedOffer.OfferStatus.STATUS || currentOfferStatus;
 			const isIBIZNotified = selectedOffer.isIBIZNotified;
 			const isDirectDistributor = selectedOffer.Distributor.DistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? true : false;
 			const isChannelDistributor = selectedOffer.Product.results.findIndex(pr => pr.Channel.replace(/\s/g, '').toLowerCase() === "distributor") > -1 ? true: false;
