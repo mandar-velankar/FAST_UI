@@ -39,7 +39,7 @@
                                 {path:'fastAppData>PVL'},
                                 {value: 2}
                             ],
-                            formatter: '.formatter.formatUoMCurrentPrice'}
+                            formatter: '.formatter.formatUoMCurrentPriceEsIt'}
                         }"
                 description="{fastAppData>masterPriceCurrency}" 
                 enabled="false" 
@@ -64,7 +64,7 @@
                             {path:'fastAppData>YLAP'},
                             {value: 2}
                         ],
-                        formatter: '.formatter.formatUoMCurrentPrice'}
+                        formatter: '.formatter.formatUoMCurrentPriceEsIt'}
                         }" 
                 visible="{= ${fastAppData>/Tender/Institute/InstituteType} !== 'Private Account'}" 
                 description="{fastAppData>masterPriceCurrency}" 

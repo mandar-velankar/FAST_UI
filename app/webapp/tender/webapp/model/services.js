@@ -7740,6 +7740,37 @@ sap.ui.define([
 
 		},
 
+		savePriceAgreementWithoutMessages: function(oPriceAgreementSaveInfo){
+			var that = this;
+
+			let promises = [];
+
+			switch(oPriceAgreementSaveInfo._sOperation){
+				case "POST":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
+						return response && response.data;
+					})
+					.catch(function (oError) {
+						throw new Error(oError);
+					}));
+					break;
+				case "PUT":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
+						return response && response.data;
+					})
+					.catch(function (oError) {
+						throw new Error(oError);
+					}));
+					break;
+			}
+
+			// oPriceAgreementSaveInfo = {};
+			return Promise.all(promises);
+
+		},
+
 		//save the deliveries
 		saveDeliveries: function () {
 
