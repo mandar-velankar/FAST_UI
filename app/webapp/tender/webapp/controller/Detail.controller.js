@@ -11959,8 +11959,10 @@ sap.ui.define([
 			
             //get user input
 			// let oNotifyIbizComment = this.byId("idNotifyIbizComments").getValue();
-			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID");
-			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect");
+			const oOffer = Services.getFastAppDataModel().getProperty("/SelectedOffer");
+			const directIndirectDistributor = oOffer.Distributor.DistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? 1 : 0;
+			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID") || oOffer?.IbizWorkflowID;
+			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect") || directIndirectDistributor;
 			const workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs");
 			
 			try{
