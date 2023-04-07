@@ -984,6 +984,23 @@ sap.ui.define([
 				//Logic to call the API to Notify about Product Switch
 				const response = await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
                 if (offerStatus == 1) await this._saveAndSubmitQuotation();
+                Services.getFastAppDataModel().setProperty("/SelectedOffer/DecisionSharedWithIBIZ", true);
+                if (loadedOfferStatus === "Offer Rejected") {
+                    let oOfferSaveInfo = {
+                        OfferID: loadedOffer.OfferID,
+                        DecisionSharedWithIBIZ: true
+                    }
+                    //update offer
+                    await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+
+                        //show error message
+                        Services.showErrorMessage(oError, "Update of offer");
+
+                        //promises must fail as well
+                        throw new Error(oError);
+
+                    });
+                }
                 const res_msg = response.data;
 				MessageToast.show(res_msg);
 			}catch(error){
@@ -1057,6 +1074,8 @@ sap.ui.define([
                     if (qoutationForSelectedOffer) {
                         //do the save of the quotation
                         await Quotation.submitQuotation(quotationFields);
+                        //update offer status
+                        Services.getLoadedOffer(Services.getSelectedOfferID()).OfferStatus.STATUS = "Quotation Submitted";
                     }
                 }		
 			}
@@ -1118,7 +1137,7 @@ sap.ui.define([
 				row.forEach((item, index, arr) => {
 					arr[index] = {
 						value: item.value,
-                        bSmallerDiscount: false
+                        existsSimilarValueInProd: false
 					}
 				});
 
@@ -1135,11 +1154,9 @@ sap.ui.define([
                 // Check if product has totalDiscount take minimal discount
                 // if discount is empty array Math.min() return infinity
                 if (discounts.length > 0) {
-                    let minDiscount = Math.min(...discounts); 
-                    row.find(prod => {
-                        if (prod.value == minDiscount) {
-                            prod.bSmallerDiscount = true
-                        }
+                    let maxDiscount = Math.max(...discounts); 
+                    row.map(el => {
+                        if (el.value != "NA" && el.value != maxDiscount) el.existsSimilarValueInProd = true;
                     })
                 }
 				row.unshift({
