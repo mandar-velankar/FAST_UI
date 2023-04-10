@@ -1483,6 +1483,7 @@ sap.ui.define([
 				descending: true
 			});
 			//EHQUT-195982-MEA -Unit Price in Offer History
+			//EFRCL- 218142- MEA- update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers
 
 			var tenderregion = Services.getFastAppDataModel().oData.Tender.Country.Region;
 			var oTenderHistoryTemplate = new sap.m.ColumnListItem({
@@ -1563,6 +1564,9 @@ sap.ui.define([
 					}),
 					new sap.m.Text({
 						text: "{fastData>OUTCOME}"
+					}),
+					new sap.m.Text({
+						text: "{fastData>OFFERSTATUS}"
 					})
 				]
 			});
