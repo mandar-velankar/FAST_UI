@@ -175,6 +175,31 @@ sap.ui.define([
 			return oValue + " "+ currency;
 		},
 		
+	//EFRCL- 317793- MEA-Zero offer Price workaround
+		pricewithoutdecimal: function(price, currency, unit) {
+			var oValue;
+			if (!price){
+				return "";
+			}
+			
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: unit !== "Pack" ? 4 : 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			if(price === "0.0001"){
+				 oValue= oNumberFormat.format(parseInt(price));
+			}else{
+				 oValue = oNumberFormat.format(parseFloat(price));
+			}
+			
+			if (!currency){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
+		
 		unitPrice: function(price, currency, unit, packFactor) {
 			if (!price){
 				return "";
