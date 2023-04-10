@@ -1729,7 +1729,7 @@ sap.ui.define([
 		//load Exchange Rates again from database
 		loadCountryRegisteredPrice: function (sCountry, sUOM, sProduct, sCurrency) {
 			// For Brazil and Spain we do not set the REGISTERED_PRICE
-			if (sCountry === "BR" || sCountry === "ES") {
+			if (sCountry === "BR" || sCountry === "ES" || sCountry === "IT") {
 				return Promise.resolve({
 					REGISTERED_PRICE: 0,
 					UOM: sUOM,
