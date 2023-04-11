@@ -1483,6 +1483,7 @@ sap.ui.define([
 				descending: true
 			});
 			//EHQUT-195982-MEA -Unit Price in Offer History
+			//EFRCL- 218142- MEA- update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers
 
 			var tenderregion = Services.getFastAppDataModel().oData.Tender.Country.Region;
 			var oTenderHistoryTemplate = new sap.m.ColumnListItem({
@@ -1563,6 +1564,9 @@ sap.ui.define([
 					}),
 					new sap.m.Text({
 						text: "{fastData>OUTCOME}"
+					}),
+					new sap.m.Text({
+						text: "{fastData>OFFERSTATUS}"
 					})
 				]
 			});
@@ -1729,7 +1733,7 @@ sap.ui.define([
 		//load Exchange Rates again from database
 		loadCountryRegisteredPrice: function (sCountry, sUOM, sProduct, sCurrency) {
 			// For Brazil and Spain we do not set the REGISTERED_PRICE
-			if (sCountry === "BR" || sCountry === "ES") {
+			if (sCountry === "BR" || sCountry === "ES" || sCountry === "IT") {
 				return Promise.resolve({
 					REGISTERED_PRICE: 0,
 					UOM: sUOM,
