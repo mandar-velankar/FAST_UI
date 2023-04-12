@@ -5731,11 +5731,15 @@ sap.ui.define([
 				const isInDirectOffer = oFastAppData.getProperty("/isInDirectOffer");
 				const isDirectOffer = oFastAppData.getProperty("/isDirectOffer");
 				aProducts = aProducts.map(product => {
-					if (product.Channel.toLowerCase() === "bayer" && isInDirectOffer) {
+					if ((product.Channel.toLowerCase() === "bayer" || product.Channel.toLowerCase() === "decline") && isInDirectOffer) {
 						product.ActiveProduct = 2;
+					}else if (product.Channel.toLowerCase() === "distributor" && isInDirectOffer) {
+						product.ActiveProduct = 1;
 					}
-					if (product.Channel.toLowerCase() === "distributor" && isDirectOffer) {
+					if ((product.Channel.toLowerCase() === "distributor" || product.Channel.toLowerCase() === "decline") && isDirectOffer) {
 						product.ActiveProduct = 2;
+					}else if (product.Channel.toLowerCase() === "bayer" && isDirectOffer) {
+						product.ActiveProduct = 1;
 					}
 					return product
 				});
