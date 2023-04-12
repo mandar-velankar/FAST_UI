@@ -226,8 +226,12 @@
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>FOC}"/>
 							</Column>
-							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>Status}"/>
+						<!-- EFRCL- 218142- MEA- update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers -->
+							<Column minScreenWidth="Tablet" demandPopin="true" >
+							    <Text text="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? ${i18n>Outcome} : ${i18n>Status}}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }">
+							    <Text text="{i18n>Status}"/>
 							</Column>
 						</columns>
 					</Table>

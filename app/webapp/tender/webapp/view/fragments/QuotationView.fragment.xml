@@ -354,11 +354,13 @@
                             <m:FormattedText htmlText="{path: 'fastAppData>REQUESTED_QUANTITY'}" class="sapMText"/>
 
                             <!-- Unit Price -->
+                            <!-- EFRCL- 317793- MEA-Zero offer Price workaround -->
                             <m:ObjectStatus
-                                text="{parts: [
-                                    {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
-                                    {path: 'fastAppData>CURRENCY'}
-                                ], formatter:'.formatter.priceTwoOrFour'}"
+                                text="{= ${fastAppData>/EditTender/Country/Region} === 'MEA' ? ${parts: [
+                                 {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>CURRENCY'}], formatter:'.formatter.pricewithoutdecimal'} : ${parts: [
+                                     {path: 'fastAppData>REQ_PRICE_UNIT_OFFER_CURRENCY'}, 
+                                    {path: 'fastAppData>CURRENCY'}], formatter:'.formatter.priceTwoOrFour'}}"
                                 state="{ parts:[{path:'fastAppData>IS_LOWEST'}], formatter: '.formatter.statusPrice'}"
                             />
                             <!-- Unit Price With Tax -->
