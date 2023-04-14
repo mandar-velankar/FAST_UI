@@ -74,7 +74,7 @@
 										<cells>
 											
 											<!-- Approver Type -->
-											<Label text="{fastAppData>ApproverType}"/>
+											<Label text="{fastAppData>ApproverType}" wrapping = "true"/>
 
 											<!-- Hierarchy -->
 											<!--<Input value="{= ${fastAppData>Hierarchy} !== null &amp;&amp; ${fastAppData>Hierarchy} !== 0 ? ${fastAppData>Hierarchy} : ${fastAppData>ApproverTypes/results/0/hierarchy} }" required="true"/>-->
