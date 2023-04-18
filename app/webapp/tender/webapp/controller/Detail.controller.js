@@ -5725,15 +5725,15 @@ sap.ui.define([
 			var bError = false;
 
 			//products to save that are visible in the table
+			const oOffer = oFastAppData.getProperty("/EditOffer");
 			var aProducts = oFastAppData.getProperty("/EditOffer/Product/results");
+			const isDirectOffer = oOffer?.Distributor?.DistributorName?.replace(/\s/g, '')?.toLowerCase() === "bayerbrazil";
 			//Brazil
 			if (oFastAppData.getProperty('/Tender/CountryCode') === 'BR') {
-				const isInDirectOffer = oFastAppData.getProperty("/isInDirectOffer");
-				const isDirectOffer = oFastAppData.getProperty("/isDirectOffer");
 				aProducts = aProducts.map(product => {
-					if ((product.Channel.toLowerCase() === "bayer" || product.Channel.toLowerCase() === "decline") && isInDirectOffer) {
+					if ((product.Channel.toLowerCase() === "bayer" || product.Channel.toLowerCase() === "decline") && !isDirectOffer) {
 						product.ActiveProduct = 2;
-					}else if (product.Channel.toLowerCase() === "distributor" && isInDirectOffer) {
+					}else if (product.Channel.toLowerCase() === "distributor" && !isDirectOffer) {
 						product.ActiveProduct = 1;
 					}
 					if ((product.Channel.toLowerCase() === "distributor" || product.Channel.toLowerCase() === "decline") && isDirectOffer) {
@@ -6552,15 +6552,11 @@ sap.ui.define([
 			if(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil" && channel.toLowerCase() === "distributor" && !oOffer.isIBIZNotified){
 				sMessage = sBayerToDistributorMessage;
 				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 1);
-				Services.getFastAppDataModel().setProperty("/isDirectOffer", true);
-				Services.getFastAppDataModel().setProperty("/isInDirectOffer", false);
 			}
 			// form Distributor to Bayer
 			else if(!(distributor.replace(/\s/g, '').toLowerCase() === "bayerbrazil") && (channel.toLowerCase() === "bayer" || channel.toLowerCase() === "decline") && !oOffer.isIBIZNotified){
 				sMessage = sDistributorToBayerMessage;
 				this.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", 0);
-				Services.getFastAppDataModel().setProperty("/isInDirectOffer", true);
-				Services.getFastAppDataModel().setProperty("/isDirectOffer", false);
 			}else {
 				sMessage = "";
 			}
