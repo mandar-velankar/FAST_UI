@@ -6385,9 +6385,10 @@ sap.ui.define([
 			//products with newly added product included
 			var sPath = "/EditOffer/Product/results";
 			var aProductsAfterAdd = oFastAppDataModel.getProperty(sPath);
-
+			
+		//EFRCL- 324102- ES-Replicate the change for other division other than Radiology
 			if (aProductsAfterAdd) {
-				if(SelectedCountry === 'ES' && SelectedDivision === 'Consumer Health'){
+				if(SelectedCountry === 'ES' && (SelectedDivision === 'Consumer Health' || SelectedDivision === 'Pharma')){
 					var length=aProductsAfterAdd.length;
 					for (var i=0;i<length;i++){
 						aProductsAfterAdd[i].UnitPerPack='Pack';
