@@ -3554,7 +3554,8 @@ sap.ui.define([
 			});
 
 		},
-
+		
+		// EFRCL- 329186- Mexico-Quotation tab disappear
 		// TODO: improve the way of handeling of duplicate ID's. 
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
@@ -3586,6 +3587,10 @@ sap.ui.define([
 
 				if(this._pageFragments.QuotationView_BR){
 					this._pageFragments.QuotationView_BR = null;
+				}
+
+				if(this._pageFragments.QuotationView_MX){
+					this._pageFragments.QuotationView_MX = null;
 				}
 			}
 
