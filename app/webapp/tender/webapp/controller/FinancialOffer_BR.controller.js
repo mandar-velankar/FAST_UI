@@ -293,7 +293,6 @@ sap.ui.define([
             //load products
 		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
             aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1);
-            aProducts = aProducts?.filter(prod => prod.Channel !== "Decline");
             let oFastAppDataModel = Services.getFastAppDataModel();
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 
@@ -832,7 +831,7 @@ sap.ui.define([
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
             let aOfferProducts = oOffer?.Product?.results;
-            aOfferProducts = aOfferProducts?.filter(prod => prod.Channel !== "Decline");
+            aOfferProducts = aOfferProducts?.filter(prod => prod.ActiveProduct == 1);
 
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);

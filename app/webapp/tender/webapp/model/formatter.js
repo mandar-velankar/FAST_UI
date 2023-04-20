@@ -617,7 +617,7 @@ sap.ui.define([
 			const isChannelDistributor = selectedOffer.Product?.results?.findIndex(pr => pr.Channel.replace(/\s/g, '').toLowerCase() === "distributor") > -1 ? true: false;
 			const isChannelBayer = selectedOffer.Product?.results?.findIndex(pr => pr.Channel.replace(/\s/g, '').toLowerCase() === "bayer") > -1 ? true: false;
 			const isChannelDeclined = selectedOffer.Product?.results?.findIndex(pr => pr.Channel.replace(/\s/g, '').toLowerCase() === "decline") > -1 ? true: false;
-			const offerCreatedOrDeclined = offerStatus?.replace(/\s/g, '').toLowerCase() === "offercreated" || offerStatus.replace(/\s/g, '').toLowerCase() === "offerdeclined";
+			const offerCreatedOrDeclined = offerStatus?.replace(/\s/g, '')?.toLowerCase() === "offercreated" || offerStatus?.replace(/\s/g, '')?.toLowerCase() === "offerdeclined";
 			if (offerCreatedOrDeclined && isDirectDistributor && !isIBIZNotified && isChannelDistributor) return true;
 			if (offerCreatedOrDeclined && !isDirectDistributor && !isIBIZNotified && (isChannelBayer || isChannelDeclined)) return true;
 			return false;

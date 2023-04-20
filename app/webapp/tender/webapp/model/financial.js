@@ -148,7 +148,7 @@ sap.ui.define([
 						// In that case we are not able to create pricecondtion for declined product
 						// this filter is needed in order to check prices of the products which channel is not Decline 
 						if (oOffer.CountryCode === "BR") {
-							aProducts = aProducts.filter(prod => prod.Channel !== "Decline");
+							aProducts = aProducts.filter(prod => prod.ActiveProduct == 1);
 							if (aProducts.length == 0) {
 								_allProductPricesSet = false;
 							}
