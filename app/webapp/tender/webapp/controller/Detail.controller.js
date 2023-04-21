@@ -5927,6 +5927,11 @@ sap.ui.define([
 						// close loading that blocks everything
 						BusyIndicator.hide();
 
+						// clear NotifyIbiz values
+						that.getView().getModel("viewModel").setProperty("/NotifyIbizWorkflowID", "");
+						that.getView().getModel("viewModel").setProperty("/NotifyIbizDirectIndirect", "");
+						that.getView().getModel("viewModel").setProperty("/NotifyIbizWorkflowProductIDs", "");
+
 					});
 
 				}
@@ -11963,7 +11968,10 @@ sap.ui.define([
 			const directIndirectDistributor = oOffer.Distributor.DistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? 1 : 0;
 			const workflowID = this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowID") || oOffer?.IbizWorkflowID;
 			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect") || directIndirectDistributor;
-			const workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs");
+			let workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs") || [];
+			if(workflowproductIDs.length <= 0){
+				workflowproductIDs = oOffer?.Product.results.map(i => i.WorkflowProductID);
+			}
 			
 			try{
 				//Logic to call the API to Notify about Product Switch
