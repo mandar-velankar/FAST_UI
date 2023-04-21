@@ -1109,7 +1109,8 @@ sap.ui.define([
 
 			// get data
 			const expandFields = "Product/PriceCondition,Distributor";
-			const allTenderOffers = await this.getTenderOffers(expandFields);
+            let allTenderOffers = await this.getTenderOffers(expandFields);
+            allTenderOffers = allTenderOffers.filter(ofr => ofr.ActiveOffer === 1); // Filter out inactive Offers
 			const allTenderProducts = await this.getTenderProducts(Services.getSelectedTenderID());
 			const uniqueTenderProductCodes = Array.from(new Set(allTenderProducts.map(product => product.ProductCode)));
 
