@@ -945,10 +945,10 @@ sap.ui.define([
             oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
                                                     dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
      
-            if(dBasePrice === null){
-                dBasePrice = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
+            
+            dBasePrice = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
                              dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
-            }
+            
 
             if(conditionType === 'Discount'){
                 oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
