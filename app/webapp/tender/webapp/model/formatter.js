@@ -263,6 +263,7 @@ sap.ui.define([
 		},
 		
 		percentage: function(pct){
+			if(!pct) pct = 0;
 			var oNumberFormat = NumberFormat.getPercentInstance({
 				maxFractionDigits: 2,
 				decimalSeparator: "."
@@ -611,6 +612,7 @@ sap.ui.define([
 		},
 		isNotifyIBIZButtonEnabled: function (selectedOffer, currentOfferStatus) {
 			if (!selectedOffer) return false;
+			if (selectedOffer?.Tender?.createdBy !== 'IBIZ') return false;
 			const offerStatus = selectedOffer?.OfferStatus?.STATUS || currentOfferStatus;
 			const isIBIZNotified = selectedOffer.isIBIZNotified;
 			const isDirectDistributor = selectedOffer.Distributor.DistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? true : false;

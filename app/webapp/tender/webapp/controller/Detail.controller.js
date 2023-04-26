@@ -5727,7 +5727,12 @@ sap.ui.define([
 			//products to save that are visible in the table
 			const oOffer = oFastAppData.getProperty("/EditOffer");
 			var aProducts = oFastAppData.getProperty("/EditOffer/Product/results");
-			const isDirectOffer = oOffer?.Distributor?.DistributorName?.replace(/\s/g, '')?.toLowerCase() === "bayerbrazil";
+
+			const aInstituteDistributors = oFastAppData.getProperty('/InstituteDistributor');
+			const distributorID =  oOffer?.DistributorID;
+			// New created offers don't have Distributor in EditOffer that's why taking Distributor_Name from instituteDistributors list
+			const oDistributor = aInstituteDistributors?.find(dist => dist.DISTRIBUTOR_ID == distributorID);
+			const isDirectOffer = oDistributor?.DISTRIBUTOR_NAME?.replace(/\s/g, '')?.toLowerCase() === "bayerbrazil";
 			//Brazil
 			if (oFastAppData.getProperty('/Tender/CountryCode') === 'BR') {
 				aProducts = aProducts.map(product => {
