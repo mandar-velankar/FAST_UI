@@ -263,6 +263,7 @@ sap.ui.define([
 		},
 		
 		percentage: function(pct){
+			if(!pct) pct = 0;
 			var oNumberFormat = NumberFormat.getPercentInstance({
 				maxFractionDigits: 2,
 				decimalSeparator: "."
