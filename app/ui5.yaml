@@ -42,6 +42,12 @@ server:
       removeETag: true
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
+    mountPath: /standardtender
+    configuration:
+      baseUri: "http://localhost:8089/"
+      removeETag: true
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
     mountPath: /app
     configuration:
       baseUri: "http://localhost:8080/landingspage/webapp/"
