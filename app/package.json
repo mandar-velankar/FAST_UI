@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@sap/approuter": "^10",
+    "@sap/ux-ui5-tooling": "1",
     "@ui5/builder": "2.8.2",
     "@ui5/cli": "^2.14.17",
     "serve": "11.3.2",
@@ -28,7 +29,8 @@
     "dependencies": [
       "ui5-middleware-simpleproxy",
       "ui5-task-transpile",
-      "ui5-task-cachebuster-indexing"
+      "ui5-task-cachebuster-indexing",
+      "@sap/ux-ui5-tooling"
     ]
   }
 }

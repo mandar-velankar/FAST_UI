@@ -40,12 +40,18 @@ server:
     configuration:
       baseUri: "http://localhost:8088/"
       removeETag: true
-  - name: ui5-middleware-simpleproxy
+  # - name: ui5-middleware-simpleproxy
+  #   afterMiddleware: compression
+  #   mountPath: /standardtender
+  #   configuration:
+  #     baseUri: "http://localhost:8089/"
+  #     removeETag: true
+  - name: fiori-tools-servestatic
     afterMiddleware: compression
-    mountPath: /standardtender
     configuration:
-      baseUri: "http://localhost:8089/"
-      removeETag: true
+      paths:
+        - path: /standardtender
+          src: ../../F_TNDR_CAG_FAST_STANDARD_TENDERS/webapp
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
     mountPath: /app
