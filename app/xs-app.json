@@ -20,6 +20,13 @@
       "csrfProtection": true
     },
     {
+      "source": "/UITemplates/(.*)$",
+      "target": "/UITemplates/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-templates-api",
+      "csrfProtection": true
+    },
+    {
       "source": "/app/admin/(.*)$",
       "target": "$1",
       "destination": "adminapp"
@@ -68,7 +75,18 @@
       "source": "/priceagreements/(.*)$",
       "target": "$1",
       "destination": "priceAgreementsApp"
-    },{
+    },
+    {
+      "source": "^/standardtender/(.*)$",
+      "target": "/combayertenderstatenderapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/app/standardtender/(.*)$",
+      "target": "/combayertenderstatenderapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
       "source": "^/app/index.html(.*)$",
       "target":"index.html$1",
       "localDir": "dist",
