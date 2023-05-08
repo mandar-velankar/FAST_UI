@@ -3,6 +3,7 @@
   "description": "",
   "private": true,
   "devDependencies": {
+    "@sap/ux-ui5-tooling": "1.9.5",
     "eslint": "7.17.0",
     "ui5-task-cachebuster-indexing": "1.0.0"
   },
@@ -18,7 +19,6 @@
   },
   "dependencies": {
     "@sap/approuter": "^10",
-    "@sap/ux-ui5-tooling": "1",
     "@ui5/builder": "2.8.2",
     "@ui5/cli": "^2.14.17",
     "serve": "11.3.2",
