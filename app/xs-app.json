@@ -77,12 +77,12 @@
       "destination": "priceAgreementsApp"
     },
     {
-      "source": "^/standardtender/(.*)$",
+      "source": "^/standardtender/(.*)",
       "target": "/combayertenderstatenderapp/$1",
       "service": "html5-apps-repo-rt"
     },
     {
-      "source": "^/app/standardtender/(.*)$",
+      "source": "^/app/standardtender/(.*)",
       "target": "/combayertenderstatenderapp/$1",
       "service": "html5-apps-repo-rt"
     },
