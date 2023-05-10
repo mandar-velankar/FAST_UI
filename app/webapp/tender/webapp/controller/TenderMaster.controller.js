@@ -991,6 +991,10 @@ sap.ui.define([
 			if(this.accessModel.oData.tenderAccess.PHARMATENDERVIEW === true){
 			andFilters.push(new sap.ui.model.Filter("DIVISION", "EQ", 'Pharma'));
 			}
+			//EHQUT-197392-MEA - additional edit access to Tender Results and Delivery Tracking tabs
+			if(this.accessModel.oData.tenderAccess.RADIOLOGYTENDERVIEW === true){
+				andFilters.push(new sap.ui.model.Filter("DIVISION", "EQ", 'Radiology'));
+				}
 			
 			//oSelection is empty when you are navigating back to the tender list after selecting a tender
 			var sIdSource = "";
