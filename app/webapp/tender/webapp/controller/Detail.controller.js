@@ -11975,7 +11975,10 @@ sap.ui.define([
 			const directIndirect = this.getView().getModel("viewModel").getProperty("/NotifyIbizDirectIndirect") || directIndirectDistributor;
 			let workflowproductIDs =this.getView().getModel("viewModel").getProperty("/NotifyIbizWorkflowProductIDs") || [];
 			if(workflowproductIDs.length <= 0){
-				workflowproductIDs = oOffer?.Product.results.map(i => i.WorkflowProductID);
+				workflowproductIDs = oOffer?.Product.results.reduce((acc, curr) => {
+					if (curr.ActiveProduct == 2) acc.push(curr.WorkflowProductID);
+					return acc;
+				}, []);
 			}
 			
 			try{
