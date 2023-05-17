@@ -1053,6 +1053,7 @@ sap.ui.define([
 		//array for holding the page fragments that are already loaded TODO keep in seperate file so this controller is not overloaded
 		_pageFragments: {},
 
+		//EHQUT-329186-Mexico-Quotation tab disappear
 		//get pagefragement and keep it in the controller
 		_getPageFragment: function (sFragmentName) {
 
@@ -1061,6 +1062,9 @@ sap.ui.define([
 
 			if (oPageFragment) { 
 				return oPageFragment;
+			}
+			else{
+				this.clearQuotationElements();
 			}
 
 			//if not yet exists... get fragment from project folder
