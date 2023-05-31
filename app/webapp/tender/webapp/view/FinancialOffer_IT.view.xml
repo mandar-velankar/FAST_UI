@@ -343,7 +343,7 @@
 							vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>
-				
+			<!-- EFRCL- 360096- Italy-Contract Start date as not mandatory -->
 				<!-- Rental -->
 				<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Rental'}">
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
@@ -374,7 +374,7 @@
 									<Input value="{fastAppData>MonthlyRent}" type="Number"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 									<Label text="Months per invoice" required="true" />
 									<Input value="{fastAppData>MonthsPerInvoice}" type="Number"  liveChange="onValidateMonth" change="onValidateMonth" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-									<Label text="Contract start date" required="true"/>
+									<Label text="Contract start date"/>
 									<Input 
 										value="{fastAppData>ContractStartDate}" 
 										enabled="{fastAppData>/EditMode}"/>
@@ -414,7 +414,7 @@
 							vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>
-
+<!-- EFRCL- 360096- Italy-Contract Start date as not mandatory -->
 				<!-- Comodato -->
 				<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Comodato'}">
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
@@ -442,7 +442,7 @@
 									<Input value="{fastAppData>MinContractual}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number" description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 									<Label text="Minimum annual purchase amount" required="true"/>
 									<Input value="{path: 'fastAppData>MinAnnPurch', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-									<Label text="Contract start date" required="true"/>
+									<Label text="Contract start date"/>
 									<Input 
 										value="{fastAppData>ContractStartDate}" 
 										enabled="{fastAppData>/EditMode}"/>
