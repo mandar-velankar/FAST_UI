@@ -2075,8 +2075,9 @@ sap.ui.define([
 				var oCountryFilter = new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountry);
 				aFilters.push(oCountryFilter);
 			}
-
-			if (sProductCode) {
+			
+			//EFRCL- 308719- Italy-competitors DB is empty
+			if (sProductCode && sCountry !=='IT') {
 				let oFilter = new sap.ui.model.Filter("ProductCode", sap.ui.model.FilterOperator.EQ, sProductCode);
 				aFilters.push(oFilter);
 			}
@@ -7729,6 +7730,37 @@ sap.ui.define([
 						});
 						that.showMessageCompositeView("Error", that.getOfferCompositeMessages(), 'Error');
 						that.getOfferCompositeMessages().splice(0, that.getOfferCompositeMessages().length);
+						throw new Error(oError);
+					}));
+					break;
+			}
+
+			// oPriceAgreementSaveInfo = {};
+			return Promise.all(promises);
+
+		},
+
+		savePriceAgreementWithoutMessages: function(oPriceAgreementSaveInfo){
+			var that = this;
+
+			let promises = [];
+
+			switch(oPriceAgreementSaveInfo._sOperation){
+				case "POST":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
+						return response && response.data;
+					})
+					.catch(function (oError) {
+						throw new Error(oError);
+					}));
+					break;
+				case "PUT":
+					delete oPriceAgreementSaveInfo._sOperation;
+					promises.push(that.getService('PriceAgreement').createPriceAgreement(oPriceAgreementSaveInfo).then(function (response){
+						return response && response.data;
+					})
+					.catch(function (oError) {
 						throw new Error(oError);
 					}));
 					break;

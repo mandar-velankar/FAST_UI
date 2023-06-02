@@ -24,13 +24,14 @@ sap.ui.define([
 	"sap/m/library",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
+	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimalDiscount",
 	"sap/m/MessageBox",
 	"sap/m/library",
 	"sap/m/ActionSheet",
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,MessageBox,mobileLibrary,coreLibrary) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,PercentageTypeDecimalDiscount,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -54,7 +55,8 @@ sap.ui.define([
 		formatter: formatter,
 		types: {
 			percent: PercentageType,
-			percentdecimal : PercentageTypeDecimal
+			percentdecimal : PercentageTypeDecimal,
+			percentdecimaldiscount : PercentageTypeDecimalDiscount
 		},
 
 
@@ -1054,6 +1056,7 @@ sap.ui.define([
 		//array for holding the page fragments that are already loaded TODO keep in seperate file so this controller is not overloaded
 		_pageFragments: {},
 
+		//EHQUT-329186-Mexico-Quotation tab disappear
 		//get pagefragement and keep it in the controller
 		_getPageFragment: function (sFragmentName) {
 
@@ -1062,6 +1065,9 @@ sap.ui.define([
 
 			if (oPageFragment) { 
 				return oPageFragment;
+			}
+			else{
+				this.clearQuotationElements();
 			}
 
 			//if not yet exists... get fragment from project folder
@@ -3567,7 +3573,8 @@ sap.ui.define([
 			});
 
 		},
-
+		
+		// EFRCL- 329186- Mexico-Quotation tab disappear
 		// TODO: improve the way of handeling of duplicate ID's. 
 		clearQuotationElements: function(){
 			//in order to have multiple views / country working correctly, all element ID's should be destroyed when closing a Tender
@@ -3599,6 +3606,10 @@ sap.ui.define([
 
 				if(this._pageFragments.QuotationView_BR){
 					this._pageFragments.QuotationView_BR = null;
+				}
+
+				if(this._pageFragments.QuotationView_MX){
+					this._pageFragments.QuotationView_MX = null;
 				}
 			}
 
@@ -6406,6 +6417,10 @@ sap.ui.define([
 			var that = this;
 			var aMessages = [];
 
+			// EFRCL-305270-Spain - Adding default value of volume and UOM for consumer Health in Offer Product Tab
+			var SelectedDivision=oFastAppDataModel.oData.EditOffer.Division;
+			var SelectedCountry=oFastAppDataModel.oData.EditTender.CountryCode;
+
 			//add productpack sku after product is added to the fastappdatamodel
 			//otherwise the structure of the object is not correct to use in the save
 			//these are not saved to the database (not existing in PT_TMOFPR) but still displayed in the product table in edit mode
@@ -6415,8 +6430,17 @@ sap.ui.define([
 			//products with newly added product included
 			var sPath = "/EditOffer/Product/results";
 			var aProductsAfterAdd = oFastAppDataModel.getProperty(sPath);
-
+			
+		//EFRCL- 324102- ES-Replicate the change for other division other than Radiology
 			if (aProductsAfterAdd) {
+				if(SelectedCountry === 'ES' && (SelectedDivision === 'Consumer Health' || SelectedDivision === 'Pharma')){
+					var length=aProductsAfterAdd.length;
+					for (var i=0;i<length;i++){
+						aProductsAfterAdd[i].UnitPerPack='Pack';
+						aProductsAfterAdd[i].RequestedVolume =1;
+					}
+				}
+		
 				$.when(Services.convProductsForBinding(aProductsAfterAdd)).done(function (aProductsForBinding) {
 
 					//Bind the product objects (including the newly added & extended product)
@@ -10043,6 +10067,68 @@ sap.ui.define([
 
 
 			return oPriceAgreementSaveInfo;
+		},
+
+		onCreatePriceAgreementAll: async function (oEvent){
+
+			BusyIndicator.show();
+
+			//get model & selected row
+			var that = this;
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			let sOfferID = oFastAppDataModel.getProperty("/SelectedOffer/OfferID");
+			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
+			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
+
+			await Promise.all(tenderResults.map(async (result, index) => {
+				if(result.AWARDEDCOMPANY === 'Bayer'){
+					const oSelectedProduct = offerProducts[index];
+					let oLoadedPriceAgreement = oSelectedProduct.PriceAgreement;
+
+					if(!oLoadedPriceAgreement && !oSelectedProduct.PriceCondition.results.find(condition => condition.PriceConditionClassification.ConditionType === "Rental")){
+						const rowProductCode = result.PRODUCTCODE;
+						const offerProduct = offerProducts.find(prd => prd.ProductCode === rowProductCode);
+						const offerType = offerProduct.OfferType;
+
+						if(result.OUTCOME === 'Won'){
+							if(Services.getSelectedCountry() === 'ES' || (offerType && offerType === "Selling" && Services.getSelectedCountry() !== 'ES')){
+								var oPriceAgreementSaveInfo = oSelectedProduct.PriceAgreement;
+
+								if(!oPriceAgreementSaveInfo){
+									oPriceAgreementSaveInfo = await that.preparePriceAgreementSaveInfo(result);
+									oPriceAgreementSaveInfo._sOperation = "POST";
+								} else {
+									oPriceAgreementSaveInfo._sOperation = "PUT";
+								}
+
+								const priceAgreement = await Services.savePriceAgreementWithoutMessages(oPriceAgreementSaveInfo);
+								const priceAgreementID = priceAgreement[0].ID;
+
+								// add PriceAgreementID to PriceCondtions
+								if(priceAgreementID){
+									const priceConditions = offerProduct.PriceCondition.results
+									const savePriceConditionPromises = priceConditions.map(condition => {
+										condition.PriceAgreement_ID = priceAgreementID;
+										const priceConditionSaveObject = Services.getService("PriceCondition").convertToSaveObject(condition,"ResultsPage");
+										return Services.getService("PriceCondition").upsertPriceCondition(priceConditionSaveObject);
+									});
+									await Promise.all(savePriceConditionPromises);
+								}
+							}
+						}
+					}
+				}
+			}));
+
+			sap.m.MessageBox.success("Price agreements have been created for applicable products.", {});
+
+			//reload offer data
+			await Services.loadProductDataForOffer(sOfferID);
+
+			//refresh everything
+			that.onRefresh();
+
+			BusyIndicator.hide();
 		},
 
 		//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers

@@ -128,6 +128,12 @@
 											  visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }"/>
 									<CheckBox id="editWonCheckId" text="{i18n>Won}" selected="true" select=".onHistoryFilterCheck"/>
 									<CheckBox id="editLossCheckId" text="{i18n>Loss}" selected="false" select=".onHistoryFilterCheck"/>
+									<!-- EHQUT-218142-MEA - update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers -->
+									<CheckBox id="editwholesaleofferCheckId" text="{i18n>Wholesaleoffer}"  select=".onHistoryFilterCheck"
+											  visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }"/>
+									<CheckBox id="editOfferDeclineCheckId" text="{i18n>OfferDeclined}"  select=".onHistoryFilterCheck"
+											  visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }"/>
+									<!-- EHQUT-218142-MEA - update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers -->
 								</content>
 							</Toolbar>
 						</headerToolbar>
@@ -168,8 +174,12 @@
 							<Column minScreenWidth="Tablet" demandPopin="true">
 								<Text text="{i18n>FOC}"/>
 							</Column>
+						<!-- EFRCL- 218142- MEA- update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers -->
 							<Column minScreenWidth="Tablet" demandPopin="true">
-								<Text text="{i18n>Status}"/>
+							    <Text text="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? ${i18n>Outcome} : ${i18n>Status}}"/>
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false }">
+							    <Text text="{i18n>Status}"/>
 							</Column>
 						</columns>
 					</Table>

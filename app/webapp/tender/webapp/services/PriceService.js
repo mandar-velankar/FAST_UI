@@ -206,9 +206,10 @@ sap.ui.define([
 			}
 		},
 //EHQUT-OTT-175585-Status of device" field not mandatory for Radiology
+//EFRCL- 360096- Italy-Contract Start date as not mandatory
 		validateProductPriceRental: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if (( e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ContractStartDate' || e === 'ValueOfDevices'  || e === 'FOC' )
+				if (( e === 'AgreementDuration' || e === 'MonthlyRent' || e === 'MonthsPerInvoice' || e === 'ValueOfDevices'  || e === 'FOC' )
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
@@ -217,7 +218,7 @@ sap.ui.define([
 //EHQUT-OTT-175585-Status of device" field not mandatory for Radiology
 		validateProductPriceComodato: function (oPriceSaveInfo, aInvalidFields) {
 			Object.keys(oPriceSaveInfo).forEach(e => {
-				if (( e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ContractStartDate' || e === 'ValueOfDevices' )
+				if (( e === 'AgreementDuration' || e === 'MinContractual' || e === 'MinAnnPurch' || e === 'ValueOfDevices' )
 					&& (oPriceSaveInfo[e] === null || oPriceSaveInfo[e] === "")) {
 					aInvalidFields.push(e);
 				}
