@@ -1435,7 +1435,7 @@ sap.ui.define([
 			}
 			return scenarioPrice;
 		},
-
+		//EHQUT-218142-MEA - update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers
 		//local method for setting history
 		_setTenderHistory: function (oDetailController, productPath) {
 			var oObjectPage = oDetailController.getView().byId("DetailPage");
@@ -1448,6 +1448,9 @@ sap.ui.define([
 			var oCurrentCountry = forEdit ? oDetailController.byId("editCurrentCountryCheckId") : oDetailController.byId("currentCountryCheckId");
 			var oWon = forEdit ? oDetailController.byId("editWonCheckId") : oDetailController.byId("wonCheckId");
 			var oLost = forEdit ? oDetailController.byId("editLossCheckId") : oDetailController.byId("lossCheckId");
+
+			var oWholesale =forEdit ? oDetailController.byId("editwholesaleofferCheckId") : oDetailController.byId("wholesaleofferCheckId");
+			var oOfferDeclined =forEdit ? oDetailController.byId("editOfferDeclineCheckId") : oDetailController.byId("OfferDeclineCheckId");
 
 			var tenderValues = oDetailController.getView().getModel("fastData").getObject(Services.getSelectedTenderPath());
 			var productValues = oDetailController.getView().getModel("fastData").getObject(productPath);
@@ -1469,11 +1472,18 @@ sap.ui.define([
 				oFilters.push(new sap.ui.model.Filter("OUTCOME", "EQ", "Lost"));
 			}
 
+			if (oWholesale.getSelected()) {
+				oFilters.push(new sap.ui.model.Filter("OFFERSTATUS", "EQ", "Wholesale Offer"));
+			}
+			if (oOfferDeclined.getSelected()) {
+				oFilters.push(new sap.ui.model.Filter("OFFERSTATUS", "EQ", "Offer Declined"));
+			}
 			var oSorter = new sap.ui.model.Sorter({
 				path: "OFFER_DATE",
 				descending: true
 			});
 			//EHQUT-195982-MEA -Unit Price in Offer History
+			//EFRCL- 218142- MEA- update the offer history section of the Financial Offer tab to include wholesale price offers and declined offers
 
 			var tenderregion = Services.getFastAppDataModel().oData.Tender.Country.Region;
 			var oTenderHistoryTemplate = new sap.m.ColumnListItem({
@@ -1554,6 +1564,9 @@ sap.ui.define([
 					}),
 					new sap.m.Text({
 						text: "{fastData>OUTCOME}"
+					}),
+					new sap.m.Text({
+						text: "{fastData>OFFERSTATUS}"
 					})
 				]
 			});
@@ -1720,7 +1733,7 @@ sap.ui.define([
 		//load Exchange Rates again from database
 		loadCountryRegisteredPrice: function (sCountry, sUOM, sProduct, sCurrency) {
 			// For Brazil and Spain we do not set the REGISTERED_PRICE
-			if (sCountry === "BR" || sCountry === "ES") {
+			if (sCountry === "BR" || sCountry === "ES" || sCountry === "IT") {
 				return Promise.resolve({
 					REGISTERED_PRICE: 0,
 					UOM: sUOM,

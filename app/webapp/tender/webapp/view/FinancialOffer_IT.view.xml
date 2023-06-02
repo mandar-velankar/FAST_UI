@@ -106,19 +106,19 @@
 											<Text text="{fastAppData>UOM}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>NetofferPrice}"/>
+											<Text text="{path: 'fastAppData>NetofferPrice', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>NetPriceFOC}"/>
+											<Text text="{path: 'fastAppData>NetPriceFOC', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>cogsUoM}"/>
+											<Text text="{path: 'fastAppData>cogsUoM', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>GrossSales}"/>
+											<Text text="{path: 'fastAppData>GrossSales', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 										</cells>
 										<cells>
-											<Text text="{fastAppData>GrossProfit}"/>
+											<Text text="{path: 'fastAppData>GrossProfit', formatter:'FAST_NS0FAST0.utils.Formatter.floatNoUnit'}"/>
 										</cells>
 										<cells>
 											<Text text="{path:'fastAppData>GrossMargin', formatter:'FAST_NS0FAST0.utils.Formatter.percentage'}"/>
@@ -198,22 +198,22 @@
 												<Label text="Consumer Price (w/o VAT)"/>
 											</form:label>
 											<form:fields>
-												<Input value="{path:'fastAppData>ConsumerPriceExclPP'}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+												<Input value="{path:'fastAppData>ConsumerPriceExclPP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement label="Consumer Price (with VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
 											<form:fields>
-												<Input value="{path:'fastAppData>ConsumerPriceInclPP'}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+												<Input value="{path:'fastAppData>ConsumerPriceInclPP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement label="Consumer Price (w/o VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
 											<form:fields>
-												<Input value="{path:'fastAppData>ConsumerPriceExclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+												<Input value="{path:'fastAppData>ConsumerPriceExclPU', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement label="Consumer Price (with VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
 											<form:fields>
-												<Input value="{path:'fastAppData>ConsumerPriceInclPU' }" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+												<Input value="{path:'fastAppData>ConsumerPriceInclPU', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement label="Tax (VAT)">
@@ -228,7 +228,7 @@
 										</form:FormElement>
 										<form:FormElement label="Ex-factory Price w/o VAT" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
 											<form:fields>
-												<Input value="{path:'fastAppData>ExfPriceExclPP'}" type="Number" description="EUR"  enabled="false" fieldWidth="80%"/>
+												<Input value="{path:'fastAppData>ExfPriceExclPP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR"  enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement label="I° confidential discount">
@@ -248,12 +248,12 @@
 										</form:FormElement>	
 										<form:FormElement label="Max Price for NHS w/o VAT" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
 											<form:fields>
-												<Input value="{path:'fastAppData>MaxPriceNhsPP'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
+												<Input value="{path:'fastAppData>MaxPriceNhsPP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement label="Max Price for NHS w/o VAT" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
 											<form:fields>
-												<Input value="{path:'fastAppData>MaxPriceNhsPU'}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
+												<Input value="{path:'fastAppData>MaxPriceNhsPU', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}"  description="EUR" type="Number" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement>
@@ -306,7 +306,7 @@
 												<Label text="Net Offer Price" required="true"/>
 											</form:label>
 											<form:fields>
-												<Input value="{path:'fastAppData>NetofferPrice'}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>											
+												<Input value="{path:'fastAppData>NetofferPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>											
 											</form:fields>
 										</form:FormElement>
 
@@ -343,7 +343,7 @@
 							vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>
-				
+			<!-- EFRCL- 360096- Italy-Contract Start date as not mandatory -->
 				<!-- Rental -->
 				<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Rental'}">
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
@@ -374,7 +374,7 @@
 									<Input value="{fastAppData>MonthlyRent}" type="Number"  description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 									<Label text="Months per invoice" required="true" />
 									<Input value="{fastAppData>MonthsPerInvoice}" type="Number"  liveChange="onValidateMonth" change="onValidateMonth" description="months" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-									<Label text="Contract start date" required="true"/>
+									<Label text="Contract start date"/>
 									<Input 
 										value="{fastAppData>ContractStartDate}" 
 										enabled="{fastAppData>/EditMode}"/>
@@ -414,7 +414,7 @@
 							vizProperties="{ title: {text : 'List-to-Net', visible : true}}" renderComplete="handleRenderComplete" legendVisible="false"></viz:VizFrame>
 					</l:BlockLayoutCell>
 				</l:BlockLayoutRow>
-
+<!-- EFRCL- 360096- Italy-Contract Start date as not mandatory -->
 				<!-- Comodato -->
 				<l:BlockLayoutRow visible="{= ${fastAppData>OfferType} === 'Comodato'}">
 					<l:BlockLayoutCell backgroundColorSet="ColorSet10" backgroundColorShade="ShadeA" width="2">
@@ -441,13 +441,13 @@
 									<Label text="Minimum contractual commitment" required="true"/>
 									<Input value="{fastAppData>MinContractual}"  liveChange="onValidateMonth" change="onValidateMonth" type="Number" description="years" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 									<Label text="Minimum annual purchase amount" required="true"/>
-									<Input value="{fastAppData>MinAnnPurch}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
-									<Label text="Contract start date" required="true"/>
+									<Input value="{path: 'fastAppData>MinAnnPurch', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+									<Label text="Contract start date"/>
 									<Input 
 										value="{fastAppData>ContractStartDate}" 
 										enabled="{fastAppData>/EditMode}"/>
 									<Label text="Value of devices" required="true"/>
-									<Input value="{fastAppData>ValueOfDevices}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
+									<Input value="{path: 'fastAppData>ValueOfDevices', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="{fastAppData>/EditMode}" fieldWidth="80%"/>
 									<Label text="Status of device" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}"/> 
 									<Select selectedKey="{fastAppData>StatusOfDevice}" enabled="{fastAppData>/EditMode}" visible="{= ${fastAppData>/EditOffer/Division} === 'Radiology'}">
 										<items>

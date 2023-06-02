@@ -175,6 +175,31 @@ sap.ui.define([
 			return oValue + " "+ currency;
 		},
 		
+	//EFRCL- 317793- MEA-Zero offer Price workaround
+		pricewithoutdecimal: function(price, currency, unit) {
+			var oValue;
+			if (!price){
+				return "";
+			}
+			
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: unit !== "Pack" ? 4 : 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			if(price === "0.0001"){
+				 oValue= oNumberFormat.format(parseInt(price));
+			}else{
+				 oValue = oNumberFormat.format(parseFloat(price));
+			}
+			
+			if (!currency){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
+		
 		unitPrice: function(price, currency, unit, packFactor) {
 			if (!price){
 				return "";
@@ -541,7 +566,7 @@ sap.ui.define([
 			const floatFormatter = NumberFormat.getFloatInstance({
 				maxFractionDigits: decval,
 				minFractionDigits: decval,
-				groupingEnabled: true,
+				groupingEnabled: false,
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
@@ -566,6 +591,30 @@ sap.ui.define([
 				maxFractionDigits: decval,
 				minFractionDigits: decval,
 				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			return floatFormatter.format(newPrice);
+		},
+
+		formatUoMCurrentPriceEsIt: function(ProductCode, ProductPricingView, price, numOfDecimal,event){
+            if(!price || !ProductPricingView || !ProductCode) {return}
+			let newPrice = Number(price);
+            let decval = Number(numOfDecimal);
+            // if price condition was saved, do not apply conversion!
+
+            let product = ProductPricingView.find(i => i.ProductCode === ProductCode);
+            if(!product) {return};
+            let uom = product.UOM;
+            let packFactor = product.PACKFACTOR;  
+            if(~uom.toLowerCase().indexOf("unit")){ 
+                newPrice = newPrice / packFactor;
+            }
+            
+			const floatFormatter = NumberFormat.getFloatInstance({
+				maxFractionDigits: decval,
+				minFractionDigits: decval,
+				groupingEnabled: false,
 				groupingSeparator: ",",
 				decimalSeparator: "."
 			});
