@@ -288,6 +288,7 @@ sap.ui.define([
 		},
 		
 		percentage: function(pct){
+			if(!pct) pct = 0;
 			var oNumberFormat = NumberFormat.getPercentInstance({
 				maxFractionDigits: 2,
 				decimalSeparator: "."
@@ -657,6 +658,20 @@ sap.ui.define([
 				return (value * 100).toFixed(2) + "%";
 			}
 			return value
+		},
+		isNotifyIBIZButtonEnabled: function (selectedOffer, currentOfferStatus) {
+			if (!selectedOffer) return false;
+			if (selectedOffer?.Tender?.createdBy !== 'IBIZ') return false;
+			const offerStatus = selectedOffer?.OfferStatus?.STATUS || currentOfferStatus;
+			const isIBIZNotified = selectedOffer.isIBIZNotified;
+			const isDirectDistributor = selectedOffer.Distributor.DistributorName.replace(/\s/g, '').toLowerCase() === "bayerbrazil" ? true : false;
+			const isChannelDistributor = selectedOffer.Product?.results?.findIndex(pr => pr.Channel.replace(/\s/g, '').toLowerCase() === "distributor") > -1 ? true: false;
+			const isChannelBayer = selectedOffer.Product?.results?.findIndex(pr => pr.Channel.replace(/\s/g, '').toLowerCase() === "bayer") > -1 ? true: false;
+			const isChannelDeclined = selectedOffer.Product?.results?.findIndex(pr => pr.Channel.replace(/\s/g, '').toLowerCase() === "decline") > -1 ? true: false;
+			const offerCreatedOrDeclined = offerStatus?.replace(/\s/g, '')?.toLowerCase() === "offercreated" || offerStatus?.replace(/\s/g, '')?.toLowerCase() === "offerdeclined";
+			if (offerCreatedOrDeclined && isDirectDistributor && !isIBIZNotified && isChannelDistributor) return true;
+			if (offerCreatedOrDeclined && !isDirectDistributor && !isIBIZNotified && (isChannelBayer || isChannelDeclined)) return true;
+			return false;
 		}
 		
 	};
