@@ -2882,6 +2882,7 @@ sap.ui.define([
 			var aSorter = new sap.ui.model.Sorter('ApproverTypeSection');
 
 			//Reading the back end data from the Approvals table
+			// EFRCL- 377753- Spain - changes in approval workflow for Pharma
 			oFastDataCalls.read(sApprovalPath, {
 				filters: aFilters,
 				urlParameters: {
@@ -2891,7 +2892,26 @@ sap.ui.define([
 				success: function (oData, oResponse) {
 
 					if (oData.results) { //if offers are found add them to the Model
-
+						if (countrycode == 'ES' && oFastAppDataModel.oData.EditOffer.Division == 'Pharma') {
+                            var ApproverTypeCount = oData.results;
+                            var SPainApproverTypes = ApproverTypeCount.findIndex(apc => apc.ApproverType === 'BU/RAM 1');
+                            var ApproverListlength = ApproverTypeCount[SPainApproverTypes].ApproverList.results.length;
+                            if (oFastAppDataModel.oData.EditTender.Classification === 'Tender') {
+                                for (var i = 0; i < ApproverListlength; i++) {
+                                    if (ApproverTypeCount[SPainApproverTypes].ApproverList.results[i].ApproverName == 'Cristina Rodrigo') {
+                                        ApproverTypeCount[SPainApproverTypes].ApproverList.results.splice(i, 1);
+                                        ApproverListlength = ApproverListlength - 1;
+                                    }
+                                }
+                            } else {
+                                for (var i = 0; i < ApproverListlength; i++) {
+                                    if (ApproverTypeCount[SPainApproverTypes].ApproverList.results[i].ApproverName == 'Victor Canellas Guerrero') {
+                                        ApproverTypeCount[SPainApproverTypes].ApproverList.results.splice(i, 1);
+                                        ApproverListlength = ApproverListlength - 1;
+                                    }
+                                }
+                            }
+                        }
 
                         if(AutoApprovalflag==false){
 
