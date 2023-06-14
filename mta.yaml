@@ -61,6 +61,7 @@ modules:
       - name: uaa_FAST
       - name: html5_repo_runtime
       - name: com-bayer-tender-destination-service
+      - name: fast-theming
 resources:
   - name: uaa_FAST
     parameters:
@@ -133,3 +134,8 @@ resources:
         org: ${org}
         space: ${space}
       version: '>=0.0.0'
+  - name: fast-theming
+    parameters:
+      service: theming
+      service-plan: standard
+    type: org.cloudfoundry.managed-service
