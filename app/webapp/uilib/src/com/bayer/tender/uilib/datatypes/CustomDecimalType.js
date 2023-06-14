@@ -14,6 +14,7 @@ sap.ui.define([
         }),
 
         formatValue: function(oValue) {
+            if (oValue) oValue = Number(oValue)?.toFixed(2);
             return this._oNumberFormat.format(oValue);
         },
 

@@ -293,7 +293,6 @@ sap.ui.define([
             //load products
 		    let aProducts = await this.getFinancialProducts(Services.getSelectedOfferID());
             aProducts.sort((a, b) => (a.SORTER > b.SORTER) ? 1 : -1);
-            aProducts = aProducts?.filter(prod => prod.Channel !== "Decline");
             let oFastAppDataModel = Services.getFastAppDataModel();
             oFastAppDataModel.setProperty("/ProductPricingView", aProducts);
 
@@ -832,7 +831,7 @@ sap.ui.define([
 			let sOfferID = Services.getSelectedOfferID();
 			var oOffer = Services.getLoadedOffer(sOfferID); //Services.getDefaultModel().getProperty(sOfferPath);
             let aOfferProducts = oOffer?.Product?.results;
-            aOfferProducts = aOfferProducts?.filter(prod => prod.Channel !== "Decline");
+            aOfferProducts = aOfferProducts?.filter(prod => prod.ActiveProduct == 1);
 
 			Services.getFastAppDataModel().setProperty("/EditOffer/", oOffer);
 			Services.getFastAppDataModel().setProperty("/EditProduct/", oProductPrice);
@@ -946,10 +945,10 @@ sap.ui.define([
             oPriceCondition.PriceAfterCap         = dCap === 'Yes' &&  dTaxExemption === 'No' ? Number(correctPrice * (1 - oPriceCondition.CapValue)).toFixed(2) : 
                                                     dCap === 'Yes' &&  dTaxExemption === 'Yes' ? Number(correctPrice * (1 - oPriceCondition.ICMSTax) * (1 - oPriceCondition.CapValue)).toFixed(2) : null;
      
-            if(dBasePrice === null){
-                dBasePrice = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
+            
+            dBasePrice = dTaxExemption === 'No' && dCap === 'No' ? correctPrice :
                              dTaxExemption === 'Yes' && dCap === 'No' ? oPriceCondition.PriceAfterTaxExemtion : oPriceCondition.PriceAfterCap;
-            }
+            
 
             if(conditionType === 'Discount'){
                 oPriceCondition.CommercialProposal = Number(dBasePrice * (1 - oPriceCondition.StandardDiscount - dAdditionalDiscount)).toFixed(2);
@@ -984,6 +983,23 @@ sap.ui.define([
 				//Logic to call the API to Notify about Product Switch
 				const response = await Services.getService("Tender").sendApprovalToIbiz(workflowID, offerStatus, comment);
                 if (offerStatus == 1) await this._saveAndSubmitQuotation();
+                Services.getFastAppDataModel().setProperty("/SelectedOffer/DecisionSharedWithIBIZ", true);
+                if (loadedOfferStatus === "Offer Rejected") {
+                    let oOfferSaveInfo = {
+                        OfferID: loadedOffer.OfferID,
+                        DecisionSharedWithIBIZ: true
+                    }
+                    //update offer
+                    await Services.getService('Offer').updateOffer(oOfferSaveInfo).catch(function (oError) {
+
+                        //show error message
+                        Services.showErrorMessage(oError, "Update of offer");
+
+                        //promises must fail as well
+                        throw new Error(oError);
+
+                    });
+                }
                 const res_msg = response.data;
 				MessageToast.show(res_msg);
 			}catch(error){
@@ -1057,6 +1073,8 @@ sap.ui.define([
                     if (qoutationForSelectedOffer) {
                         //do the save of the quotation
                         await Quotation.submitQuotation(quotationFields);
+                        //update offer status
+                        Services.getLoadedOffer(Services.getSelectedOfferID()).OfferStatus.STATUS = "Quotation Submitted";
                     }
                 }		
 			}
@@ -1091,7 +1109,8 @@ sap.ui.define([
 
 			// get data
 			const expandFields = "Product/PriceCondition,Distributor";
-			const allTenderOffers = await this.getTenderOffers(expandFields);
+            let allTenderOffers = await this.getTenderOffers(expandFields);
+            allTenderOffers = allTenderOffers.filter(ofr => ofr.ActiveOffer === 1); // Filter out inactive Offers
 			const allTenderProducts = await this.getTenderProducts(Services.getSelectedTenderID());
 			const uniqueTenderProductCodes = Array.from(new Set(allTenderProducts.map(product => product.ProductCode)));
 
@@ -1118,7 +1137,7 @@ sap.ui.define([
 				row.forEach((item, index, arr) => {
 					arr[index] = {
 						value: item.value,
-                        bSmallerDiscount: false
+                        existsSimilarValueInProd: false
 					}
 				});
 
@@ -1135,11 +1154,9 @@ sap.ui.define([
                 // Check if product has totalDiscount take minimal discount
                 // if discount is empty array Math.min() return infinity
                 if (discounts.length > 0) {
-                    let minDiscount = Math.min(...discounts); 
-                    row.find(prod => {
-                        if (prod.value == minDiscount) {
-                            prod.bSmallerDiscount = true
-                        }
+                    let maxDiscount = Math.max(...discounts); 
+                    row.map(el => {
+                        if (el.value != "NA" && el.value != maxDiscount) el.existsSimilarValueInProd = true;
                     })
                 }
 				row.unshift({
