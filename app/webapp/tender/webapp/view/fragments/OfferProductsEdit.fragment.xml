@@ -120,7 +120,7 @@
 									
 									<ToolbarSpacer/>
                                     <Button text="{i18n>AddLot}" icon="sap-icon://add-product" press="onAddLot" enabled="{= ${fastAppData>/EditOffer/Division} &amp;&amp; ${fastAppData>/SelectedOffer/Tender/createdBy} !== 'IBIZ' ? true : false}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR' }"/>
-									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }"/>
+									<Button text="{i18n>DeclineProduct}" icon="sap-icon://decline" press="onDeclineAllProductsForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 }" visible="{= ${fastAppData>/Tender/CountryCode} !== 'BR'}"/>
 									<Button text="{i18n>Addprod}" icon="sap-icon://add" press="onAddProductForOffer" enabled="{= (${fastAppData>/Tender/CountryCode} !== 'BR' &amp;&amp; ${fastAppData>/EditOffer/Division}) || ( ${fastAppData>/Tender/CountryCode} === 'BR' &amp;&amp; ${fastAppData>/EditOffer/Division} &amp;&amp; ${fastAppData>/EditOffer/Lots/results/length} > 0 &amp;&amp; ${fastAppData>/SelectedOffer/Tender/createdBy} !== 'IBIZ') ? true : false }"/>
 									<Button text="{i18n>Deleteprod}" icon="sap-icon://delete" press="onDeleteProductForOffer" enabled="{= ${fastAppData>/EditOffer/Product/results/length} > 0 &amp;&amp; ${fastAppData>/SelectedOffer/Tender/createdBy} !== 'IBIZ'}"/>
 								</Toolbar>
@@ -216,6 +216,7 @@
 											width="250px" 
 											visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}"
 											change=".onOfferProductsChannelChange"
+											enabled = "{= !${fastAppData>/EditOffer/isIBIZNotified}}"
 										>
 											<items>
 												<core:Item text="" key=""/>
