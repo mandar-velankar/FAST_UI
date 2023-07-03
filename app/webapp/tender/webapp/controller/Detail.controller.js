@@ -4215,7 +4215,7 @@ sap.ui.define([
 							//EHQUT-383979-Italy- Termination Date Editable (INC19980583)
 							//everything is saved and loaded correctly for the new tender
 							//clear all, they will be set again when route matched on detail
-							if (Services.getSelectedCountry() !== "IT" && oFastAppDataModel.oData.CurrentOfferStatus !=='Results Recorded'){
+							if (Services.getSelectedCountry() !== "IT"){
 							Services.setSelectedOfferID("");
 							Services.setSelectedOfferPath("");
 							Services.setSelectedProductID("");
