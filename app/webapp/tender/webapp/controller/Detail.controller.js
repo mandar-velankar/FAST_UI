@@ -4212,13 +4212,16 @@ sap.ui.define([
 							var oTender = Services.getLoadedTender();
 							oFastAppDataModel.setProperty("/EditTender/", oTender);
 
+							//EHQUT-383979-Italy- Termination Date Editable (INC19980583)
 							//everything is saved and loaded correctly for the new tender
 							//clear all, they will be set again when route matched on detail
+							if (Services.getSelectedCountry() !== "IT"){
 							Services.setSelectedOfferID("");
 							Services.setSelectedOfferPath("");
 							Services.setSelectedProductID("");
 							Services.setSelectedProductName("");
 							Services.setSelectedProductPath("");
+							}
 						});
 
 					}).catch(function (oError) {
