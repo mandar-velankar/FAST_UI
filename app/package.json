@@ -3,6 +3,7 @@
   "description": "",
   "private": true,
   "devDependencies": {
+    "@sap/ux-ui5-tooling": "1.9.5",
     "eslint": "7.17.0",
     "ui5-task-cachebuster-indexing": "1.0.0"
   },
@@ -14,7 +15,7 @@
     "build": "ui5 -v && ui5 build --clean-dest "
   },
   "engines": {
-    "node": "^14"
+    "node": "^16"
   },
   "dependencies": {
     "@sap/approuter": "^10",
@@ -28,7 +29,8 @@
     "dependencies": [
       "ui5-middleware-simpleproxy",
       "ui5-task-transpile",
-      "ui5-task-cachebuster-indexing"
+      "ui5-task-cachebuster-indexing",
+      "@sap/ux-ui5-tooling"
     ]
   }
 }

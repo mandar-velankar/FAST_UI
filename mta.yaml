@@ -59,6 +59,9 @@ modules:
           name: brazilContractingApp
           url: '~{url}'
       - name: uaa_FAST
+      - name: html5_repo_runtime
+      - name: com-bayer-tender-destination-service
+      - name: fast-theming
 resources:
   - name: uaa_FAST
     parameters:
@@ -66,6 +69,17 @@ resources:
       service-plan: application
       service: xsuaa
     type: org.cloudfoundry.existing-service
+  - name: html5_repo_runtime
+    parameters:
+      service-plan: app-runtime
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: com-bayer-tender-destination-service
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-name: com-bayer-tender-contracts-destination-service
+      service-plan: lite
   - name: srv_api
     type: configuration
     parameters:
@@ -120,3 +134,8 @@ resources:
         org: ${org}
         space: ${space}
       version: '>=0.0.0'
+  - name: fast-theming
+    parameters:
+      service: theming
+      service-plan: standard
+    type: org.cloudfoundry.managed-service
