@@ -4212,13 +4212,16 @@ sap.ui.define([
 							var oTender = Services.getLoadedTender();
 							oFastAppDataModel.setProperty("/EditTender/", oTender);
 
+							//EHQUT-383979-Italy- Termination Date Editable (INC19980583)
 							//everything is saved and loaded correctly for the new tender
 							//clear all, they will be set again when route matched on detail
+							if (Services.getSelectedCountry() !== "IT"){
 							Services.setSelectedOfferID("");
 							Services.setSelectedOfferPath("");
 							Services.setSelectedProductID("");
 							Services.setSelectedProductName("");
 							Services.setSelectedProductPath("");
+							}
 						});
 
 					}).catch(function (oError) {
@@ -10132,11 +10135,16 @@ sap.ui.define([
 		},
 
 		//EHQUT-199069-Italy – Competitor results not linked to Bayer products/offers
+		//EFRCL- INC19796216- Doubled material in offer
 		onCreatePriceAgreement: async function (oEvent) {
 
 			//get model & selected row
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
+			var button =oEvent.getSource();
+			if(Services.getSelectedCountry() === 'IT' && button.getIcon() !=='sap-icon://display'){
+            button.setEnabled(false);
+			}
 			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
 			const tenderResults = oFastAppDataModel.getProperty("/ResultsForTree/");
 			const offerValidation = oFastAppDataModel.getProperty("/OfferValidation/");
@@ -10163,6 +10171,7 @@ sap.ui.define([
             //         if it's a rental condition, the error should be shown. Otherwise, the PA can be created
 			if (oSelectedProduct.CountryCode === "ES" && oSelectedProduct.PriceCondition.results.find(condition => condition.PriceConditionClassification.ConditionType === "Rental")){
 				sap.m.MessageToast.show("No price agreement can be created for Rental");
+				button.setEnabled(true);
 				return;
 			}
 		
@@ -10180,6 +10189,7 @@ sap.ui.define([
 				// therefore only allow creating price agreements for selling offer type products! 
 				if(offerType !== "Selling" && Services.getSelectedCountry() !== 'ES'){
 					sap.m.MessageBox.error("Only products with OfferType 'Selling' are allowed to create a price agreement.");
+					button.setEnabled(true);
 					return;
 				}
 
