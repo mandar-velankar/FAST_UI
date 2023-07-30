@@ -1431,10 +1431,10 @@ sap.ui.define([
                     correctPrice = priceConditionViewObj.YLAP;
                 }
             }
-
+            //EHQUT-Spain -311609- "Additional discount" field should not include Royal Decree
             const standardPrice = correctPrice * (1 - priceConditionViewObj.StandardDiscount);
-            const additionalDiscount =  correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6) : 0;
-
+           // const additionalDiscount =  correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6) : 0;
+           const additionalDiscount = correctPrice > 0 ? (1-(newNetPriceWithoutTaxBeforeDeductionRD/(priceConditionViewObj.YLAP  *(1 - priceConditionViewObj.RoyalDecreePercentage)))).toFixed(6) : 0;
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
 

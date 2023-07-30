@@ -201,7 +201,6 @@
                                                                     <m:Label text="{i18n>EffectiveDate}" design="Bold"/>
                                                                     <m:DatePicker id="idQofferEffectiveDate" 
 										                            valueState="{fastAppData>/OfferValidation/EffectiveDateValueState}" 
-                                                                    minDate="{fastAppData>/QuotationDateRestrictions/effectiveDate/min}"
                                                                     maxDate="{fastAppData>/OfferValidation/ExpiryDate}"
 										                            change=".onChangeQuotationDates($event,'EffectiveDate')"
                                                                     value="{path :'fastAppData>/OfferValidation/EffectiveDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" enabled="false"/>
