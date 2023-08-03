@@ -1,0 +1,39 @@
+{
+	"mVersionDependency": {
+		"UI5.sap/ui/vtm.sap_belize": "1.96.0",
+		"UI5.sap/ui/vtm": "1.96.0",
+		"UI5": "1.96.11"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal",
+	"sLabel": "Custom Belize",
+	"sVendor": "Pythia",
+	"oExtends": "UI5.sap/ui/vtm.sap_belize",
+	"aBundled": [
+		"BayerFastFinal--Contrast"
+	],
+	"sTextDirections": "LTR",
+	"sType": "STANDARD",
+	"sThemability": "PUBLIC",
+	"mCssScopes": {
+		"library": {
+			"sEmbeddingMethod": "APPEND",
+			"aScopes": [
+				{
+					"sLabel": "Contrast",
+					"sSelector": "sapContrast",
+					"sThemeIdSuffix": "Contrast",
+					"sThemability": "PUBLIC",
+					"aThemabilityFilter": [
+						"Color"
+					],
+					"rExcludeSelector": "\\.sapContrastPlus\\W",
+					"sEmbeddedFile": "BayerFastFinal--Contrast.library",
+					"sEmbeddedCompareFile": "library"
+				}
+			],
+			"sBaseFile": "library"
+		}
+	},
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}
