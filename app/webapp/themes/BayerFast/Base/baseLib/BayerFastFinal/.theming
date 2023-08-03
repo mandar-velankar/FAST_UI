@@ -1,0 +1,203 @@
+{
+	"mVersionDependency": {
+		"Base.baseLib.sap_belize": "11.6.4",
+		"Base.baseLib": "11.6.4",
+		"Base": "11.6.4"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal",
+	"sLabel": "Custom Belize",
+	"sVendor": "Pythia",
+	"oExtends": "Base.baseLib.sap_belize",
+	"aFiles": [
+		"base",
+		"preview",
+		"css_variables",
+		"custom"
+	],
+	"aBundled": [
+		"BayerFastFinal--Contrast"
+	],
+	"sTextDirections": "LTR",
+	"sType": "STANDARD",
+	"sThemability": "PUBLIC",
+	"mCssScopes": {
+		"css_variables": {
+			"sEmbeddingMethod": "APPEND",
+			"aScopes": [
+				{
+					"sLabel": "Contrast",
+					"sSelector": "sapContrast",
+					"sThemeIdSuffix": "Contrast",
+					"sThemability": "PUBLIC",
+					"aThemabilityFilter": [
+						"Color"
+					],
+					"sEmbeddedFile": "BayerFastFinal--Contrast.css_variables",
+					"sEmbeddedCompareFile": "css_variables"
+				}
+			],
+			"sBaseFile": "css_variables"
+		}
+	},
+	"mData": {
+		"mThemeMasterState": {
+			"mSourceInfo": {
+				"sCreated": "2023-08-03T08:04:40.321Z",
+				"sLastModified": "2023-08-03T09:00:07.523Z",
+				"aVersionHistory": [
+					{
+						"sDate": "2023-08-03T08:04:40.321Z",
+						"mVersion": {
+							"Base": "11.6.4",
+							"UR": "10.30.7.351846.0",
+							"UI5": "1.96.11"
+						}
+					}
+				]
+			}
+		}
+	},
+	"sReleaseStage": "GENERAL_AVAILABILITY",
+	"sDeploymentType": "MANUAL",
+	"aBadgeParameters": [
+		{
+			"Id": "sapBrandColor",
+			"CssValue": "#00BAEE",
+			"Label": "Brand Color",
+			"Tags": "Quick,Base,Color,Mobile"
+		},
+		{
+			"Id": "sapHighlightColor",
+			"CssValue": "#0092bb",
+			"Label": "Highlight Color",
+			"Tags": "Quick,Base,Content,Color"
+		},
+		{
+			"Id": "sapBaseColor",
+			"CssValue": "#fff",
+			"Label": "Base Color",
+			"Tags": "Quick,Base,Color,Mobile"
+		},
+		{
+			"Id": "sapShellColor",
+			"CssValue": "transparent",
+			"Label": "Shell Header Color",
+			"Tags": "Quick,Base,Shell,Color,Mobile"
+		},
+		{
+			"Id": "sapBackgroundColor",
+			"CssValue": "#fafafa",
+			"Label": "Background Color",
+			"Tags": "Quick,Base,Color,Mobile"
+		},
+		{
+			"Id": "sapTextColor",
+			"CssValue": "#10384F",
+			"Label": "Text Color",
+			"Tags": "Quick,Base,Content,Color,Font,Mobile"
+		},
+		{
+			"Id": "sapLinkColor",
+			"CssValue": "#0070b1",
+			"Label": "Link Color",
+			"Tags": "Quick,Base,Content,Color,Font,Link"
+		},
+		{
+			"Id": "sapContent_Selected_TextColor",
+			"CssValue": "#fff",
+			"Label": "Selected Text Color",
+			"Tags": "Base,Content,Color,Font"
+		},
+		{
+			"Id": "sapContent_Shadow0",
+			"CssValue": "0 0 0 1px rgba(0,0,0,0.15)",
+			"Label": "Shadow Level 0",
+			"Tags": "Base,Content"
+		},
+		{
+			"Id": "sapField_Background",
+			"CssValue": "#fff",
+			"Label": "Field Background Color",
+			"Tags": "Base,Field,Color"
+		},
+		{
+			"Id": "sapField_BorderColor",
+			"CssValue": "#bfbfbf",
+			"Label": "Field Border Color",
+			"Tags": "Base,Field,Color"
+		},
+		{
+			"Id": "sapShell_Background",
+			"CssValue": "#e3e3e3",
+			"Label": "Shell Background Color",
+			"Tags": "Base,Shell,Color"
+		},
+		{
+			"Id": "sapShell_TextColor",
+			"CssValue": "#0092bb",
+			"Label": "Shell Text Color",
+			"Tags": "Base,Shell,Color,Font,Mobile"
+		},
+		{
+			"Id": "sapShell_InteractiveTextColor",
+			"CssValue": "#0092bb",
+			"Label": "Shell Interactive Text Color",
+			"Tags": "Base,Shell,Color,Font"
+		},
+		{
+			"Id": "sapShell_GroupTitleTextColor",
+			"CssValue": "#624963",
+			"Label": "Shell Group Title Text Color",
+			"Tags": "Base,Shell,Color,Font"
+		},
+		{
+			"Id": "sapShell_Shadow",
+			"CssValue": "0 0.125rem 0 0 #d6d6d6",
+			"Label": "Shell Shadow",
+			"Tags": "Base,Shell"
+		},
+		{
+			"Id": "sapShell_Navigation_Background",
+			"CssValue": "transparent",
+			"Label": "Shell Navigation Area Background",
+			"Tags": "Base,Shell,Color"
+		},
+		{
+			"Id": "sapShell_Navigation_TextColor",
+			"CssValue": "#624963",
+			"Label": "Shell Navigation Text Color",
+			"Tags": "Base,Shell,Color,Font"
+		},
+		{
+			"Id": "sapTile_Background",
+			"CssValue": "#fff",
+			"Label": "Tile Background Color",
+			"Tags": "Base,Tile,Color"
+		},
+		{
+			"Id": "sapTile_BorderColor",
+			"CssValue": "transparent",
+			"Label": "Tile Border Color",
+			"Tags": "Base,Tile,Color"
+		},
+		{
+			"Id": "sapTile_BorderCornerRadius",
+			"CssValue": ".25rem",
+			"Label": "Tile Border Corner Radius",
+			"Tags": "Base,Tile,Dimension"
+		},
+		{
+			"Id": "sapTile_TextColor",
+			"CssValue": "#2174a4",
+			"Label": "Tile Text Color",
+			"Tags": "Base,Tile,Color,Font"
+		},
+		{
+			"Id": "sapTile_TitleTextColor",
+			"CssValue": "#10384f",
+			"Label": "Tile Title Text Color",
+			"Tags": "Base,Tile,Color,Font"
+		}
+	]
+}

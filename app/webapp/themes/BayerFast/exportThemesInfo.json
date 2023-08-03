@@ -1,0 +1,105 @@
+{
+	"zipInfo": {
+		"creatorName": "Theming Engine",
+		"creatorVersion": "1.23071.0-20230727072504+103a4b0abd3804e9712812399620a8b1ef82147d",
+		"created": "2023-08-03T09:00:07Z",
+		"lessVersion": "1.6.3",
+		"compression": "none",
+		"exportMode": "DESIGNTIME"
+	},
+	"contentInfo": {
+		"sourcePath": "https://bayer-fast-dev-fast-fastui-app.cfapps.eu20.hana.ondemand.com/comsapuitheming.themedesigner/theming-repository/sap-themes/~v=Base:11.6.4,UR:10.30.7.351846.0,UI5:1.96.11",
+		"frameworks": {
+			"UR": {
+				"version": "10.30.7.351846.0"
+			},
+			"UI5": {
+				"version": "1.96.11"
+			},
+			"Base": {
+				"version": "11.6.4"
+			}
+		},
+		"libraries": {
+			"UR.baseLib": {
+				"version": "10.30.7.351846.0"
+			},
+			"UI5.sap/collaboration": {
+				"version": "1.96.0"
+			},
+			"UI5.sap/f": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/gantt": {
+				"version": "1.96.7"
+			},
+			"UI5.sap/m": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/suite/ui/commons": {
+				"version": "1.96.3"
+			},
+			"UI5.sap/suite/ui/microchart": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/tnt": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/commons": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/comp": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/core": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/dt": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/export": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/fl": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/layout": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/table": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/unified": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ushell": {
+				"version": "1.96.9"
+			},
+			"UI5.sap/uxap": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/viz": {
+				"version": "1.96.10"
+			},
+			"Base.baseLib": {
+				"version": "11.6.4"
+			}
+		},
+		"themes": {
+			"BayerFastFinal": {
+				"id": "BayerFastFinal",
+				"extends": "sap_belize",
+				"label": "Custom Belize",
+				"vendor": "Pythia",
+				"textDirections": "LTR"
+			},
+			"BayerFastFinal--Contrast": {
+				"id": "BayerFastFinal--Contrast",
+				"extends": "sap_belize_plus",
+				"label": "",
+				"vendor": "",
+				"textDirections": ""
+			}
+		}
+	}
+}
