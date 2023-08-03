@@ -1,0 +1,79 @@
+{
+	"mVersionDependency": {
+		"UR.c2.sap_belize": "2.2.8",
+		"UR.c2": "2.2.8",
+		"UR": "10.30.7.351846.0"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal",
+	"sLabel": "Custom Belize",
+	"sVendor": "Pythia",
+	"oExtends": "UR.c2.sap_belize",
+	"aBuildFiles": [
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_fioripaddings",
+		"standards_legacy",
+		"SAP-icons"
+	],
+	"aFiles": [
+		"base",
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_fioripaddings",
+		"standards_legacy",
+		"SAP-icons",
+		"custom"
+	],
+	"aBundled": [
+		"BayerFastFinal--Contrast"
+	],
+	"sTextDirections": "LTR",
+	"sType": "STANDARD",
+	"sThemability": "PUBLIC",
+	"mCssScopes": {
+		"standards": {
+			"sEmbeddingMethod": "APPEND",
+			"aScopes": [
+				{
+					"sLabel": "Condensed",
+					"sSelector": "lsCondensed",
+					"sEmbeddedFile": "standards_condensed",
+					"sEmbeddedCompareFile": "standards"
+				},
+				{
+					"sLabel": "Contrast",
+					"sSelector": "sapContrast",
+					"sThemeIdSuffix": "Contrast",
+					"sThemability": "PUBLIC",
+					"aThemabilityFilter": [
+						"Color"
+					],
+					"sEmbeddedFile": "BayerFastFinal--Contrast.standards",
+					"sEmbeddedCompareFile": "standards"
+				}
+			],
+			"sBaseFile": "standards"
+		},
+		"standards_cozy": {
+			"sEmbeddingMethod": "APPEND",
+			"aScopes": [
+				{
+					"sLabel": "Contrast",
+					"sSelector": "sapContrast",
+					"sThemeIdSuffix": "Contrast",
+					"sThemability": "PUBLIC",
+					"aThemabilityFilter": [
+						"Color"
+					],
+					"sEmbeddedFile": "BayerFastFinal--Contrast.standards_cozy",
+					"sEmbeddedCompareFile": "standards_cozy"
+				}
+			],
+			"sBaseFile": "standards_cozy"
+		}
+	},
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}

@@ -1,0 +1,36 @@
+{
+	"mVersionDependency": {
+		"UR.c2.sap_belize_plus": "2.2.8",
+		"UR.c2": "2.2.8",
+		"UR": "10.30.7.351846.0"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal--Contrast",
+	"sVendor": "Pythia",
+	"oExtends": "UR.c2.sap_belize_plus",
+	"aBuildFiles": [
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_fioripaddings",
+		"standards_legacy",
+		"SAP-icons"
+	],
+	"aFiles": [
+		"base",
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_fioripaddings",
+		"standards_legacy",
+		"SAP-icons",
+		"custom"
+	],
+	"aBundled": [
+		"BayerFastFinal"
+	],
+	"sBuildOptions": "SKIP",
+	"sType": "ABSTRACT",
+	"sThemability": "PRIVATE",
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}

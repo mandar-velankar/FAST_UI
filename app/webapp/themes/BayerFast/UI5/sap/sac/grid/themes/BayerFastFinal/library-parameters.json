@@ -1,0 +1,23 @@
+{
+	"default": {
+		"sapUiFontLightFamily": "\"72-Light\", \"72-Lightfull\", \"72\", \"72full\", Arial, Helvetica, sans-serif",
+		"sapUiFontBoldFamily": "\"72-Bold\", \"72-Boldfull\", \"72\", \"72full\", Arial, Helvetica, sans-serif",
+		"sapUiSacGridExpandedAboveIcon": "\"\\e1f0\"",
+		"sapUiSacGridExpandedBelowIcon": "\"\\e1ef\"",
+		"sapUiSacGridCollapsedIcon": "\"\\e1ed\"",
+		"sapUiSacGridCursorPointer": "pointer !important",
+		"sapUiSacGridNoDataCursorPointer": "auto !important",
+		"sapUiSacGridTextDecoration": "underline !important",
+		"sapUiSacGridNoDataTextDecoration": "none !important",
+		"sapUiSacGridCellBorder": "1px solid #5e696e",
+		"sapUiSacGridCellBorderCollapse": "separate",
+		"sapUiSacGridOverflow": "auto !important",
+		"sapUiSacGrid100PerCent": "100%",
+		"sapUiSacGridCellNoFlex": "none"
+	},
+	"scopes": {
+		"sapContrast": {
+			"sapUiSacGridCellBorder": "1px solid #d3d7d9"
+		}
+	}
+}

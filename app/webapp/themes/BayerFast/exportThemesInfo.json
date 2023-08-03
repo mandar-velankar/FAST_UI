@@ -2,10 +2,10 @@
 	"zipInfo": {
 		"creatorName": "Theming Engine",
 		"creatorVersion": "1.23071.0-20230727072504+103a4b0abd3804e9712812399620a8b1ef82147d",
-		"created": "2023-08-03T09:00:07Z",
+		"created": "2023-08-03T09:27:54Z",
 		"lessVersion": "1.6.3",
 		"compression": "none",
-		"exportMode": "DESIGNTIME"
+		"exportMode": "ALL"
 	},
 	"contentInfo": {
 		"sourcePath": "https://bayer-fast-dev-fast-fastui-app.cfapps.eu20.hana.ondemand.com/comsapuitheming.themedesigner/theming-repository/sap-themes/~v=Base:11.6.4,UR:10.30.7.351846.0,UI5:1.96.11",
@@ -24,11 +24,29 @@
 			"UR.baseLib": {
 				"version": "10.30.7.351846.0"
 			},
+			"UR.c2": {
+				"version": "2.2.8"
+			},
+			"UR.ls": {
+				"version": "10.30.7.351846.0"
+			},
+			"UI5.sap/ca/ui": {
+				"version": "1.96.0"
+			},
 			"UI5.sap/collaboration": {
 				"version": "1.96.0"
 			},
+			"UI5.sap/esh/search/ui": {
+				"version": "1.96.1"
+			},
 			"UI5.sap/f": {
 				"version": "1.96.10"
+			},
+			"UI5.sap/fe/placeholder": {
+				"version": "1.96.9"
+			},
+			"UI5.sap/fiori": {
+				"version": "1.96.11"
 			},
 			"UI5.sap/gantt": {
 				"version": "1.96.7"
@@ -36,13 +54,34 @@
 			"UI5.sap/m": {
 				"version": "1.96.10"
 			},
+			"UI5.sap/makit": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/me": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ovp": {
+				"version": "1.96.6"
+			},
+			"UI5.sap/rules/ui": {
+				"version": "1.96.0"
+			},
+			"UI5.sap/sac/grid": {
+				"version": "1.96.1"
+			},
 			"UI5.sap/suite/ui/commons": {
 				"version": "1.96.3"
+			},
+			"UI5.sap/suite/ui/generic/template": {
+				"version": "1.96.9"
 			},
 			"UI5.sap/suite/ui/microchart": {
 				"version": "1.96.10"
 			},
 			"UI5.sap/tnt": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/codeeditor": {
 				"version": "1.96.10"
 			},
 			"UI5.sap/ui/commons": {
@@ -63,13 +102,43 @@
 			"UI5.sap/ui/fl": {
 				"version": "1.96.10"
 			},
+			"UI5.sap/ui/integration": {
+				"version": "1.96.10"
+			},
 			"UI5.sap/ui/layout": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/mdc": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/richtexteditor": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/rta": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/suite": {
 				"version": "1.96.10"
 			},
 			"UI5.sap/ui/table": {
 				"version": "1.96.10"
 			},
 			"UI5.sap/ui/unified": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/ux3": {
+				"version": "1.96.10"
+			},
+			"UI5.sap/ui/vbm": {
+				"version": "1.96.4"
+			},
+			"UI5.sap/ui/vk": {
+				"version": "1.96.1"
+			},
+			"UI5.sap/ui/vtm": {
+				"version": "1.96.0"
+			},
+			"UI5.sap/uiext/inbox": {
 				"version": "1.96.10"
 			},
 			"UI5.sap/ushell": {
@@ -80,6 +149,15 @@
 			},
 			"UI5.sap/viz": {
 				"version": "1.96.10"
+			},
+			"UI5.sap/zen/commons": {
+				"version": "1.96.1"
+			},
+			"UI5.sap/zen/crosstab": {
+				"version": "1.96.1"
+			},
+			"UI5.sap/zen/dsh": {
+				"version": "1.96.1"
 			},
 			"Base.baseLib": {
 				"version": "11.6.4"

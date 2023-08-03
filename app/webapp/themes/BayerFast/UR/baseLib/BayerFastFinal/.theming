@@ -26,6 +26,9 @@
 		"standards_legacy",
 		"SAP-icons"
 	],
+	"aBundled": [
+		"BayerFastFinal--Contrast"
+	],
 	"sTextDirections": "LTR",
 	"sType": "STANDARD",
 	"sThemability": "PUBLIC",
