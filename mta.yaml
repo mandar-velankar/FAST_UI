@@ -29,6 +29,36 @@ modules:
           name: srv_api
           url: '~{url}'
           timeout: 120000
+      - name: adminapp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: adminapp
+          url: '~{url}'
+      - name: createSalesOppApp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: createSalesOppApp
+          url: '~{url}'
+      - name: bankGuaranteesApp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: bankGuaranteesApp
+          url: '~{url}'
+      - name: priceAgreementsApp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: priceAgreementsApp
+          url: '~{url}'
+      - name: brazilContractingApp
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: brazilContractingApp
+          url: '~{url}'
       - name: uaa_FAST
 resources:
   - name: FAST-logging
@@ -46,6 +76,51 @@ resources:
     type: configuration
     parameters:
       provider-id: FAST:srv_api
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: adminapp
+    type: configuration
+    parameters:
+      provider-id: FASTUIADMIN:adminapp
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: createSalesOppApp
+    type: configuration
+    parameters:
+      provider-id: FASTCREATESALESOPP:createSalesOppApp
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: bankGuaranteesApp
+    type: configuration
+    parameters:
+      provider-id: FASTBANKGUARANTEES:bankGuaranteesApp
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: priceAgreementsApp
+    type: configuration
+    parameters:
+      provider-id: FASTPRICEAGREEMENTS:priceAgreementsApp
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: brazilContractingApp
+    type: configuration
+    parameters:
+      provider-id: FASTBRCONTRACTING:brazilContractingApp
       provider-nid: mta
       target:
         org: ${org}
