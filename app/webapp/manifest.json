@@ -127,6 +127,12 @@
 				"settings": {},
 				"componentData": {},
 				"lazy": true
+			},
+			"whcComponent": {
+				"name": "com.bayer.tender.whcapp",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
 			}
 		},
 		"resourceRoots":{
@@ -140,6 +146,7 @@
 			"com.bayer.tender.priceagreements": "./priceagreements",
 			"com.bayer.tender.brazilcontracting": "./brazilcontracting",
 			"com.bayer.tender.statenderapp": "./standardtender",
+			"com.bayer.tender.whcapp": "./whc",
 			"FAST_NS0FAST0": "./tender/webapp",
 			"com.bayer.tender.uilib": "./uilib/src/com/bayer/tender/uilib"
 		},
@@ -298,6 +305,14 @@
 						"name": "standardtender",
 						"prefix": "stdt"
 					}			
+				},
+				{
+					"name": "whc",
+					"pattern": "whc",
+					"target": {
+						"name": "whc",
+						"prefix": "whc"
+					}			
 				}
 			],
 
@@ -351,6 +366,10 @@
 				"standardtender": {
 					"type": "Component",
 					"usage": "standardtenderComponent"
+				},
+				"whc": {
+					"type": "Component",
+					"usage": "whcComponent"
 				}
 			}
 		}
