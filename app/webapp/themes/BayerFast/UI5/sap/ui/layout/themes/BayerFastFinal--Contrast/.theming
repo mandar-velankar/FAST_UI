@@ -1,0 +1,16 @@
+{
+	"mVersionDependency": {
+		"UI5.sap/ui/layout.sap_belize_plus": "1.96.10",
+		"UI5.sap/ui/layout": "1.96.10",
+		"UI5": "1.96.11"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal--Contrast",
+	"oExtends": "UI5.sap/ui/layout.sap_belize_plus",
+	"aBundled": [
+		"BayerFastFinal"
+	],
+	"sType": "ABSTRACT",
+	"sThemability": "PRIVATE",
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}

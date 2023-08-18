@@ -1,0 +1,18 @@
+{
+	"mVersionDependency": {
+		"UI5.sap/ovp.sap_belize_plus": "1.96.6",
+		"UI5.sap/ovp": "1.96.6",
+		"UI5": "1.96.11"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal--Contrast",
+	"sVendor": "Pythia",
+	"oExtends": "UI5.sap/ovp.sap_belize_plus",
+	"aBundled": [
+		"BayerFastFinal"
+	],
+	"sBuildOptions": "SKIP",
+	"sType": "ABSTRACT",
+	"sThemability": "PRIVATE",
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}

@@ -101,6 +101,15 @@
 										<ImageContent src="sap-icon://request"/>
 									</TileContent>
 								</GenericTile>
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="US WHC" 
+									press="onTileWhcPress" 
+									visible="{tiles>/whc}">
+									<TileContent>
+										<ImageContent src="sap-icon://request"/>
+									</TileContent>
+								</GenericTile>
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
 					</Panel>

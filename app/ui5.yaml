@@ -52,6 +52,12 @@ server:
       paths:
         - path: /standardtender
           src: ../../F_TNDR_CAG_FAST_STANDARD_TENDERS/webapp
+  - name: fiori-tools-servestatic
+    afterMiddleware: compression
+    configuration:
+      paths:
+        - path: /whc
+          src: ../../F_TNDR_CAG_FAST_WHC/app/whcapp/webapp
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
     mountPath: /app

@@ -87,6 +87,16 @@
       "service": "html5-apps-repo-rt"
     },
     {
+      "source": "^/whc/(.*)",
+      "target": "/combayertenderwhcapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/app/whc/(.*)",
+      "target": "/combayertenderwhcapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
       "source": "^/app/index.html(.*)$",
       "target":"index.html$1",
       "localDir": "dist",

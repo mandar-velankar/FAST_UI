@@ -1,0 +1,28 @@
+{
+	"mVersionDependency": {
+		"UI5.sap/ui/core.sap_belize_plus": "1.96.10",
+		"UI5.sap/ui/core": "1.96.10",
+		"UI5": "1.96.11"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal--Contrast",
+	"oExtends": "UI5.sap/ui/core.sap_belize_plus",
+	"aBuildFiles": [
+		"library",
+		"css_variables",
+		"custom"
+	],
+	"aFiles": [
+		"library",
+		"global",
+		"css_variables",
+		"custom"
+	],
+	"aBundled": [
+		"BayerFastFinal"
+	],
+	"sBuildOptions": "SKIP",
+	"sType": "ABSTRACT",
+	"sThemability": "PRIVATE",
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}
