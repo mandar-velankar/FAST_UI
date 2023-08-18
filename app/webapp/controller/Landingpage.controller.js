@@ -44,7 +44,8 @@ sap.ui.define([
 				bankguarantees:false,
 				priceagreements:false,
 				brazilcontracting:false,
-				masterdata:false
+				masterdata:false,
+				whc:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
 			this.getView().getModel("access").metadataLoaded().then(() => this.getView().getModel("access").read("/getAccess", { success: (result) => this.getView().getModel("tiles").setData(result) }));
@@ -157,6 +158,14 @@ sap.ui.define([
 				.getRouter()
 				.navTo("standardtender");
 		},
+
+		onTileWhcPress: function (event) {
+			BusyIndicator.show(0);
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("whc");
+		},
+
 		//Tile tender manager press
 		onTileTenderManagerDashPress: function (oEvent) {
 			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/TenderManagerDashboard/OfferSubmissions?:iid=2"); //check where to store constants
