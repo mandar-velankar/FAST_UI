@@ -28,6 +28,13 @@ modules:
           name: srv_api
           url: '~{url}'
           timeout: 120000
+      - name: srv_whc
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: srv_whc
+          url: '~{url}'
+          timeout: 120000
       - name: adminapp
         group: destinations
         properties:
@@ -84,6 +91,15 @@ resources:
     type: configuration
     parameters:
       provider-id: FAST:srv_api
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
+  - name: srv_whc
+    type: configuration
+    parameters:
+      provider-id: com-bayer-tender-whcapp:srv_api
       provider-nid: mta
       target:
         org: ${org}

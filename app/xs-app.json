@@ -97,6 +97,13 @@
       "service": "html5-apps-repo-rt"
     },
     {
+      "source": "/app/whc/v2/(.*)$",
+      "target": "/app/whc/v2/$1",
+      "authenticationType": "xsuaa",
+      "destination": "srv_whc",
+      "csrfProtection": true
+    },
+    {
       "source": "^/app/index.html(.*)$",
       "target":"index.html$1",
       "localDir": "dist",
