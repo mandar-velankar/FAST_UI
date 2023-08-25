@@ -4,7 +4,7 @@
     "logoutEndpoint": "/do/logout",
     "logoutPage": "/app/logged-out.html"
   },
-    "routes": [
+  "routes": [
     {
       "source": "/app/whc/v2/(.*)$",
       "target": "/v2/catalog/$1",
