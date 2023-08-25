@@ -32,7 +32,7 @@ modules:
         group: destinations
         properties:
           forwardAuthToken: true
-          name: srv_whc
+          name: srv_api
           url: '~{url}'
           timeout: 120000
       - name: adminapp
