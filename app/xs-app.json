@@ -6,6 +6,13 @@
   },
   "routes": [
     {
+      "source": "/app/whc/v2/(.*)$",
+      "target": "/v2/catalog/$1",
+      "authenticationType": "xsuaa",
+      "destination": "srv_whc",
+      "csrfProtection": true
+    },
+    {
       "source": "/v4/(.*)$",
       "target": "$1",
       "authenticationType": "xsuaa",
@@ -84,23 +91,6 @@
     {
       "source": "^/app/standardtender/(.*)",
       "target": "/combayertenderstatenderapp/$1",
-      "service": "html5-apps-repo-rt"
-    },
-    {
-      "source": "^/whc/(.*)",
-      "target": "/combayertenderwhcapp/$1",
-      "service": "html5-apps-repo-rt"
-    },
-    {
-      "source": "/app/whc/v2/(.*)$",
-      "target": "/app/whc/v2/$1",
-      "authenticationType": "xsuaa",
-      "destination": "srv_whc",
-      "csrfProtection": true
-    },
-    {
-      "source": "^/app/whc/(.*)",
-      "target": "/combayertenderwhcapp/$1",
       "service": "html5-apps-repo-rt"
     },
     {
