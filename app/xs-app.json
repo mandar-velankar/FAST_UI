@@ -6,10 +6,17 @@
   },
   "routes": [
     {
-      "source": "/app/whc/v2/(.*)$",
+      "source": "/app/whc/v2/catalog/(.*)$",
       "target": "/v2/catalog/$1",
       "authenticationType": "xsuaa",
-      "destination": "srv_whc",
+      "destination": "fast-whc-api",
+      "csrfProtection": true
+    },
+    {
+      "source": "/whc/v2/catalog/(.*)$",
+      "target": "/v2/catalog/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-whc-api",
       "csrfProtection": true
     },
     {
