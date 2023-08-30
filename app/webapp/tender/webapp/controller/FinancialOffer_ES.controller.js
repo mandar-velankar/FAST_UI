@@ -124,7 +124,7 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
             }
         },
-
+//EHQUT-387694-Spain - possibility to create tender for single institutes/accounts at every time (they need to be active at the same time with regional tender)
         managePriceConditions: async function(){
             BusyIndicator.show();
 
@@ -143,19 +143,19 @@ sap.ui.define([
             const applicableTenderCondition = await this.getApplicableTenderCondition();
             const existingPriceAgreement = await this.getExistingPriceAgreement();
             let sExistingAgreementInPlaceText = '';            
-            if(applicableTenderCondition){
-                const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
-                const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
-                if(!priceConditionViews.find(conditionView => conditionView.IsPricingUnlocked === true)){
-                    this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView); //overrule this by checking if there is a condition where we overrule the existing one. If yes, load that one
-                }
-                sExistingAgreementInPlaceText = 'Existing agreement in place for OfferID: ' + existingPriceAgreement.OfferId + ' Expiring on: ' + (DateFormat.getDateInstance({pattern : "dd-MM-yyyy" }).format(existingPriceAgreement.ExpiryDate));
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlaceText", sExistingAgreementInPlaceText);
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
-            }else{
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
-            }
-
+            // if(applicableTenderCondition){
+            //     const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
+            //     const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
+            //     if(!priceConditionViews.find(conditionView => conditionView.IsPricingUnlocked === true)){
+            //         this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView); //overrule this by checking if there is a condition where we overrule the existing one. If yes, load that one
+            //     }
+            //     sExistingAgreementInPlaceText = 'Existing agreement in place for OfferID: ' + existingPriceAgreement.OfferId + ' Expiring on: ' + (DateFormat.getDateInstance({pattern : "dd-MM-yyyy" }).format(existingPriceAgreement.ExpiryDate));
+            //     Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlaceText", sExistingAgreementInPlaceText);
+            //     Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
+            // }else{
+            //     Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
+            // }
+            Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
             // set selected key on idPriceConditionSelect
             const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
             const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
