@@ -21,6 +21,7 @@ modules:
       memory: 1024M
       disk-quota: 4096M
     requires:
+      - name: FAST-logging
       - name: srv_api
         group: destinations
         properties:
@@ -63,6 +64,11 @@ modules:
       - name: com-bayer-tender-destination-service
       - name: fast-theming
 resources:
+  - name: FAST-logging
+    type: org.cloudfoundry.managed-service
+    parameters:
+       service: application-logs
+       service-plan: lite
   - name: uaa_FAST
     parameters:
       path: ./xs-security.json
