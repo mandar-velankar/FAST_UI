@@ -150,6 +150,7 @@ sap.ui.define([
 			this.oView.setModel(oFastAppDataModel, "fastAppData");
 
 		},
+		//EHQUT-397790-Italy-Search function is slow and system crashes
 		//EHQUT-199068-Italy – Tender search by Region
 		//EHQUT-217122-Spain - Tender search by Region
 		loadInstituteName: function (sCountry) {
@@ -171,7 +172,7 @@ sap.ui.define([
 
 			//var sCountryChannelsPath = "/PT_TMINST";
 			const instituteType = this.byId("idfltInstituteType").getProperty("selectedKey");
-			if(instituteType === "Region(s)" && that._country=== "ES"){
+			if(instituteType === "Region(s)"){
 				this.byId("idfltInstituteName").setVisible(false);
 				this.byId("idRegionNameFilter").setVisible(true);
 			}else{
@@ -179,7 +180,7 @@ sap.ui.define([
 			}
 			var aFilters = [];
 			var sCountryChannelsPath;
-			if(instituteType === "Region(s)" && that._country=== "ES"){
+			if(instituteType === "Region(s)"){
 				sCountryChannelsPath = "/CountryRegions";
 			
 				aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, that._country)
@@ -195,7 +196,7 @@ sap.ui.define([
 				filters: aFilters,
 				success: function (oData, oResponse) {
 					var aCountryChannels = oData.results;
-					if(instituteType === "Region(s)" && that._country === "ES"){
+					if(instituteType === "Region(s)"){
 						aCountryChannels = Services.sortByKeyAsc(aCountryChannels, "Name");
 					}else{
 					aCountryChannels = Services.sortByKeyAsc(aCountryChannels, "InstituteName");
@@ -697,7 +698,7 @@ sap.ui.define([
 				});
 			});
 		},
-
+//EHQUT-397790-Italy-Search function is slow and system crashes
 		//filter based upon the selections made above the tender table
 		//setFilter is called on every route match.
 		//setFilter contains also binding of the items from the tender table
@@ -788,16 +789,16 @@ sap.ui.define([
 					
 					if(Regiontype==="Region(s)"){
 
-						if(oCountry==="IT"){
+						//if(oCountry==="IT"){
 						
-						oInstituteName=this.byId("idfltInstituteName").getSelectedItem() ? this.byId("idfltInstituteName").getSelectedItem().getKey(): "";
-						let InstituteIDList=Services.getInstituteID(oInstituteName);
-						oInstituteName=InstituteIDList;
-						}else{
+						// oInstituteName=this.byId("idfltInstituteName").getSelectedItem() ? this.byId("idfltInstituteName").getSelectedItem().getKey(): "";
+						// let InstituteIDList=Services.getInstituteID(oInstituteName);
+						// oInstituteName=InstituteIDList;
+						// }else{
 							oInstituteName=this.byId("idRegionNameFilter").getSelectedItem() ? this.byId("idRegionNameFilter").getSelectedItem().getKey(): "";
-							let RegionList=Services.getRegionID(oInstituteName);
-						oInstituteName=RegionList;
-						}
+						// 	let RegionList=Services.getRegionID(oInstituteName);
+						// oInstituteName=RegionList;
+						// }
 						
 					}else{
 						oInstituteName=this.byId("idfltInstituteName").getSelectedItem() ? this.byId("idfltInstituteName").getSelectedItem().getText(): "";
@@ -964,11 +965,12 @@ sap.ui.define([
 			if(oInstituteName !== ""){
 				if(Regiontype==="Region(s)"){
 					if(oInstituteName.length>1){
-						for(var i=0;i<oInstituteName.length;i++){
-							orInstituteFilter.push(new sap.ui.model.Filter("INSTITUTE", sap.ui.model.FilterOperator.EQ, oInstituteName[i]));
+						// for(var i=0;i<oInstituteName.length;i++){
+						// 	orInstituteFilter.push(new sap.ui.model.Filter("INSTITUTE", sap.ui.model.FilterOperator.EQ, oInstituteName[i]));
 							
-						}
-						andFilters.push(new sap.ui.model.Filter(orInstituteFilter, false));
+						// }
+						// andFilters.push(new sap.ui.model.Filter(orInstituteFilter, false));
+						andFilters.push(new sap.ui.model.Filter("REGION_ID", sap.ui.model.FilterOperator.EQ, oInstituteName));
 					}
 				}else{
 					andFilters.push(new sap.ui.model.Filter("INSTITUTE", sap.ui.model.FilterOperator.EQ, oInstituteName));
