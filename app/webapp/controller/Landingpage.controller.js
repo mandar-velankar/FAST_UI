@@ -45,6 +45,7 @@ sap.ui.define([
 				priceagreements:false,
 				brazilcontracting:false,
 				masterdata:false,
+				standardtender: false,
 				whc:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
