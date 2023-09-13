@@ -2268,7 +2268,7 @@ sap.ui.define([
 
 						//these fields should be disabled
 						//EHQUT-391391-Thailand - Adjust ‘Clone’ function to enable editing ‘Institute type’ and ‘Institute name’
-						if(Services.getSelectedCountry() === 'TH' && Services.getFastAppDataModel().oData.EditTender.CloneTenderID !== ''){
+						if(Services.getSelectedCountry() === 'TH' && (Services.getFastAppDataModel().oData.EditTender.CloneTenderID !== '' && Services.getFastAppDataModel().oData.EditTender.CloneTenderID !== null )){
 							that.getView().byId("idInstituteType").setEnabled(true);
 						    that.getView().byId("idInstituteName").setEnabled(true);
 						}else{
