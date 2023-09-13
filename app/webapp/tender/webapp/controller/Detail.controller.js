@@ -2267,9 +2267,17 @@ sap.ui.define([
 						that._showSubSectionFragment("BasicInformationEdit", "basicInformationSubSectionId");
 
 						//these fields should be disabled
+						//EHQUT-391391-Thailand - Adjust ‘Clone’ function to enable editing ‘Institute type’ and ‘Institute name’
+						if(Services.getSelectedCountry() === 'TH' && Services.getFastAppDataModel().oData.EditTender.CloneTenderID !== ''){
+							that.getView().byId("idInstituteType").setEnabled(true);
+						    that.getView().byId("idInstituteName").setEnabled(true);
+						}else{
+							that.getView().byId("idInstituteType").setEnabled(false);
+						    that.getView().byId("idInstituteName").setEnabled(false);
+						}
 						that.getView().byId("idClassification").setEnabled(false);
-						that.getView().byId("idInstituteType").setEnabled(false);
-						that.getView().byId("idInstituteName").setEnabled(false);
+						//that.getView().byId("idInstituteType").setEnabled(false);
+						//that.getView().byId("idInstituteName").setEnabled(false);
 						that.getView().byId("idTenderChannel").setEnabled(false);
 						that.getView().byId("idGroupPurchasingEdit").setEnabled(false);
 						that.getView().byId("idSelectTenderTypeEdit").setEnabled(false);
@@ -4215,7 +4223,8 @@ sap.ui.define([
 							//EHQUT-383979-Italy- Termination Date Editable (INC19980583)
 							//everything is saved and loaded correctly for the new tender
 							//clear all, they will be set again when route matched on detail
-							if (Services.getSelectedCountry() !== "IT"){
+							//EHQUT-391391-Thailand - Adjust ‘Clone’ function to enable editing ‘Institute type’ and ‘Institute name’
+							if (Services.getSelectedCountry() !== "IT" && Services.getSelectedCountry() !== "TH"){
 							Services.setSelectedOfferID("");
 							Services.setSelectedOfferPath("");
 							Services.setSelectedProductID("");
