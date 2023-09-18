@@ -10151,7 +10151,7 @@ sap.ui.define([
 			var that = this;
 			var oFastAppDataModel = Services.getFastAppDataModel();
 			var button =oEvent.getSource();
-			if(Services.getSelectedCountry() === 'IT' && button.getIcon() !=='sap-icon://display'){
+			if((Services.getSelectedCountry() === 'IT'||Services.getSelectedCountry() === 'ES') && button.getIcon() !=='sap-icon://display'){
             button.setEnabled(false);
 			}
 			const offerProducts = oFastAppDataModel.getProperty("/ProductsForOffer/results")?.filter(product => product.ActiveProduct !== 2);
