@@ -5370,7 +5370,7 @@ sap.ui.define([
 			var sOfferID = this.getLoadedNextOfferID(); //Should be: Tenderoff + "-" + sNextOfferID;
 
 			var that = this;
-
+			var oResult=[];
 			//get fastAppData model
 			var oFastAppDataModel = this.getFastAppDataModel();
 
@@ -5473,7 +5473,7 @@ sap.ui.define([
 						var rsTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 						var rsSellingCompany = oCopyExistingOfferInfo.SellingCompany;
 						oResult = await that.getInstituteDistributorBrandProductsForMEA(rCountryCode,rInstituteID,rDistributorID,rsSellingCompany,rsTenderChannel);
-						
+						console.log(oResult.results);
 						
 						}
 					//push to array of offers
@@ -5501,14 +5501,21 @@ sap.ui.define([
 							let resultdata=[];
 							if (bValid) {
 								var brandID=oCopyExistingOfferInfo.Product.results[index].SKU.Product.HLEVEL4_CODE;
-								resultdata= (oResult.results.findIndex(commentdetails =>commentdetails.BRAND_ID	=== brandID && commentdetails.PRODUCT_ID === sProductCode) ) ;
+								console.log(brandID);
+								console.log(sProductCode);
+								if(oResult.results.length>0){
+									resultdata= (oResult.results.findIndex(commentdetails =>commentdetails.BRAND_ID	=== brandID && commentdetails.PRODUCT_ID === sProductCode) ) ;
+									console.log(resultdata);
+									oCopyExistingOfferInfo.Product.results[index].PaymentTerms =oResult.results[resultdata].PAYMENT_TERMS;
+								    oCopyExistingOfferInfo.Product.results[index].INCOTerms =oResult.results[resultdata].INCO_TERMS;
+								}
+								
 								//offerid should be the offer id of the new product
 								oCopyExistingOfferInfo.Product.results[index].OfferID = sOfferID;
 								//the update fields should be 0 (https://trello.com/c/np1g69g7)
 								oCopyExistingOfferInfo.Product.results[index].SUPPLY_UPDATE = 0;
 								oCopyExistingOfferInfo.Product.results[index].PAYMENT_UPDATE = 0;
-								oCopyExistingOfferInfo.Product.results[index].PaymentTerms =oResult.results[resultdata].PAYMENT_TERMS;
-								oCopyExistingOfferInfo.Product.results[index].INCOTerms =oResult.results[resultdata].INCO_TERMS;
+								
 								//set price update to 0 if prices exist
 								if (oCopyExistingOfferInfo.Product.results[index].Prices && oCopyExistingOfferInfo.Product.results[index].Prices.results) {
 									$.each(oCopyExistingOfferInfo.Product.results[index].Prices.results, function (index, oPrice) {
