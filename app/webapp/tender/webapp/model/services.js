@@ -5362,7 +5362,7 @@ sap.ui.define([
 		//------
 
 		//add a new offer that is not yet created in the database, so we can bind to it in the edit mode
-		addNewOfferToFastAppDataModel: function () {
+		addNewOfferToFastAppDataModel:async function () {
 
 			//what is the ID for the new offer
 			//offerID is a temporary ID beceause at this point we do not know yet the selling companny.
@@ -5464,7 +5464,19 @@ sap.ui.define([
 					if (oCopyExistingOfferInfo.Distributor.DistributorName) {
 						that.setSelectedDistributorID(oCopyExistingOfferInfo.Distributor.DistributorID);
 					}
-
+					//EHQUT-401627-MEA-SCTASK15273924 - Payment Terms on revised Offers
+					if(this.getReviewedOfferPressed() && oFastAppDataModel.oData.EditTender.Country.Region === 'MEA'){
+					
+						var rInstituteID = that.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+						var rCountryCode = that.getCountryCodeofSelectedTender(); //COUNTRY_CODE
+						var rDistributorID = that.getSelectedDistributorID(); //DISTRIBUTOR_ID
+						var rsTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+						var rsSellingCompany = oCopyExistingOfferInfo.SellingCompany;
+						var oResult = await that.getInstituteDistributorBrandProductsForMEA(rCountryCode,rInstituteID,rDistributorID,rsSellingCompany,rsTenderChannel);
+						if(oResult.length>0){
+							console.log(oResult);
+						}
+						}
 					//push to array of offers
 					aOffers.push(oCopyExistingOfferInfo);
 
@@ -8326,7 +8338,48 @@ sap.ui.define([
 
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
 		},
+		//EHQUT-401627-MEA-SCTASK15273924 -Payment Terms on revised Offers
+		getInstituteDistributorBrandProductsForMEA: function (sCountryCode,sInstituteID,sDistributorID,sSellingCompany,sTenderChannel) {
 
+			var oCountryCodeFilter = new Filter({
+				path: 'COUNTRY_CODE',
+				operator: FilterOperator.EQ,
+				value1: sCountryCode
+			});
+
+
+			var oInstituteFilter = new Filter({
+				path: 'INSTITUTE_ID',
+				operator: FilterOperator.EQ,
+				value1: sInstituteID
+			});
+
+
+			var oDistributorFilter = new Filter({
+				path: 'DISTRIBUTOR_ID',
+				operator: FilterOperator.EQ,
+				value1: sDistributorID
+			});
+
+			var oChannelFilter = new Filter({
+				path: 'CHANNEL',
+				operator: FilterOperator.EQ,
+				value1: sTenderChannel
+			});
+
+            
+			
+			var oLegalFilter = new Filter({
+				path: 'LEGAL_ENTITY_CODE',
+				operator: FilterOperator.EQ,
+				value1: sSellingCompany
+			});
+			var mParameters = {
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter,oChannelFilter,oLegalFilter]
+			};
+
+			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
+		},
         getInstituteDistributorBrandProductsForSpain: function (sInstitute) {
 
 			var oCountryCodeFilter = new Filter({
