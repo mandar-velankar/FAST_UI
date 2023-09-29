@@ -5468,8 +5468,8 @@ sap.ui.define([
 					if(this.getReviewedOfferPressed() && oFastAppDataModel.oData.EditTender.Country.Region === 'MEA'){
 					
 						var rInstituteID = that.getInstituteIDofSelectedTender(); //INSTITUTE_ID
-						var rCountryCode = that.getCountryCodeofSelectedTender(); //COUNTRY_CODE
-						var rDistributorID = that.getSelectedDistributorID(); //DISTRIBUTOR_ID
+						var rCountryCode = oCopyExistingOfferInfo.CountryCode; //COUNTRY_CODE
+						var rDistributorID = oCopyExistingOfferInfo.DistributorID; //DISTRIBUTOR_ID
 						var rsTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 						var rsSellingCompany = oCopyExistingOfferInfo.SellingCompany;
 						oResult = await that.getInstituteDistributorBrandProductsForMEA(rCountryCode,rInstituteID,rDistributorID,rsSellingCompany,rsTenderChannel);
@@ -5488,7 +5488,7 @@ sap.ui.define([
 						var sProductCode = oCopyExistingOfferInfo.Product.results[index].ProductCode;
 						var sInstituteID = that.getInstituteIDofSelectedTender(); //INSTITUTE_ID
 						var sCountryCode = that.getCountryCodeofSelectedTender(); //COUNTRY_CODE
-						var sDistributorID = that.getSelectedDistributorID(); //DISTRIBUTOR_ID
+						var sDistributorID = oCopyExistingOfferInfo.DistributorID //DISTRIBUTOR_ID
 						var sTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 						var sSellingCompany = oCopyExistingOfferInfo.SellingCompany; //that.getFastAppDataModel().getProperty(that.getSelectedOfferPath()).SellingCompany;
 						var aCommercialAgreement = that.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
@@ -5503,7 +5503,7 @@ sap.ui.define([
 								var brandID=oCopyExistingOfferInfo.Product.results[index].SKU.Product.HLEVEL4_CODE;
 								console.log(brandID);
 								console.log(sProductCode);
-								if(oResult.results.length>0){
+								if(oResult.results.length>0 && that.getReviewedOfferPressed() && oFastAppDataModel.oData.EditTender.Country.Region === 'MEA'){
 									resultdata= (oResult.results.findIndex(commentdetails =>commentdetails.BRAND_ID	=== brandID && commentdetails.PRODUCT_ID === sProductCode) ) ;
 									console.log(resultdata);
 									oCopyExistingOfferInfo.Product.results[index].PaymentTerms =oResult.results[resultdata].PAYMENT_TERMS;
