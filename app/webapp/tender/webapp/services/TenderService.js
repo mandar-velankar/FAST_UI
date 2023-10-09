@@ -132,7 +132,8 @@ sap.ui.define([
             oTenderToSave.PORTAL = oTenderSaveInfo.PORTAL;
             oTenderToSave.CONTENT = oTenderSaveInfo.CONTENT;
             oTenderToSave.TENDER_TYPE_2_ID = oTenderSaveInfo.TENDER_TYPE_2_ID;
-
+			oTenderToSave.EffectiveDate=oTenderSaveInfo.EffectiveDate;
+			oTenderToSave.ExpiryDate=oTenderSaveInfo.ExpiryDate;
 			return oTenderToSave;
 		},
 
