@@ -5473,7 +5473,7 @@ sap.ui.define([
 						var rsTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 						var rsSellingCompany = oCopyExistingOfferInfo.SellingCompany;
 						oResult = await that.getInstituteDistributorBrandProductsForMEA(rCountryCode,rInstituteID,rDistributorID,rsSellingCompany,rsTenderChannel);
-						console.log(oResult.results);
+						
 						
 						}
 					//push to array of offers
@@ -5501,12 +5501,11 @@ sap.ui.define([
 							let resultdata=[];
 							if (bValid) {
 								var brandID=oCopyExistingOfferInfo.Product.results[index].SKU.Product.HLEVEL4_CODE;
-								console.log(brandID);
-								console.log(sProductCode);
+								
 								if(that.getReviewedOfferPressed() && oFastAppDataModel.oData.EditTender.Country.Region === 'MEA'){
 									if(oResult.results.length>0){
 									resultdata= (oResult.results.findIndex(commentdetails =>commentdetails.BRAND_ID	=== brandID && commentdetails.PRODUCT_ID === sProductCode) ) ;
-									console.log(resultdata);
+									
 									oCopyExistingOfferInfo.Product.results[index].PaymentTerms =oResult.results[resultdata].PAYMENT_TERMS;
 								    oCopyExistingOfferInfo.Product.results[index].INCOTerms =oResult.results[resultdata].INCO_TERMS;
 									}
