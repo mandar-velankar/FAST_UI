@@ -4140,6 +4140,10 @@ sap.ui.define([
 
 				//EFRCL-217931-Italy - Tender expiry date field
 				oSaveBasicInfo.TerminationDate = (oTender.TerminationDate) ? oTender.TerminationDate : null;
+				//CR1
+				oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
+				oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
+
 				oSaveBasicInfo.TenderStatus = this.byId("idTenderStatus").getSelectedKey();
 
 				/* Mexico */
@@ -4337,7 +4341,9 @@ sap.ui.define([
 			/* Thailand */
 			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-
+	//CR1
+		oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
+		oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
 			//TEMP
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
 			oSaveBasicInfo.TenderNo = Services.getNewTenderNo(); //oSaveBasicInfo.TenderID.split("-")[2];
