@@ -2276,6 +2276,17 @@ sap.ui.define([
 						    that.getView().byId("idInstituteName").setEnabled(false);
 						}
 						that.getView().byId("idClassification").setEnabled(false);
+						//CR1
+						if ((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created')){
+							that.byId("idEffectiveDate").setEnabled(false);
+							that.byId("idExpiryDate").setEnabled(false);
+	
+	
+						}else if((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created')){
+							that.byId("idEffectiveDate").setEnabled(true);
+							//that.byId("idEffectiveDate").setEnabled(false);
+							that.byId("idExpiryDate").setEnabled(true);
+						}
 						//that.getView().byId("idInstituteType").setEnabled(false);
 						//that.getView().byId("idInstituteName").setEnabled(false);
 						that.getView().byId("idTenderChannel").setEnabled(false);
