@@ -4239,7 +4239,7 @@ sap.ui.define([
 							//everything is saved and loaded correctly for the new tender
 							//clear all, they will be set again when route matched on detail
 							//EHQUT-391391-Thailand - Adjust ‘Clone’ function to enable editing ‘Institute type’ and ‘Institute name’
-							if (Services.getSelectedCountry() !== "IT" && Services.getSelectedCountry() !== "TH"){
+							if (Services.getSelectedCountry() !== "IT" && Services.getSelectedCountry() !== "TH" && Services.getSelectedCountry() !== "ES"){
 							Services.setSelectedOfferID("");
 							Services.setSelectedOfferPath("");
 							Services.setSelectedProductID("");
