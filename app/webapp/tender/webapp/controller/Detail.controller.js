@@ -2277,14 +2277,13 @@ sap.ui.define([
 						}
 						that.getView().byId("idClassification").setEnabled(false);
 						//CR1
-						if ((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created')){
+						if ((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created') && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== undefined)){
 							that.byId("idEffectiveDate").setEnabled(false);
 							that.byId("idExpiryDate").setEnabled(false);
 	
 	
-						}else if((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created')){
+						}else if((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created'|| Services.getFastAppDataModel().oData.CurrentOfferStatus === undefined)){
 							that.byId("idEffectiveDate").setEnabled(true);
-							//that.byId("idEffectiveDate").setEnabled(false);
 							that.byId("idExpiryDate").setEnabled(true);
 						}
 						//that.getView().byId("idInstituteType").setEnabled(false);
