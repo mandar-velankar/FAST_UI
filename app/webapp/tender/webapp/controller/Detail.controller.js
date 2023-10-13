@@ -10503,6 +10503,7 @@ sap.ui.define([
 				var sSelectedOfferPath = Services.getSelectedOfferPath();
 			}
 
+			
 			//getting selected offer on the new way.
 			var sSelectedOfferID = Services.getSelectedOfferID(); //this.getView().getModel("fastData").getProperty(sSelectedOfferPath).OfferID;
 			
