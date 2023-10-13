@@ -1529,8 +1529,8 @@ sap.ui.define([
 				}else{
 					that.getView().byId("editButtonId").setEnabled(true);
 				}
-				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+				//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+				//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
 					oCustomRemark.setEnabled(false);
@@ -2078,8 +2078,8 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
-					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+					//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+					//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
@@ -2276,6 +2276,16 @@ sap.ui.define([
 						    that.getView().byId("idInstituteName").setEnabled(false);
 						}
 						that.getView().byId("idClassification").setEnabled(false);
+						//CR1
+						if ((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created') && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== undefined)){
+							that.byId("idEffectiveDate").setEnabled(false);
+							that.byId("idExpiryDate").setEnabled(false);
+	
+	
+						}else if((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created'|| Services.getFastAppDataModel().oData.CurrentOfferStatus === undefined)){
+							that.byId("idEffectiveDate").setEnabled(true);
+							that.byId("idExpiryDate").setEnabled(true);
+						}
 						//that.getView().byId("idInstituteType").setEnabled(false);
 						//that.getView().byId("idInstituteName").setEnabled(false);
 						that.getView().byId("idTenderChannel").setEnabled(false);
@@ -2632,8 +2642,8 @@ sap.ui.define([
 								oQofferValidity.setEnabled(true);
 							}
 						}
-						that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
-						that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
+						//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
+						//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
 						let oCustomRemark = that.byId("idCustomRemark");
 						if(oCustomRemark){
 							oCustomRemark.setEnabled(true);
@@ -4129,6 +4139,10 @@ sap.ui.define([
 
 				//EFRCL-217931-Italy - Tender expiry date field
 				oSaveBasicInfo.TerminationDate = (oTender.TerminationDate) ? oTender.TerminationDate : null;
+				//CR1
+				oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
+				oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
+
 				oSaveBasicInfo.TenderStatus = this.byId("idTenderStatus").getSelectedKey();
 
 				/* Mexico */
@@ -4224,7 +4238,7 @@ sap.ui.define([
 							//everything is saved and loaded correctly for the new tender
 							//clear all, they will be set again when route matched on detail
 							//EHQUT-391391-Thailand - Adjust ‘Clone’ function to enable editing ‘Institute type’ and ‘Institute name’
-							if (Services.getSelectedCountry() !== "IT" && Services.getSelectedCountry() !== "TH"){
+							if (Services.getSelectedCountry() !== "IT" && Services.getSelectedCountry() !== "TH" && Services.getSelectedCountry() !== "ES"){
 							Services.setSelectedOfferID("");
 							Services.setSelectedOfferPath("");
 							Services.setSelectedProductID("");
@@ -4326,7 +4340,9 @@ sap.ui.define([
 			/* Thailand */
 			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-
+	//CR1
+		oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
+		oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
 			//TEMP
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
 			oSaveBasicInfo.TenderNo = Services.getNewTenderNo(); //oSaveBasicInfo.TenderID.split("-")[2];
@@ -10060,8 +10076,10 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.hasNewMaterials = false;
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
-			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
-			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
+			//CR1
+			oPriceAgreementSaveInfo.EffectiveDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
+			//oPriceAgreementSaveInfo.ExpiryDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
+			oPriceAgreementSaveInfo.ExpiryDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate");
 			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
