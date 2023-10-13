@@ -3559,7 +3559,7 @@ sap.ui.define([
 
 		//Checkers
 		//--------
-
+//CR1
 		checkBasicInfo: function (oBasicInfo, bCheckForTenderToClone) {
 
 			var bValid = true;
@@ -3574,7 +3574,9 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
-				!oBasicInfo.BidDueDate) {
+				!oBasicInfo.BidDueDate || 
+				((oBasicInfo.CountryCode === 'IT'|| oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
+				((oBasicInfo.CountryCode === 'IT'|| oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.ExpiryDate )) {
 
 				//add error message
 				var oMessage = {
@@ -3586,7 +3588,9 @@ sap.ui.define([
 						'- Channel \n' +
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Bid due Date \n' +
+						((oBasicInfo.CountryCode === 'IT' ||oBasicInfo.CountryCode === 'ES') ? '-Effective Date \n':'') +
+						((oBasicInfo.CountryCode === 'IT' ||oBasicInfo.CountryCode === 'ES') ? '-Expiry Date \n':''),
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
