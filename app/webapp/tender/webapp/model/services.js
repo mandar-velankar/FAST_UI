@@ -3559,7 +3559,9 @@ sap.ui.define([
 
 		//Checkers
 		//--------
+
 		//EHQUT-CR1
+
 		checkBasicInfo: function (oBasicInfo, bCheckForTenderToClone) {
 
 			var bValid = true;
@@ -3574,7 +3576,9 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
-				!oBasicInfo.BidDueDate|| 
+
+				!oBasicInfo.BidDueDate || 
+
 				((oBasicInfo.CountryCode === 'IT'|| oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
 				((oBasicInfo.CountryCode === 'IT'|| oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.ExpiryDate )) {
 
