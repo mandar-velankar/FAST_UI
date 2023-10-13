@@ -1,5 +1,6 @@
 {
   "name": "FASTUI-app",
+  "version": "1.0.0",
   "description": "",
   "private": true,
   "devDependencies": {
@@ -17,7 +18,7 @@
     "node": "16.20.1"
   },
   "dependencies": {
-    "@sap/approuter": "14.3.3",
+    "@sap/approuter": "^14.3.3",
     "@ui5/builder": "2.11.10",
     "@ui5/cli": "^3.7.0",
     "serve": "14.2.1",
