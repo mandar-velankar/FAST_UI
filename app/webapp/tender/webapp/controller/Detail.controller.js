@@ -10788,6 +10788,14 @@ sap.ui.define([
                                         oResult.Outcome='Decision Pending';
                                     }
                                     //EHQUT-OTT-118849-Making decision pending as default
+									//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+									if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
+                                            {
+                                               oResult.Outcome='Won';
+											   that.onChangeOutcomeES(iIndex);
+											   oResult.Reason='Not Specified';
+											  
+                                            }
 									var oBayerProduct = {
 										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
@@ -10927,7 +10935,16 @@ sap.ui.define([
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			oOutcomeTreeTable.collapseAll();
 		},
+		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+		onChangeOutcomeES: function (index) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sBindingPath = "/ResultsForTree/" + index;
+			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
+				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+			});
 
+		},
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
