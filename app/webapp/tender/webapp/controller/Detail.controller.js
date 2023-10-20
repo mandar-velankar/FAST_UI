@@ -11720,6 +11720,10 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(true);
                             this.byId("idAwardDate").setVisible(true);
                             this.byId("idAwardDateLabel").setVisible(true);
+							this.byId("idExpiryDateLable").setVisible(false);
+							this.byId("idExpiryDate").setVisible(false);
+							this.byId("idEffectiveDateLabel").setVisible(false);
+							this.byId("idEffectiveDate").setVisible(false);
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
@@ -11737,6 +11741,10 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(false);
                             this.byId("idAwardDate").setVisible(false);
                             this.byId("idAwardDateLabel").setVisible(false);
+							this.byId("idEffectiveDateLabel").setVisible(true);
+							this.byId("idEffectiveDate").setVisible(true);
+							this.byId("idExpiryDateLable").setVisible(true);
+							this.byId("idExpiryDate").setVisible(true);
                         }                  
                     }         
                     //EHQUT-INC0184560-Issue in offer creation
