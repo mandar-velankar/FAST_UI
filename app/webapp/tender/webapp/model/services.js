@@ -3579,8 +3579,8 @@ sap.ui.define([
 
 				!oBasicInfo.BidDueDate || 
 
-				((oBasicInfo.CountryCode === 'IT'|| oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
-				((oBasicInfo.CountryCode === 'IT'|| oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.ExpiryDate )) {
+				((oBasicInfo.CountryCode === 'IT'|| (oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) &&!oBasicInfo.EffectiveDate )|| 
+				((oBasicInfo.CountryCode === 'IT'|| (oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) &&!oBasicInfo.ExpiryDate )) {
 
 				//add error message
 				var oMessage = {
@@ -3593,8 +3593,9 @@ sap.ui.define([
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
 						'- Bid due Date \n' +
-						((oBasicInfo.CountryCode === 'IT' ||oBasicInfo.CountryCode === 'ES') ? '-Effective Date \n':'') +
-						((oBasicInfo.CountryCode === 'IT' ||oBasicInfo.CountryCode === 'ES') ? '-Expiry Date \n':''),
+						((oBasicInfo.CountryCode === 'IT' ||(oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) ? '-Effective Date \n':'') +
+						((oBasicInfo.CountryCode === 'IT' ||(oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) ? '-Expiry Date \n':'')
+						,
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
