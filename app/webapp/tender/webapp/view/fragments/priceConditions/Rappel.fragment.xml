@@ -97,6 +97,16 @@
                         <core:Item key="Annually" text="Yearly" />									
                     </items>
                 </Select>
+                <!-- CR2 -->
+                <Label text="Rebate Calculation" required="true"/>
+                <Select selectedKey="{fastAppData>PriceConditionCode}" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/RappelRequired} }"> 
+                    <items>
+                        <core:Item key="" text="" />
+                        <core:Item key="YAW1" text="old calculation" />
+                        <core:Item key="YAW2" text="new calculation" />
+                       								
+                    </items>
+                </Select>
                 <Label text="{i18n>PaymentBackDate}" required="true"/>
                 <DatePicker
                         id="DP1"
