@@ -41,6 +41,13 @@
       "csrfProtection": true
     },
     {
+      "source": "/cs/(.*)$",
+      "target": "/cs/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-templates-api",
+      "csrfProtection": true
+    },
+    {
       "source": "/app/admin/(.*)$",
       "target": "$1",
       "destination": "adminapp"
