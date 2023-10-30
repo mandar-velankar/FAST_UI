@@ -10797,6 +10797,9 @@ sap.ui.define([
                                                oResult.Outcome='Won';
 											   that.onChangeOutcomeES(iIndex);
 											   oResult.Reason='Not Specified';
+											   var path = oEvent.getSource().getBindingContext("fastData").getPath();
+												var oRefre = oEvent.getSource();
+												that._onSaveTenderResults(path, oRefre);
 
                                             }
                                     //EHQUT-OTT-118849-Making decision pending as default
