@@ -1,9 +1,10 @@
 {
   "name": "FASTUI-app",
+  "version": "1.0.0",
   "description": "",
   "private": true,
   "devDependencies": {
-    "@sap/ux-ui5-tooling": "1.9.5",
+    "@sap/ux-ui5-tooling": "1.11.3",
     "eslint": "7.17.0",
     "ui5-task-cachebuster-indexing": "1.0.0"
   },
@@ -18,10 +19,10 @@
     "node": "16.20.1"
   },
   "dependencies": {
-    "@sap/approuter": "^10",
+    "@sap/approuter": "14.3.4",
     "@ui5/builder": "2.8.2",
-    "@ui5/cli": "^2.14.17",
-    "serve": "11.3.2",
+    "@ui5/cli": "3.7.1",
+    "serve": "14.2.1",
     "ui5-middleware-simpleproxy": "^0.6.0",
     "ui5-task-transpile": "^0.3.0"
   },
