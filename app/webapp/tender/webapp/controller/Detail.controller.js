@@ -1529,8 +1529,8 @@ sap.ui.define([
 				}else{
 					that.getView().byId("editButtonId").setEnabled(true);
 				}
-				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+				//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+				//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
 					oCustomRemark.setEnabled(false);
@@ -2078,8 +2078,8 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
-					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+					//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+					//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
@@ -2642,13 +2642,10 @@ sap.ui.define([
 								oQofferValidity.setEnabled(true);
 							}
 						}
-						if(Services.getSelectedCountry() === 'ES' && Services.getFastAppDataModel().oData.EditTender.Classification==="Commercial Agreement"){
-							that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-							that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
-						}else{
-							that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
-							that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
-						}
+						//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
+						//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
+						//CR1
+						
 						
 						let oCustomRemark = that.byId("idCustomRemark");
 						if(oCustomRemark){
@@ -10527,6 +10524,7 @@ sap.ui.define([
 				var sSelectedOfferPath = Services.getSelectedOfferPath();
 			}
 
+			
 			//getting selected offer on the new way.
 			var sSelectedOfferID = Services.getSelectedOfferID(); //this.getView().getModel("fastData").getProperty(sSelectedOfferPath).OfferID;
 			
@@ -10683,10 +10681,6 @@ sap.ui.define([
                                             {
                                                 oCompetitorResult.OUTCOME='Decision Pending';
                                             }
-											if(oCompetitorResult.OUTCOME=='' && sCountry=='ES' && aProducts.results[0].Offer.Division =='Consumer Health')
-                                            {
-                                                oCompetitorResult.OUTCOME='Won';
-                                            }
 											//EHQUT-218727-Requested Volume Field for competitor result
 											if(sCountry !== "IT"){
 												oCompetitorResult.REQUESTEDVOLUME =null;
@@ -10796,12 +10790,17 @@ sap.ui.define([
                                     {
                                         oResult.Outcome='Decision Pending';
                                     }
+									//EHQUT-OTT-118849-Making decision pending as default
+									//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
 									if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
                                             {
                                                oResult.Outcome='Won';
 											   that.onChangeOutcomeES(iIndex);
 											   oResult.Reason='Not Specified';
-											  
+											   var path = oEvent.getSource().getBindingContext("fastData").getPath();
+												var oRefre = oEvent.getSource();
+												that._onSaveTenderResults(path, oRefre);
+
                                             }
                                     //EHQUT-OTT-118849-Making decision pending as default
 									var oBayerProduct = {
@@ -10991,6 +10990,16 @@ sap.ui.define([
 		}	
 
 			
+
+		},
+		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+		onChangeOutcomeES: function (index) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sBindingPath = "/ResultsForTree/" + index;
+			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
+				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+			});
 
 		},
 		//add awarded company results
@@ -11227,17 +11236,6 @@ sap.ui.define([
 				var aListOutcomeReasons = [];
 				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, aListOutcomeReasons);
 			}
-
-		},
-		onChangeOutcomeES: function (index) {
-
-			
-			var oFastAppDataModel = Services.getFastAppDataModel();
-			var sBindingPath = "/ResultsForTree/" + index;
-			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
-			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
-				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
-			});
 
 		},
 
@@ -11738,10 +11736,7 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(true);
                             this.byId("idAwardDate").setVisible(true);
                             this.byId("idAwardDateLabel").setVisible(true);
-							this.byId("idEffectiveDateLabel").setVisible(false);
-							this.byId("idEffectiveDate").setVisible(false);
-							this.byId("idExpiryDateLable").setVisible(false);
-							this.byId("idExpiryDate").setVisible(false);
+							
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
@@ -11753,16 +11748,13 @@ sap.ui.define([
                             this.byId("idContractExtenseionLabel").setVisible(false);
                             this.byId("idPublicationDateLabel").setVisible(false);
                             this.byId("idPublicationDate").setVisible(false);
-							this.byId("idEffectiveDateLabel").setVisible(true);
-							this.byId("idEffectiveDate").setVisible(true);
-							this.byId("idExpiryDateLable").setVisible(true);
-							this.byId("idExpiryDate").setVisible(true);
                             this.byId("idBidDueDateLabel").setVisible(false);
                             this.byId("idBidDueDate").setVisible(false);
                             this.byId("idNextPublicationDyeLabel").setVisible(false);
                             this.byId("idNextPublicationDye").setVisible(false);
                             this.byId("idAwardDate").setVisible(false);
                             this.byId("idAwardDateLabel").setVisible(false);
+							
                         }                  
                     }         
                     //EHQUT-INC0184560-Issue in offer creation

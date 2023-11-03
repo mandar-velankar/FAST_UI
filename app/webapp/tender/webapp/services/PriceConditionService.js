@@ -150,7 +150,7 @@ sap.ui.define([
          * @param {*} tab - Indicates from which tab the call is comming from
          * @returns 
          */
-        //EHQUT-CR6
+        //CR2
         convertToSaveObject: function(oPriceConditionViewObject,tab){
             let priceConditionCode;         
             let convertedPVL;
