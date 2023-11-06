@@ -3575,8 +3575,8 @@ sap.ui.define([
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
 				!oBasicInfo.BidDueDate || 
-				((oBasicInfo.CountryCode === 'IT'|| (oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) &&!oBasicInfo.EffectiveDate )|| 
-				((oBasicInfo.CountryCode === 'IT'|| (oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) &&!oBasicInfo.ExpiryDate ))
+				((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
+				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate ))
 				{
 
 				//add error message
