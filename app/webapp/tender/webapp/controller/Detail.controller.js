@@ -1529,8 +1529,9 @@ sap.ui.define([
 				}else{
 					that.getView().byId("editButtonId").setEnabled(true);
 				}
-				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+				//CR1-Spain
+				// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+				// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
 					oCustomRemark.setEnabled(false);
@@ -2078,8 +2079,9 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
-					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+					//CR1-Spain
+					// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+					// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
