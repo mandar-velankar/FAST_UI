@@ -3565,7 +3565,7 @@ sap.ui.define([
 			var bValid = true;
 			var bWarning = false;
 			var aMessages = [];
-
+			//CR1-Spain
 			//check mandatory fields
 			if (
 				!oBasicInfo.TenderName ||
@@ -3578,6 +3578,7 @@ sap.ui.define([
 				((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
 				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate ))
 				{
+
 
 				//add error message
 				var oMessage = {

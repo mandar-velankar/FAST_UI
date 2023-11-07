@@ -100,6 +100,7 @@ sap.ui.define([
 			var oValue = oNumberFormat.format(parseFloat(offerPrice) * volume);
 			return oValue + " "+ currency;
 		},
+		//EHQUT-409020-MEA -INC21327542
 		profitability : function(netPrice, cogs, volume, currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1){
 			var oNumberFormat = NumberFormat.getPercentInstance({
 				maxFractionDigits: 2,
