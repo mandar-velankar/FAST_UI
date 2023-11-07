@@ -1529,9 +1529,11 @@ sap.ui.define([
 				}else{
 					that.getView().byId("editButtonId").setEnabled(true);
 				}
+
 				//CR1-Spain
 				// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 				// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
 					oCustomRemark.setEnabled(false);
@@ -2079,9 +2081,11 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
+
 					//CR1-Spain
 					// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 					// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
@@ -2278,6 +2282,16 @@ sap.ui.define([
 						    that.getView().byId("idInstituteName").setEnabled(false);
 						}
 						that.getView().byId("idClassification").setEnabled(false);
+						//CR1
+						if ((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created') && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== undefined)){
+							that.byId("idEffectiveDate").setEnabled(false);
+							that.byId("idExpiryDate").setEnabled(false);
+	
+	
+						}else if((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created'|| Services.getFastAppDataModel().oData.CurrentOfferStatus === undefined)){
+							that.byId("idEffectiveDate").setEnabled(true);
+							that.byId("idExpiryDate").setEnabled(true);
+						}
 						//that.getView().byId("idInstituteType").setEnabled(false);
 						//that.getView().byId("idInstituteName").setEnabled(false);
 						that.getView().byId("idTenderChannel").setEnabled(false);
@@ -2634,8 +2648,11 @@ sap.ui.define([
 								oQofferValidity.setEnabled(true);
 							}
 						}
-						that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
-						that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
+						//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
+						//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
+						//CR1
+						
+						
 						let oCustomRemark = that.byId("idCustomRemark");
 						if(oCustomRemark){
 							oCustomRemark.setEnabled(true);
@@ -4131,6 +4148,10 @@ sap.ui.define([
 
 				//EFRCL-217931-Italy - Tender expiry date field
 				oSaveBasicInfo.TerminationDate = (oTender.TerminationDate) ? oTender.TerminationDate : null;
+				//CR1
+				oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
+				oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
+
 				oSaveBasicInfo.TenderStatus = this.byId("idTenderStatus").getSelectedKey();
 
 				/* Mexico */
@@ -4226,7 +4247,7 @@ sap.ui.define([
 							//everything is saved and loaded correctly for the new tender
 							//clear all, they will be set again when route matched on detail
 							//EHQUT-391391-Thailand - Adjust ‘Clone’ function to enable editing ‘Institute type’ and ‘Institute name’
-							if (Services.getSelectedCountry() !== "IT" && Services.getSelectedCountry() !== "TH"){
+							if (Services.getSelectedCountry() !== "IT" && Services.getSelectedCountry() !== "TH" && Services.getSelectedCountry() !== "ES"){
 							Services.setSelectedOfferID("");
 							Services.setSelectedOfferPath("");
 							Services.setSelectedProductID("");
@@ -4328,7 +4349,9 @@ sap.ui.define([
 			/* Thailand */
 			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-
+	//CR1
+		oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
+		oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
 			//TEMP
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
 			oSaveBasicInfo.TenderNo = Services.getNewTenderNo(); //oSaveBasicInfo.TenderID.split("-")[2];
@@ -10062,8 +10085,10 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.hasNewMaterials = false;
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
-			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
-			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
+			//CR1
+			oPriceAgreementSaveInfo.EffectiveDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
+			//oPriceAgreementSaveInfo.ExpiryDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
+			oPriceAgreementSaveInfo.ExpiryDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate");
 			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;
 			oPriceAgreementSaveInfo.Discount = financialProduct.AdditionalDiscount;
@@ -10505,6 +10530,7 @@ sap.ui.define([
 				var sSelectedOfferPath = Services.getSelectedOfferPath();
 			}
 
+			
 			//getting selected offer on the new way.
 			var sSelectedOfferID = Services.getSelectedOfferID(); //this.getView().getModel("fastData").getProperty(sSelectedOfferPath).OfferID;
 			
@@ -10770,7 +10796,27 @@ sap.ui.define([
                                     {
                                         oResult.Outcome='Decision Pending';
                                     }
+									//EHQUT-OTT-118849-Making decision pending as default
+									//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+									if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
+                                            {
+                                               oResult.Outcome='Won';
+											   that.onChangeOutcomeES(iIndex);
+											   oResult.Reason='Not Specified';
+											   var path = oEvent.getSource().getBindingContext("fastData").getPath();
+												var oRefre = oEvent.getSource();
+												that._onSaveTenderResults(path, oRefre);
+
+                                            }
                                     //EHQUT-OTT-118849-Making decision pending as default
+									//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+									if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
+                                            {
+                                               oResult.Outcome='Won';
+											   that.onChangeOutcomeES(iIndex);
+											   oResult.Reason='Not Specified';
+											  
+                                            }
 									var oBayerProduct = {
 										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
@@ -10910,7 +10956,16 @@ sap.ui.define([
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
 			oOutcomeTreeTable.collapseAll();
 		},
+		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+		onChangeOutcomeES: function (index) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sBindingPath = "/ResultsForTree/" + index;
+			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
+				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+			});
 
+		},
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
@@ -10958,6 +11013,16 @@ sap.ui.define([
 		}	
 
 			
+
+		},
+		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+		onChangeOutcomeES: function (index) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sBindingPath = "/ResultsForTree/" + index;
+			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
+				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+			});
 
 		},
 		//add awarded company results
@@ -11694,6 +11759,7 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(true);
                             this.byId("idAwardDate").setVisible(true);
                             this.byId("idAwardDateLabel").setVisible(true);
+							
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
                         this.byId("idSelectTenderTypeEdit").setVisible(false);
@@ -11711,6 +11777,7 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(false);
                             this.byId("idAwardDate").setVisible(false);
                             this.byId("idAwardDateLabel").setVisible(false);
+							
                         }                  
                     }         
                     //EHQUT-INC0184560-Issue in offer creation

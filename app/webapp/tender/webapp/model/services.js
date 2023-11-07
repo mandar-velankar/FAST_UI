@@ -1001,7 +1001,7 @@ sap.ui.define([
 			oDialogMessages.open();
 
 		},
-
+		
 		//sorting an array of objects
 		sortByKeyDesc: function (array, key) {
 			if (array) {
@@ -3574,9 +3574,11 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
-				!oBasicInfo.BidDueDate ||
+				!oBasicInfo.BidDueDate || 
 				((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
-				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate )) {
+				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate ))
+				{
+
 
 				//add error message
 				var oMessage = {
@@ -3588,7 +3590,10 @@ sap.ui.define([
 						'- Channel \n' +
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Bid due Date \n' +
+						((oBasicInfo.CountryCode === 'IT' ||(oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) ? '-Effective Date \n':'') +
+						((oBasicInfo.CountryCode === 'IT' ||(oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) ? '-Expiry Date \n':'')
+						,
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -5437,7 +5442,7 @@ sap.ui.define([
 
 				//catch all promises in an array
 				let promises = [];
-
+				var termChanged= false;
 				//if no offer found, there is no offer selected
 				if (iIndexArray === -1) {
 					sap.m.MessageBox.warning("First select an offer.", {});
@@ -5507,9 +5512,13 @@ sap.ui.define([
 								if(that.getReviewedOfferPressed() && oFastAppDataModel.oData.EditTender.Country.Region === 'MEA'){
 									if(oResult.results.length>0){
 									resultdata= (oResult.results.findIndex(commentdetails =>commentdetails.BRAND_ID	=== brandID && commentdetails.PRODUCT_ID === sProductCode) ) ;
+									if(oCopyExistingOfferInfo.Product.results[index].PaymentTerms !==oResult.results[resultdata].PAYMENT_TERMS || oCopyExistingOfferInfo.Product.results[index].INCOTerms !==oResult.results[resultdata].INCO_TERMS){
+										termChanged =true;
+										oCopyExistingOfferInfo.Product.results[index].PaymentTerms =oResult.results[resultdata].PAYMENT_TERMS;
+										oCopyExistingOfferInfo.Product.results[index].INCOTerms =oResult.results[resultdata].INCO_TERMS;
+									}
 									
-									oCopyExistingOfferInfo.Product.results[index].PaymentTerms =oResult.results[resultdata].PAYMENT_TERMS;
-								    oCopyExistingOfferInfo.Product.results[index].INCOTerms =oResult.results[resultdata].INCO_TERMS;
+								    
 									}
 								}
 								
@@ -5526,6 +5535,7 @@ sap.ui.define([
 										oPrice.PRICE_UPDATE = 0;
 									});
 								}
+								
 
 								// clone PriceConditions
 								const clonedPriceConditions = priceConditions.map(pc => {
@@ -5565,9 +5575,16 @@ sap.ui.define([
 							}
 
 						}));
-
-					});
-
+						
+					}
+					);
+					setTimeout(function(){
+						if(termChanged){
+							sap.m.MessageBox.warning("Payment and Inco Terms changed",{});
+						}
+					}, 1000);
+					
+					
 					//if all promises pushed from the loop have received their answer
 					//we can keep the copy
 					Promise.all(promises).then((result) => {
@@ -5590,6 +5607,7 @@ sap.ui.define([
 						}
 
 					});
+					
 
 				}
 			}

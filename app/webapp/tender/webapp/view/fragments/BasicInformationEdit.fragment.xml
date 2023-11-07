@@ -292,12 +292,15 @@
 				<Label id="idTerminationDateLabel" text="{i18n>trmndte}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'IT'}"/>
 			    <DatePicker id="idTerminationDate" value="{path :'fastAppData>/EditTender/TerminationDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'IT'}"/>
 				<!-- EFRCL-217931-Italy - Tender expiry date field -->
+
 				<!-- CR1-Spain -->
 				<Label id="idEffectiveDateLabel" text="Effective Date" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES' }" required="true"/>
 				<DatePicker id="idEffectiveDate" value="{path :'fastAppData>/EditTender/EffectiveDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES'}"  />
 				<Label id="idExpiryDateLable" text="Expiry Date" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES'}" required="true"/>
 				<DatePicker id="idExpiryDate" value="{path :'fastAppData>/EditTender/ExpiryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" minDate="{fastAppData>/EditTender/EffectiveDate}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES'}"  />
+
 				<!-- CR1-Spain -->
+
 				<!-- Brazil only -->
 				<Label text="{i18n>OfferStartDate}" design="Bold"/>
 				<DatePicker id="idOfferStartDateEdit" 

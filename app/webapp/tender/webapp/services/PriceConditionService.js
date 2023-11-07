@@ -150,6 +150,7 @@ sap.ui.define([
          * @param {*} tab - Indicates from which tab the call is comming from
          * @returns 
          */
+        //CR2
         convertToSaveObject: function(oPriceConditionViewObject,tab){
             let priceConditionCode;         
             let convertedPVL;
@@ -176,7 +177,7 @@ sap.ui.define([
                         priceConditionCode = "YDC0";
                         break;
                     case "Rappel":
-                        priceConditionCode = "YAW1";
+                        priceConditionCode = oPriceConditionViewObject.PriceConditionCode;
                         break;
                     case "FOC":
                         priceConditionCode = "YA01";
