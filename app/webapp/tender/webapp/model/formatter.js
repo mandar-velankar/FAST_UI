@@ -111,7 +111,7 @@ sap.ui.define([
 			}else{
 				grosssale= calculateProfit(netPrice, cogs, volume, currency, spotRate, foc, focAbsPct, focType, unit, packFactor, foc_bund1, focAbsPct_bund1, cogs_bund1, packFactor_bund1);
 				
-				volume = (focType === "FOC 2") ? Math.ceil(parseFloat(volume)) :
+				volume = (focType === "FOC 1") ? Math.ceil(parseFloat(volume)) :
 				(
 					(focAbsPct === "PCT") ? Math.ceil(parseFloat(volume)) * (1 + parseFloat(foc)) : Math.ceil(parseFloat(volume)) + parseFloat(foc)
 				);
