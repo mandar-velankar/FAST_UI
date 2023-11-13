@@ -3565,7 +3565,7 @@ sap.ui.define([
 			var bValid = true;
 			var bWarning = false;
 			var aMessages = [];
-
+			//CR1
 			//check mandatory fields
 			if (
 				!oBasicInfo.TenderName ||
@@ -3574,7 +3574,8 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
-				!oBasicInfo.BidDueDate) {
+				!oBasicInfo.BidDueDate || ((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
+				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate )) {
 
 				//add error message
 				var oMessage = {
