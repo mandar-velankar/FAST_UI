@@ -134,6 +134,7 @@ sap.ui.define([
             oTenderToSave.TENDER_TYPE_2_ID = oTenderSaveInfo.TENDER_TYPE_2_ID;
 			oTenderToSave.EffectiveDate=oTenderSaveInfo.EffectiveDate;
 			oTenderToSave.ExpiryDate=oTenderSaveInfo.ExpiryDate;
+
 			oTenderToSave.OfferValidity = oTenderSaveInfo.OfferValidity;
 
 			return oTenderToSave;
