@@ -5532,7 +5532,9 @@ sap.ui.define([
 										oPrice.PRICE_UPDATE = 0;
 									});
 								}
-								
+								if(termChanged && oCopyExistingOfferInfo.Product.results.length === index +1){
+									sap.m.MessageBox.warning("Payment and Inco Terms changed",{});
+								}
 
 								// clone PriceConditions
 								const clonedPriceConditions = priceConditions.map(pc => {
@@ -5575,11 +5577,11 @@ sap.ui.define([
 						
 					}
 					);
-					setTimeout(function(){
-						if(termChanged){
-							sap.m.MessageBox.warning("Payment and Inco Terms changed",{});
-						}
-					}, 1000);
+					// setTimeout(function(){
+					// 	if(termChanged){
+					// 		sap.m.MessageBox.warning("Payment and Inco Terms changed",{});
+					// 	}
+					// }, 1000);
 					
 					
 					//if all promises pushed from the loop have received their answer

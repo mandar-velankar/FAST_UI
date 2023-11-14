@@ -10819,25 +10819,17 @@ sap.ui.define([
                                     }
 									//EHQUT-OTT-118849-Making decision pending as default
 									//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
-									if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
-                                            {
-                                               oResult.Outcome='Won';
-											   that.onChangeOutcomeES(iIndex);
-											   oResult.Reason='Not Specified';
-											   var path = oEvent.getSource().getBindingContext("fastData").getPath();
-												var oRefre = oEvent.getSource();
-												that._onSaveTenderResults(path, oRefre);
+									// if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
+                                    //         {
+                                    //            oResult.Outcome='Won';
+									// 		   that.onChangeOutcomeES(iIndex);
+									// 		   oResult.Reason='Not Specified';
+									// 		   var path = oEvent.getSource().getBindingContext("fastData").getPath();
+									// 			var oRefre = oEvent.getSource();
+									// 			that._onSaveTenderResults(path, oRefre);
 
-                                            }
-                                    //EHQUT-OTT-118849-Making decision pending as default
-									//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
-									if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
-                                            {
-                                               oResult.Outcome='Won';
-											   that.onChangeOutcomeES(iIndex);
-											   oResult.Reason='Not Specified';
-											  
-                                            }
+                                    //         }
+                                   
 									var oBayerProduct = {
 										CONTRACT_NO: oResult.ContractNo,
 										OFFERID: oProduct.OfferID,
