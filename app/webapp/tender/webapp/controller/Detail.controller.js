@@ -2086,7 +2086,7 @@ sap.ui.define([
 
 					// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 					// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
-=
+
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
