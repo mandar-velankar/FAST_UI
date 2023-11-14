@@ -3565,7 +3565,7 @@ sap.ui.define([
 			var bValid = true;
 			var bWarning = false;
 			var aMessages = [];
-			//CR1-Spain
+
 			//check mandatory fields
 			if (
 				!oBasicInfo.TenderName ||
@@ -3574,10 +3574,15 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
+
+				!oBasicInfo.BidDueDate || ((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
+				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate )) {
+
 				!oBasicInfo.BidDueDate || 
 				((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
 				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate ))
 				{
+
 
 
 				//add error message
@@ -3591,8 +3596,8 @@ sap.ui.define([
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
 						'- Bid due Date \n' +
-						((oBasicInfo.CountryCode === 'IT' ||(oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) ? '-Effective Date \n':'') +
-						((oBasicInfo.CountryCode === 'IT' ||(oBasicInfo.CountryCode === 'ES' && oBasicInfo.Classification === 'Commercial Agreement') ) ? '-Expiry Date \n':'')
+						(oBasicInfo.CountryCode === 'ES'  ? '-Effective Date \n':'') +
+						(oBasicInfo.CountryCode === 'ES' ? '-Expiry Date \n':'')
 						,
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1

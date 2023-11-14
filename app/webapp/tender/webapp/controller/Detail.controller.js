@@ -391,7 +391,9 @@ sap.ui.define([
 			Services.setSelectedTenderID(sTenderID);
 
 			//CurrentTender on FASTAPPDATA model for easy access, so we can move step by step to FastAppData model binding on basic information tab TODO currently we only use the dates in this way, we should use all fields in this way
-			var oTenderNew = Services.getService('Tender').getEmptyTender();
+			//CR1
+			var sCountryCode = Services.getSelectedCountry();
+			var oTenderNew = Services.getService('Tender').getEmptyTender(sCountryCode);
             oTenderNew.CountryCode = Services.getSelectedCountry();
 			oFastAppDataModel.setProperty("/EditTender/", oTenderNew);
 
@@ -2082,10 +2084,9 @@ sap.ui.define([
 						oQofferValidity.setEnabled(false);
 					}
 
-					//CR1-Spain
 					// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 					// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
-
+=
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
 						oCustomRemark.setEnabled(false);
@@ -2283,15 +2284,22 @@ sap.ui.define([
 						}
 						that.getView().byId("idClassification").setEnabled(false);
 						//CR1
-						if ((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created') && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== undefined)){
+
+						if ((Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created') && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== undefined)){
 							that.byId("idEffectiveDate").setEnabled(false);
 							that.byId("idExpiryDate").setEnabled(false);
 	
-	
-						}else if((Services.getSelectedCountry() === 'IT' || Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created'|| Services.getFastAppDataModel().oData.CurrentOfferStatus === undefined)){
+						}else if(( Services.getSelectedCountry() === 'ES' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created'|| Services.getFastAppDataModel().oData.CurrentOfferStatus === undefined)){
 							that.byId("idEffectiveDate").setEnabled(true);
 							that.byId("idExpiryDate").setEnabled(true);
 						}
+						if ((Services.getSelectedCountry() === 'IT' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== 'Offer Created') && (Services.getFastAppDataModel().oData.CurrentOfferStatus !== undefined)){
+							that.getView().byId("idOfferValidity").setEnabled(false);
+	
+						}else if(( Services.getSelectedCountry() === 'IT' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created'|| Services.getFastAppDataModel().oData.CurrentOfferStatus === undefined)){
+							that.getView().byId("idOfferValidity").setEnabled(true);
+						}
+=
 						//that.getView().byId("idInstituteType").setEnabled(false);
 						//that.getView().byId("idInstituteName").setEnabled(false);
 						that.getView().byId("idTenderChannel").setEnabled(false);
@@ -2641,18 +2649,22 @@ sap.ui.define([
 						
 					//EFRCL-268219- Change Additional Remarks to Editable
 						if(oQofferValidity){
-							if(Services.getSelectedCountry() === 'IT' && oData.STATUS === 'Quotation Submitted'){
+							if(Services.getSelectedCountry() === 'IT'){
 								oQofferValidity.setEnabled(false);
 							}
 							else{
 								oQofferValidity.setEnabled(true);
 							}
 						}
-						//that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
-						//that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
-						//CR1
-						
-						
+
+						if(Services.getSelectedCountry() === 'ES'){
+							that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+							that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+						}else{
+							that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(true);
+							that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(true);
+						}
+
 						let oCustomRemark = that.byId("idCustomRemark");
 						if(oCustomRemark){
 							oCustomRemark.setEnabled(true);
@@ -4152,6 +4164,9 @@ sap.ui.define([
 				oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
 				oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
 
+				oSaveBasicInfo.OfferValidity = (oTender.OfferValidity) ? oTender.OfferValidity : null;
+
+
 				oSaveBasicInfo.TenderStatus = this.byId("idTenderStatus").getSelectedKey();
 
 				/* Mexico */
@@ -4349,9 +4364,12 @@ sap.ui.define([
 			/* Thailand */
 			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-	//CR1
-		oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
-		oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
+
+			//CR1
+			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
+			oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
+			oSaveBasicInfo.OfferValidity = (oTender.OfferValidity) ? oTender.OfferValidity : null;
+
 			//TEMP
 			oSaveBasicInfo.ToolID = UserInfo.getToolID(); //612;
 			oSaveBasicInfo.TenderNo = Services.getNewTenderNo(); //oSaveBasicInfo.TenderID.split("-")[2];
@@ -10085,9 +10103,12 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.hasNewMaterials = false;
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
+
+			// oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
+			// oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
 			//CR1
 			oPriceAgreementSaveInfo.EffectiveDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
-			//oPriceAgreementSaveInfo.ExpiryDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
+
 			oPriceAgreementSaveInfo.ExpiryDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate");
 			oPriceAgreementSaveInfo.ListPrice = financialProduct.UOM === 'Pack' ? financialProduct.ConsumerPriceExclPP : financialProduct.ConsumerPriceExclPU; // ListPrice = ConsumerPrice w/o VAT
 			oPriceAgreementSaveInfo.RetailPrice = financialProduct.UOM === 'Pack' ? financialProduct.MaxPriceNhsPP : financialProduct.MaxPriceNhsPU; // RetailPrice = MaxPrice for NHS w/o VAT;

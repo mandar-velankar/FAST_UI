@@ -83,7 +83,7 @@ sap.ui.define([
 		//EFRCL-217931-Italy - Tender expiry date field
 		//basic info for tender to save
 		getConvertTenderToSave: function (oTenderSaveInfo) {
-
+			//CR1
 			//Convert odata to structure that can be used to save
 			var oTenderToSave = {};
 
@@ -134,14 +134,22 @@ sap.ui.define([
             oTenderToSave.TENDER_TYPE_2_ID = oTenderSaveInfo.TENDER_TYPE_2_ID;
 			oTenderToSave.EffectiveDate=oTenderSaveInfo.EffectiveDate;
 			oTenderToSave.ExpiryDate=oTenderSaveInfo.ExpiryDate;
+
+			oTenderToSave.OfferValidity = oTenderSaveInfo.OfferValidity;
+
 			return oTenderToSave;
 		},
-
+		//CR1
 		//get new tender object to bind to TODO - fill all fields and use them all for binding to new Tender... at this moment only dates are used
-		getEmptyTender: function () {
+		getEmptyTender: function (sCountryCode) {
 
 			var oNewTender = {};
-
+			var ValidityDate = "";
+            if(sCountryCode == 'IT'){
+            ValidityDate = new Date();
+            ValidityDate = ValidityDate.setMonth(ValidityDate.getMonth() + 6);
+            ValidityDate = new Date(ValidityDate);
+            }
 			oNewTender.TenderID = "";
 			oNewTender.CountryCode = "";
 			oNewTender.ToolID = "";
@@ -164,6 +172,7 @@ sap.ui.define([
 			oNewTender.GroupPurchasing = "";
 			oNewTender.PublicationDate = "";
 			oNewTender.TerminationDate = "";
+			oNewTender.OfferValidity = ValidityDate;
 			oNewTender.BidDueDate = "";
 			oNewTender.AwardDate = "";
 			oNewTender.NextPublicationDye = "";
