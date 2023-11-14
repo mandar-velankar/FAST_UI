@@ -3574,17 +3574,9 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
-
 				!oBasicInfo.BidDueDate || ((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
 				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate )) {
-
-				!oBasicInfo.BidDueDate || 
-				((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
-				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate ))
-				{
-
-
-
+				
 				//add error message
 				var oMessage = {
 					type: 'Error',
