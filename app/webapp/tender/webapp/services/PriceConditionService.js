@@ -177,7 +177,7 @@ sap.ui.define([
                         priceConditionCode = "YDC0";
                         break;
                     case "Rappel":
-                        priceConditionCode = oPriceConditionViewObject.PriceConditionCode;
+                        priceConditionCode = "YAW1";
                         break;
                     case "FOC":
                         priceConditionCode = "YA01";
