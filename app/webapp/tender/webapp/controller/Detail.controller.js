@@ -2299,7 +2299,7 @@ sap.ui.define([
 						}else if(( Services.getSelectedCountry() === 'IT' ) && (Services.getFastAppDataModel().oData.CurrentOfferStatus === 'Offer Created'|| Services.getFastAppDataModel().oData.CurrentOfferStatus === undefined)){
 							that.getView().byId("idOfferValidity").setEnabled(true);
 						}
-=
+
 						//that.getView().byId("idInstituteType").setEnabled(false);
 						//that.getView().byId("idInstituteName").setEnabled(false);
 						that.getView().byId("idTenderChannel").setEnabled(false);
