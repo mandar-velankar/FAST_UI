@@ -6,8 +6,8 @@
   },
   "routes": [
     {
-      "source": "/app/whc/v2/catalog/(.*)$",
-      "target": "/v2/catalog/$1",
+      "source": "/app/whc/v2/(.*)$",
+      "target": "/v2/$1",
       "authenticationType": "xsuaa",
       "destination": "fast-whc-api",
       "csrfProtection": true
