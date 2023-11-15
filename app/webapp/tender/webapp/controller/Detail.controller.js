@@ -10970,15 +10970,15 @@ sap.ui.define([
 			oOutcomeTreeTable.collapseAll();
 		},
 		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
-		onChangeOutcomeES: function (index) {
-			var oFastAppDataModel = Services.getFastAppDataModel();
-			var sBindingPath = "/ResultsForTree/" + index;
-			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
-			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
-				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
-			});
+		// onChangeOutcomeES: function (index) {
+		// 	var oFastAppDataModel = Services.getFastAppDataModel();
+		// 	var sBindingPath = "/ResultsForTree/" + index;
+		// 	var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+		// 	$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
+		// 		oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+		// 	});
 
-		},
+		// },
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
@@ -11029,15 +11029,15 @@ sap.ui.define([
 
 		},
 		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
-		onChangeOutcomeES: function (index) {
-			var oFastAppDataModel = Services.getFastAppDataModel();
-			var sBindingPath = "/ResultsForTree/" + index;
-			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
-			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
-				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
-			});
+		// onChangeOutcomeES: function (index) {
+		// 	var oFastAppDataModel = Services.getFastAppDataModel();
+		// 	var sBindingPath = "/ResultsForTree/" + index;
+		// 	var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+		// 	$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
+		// 		oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+		// 	});
 
-		},
+		// },
 		//add awarded company results
 		onAddAwardedProduct: function (oEvent) {
 
