@@ -6,6 +6,20 @@
   },
   "routes": [
     {
+      "source": "/app/whc/v2/(.*)$",
+      "target": "/v2/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-whc-api",
+      "csrfProtection": true
+    },
+    {
+      "source": "/whc/v2/catalog/(.*)$",
+      "target": "/v2/catalog/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-whc-api",
+      "csrfProtection": true
+    },
+    {
       "source": "/v4/(.*)$",
       "target": "$1",
       "authenticationType": "xsuaa",
@@ -17,6 +31,20 @@
       "target": "/v2/$1",
       "authenticationType": "xsuaa",
       "destination": "srv_api",
+      "csrfProtection": true
+    },
+    {
+      "source": "/UITemplates/(.*)$",
+      "target": "/UITemplates/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-templates-api",
+      "csrfProtection": true
+    },
+    {
+      "source": "/cs/(.*)$",
+      "target": "/cs/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-templates-api",
       "csrfProtection": true
     },
     {
@@ -68,7 +96,28 @@
       "source": "/priceagreements/(.*)$",
       "target": "$1",
       "destination": "priceAgreementsApp"
-    },{
+    },
+    {
+      "source": "^/standardtender/(.*)",
+      "target": "/combayertenderstatenderapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/app/standardtender/(.*)",
+      "target": "/combayertenderstatenderapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/whc/(.*)",
+      "target": "/combayertenderwhcapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/app/whc/(.*)",
+      "target": "/combayertenderwhcapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
       "source": "^/app/index.html(.*)$",
       "target":"index.html$1",
       "localDir": "dist",

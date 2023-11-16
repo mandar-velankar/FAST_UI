@@ -1,0 +1,18 @@
+{
+	"mVersionDependency": {
+		"UI5.sap/fiori.sap_belize_plus": "1.96.11",
+		"UI5.sap/fiori": "1.96.11",
+		"UI5": "1.96.11"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal--Contrast",
+	"sVendor": "Pythia",
+	"oExtends": "UI5.sap/fiori.sap_belize_plus",
+	"aBundled": [
+		"BayerFastFinal"
+	],
+	"sBuildOptions": "SKIP",
+	"sType": "ABSTRACT",
+	"sThemability": "PRIVATE",
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}

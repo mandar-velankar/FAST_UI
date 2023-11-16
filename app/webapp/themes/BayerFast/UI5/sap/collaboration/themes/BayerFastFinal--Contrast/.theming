@@ -1,0 +1,16 @@
+{
+	"mVersionDependency": {
+		"UI5.sap/collaboration.sap_belize_plus": "1.96.0",
+		"UI5.sap/collaboration": "1.96.0",
+		"UI5": "1.96.11"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal--Contrast",
+	"oExtends": "UI5.sap/collaboration.sap_belize_plus",
+	"aBundled": [
+		"BayerFastFinal"
+	],
+	"sType": "ABSTRACT",
+	"sThemability": "PRIVATE",
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}
