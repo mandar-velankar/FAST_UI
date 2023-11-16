@@ -1,0 +1,8 @@
+{
+	"default": {
+		"_sap_ui_integration_AnalyticsCloud_ScrollBorder": "transparent"
+	},
+	"scopes": {
+		"sapContrast": {}
+	}
+}
