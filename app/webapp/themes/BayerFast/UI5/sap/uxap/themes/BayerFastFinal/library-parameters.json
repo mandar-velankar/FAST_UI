@@ -1,0 +1,14 @@
+{
+	"default": {
+		"_sap_uxap_ObjectPageSection_HeaderBorderColor": "#995a7b",
+		"_sap_uxap_ObjectPageSection_TitleBorderColor": "#291821",
+		"_sap_uxap_ObjectPageSubSection_BorderColor": "#995a7b"
+	},
+	"scopes": {
+		"sapContrast": {
+			"_sap_uxap_ObjectPageSection_HeaderBorderColor": "#435668",
+			"_sap_uxap_ObjectPageSection_TitleBorderColor": "#9dafc0",
+			"_sap_uxap_ObjectPageSubSection_BorderColor": "#435668"
+		}
+	}
+}

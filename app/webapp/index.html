@@ -26,7 +26,9 @@
 	<!-- EFRCL- 347659- ALL-Offer view formatting issue -->
 	<script id="sap-ui-bootstrap"
 			src="https://sapui5.hana.ondemand.com/1.96.25/resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_belize"
+			data-sap-ui-versionedLibCss="true"
+			data-sap-ui-theme="BayerFastFinal"
+			data-sap-ui-theme-roots='{"BayerFastFinal" : "themes/BayerFast/UI5"}'
 			data-sap-ui-resourceroots='{
 				"com.bayer.tender.landingspage": "./"
 			}'
@@ -38,9 +40,20 @@
 			//https://sapui5.hana.ondemand.com/1.72.11/resources/sap-ui-cachebuster/sap-ui-core.js"
 			//data-sap-ui-appCacheBuster="./"
 	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.6.0/dist/jspdf.plugin.autotable.js"></script>
+	<script type="text/javascript" src="https://widgets.veevanetwork.com/veeva-network-manifest.js"></script>
+	<script type="text/javascript" src="https://widgets.veevanetwork.com/veeva-network-search-widget-loader.js"></script>
 
 </head>
 <body class="sapUiBody">
 	<div data-sap-ui-component data-name="com.bayer.tender.landingspage" data-id="container" data-height="100%" style="height: 100%" data-settings='{"id" : "landingspage"}'></div>
+    <veeva-network-search-widget
+        id="searchWidget"
+        widget-name="CT_SEARCH"
+        auth-domain="bayerus.veevanetwork.com"
+        widget-id="NDEyNzc7OztjdF9zZWFyY2hfX2M="
+        show-in-dialog="true"/>
 </body>
 </html>

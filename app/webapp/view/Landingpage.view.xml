@@ -92,6 +92,24 @@
 										<ImageContent src="sap-icon://decision"/>
 									</TileContent>
 								</GenericTile>
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Standard Tender" 
+									press="onTileStandardTenderPress" 
+									visible="{tiles>/standardtender}">
+									<TileContent>
+										<ImageContent src="sap-icon://request"/>
+									</TileContent>
+								</GenericTile>
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="US WHC" 
+									press="onTileWhcPress" 
+									visible="{tiles>/whc}">
+									<TileContent>
+										<ImageContent src="sap-icon://request"/>
+									</TileContent>
+								</GenericTile>
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
 					</Panel>

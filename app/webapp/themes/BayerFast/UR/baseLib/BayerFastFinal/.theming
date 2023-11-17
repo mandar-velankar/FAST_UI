@@ -1,0 +1,36 @@
+{
+	"mVersionDependency": {
+		"UR.baseLib.sap_belize": "10.30.7.351846.0",
+		"UR.baseLib": "10.30.7.351846.0",
+		"UR": "10.30.7.351846.0"
+	},
+	"sEntity": "Theme",
+	"sId": "BayerFastFinal",
+	"sLabel": "Custom Belize",
+	"sVendor": "Pythia",
+	"oExtends": "UR.baseLib.sap_belize",
+	"aBuildFiles": [
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_fioripaddings",
+		"standards_legacy",
+		"SAP-icons"
+	],
+	"aFiles": [
+		"base",
+		"standards",
+		"standards_cozy",
+		"standards_condensed",
+		"standards_fioripaddings",
+		"standards_legacy",
+		"SAP-icons"
+	],
+	"aBundled": [
+		"BayerFastFinal--Contrast"
+	],
+	"sTextDirections": "LTR",
+	"sType": "STANDARD",
+	"sThemability": "PUBLIC",
+	"sReleaseStage": "GENERAL_AVAILABILITY"
+}
