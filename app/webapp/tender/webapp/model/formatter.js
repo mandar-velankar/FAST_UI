@@ -200,6 +200,22 @@ sap.ui.define([
 			}
 			return oValue + " "+ currency;
 		},
+		priceFour: function(price, currency, unit) {
+			if (!price){
+				return "";
+			}
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: 4,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			var oValue = oNumberFormat.format(parseFloat(price));
+			if (!currency){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
 		
 		unitPrice: function(price, currency, unit, packFactor) {
 			if (!price){

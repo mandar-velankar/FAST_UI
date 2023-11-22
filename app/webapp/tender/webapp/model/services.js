@@ -7000,7 +7000,7 @@ sap.ui.define([
 
 										//in this case we should save price data as well
 										var oProductPrice = that.getService('Price').getConvertPriceToSave(oProductSaveInfo.Price);
-
+										var Region=that.getFastAppDataModel().oData.Tender.Country.Region;
 										//if sRegPrice = false, meaning calculation is no longer found & price is not copied
 										if (oUpToDatePrices.RegPrice !== false) {
 
@@ -7009,7 +7009,7 @@ sap.ui.define([
 											//make same rounding
 											if (oProductSaveInfo.UnitPerPack) {
 												var sUnitPerPackOffer = oProductSaveInfo.UnitPerPack;
-												var iConvertedOfferPrice = formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
+												var iConvertedOfferPrice = (Region === 'MEA' ) ? formatter.priceFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer) :formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
 											} else {
 												var iConvertedOfferPrice = oProductPrice.OfferPrice;
 											}
@@ -7017,7 +7017,7 @@ sap.ui.define([
 											//make same rounding
 											if (sRegisteredPrice) {
 												var sUOMregPrice = sRegisteredPrice.UOM;
-												var iConvertedRegPrice = formatter.priceTwoOrFour(iConvertedRegPrice, undefined, sUOMregPrice);
+												var iConvertedRegPrice = (Region === 'MEA' ) ? formatter.priceFour(iConvertedRegPrice, undefined, sUOMregPrice) :formatter.priceTwoOrFour(iConvertedRegPrice, undefined, sUOMregPrice);
 											} else {
 												var iConvertedRegPrice = iConvertedRegPrice;
 											}
