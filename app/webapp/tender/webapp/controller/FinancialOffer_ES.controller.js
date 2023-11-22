@@ -124,7 +124,7 @@ sap.ui.define([
                 Services.getFastAppDataModel().setProperty("/PriceConditionClassification", priceConditionClassification);
             }
         },
-
+//EHQUT-387694-Spain - possibility to create tender for single institutes/accounts at every time (they need to be active at the same time with regional tender)
         managePriceConditions: async function(){
             BusyIndicator.show();
 
@@ -143,19 +143,19 @@ sap.ui.define([
             const applicableTenderCondition = await this.getApplicableTenderCondition();
             const existingPriceAgreement = await this.getExistingPriceAgreement();
             let sExistingAgreementInPlaceText = '';            
-            if(applicableTenderCondition){
-                const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
-                const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
-                if(!priceConditionViews.find(conditionView => conditionView.IsPricingUnlocked === true)){
-                    this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView); //overrule this by checking if there is a condition where we overrule the existing one. If yes, load that one
-                }
-                sExistingAgreementInPlaceText = 'Existing agreement in place for OfferID: ' + existingPriceAgreement.OfferId + ' Expiring on: ' + (DateFormat.getDateInstance({pattern : "dd-MM-yyyy" }).format(existingPriceAgreement.ExpiryDate));
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlaceText", sExistingAgreementInPlaceText);
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
-            }else{
-                Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
-            }
-
+            // if(applicableTenderCondition){
+            //     const applicableTenderConditionType = applicableTenderCondition?.PriceConditionClassification?.ConditionType;
+            //     const applicablePriceConditionView = priceConditionViews.find(conditionView => conditionView.ConditionType === applicableTenderConditionType);
+            //     if(!priceConditionViews.find(conditionView => conditionView.IsPricingUnlocked === true)){
+            //         this.copyAndSetApplicableTenderConditionValues(applicableTenderCondition, applicablePriceConditionView); //overrule this by checking if there is a condition where we overrule the existing one. If yes, load that one
+            //     }
+            //     sExistingAgreementInPlaceText = 'Existing agreement in place for OfferID: ' + existingPriceAgreement.OfferId + ' Expiring on: ' + (DateFormat.getDateInstance({pattern : "dd-MM-yyyy" }).format(existingPriceAgreement.ExpiryDate));
+            //     Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlaceText", sExistingAgreementInPlaceText);
+            //     Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", true);
+            // }else{
+            //     Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
+            // }
+            Services.getFastAppDataModel().setProperty("/ExistingAgreementInPlace", false);
             // set selected key on idPriceConditionSelect
             const priceConditionClassification = Services.getFastAppDataModel().getProperty("/PriceConditionClassification");
             const existingMainPriceCondition = priceConditionViews.find(item => item.isMain && item.ExistingPriceConditionID);
@@ -1314,18 +1314,18 @@ sap.ui.define([
                     since we are now also calling this method from the "Royal decree included" checkbox.
                       Also, the code will throw error, as the sap.m.Select Control do not have openValueStateMessage() and closeValueStateMessage() methods. 
             */
-
+            //EHQUT-311609-Spain -Additional discount field should not include Royal Decree
             if(evt.getSource().openValueStateMessage){            
                 if(bindingContext.getProperty('/Tender/Classification') === 'Tender'){
                     if(bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Private Account' && 
-                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor )) || 
-                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) ))))){
+                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) && (((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) / packFactor )) || 
+                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.PVL) )))))){
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and PVL.");
                         evt.getSource().openValueStateMessage();  
                     } else if((bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Public Account' || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'Region(s)'  || bindingContext.getProperty('/Tender/Institute/InstituteType') === 'National') && 
-                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) || ((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || 
-                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) ))))){                         
+                                (newNetPriceWithoutTaxBeforeDeductionRD > Number(priceConditionViewObj.MaximumPrice) && (((UOM === 'Unit' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) / packFactor )) || 
+                                (UOM === 'Pack' && newNetPriceWithoutTaxBeforeDeductionRD > (Number(priceConditionViewObj.YLAP) )))))){                         
                         evt.getSource().setValueState("Error");
                         evt.getSource().setValueStateText("Net price w/o tax must be lower than the maximum price and confidential price.");
                         evt.getSource().openValueStateMessage();                    
@@ -1434,7 +1434,13 @@ sap.ui.define([
             //EHQUT-Spain -311609- "Additional discount" field should not include Royal Decree
             const standardPrice = correctPrice * (1 - priceConditionViewObj.StandardDiscount);
            // const additionalDiscount =  correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6) : 0;
-           const additionalDiscount = correctPrice > 0 ? (1-(newNetPriceWithoutTaxBeforeDeductionRD/(priceConditionViewObj.YLAP  *(1 - priceConditionViewObj.RoyalDecreePercentage)))).toFixed(6) : 0;
+            let additionalDiscount;
+            //    const additionalDiscount = correctPrice > 0 ? (1-(newNetPriceWithoutTaxBeforeDeductionRD/(priceConditionViewObj.YLAP  *(1 - priceConditionViewObj.RoyalDecreePercentage)))).toFixed(6) : 0;
+            if (priceConditionViewObj.RoyalDecreeIncl) {
+                additionalDiscount = correctPrice > 0 ? (1 - (newNetPriceWithoutTaxBeforeDeductionRD / (priceConditionViewObj.YLAP * (1 - priceConditionViewObj.RoyalDecreePercentage)))).toFixed(6) : 0;
+            } else {
+                additionalDiscount = correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6) : 0;
+            }
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
 

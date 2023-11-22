@@ -1001,7 +1001,7 @@ sap.ui.define([
 			oDialogMessages.open();
 
 		},
-
+		
 		//sorting an array of objects
 		sortByKeyDesc: function (array, key) {
 			if (array) {
@@ -3574,8 +3574,9 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
-				!oBasicInfo.BidDueDate) {
-
+				!oBasicInfo.BidDueDate || ((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
+				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate )) {
+				
 				//add error message
 				var oMessage = {
 					type: 'Error',
@@ -3586,7 +3587,10 @@ sap.ui.define([
 						'- Channel \n' +
 						'- Group Purchasing \n' +
 						'- Publication Date \n' +
-						'- Bid due Date \n',
+						'- Bid due Date \n' +
+						(oBasicInfo.CountryCode === 'ES'  ? '-Effective Date \n':'') +
+						(oBasicInfo.CountryCode === 'ES' ? '-Expiry Date \n':'')
+						,
 					subtitle: 'Please enter all the mandatory fields..',
 					counter: 1
 				}
@@ -5362,7 +5366,7 @@ sap.ui.define([
 		//------
 
 		//add a new offer that is not yet created in the database, so we can bind to it in the edit mode
-		addNewOfferToFastAppDataModel: function () {
+		addNewOfferToFastAppDataModel:async function () {
 
 			//what is the ID for the new offer
 			//offerID is a temporary ID beceause at this point we do not know yet the selling companny.
@@ -5370,7 +5374,7 @@ sap.ui.define([
 			var sOfferID = this.getLoadedNextOfferID(); //Should be: Tenderoff + "-" + sNextOfferID;
 
 			var that = this;
-
+			var oResult=[];
 			//get fastAppData model
 			var oFastAppDataModel = this.getFastAppDataModel();
 
@@ -5435,7 +5439,7 @@ sap.ui.define([
 
 				//catch all promises in an array
 				let promises = [];
-
+				var termChanged= false;
 				//if no offer found, there is no offer selected
 				if (iIndexArray === -1) {
 					sap.m.MessageBox.warning("First select an offer.", {});
@@ -5464,7 +5468,18 @@ sap.ui.define([
 					if (oCopyExistingOfferInfo.Distributor.DistributorName) {
 						that.setSelectedDistributorID(oCopyExistingOfferInfo.Distributor.DistributorID);
 					}
-
+					//EHQUT-401627-MEA-SCTASK15273924 - Payment Terms on revised Offers
+					if(this.getReviewedOfferPressed() && oFastAppDataModel.oData.EditTender.Country.Region === 'MEA'){
+					
+						var rInstituteID = that.getInstituteIDofSelectedTender(); //INSTITUTE_ID
+						var rCountryCode = oCopyExistingOfferInfo.CountryCode; //COUNTRY_CODE
+						var rDistributorID = oCopyExistingOfferInfo.DistributorID; //DISTRIBUTOR_ID
+						var rsTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
+						var rsSellingCompany = oCopyExistingOfferInfo.SellingCompany;
+						oResult = await that.getInstituteDistributorBrandProductsForMEA(rCountryCode,rInstituteID,rDistributorID,rsSellingCompany,rsTenderChannel);
+						
+						
+						}
 					//push to array of offers
 					aOffers.push(oCopyExistingOfferInfo);
 
@@ -5477,7 +5492,7 @@ sap.ui.define([
 						var sProductCode = oCopyExistingOfferInfo.Product.results[index].ProductCode;
 						var sInstituteID = that.getInstituteIDofSelectedTender(); //INSTITUTE_ID
 						var sCountryCode = that.getCountryCodeofSelectedTender(); //COUNTRY_CODE
-						var sDistributorID = that.getSelectedDistributorID(); //DISTRIBUTOR_ID
+						var sDistributorID = oCopyExistingOfferInfo.DistributorID //DISTRIBUTOR_ID
 						var sTenderChannel = that.getFastAppDataModel().getProperty('/Tender/TenderChannel');
 						var sSellingCompany = oCopyExistingOfferInfo.SellingCompany; //that.getFastAppDataModel().getProperty(that.getSelectedOfferPath()).SellingCompany;
 						var aCommercialAgreement = that.getFastAppDataModel().getProperty('/Tender/CommercialAgreement');
@@ -5487,18 +5502,38 @@ sap.ui.define([
 						promises.push(that.checkProductValidForOffer(sProductCode, sInstituteID, sCountryCode, sDistributorID, sTenderChannel,
 							sSellingCompany, aCommercialAgreement).then(function (bValid) {
 							//if product is still valid, we can add it to the model, otherwise we need to 
+							let resultdata=[];
 							if (bValid) {
+								var brandID=oCopyExistingOfferInfo.Product.results[index].SKU.Product.HLEVEL4_CODE;
+								
+								if(that.getReviewedOfferPressed() && oFastAppDataModel.oData.EditTender.Country.Region === 'MEA'){
+									if(oResult.results.length>0){
+									resultdata= (oResult.results.findIndex(commentdetails =>commentdetails.BRAND_ID	=== brandID && commentdetails.PRODUCT_ID === sProductCode) ) ;
+									if(oCopyExistingOfferInfo.Product.results[index].PaymentTerms !==oResult.results[resultdata].PAYMENT_TERMS || oCopyExistingOfferInfo.Product.results[index].INCOTerms !==oResult.results[resultdata].INCO_TERMS){
+										termChanged =true;
+										oCopyExistingOfferInfo.Product.results[index].PaymentTerms =oResult.results[resultdata].PAYMENT_TERMS;
+										oCopyExistingOfferInfo.Product.results[index].INCOTerms =oResult.results[resultdata].INCO_TERMS;
+									}
+									
+								    
+									}
+								}
+								
 								//offerid should be the offer id of the new product
 								oCopyExistingOfferInfo.Product.results[index].OfferID = sOfferID;
 								//the update fields should be 0 (https://trello.com/c/np1g69g7)
 								oCopyExistingOfferInfo.Product.results[index].SUPPLY_UPDATE = 0;
 								oCopyExistingOfferInfo.Product.results[index].PAYMENT_UPDATE = 0;
+								
 								//set price update to 0 if prices exist
 								if (oCopyExistingOfferInfo.Product.results[index].Prices && oCopyExistingOfferInfo.Product.results[index].Prices.results) {
 									$.each(oCopyExistingOfferInfo.Product.results[index].Prices.results, function (index, oPrice) {
 										//if prices exist
 										oPrice.PRICE_UPDATE = 0;
 									});
+								}
+								if(termChanged && oCopyExistingOfferInfo.Product.results.length === index +1){
+									sap.m.MessageBox.warning("Payment and Inco Terms changed",{});
 								}
 
 								// clone PriceConditions
@@ -5539,9 +5574,16 @@ sap.ui.define([
 							}
 
 						}));
-
-					});
-
+						
+					}
+					);
+					// setTimeout(function(){
+					// 	if(termChanged){
+					// 		sap.m.MessageBox.warning("Payment and Inco Terms changed",{});
+					// 	}
+					// }, 1000);
+					
+					
 					//if all promises pushed from the loop have received their answer
 					//we can keep the copy
 					Promise.all(promises).then((result) => {
@@ -5564,6 +5606,7 @@ sap.ui.define([
 						}
 
 					});
+					
 
 				}
 			}
@@ -5608,6 +5651,58 @@ sap.ui.define([
 			this._aProductsSaveInfo.push(oProductSaveInfo);
 
 		},
+		//EHQUT-401627-MEA-SCTASK15273924 - Payment Terms on revised Offers
+		getInstituteDistributorBrandProductsForMEA: function (sCountryCode,sInstituteID,sDistributorID,sSellingCompany,sTenderChannel) {
+
+	
+			//lets work with callbacks (3 places, return, resolve, reject)
+			var oDeferred = $.Deferred();
+
+			//that is this
+			var that = this;
+
+			//set filters
+			var aFilters = [];
+			aFilters.push(
+				new sap.ui.model.Filter("COUNTRY_CODE", sap.ui.model.FilterOperator.EQ, sCountryCode),
+				new sap.ui.model.Filter("INSTITUTE_ID", sap.ui.model.FilterOperator.EQ, sInstituteID),
+				new sap.ui.model.Filter("DISTRIBUTOR_ID", sap.ui.model.FilterOperator.EQ, sDistributorID),
+				new sap.ui.model.Filter("CHANNEL", sap.ui.model.FilterOperator.EQ, sTenderChannel),
+				new sap.ui.model.Filter("LEGAL_ENTITY_CODE", sap.ui.model.FilterOperator.EQ, sSellingCompany)
+			);
+				//Reading variables
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+			var sPath = "/InstituteDistributorBrandProduct";
+
+			//actual reading of the Product list
+			oFastDataCalls.read(sPath, {
+				filters: aFilters,
+				success: function (oData, oResponse) {
+
+					if (oData.results) { //if offers are found add them to the Model
+					oFastAppDataModel.setProperty("/InstituteDistributorBrandProductMEA",oData.results)
+			}
+
+					//let the callback be triggered
+					oDeferred.resolve(oData);
+				},
+				error: function (oError) {
+
+					//show error message
+					that.showErrorMessage(oError, "Loading list of products");
+
+					//let the callback be triggered
+					oDeferred.reject(oError);
+				}
+
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+
+		
+	},
 
 		//add already existing products to array that will be saved later on
 		addAlreadyExistingProductsToSave: function () {
