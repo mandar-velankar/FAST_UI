@@ -13,7 +13,7 @@
     "mbt": "^1.2.26"
   },
   "engines": {
-    "node": "^16.20.1"
+    "node": "18.18.2"
   },
   "scripts": {
     "setup": "cd app && npm install",
