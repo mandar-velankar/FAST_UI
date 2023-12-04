@@ -1533,8 +1533,8 @@ sap.ui.define([
 				}
 
 				//CR1-Spain
-				// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-				// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
@@ -2084,8 +2084,8 @@ sap.ui.define([
 						oQofferValidity.setEnabled(false);
 					}
 
-					// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-					// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
@@ -2656,8 +2656,8 @@ sap.ui.define([
 								oQofferValidity.setEnabled(true);
 							}
 						}
-
-						if(Services.getSelectedCountry() === 'ES'){
+						//EHQUT-CR1
+						if(Services.getSelectedCountry() === 'ES' && Services.getFastAppDataModel().oData.EditTender.Classification==="Commercial Agreement"){
 							that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 							that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 						}else{
@@ -11772,6 +11772,10 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(true);
                             this.byId("idAwardDate").setVisible(true);
                             this.byId("idAwardDateLabel").setVisible(true);
+							this.byId("idEffectiveDateLabel").setVisible(false);
+							this.byId("idEffectiveDate").setVisible(false);
+							this.byId("idExpiryDateLable").setVisible(false);
+							this.byId("idExpiryDate").setVisible(false);
 							
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
@@ -11790,6 +11794,10 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(false);
                             this.byId("idAwardDate").setVisible(false);
                             this.byId("idAwardDateLabel").setVisible(false);
+							this.byId("idEffectiveDateLabel").setVisible(true);
+							this.byId("idEffectiveDate").setVisible(true);
+							this.byId("idExpiryDateLable").setVisible(true);
+							this.byId("idExpiryDate").setVisible(true);
 							
                         }                  
                     }         
