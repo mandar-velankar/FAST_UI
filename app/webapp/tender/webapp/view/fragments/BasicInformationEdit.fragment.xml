@@ -294,10 +294,10 @@
 				<!-- EFRCL-217931-Italy - Tender expiry date field -->
 
 				<!-- CR1 -->
-					<Label id="idEffectiveDateLabel" text="Effective Date" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES' }" required="true"/>
-					<DatePicker id="idEffectiveDate" value="{path :'fastAppData>/EditTender/EffectiveDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES'}"  />
-					<Label id="idExpiryDateLable" text="Expiry Date" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES'}" required="true"/>
-					<DatePicker id="idExpiryDate" value="{path :'fastAppData>/EditTender/ExpiryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" minDate="{fastAppData>/EditTender/EffectiveDate}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES'}"  />
+					<Label id="idEffectiveDateLabel" text="Effective Date" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Commercial Agreement' }" required="true"/>
+					<DatePicker id="idEffectiveDate" value="{path :'fastAppData>/EditTender/EffectiveDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Commercial Agreement'}"  />
+					<Label id="idExpiryDateLable" text="Expiry Date" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Commercial Agreement'}" required="true"/>
+					<DatePicker id="idExpiryDate" value="{path :'fastAppData>/EditTender/ExpiryDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" minDate="{fastAppData>/EditTender/EffectiveDate}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Commercial Agreement'}"  />
 					<Label id="idOfferValidityLabel" text="{i18n>offvad}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'IT'}"/>
                		 <DatePicker id="idOfferValidity" value="{path :'fastAppData>/EditTender/OfferValidity', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'IT'}"/>
 
