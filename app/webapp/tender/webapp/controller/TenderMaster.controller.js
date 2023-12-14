@@ -712,8 +712,11 @@ sap.ui.define([
         ////EHQUT-199068-Italy – Tender search by Region
 		//EHQUT-CountryCode NA
 			//get possible filters
+
 			let sSelectedCountry = Services.getSelectedCountry() || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
 			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
+
+			
 			Services.setSelectedCountry(oCountry);
 			//this.oRouter.getHashChanger().setHash(oCountry + Services.getLayoutType() || "/OneColumn")
 			//EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
@@ -1133,7 +1136,7 @@ sap.ui.define([
 			});
 
 			//this solves  a problem with dropdowns not loaded correctly on initial load of application
-			oCountry = (oCountry === "NA") ? oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE") : oCountry;
+			oCountry = (oCountry === "NAN") ? oFastAppData.oData.UserCountries?.results[0].COUNTRY_CODE : oCountry;
 
 			//if a new country is set, the brandlist should be re-loaded
 			if (this._country !== oCountry) {
