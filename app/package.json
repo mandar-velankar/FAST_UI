@@ -19,7 +19,7 @@
     "node": "18.18.2"
   },
   "dependencies": {
-    "@sap/approuter": "14.3.4",
+    "@sap/approuter": "^14.4.3",
     "@ui5/builder": "2.8.2",
     "@ui5/cli": "3.7.1",
     "serve": "14.2.1",
