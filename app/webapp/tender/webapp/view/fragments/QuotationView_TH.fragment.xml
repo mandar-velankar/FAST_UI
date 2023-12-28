@@ -69,7 +69,7 @@
                     text="{i18n>ExportToExcel}"
                     icon="sap-icon://excel-attachment"
                     press=".onExportToExcel"
-                    enabled="{=${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Created' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Awaiting Approval' ? false : true}"/>
+                    enabled="{=${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Created' ||  ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Awaiting Approval' || ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'In FOC Negotiation' || ${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Rejected' ? false : true}"/>
 
             </actions>
             <l:BlockLayout background="Light">
