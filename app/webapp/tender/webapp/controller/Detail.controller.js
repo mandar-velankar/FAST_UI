@@ -7468,9 +7468,16 @@ sap.ui.define([
 			} else {
 				instituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 			}
-			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
+			if(this._country !== 'IT'){
+				aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
 				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
 			);
+			}else{
+				aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
+				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType),
+				new sap.ui.model.Filter("ActiveRecord", sap.ui.model.FilterOperator.EQ, 'Yes')
+			);
+			}
 
 			var that = this;
 			model_f4.read(sPath, {
