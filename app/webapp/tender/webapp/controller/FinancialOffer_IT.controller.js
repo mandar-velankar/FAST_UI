@@ -429,7 +429,7 @@ sap.ui.define([
 			if(ProductFloorPrice === null){
 				ProductFloorPrice=0;
 			}
-			if(parseFloat(oNewPriceInfo.NetPrice) > parseFloat(ProductFloorPrice) && ProductFloorPrice !== null){
+			if(parseFloat(oNewPriceInfo.NetPrice) < parseFloat(ProductFloorPrice) && ProductFloorPrice !== null){
 
 				sap.m.MessageBox.show(
 					"The selected net offer price for "+ oProduct.SKU.PRODUCTPACKNAME+" is below the currently approved floor price and thus further process steps are blocked. Therefore, please perform the required PRAF approval process outside the FAST system and update the FAST master data. Afterwards, you can continue working with this offer in FAST.", {
