@@ -206,6 +206,12 @@
 												<Input value="{path:'fastAppData>ConsumerPriceInclPP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
+										<!-- CR8 -->
+										<form:FormElement label="Floor Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Pack'}">
+											<form:fields>
+												<Input value="{path:'fastAppData>FloorPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 3, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%" />
+											</form:fields>
+										</form:FormElement>
 										<form:FormElement label="Consumer Price (w/o VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
 											<form:fields>
 												<Input value="{path:'fastAppData>ConsumerPriceExclPU', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
@@ -214,6 +220,12 @@
 										<form:FormElement label="Consumer Price (with VAT)" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
 											<form:fields>
 												<Input value="{path:'fastAppData>ConsumerPriceInclPU', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
+											</form:fields>
+										</form:FormElement>
+										<!-- CR8 -->
+										<form:FormElement label="Floor Price" visible="{= ${finOfferView>/selectedProductUoM} === 'Unit'}">
+											<form:fields>
+												<Input value="{path:'fastAppData>FloorPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 3, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" description="EUR" enabled="false" fieldWidth="80%"/>
 											</form:fields>
 										</form:FormElement>
 										<form:FormElement label="Tax (VAT)">

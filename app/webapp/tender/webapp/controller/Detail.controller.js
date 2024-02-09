@@ -7478,7 +7478,7 @@ sap.ui.define([
 				new sap.ui.model.Filter("ActiveRecord", sap.ui.model.FilterOperator.EQ, 'Yes')
 			);
 			}
-			
+
 
 			var that = this;
 			model_f4.read(sPath, {
