@@ -318,7 +318,7 @@
 												<Label text="Net Offer Price" required="true"/>
 											</form:label>
 											<form:fields>
-												<Input value="{path:'fastAppData>NetofferPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>											
+												<Input id='idNetofferPriceIT' value="{path:'fastAppData>NetofferPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: false, groupingSeparator: ',', decimalSeparator: '.' }}" type="Number" enabled="{= ${fastAppData>/EditMode} &amp;&amp; ${fastAppData>/EditSelectedProduct/UnitPerPack} === ${finOfferView>/selectedProductUoM} ? true : false }"  fieldWidth="80%" description="EUR" liveChange=".calculateAdditionalDiscount"/>											
 											</form:fields>
 										</form:FormElement>
 
