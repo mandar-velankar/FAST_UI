@@ -60,11 +60,11 @@ sap.ui.define([
 				value1: "Distributor"
 			});
 
-			// var oSellingCompanyCodeFilter = new Filter({
-			// 	path: 'CHANNEL',
-			// 	operator: FilterOperator.EQ,
-			// 	value1: sSellingCompanyCode
-			// });
+			var oSellingCompanyCodeFilter = new Filter({
+				path: 'CHANNEL',
+				operator: FilterOperator.EQ,
+				value1: sSellingCompanyCode
+			});
 			
 
 			var mParameters = {
