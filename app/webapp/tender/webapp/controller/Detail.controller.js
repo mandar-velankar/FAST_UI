@@ -12614,6 +12614,19 @@ sap.ui.define([
 
 			}
 		},
+		onAfterRendering: function () {
+			var datapicker = this.getView().byId("idEffectiveDate");
+			if (datapicker) {
+				var minDate = new Date();
+				this.byId("idEffectiveDate").setMinDate(minDate);
+			}
+			var datapickerMaxDate = this.getView().byId("idExpiryDate");
+			if (datapickerMaxDate) {
+				var maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+				maxDate = new Date(maxDate);
+				this.byId("idExpiryDate").setMaxDate(maxDate);
+			}
+		}
 
 
 	});
