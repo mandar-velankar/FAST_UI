@@ -426,6 +426,7 @@ sap.ui.define([
 			let ProductFloorPrice = oProductPrice.FloorPrice;
 			//build old price object for additional saving to PT_TMBDPR
 			let oNewPriceInfo = this.getOfferProductPrices(oOffer, oProduct, oProductPrice);
+
 			if(ProductFloorPrice === null){
 				ProductFloorPrice=0;
 			}
