@@ -149,7 +149,7 @@ sap.ui.define([
 
 			//get the tenderID/country from the navigation parameters
 			var sTenderID = oEvent.getParameter("arguments").tender;
-			var sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA"; // if country is found in the link.. use NA
+			var sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NAN"; // if country is found in the link.. use NA
 			var sOfferID = oEvent.getParameter("arguments").offer;
 			var sTab = oEvent.getParameter("arguments").tab || Services.getBasicInformationPageSectionID();
 			var sLayout = oEvent.getParameter("arguments").layout;
@@ -1894,7 +1894,7 @@ sap.ui.define([
 		//save or cancel button below is pressed
 		onEditToggleButtonPress: function (oEvent) {
 			var that = this;
-			let sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";;
+			let sCountry = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NAN";;
 			var oObjectPage = that.getView().byId("DetailPage"),
 				bCurrentShowFooterState = oObjectPage.getShowFooter();
 			var sSelectedSection = oObjectPage.getSelectedSection();
@@ -2262,7 +2262,7 @@ sap.ui.define([
 					case Services.getBasicInformationPageSectionID():
 
 						/*initialize country filter for particular fields (tender type, tender origin, sales type, contract type) */
-						var sCountryCode = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NA";
+						var sCountryCode = Services.getSelectedCountry() || oEvent.getParameter("arguments").country || "NAN";
 						var aFilter = [];
 						let sInstituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 						aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
@@ -2778,7 +2778,7 @@ sap.ui.define([
 
 		reloadCountrySpecificData: function(sCountryCode){
 
-			if(!sCountryCode || sCountryCode.indexOf("NA") > -1){
+			if(!sCountryCode || sCountryCode.indexOf("NAN") > -1){
 				return;
 			}
 
@@ -7478,6 +7478,7 @@ sap.ui.define([
 				new sap.ui.model.Filter("ActiveRecord", sap.ui.model.FilterOperator.EQ, 'Yes')
 			);
 			}
+
 
 			var that = this;
 			model_f4.read(sPath, {

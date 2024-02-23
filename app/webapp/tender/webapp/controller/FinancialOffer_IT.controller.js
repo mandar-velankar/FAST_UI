@@ -426,26 +426,24 @@ sap.ui.define([
 			let ProductFloorPrice = oProductPrice.FloorPrice;
 			//build old price object for additional saving to PT_TMBDPR
 			let oNewPriceInfo = this.getOfferProductPrices(oOffer, oProduct, oProductPrice);
-			if (ProductFloorPrice === null) {
-				ProductFloorPrice = 0;
+
+			if(ProductFloorPrice === null){
+				ProductFloorPrice=0;
 			}
-			if (parseFloat(oNewPriceInfo.NetPrice) < parseFloat(ProductFloorPrice) && ProductFloorPrice !== null) {
+			if(parseFloat(oNewPriceInfo.NetPrice) < parseFloat(ProductFloorPrice) && ProductFloorPrice !== null){
 
 				sap.m.MessageBox.show(
-					"The selected net offer price for " + oProduct.SKU.PRODUCTPACKNAME + " is below the currently approved floor price and thus further process steps are blocked. Therefore, please perform the required PRAF approval process outside the FAST system and update the FAST master data. Afterwards, you can continue working with this offer in FAST.", {
-					icon: sap.m.MessageBox.Icon.INFORMATION,
-					title: "Net offer Price below Floor Price",
-					actions: [sap.m.MessageBox.Action.YES],
-					onClose: function (oAction) {
-						that.getView().byId("idNetofferPriceIT").setValue();
+					"The selected net offer price for "+ oProduct.SKU.PRODUCTPACKNAME+" is below the currently approved floor price and thus further process steps are blocked. Therefore, please perform the required PRAF approval process outside the FAST system and update the FAST master data. Afterwards, you can continue working with this offer in FAST.", {
+						icon: sap.m.MessageBox.Icon.INFORMATION,
+						title: "Net offer Price above Floor Price",
+						actions: [sap.m.MessageBox.Action.YES],
+						onClose: function (oAction) { 
+							that.getView().byId("idNetofferPriceIT").setValue();
 					}
-				}
+					}
 				);
-
-			} else {
-			//build old price object for additional saving to PT_TMBDPR
-			//let oNewPriceInfo = this.getOfferProductPrices(oOffer, oProduct, oProductPrice);
-
+				
+			}else{
 			//convert old price to save & save
 			let oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
 			await Services.getService('Price').updatePrice(oPriceToSave);

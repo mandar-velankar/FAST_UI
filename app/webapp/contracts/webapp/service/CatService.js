@@ -68,7 +68,7 @@ sap.ui.define([
 			
 
 			var mParameters = {
-				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter, oSellingCompanyCodeFilter]
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter ]
 			};
 
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
