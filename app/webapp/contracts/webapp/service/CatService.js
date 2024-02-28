@@ -24,7 +24,7 @@ sap.ui.define([
 		},
 
 
-		getInstituteDistributorBrandProducts: function (sCountryCode, aInstitutes, iDistributorId, sSellingCompanyCode) {
+		getInstituteDistributorBrandProducts: function (sCountryCode, aInstitutes, iDistributorId) {
 
 			var oCountryCodeFilter = new Filter({
 				path: 'COUNTRY_CODE',
@@ -58,17 +58,10 @@ sap.ui.define([
 				path: 'CHANNEL',
 				operator: FilterOperator.EQ,
 				value1: "Distributor"
-			});
-
-			var oSellingCompanyCodeFilter = new Filter({
-				path: 'CHANNEL',
-				operator: FilterOperator.EQ,
-				value1: sSellingCompanyCode
-			});
-			
+			});			
 
 			var mParameters = {
-				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter, oSellingCompanyCodeFilter]
+				filters: [oCountryCodeFilter, oInstituteFilter, oDistributorFilter, oChannelFilter]
 			};
 
 			return this.odata("/InstituteDistributorBrandProduct").get(mParameters);
