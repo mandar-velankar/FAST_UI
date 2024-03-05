@@ -12192,6 +12192,7 @@ sap.ui.define([
 							this.byId("idEffectiveDate").setVisible(true);
 							this.byId("idExpiryDateLable").setVisible(true);
 							this.byId("idExpiryDate").setVisible(true);
+							//EJUVE-CR2
 							var datapicker = this.getView().byId("idEffectiveDate");
 							if (datapicker) {
 								var minDate = new Date();
@@ -12203,7 +12204,6 @@ sap.ui.define([
 								maxDate = new Date(maxDate);
 								this.byId("idExpiryDate").setMaxDate(maxDate);
 							}
-							
                         }                  
                     }         
                     //EHQUT-INC0184560-Issue in offer creation
@@ -12626,7 +12626,5 @@ sap.ui.define([
 
 			}
 		},
-
-
 	});
 });

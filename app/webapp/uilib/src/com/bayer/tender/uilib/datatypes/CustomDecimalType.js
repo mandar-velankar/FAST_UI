@@ -20,7 +20,7 @@ sap.ui.define([
 
         parseValue: function(oValue) {
             oValue = oValue.replace(",",".");
-            return this._oNumberFormat.format(oValue);
+            return this._oNumberFormat.parse(oValue);
         },
 
         validateValue: function(oValue) {}
