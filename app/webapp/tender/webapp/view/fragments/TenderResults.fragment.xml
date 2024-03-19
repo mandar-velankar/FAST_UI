@@ -393,6 +393,22 @@
                                         <m:Input value="{fastAppData>AwardActing}" enabled="{= ${fastAppData>/EditMode} === true }"/>
                                     </t:template>
                                 </t:Column> 
+
+                                <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                    <m:Label text="{i18n>ResultContractStartDate}"/>
+                                    <t:template>
+                                        <m:DatePicker value="{path :'fastAppData>ContractStartDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+                                                tooltip="{i18n>ResultContractStartDate}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; (!!${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== 'Selling')}" placeholder="{i18n>Select_date}"/>
+                                    </t:template>
+                                </t:Column> 
+
+                                <t:Column width="14rem" visible="{= ${fastAppData>/Tender/CountryCode} === 'IT' }">
+                                    <m:Label text="{i18n>ResultContractEndDate}"/>
+                                    <t:template>
+                                        <m:DatePicker value="{path :'fastAppData>ContractEndDate', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"
+                                                tooltip="{i18n>ResultContractEndDate}" enabled="{= ${fastAppData>/EditMode} === true &amp;&amp; (!!${fastAppData>OfferType} &amp;&amp; ${fastAppData>OfferType} !== 'Selling')}" placeholder="{i18n>Select_date}"/>
+                                    </t:template>
+                                </t:Column> 
                             </t:columns>
                         </t:TreeTable>
             </m:Panel>
