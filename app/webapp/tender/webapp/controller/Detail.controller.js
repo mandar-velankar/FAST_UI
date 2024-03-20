@@ -10881,7 +10881,10 @@ sap.ui.define([
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation, //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
                                         PriceCondition: iPriceCondition,
-										LotID: oProduct.LotID
+										LotID: oProduct.LotID,
+										ContractStartDate: oResult.ContractStartDate,
+										ContractEndDate: oResult.ContractEndDate,
+										OfferType: oProduct.OfferType
                                     }
 
 									var oResultsForTree = {
@@ -11467,7 +11470,9 @@ sap.ui.define([
                         Appeal: oResultForTree.APPEAL,
                         TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
                         InfoNeeded: oResultForTree.INFONEEDED,
-						LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1                     
+						LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1,
+						ContractStartDate: oResultForTree.ContractStartDate,
+						ContractEndDate: oResultForTree.ContractEndDate             
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
