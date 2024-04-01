@@ -14,6 +14,7 @@ sap.ui.define([
 			_sToolID: "",
 			_sCWID: "", 	//external active directory user ID,
 			_email: "",
+			_sRole: "",
 			_aUserCountries: [],
 		
 		//CONSTRUCTOR
@@ -50,6 +51,11 @@ sap.ui.define([
 				getCWID: function (){
 					return this._sCWID;
 				},
+
+				//get Role of user
+				getRole: function (){
+					return this._sRole;
+				},
 				
 				//get countries to wich the user has access
 				getUserCountries: function(){
@@ -74,6 +80,11 @@ sap.ui.define([
 				//CWID of user
 				setCWID: function (sCWID){
 					this._sCWID = sCWID;
+				},
+
+				//Role of user
+				setRole: function (sRole){
+					this._sRole = sRole;
 				},
 				
 				//get countries to wich the user has access
