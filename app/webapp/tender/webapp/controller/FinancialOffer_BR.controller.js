@@ -968,6 +968,30 @@ sap.ui.define([
             return Services.getService("PriceCondition").getMostRecentMasterPrices(countryCode, productPackID);
         },
 
+        onOpenShareDecisionWithIbizDialog: function () {
+            const controller = this;
+			if (!this.byId("idShareDecisioinWithIbizDialog")) {
+				Fragment.load({
+					id: this.getView().getId(),
+					name: "FAST_NS0FAST0.fragments.ShareDecisionWithIbiz",
+                    controller: controller,
+				}).then(function (oDialog) {
+                    const loadedOffer = Services.getLoadedOffer(Services.getSelectedOfferID());
+                    controller.getView().getModel('fastAppData').setProperty('/ShareWithIbizComment', loadedOffer.OfferStatus.STATUS)
+					controller.getView().addDependent(oDialog);
+                    oDialog.open();
+                })
+			}else {
+				this.byId("idShareDecisioinWithIbizDialog").open();
+			}
+        },
+
+        onCloseAddOfferProductDialog: function () {
+            this.getView().getModel('fastAppData').setProperty('/ShareWithIbizComment', '');
+			this.byId('idShareDecisioinWithIbizDialog').close();
+			this.byId('idShareDecisioinWithIbizDialog').destroy();
+		},
+
         onShareApprovalsToIbizPress: async function(oEvent){
 
             BusyIndicator.show();
@@ -976,7 +1000,7 @@ sap.ui.define([
             const loadedOfferStatus = loadedOffer.OfferStatus.STATUS;
 			
             //get user input
-			let comment = loadedOfferStatus; // will contain the offer status value
+			let comment = this.getView().getModel('fastAppData').getProperty('/ShareWithIbizComment'); // will contain the offer status value
 			const workflowID = loadedOffer.IbizWorkflowID;
 			const offerStatus = loadedOfferStatus == "Offer Approved" ? 1 : -1;
 			try{
@@ -1000,6 +1024,7 @@ sap.ui.define([
 
                     });
                 }
+                this.onCloseAddOfferProductDialog();
                 const res_msg = response.data;
 				MessageToast.show(res_msg);
 			}catch(error){

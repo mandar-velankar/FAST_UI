@@ -1339,6 +1339,9 @@ sap.ui.define([
 						//set the user email
 						UserInfo.setUserEmail(oData.UserEmail);
 
+						//set the user role
+						UserInfo.setRole(oData.ROLE);
+
 						//keep the countries to which the user has access
 						oData.toUserCountries.results = that.sortByKeyAsc(oData.toUserCountries.results, "COUNTRY_NAME");
 						UserInfo.setUserCountries(oData.toUserCountries);
@@ -2815,6 +2818,7 @@ sap.ui.define([
             var AutoApprovalflag=true;
             var Instituteid=this.getInstituteIDofSelectedTender();
             var countrycode=this.getSelectedCountry();
+			const userRole = UserInfo.getRole();
 
             $.when(this.loadPreApprovedprice(Instituteid, countrycode)).done(function (oData) {
                 if(countrycode=='TH'){
@@ -2896,7 +2900,7 @@ sap.ui.define([
                             var ApproverTypeCount = oData.results;
                             var SPainApproverTypes = ApproverTypeCount.findIndex(apc => apc.ApproverType === 'BU/RAM 1');
                             var ApproverListlength = ApproverTypeCount[SPainApproverTypes].ApproverList.results.length;
-                            if (oFastAppDataModel.oData.EditTender.Classification === 'Tender') {
+                            if (userRole !== 'RAM') {
                                 for (var i = 0; i < ApproverListlength; i++) {
                                     if (ApproverTypeCount[SPainApproverTypes].ApproverList.results[i].ApproverName == 'Cristina Rodrigo') {
                                         ApproverTypeCount[SPainApproverTypes].ApproverList.results.splice(i, 1);
