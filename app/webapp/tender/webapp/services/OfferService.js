@@ -175,6 +175,8 @@ sap.ui.define([
 			oOfferToSave.DistributorComments = oOfferSaveInfo.DistributorComments;
 			oOfferToSave.TenderDistributorID = oOfferSaveInfo.TenderDistributorID;
 			oOfferToSave.Comment = oOfferSaveInfo.Comment;
+			oOfferToSave.Custom_String_1 = oOfferSaveInfo.Custom_String_1
+			oOfferToSave.Custom_Integer_1 = oOfferSaveInfo.Custom_Integer_1
 			return oOfferToSave;
 
 		},
