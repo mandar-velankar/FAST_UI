@@ -117,6 +117,8 @@
 									<Text text="{fastAppData>SellingCompanyDetails/LegalEntityName}"/>
                                     <Label text="{i18n>offerNumber}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
 									<Text text="{fastAppData>/SelectedOfferID}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
+									<Label text="{i18n>itemNumber}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>
+									<Text text="{fastAppData>Custom_Integer_1}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}" />
 									<core:Title/>
 									<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 									<!--<Text text="{path :'fastAppData>InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>-->
@@ -165,6 +167,9 @@
 									</Select>
 									<Label text="{i18n>Comment}"/>
 									<Text text="{fastAppData>Comment}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR'}"/>
+
+									<Label text="{i18n>tenderAnnouncementReference}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>
+									<Text text="{fastAppData>Custom_String_1}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>						
 							</form:content>
 						</form:SimpleForm>
 					
@@ -340,7 +345,7 @@
 						</t:template>
 					</t:Column>
 
-					<t:Column width="10rem" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
+					<t:Column width="10rem" visible="{= ${fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible} &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH'}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AtcRdm/description',
 										formatter: '.formatter.offerProductsColumnName' }"
 								wrapping="true" />

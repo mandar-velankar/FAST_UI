@@ -175,7 +175,7 @@
                                                             </m:VBox>
                                                             <m:VBox width="2%">
                                                             </m:VBox>
-                                                            
+
                                                         </m:items>
                                                     </m:HBox>
                                                     <m:Toolbar width="100%" height="1px"/>
@@ -217,6 +217,79 @@
                                                             <m:FormattedText htmlText="{fastAppData>/OfferValidation/SELLINGCOMPANYBANK}" class="sapMText" visible="{= ${fastAppData>/OfferValidation/COUNTRYCODE} === 'TH' ? false : true}"/>
                                                         </m:items>
                                                     </m:VBox>
+                                                </m:items>
+                                            </m:VBox>
+                                        </m:items>
+                                    </m:HBox>
+                                    <m:Toolbar width="100%" height="1px"/>
+                                    <m:HBox>
+                                        <m:items>
+                                            <m:VBox width="23rem" class="sapUiSmallMarginEnd">
+                                                <m:items>
+                                                    <m:Label text="{i18n>qUnitofvalidityperiod}" design="Bold"/>
+                                                    <m:Select class="sapUiSmallMarginEnd" width="100%" enabled="false" id="idqUnitofvalidityperiod" selectedKey="{fastAppData>/OfferValidation/Unitofvalidityperiod}">
+                                                        <core:Item key="" text=""/>
+                                                        <core:Item key="Days" text="Days"/>
+                                                        <core:Item key="Months" text="Months"/>
+                                                        <core:Item key="Years" text="Years"/>
+                                                    </m:Select>
+                                                </m:items>
+                                            </m:VBox>
+                                                <m:VBox width="13rem" class="sapUiSmallMarginEnd">
+                                                <m:items>
+                                                    <m:Label text="{i18n>qDeliveryDue}" design="Bold"/>
+                                                    <m:Input class="sapUiSmallMarginEnd" id="idqDeliveryDue" enabled="false" value="{fastAppData>/OfferValidation/DeliveryDue}" type="Number"/>
+                                                </m:items>
+                                            </m:VBox>
+                                                <m:VBox width="24rem">
+                                                <m:items>
+                                                    <m:Label text="{i18n>qUnitofdeliverydue}" design="Bold" />
+                                                    <m:Select class="sapUiSmallMarginEnd" width="100%" enabled="false" id="idqUnitofdeliverydue" selectedKey="{fastAppData>/OfferValidation/Unitofdeliverydue}">
+                                                        <core:Item key="" text=""/>
+                                                        <core:Item key="Days" text="Days"/>
+                                                        <core:Item key="Months" text="Months"/>
+                                                        <core:Item key="Years" text="Years"/>
+                                                    </m:Select>
+                                                </m:items>
+                                            </m:VBox>
+                                        </m:items>
+                                    </m:HBox>
+                                    <m:Toolbar width="100%" height="1px" class="sapUiSmallMarginTop"/>
+                                    <m:HBox>
+                                        <m:items>
+                                            <m:VBox width="30rem" class="sapUiSmallMarginEnd">
+                                                <m:items>
+                                                    <m:Label text="{i18n>qQuotationDeliverymethod}" design="Bold"/>
+                                                    <m:MultiComboBox class="sapUiSmallMarginEnd" enabled="false" id="idqQuotationDeliverymethod" selectedKeys="{fastAppData>/OfferValidation/QuotationDeliverymethod}">
+                                                        <core:Item key="DKSH Quotation Office" text="DKSH Quotation Office"/>
+                                                        <core:Item key="Send to Bayer" text="Send to Bayer"/>
+                                                        <core:Item key="Email" text="Email"/>
+                                                        <core:Item key="Fax" text="Fax"/>
+                                                        <core:Item key="Customer" text="Customer"/>
+                                                    </m:MultiComboBox>
+                                                </m:items>
+                                            </m:VBox>
+                                            <m:VBox width="30rem" class="sapUiSmallMarginBegin sapUiSmallMarginEnd">
+                                                <m:items>
+                                                    <m:Label text="{i18n>qQuotationRecipientname}" design="Bold"/>
+                                                    <m:Input class="sapUiSmallMarginEnd" enabled="false" id="idqQuotationRecipientname" value="{fastAppData>/OfferValidation/QuotationRecipientname}" />
+                                                </m:items>
+                                            </m:VBox>
+                                        </m:items>
+                                    </m:HBox>
+                                     <m:Toolbar width="100%" height="1px" class="sapUiSmallMarginTop"/>
+                                     <m:HBox>
+                                        <m:items>
+                                            <m:VBox width="30rem" class=" sapUiSmallMarginEnd">
+                                                <m:items>
+                                                    <m:Label text="{i18n>qQuotationRecipientcontact}" design="Bold"/>
+                                                    <m:Input class="sapUiSmallMarginEnd" enabled="false" id="idqQuotationRecipientcontact" value="{fastAppData>/OfferValidation/QuotationRecipientcontact}"/>
+                                                </m:items>
+                                            </m:VBox>
+                                            <m:VBox width="30rem" class="sapUiSmallMarginBegin sapUiSmallMarginEnd">
+                                                <m:items>
+                                                    <m:Label text="{i18n>qExpectdatetoreceivethedocument}" design="Bold"/>
+                                                    <m:DatePicker class="sapUiSmallMarginEnd" enabled="false" id="idqExpectdatetoreceivethedocument" value="{path:'fastAppData>/OfferValidation/Expectdatetoreceivethedocument',type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
                                                 </m:items>
                                             </m:VBox>
                                         </m:items>

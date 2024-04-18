@@ -512,6 +512,13 @@ sap.ui.define([
 						oQuotationSaveInfo.AS1 = quotationFields.IssuedBy;
 						oQuotationSaveInfo.AS2 = quotationFields.CompanyStamp;
 						oQuotationSaveInfo.UPDATED = 1;
+						oQuotationSaveInfo.Custom_String_1 =  quotationFields.Unitofvalidityperiod
+						oQuotationSaveInfo.Custom_Integer_1 = quotationFields.DeliveryDue
+						oQuotationSaveInfo.Custom_String_2 =  quotationFields.Unitofdeliverydue
+						oQuotationSaveInfo.Custom_String_3 =  quotationFields.QuotationDeliverymethod
+						oQuotationSaveInfo.Custom_String_4 =  quotationFields.QuotationRecipientname
+						oQuotationSaveInfo.Custom_String_5 =  quotationFields.QuotationRecipientcontact
+						oQuotationSaveInfo.Custom_Date_1 =    quotationFields.Expectdatetoreceivethedocument
 
 						var oQuotationToSave = Services.getService('Quotation').getConvertQuotationToSave(oQuotationSaveInfo);
 						
@@ -835,6 +842,13 @@ sap.ui.define([
 						oQuotationSaveInfo.AS1 = quotationFields.IssuedBy;
 						oQuotationSaveInfo.AS2 = quotationFields.CompanyStamp;
 						oQuotationSaveInfo.UPDATED = updatedFlag;
+						oQuotationSaveInfo.Custom_String_1 =  quotationFields.Unitofvalidityperiod
+						oQuotationSaveInfo.Custom_Integer_1 = quotationFields.DeliveryDue
+						oQuotationSaveInfo.Custom_String_2 =  quotationFields.Unitofdeliverydue
+						oQuotationSaveInfo.Custom_String_3 =  quotationFields.QuotationDeliverymethod
+						oQuotationSaveInfo.Custom_String_4 =  quotationFields.QuotationRecipientname
+						oQuotationSaveInfo.Custom_String_5 =  quotationFields.QuotationRecipientcontact
+						oQuotationSaveInfo.Custom_Date_1 =    quotationFields.Expectdatetoreceivethedocument
 						
 						//array for the change operations
 						var aChangeOperations = [];
