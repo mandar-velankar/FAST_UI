@@ -1115,6 +1115,7 @@ sap.ui.define([
                             // !oPriceConditions[i].onVolumeTreshhold || 
                             // !oPriceConditions[i].Discount || 
                             !oPriceConditions[i].DiscountConditions || 
+                            !oPriceConditions[i].PriceConditionCode || 
                             !oPriceConditions[i].RefundDate ||
                             !oPriceConditions[i].Settlement_ID
                             )){

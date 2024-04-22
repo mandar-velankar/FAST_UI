@@ -1339,6 +1339,9 @@ sap.ui.define([
 						//set the user email
 						UserInfo.setUserEmail(oData.UserEmail);
 
+						//set the user role
+						UserInfo.setRole(oData.ROLE);
+
 						//keep the countries to which the user has access
 						oData.toUserCountries.results = that.sortByKeyAsc(oData.toUserCountries.results, "COUNTRY_NAME");
 						UserInfo.setUserCountries(oData.toUserCountries);
@@ -2815,6 +2818,7 @@ sap.ui.define([
             var AutoApprovalflag=true;
             var Instituteid=this.getInstituteIDofSelectedTender();
             var countrycode=this.getSelectedCountry();
+			const userRole = UserInfo.getRole();
 
             $.when(this.loadPreApprovedprice(Instituteid, countrycode)).done(function (oData) {
                 if(countrycode=='TH'){
@@ -2896,7 +2900,7 @@ sap.ui.define([
                             var ApproverTypeCount = oData.results;
                             var SPainApproverTypes = ApproverTypeCount.findIndex(apc => apc.ApproverType === 'BU/RAM 1');
                             var ApproverListlength = ApproverTypeCount[SPainApproverTypes].ApproverList.results.length;
-                            if (oFastAppDataModel.oData.EditTender.Classification === 'Tender') {
+                            if (userRole !== 'RAM') {
                                 for (var i = 0; i < ApproverListlength; i++) {
                                     if (ApproverTypeCount[SPainApproverTypes].ApproverList.results[i].ApproverName == 'Cristina Rodrigo') {
                                         ApproverTypeCount[SPainApproverTypes].ApproverList.results.splice(i, 1);
@@ -3574,8 +3578,10 @@ sap.ui.define([
 				!oBasicInfo.TenderChannel ||
 				oBasicInfo.GroupPurchasing === null ||
 				!oBasicInfo.PublicationDate ||
-				!oBasicInfo.BidDueDate || ((oBasicInfo.CountryCode === 'ES') &&!oBasicInfo.EffectiveDate )|| 
-				((oBasicInfo.CountryCode === 'ES' ) &&!oBasicInfo.ExpiryDate )) {
+
+				!oBasicInfo.BidDueDate || ((oBasicInfo.CountryCode === 'ES'  && oBasicInfo.Classification === 'Commercial Agreement') &&!oBasicInfo.EffectiveDate )|| 
+				((oBasicInfo.CountryCode === 'ES'  && oBasicInfo.Classification === 'Commercial Agreement') &&!oBasicInfo.ExpiryDate )) {
+
 				
 				//add error message
 				var oMessage = {
@@ -7000,7 +7006,7 @@ sap.ui.define([
 
 										//in this case we should save price data as well
 										var oProductPrice = that.getService('Price').getConvertPriceToSave(oProductSaveInfo.Price);
-
+										var Region=that.getFastAppDataModel().oData.Tender.Country.Region;
 										//if sRegPrice = false, meaning calculation is no longer found & price is not copied
 										if (oUpToDatePrices.RegPrice !== false) {
 
@@ -7009,7 +7015,7 @@ sap.ui.define([
 											//make same rounding
 											if (oProductSaveInfo.UnitPerPack) {
 												var sUnitPerPackOffer = oProductSaveInfo.UnitPerPack;
-												var iConvertedOfferPrice = formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
+												var iConvertedOfferPrice = (Region === 'MEA' ) ? formatter.priceFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer) :formatter.priceTwoOrFour(oProductPrice.OfferPrice, undefined, sUnitPerPackOffer);
 											} else {
 												var iConvertedOfferPrice = oProductPrice.OfferPrice;
 											}
@@ -7017,7 +7023,7 @@ sap.ui.define([
 											//make same rounding
 											if (sRegisteredPrice) {
 												var sUOMregPrice = sRegisteredPrice.UOM;
-												var iConvertedRegPrice = formatter.priceTwoOrFour(iConvertedRegPrice, undefined, sUOMregPrice);
+												var iConvertedRegPrice = (Region === 'MEA' ) ? formatter.priceFour(iConvertedRegPrice, undefined, sUOMregPrice) :formatter.priceTwoOrFour(iConvertedRegPrice, undefined, sUOMregPrice);
 											} else {
 												var iConvertedRegPrice = iConvertedRegPrice;
 											}

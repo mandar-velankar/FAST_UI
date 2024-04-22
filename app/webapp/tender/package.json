@@ -21,7 +21,7 @@
     "build": "ui5 build --clean-dest --include-task=generateManifestBundle generateCachebusterInfo"
   },
   "dependencies": {
-    "@sap/approuter": "^6",
+    "@sap/approuter": "^14.4.3",
     "@ui5/cli": "^2.0.2",
     "sap-cf-mailer": "0.0.3"
   }

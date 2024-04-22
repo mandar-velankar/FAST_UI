@@ -1533,8 +1533,8 @@ sap.ui.define([
 				}
 
 				//CR1-Spain
-				// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-				// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+				that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+				that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 
 				let oCustomRemark = that.byId("idCustomRemark");
 				if(oCustomRemark){
@@ -2083,9 +2083,17 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
-
-					// that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
-					// that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
+					if (Services.getSelectedCountry() === 'TH') {
+						that.byId("idqUnitofvalidityperiod") &&	that.byId("idqUnitofvalidityperiod").setEnabled(false);
+						that.byId("idqDeliveryDue") && that.byId("idqDeliveryDue").setEnabled(false);
+						that.byId("idqUnitofdeliverydue") && that.byId("idqUnitofdeliverydue").setEnabled(false);
+						that.byId("idqQuotationDeliverymethod") && that.byId("idqQuotationDeliverymethod").setEnabled(false);
+						that.byId("idqQuotationRecipientname") && that.byId("idqQuotationRecipientname").setEnabled(false);
+						that.byId("idqQuotationRecipientcontact") && that.byId("idqQuotationRecipientcontact").setEnabled(false);
+						that.byId("idqExpectdatetoreceivethedocument") && that.byId("idqExpectdatetoreceivethedocument").setEnabled(false);
+					}
+					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
+					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 
 					let oCustomRemark = that.byId("idCustomRemark");
 					if(oCustomRemark){
@@ -2656,8 +2664,18 @@ sap.ui.define([
 								oQofferValidity.setEnabled(true);
 							}
 						}
+						if (Services.getSelectedCountry() === 'TH') {
+							that.byId("idqUnitofvalidityperiod") &&	that.byId("idqUnitofvalidityperiod").setEnabled(true);
+							that.byId("idqDeliveryDue") && that.byId("idqDeliveryDue").setEnabled(true);
+							that.byId("idqUnitofdeliverydue") && that.byId("idqUnitofdeliverydue").setEnabled(true);
+							that.byId("idqQuotationDeliverymethod") && that.byId("idqQuotationDeliverymethod").setEnabled(true);
+							that.byId("idqQuotationRecipientname") && that.byId("idqQuotationRecipientname").setEnabled(true);
+							that.byId("idqQuotationRecipientcontact") && that.byId("idqQuotationRecipientcontact").setEnabled(true);
+							that.byId("idqExpectdatetoreceivethedocument") && that.byId("idqExpectdatetoreceivethedocument").setEnabled(true);
+						}
+						//EHQUT-CR1
 
-						if(Services.getSelectedCountry() === 'ES'){
+						if(Services.getSelectedCountry() === 'ES' && Services.getFastAppDataModel().oData.EditTender.Classification==="Commercial Agreement"){
 							that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 							that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 						}else{
@@ -4196,6 +4214,12 @@ sap.ui.define([
 				/* Thailand */
 				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
+				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+				oSaveBasicInfo.Custom_String_1 =  oTender.Custom_String_1
+				oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
+				oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
+				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
+				oSaveBasicInfo.Custom_Date_3 =  oTender.Custom_Date_3
 
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
@@ -4364,7 +4388,12 @@ sap.ui.define([
 			/* Thailand */
 			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-
+			oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+			oSaveBasicInfo.Custom_String_1 =  oTender.Custom_String_1
+			oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
+			oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
+			oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
+			oSaveBasicInfo.Custom_Date_3 =  oTender.Custom_Date_3
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
 			oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
@@ -6773,10 +6802,14 @@ sap.ui.define([
 				oOfferSaveInfo.DistributorComments = oOffer.DistributorComments;
 				oOfferSaveInfo.TenderDistributorID = oOffer.TenderDistributorID;
 				oOfferSaveInfo.Comment = oOffer.Comment;
+				oOfferSaveInfo.Custom_String_1 = oOffer.Custom_String_1;
+				oOfferSaveInfo.Custom_Integer_1 = oOffer.Custom_Integer_1;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
 				oOfferSaveInfo.Comment = oFastAppDataModel.getProperty("/EditOffer/Comment");
+				oOfferSaveInfo.Custom_String_1 = oFastAppDataModel.getProperty("/EditOffer/Custom_String_1");
+				oOfferSaveInfo.Custom_Integer_1 = oFastAppDataModel.getProperty("/EditOffer/Custom_Integer_1");
                 if(this._country === "ES"){
                     oOfferSaveInfo.ProfitabilityStartMnth = 1;
                     oOfferSaveInfo.ProfitabilityAgrDur = 5;
@@ -7466,9 +7499,16 @@ sap.ui.define([
 			} else {
 				instituteType = Services.getFastAppDataModel().getProperty('/Tender/Institute/InstituteType');
 			}
-			aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
+			if(this._country !== 'IT'){
+				aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
 				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType)
 			);
+			}else{
+				aFilters.push(new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, this._country),
+				new sap.ui.model.Filter("InstituteType", sap.ui.model.FilterOperator.EQ, instituteType),
+				new sap.ui.model.Filter("ActiveRecord", sap.ui.model.FilterOperator.EQ, 'Yes')
+			);
+			}
 
 			var that = this;
 			model_f4.read(sPath, {
@@ -9175,6 +9215,14 @@ sap.ui.define([
 					that.setQuotationDateRestrictions();
 					that._createPriceConditionTableEntitiesOnQuotationTabForBrazil();
 				}
+				
+				if (Services.getSelectedCountry() === "TH") {
+					let quotationDeliverymethod = that.byId("idqQuotationDeliverymethod") 
+					if (quotationDeliverymethod) {
+						let getQuotationDeliverymethodValue = that.getView().getModel('fastAppData').getProperty("/OfferValidation/QuotationDeliverymethod")?.split(",")
+						quotationDeliverymethod.setSelectedKeys(getQuotationDeliverymethodValue)
+					}
+				}
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -9778,6 +9826,13 @@ sap.ui.define([
 						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
 						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
 						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
+						Unitofvalidityperiod: oFastAppDataModel.getProperty("/OfferValidation/Unitofvalidityperiod"),
+						DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
+						Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
+						QuotationDeliverymethod :  oFastAppDataModel.getProperty("/OfferValidation/QuotationDeliverymethod")?.join(','),
+						QuotationRecipientname  :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientname"),
+						QuotationRecipientcontact :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientcontact"),
+						Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
 					};
 
 					//do the save of the quotation with UPDATED to 1
@@ -10431,6 +10486,13 @@ sap.ui.define([
 				CustomRemark: oCustomRemark ? this.byId("idCustomRemark").getValue() : '',
 				IssuedBy: oSelectIssuedBy ? this.byId("idSelectIssuedBy").getSelectedKey() : '',
 				CompanyStamp: oSelectCompanyStamp ? this.byId("idSelectCompanyStamp").getSelectedKey() : '',
+				Unitofvalidityperiod: oFastAppDataModel.getProperty("/OfferValidation/Unitofvalidityperiod"),
+				DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
+				Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
+				QuotationDeliverymethod :  oFastAppDataModel.getProperty("/OfferValidation/QuotationDeliverymethod")?.join(','),
+				QuotationRecipientname  :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientname"),
+				QuotationRecipientcontact :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientcontact"),
+				Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
 			};
 
 			//keep selected offer
@@ -10543,6 +10605,7 @@ sap.ui.define([
 
 			//that = this
 			var that = this;
+			var bOutcomeStatusFlag= false;
 
 			if (oEvent) { //if you enter this method from the edit button, the oEvent is empty & offer path is already set
 				var sSelectedOfferPath = oEvent.getSource().getBindingContext("fastData").getPath();
@@ -10819,16 +10882,16 @@ sap.ui.define([
                                     }
 									//EHQUT-OTT-118849-Making decision pending as default
 									//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
-									// if(oResult.Outcome=='' && sCountry=='ES' && aProducts.results[0].Offer.Division === 'Consumer Health')
-                                    //         {
-                                    //            oResult.Outcome='Won';
-									// 		   that.onChangeOutcomeES(iIndex);
-									// 		   oResult.Reason='Not Specified';
-									// 		   var path = oEvent.getSource().getBindingContext("fastData").getPath();
-									// 			var oRefre = oEvent.getSource();
-									// 			that._onSaveTenderResults(path, oRefre);
+									var classification=(oFastAppDataModel.oData.SelectedOffer.Tender.Classification || oFastAppDataModel.oData.EditTender.Classification) ;
+									if(oResult.Outcome=='' && sCountry=='ES' && (aProducts.results[0].Offer.Division === 'Pharma'|| aProducts.results[0].Offer.Division === 'Consumer Health') && classification === 'Commercial Agreement')
+                                            {
+                                               
+												oResult.Outcome='Won';
+												that.onChangeOutcomeES(iIndex);
+												oResult.Reason='Not Specified';
+												bOutcomeStatusFlag=true;
 
-                                    //         }
+                                            }
                                    
 									var oBayerProduct = {
 										CONTRACT_NO: oResult.ContractNo,
@@ -10871,7 +10934,10 @@ sap.ui.define([
                                         TOTALAWARDEDVALUE: oResult.TotalAwardedValue,
 										_sOperation: oResult._sOperation, //we don't save, or update bayer results at this moment, but maybe in future, at this moment we need same fields for display
                                         PriceCondition: iPriceCondition,
-										LotID: oProduct.LotID
+										LotID: oProduct.LotID,
+										ContractStartDate: oResult.ContractStartDate,
+										ContractEndDate: oResult.ContractEndDate,
+										OfferType: oProduct.OfferType
                                     }
 
 									var oResultsForTree = {
@@ -10936,6 +11002,23 @@ sap.ui.define([
 	               
 					oFastAppDataModel.setProperty("/ResultsForProducts/", aResultsForProducts);
 					oFastAppDataModel.setProperty("/ResultsForTree/", aResultsForTree);
+					//EHQUT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+
+
+					//EHQUT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+
+					var match=this.getView().getModel("dateModel").getProperty("/Check");
+					var CurrentOfferStatus=oFastAppDataModel.oData.CurrentOfferStatus;
+
+					if( sCountry=='ES' && bOutcomeStatusFlag && match===undefined && CurrentOfferStatus != 'Results Recorded' && oFastAppDataModel.oData.SelectedOffer.Tender.Classification === 'Commercial Agreement')
+					{
+
+						    var path = "/PT_TMTEND('"+ sSelectedOfferID+"')";
+							that._onSaveResults(path);
+							 bOutcomeStatusFlag=false;
+
+  }
+
 
 					//Enable Create contract button only for Brazil
 					let iEmptyOutcomeIndex = aResultsForTree.findIndex((elem) => elem.OUTCOME === ""); 
@@ -10946,8 +11029,13 @@ sap.ui.define([
 					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", bCheckOutcome); 
 
 					//Enable/Disable SetAllProductsOutcometoWonLost Button
-					let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== ""); 
-					Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
+					if (sCountry === "IT") {
+						let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== "Decision Pending"); 
+						Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
+					}else{
+						let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== ""); 
+						Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
+					}
 
 					//apply filter for outcome tree table
 					oOutcomeTreeTable.getBinding("rows").filter(
@@ -10970,15 +11058,17 @@ sap.ui.define([
 			oOutcomeTreeTable.collapseAll();
 		},
 		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
-		// onChangeOutcomeES: function (index) {
-		// 	var oFastAppDataModel = Services.getFastAppDataModel();
-		// 	var sBindingPath = "/ResultsForTree/" + index;
-		// 	var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
-		// 	$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
-		// 		oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
-		// 	});
+		onChangeOutcomeES: function (index) {
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var sBindingPath = "/ResultsForTree/" + index;
+			var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
+			$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
+				oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
+			});
 
-		// },
+
+		},
+
 		//Expand hyrarchie of tree table
 		onExpandOutcome: function () {
 			var oOutcomeTreeTable = this.byId(this.getView().getId() + "--tenderResultsFragmentId" +"--idOutcomeTable");
@@ -11028,16 +11118,7 @@ sap.ui.define([
 			
 
 		},
-		//EHQUT-OTT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
-		// onChangeOutcomeES: function (index) {
-		// 	var oFastAppDataModel = Services.getFastAppDataModel();
-		// 	var sBindingPath = "/ResultsForTree/" + index;
-		// 	var sBindingPathListOutcomeReasons = sBindingPath + "/LISTOUTCOMEREASONS/";
-		// 	$.when(Services.loadOutcomeReasons("Won", index)).done(function (oOutcomeReasons) {
-		// 		oFastAppDataModel.setProperty(sBindingPathListOutcomeReasons, oOutcomeReasons.results);
-		// 	});
-
-		// },
+	
 		//add awarded company results
 		onAddAwardedProduct: function (oEvent) {
 
@@ -11447,7 +11528,9 @@ sap.ui.define([
                         Appeal: oResultForTree.APPEAL,
                         TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
                         InfoNeeded: oResultForTree.INFONEEDED,
-						LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1                     
+						LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1,
+						ContractStartDate: oResultForTree.ContractStartDate,
+						ContractEndDate: oResultForTree.ContractEndDate             
 					};
 
 					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
@@ -11678,6 +11761,193 @@ sap.ui.define([
 			});
 		
 		},
+		//EHQUT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
+
+		_onSaveResults: async function (sPathIn) {
+
+			//FastAppDataModel
+			var oFastAppDataModel = Services.getFastAppDataModel();
+			var dateModel=this.getView().getModel("dateModel");
+			dateModel.setProperty("/Check","Saved");
+			
+			var aMessages = [];
+			var bError = false;
+
+			var that = this;
+			let promises = [];
+			var oBayerResultToSave = {};
+
+			//var offerid = this.getView().getModel("fastData").getProperty(path).OfferID;
+			var sOfferID = Services.getSelectedOfferID();
+			var sTenderID = Services.getSelectedTenderID();
+			var sInstituteID = Services.getInstituteIDofSelectedTender();
+			var sCountryCode = Services.getCountryCodeofSelectedTender();
+
+			//products of offer
+			var aResultsForProducts = oFastAppDataModel.getProperty("/ResultsForProducts");
+			var aResultsForTree = oFastAppDataModel.getProperty("/ResultsForTree");
+			const missingFields = new Set();
+			
+			aResultsForTree.forEach(function(oResultForTree, iIndex) {
+
+				missingFields.clear();
+
+                if(sCountryCode === 'ES'){
+                    
+				    if (oResultForTree) {
+                                        
+                        if(oResultForTree.PriceAgreement === null){
+                                
+                            if(!oResultForTree.OUTCOME){
+                                missingFields.add("Outcome");
+                            }
+                            if(oResultForTree.PRODUCT === "Other" && !oResultForTree.AWARDEDPRICE){
+                                missingFields.add("Awarded Price");
+                            }
+                            if(!oResultForTree.AWARDEDQTY){
+                                missingFields.add("Awarded Quantity");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.INFONEEDED){
+                                missingFields.add("Information Needed");
+                            }
+                            if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.APPEAL){
+                                missingFields.add("Appeal");
+                            }
+                            if((oResultForTree.OUTCOME && (oResultForTree.OUTCOME === 'Won' || oResultForTree.OUTCOME === 'Lost')) && !oResultForTree.REASON){
+                                missingFields.add("Reason");
+                            }                        
+                        }
+                    }
+                }                
+
+			
+				if(missingFields.size > 0){
+					var oMessage = {
+						type: 'Error',
+						title: `Please enter all mandatory fields.`,
+						subtitle: oResultForTree.PRODUCT,
+						description: Array.from(missingFields).join("\n")
+					};
+
+					aMessages.push(oMessage);
+					bError = true;
+				}
+
+
+			});
+
+			if(bError){
+				Services.showMessageCompositeView('Error', aMessages, 'Error');
+				return;
+			}
+
+			//loop at each row TODO this can be handeled by using binding in the same way as on the other tabs, so no looping over rows...
+			aResultsForTree.forEach(async function (oResultForTree, iIndex) {
+
+				//only if we are in a cell with a product
+				if (oResultForTree) {
+					
+					//EHQUT
+					if(oResultForTree.AWARDEDCOMPANY === "Bayer"){
+						
+					//push data for saving
+					oBayerResultToSave = {
+						ContractNo: oResultForTree.CONTRACT_NO,
+						TenderID: sTenderID,
+						OfferID: sOfferID,
+						CountryCode: sCountryCode,
+						InstituteID: sInstituteID, //Number(aCells["14"].getSelectedKey()),
+						ProductCode: oResultForTree.PRODUCTCODE,
+						SubmittedOn: moment().utc().toDate(),
+						SubmittedBy: UserInfo.getCWID(),
+						Active: 1,
+						ErrorInSubmission: oResultForTree.ERRORINSUBMISSION,
+						Outcome: oResultForTree.OUTCOME,
+						AwardedCompany: oResultForTree.AWARDEDCOMPANY, //"Bayer",
+						AwardedProduct: oResultForTree.AWARDEDPRODUCT, //0
+						AwardedPrice: (oResultForTree.AWARDEDPRICE === "" || oResultForTree.AWARDEDPRICE === null) ? null : oResultForTree.AWARDEDPRICE
+							.toString(), //2
+						Currency: oResultForTree.CURRENCY,
+						AwardedQty: (oResultForTree.AWARDEDQTY !== "") ? oResultForTree.AWARDEDQTY : "0",
+						// AwardedQty: sAwardedQty
+						UoM: oResultForTree.UOM,
+						Reason: oResultForTree.REASON,
+						Comment: oResultForTree.COMMENT,
+						AwardedTier: 0,
+						//italy fields
+						ExtensionDate: oResultForTree.ExtensionDate,
+						ExtensionNotes: oResultForTree.ExtensionNotes,
+						AwardLetterNo: oResultForTree.AwardLetterNo,
+						AwardDelibNo: oResultForTree.AwardDelibNo,
+						DeliveryDate: oResultForTree.DeliveryDate,
+						ResultDate: oResultForTree.ResultDate,
+						AwardDate: oResultForTree.AwardDate,
+						AwardActing: oResultForTree.AwardActing,
+                        Appeal: oResultForTree.APPEAL,
+                        TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
+                        InfoNeeded: oResultForTree.INFONEEDED,
+						LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1                     
+					};
+
+					//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
+					switch (oResultForTree._sOperation) {
+					case "POST":
+						//create new Result (Bayer)
+						promises.push(Services.getService('Result').createResult(oBayerResultToSave).catch(function (oError) {
+							
+						}));
+						oBayerResultToSave = {};
+						break;
+					case "PUT":
+						//update Result (Bayer)
+						promises.push(Services.getService('Result').updateResult(oBayerResultToSave).catch(function (oError) {
+							//show error message
+							Services.showErrorMessage(oError, "Updating of Bayer Result");
+							//promises must fail as well
+							throw oError;
+						}));
+						oBayerResultToSave = {};
+						break;
+					
+					}
+				}
+			}
+				});		
+			//DOING THE ACCUAL SAVE
+			Promise.all(promises).then((result) => {
+
+				var sTenderID = Services.getSelectedTenderID();
+				var bLoadedCheck = false;
+
+				//load all data again
+				$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+					//give message that everything was updated
+					sap.m.MessageBox.success("Results Updated Successfully", {});
+
+					//save offer status as tender recorded... 
+					$.when(Services.saveOfferStatus("Results Recorded")).done(function (oSaveStatus) {
+
+						//this way we can use a seperate layer, adding deleting... and afterords saving
+						var oFastAppDataModel = Services.getFastAppDataModel();
+						that.getView().setModel(oFastAppDataModel, "fastAppData");
+						dateModel.setProperty("/Check",undefined);
+						that.getView().getModel("fastData").refresh(true);
+						
+
+												
+					});
+
+				});
+
+			}).catch(function (oError) {
+
+				
+				//	Services.showErrorMessage(oError, "Saving tender results");
+								
+			});
+		
+		},
 
 		onChangeSampleYN: function (oEvent) {
 			//get selected value
@@ -11702,7 +11972,193 @@ sap.ui.define([
 				aCells[14].setValue("");
 			}
 		},
+	//EHQUT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
 
+	_onSaveResults: async function (sPathIn) {
+
+		//FastAppDataModel
+		var oFastAppDataModel = Services.getFastAppDataModel();
+		var dateModel=this.getView().getModel("dateModel");
+		dateModel.setProperty("/Check","Saved");
+
+		var aMessages = [];
+		var bError = false;
+
+		var that = this;
+		let promises = [];
+		var oBayerResultToSave = {};
+
+		//var offerid = this.getView().getModel("fastData").getProperty(path).OfferID;
+		var sOfferID = Services.getSelectedOfferID();
+		var sTenderID = Services.getSelectedTenderID();
+		var sInstituteID = Services.getInstituteIDofSelectedTender();
+		var sCountryCode = Services.getCountryCodeofSelectedTender();
+
+		//products of offer
+		var aResultsForProducts = oFastAppDataModel.getProperty("/ResultsForProducts");
+		var aResultsForTree = oFastAppDataModel.getProperty("/ResultsForTree");
+		const missingFields = new Set();
+
+		aResultsForTree.forEach(function(oResultForTree, iIndex) {
+
+			missingFields.clear();
+
+			if(sCountryCode === 'ES'){
+
+				if (oResultForTree) {
+
+					if(oResultForTree.PriceAgreement === null){
+
+						if(!oResultForTree.OUTCOME){
+							missingFields.add("Outcome");
+						}
+						if(oResultForTree.PRODUCT === "Other" && !oResultForTree.AWARDEDPRICE){
+							missingFields.add("Awarded Price");
+						}
+						if(!oResultForTree.AWARDEDQTY){
+							missingFields.add("Awarded Quantity");
+						}
+						if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.INFONEEDED){
+							missingFields.add("Information Needed");
+						}
+						if(oResultForTree.AWARDEDCOMPANY === "Bayer" && !oResultForTree.APPEAL){
+							missingFields.add("Appeal");
+						}
+						if((oResultForTree.OUTCOME && (oResultForTree.OUTCOME === 'Won' || oResultForTree.OUTCOME === 'Lost')) && !oResultForTree.REASON){
+							missingFields.add("Reason");
+						}                        
+					}
+				}
+			}                
+
+
+			if(missingFields.size > 0){
+				var oMessage = {
+					type: 'Error',
+					title: `Please enter all mandatory fields.`,
+					subtitle: oResultForTree.PRODUCT,
+					description: Array.from(missingFields).join("\n")
+				};
+
+				aMessages.push(oMessage);
+				bError = true;
+			}
+
+
+		});
+
+		if(bError){
+			Services.showMessageCompositeView('Error', aMessages, 'Error');
+			return;
+		}
+
+		//loop at each row TODO this can be handeled by using binding in the same way as on the other tabs, so no looping over rows...
+		aResultsForTree.forEach(async function (oResultForTree, iIndex) {
+
+			//only if we are in a cell with a product
+			if (oResultForTree) {
+
+				//EHQUT
+				if(oResultForTree.AWARDEDCOMPANY === "Bayer"){
+
+				//push data for saving
+				oBayerResultToSave = {
+					ContractNo: oResultForTree.CONTRACT_NO,
+					TenderID: sTenderID,
+					OfferID: sOfferID,
+					CountryCode: sCountryCode,
+					InstituteID: sInstituteID, //Number(aCells["14"].getSelectedKey()),
+					ProductCode: oResultForTree.PRODUCTCODE,
+					SubmittedOn: moment().utc().toDate(),
+					SubmittedBy: UserInfo.getCWID(),
+					Active: 1,
+					ErrorInSubmission: oResultForTree.ERRORINSUBMISSION,
+					Outcome: oResultForTree.OUTCOME,
+					AwardedCompany: oResultForTree.AWARDEDCOMPANY, //"Bayer",
+					AwardedProduct: oResultForTree.AWARDEDPRODUCT, //0
+					AwardedPrice: (oResultForTree.AWARDEDPRICE === "" || oResultForTree.AWARDEDPRICE === null) ? null : oResultForTree.AWARDEDPRICE
+						.toString(), //2
+					Currency: oResultForTree.CURRENCY,
+					AwardedQty: (oResultForTree.AWARDEDQTY !== "") ? oResultForTree.AWARDEDQTY : "0",
+					// AwardedQty: sAwardedQty
+					UoM: oResultForTree.UOM,
+					Reason: oResultForTree.REASON,
+					Comment: oResultForTree.COMMENT,
+					AwardedTier: 0,
+					//italy fields
+					ExtensionDate: oResultForTree.ExtensionDate,
+					ExtensionNotes: oResultForTree.ExtensionNotes,
+					AwardLetterNo: oResultForTree.AwardLetterNo,
+					AwardDelibNo: oResultForTree.AwardDelibNo,
+					DeliveryDate: oResultForTree.DeliveryDate,
+					ResultDate: oResultForTree.ResultDate,
+					AwardDate: oResultForTree.AwardDate,
+					AwardActing: oResultForTree.AwardActing,
+					Appeal: oResultForTree.APPEAL,
+					TotalAwardedValue: oResultForTree.TOTALAWARDEDVALUE,
+					InfoNeeded: oResultForTree.INFONEEDED,
+					LotID: sCountryCode === "BR" ? oResultForTree.LotID : 1                     
+				};
+
+				//Check if for the result is newly added and does not exist in database (in this case _sOperation exists and is POST)
+				switch (oResultForTree._sOperation) {
+				case "POST":
+					//create new Result (Bayer)
+					promises.push(Services.getService('Result').createResult(oBayerResultToSave).catch(function (oError) {
+
+					}));
+					oBayerResultToSave = {};
+					break;
+				case "PUT":
+					//update Result (Bayer)
+					promises.push(Services.getService('Result').updateResult(oBayerResultToSave).catch(function (oError) {
+						//show error message
+						Services.showErrorMessage(oError, "Updating of Bayer Result");
+						//promises must fail as well
+						throw oError;
+					}));
+					oBayerResultToSave = {};
+					break;
+
+				}
+			}
+		}
+			});		
+		//DOING THE ACCUAL SAVE
+		Promise.all(promises).then((result) => {
+
+			var sTenderID = Services.getSelectedTenderID();
+			var bLoadedCheck = false;
+
+			//load all data again
+			$.when(Services.loadAllFastAppDataForProdOffer(sTenderID, bLoadedCheck)).done(function (oDataTenderOffer) {
+
+				//give message that everything was updated
+				sap.m.MessageBox.success("Results Updated Successfully", {});
+
+				//save offer status as tender recorded... 
+				$.when(Services.saveOfferStatus("Results Recorded")).done(function (oSaveStatus) {
+
+					//this way we can use a seperate layer, adding deleting... and afterords saving
+					var oFastAppDataModel = Services.getFastAppDataModel();
+					that.getView().setModel(oFastAppDataModel, "fastAppData");
+					dateModel.setProperty("/Check",undefined);
+					that.getView().getModel("fastData").refresh(true);
+
+
+
+				});
+
+			});
+
+		}).catch(function (oError) {
+
+
+			//	Services.showErrorMessage(oError, "Saving tender results");
+
+		});
+
+	},
 		_initializeCountrySpecificFields: function(){
 
 			this.byId("idBiddingTypeLevel1") && this.byId("idBiddingTypeLevel1").setVisible(false);
@@ -11772,6 +12228,10 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(true);
                             this.byId("idAwardDate").setVisible(true);
                             this.byId("idAwardDateLabel").setVisible(true);
+							this.byId("idEffectiveDateLabel").setVisible(false);
+							this.byId("idEffectiveDate").setVisible(false);
+							this.byId("idExpiryDateLable").setVisible(false);
+							this.byId("idExpiryDate").setVisible(false);
 							
                         }                   
                     } else if(sCountry === 'ES' && sKey !== 'Tender'){
@@ -11790,9 +12250,31 @@ sap.ui.define([
                             this.byId("idNextPublicationDye").setVisible(false);
                             this.byId("idAwardDate").setVisible(false);
                             this.byId("idAwardDateLabel").setVisible(false);
-							
+							this.byId("idEffectiveDateLabel").setVisible(true);
+							this.byId("idEffectiveDate").setVisible(true);
+							this.byId("idExpiryDateLable").setVisible(true);
+							this.byId("idExpiryDate").setVisible(true);
+							//EJUVE-CR2
+							var datapicker = this.getView().byId("idEffectiveDate");
+							if (datapicker) {
+								var minDate = new Date();
+								this.byId("idEffectiveDate").setMinDate(minDate);
+							}
+							var datapickerMaxDate = this.getView().byId("idExpiryDate");
+							if (datapickerMaxDate) {
+								var maxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+								maxDate = new Date(maxDate);
+								this.byId("idExpiryDate").setMaxDate(maxDate);
+							}
                         }                  
-                    }         
+                    }else if(sCountry === "TH" && sKey === "Tender"){
+						this.byId("idPeriodOfBankGauranteeStartEdit").setVisible(true)
+						this.byId("idPeriodOfBankGauranteeStartLabelEdit").setVisible(true)
+						this.byId("idPeriodOfBankGauranteeEndLabelEdit").setVisible(true)
+						this.byId("idPeriodOfBankGauranteeEndEdit").setVisible(true)
+						this.byId("idBGValueBahtLabelEdit").setVisible(true)
+						this.byId("idBGValueBahtEdit").setVisible(true)
+					}       
                     //EHQUT-INC0184560-Issue in offer creation
 				} catch(err) {
 					console.log(err);
@@ -12213,7 +12695,5 @@ sap.ui.define([
 
 			}
 		},
-
-
 	});
 });
