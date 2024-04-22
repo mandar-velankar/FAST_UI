@@ -9215,6 +9215,14 @@ sap.ui.define([
 					that.setQuotationDateRestrictions();
 					that._createPriceConditionTableEntitiesOnQuotationTabForBrazil();
 				}
+				
+				if (Services.getSelectedCountry() === "TH") {
+					let quotationDeliverymethod = that.byId("idqQuotationDeliverymethod") 
+					if (quotationDeliverymethod) {
+						let getQuotationDeliverymethodValue = that.getView().getModel('fastAppData').getProperty("/OfferValidation/QuotationDeliverymethod")?.split(",")
+						quotationDeliverymethod.setSelectedKeys(getQuotationDeliverymethodValue)
+					}
+				}
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
