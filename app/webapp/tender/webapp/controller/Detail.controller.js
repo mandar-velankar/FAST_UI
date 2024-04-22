@@ -11029,8 +11029,13 @@ sap.ui.define([
 					Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", bCheckOutcome); 
 
 					//Enable/Disable SetAllProductsOutcometoWonLost Button
-					let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== ""); 
-					Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
+					if (sCountry === "IT") {
+						let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== "Decision Pending"); 
+						Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
+					}else{
+						let bCheckOutcomeStatus = aResultsForTree.some((elem) => elem.OUTCOME !== ""); 
+						Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", !bCheckOutcomeStatus);
+					}
 
 					//apply filter for outcome tree table
 					oOutcomeTreeTable.getBinding("rows").filter(
