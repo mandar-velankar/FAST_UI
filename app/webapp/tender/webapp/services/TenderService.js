@@ -132,7 +132,7 @@ sap.ui.define([
 			oTenderToSave.Custom_Integer_2 = oTenderSaveInfo.Custom_Integer_2
 			oTenderToSave.Custom_Date_1 = oTenderSaveInfo.Custom_Date_1
 			oTenderToSave.Custom_Date_2 = oTenderSaveInfo.Custom_Date_2
-			oTenderToSave.Custom_Date_3 = oTenderSaveInfo.Custom_Date_3
+			oTenderToSave.Custom_Double_1 = oTenderSaveInfo.Custom_Double_1
 			/* End of Thailand */
             /* Spain */
             oTenderToSave.PORTAL = oTenderSaveInfo.PORTAL;
