@@ -117,8 +117,6 @@
 									<Text text="{fastAppData>SellingCompanyDetails/LegalEntityName}"/>
                                     <Label text="{i18n>offerNumber}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
 									<Text text="{fastAppData>/SelectedOfferID}" visible="{= ${fastAppData>/Tender/CountryCode} === 'ES'? true : false}"/>
-									<Label text="{i18n>itemNumber}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>
-									<Text text="{fastAppData>Custom_Integer_1}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}" />
 									<core:Title/>
 									<Label text="{i18n>intrnlduedte}" required="{= ${fastAppData>/Tender/CountryCode} === 'ES' ? false : true}"/>
 									<!--<Text text="{path :'fastAppData>InternalBidDueDate',formatter:'FAST_NS0FAST0.utils.Formatter.bdate'}"/>-->
@@ -511,6 +509,12 @@
                                        formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
 							<Text text="{fastAppData>SKUCountry/BU}"/>
+						</t:template>
+					</t:Column>
+					 <t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
+						<Label text="{i18n>itemNumber}"/>
+						<t:template>
+							<Input value="{fastAppData>Custom_Integer_1}" enabled="false" type="Number"/>
 						</t:template>
 					</t:Column>
 				</t:columns>

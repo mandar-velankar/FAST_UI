@@ -4219,7 +4219,7 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
 				oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
 				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
-				oSaveBasicInfo.Custom_Date_3 =  oTender.Custom_Date_3
+				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
@@ -4393,7 +4393,7 @@ sap.ui.define([
 			oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
 			oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
 			oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
-			oSaveBasicInfo.Custom_Date_3 =  oTender.Custom_Date_3
+			oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
 			oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
