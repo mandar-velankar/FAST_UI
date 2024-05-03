@@ -2083,7 +2083,15 @@ sap.ui.define([
 					if(oQofferValidity){
 						oQofferValidity.setEnabled(false);
 					}
-
+					if (Services.getSelectedCountry() === 'TH') {
+						that.byId("idqUnitofvalidityperiod") &&	that.byId("idqUnitofvalidityperiod").setEnabled(false);
+						that.byId("idqDeliveryDue") && that.byId("idqDeliveryDue").setEnabled(false);
+						that.byId("idqUnitofdeliverydue") && that.byId("idqUnitofdeliverydue").setEnabled(false);
+						that.byId("idqQuotationDeliverymethod") && that.byId("idqQuotationDeliverymethod").setEnabled(false);
+						that.byId("idqQuotationRecipientname") && that.byId("idqQuotationRecipientname").setEnabled(false);
+						that.byId("idqQuotationRecipientcontact") && that.byId("idqQuotationRecipientcontact").setEnabled(false);
+						that.byId("idqExpectdatetoreceivethedocument") && that.byId("idqExpectdatetoreceivethedocument").setEnabled(false);
+					}
 					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
 
@@ -2656,7 +2664,15 @@ sap.ui.define([
 								oQofferValidity.setEnabled(true);
 							}
 						}
-
+						if (Services.getSelectedCountry() === 'TH') {
+							that.byId("idqUnitofvalidityperiod") &&	that.byId("idqUnitofvalidityperiod").setEnabled(true);
+							that.byId("idqDeliveryDue") && that.byId("idqDeliveryDue").setEnabled(true);
+							that.byId("idqUnitofdeliverydue") && that.byId("idqUnitofdeliverydue").setEnabled(true);
+							that.byId("idqQuotationDeliverymethod") && that.byId("idqQuotationDeliverymethod").setEnabled(true);
+							that.byId("idqQuotationRecipientname") && that.byId("idqQuotationRecipientname").setEnabled(true);
+							that.byId("idqQuotationRecipientcontact") && that.byId("idqQuotationRecipientcontact").setEnabled(true);
+							that.byId("idqExpectdatetoreceivethedocument") && that.byId("idqExpectdatetoreceivethedocument").setEnabled(true);
+						}
 						//EHQUT-CR1
 
 						if(Services.getSelectedCountry() === 'ES' && Services.getFastAppDataModel().oData.EditTender.Classification==="Commercial Agreement"){
@@ -4198,6 +4214,12 @@ sap.ui.define([
 				/* Thailand */
 				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
+				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+				oSaveBasicInfo.Custom_String_1 =  oTender.Custom_String_1
+				oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
+				oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
+				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
+				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
@@ -4366,7 +4388,12 @@ sap.ui.define([
 			/* Thailand */
 			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-
+			oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+			oSaveBasicInfo.Custom_String_1 =  oTender.Custom_String_1
+			oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
+			oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
+			oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
+			oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
 			oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
@@ -6775,10 +6802,14 @@ sap.ui.define([
 				oOfferSaveInfo.DistributorComments = oOffer.DistributorComments;
 				oOfferSaveInfo.TenderDistributorID = oOffer.TenderDistributorID;
 				oOfferSaveInfo.Comment = oOffer.Comment;
+				oOfferSaveInfo.Custom_String_1 = oOffer.Custom_String_1;
+				oOfferSaveInfo.Custom_Integer_1 = oOffer.Custom_Integer_1;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
 				oOfferSaveInfo.Comment = oFastAppDataModel.getProperty("/EditOffer/Comment");
+				oOfferSaveInfo.Custom_String_1 = oFastAppDataModel.getProperty("/EditOffer/Custom_String_1");
+				oOfferSaveInfo.Custom_Integer_1 = oFastAppDataModel.getProperty("/EditOffer/Custom_Integer_1");
                 if(this._country === "ES"){
                     oOfferSaveInfo.ProfitabilityStartMnth = 1;
                     oOfferSaveInfo.ProfitabilityAgrDur = 5;
@@ -9184,6 +9215,14 @@ sap.ui.define([
 					that.setQuotationDateRestrictions();
 					that._createPriceConditionTableEntitiesOnQuotationTabForBrazil();
 				}
+				
+				if (Services.getSelectedCountry() === "TH") {
+					let quotationDeliverymethod = that.byId("idqQuotationDeliverymethod") 
+					if (quotationDeliverymethod) {
+						let getQuotationDeliverymethodValue = that.getView().getModel('fastAppData').getProperty("/OfferValidation/QuotationDeliverymethod")?.split(",")
+						quotationDeliverymethod.setSelectedKeys(getQuotationDeliverymethodValue)
+					}
+				}
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -9787,6 +9826,13 @@ sap.ui.define([
 						CustomRemark: oCustomRemark ? that.byId("idCustomRemark").getValue() : '',
 						IssuedBy: oSelectIssuedBy ? that.byId("idSelectIssuedBy").getSelectedKey() : '',
 						CompanyStamp: oSelectCompanyStamp ? that.byId("idSelectCompanyStamp").getSelectedKey() : '',
+						Unitofvalidityperiod: oFastAppDataModel.getProperty("/OfferValidation/Unitofvalidityperiod"),
+						DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
+						Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
+						QuotationDeliverymethod :  oFastAppDataModel.getProperty("/OfferValidation/QuotationDeliverymethod")?.join(','),
+						QuotationRecipientname  :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientname"),
+						QuotationRecipientcontact :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientcontact"),
+						Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
 					};
 
 					//do the save of the quotation with UPDATED to 1
@@ -10440,6 +10486,13 @@ sap.ui.define([
 				CustomRemark: oCustomRemark ? this.byId("idCustomRemark").getValue() : '',
 				IssuedBy: oSelectIssuedBy ? this.byId("idSelectIssuedBy").getSelectedKey() : '',
 				CompanyStamp: oSelectCompanyStamp ? this.byId("idSelectCompanyStamp").getSelectedKey() : '',
+				Unitofvalidityperiod: oFastAppDataModel.getProperty("/OfferValidation/Unitofvalidityperiod"),
+				DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
+				Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
+				QuotationDeliverymethod :  oFastAppDataModel.getProperty("/OfferValidation/QuotationDeliverymethod")?.join(','),
+				QuotationRecipientname  :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientname"),
+				QuotationRecipientcontact :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientcontact"),
+				Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
 			};
 
 			//keep selected offer
@@ -12214,7 +12267,14 @@ sap.ui.define([
 								this.byId("idExpiryDate").setMaxDate(maxDate);
 							}
                         }                  
-                    }         
+                    }else if(sCountry === "TH" && sKey === "Tender"){
+						this.byId("idPeriodOfBankGauranteeStartEdit").setVisible(true)
+						this.byId("idPeriodOfBankGauranteeStartLabelEdit").setVisible(true)
+						this.byId("idPeriodOfBankGauranteeEndLabelEdit").setVisible(true)
+						this.byId("idPeriodOfBankGauranteeEndEdit").setVisible(true)
+						this.byId("idBGValueBahtLabelEdit").setVisible(true)
+						this.byId("idBGValueBahtEdit").setVisible(true)
+					}       
                     //EHQUT-INC0184560-Issue in offer creation
 				} catch(err) {
 					console.log(err);

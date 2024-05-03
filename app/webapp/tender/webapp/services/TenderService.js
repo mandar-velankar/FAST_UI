@@ -127,6 +127,12 @@ sap.ui.define([
 			/* Thailand */
 			oTenderToSave.PROCUREMENT_METHOD_ID = oTenderSaveInfo.PROCUREMENT_METHOD_ID;
 			oTenderToSave.PROCUREMENT_REASON = oTenderSaveInfo.PROCUREMENT_REASON;
+			oTenderToSave.Custom_Integer_1 = oTenderSaveInfo.Custom_Integer_1
+			oTenderToSave.Custom_String_1 = oTenderSaveInfo.Custom_String_1
+			oTenderToSave.Custom_Integer_2 = oTenderSaveInfo.Custom_Integer_2
+			oTenderToSave.Custom_Date_1 = oTenderSaveInfo.Custom_Date_1
+			oTenderToSave.Custom_Date_2 = oTenderSaveInfo.Custom_Date_2
+			oTenderToSave.Custom_Double_1 = oTenderSaveInfo.Custom_Double_1
 			/* End of Thailand */
             /* Spain */
             oTenderToSave.PORTAL = oTenderSaveInfo.PORTAL;

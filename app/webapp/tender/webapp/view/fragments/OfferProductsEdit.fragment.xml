@@ -91,6 +91,9 @@
 								<!-- <Text id="idDistID" text="{fastAppData>/EditOffer/Distributor/DistributorID}" visible="false"/> -->
 								<Label text="{i18n>Comment}"/>
 								<Input value="{fastAppData>/EditOffer/Comment}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR'}"/>
+								
+								<Label text="{i18n>tenderAnnouncementReference}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
+								<Input value="{fastAppData>/EditOffer/Custom_String_1}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
 							</form:content>
 						</form:SimpleForm>
 						
@@ -341,7 +344,7 @@
 									</t:template>
 								</t:Column>
 
-								<t:Column width="100px" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
+								<t:Column width="100px" visible="{= ${fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible} &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH'}">
 									<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AtcRdm/description',
 												   formatter: '.formatter.offerProductsColumnName' }"
 										   wrapping="true" 
@@ -592,6 +595,12 @@
 															   required="{fastAppData>/permissions/tables/editofferProductId/BU/required}"/>
 									<t:template>
                                         <Input value="{fastAppData>SKUCountry/BU}" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}" enabled="false"/>
+									</t:template>
+								</t:Column>
+								 <t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
+									<Label text="{i18n>itemNumber}"/>
+									<t:template>
+										<Input value="{fastAppData>Custom_Integer_1}" type="Number"/>
 									</t:template>
 								</t:Column>
 							</t:columns>
