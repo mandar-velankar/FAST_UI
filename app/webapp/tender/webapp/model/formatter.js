@@ -689,6 +689,22 @@ sap.ui.define([
 			if (offerCreatedOrDeclined && isDirectDistributor && !isIBIZNotified && isChannelDistributor) return true;
 			if (offerCreatedOrDeclined && !isDirectDistributor && !isIBIZNotified && (isChannelBayer || isChannelDeclined)) return true;
 			return false;
+		},
+
+		formatOfferProductSKUCodes: function (skus, columnName) {
+			let result = '';
+			if (!skus) return result;
+			switch (columnName) {
+				case 'sapNo':
+					result = skus.filter(el => el.ActiveRecord === 'Yes').map(el => el.SKUCode).join(',')
+					break;
+				case 'previousSAPNo':
+					result = skus.filter(el => el.ActiveRecord === 'No').map(el => el.SKUCode).join(',')
+					break;
+				default:
+					break;
+			}
+			return result;
 		}
 		
 	};

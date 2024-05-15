@@ -321,7 +321,27 @@
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/SapNo/description',
 									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>SKUCountry/ProductPack/ProductPackSKUs/results/SKUCode}" wrapping="true" />
+							<Text text="{
+								parts: [
+									'fastAppData>SKU/ProductPackSKUs/results',
+									'fastAppData>/permissions/tables/editofferProductId/SapNo/description'
+								], 
+								formatter: '.formatter.formatOfferProductSKUCodes'
+								}" wrapping="true" />
+						</t:template>
+					</t:Column>
+
+					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/PreviousSAPNo/visible}" >
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PreviousSAPNo/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Text text="{
+								parts: [
+									'fastAppData>SKU/ProductPackSKUs/results',
+									'fastAppData>/permissions/tables/editofferProductId/PreviousSAPNo/description'
+								], 
+								formatter: '.formatter.formatOfferProductSKUCodes'
+								}" wrapping="true" />
 						</t:template>
 					</t:Column>
 
