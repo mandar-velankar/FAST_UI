@@ -322,8 +322,8 @@ sap.ui.define([
 			});
 
 			var mParameters = {
+				filters: [oFilter],
 				urlParameters:{
-                    filters: [oFilter],
 					$expand:"Regions/Region"
 				}
 			};
