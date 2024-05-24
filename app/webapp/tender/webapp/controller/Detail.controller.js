@@ -25,13 +25,14 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimalDiscount",
+	"com/bayer/tender/uilib/datatypes/CustomDecimalType",
 	"sap/m/MessageBox",
 	"sap/m/library",
 	"sap/m/ActionSheet",
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,PercentageTypeDecimalDiscount,MessageBox,mobileLibrary,coreLibrary) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,PercentageTypeDecimalDiscount,CustomDecimalType,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -56,7 +57,8 @@ sap.ui.define([
 		types: {
 			percent: PercentageType,
 			percentdecimal : PercentageTypeDecimal,
-			percentdecimaldiscount : PercentageTypeDecimalDiscount
+			percentdecimaldiscount : PercentageTypeDecimalDiscount,
+			customDecimal: CustomDecimalType
 		},
 
 
