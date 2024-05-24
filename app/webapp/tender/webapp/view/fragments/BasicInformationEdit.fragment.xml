@@ -253,7 +253,7 @@
 				<DatePicker id="idPeriodOfBankGauranteeEndEdit" value="{path: 'fastAppData>/EditTender/Custom_Date_2', type: 'sap.ui.model.type.Date',  formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"  visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
 
 				<Label id="idBGValueBahtLabelEdit" text="{i18n>BGValueBaht}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
-				<Input id="idBGValueBahtEdit"  value="{path: 'fastAppData>/EditTender/Custom_Double_1', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2, groupingEnabled: true, groupingSeparator: ',', decimalSeparator: '.', preserveDecimals: false }}" type="Number"  visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
+				<Input id="idBGValueBahtEdit"  value="{path: 'fastAppData>/EditTender/Custom_Double_1', type:'.types.customDecimal'}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
 				<!-- End of Thailand Changes-->
 
 				<!-- Brazil only -->
