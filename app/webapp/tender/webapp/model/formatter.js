@@ -705,7 +705,42 @@ sap.ui.define([
 					break;
 			}
 			return result;
-		}
-		
+		},
+		calculateFOCValue: function  (product) {
+			if(!Number(product?.Price?.FOC)) return 0;
+			let regPrice = product.RegisteredPrice.results[0].REGISTERED_PRICE;
+			let focValue;
+			switch(product.Price.FOC_ABS_PCT){
+				case "ABS":
+					focValue = product.Price.FOC * regPrice;
+					break;
+				case "PCT":
+					focValue = Math.round(product.RequestedVolume * product.Price.FOC) * regPrice;
+					break;
+				case "STP":
+					focValue = (Math.floor(product.RequestedVolume / product.Price.FOCStep) * product.Price.FOC) * regPrice;
+					break;
+				default:
+					break;
+			}	
+			return this.formatFOCValue(focValue, undefined);
+		},
+		formatFOCValue: function(price, currency) {
+			if (!price){
+				return "";
+			}
+			var oNumberFormat = NumberFormat.getFloatInstance({
+				maxFractionDigits: 2,
+				minFractionDigits: 2,
+				groupingEnabled: true,
+				groupingSeparator: ",",
+				decimalSeparator: "."
+			});
+			var oValue = oNumberFormat.format(parseFloat(price));
+			if (currency === undefined){
+				return oValue;
+			}
+			return oValue + " "+ currency;
+		},
 	};
 });
