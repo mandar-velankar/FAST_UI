@@ -10159,8 +10159,8 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
 
-			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
-			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
+			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' || oTender.CountryCode === 'IT' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
+			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' || oTender.CountryCode === 'IT' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
 			//CR1
 			// oPriceAgreementSaveInfo.EffectiveDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
 
@@ -10606,6 +10606,7 @@ sap.ui.define([
 			//that = this
 			var that = this;
 			var bOutcomeStatusFlag= false;
+			const countryCode = Services.getSelectedCountry();
 
 			if (oEvent) { //if you enter this method from the edit button, the oEvent is empty & offer path is already set
 				var sSelectedOfferPath = oEvent.getSource().getBindingContext("fastData").getPath();
@@ -10620,6 +10621,14 @@ sap.ui.define([
 			
 			let aContracts = await this.getExistingContracts();
 			Services.getFastAppDataModel().setProperty("/BrazilContractsForOffer", aContracts?.data?.results);
+
+			if (countryCode === 'IT') {
+				const selectedOfferQuotation = Services.getFastAppDataModel().getProperty("/SelectedOffer/Quotation");
+				Services.getFastAppDataModel().setProperty("/ItalyPriceAggrementContractDates", {
+					ContractStartDate: selectedOfferQuotation.EffectiveDate,
+					ContractEndDate: selectedOfferQuotation.ExpiryDate
+				});
+			}
 
 			//Get offer table + column from where we can check if offer is valid for tab
 			//var oOffersTable = that.getView().byId("tenderResultsOfferTableViewID");
@@ -11689,6 +11698,22 @@ sap.ui.define([
 				}
 			
 			});
+
+			if (sCountryCode === 'IT') {
+				debugger;
+				const oQuotationToConvert = oFastAppDataModel.getProperty("/SelectedOffer/Quotation");
+				const contratcDates = oFastAppDataModel.getProperty("/ItalyPriceAggrementContractDates");
+
+				oQuotationToConvert.EffectiveDate = contratcDates.ContractStartDate;
+				oQuotationToConvert.ExpiryDate = contratcDates.ContractEndDate;
+
+				const quotation = Services.getService('Quotation').getConvertQuotationToSave(oQuotationToConvert);
+				promises.push(Services.getService('Quotation').updateQuotation(quotation).catch(function(oError){
+					Services.showErrorMessage(oError, "Update Quotation");
+					throw new Error(oError);
+				}));
+			}
+
 			if(missingFields.size > 0){
 				var oMessage = {
 					type: 'Error',

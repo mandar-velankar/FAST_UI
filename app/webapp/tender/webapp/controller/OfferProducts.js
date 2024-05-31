@@ -220,7 +220,17 @@ sap.ui.define([
 				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
 				visible: sCountryCode === "CL" ? false : true
 			}));
-
+			//FOCValue
+			oForm.addContent(new sap.m.Label({
+				text: "{i18n>FOCValue}",
+				visible: sCountryCode === "TH" ? true : false
+			}));
+			oForm.addContent(new sap.m.Input({
+				value: formatter.calculateFOCValue(oProduct),
+				enabled: false,
+				visible: sCountryCode === "TH" ? true : false,
+				description: price.offerCurrency,
+			}));
 			//Net Price
 			oForm.addContent(new sap.m.Label({
 				text: "{= ${fastAppData>/Tender/CountryCode} === 'TH' ? ${i18n>NetOfferPrice_TH} : ${i18n>NetOfferPrice}}",
@@ -2568,6 +2578,5 @@ sap.ui.define([
 
 			return sOfferPath;
 		}
-
 	});
 });
