@@ -4214,12 +4214,15 @@ sap.ui.define([
 				/* Thailand */
 				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
-				oSaveBasicInfo.Custom_String_1 =  oTender.Custom_String_1
-				oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
+				oSaveBasicInfo.Custom_String_2 = oTender.Custom_String_2
+				oSaveBasicInfo.Custom_String_1 = oTender.Custom_String_1
+				oSaveBasicInfo.Custom_String_3 = oTender.Custom_String_3
 				oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
 				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
 				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
+				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
+				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
 
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
