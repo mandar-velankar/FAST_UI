@@ -90,8 +90,7 @@
 				"settings": {
 					"defaultOperationMode": "Server",
 					"defaultBindingMode": "OneWay",
-					"defaultCountMode": "Request",
-					"useBatch": false
+					"defaultCountMode": "Request"
 				},
 				"dataSource": "tender",
 				"preload": true

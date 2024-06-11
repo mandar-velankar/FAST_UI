@@ -235,23 +235,6 @@
                                                     </m:Select>
                                                 </m:items>
                                             </m:VBox>
-                                                <m:VBox width="13rem" class="sapUiSmallMarginEnd">
-                                                <m:items>
-                                                    <m:Label text="{i18n>qDeliveryDue}" design="Bold"/>
-                                                    <m:Input class="sapUiSmallMarginEnd" id="idqDeliveryDue" enabled="false" value="{fastAppData>/OfferValidation/DeliveryDue}" type="Number"/>
-                                                </m:items>
-                                            </m:VBox>
-                                                <m:VBox width="24rem">
-                                                <m:items>
-                                                    <m:Label text="{i18n>qUnitofdeliverydue}" design="Bold" />
-                                                    <m:Select class="sapUiSmallMarginEnd" width="100%" enabled="false" id="idqUnitofdeliverydue" selectedKey="{fastAppData>/OfferValidation/Unitofdeliverydue}">
-                                                        <core:Item key="" text=""/>
-                                                        <core:Item key="Days" text="Days"/>
-                                                        <core:Item key="Months" text="Months"/>
-                                                        <core:Item key="Years" text="Years"/>
-                                                    </m:Select>
-                                                </m:items>
-                                            </m:VBox>
                                         </m:items>
                                     </m:HBox>
                                     <m:Toolbar width="100%" height="1px" class="sapUiSmallMarginTop"/>
