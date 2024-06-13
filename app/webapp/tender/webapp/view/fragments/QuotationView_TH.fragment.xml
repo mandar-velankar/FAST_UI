@@ -221,22 +221,6 @@
                                             </m:VBox>
                                         </m:items>
                                     </m:HBox>
-                                    <m:Toolbar width="100%" height="1px"/>
-                                    <m:HBox>
-                                        <m:items>
-                                            <m:VBox width="23rem" class="sapUiSmallMarginEnd">
-                                                <m:items>
-                                                    <m:Label text="{i18n>qUnitofvalidityperiod}" design="Bold"/>
-                                                    <m:Select class="sapUiSmallMarginEnd" width="100%" enabled="false" id="idqUnitofvalidityperiod" selectedKey="{fastAppData>/OfferValidation/Unitofvalidityperiod}">
-                                                        <core:Item key="" text=""/>
-                                                        <core:Item key="Days" text="Days"/>
-                                                        <core:Item key="Months" text="Months"/>
-                                                        <core:Item key="Years" text="Years"/>
-                                                    </m:Select>
-                                                </m:items>
-                                            </m:VBox>
-                                        </m:items>
-                                    </m:HBox>
                                     <m:Toolbar width="100%" height="1px" class="sapUiSmallMarginTop"/>
                                     <m:HBox>
                                         <m:items>
