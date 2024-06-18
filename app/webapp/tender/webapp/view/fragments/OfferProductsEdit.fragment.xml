@@ -205,6 +205,17 @@
 										<Input  id="idReference" value="{fastAppData>Reference}" placeholder="{i18n>reference}"  maxLength="255"/>
 									</t:template>
 								</t:Column>
+
+								<t:Column width="150px" visible="{= ${fastAppData>/permissions/tables/editofferProductId/itemNumber/visible} &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
+									<Label text="{
+										path: 'fastAppData>/permissions/tables/editofferProductId/itemNumber/description',
+										formatter: '.formatter.offerProductsColumnName'	
+									}"/>
+									<t:template>
+										<Input value="{fastAppData>Custom_Integer_1}" type="Number"/>
+									</t:template>
+								</t:Column>
+
 								<!-- Channel -->
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}">
 									<Label
@@ -617,12 +628,6 @@
 															   required="{fastAppData>/permissions/tables/editofferProductId/BU/required}"/>
 									<t:template>
                                         <Input value="{fastAppData>SKUCountry/BU}" visible="{fastAppData>/permissions/tables/editofferProductId/BU/visible}" enabled="false"/>
-									</t:template>
-								</t:Column>
-								 <t:Column width="150px" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
-									<Label text="{i18n>itemNumber}"/>
-									<t:template>
-										<Input value="{fastAppData>Custom_Integer_1}" type="Number"/>
 									</t:template>
 								</t:Column>
 							</t:columns>
