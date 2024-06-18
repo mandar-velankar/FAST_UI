@@ -49,6 +49,25 @@ sap.ui.define([
 		getWordTemplates:function(countryCode){
 			///v2/tender/WordTemplateCountry?$expand=WordTemplates&$filter=countryCode%20eq%20%27IT%27
 			return this.odata("/WordTemplateCountry").get({urlParameters:{"$expand":"WordTemplates"},filters:[new Filter({path:"countryCode",operator:FilterOperator.EQ,value1:countryCode})]});
+		},
+		getTHQuotationDelevery: function (offerID) {
+			return this.odata("/THQuotationDelevery").get({filters:[new Filter({path:"OfferID",operator:FilterOperator.EQ,value1:offerID})]})
+		},
+		updateTHQuotationDelevery: function (item) {
+			const sPath = Services.getDefaultModel().createKey("/THQuotationDelevery", {
+				ID: item.ID,
+			});
+			return this.odata(sPath).put(item)
+		},
+		createTHQuotationDelevery: function (item) {
+			return this.odata("/THQuotationDelevery").post(item)
+		},
+		removeTHQuotationDelevery: function (item) {
+			const sPath = Services.getDefaultModel().createKey("/THQuotationDelevery", {
+				ID: item.ID,
+			});
+			return this.odata(sPath).delete()
+			
 		}
 	});
 	return QuotationService;
