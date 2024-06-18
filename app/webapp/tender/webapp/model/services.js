@@ -8513,7 +8513,35 @@ sap.ui.define([
 			this.getFastAppDataModel().setProperty("/SelectedOffer/ConsolidatedProfitability", table);
 
 		},
+		onSaveQuotationDeleveryInfo: function() {
+			const quotationData = this.getFastAppDataModel().getProperty("/QuotationDataResult");
+			quotationData.forEach(item =>{
+				if (item.ID) {
+					this.getService("Quotation").updateTHQuotationDelevery(item)
+				}else{
+					this.getService("Quotation").createTHQuotationDelevery(item)
+				}
+			})
+			const quotationDataModel = this.getFastAppDataModel().getProperty("/RemoveQuotationRow");
 
+			if (quotationDataModel) {
+				quotationDataModel.forEach(item =>{
+					if (item.ID) {
+						this.getService("Quotation").removeTHQuotationDelevery(item);
+					}
+
+				})
+				this.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
+			}
+			this.getQuotationDeleveryData()
+		},
+		getQuotationDeleveryData: function(){
+			const that = this
+			const offerID = this.getSelectedOfferID()
+			this.getService("Quotation").getTHQuotationDelevery(offerID).then(function ({data: {results}}) {
+				that.getFastAppDataModel().setProperty('/QuotationDataResult', results);
+			});
+		},
 	});
 
 	return new Service();
