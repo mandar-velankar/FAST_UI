@@ -9831,6 +9831,8 @@ sap.ui.define([
 						DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
 						Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
 						Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
+						AttentionTo :  oFastAppDataModel.getProperty("/OfferValidation/AttentionTo"),
+				        QuotationDate: oFastAppDataModel.getProperty("/OfferValidation/QuotationDate")
 					};
 
 					//do the save of the quotation with UPDATED to 1
@@ -10488,6 +10490,8 @@ sap.ui.define([
 				DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
 				Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
 				Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
+				AttentionTo :  oFastAppDataModel.getProperty("/OfferValidation/AttentionTo"),
+				QuotationDate: oFastAppDataModel.getProperty("/OfferValidation/QuotationDate")
 			};
 
 			//keep selected offer
