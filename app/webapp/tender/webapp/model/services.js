@@ -8514,26 +8514,30 @@ sap.ui.define([
 
 		},
 		onSaveQuotationDeleveryInfo: function() {
+			const promises = []
 			const quotationData = this.getFastAppDataModel().getProperty("/QuotationDataResult");
-			quotationData.forEach(item =>{
+			promises.push(quotationData.map(item =>{
 				if (item.ID) {
-					this.getService("Quotation").updateTHQuotationDelevery(item)
+					return this.getService("Quotation").updateTHQuotationDelevery(item)
 				}else{
-					this.getService("Quotation").createTHQuotationDelevery(item)
+					return this.getService("Quotation").createTHQuotationDelevery(item)
 				}
-			})
+			}))
 			const quotationDataModel = this.getFastAppDataModel().getProperty("/RemoveQuotationRow");
 
 			if (quotationDataModel) {
-				quotationDataModel.forEach(item =>{
+				promises.push(quotationDataModel.map(item =>{
 					if (item.ID) {
-						this.getService("Quotation").removeTHQuotationDelevery(item);
+						return this.getService("Quotation").removeTHQuotationDelevery(item);
 					}
-
-				})
+				}))
 				this.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
 			}
-			this.getQuotationDeleveryData()
+			const that = this
+			Promise.all(promises).then(()=>{
+				that.getQuotationDeleveryData()
+			})
+			
 		},
 		getQuotationDeleveryData: function(){
 			const that = this
