@@ -228,21 +228,19 @@
                                         </m:VBox>
                                     </m:HBox>
                                     <m:HBox class="sapUiSmallMarginTop">
-                                        <m:VBox width="30rem" class="sapUiSmallMarginEnd">
+                                      <m:VBox width="30rem"  class="sapUiSmallMarginEnd">
                                             <m:items>
                                                 <m:Label text="{i18n>QuotationDate}" design="Bold"/>
-                                                <m:Input enabled="{fastAppData>/isQuotationDeliveryEnabled}" id="idQuotationDate" value="{fastAppData>/OfferValidation/AttentionTo}" class="sapUiSmallMarginEnd" />
-                                            </m:items>
-                                        </m:VBox> 
-
-                                        <m:VBox width="30rem">
-                                            <m:items>
-                                                <m:Label text="{i18n>AttentionTo}" design="Bold"/>
                                                 <m:DatePicker class="sapUiSmallMarginEnd" enabled="{fastAppData>/isQuotationDeliveryEnabled}" id="idAttentionTo" value="{path:'fastAppData>/OfferValidation/QuotationDate',type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"/>
                                             </m:items>
                                         </m:VBox>
+                                        <m:VBox width="30rem">
+                                            <m:items>
+                                                <m:Label  text="{i18n>AttentionTo}"  design="Bold"/>
+                                                <m:Input enabled="{fastAppData>/isQuotationDeliveryEnabled}" id="idQuotationDate" value="{fastAppData>/OfferValidation/AttentionTo}" class="sapUiSmallMarginEnd" />
+                                            </m:items>
+                                        </m:VBox> 
                                     </m:HBox>
-
                                     <m:Table 
                                         id="quotationTable"
                                         items="{fastAppData>/QuotationDataResult}"
