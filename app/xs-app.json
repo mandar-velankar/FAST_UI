@@ -119,12 +119,12 @@
     },
     {
       "source": "^/claims/(.*)",
-      "target": "/combayertenderclaimsapp/$1",
+      "target": "/combayertenderclaims/$1",
       "service": "html5-apps-repo-rt"
     },
     {
       "source": "^/app/claims/(.*)",
-      "target": "/combayertenderclaimsapp/$1",
+      "target": "/combayertenderclaims/$1",
       "service": "html5-apps-repo-rt"
     },
     {
