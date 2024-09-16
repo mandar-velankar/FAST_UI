@@ -118,6 +118,16 @@
       "service": "html5-apps-repo-rt"
     },
     {
+      "source": "^/claims/(.*)",
+      "target": "/combayertenderclaimsapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/app/claims/(.*)",
+      "target": "/combayertenderclaimsapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
       "source": "^/app/index.html(.*)$",
       "target":"index.html$1",
       "localDir": "dist",

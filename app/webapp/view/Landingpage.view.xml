@@ -110,6 +110,15 @@
 										<ImageContent src="sap-icon://request"/>
 									</TileContent>
 								</GenericTile>
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Claims" 
+									press="onTileClaimsPress" 
+									visible="{tiles>/claims}">
+									<TileContent>
+										<ImageContent src="sap-icon://request"/>
+									</TileContent>
+								</GenericTile>
 							</l:HorizontalLayout>
 						</l:VerticalLayout>
 					</Panel>
