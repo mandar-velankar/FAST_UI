@@ -59,12 +59,6 @@ modules:
           forwardAuthToken: true
           name: brazilContractingApp
           url: '~{url}'
-      - name: claimsApp
-        group: destinations
-        properties:
-          forwardAuthToken: true
-          name: claimsApp
-          url: '~{url}'      
       - name: uaa_FAST
       - name: html5_repo_runtime
       - name: com-bayer-tender-destination-service
@@ -146,15 +140,6 @@ resources:
         org: ${org}
         space: ${space}
       version: '>=0.0.0'
-  - name: claimsApp
-    type: configuration
-    parameters:
-      provider-id: FASTCLAIMS:claimsApp
-      provider-nid: mta
-      target:
-        org: ${org}
-        space: ${space}
-      version: '>=0.0.0'      
   - name: fast-theming
     parameters:
       service: theming
