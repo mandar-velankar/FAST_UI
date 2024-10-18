@@ -7623,17 +7623,20 @@ sap.ui.define([
 
 					//should tender channel be defaulted/forced on distributor?
 					$.when(Services.checkTenderChannelOnDistributor(sCountry, sSelectedInstituteID)).done(function (bTenderChannelOnDistributor) {
+						
+						const path = that.getView().getModel('fastData').createKey('/PT_TMINST',{
+							InstituteID : sSelectedInstituteID,
+							CountryCode : Services.getSelectedCountry()
+						})
+						const selectedinst = that.getView().getModel('fastData').getObject(path)
+
 						//default on Distributor / Direct for Chile
 						if(Services.getSelectedCountry() === 'CL'){
 							that.getView().byId("idTenderChannel").setSelectedKey("Direct");
 							that.getView().byId("idTenderChannel").setEnabled(false);
 						} else {
-							if (bTenderChannelOnDistributor) {
-								that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
-								that.getView().byId("idTenderChannel").setEnabled(false);
-							} else {
-								that.getView().byId("idTenderChannel").setEnabled(true);
-							}
+							that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+							that.getView().byId("idTenderChannel").setEnabled(selectedinst.DirectTender);
 						}
 					});
                     // oFastAppDataModel.refresh(true); // this is causing issues and hinding the Regions field
