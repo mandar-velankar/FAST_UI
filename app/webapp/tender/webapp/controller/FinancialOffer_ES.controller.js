@@ -1438,7 +1438,7 @@ sap.ui.define([
             let additionalDiscount;
             //    const additionalDiscount = correctPrice > 0 ? (1-(newNetPriceWithoutTaxBeforeDeductionRD/(priceConditionViewObj.YLAP  *(1 - priceConditionViewObj.RoyalDecreePercentage)))).toFixed(6) : 0;
             if (priceConditionViewObj.RoyalDecreeIncl) {
-                additionalDiscount = correctPrice > 0 ? (1 - priceConditionViewObj.RoyalDecreePercentage - newNetPriceWithoutTaxBeforeDeductionRD / correctPrice).toFixed(6) : 0;
+                additionalDiscount = correctPrice > 0 ? ((1 - priceConditionViewObj.RoyalDecreePercentage - newNetPriceWithoutTaxBeforeDeductionRD) / correctPrice).toFixed(6) : 0;
             } else {
                 additionalDiscount = correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6) : 0;
             }
