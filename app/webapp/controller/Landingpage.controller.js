@@ -195,7 +195,7 @@ sap.ui.define([
 
 		//Tile FAST Dashboards
 		onTileFastDashboardsPress: function(oEvent){
-			window.open("https://emea.tableau.intranet.cnb/#/site/FASTTM/views/FASTDashboards/ExecutiveSummary?:iid=1"); //check where to store constants
+			window.open("https://tableau-emea-temp-dev.aws.cnb/#/site/FASTD/views/FASTDashboards/ExecutiveSummary?:iid=1"); //check where to store constants
 		}
 		
 	});
