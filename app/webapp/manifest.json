@@ -133,6 +133,12 @@
 				"settings": {},
 				"componentData": {},
 				"lazy": true
+			},
+			"claimsComponent": {
+				"name": "com.bayer.tender.claims",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
 			}
 		},
 		"resourceRoots":{
@@ -147,6 +153,7 @@
 			"com.bayer.tender.brazilcontracting": "./brazilcontracting",
 			"com.bayer.tender.statenderapp": "./standardtender",
 			"com.bayer.tender.whcapp": "./whc",
+			"com.bayer.tender.claims": "./claims",
 			"FAST_NS0FAST0": "./tender/webapp",
 			"com.bayer.tender.uilib": "./uilib/src/com/bayer/tender/uilib"
 		},
@@ -313,6 +320,14 @@
 						"name": "whc",
 						"prefix": "whc"
 					}			
+				},
+				{
+					"name": "claims",
+					"pattern": "claims",
+					"target": {
+						"name": "claims",
+						"prefix": "claims"
+					}			
 				}
 			],
 
@@ -370,6 +385,10 @@
 				"whc": {
 					"type": "Component",
 					"usage": "whcComponent"
+				},
+				"claims": {
+					"type": "Component",
+					"usage": "claimsComponent"
 				}
 			}
 		}

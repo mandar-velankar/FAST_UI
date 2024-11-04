@@ -58,6 +58,12 @@ server:
       paths:
         - path: /whc
           src: ../../F_TNDR_CAG_FAST_WHC/app/whcapp/webapp
+  - name: fiori-tools-servestatic
+    afterMiddleware: compression
+    configuration:
+      paths:
+        - path: /claims
+          src: ../../F_TNDR_CAG_FAST_CLAIMS/webapp
   - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
     mountPath: /app
