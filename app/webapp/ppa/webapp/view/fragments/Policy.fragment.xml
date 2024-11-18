@@ -266,7 +266,7 @@
 		</Panel>
 
 		<!-- MSP panel -->
-		<Panel id="MspPanelId" expandable="true" expanded="{ppa>/mspPanelExpanded}" visible="{ppa>/mspPanelExpandable}" width="100%">
+		<Panel id="MspPanelId" expandable="true" width="100%">
 
 			<!-- Toolbar for MSP panel -->
 			<headerToolbar>
@@ -298,8 +298,8 @@
 									<!-- Labels -->
 									<VBox width="250px">
 										<Text text=""/>
-										<Text text="NSM/SM/FM" />
-										<Text text="HBU" />
+										<Text text="SM/PCEA" />
+										<Text text="PoH/CEN" />
 										<Text text="CDH" />
 									</VBox>
 
@@ -637,7 +637,7 @@
 		</Panel>
 
 		<!-- NSP Panel -->
-		<Panel id="NspPanelId" expandable="true" expanded="{ppa>/nspPanelExpanded}" visible="{ppa>/nspPanelExpandable}" width="100%">
+		<Panel id="NspPanelId" expandable="true" width="100%">
 			<headerToolbar>
 				<OverflowToolbar>
 					<Title text="{i18n>nspPricingPolicy}"/>
@@ -662,8 +662,8 @@
 									<!-- Labels -->
 									<VBox width="250px">
 										<Text text=""/>
-										<Text text="NSM/SM/FM" />
-										<Text text="HBU" />
+										<Text text="SM/PCEA" />
+										<Text text="PoH/CEN" />
 										<Text text="CDH" />
 									</VBox>
 
