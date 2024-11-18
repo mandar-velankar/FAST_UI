@@ -102,9 +102,9 @@ sap.ui.define([
 						//&& oOriginalPrices.FOCProduct_Bundled_1 === oNewPrices.FOCProduct_Bundled_1
 						&& this.floatComparison(oOriginalPrices.FOCProduct_Bundled_1, oNewPrices.FOCProduct_Bundled_1)/* 05.03.2020 - https://trello.com/c/5kKb4VhF */
 						&& oOriginalPrices.FOC_ABS_PCT_Bundled_1 === oNewPrices.FOC_ABS_PCT_Bundled_1
-						&& oOriginalPrices.FOC_Bundled_1 === Number(oNewPrices.FOC_Bundled_1)
+						&& Number(oOriginalPrices.FOC_Bundled_1) === Number(oNewPrices.FOC_Bundled_1)
 						&& oNewPrices.OfferPrice >= oOriginalPrices.OfferPrice /* 05.03.2020 - https://trello.com/c/5kKb4VhF */
-						&& oOriginalPrices.Deductions === oNewPrices.Deductions /* 05.03.2020 - https://trello.com/c/5kKb4VhF */
+						&& Number(oOriginalPrices.Deductions) === Number(oNewPrices.Deductions) /* 05.03.2020 - https://trello.com/c/5kKb4VhF */
 						&& oNewPrices.NetofferPrice >= oOriginalPrices.NetofferPrice
 						//&& oOriginalPrices.WholesalePrice === oNewPrices.WholesalePrice
 						&& this.floatComparison(oOriginalPrices.WholesalePrice, oNewPrices.WholesalePrice)/* 05.03.2020 - https://trello.com/c/5kKb4VhF */
