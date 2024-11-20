@@ -230,8 +230,8 @@ sap.ui.define([
          */
         getHardCodedRoles: function (){
             let aRoles = [ 
-                "NSM/SM/FM",
-                "HBU",
+                "SM/PCEA",
+                "PoH/CEH",
                 "CDH"
             ];
 
