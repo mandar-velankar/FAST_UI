@@ -1739,7 +1739,7 @@ sap.ui.define([
 
 			//Change navigation parameters
 			that._initSection(sSelectedSection);
-
+			let countryCode = Services.getCountryCodeofSelectedTender()
 			//go to on route matched and handle it there
 			var sLayout = oControlEvent.getSource().getParent().getParent().getParent().getProperty("layout") || "TwoColumnsMidExpanded";
 			var sTenderID = Services.getSelectedTenderID();
@@ -1749,7 +1749,7 @@ sap.ui.define([
 				tender: sTenderID,
 				offer: sOfferID,
 				tab: sSelectedSection,
-				country: this._country
+				country: countryCode
 			});
 
 			//if in edit mode, give message first
@@ -6765,7 +6765,7 @@ sap.ui.define([
 
 			//Fill all data needed for the save of the new product for the offer
 			oOfferSaveInfo.TenderID = Services.getSelectedTenderID();
-			oOfferSaveInfo.CountryCode = that._country;
+			oOfferSaveInfo.CountryCode =  Services.getCountryCodeofSelectedTender();
 			oOfferSaveInfo.TenderOfferNo = TenderOfferNo;
 			oOfferSaveInfo.RevisedOfferNo = RevisedOfferNo;
 			oOfferSaveInfo.ActiveOffer = "1"; //Tenderoffer count for active record
