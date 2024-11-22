@@ -432,6 +432,14 @@ sap.ui.define([
 		 * @param {*} oPolicy 
 		 */
 		updatePolicy: function (oPolicy){
+			oPolicy.policyPrices = oPolicy.policyPrices.map(price => {
+				if (price.role === "NSM/SM/FM") {
+					price.role = "SM/PCEA";
+				} else if (price.role === "HBU") {
+					price.role = "PoH/CEH";
+				}
+				return price;
+			});
 			return this.getService().updatePolicy(oPolicy);
 		},
 
