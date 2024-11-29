@@ -306,7 +306,7 @@
                                     <m:Label text="{i18n>mspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true" />
                                     <m:Select selectedKey="{ctr>/currentContract/selectedProduct/mspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}">
                                         <core:Item key="" text="" />
-                                        <core:Item key="NSM/SM/FM" text="NSM/SM/FM" />
+                                        <core:Item key="SM/PCEA" text="SM/PCEA" />
                                         <core:Item key="HBU" text="HBU" />
                                         <core:Item key="CDH" text="CDH" />
                                     </m:Select>
@@ -323,7 +323,7 @@
                                     <m:Label text="{i18n>nspApprovedByPosi}" required="{= ${ctr>/editMode} ? true : false}" wrapping="true" />
                                     <m:Select selectedKey="{ctr>/currentContract/selectedProduct/nspApprovedByRole}" enabled="{= ${ctr>/editMode} === true ? true : false}">
                                         <core:Item key="" text="" />
-                                        <core:Item key="NSM/SM/FM" text="NSM/SM/FM" />
+                                        <core:Item key="SM/PCEA" text="SM/PCEA" />
                                         <core:Item key="HBU" text="HBU" />
                                         <core:Item key="CDH" text="CDH" />
                                     </m:Select>
