@@ -1443,10 +1443,7 @@ sap.ui.define([
                     ? (calculatedValue < 0 ? 0 : calculatedValue)
                     : 0;
             } else {
-                const calculatedValue = ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6);
-                additionalDiscount = correctPrice > 0 
-                    ? (calculatedValue < 0 ? 0 : calculatedValue)
-                    : 0;
+                additionalDiscount = correctPrice > 0 ? ((standardPrice - newNetPriceWithoutTaxBeforeDeductionRD) / standardPrice).toFixed(6) : 0;
             }
             let newNetPriceWithoutTaxAfterDeductionRD = "";
             let newNetPriceWithTaxAfterDeductionRD =  "";
