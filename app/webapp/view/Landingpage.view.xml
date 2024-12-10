@@ -164,7 +164,7 @@
 
 				<!-- Masterdata tiles-->
 				<Panel headerText="Analytics">
-					<l:VerticalLayout>
+					<!-- <l:VerticalLayout>
 							<l:HorizontalLayout id="idTransactionalDash" allowWrapping="true">
 								<GenericTile 
 									class="sapUiTinyMarginBegin 
@@ -176,10 +176,10 @@
 									</TileContent>
 								</GenericTile>
 							</l:HorizontalLayout>
-						</l:VerticalLayout>
+						</l:VerticalLayout> -->
 
 					<!-- Tender Manager Dashboard-->
-						<l:VerticalLayout>
+						<!-- <l:VerticalLayout>
 							<l:HorizontalLayout id="idTenderManagementDash" allowWrapping="true">
 								<GenericTile 
 									class="sapUiTinyMarginBegin 
@@ -191,7 +191,7 @@
 									</TileContent>
 								</GenericTile>
 							</l:HorizontalLayout>
-						</l:VerticalLayout>	
+						</l:VerticalLayout>	 -->
 
 						<!-- Caliber Connect -->
 						<l:VerticalLayout>
@@ -209,7 +209,7 @@
 						</l:VerticalLayout>	
 
 						<!-- Analytics Dashboard-->
-						<l:VerticalLayout>
+						<!-- <l:VerticalLayout>
 							<l:HorizontalLayout id="idAnalyticsDash" allowWrapping="true">
 								<GenericTile
 								class="sapUiTinyMarginBegin
@@ -221,7 +221,7 @@
 								</TileContent>
 								</GenericTile>
 							</l:HorizontalLayout>
-						</l:VerticalLayout>
+						</l:VerticalLayout> -->
 
 						<!-- FAST Dashboards-->
 						<l:VerticalLayout>

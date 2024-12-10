@@ -37,7 +37,7 @@
 						id="btnShareApprovalToIbizId" 
 						text="Share Decision with IBIZ" 
 						icon="sap-icon://approvals" 
-						press="onShareApprovalsToIbizPress" 
+						press=".onOpenShareDecisionWithIbizDialog" 
 						enabled="{= 
 							(
 								${fastAppData>/SelectedOffer/OfferStatus/STATUS} === 'Offer Approved' ||  

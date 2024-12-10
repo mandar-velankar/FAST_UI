@@ -1,0 +1,22 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:core="sap.ui.core"
+	xmlns:dnd="sap.ui.core.dnd">
+	
+	<Dialog id = "idShareDecisioinWithIbizDialog" title="{i18n>ShareDecisionWithIbiz}" contentWidth="800px">
+        <buttons>
+                    <Button text="Send" press="onShareApprovalsToIbizPress" />
+                    <Button text="Cancel" press="onCloseAddOfferProductDialog" />
+        </buttons> 
+
+        <content>
+            <VBox class = "sapUiMediumMargin">
+                <Label text="{i18n>Comment}"/>
+                <Input value="{fastAppData>/ShareWithIbizComment}"/>
+            </VBox>
+        </content>
+   	</Dialog>
+	
+</core:FragmentDefinition>

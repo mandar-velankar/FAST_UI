@@ -127,6 +127,15 @@ sap.ui.define([
 			/* Thailand */
 			oTenderToSave.PROCUREMENT_METHOD_ID = oTenderSaveInfo.PROCUREMENT_METHOD_ID;
 			oTenderToSave.PROCUREMENT_REASON = oTenderSaveInfo.PROCUREMENT_REASON;
+			oTenderToSave.Custom_String_2 = oTenderSaveInfo.Custom_String_2
+			oTenderToSave.Custom_String_1 = oTenderSaveInfo.Custom_String_1
+			oTenderToSave.Custom_String_3 = oTenderSaveInfo.Custom_String_3
+			oTenderToSave.Custom_Date_1 = oTenderSaveInfo.Custom_Date_1
+			oTenderToSave.Custom_Date_2 = oTenderSaveInfo.Custom_Date_2
+			oTenderToSave.Custom_Double_1 = oTenderSaveInfo.Custom_Double_1
+			oTenderToSave.Custom_Integer_1 = oTenderSaveInfo.Custom_Integer_1
+			oTenderToSave.Custom_String_4 = oTenderSaveInfo.Custom_String_4
+			oTenderToSave.Custom_String_5 = oTenderSaveInfo.Custom_String_5
 			/* End of Thailand */
             /* Spain */
             oTenderToSave.PORTAL = oTenderSaveInfo.PORTAL;
@@ -316,8 +325,8 @@ sap.ui.define([
 			});
 
 			var mParameters = {
+				filters: [oFilter],
 				urlParameters:{
-                    filters: [oFilter],
 					$expand:"Regions/Region"
 				}
 			};

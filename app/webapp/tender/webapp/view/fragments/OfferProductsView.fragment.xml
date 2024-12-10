@@ -165,6 +165,9 @@
 									</Select>
 									<Label text="{i18n>Comment}"/>
 									<Text text="{fastAppData>Comment}" visible="{= ${fastAppData>/Tender/CountryCode} === 'BR'}"/>
+
+									<Label text="{i18n>tenderAnnouncementReference}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>
+									<Text text="{fastAppData>Custom_String_1}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>						
 							</form:content>
 						</form:SimpleForm>
 					
@@ -263,6 +266,17 @@
 							<Text text="{fastAppData>Reference}" wrapping="true"/>
 						</t:template>
 					</t:Column>
+
+ 					<t:Column width="150px" visible="{= ${fastAppData>/permissions/tables/editofferProductId/itemNumber/visible} &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}">
+						<Label text="{
+							path: 'fastAppData>/permissions/tables/editofferProductId/itemNumber/description',
+							formatter: '.formatter.offerProductsColumnName'	
+						}"/>
+						<t:template>
+							<Text text="{fastAppData>Custom_Integer_1}"/>
+						</t:template>
+					</t:Column>
+
 					<!-- Channel -->
 					<t:Column width="7rem" visible="{fastAppData>/permissions/tables/editofferProductId/Channel/visible}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/Channel/description',
@@ -318,7 +332,27 @@
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/SapNo/description',
 									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
 						<t:template>
-							<Text text="{fastAppData>SKUCountry/ProductPack/ProductPackSKUs/results/SKUCode}" wrapping="true" />
+							<Text text="{
+								parts: [
+									'fastAppData>SKU/ProductPackSKUs/results',
+									'fastAppData>/permissions/tables/editofferProductId/SapNo/description'
+								], 
+								formatter: '.formatter.formatOfferProductSKUCodes'
+								}" wrapping="true" />
+						</t:template>
+					</t:Column>
+
+					<t:Column width="16rem" visible="{fastAppData>/permissions/tables/editofferProductId/PreviousSAPNo/visible}" >
+						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/PreviousSAPNo/description',
+									   formatter: '.formatter.offerProductsColumnName' }" wrapping="true"/>
+						<t:template>
+							<Text text="{
+								parts: [
+									'fastAppData>SKU/ProductPackSKUs/results',
+									'fastAppData>/permissions/tables/editofferProductId/PreviousSAPNo/description'
+								], 
+								formatter: '.formatter.formatOfferProductSKUCodes'
+								}" wrapping="true" />
 						</t:template>
 					</t:Column>
 
@@ -340,7 +374,7 @@
 						</t:template>
 					</t:Column>
 
-					<t:Column width="10rem" visible="{fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible}">
+					<t:Column width="10rem" visible="{= ${fastAppData>/permissions/tables/editofferProductId/AtcRdm/visible} &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH'}">
 						<Label text="{ path: 'fastAppData>/permissions/tables/editofferProductId/AtcRdm/description',
 										formatter: '.formatter.offerProductsColumnName' }"
 								wrapping="true" />

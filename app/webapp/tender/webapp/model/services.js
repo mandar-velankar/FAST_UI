@@ -1339,6 +1339,9 @@ sap.ui.define([
 						//set the user email
 						UserInfo.setUserEmail(oData.UserEmail);
 
+						//set the user role
+						UserInfo.setRole(oData.ROLE);
+
 						//keep the countries to which the user has access
 						oData.toUserCountries.results = that.sortByKeyAsc(oData.toUserCountries.results, "COUNTRY_NAME");
 						UserInfo.setUserCountries(oData.toUserCountries);
@@ -2815,6 +2818,7 @@ sap.ui.define([
             var AutoApprovalflag=true;
             var Instituteid=this.getInstituteIDofSelectedTender();
             var countrycode=this.getSelectedCountry();
+			const userRole = UserInfo.getRole();
 
             $.when(this.loadPreApprovedprice(Instituteid, countrycode)).done(function (oData) {
                 if(countrycode=='TH'){
@@ -2896,7 +2900,7 @@ sap.ui.define([
                             var ApproverTypeCount = oData.results;
                             var SPainApproverTypes = ApproverTypeCount.findIndex(apc => apc.ApproverType === 'BU/RAM 1');
                             var ApproverListlength = ApproverTypeCount[SPainApproverTypes].ApproverList.results.length;
-                            if (oFastAppDataModel.oData.EditTender.Classification === 'Tender') {
+                            if (userRole !== 'RAM') {
                                 for (var i = 0; i < ApproverListlength; i++) {
                                     if (ApproverTypeCount[SPainApproverTypes].ApproverList.results[i].ApproverName == 'Cristina Rodrigo') {
                                         ApproverTypeCount[SPainApproverTypes].ApproverList.results.splice(i, 1);
@@ -8509,7 +8513,39 @@ sap.ui.define([
 			this.getFastAppDataModel().setProperty("/SelectedOffer/ConsolidatedProfitability", table);
 
 		},
+		onSaveQuotationDeleveryInfo: function() {
+			const promises = []
+			const quotationData = this.getFastAppDataModel().getProperty("/QuotationDataResult");
+			promises.push(quotationData.map(item =>{
+				if (item.ID) {
+					return this.getService("Quotation").updateTHQuotationDelevery(item)
+				}else{
+					return this.getService("Quotation").createTHQuotationDelevery(item)
+				}
+			}))
+			const quotationDataModel = this.getFastAppDataModel().getProperty("/RemoveQuotationRow");
 
+			if (quotationDataModel) {
+				promises.push(quotationDataModel.map(item =>{
+					if (item.ID) {
+						return this.getService("Quotation").removeTHQuotationDelevery(item);
+					}
+				}))
+				this.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
+			}
+			const that = this
+			Promise.all(promises).then(()=>{
+				that.getQuotationDeleveryData()
+			})
+			
+		},
+		getQuotationDeleveryData: function(){
+			const that = this
+			const offerID = this.getSelectedOfferID()
+			this.getService("Quotation").getTHQuotationDelevery(offerID).then(function ({data: {results}}) {
+				that.getFastAppDataModel().setProperty('/QuotationDataResult', results);
+			});
+		},
 	});
 
 	return new Service();
