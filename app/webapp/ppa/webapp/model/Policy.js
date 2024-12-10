@@ -66,6 +66,12 @@ sap.ui.define([
 
                 //Fill MSP & NSP objects with prices for each role/channelname combination
                 aPolicyPrices.map((oPolicyPrice) => {
+
+                    if (oPolicyPrice.role === "NSM/SM/FM") {
+                        oPolicyPrice.role = "SM/PCEA";
+                    } else if (oPolicyPrice.role === "HBU") {
+                        oPolicyPrice.role = "PoH/CEH";
+                    }
                     switch(oPolicyPrice.pricingPolicyName) {
                         case 'MSP':
                           //attribute_name
@@ -112,6 +118,11 @@ sap.ui.define([
             
             //Fill MSP & NSP objects with prices for each role/channelname combination
             aPolicyPrices.map((oPolicyPrice) => {
+                if (oPolicyPrice.role === "NSM/SM/FM") {
+                    oPolicyPrice.role = "SM/PCEA";
+                } else if (oPolicyPrice.role === "HBU") {
+                    oPolicyPrice.role = "PoH/CEH";
+                }
                 switch(oPolicyPrice.pricingPolicyName) {
                     case 'MSP':
                           //attribute_name
@@ -230,8 +241,8 @@ sap.ui.define([
          */
         getHardCodedRoles: function (){
             let aRoles = [ 
-                "NSM/SM/FM",
-                "HBU",
+                "SM/PCEA",
+                "PoH/CEH",
                 "CDH"
             ];
 

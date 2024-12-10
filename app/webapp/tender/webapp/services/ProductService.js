@@ -280,6 +280,7 @@ sap.ui.define([
             oProductToSave.Channel = oProductSaveInfo.Channel;
 			oProductToSave.IbizWorkflowID = oProductSaveInfo.IbizWorkflowID;
 			oProductToSave.WorkflowProductID = oProductSaveInfo.WorkflowProductID;
+			oProductToSave.Custom_Integer_1 = oProductSaveInfo.Custom_Integer_1;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;

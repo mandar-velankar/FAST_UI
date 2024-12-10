@@ -238,13 +238,13 @@
 				<Input id="idProcurementReasonEdit" value="{fastData>PROCUREMENT_REASON}" enabled="false" visible="{= ${fastData>PROCUREMENT_METHOD_ID} === 'Other' ? true : false}"/>
 				
 				<Label text="{i18n>RequestorPphoneNnumber}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }" />
-				<Input id="idRequestorPphoneNnumberEdit" value="{path: 'fastAppData>/EditTender/Custom_Integer_1', type: 'sap.ui.model.type.Integer'}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"  />
+				<Input id="idRequestorPphoneNnumberEdit" value="{fastAppData>/EditTender/Custom_String_2}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"  />
 
 				<Label text="{i18n>BayerRepresentativeName}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"/>
-				<Input id="idBayerRepresentativeNameEdit" value="{path: 'fastAppData>/EditTender/Custom_String_1', type: 'sap.ui.model.type.Srting'}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"/>
+				<Input id="idBayerRepresentativeNameEdit" value="{fastAppData>/EditTender/Custom_String_1}" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"/>
 
 				<Label text="{i18n>BayerRepresentativePhoneNumber}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"/>
-				<Input id="idBayerRepresentativePhoneNumberEdit" value="{path: 'fastAppData>/EditTender/Custom_Integer_2', type: 'sap.ui.model.type.Integer'}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"/>
+				<Input id="idBayerRepresentativePhoneNumberEdit" value="{fastAppData>/EditTender/Custom_String_3}"  visible="{= ${fastAppData>/Tender/CountryCode} === 'TH' || ${fastAppData>/EditTender/CountryCode} === 'TH' }"/>
 
 				<Label id="idPeriodOfBankGauranteeStartLabelEdit" text="{i18n>PeriodOfBankGauranteeStart}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
 				<DatePicker id="idPeriodOfBankGauranteeStartEdit" value="{path: 'fastAppData>/EditTender/Custom_Date_1', type: 'sap.ui.model.type.Date',  formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"  visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
@@ -253,7 +253,7 @@
 				<DatePicker id="idPeriodOfBankGauranteeEndEdit" value="{path: 'fastAppData>/EditTender/Custom_Date_2', type: 'sap.ui.model.type.Date',  formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"  visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
 
 				<Label id="idBGValueBahtLabelEdit" text="{i18n>BGValueBaht}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
-				<DatePicker id="idBGValueBahtEdit" value="{path: 'fastAppData>/EditTender/Custom_Date_3', type: 'sap.ui.model.type.Date',  formatOptions: { pattern: 'dd.MM.yyyy' , UTC:true}}"  visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
+				<Input id="idBGValueBahtEdit"  value="{path: 'fastAppData>/EditTender/Custom_Double_1', type:'.types.customDecimal'}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender'}"/>
 				<!-- End of Thailand Changes-->
 
 				<!-- Brazil only -->
@@ -334,6 +334,25 @@
 				<!--<Input value="{fastData>NextPublicationDye}"/>-->
 				<Label id="idContractLengthLabel" text="{i18n>contleng}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 				<Input id="idContractLength" value="{fastAppData>/EditTender/ContractLength}" type="Number" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
+
+				<Label text="{i18n>contlengMonth}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'}"/>
+				<Select visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'}" selectedKey="{fastAppData>/EditTender/Custom_String_5}">
+					<items>
+							<core:Item text="" key=""/>
+							<core:Item text="Days" key="Days"/>
+							<core:Item text="Months" key="Months"/>
+							<core:Item text="Years" key="Years"/>
+					</items>
+				</Select>
+				<Label text="{i18n>qDeliveryDue}" design="Bold"  visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'}"/>
+				<Input class="sapUiSmallMarginEnd" id="idqDeliveryDue" value="{fastAppData>/EditTender/Custom_Integer_1}" type="Number" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'}"/>
+				<Label text="{i18n>qUnitofdeliverydue}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'}"/>
+				<Select class="sapUiSmallMarginEnd" width="100%" id="idqUnitofdeliverydue" selectedKey="{fastAppData>/EditTender/Custom_String_4}" visible="{= ${fastAppData>/EditTender/CountryCode} === 'TH'}">
+					<core:Item key="" text=""/>
+					<core:Item key="Days" text="Days"/>
+					<core:Item key="Months" text="Months"/>
+					<core:Item key="Years" text="Years"/>
+				</Select>
 				<Label id="idContractExtenseionLabel" text="{i18n>contextnprd}" design="Bold" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
 				<Input id="idContractExtenseion" value="{fastAppData>/EditTender/ContractExtenseion}" type="Number" visible="{= ${fastAppData>/EditTender/CountryCode} !== 'ES' || ( ${fastAppData>/EditTender/CountryCode} === 'ES' &amp;&amp; ${fastAppData>/EditTender/Classification} === 'Tender')}"/>
                 

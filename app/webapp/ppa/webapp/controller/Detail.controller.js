@@ -823,8 +823,11 @@ sap.ui.define([
 		clearPricingPolicyValueStates: function(sSection){
 			const aInputObjects = this.getView().getControlsByFieldGroupId(sSection);
 			aInputObjects.map(oInput => { 
-				oInput.setValueState("None");
-				oInput.setValueStateText();
+				if (oInput instanceof sap.m.Input) {
+					oInput.setValueState("None");
+					oInput.setValueStateText();
+				}
+				
 			});
 		},
 
@@ -851,12 +854,13 @@ sap.ui.define([
 			this.getView().setBusy(true);
 
 			let oDraftProductPolicy = this.ppaState.getSelectedProduct().draftProductPolicy;
+			const policyId = oDraftProductPolicy?.PolicyPrices?.[0]?.ProductPolicy_ID
 
 			//save prices
 			this.savePrices("MSP", oDraftProductPolicy).then(() => {
 				
 				//Reload policy so status is shown & PolicyID will be captured
-				this.onRefreshPolicyPress();
+				this.onRefreshPolicyPress(policyId);
 				
 				//Reload master list so status is updated
 				this.refreshMasterViewBrandListBinding();
@@ -890,12 +894,13 @@ sap.ui.define([
 			this.getView().setBusy(true);
 
 			let oDraftProductPolicy = this.ppaState.getSelectedProduct().draftProductPolicy;
+			const policyId = oDraftProductPolicy?.PolicyPrices?.[0]?.ProductPolicy_ID
 
 			//save prices
 			this.savePrices("NSP", oDraftProductPolicy).then(() => {
 
 				//Reload policy so status is shown & PolicyID will be captured
-				this.onRefreshPolicyPress();
+				this.onRefreshPolicyPress(policyId);
 
 				//Reload master list so status is updated
 				this.refreshMasterViewBrandListBinding();
@@ -949,7 +954,7 @@ sap.ui.define([
 
 		},
 
-		onRefreshPolicyPress: function(){
+		onRefreshPolicyPress: function(policyId){
 
 			//show loading screen
 			this.getView().setBusy(true);
@@ -975,11 +980,11 @@ sap.ui.define([
 
 						let oSelectedProduct = this.getView().getModel('ppa').getProperty(oProductsTable.getSelectedItem().getBindingContextPath());		
 						//this.ppaState.setSelectedProduct(oSelectedProduct);
-						
+						let currentpolicyId = policyId? policyId : oSelectedProduct.policyId
 						this.getView().setBusy(false);
 					
 						// Load the corresponding Product Policy ==> allready done by using the aggregated
-						this.ppaState.getProductPolicy(oSelectedProduct.policyId).then(() => {
+						this.ppaState.getProductPolicy(currentpolicyId).then(() => {
 							this.getView().setBusy(false);
 						}).catch((error) => {
 							this.getView().setBusy(false);
@@ -1215,17 +1220,17 @@ sap.ui.define([
 
 			switch(sRole){
 				case "CDH":
-					if(oChannelPrices["CDH"] > oChannelPrices["HBU"]){
-						msg = "CDH price must be lower than the HBU price";
+					if(oChannelPrices["CDH"] > oChannelPrices["PoHCEH"]){
+						msg = "CDH price must be lower than the PoH/CEH price";
 						bValid = false;
-					}else if(oChannelPrices["CDH"] > oChannelPrices["NSMSMFM"]){
-						msg = "CDH price must be lower than the NSM/SM/FM price";
+					}else if(oChannelPrices["CDH"] > oChannelPrices["SMPCEA"]){
+						msg = "CDH price must be lower than the SM/PCEA price";
 						bValid = false;
 					}
 					break;
-				case "HBU":
-					if(oChannelPrices["HBU"] > oChannelPrices["NSMSMFM"]){
-						msg = "HBU price must be lower than the NSM/SM/FM price";
+				case "PoHCEH":
+					if(oChannelPrices["PoHCEH"] > oChannelPrices["SMPCEA"]){
+						msg = "PoH/CEH price must be lower than the SM/PCEA price";
 						bValid = false;
 					}
 					break;

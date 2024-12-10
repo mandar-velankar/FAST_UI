@@ -25,13 +25,14 @@ sap.ui.define([
 	"com/bayer/tender/uilib/datatypes/PercentageType",
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimalDiscount",
+	"com/bayer/tender/uilib/datatypes/CustomDecimalType",
 	"sap/m/MessageBox",
 	"sap/m/library",
 	"sap/m/ActionSheet",
 	"sap/ui/core/library"
 ], function (Controller, MessageToast, OfferProducts, Button, Text,  Dialog, BusyIndicator, Label, Sorter, formatter, Formatter, JSONModel,
 	Fragment, Services,
-	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,PercentageTypeDecimalDiscount,MessageBox,mobileLibrary,coreLibrary) {
+	UserInfo, Quotation, Financial, Filter, FilterOperator, Token, Tokenizer, Ranking,mLib,PercentageType,PercentageTypeDecimal,PercentageTypeDecimalDiscount,CustomDecimalType,MessageBox,mobileLibrary,coreLibrary) {
 	"use strict";
 
 	//global variable for the resource bundle - TODO not best practice
@@ -56,7 +57,8 @@ sap.ui.define([
 		types: {
 			percent: PercentageType,
 			percentdecimal : PercentageTypeDecimal,
-			percentdecimaldiscount : PercentageTypeDecimalDiscount
+			percentdecimaldiscount : PercentageTypeDecimalDiscount,
+			customDecimal: CustomDecimalType
 		},
 
 
@@ -110,6 +112,7 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
 			Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
 			Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", false);
+			Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);	
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -267,7 +270,7 @@ sap.ui.define([
 					//that._initSection(sTab);
 				}
 			}
-
+			Services.getQuotationDeleveryData()
 		},
 
 		hideNotRelevantFragments: function(sCountry){
@@ -1736,7 +1739,7 @@ sap.ui.define([
 
 			//Change navigation parameters
 			that._initSection(sSelectedSection);
-
+			let countryCode = Services.getCountryCodeofSelectedTender()
 			//go to on route matched and handle it there
 			var sLayout = oControlEvent.getSource().getParent().getParent().getParent().getProperty("layout") || "TwoColumnsMidExpanded";
 			var sTenderID = Services.getSelectedTenderID();
@@ -1746,7 +1749,7 @@ sap.ui.define([
 				tender: sTenderID,
 				offer: sOfferID,
 				tab: sSelectedSection,
-				country: this._country
+				country: countryCode
 			});
 
 			//if in edit mode, give message first
@@ -2087,10 +2090,9 @@ sap.ui.define([
 						that.byId("idqUnitofvalidityperiod") &&	that.byId("idqUnitofvalidityperiod").setEnabled(false);
 						that.byId("idqDeliveryDue") && that.byId("idqDeliveryDue").setEnabled(false);
 						that.byId("idqUnitofdeliverydue") && that.byId("idqUnitofdeliverydue").setEnabled(false);
-						that.byId("idqQuotationDeliverymethod") && that.byId("idqQuotationDeliverymethod").setEnabled(false);
-						that.byId("idqQuotationRecipientname") && that.byId("idqQuotationRecipientname").setEnabled(false);
-						that.byId("idqQuotationRecipientcontact") && that.byId("idqQuotationRecipientcontact").setEnabled(false);
 						that.byId("idqExpectdatetoreceivethedocument") && that.byId("idqExpectdatetoreceivethedocument").setEnabled(false);
+						Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);
+						Services.getQuotationDeleveryData()
 					}
 					that.byId("idQofferEffectiveDate") && that.byId("idQofferEffectiveDate").setEnabled(false);
 					that.byId("idQofferExpiryDate") && that.byId("idQofferExpiryDate").setEnabled(false);
@@ -2668,10 +2670,8 @@ sap.ui.define([
 							that.byId("idqUnitofvalidityperiod") &&	that.byId("idqUnitofvalidityperiod").setEnabled(true);
 							that.byId("idqDeliveryDue") && that.byId("idqDeliveryDue").setEnabled(true);
 							that.byId("idqUnitofdeliverydue") && that.byId("idqUnitofdeliverydue").setEnabled(true);
-							that.byId("idqQuotationDeliverymethod") && that.byId("idqQuotationDeliverymethod").setEnabled(true);
-							that.byId("idqQuotationRecipientname") && that.byId("idqQuotationRecipientname").setEnabled(true);
-							that.byId("idqQuotationRecipientcontact") && that.byId("idqQuotationRecipientcontact").setEnabled(true);
 							that.byId("idqExpectdatetoreceivethedocument") && that.byId("idqExpectdatetoreceivethedocument").setEnabled(true);
+							Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", true);
 						}
 						//EHQUT-CR1
 
@@ -3337,7 +3337,8 @@ sap.ui.define([
 
 					//this way we can use a seperate layer, adding deleting... and afterords saving
 					that.getView().setModel(oFastAppDataModel, "fastAppData");
-
+					Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false)
+					Services.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
 				});
 
 			}
@@ -3421,6 +3422,8 @@ sap.ui.define([
 
 				//QUOTATION TAB
 				that._onSaveQuotation(oEvent);
+				Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false)
+				Services.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
 				break;
 
 			case Services.getTenderResultsPageSectionID():
@@ -3444,7 +3447,6 @@ sap.ui.define([
 			default:
 				// code block
 			}
-
 		},
 
 		//get offertable & offerID column index
@@ -4214,12 +4216,15 @@ sap.ui.define([
 				/* Thailand */
 				oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 				oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
-				oSaveBasicInfo.Custom_String_1 =  oTender.Custom_String_1
-				oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
+				oSaveBasicInfo.Custom_String_2 = oTender.Custom_String_2
+				oSaveBasicInfo.Custom_String_1 = oTender.Custom_String_1
+				oSaveBasicInfo.Custom_String_3 = oTender.Custom_String_3
 				oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
 				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
-				oSaveBasicInfo.Custom_Date_3 =  oTender.Custom_Date_3
+				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
+				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
+				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
 
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
@@ -4388,12 +4393,15 @@ sap.ui.define([
 			/* Thailand */
 			oSaveBasicInfo.PROCUREMENT_METHOD_ID = this.byId("idSelectProcurementMethodEdit").getSelectedKey();
 			oSaveBasicInfo.PROCUREMENT_REASON = oSaveBasicInfo.PROCUREMENT_METHOD_ID === 'Other' ? this.byId("idProcurementReasonEdit").getValue() : '';
-			oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
-			oSaveBasicInfo.Custom_String_1 =  oTender.Custom_String_1
-			oSaveBasicInfo.Custom_Integer_2 = oTender.Custom_Integer_2
+			oSaveBasicInfo.Custom_String_2 = oTender.Custom_String_2
+			oSaveBasicInfo.Custom_String_1 = oTender.Custom_String_1
+			oSaveBasicInfo.Custom_String_3 = oTender.Custom_String_3
 			oSaveBasicInfo.Custom_Date_1 =  oTender.Custom_Date_1
 			oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
-			oSaveBasicInfo.Custom_Date_3 =  oTender.Custom_Date_3
+			oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
+			oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+			oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
+			oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
 			oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
@@ -6757,7 +6765,7 @@ sap.ui.define([
 
 			//Fill all data needed for the save of the new product for the offer
 			oOfferSaveInfo.TenderID = Services.getSelectedTenderID();
-			oOfferSaveInfo.CountryCode = that._country;
+			oOfferSaveInfo.CountryCode =  Services.getCountryCodeofSelectedTender();
 			oOfferSaveInfo.TenderOfferNo = TenderOfferNo;
 			oOfferSaveInfo.RevisedOfferNo = RevisedOfferNo;
 			oOfferSaveInfo.ActiveOffer = "1"; //Tenderoffer count for active record
@@ -7614,17 +7622,20 @@ sap.ui.define([
 
 					//should tender channel be defaulted/forced on distributor?
 					$.when(Services.checkTenderChannelOnDistributor(sCountry, sSelectedInstituteID)).done(function (bTenderChannelOnDistributor) {
+						
+						const path = that.getView().getModel('fastData').createKey('/PT_TMINST',{
+							InstituteID : sSelectedInstituteID,
+							CountryCode : Services.getSelectedCountry()
+						})
+						const selectedinst = that.getView().getModel('fastData').getObject(path)
+
 						//default on Distributor / Direct for Chile
 						if(Services.getSelectedCountry() === 'CL'){
 							that.getView().byId("idTenderChannel").setSelectedKey("Direct");
 							that.getView().byId("idTenderChannel").setEnabled(false);
 						} else {
-							if (bTenderChannelOnDistributor) {
-								that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
-								that.getView().byId("idTenderChannel").setEnabled(false);
-							} else {
-								that.getView().byId("idTenderChannel").setEnabled(true);
-							}
+							that.getView().byId("idTenderChannel").setSelectedKey("Distributor");
+							that.getView().byId("idTenderChannel").setEnabled(selectedinst.DirectTender);
 						}
 					});
                     // oFastAppDataModel.refresh(true); // this is causing issues and hinding the Regions field
@@ -9215,14 +9226,6 @@ sap.ui.define([
 					that.setQuotationDateRestrictions();
 					that._createPriceConditionTableEntitiesOnQuotationTabForBrazil();
 				}
-				
-				if (Services.getSelectedCountry() === "TH") {
-					let quotationDeliverymethod = that.byId("idqQuotationDeliverymethod") 
-					if (quotationDeliverymethod) {
-						let getQuotationDeliverymethodValue = that.getView().getModel('fastAppData').getProperty("/OfferValidation/QuotationDeliverymethod")?.split(",")
-						quotationDeliverymethod.setSelectedKeys(getQuotationDeliverymethodValue)
-					}
-				}
 			});
 
 			/*$.when(Quotation.loadTenderBankGuarantee(Services.getSelectedTenderID())).done(function (oData) {
@@ -9829,10 +9832,9 @@ sap.ui.define([
 						Unitofvalidityperiod: oFastAppDataModel.getProperty("/OfferValidation/Unitofvalidityperiod"),
 						DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
 						Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
-						QuotationDeliverymethod :  oFastAppDataModel.getProperty("/OfferValidation/QuotationDeliverymethod")?.join(','),
-						QuotationRecipientname  :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientname"),
-						QuotationRecipientcontact :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientcontact"),
 						Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
+						AttentionTo :  oFastAppDataModel.getProperty("/OfferValidation/AttentionTo"),
+				        QuotationDate: oFastAppDataModel.getProperty("/OfferValidation/QuotationDate")
 					};
 
 					//do the save of the quotation with UPDATED to 1
@@ -10159,8 +10161,8 @@ sap.ui.define([
 			oPriceAgreementSaveInfo.CountryCode = Services.getCountryCodeofSelectedTender();
 			oPriceAgreementSaveInfo.InstituteId = oTender.InstituteID;
 
-			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
-			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
+			oPriceAgreementSaveInfo.EffectiveDate = oTender.CountryCode === 'ES' || oTender.CountryCode === 'IT' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate") : new Date();
+			oPriceAgreementSaveInfo.ExpiryDate = oTender.CountryCode === 'ES' || oTender.CountryCode === 'IT' ? oFastAppDataModel.getProperty("/SelectedOffer/Quotation/ExpiryDate") : oPriceAgreementSaveInfo.ExpiryDate;
 			//CR1
 			// oPriceAgreementSaveInfo.EffectiveDate = oFastAppDataModel.getProperty("/SelectedOffer/Quotation/EffectiveDate");
 
@@ -10489,10 +10491,9 @@ sap.ui.define([
 				Unitofvalidityperiod: oFastAppDataModel.getProperty("/OfferValidation/Unitofvalidityperiod"),
 				DeliveryDue            :  oFastAppDataModel.getProperty("/OfferValidation/DeliveryDue"),
 				Unitofdeliverydue      :  oFastAppDataModel.getProperty("/OfferValidation/Unitofdeliverydue"),
-				QuotationDeliverymethod :  oFastAppDataModel.getProperty("/OfferValidation/QuotationDeliverymethod")?.join(','),
-				QuotationRecipientname  :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientname"),
-				QuotationRecipientcontact :  oFastAppDataModel.getProperty("/OfferValidation/QuotationRecipientcontact"),
 				Expectdatetoreceivethedocument:  oFastAppDataModel.getProperty("/OfferValidation/Expectdatetoreceivethedocument"),
+				AttentionTo :  oFastAppDataModel.getProperty("/OfferValidation/AttentionTo"),
+				QuotationDate: oFastAppDataModel.getProperty("/OfferValidation/QuotationDate")
 			};
 
 			//keep selected offer
@@ -10537,7 +10538,7 @@ sap.ui.define([
                     OfferID: Services.getSelectedOfferID()
                 }))
             }
-
+			Services.getSelectedCountry() === "TH" && Services.onSaveQuotationDeleveryInfo()
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
 				//Refresh (beceause offer is reselected in onRefresh as well)
@@ -10606,6 +10607,7 @@ sap.ui.define([
 			//that = this
 			var that = this;
 			var bOutcomeStatusFlag= false;
+			const countryCode = Services.getSelectedCountry();
 
 			if (oEvent) { //if you enter this method from the edit button, the oEvent is empty & offer path is already set
 				var sSelectedOfferPath = oEvent.getSource().getBindingContext("fastData").getPath();
@@ -10620,6 +10622,14 @@ sap.ui.define([
 			
 			let aContracts = await this.getExistingContracts();
 			Services.getFastAppDataModel().setProperty("/BrazilContractsForOffer", aContracts?.data?.results);
+
+			if (countryCode === 'IT') {
+				const selectedOfferQuotation = Services.getFastAppDataModel().getProperty("/SelectedOffer/Quotation");
+				Services.getFastAppDataModel().setProperty("/ItalyPriceAggrementContractDates", {
+					ContractStartDate: selectedOfferQuotation.EffectiveDate,
+					ContractEndDate: selectedOfferQuotation.ExpiryDate
+				});
+			}
 
 			//Get offer table + column from where we can check if offer is valid for tab
 			//var oOffersTable = that.getView().byId("tenderResultsOfferTableViewID");
@@ -11689,6 +11699,22 @@ sap.ui.define([
 				}
 			
 			});
+
+			if (sCountryCode === 'IT') {
+				debugger;
+				const oQuotationToConvert = oFastAppDataModel.getProperty("/SelectedOffer/Quotation");
+				const contratcDates = oFastAppDataModel.getProperty("/ItalyPriceAggrementContractDates");
+
+				oQuotationToConvert.EffectiveDate = contratcDates.ContractStartDate;
+				oQuotationToConvert.ExpiryDate = contratcDates.ContractEndDate;
+
+				const quotation = Services.getService('Quotation').getConvertQuotationToSave(oQuotationToConvert);
+				promises.push(Services.getService('Quotation').updateQuotation(quotation).catch(function(oError){
+					Services.showErrorMessage(oError, "Update Quotation");
+					throw new Error(oError);
+				}));
+			}
+
 			if(missingFields.size > 0){
 				var oMessage = {
 					type: 'Error',
@@ -12694,6 +12720,48 @@ sap.ui.define([
 				});
 
 			}
+		},
+		onAddQuotationRow: function () {
+
+			let  newQuotationObj = {
+				OfferID : Services.getSelectedOfferID(),
+				QuotationDeliverymethod : '',
+				QuotationRecipientname : '',
+				QuotationRecipientcontact : ''
+			}
+			let oTable = this.byId('quotationTable')
+			const template = oTable.getBindingInfo('items').template
+			const quotationData = Services.getFastAppDataModel().getProperty("/QuotationDataResult");
+			quotationData.push(newQuotationObj)
+			Services.getFastAppDataModel().setProperty("/QuotationDataResult", quotationData);
+
+			oTable.bindItems({path : "fastAppData>/QuotationDataResult", template})
+		},
+
+		onRemoveQuotationRow: function () {
+			let oTable = this.byId('quotationTable');
+			let oModel = this.getView().getModel("fastAppData");
+			let aData = oModel.getProperty("/QuotationDataResult");
+			oTable.getSelectedItems().forEach(item =>{
+				const ctx = item.getBindingContext("fastAppData");
+				const path = ctx.getPath();
+				this.getView().getModel("fastAppData").setProperty(`${path}/action`, 'delete');
+			})
+			
+			let itemsToBeRemoved = oModel.getProperty("/RemoveQuotationRow") || []
+			const filtredQuotationData = []
+			aData.forEach(item => {
+				if (item.action === 'delete') {
+					itemsToBeRemoved.push(item)
+				}else{
+					filtredQuotationData.push(item)
+				}
+
+			})
+		
+			oModel.setProperty("/QuotationDataResult", filtredQuotationData);
+			oModel.setProperty("/RemoveQuotationRow", itemsToBeRemoved);
+			oTable.removeSelections()
 		},
 	});
 });

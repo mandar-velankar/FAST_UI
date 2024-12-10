@@ -519,6 +519,8 @@ sap.ui.define([
 						oQuotationSaveInfo.Custom_String_4 =  quotationFields.QuotationRecipientname
 						oQuotationSaveInfo.Custom_String_5 =  quotationFields.QuotationRecipientcontact
 						oQuotationSaveInfo.Custom_Date_1 =    quotationFields.Expectdatetoreceivethedocument
+						oQuotationSaveInfo.Custom_String_6 =  quotationFields.AttentionTo
+						oQuotationSaveInfo.Custom_Date_3 =    quotationFields.QuotationDate
 
 						var oQuotationToSave = Services.getService('Quotation').getConvertQuotationToSave(oQuotationSaveInfo);
 						
@@ -849,6 +851,8 @@ sap.ui.define([
 						oQuotationSaveInfo.Custom_String_4 =  quotationFields.QuotationRecipientname
 						oQuotationSaveInfo.Custom_String_5 =  quotationFields.QuotationRecipientcontact
 						oQuotationSaveInfo.Custom_Date_1 =    quotationFields.Expectdatetoreceivethedocument
+						oQuotationSaveInfo.Custom_String_6 =  quotationFields.AttentionTo
+						oQuotationSaveInfo.Custom_Date_3 =    quotationFields.QuotationDate
 						
 						//array for the change operations
 						var aChangeOperations = [];
