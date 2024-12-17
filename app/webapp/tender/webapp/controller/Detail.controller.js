@@ -72,7 +72,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this.oRouter = this.oOwnerComponent.getRouter();
 			this.oModel = this.oOwnerComponent.getModel();
-
+			this.oDefaultModel = this.oOwnerComponent.getModel('fastData')
 			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
 			
@@ -2723,7 +2723,6 @@ sap.ui.define([
 							oBtnDownloadQuotation.setEnabled(false);
 						}
 
-						that.getView().byId("btnSubmitQuotation").setVisible(false);
 						break;
 					case Services.getTenderResultsPageSectionID():
 						//TENDER RESULTS TAB
@@ -9286,7 +9285,6 @@ sap.ui.define([
 				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) ) {
 						enableSubmit = true;
 				}
-				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 
 			});
 
@@ -12496,6 +12494,7 @@ sap.ui.define([
 			let oEditor = sap.ui.getCore().byId("idEditor");
             let aRAMs = [];
 
+
             const oFastAppDataModel = Services.getFastAppDataModel();
             const sDivision = oFastAppDataModel.getProperty('/SelectedOffer/Division');
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
@@ -12558,6 +12557,7 @@ sap.ui.define([
                 return "'" + oValue + "' is not a valid e-mail address";
             }
         },
+
 
 
 		onSendNotificationMail: function(evt){
@@ -12763,5 +12763,87 @@ sap.ui.define([
 			oModel.setProperty("/RemoveQuotationRow", itemsToBeRemoved);
 			oTable.removeSelections()
 		},
+		
+		onOpenNotificationForTH: function () {
+			const that = this;
+			
+			 Fragment.load({
+				id: that.getView().getId(),
+				name: "FAST_NS0FAST0.view.fragments.NotificationMail",
+				controller: that,
+				
+			}).then(function (oDialog) {
+				oDialog.setModel(that.getView().getModel())
+				oDialog.setModel(that.getView().getModel('messages'),'messages')
+				oDialog.open();
+				// that.onGetNotificationContent()
+				that.NotificationMailFormBinding()
+			})
+		},
+		onCancelNotificationMailForTH: function () {
+			// this.cancelPendingChanges(["Outbox"], "notificationMailMsg");
+			this.byId("SendNotificationMailDialog").destroy();
+		},
+		NotificationMailFormBinding: function () {
+			const Form = this.byId('SendNotificationMailForm')
+			let oSender = this.byId("idFrom");
+			let userEmail = UserInfo.getUserEmail()
+			const that = this 
+			Services.getService('Quotation').getMailTemplate('THNotificationMail').then(template => {
+				oSender.setTokens([
+					new Token({text: userEmail, key: userEmail}),
+				]);
+				let notificationObj = {
+					CountryCode: this.countryCode,
+					TenderID: this.objectId,
+					OfferID: this.offerID,
+					Sender: userEmail,
+					Recipients: '',
+					Subject:`Action Required: Price Details Input for Offer ID ${this.offerID}`,
+					MailBody: template.data.res.content,
+					Sent: false			
+				}
+				
+				const NotificationPendingChenges = that.getView().getModel("fastData").createEntry("/Outbox", {
+					properties: notificationObj,
+				})
+				
+				const path = NotificationPendingChenges.getPath()
+				Form.bindElement({path})
+			})
+		},
+		onSubmitToDistributorTH: async function () {
+			try {		
+				this.onSendNotificationForTH();
+		
+				sap.m.MessageToast.show("Quotation submitted successfully.");
+			} catch (error) {
+				sap.m.MessageBox.error("Error occurred: " + error.message);
+			}
+		},
+		onSendNotificationForTH: function (oEvent) {
+			BusyIndicator.show(1);
+			this.oDefaultModel.callFunction("/sendTHNotificationMailTemplate", {
+				method:"POST", 
+				urlParameters: {
+					offerID: Services.getSelectedOfferID(),
+					tenderId: Services.getSelectedTenderID(),
+					CountryCode: Services.getSelectedCountry(),
+				},
+				success: this.onSendNotificationMailForTHSuccess.bind(this),
+				error: this.onSendNotificationMailForTHFail.bind(this)
+			});
+		},
+		onSendNotificationMailForTHSuccess: function () {
+			this.onSubmitQuotation();
+			MessageBox.success('Notification mail sent successfully');
+			BusyIndicator.hide();
+		},
+		onSendNotificationMailForTHFail: function(error){
+			let errorMessage = error?.message ? error?.message : JSON.parse(error?.responseText)?.error?.message?.value
+			MessageBox.error(errorMessage);
+			BusyIndicator.hide();
+		},
+	
 	});
 });
