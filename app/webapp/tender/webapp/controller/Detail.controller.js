@@ -72,7 +72,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this.oRouter = this.oOwnerComponent.getRouter();
 			this.oModel = this.oOwnerComponent.getModel();
-
+			this.oDefaultModel = this.oOwnerComponent.getModel('fastData')
 			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
 			
@@ -2722,7 +2722,6 @@ sap.ui.define([
 						if(oBtnDownloadQuotation){
 							oBtnDownloadQuotation.setEnabled(false);
 						}
-
 						that.getView().byId("btnSubmitQuotation").setVisible(false);
 						break;
 					case Services.getTenderResultsPageSectionID():
@@ -9288,7 +9287,6 @@ sap.ui.define([
 						enableSubmit = true;
 				}
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
-
 			});
 
 		},
@@ -12497,6 +12495,7 @@ sap.ui.define([
 			let oEditor = sap.ui.getCore().byId("idEditor");
             let aRAMs = [];
 
+
             const oFastAppDataModel = Services.getFastAppDataModel();
             const sDivision = oFastAppDataModel.getProperty('/SelectedOffer/Division');
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
@@ -12559,6 +12558,7 @@ sap.ui.define([
                 return "'" + oValue + "' is not a valid e-mail address";
             }
         },
+
 
 
 		onSendNotificationMail: function(evt){
@@ -12763,6 +12763,159 @@ sap.ui.define([
 			oModel.setProperty("/QuotationDataResult", filtredQuotationData);
 			oModel.setProperty("/RemoveQuotationRow", itemsToBeRemoved);
 			oTable.removeSelections()
+		},
+		
+		onOpenNotificationForTH: async function () {
+			const that = this;
+		
+			Fragment.load({
+				id: that.getView().getId(),
+				name: "FAST_NS0FAST0.view.fragments.NotificationMail",
+				controller: that,
+			}).then(async function (oDialog) {
+				oDialog.setModel(that.getView().getModel());
+				oDialog.setModel(that.getView().getModel('messages'), 'messages');
+				try {
+					await that.getNotificationForTH();
+					oDialog.open(); 
+				} catch (error) {
+					MessageBox.error("Error loading notification" + error.message);
+				}
+			});
+		},
+		
+		getNotificationForTH: function () {
+			const that = this;
+		
+			return new Promise((resolve, reject) => {
+				that.oDefaultModel.callFunction("/getTHNotificationMailTemplate", {
+					method: "GET",
+					urlParameters: {
+						offerID: Services.getSelectedOfferID(),
+						tenderId: Services.getSelectedTenderID(),
+						CountryCode: Services.getSelectedCountry(),
+						templateId: "THNotificationMail",
+					},
+					success: function (data) {
+						that.getNotificationMailForTHSuccess(data);
+						that.NotificationMailFormBinding(data)
+						resolve(); 
+					},
+					error: function (error) {
+						that.onSendNotificationMailForTHError(error);
+						reject(error); 
+					}
+				});
+			});
+		},
+		getNotificationMailForTHSuccess: function (data) {
+			if (data.mappedData) {
+				const htmlContent = data.mappedData;
+				const oRichTextEditor = this.byId('idRichTextEditor');
+				if (oRichTextEditor) {
+					oRichTextEditor.setValue(htmlContent);
+				} else {
+					MessageBox.error("RichTextEditor not found!");
+				}
+			} else {
+				MessageBox.error("Mail template data is empty!");
+			}
+			BusyIndicator.hide();
+		},
+		NotificationMailFormBinding: function (data) {
+			let oSender = this.byId("idFrom");
+			let Recipients = this.byId("idTo");
+			let userEmail = UserInfo.getUserEmail();
+			let subject = this.byId("idSubject");
+			let RecipientCC = this.byId("idRecipientCC");
+			let offerId = Services.getSelectedOfferID()
+			subject.setValue(`${data.TenderClassification} request form ${offerId}`);
+		
+			oSender.setTokens([new Token({ text: userEmail, key: userEmail })]);
+		
+			Recipients.setTokens([new Token({ text: data.Recipients, key: data.Recipients })]);
+		
+			RecipientCC.removeAllTokens();
+		
+			let uniqueEmails = new Set([userEmail]);
+		
+			if (data.approverList && Array.isArray(data.approverList)) {
+				data.approverList.forEach(approver => {
+					if (approver.ApproverEmailID) {
+						uniqueEmails.add(approver.ApproverEmailID);
+					}
+				});
+			}
+		
+			uniqueEmails.forEach(email => {
+				RecipientCC.addToken(
+					new sap.m.Token({
+						key: email,
+						text: email
+					})
+				);
+			});
+		
+		},
+		onRecipientChange: function(oEvent) {
+			let RecipientCC = this.byId("idRecipientCC");
+			let customValue = oEvent.getParameter("value");
+		
+			if (customValue && customValue.trim() !== "") {
+				let existingTokens = RecipientCC.getTokens();
+				let existingValues = existingTokens.map(token => token.getText());
+		
+				if (!existingValues.includes(customValue)) {
+					RecipientCC.addToken(
+						new sap.m.Token({
+							key: customValue,
+							text: customValue
+						})
+					);
+				}
+		
+				RecipientCC.setValue("");
+			}
+		},
+		
+		onSendNotificationMailForTHError: function(error){
+			let errorMessage = error?.message ? error?.message : JSON.parse(error?.responseText)?.error?.message?.value
+			MessageBox.error(errorMessage);
+			BusyIndicator.hide();
+		},
+		onSubmitToDistributorTH: function () {
+			let Recipients = this.byId("idTo")?.getTokens().map(token => token.getText()).join(", ") || "";
+			let subject = this.byId("idSubject")?.getValue() || "";
+			let mailBody = this.byId('idRichTextEditor')?.getValue() || ""; 
+			let recipientCC = this.byId("idRecipientCC")?.getTokens().map(token => token.getText()).join(", ") || "";
+			let oMail = {
+				"CountryCode": Services.getSelectedCountry(),
+				"TenderID": Services.getSelectedTenderID(),
+				"OfferID": Services.getSelectedOfferID(),
+				"Sender": UserInfo.getUserEmail(),
+				"Recipients": Recipients,
+				"Subject": subject,
+				"MailBody": mailBody,
+				"RecipientCC": recipientCC,
+				"Sent": false,
+			}
+			Services.sendMail(oMail)
+				.then(() => {
+					this.byId("SendNotificationMailDialog").destroy();
+					// Services.getOfferCompositeMessages().push({
+					// 	type: 'Success',
+					// 	title: 'Mail sent successfully',
+					// 	description: 'Mail sent successfully'
+					// });
+					// Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+				})
+				.catch(function (oError) {
+					Services.showErrorMessage(oError, "Sending mail");
+				});
+			this.onSubmitQuotation()
+		},
+		onCancelNotificationMailForTH: function () {
+			this.byId("SendNotificationMailDialog").destroy();
 		},
 	});
 });
