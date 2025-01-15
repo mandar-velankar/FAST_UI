@@ -299,7 +299,7 @@
 									<VBox width="250px">
 										<Text text=""/>
 										<Text text="SM/PCEA" />
-										<Text text="PoH/CEN" />
+										<Text text="PoH/CEH" />
 										<Text text="CDH" />
 									</VBox>
 
@@ -663,7 +663,7 @@
 									<VBox width="250px">
 										<Text text=""/>
 										<Text text="SM/PCEA" />
-										<Text text="PoH/CEN" />
+										<Text text="PoH/CEH" />
 										<Text text="CDH" />
 									</VBox>
 
