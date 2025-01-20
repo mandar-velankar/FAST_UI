@@ -47,7 +47,8 @@ sap.ui.define([
 				masterdata:false,
 				standardtender: false,
 				whc:false,
-				claims:false
+				claims:false,
+				conditioncontract:false
 			});
 			this.getView().setModel(oTileModel, "tiles");
 			this.getView().getModel("access").metadataLoaded().then(() => this.getView().getModel("access").read("/getAccess", { success: (result) => this.getView().getModel("tiles").setData(result) }));
@@ -159,6 +160,13 @@ sap.ui.define([
 			this.getOwnerComponent()
 				.getRouter()
 				.navTo("standardtender");
+		},
+
+		onTileConditionContractPress: function (event) {
+			BusyIndicator.show(0);
+			this.getOwnerComponent()
+				.getRouter()
+				.navTo("conditioncontract");
 		},
 
 		onTileWhcPress: function (event) {

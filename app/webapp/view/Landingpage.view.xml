@@ -103,6 +103,15 @@
 								</GenericTile>
 								<GenericTile 
 									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
+									header="Condition Contract Management" 
+									press="onTileConditionContractPress" 
+									visible="{tiles>/conditioncontract}">
+									<TileContent>
+										<ImageContent src="sap-icon://decision"/>
+									</TileContent>
+								</GenericTile>
+								<GenericTile 
+									class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" 
 									header="US WHC" 
 									press="onTileWhcPress" 
 									visible="{tiles>/whc}">

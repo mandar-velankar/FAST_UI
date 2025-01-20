@@ -108,6 +108,16 @@
       "service": "html5-apps-repo-rt"
     },
     {
+      "source": "^/ccma/(.*)",
+      "target": "/combayertenderccma/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/app/ccma/(.*)",
+      "target": "/combayertenderccma/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
       "source": "^/whc/(.*)",
       "target": "/combayertenderwhcapp/$1",
       "service": "html5-apps-repo-rt"
