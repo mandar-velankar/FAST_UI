@@ -34,7 +34,14 @@
 							<core:Item key="{fastData>CountryCode}" text="{fastData>CountryName}"/>
 						</Select>
 						-->
-						<Select id="idSlctCountry" forceSelection="true" items="{ path: 'fastAppData>/UserCountries/results/', sorter: { path: 'COUNTRY_NAME' } }"
+						<Select id="idSlctCountry" forceSelection="true" items="{ path: 'fastAppData>/UserCountries/results/', sorter: { path: 'COUNTRY_NAME' },
+							filters: {
+								filters: [
+									{ path: 'Application', operator: 'EQ', value1: 'LEGACY' },
+									{ path: 'Application', operator: 'EQ', value1: 'ALL' }
+								],
+								and: false
+							} }"
 							change=".setFilter">
 							<core:Item key="{fastAppData>COUNTRY_CODE}" text="{fastAppData>COUNTRY_NAME}"/>
 						</Select>
