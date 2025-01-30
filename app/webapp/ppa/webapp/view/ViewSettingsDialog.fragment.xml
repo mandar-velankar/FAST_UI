@@ -27,9 +27,9 @@
 						}}">
 				<items>
 					<ViewSettingsItem 
-						selected="{= ${ppa>countryCode} === 'TH'}"
-						key="{ppa>countryCode}"
-						text="{ppa>countryName}" 
+						selected="{= ${ppa>country/countryCode} === 'TH'}"
+						key="{ppa>country/countryCode}"
+						text="{ppa>country/countryName}" 
 					/>
 				</items>
 			</ViewSettingsFilterItem>
