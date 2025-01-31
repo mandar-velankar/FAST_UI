@@ -19,7 +19,17 @@
 				id="filterItems"
 				text="{i18n>masterFilterName}"
 				multiSelect="false"
-				items="{path: '/CountriesUser'}">
+				items="{path: '/CountriesUser' , 
+							parameters: {
+								expand: 'User'
+							}, 
+							filters: {
+								filters: [
+									{ path: 'User/Application', operator: 'EQ', value1: 'EPA' },
+									{ path: 'User/Application', operator: 'EQ', value1: 'ALL' }
+								],
+								and: false
+							}}">
 				<items>
 					<ViewSettingsItem key="{CountryCode}"
 									  text="{CountryName}" />
