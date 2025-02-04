@@ -35,7 +35,7 @@
 
                    <Label text="{i18n>Body}" required="true"/>
                    <rtx:RichTextEditor id="idEditor" 
-                                       editorType="TinyMCE5"
+                                       editorType="TinyMCE"
                                        value="" 
                                        height="800px"
                                        customToolbar="true"

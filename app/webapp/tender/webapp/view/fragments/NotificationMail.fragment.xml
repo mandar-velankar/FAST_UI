@@ -34,7 +34,7 @@
 
                    <Label text="Content" />
                    <rtx:RichTextEditor id="idRichTextEditor" 
-                                       editorType="TinyMCE5"
+                                       editorType="TinyMCE"
                                        height="600px"
                                        customToolbar="true"
                                        showGroupFont="true"
