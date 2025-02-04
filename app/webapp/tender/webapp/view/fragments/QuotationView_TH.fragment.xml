@@ -51,10 +51,10 @@
                 <!-- Submit Quotation -->	
                 <m:Button
                     id="btnSubmitQuotation"
-                    text="{i18n>SubmitQuotation}"
+                    text="{i18n>SubmitQuotationTH}"
                     icon="sap-icon://sys-enter"
-                    press=".onSubmitQuotation"
-                    enabled="false"/>
+                    press=".onOpenNotificationForTH"
+                    enabled="true"/>
                     
                 <m:MenuButton text="Download Word" id="btnDownloadWordQuotation" visible="{= ${fastAppData>/WordTemplates}.length > 0 }">
                     <m:menu>
