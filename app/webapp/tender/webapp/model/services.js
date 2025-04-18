@@ -4602,6 +4602,7 @@ sap.ui.define([
 											oProductToSave.OfferID = oOfferToSave.OfferID;
 											oProductToSave.SUPPLY_UPDATE = 0;
 											oProductToSave.PAYMENT_UPDATE = 0;
+											oProductToSave.VOLUME_UOM_UPDATE = 0;
 
 											//get values to check product validity
 											var sProductCode = oProductToSave.ProductCode;
@@ -5530,6 +5531,7 @@ sap.ui.define([
 								//the update fields should be 0 (https://trello.com/c/np1g69g7)
 								oCopyExistingOfferInfo.Product.results[index].SUPPLY_UPDATE = 0;
 								oCopyExistingOfferInfo.Product.results[index].PAYMENT_UPDATE = 0;
+								oCopyExistingOfferInfo.Product.results[index].VOLUME_UOM_UPDATE = 0;
 								
 								//set price update to 0 if prices exist
 								if (oCopyExistingOfferInfo.Product.results[index].Prices && oCopyExistingOfferInfo.Product.results[index].Prices.results) {
@@ -5962,6 +5964,21 @@ sap.ui.define([
 			}
 
 			return oNewProductInfo.SUPPLY_UPDATE;
+		},
+
+		checkApprovalVolumeUomUpdate: function (oOriginalProductInfo, oNewProductInfo) {
+			var that = this;
+			if (
+				oOriginalProductInfo.RequestedVolume === oNewProductInfo.RequestedVolume && oOriginalProductInfo.UnitPerPack === oNewProductInfo.UnitPerPack
+			) {
+				oNewProductInfo.VOLUME_UOM_UPDATE = oOriginalProductInfo.VOLUME_UOM_UPDATE;
+
+			} else {
+				var iApprovals_sent = that.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
+				oNewProductInfo.VOLUME_UOM_UPDATE = iApprovals_sent; 
+			}
+
+			return oNewProductInfo.VOLUME_UOM_UPDATE;
 		},
 
 		getCurrentOfferStatus: function(sTenderID, sOfferID){ 
@@ -6901,6 +6918,7 @@ sap.ui.define([
 						var iApprovals_sent = that.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
 						oProductToSave.SUPPLY_UPDATE = iApprovals_sent;
 						oProductToSave.PAYMENT_UPDATE = iApprovals_sent;
+						oProductToSave.VOLUME_UOM_UPDATE = iApprovals_sent;
 
 						//Create Product
 						promises.push(that.getService('Product').createProduct(oProductToSave).catch(function (oError) {
@@ -6925,6 +6943,10 @@ sap.ui.define([
 
 								//check ApprovalPaymentUpdate
 								oOriginalProductInfo._NewProductInfo.PAYMENT_UPDATE = that.checkApprovalPaymentUpdate(oOriginalProductInfo,
+									oOriginalProductInfo._NewProductInfo);
+
+								//check ApprovalVolumeUomUpdate
+								oOriginalProductInfo._NewProductInfo.VOLUME_UOM_UPDATE = that.checkApprovalVolumeUomUpdate(oOriginalProductInfo,
 									oOriginalProductInfo._NewProductInfo);
 
 							}
