@@ -5401,7 +5401,8 @@ sap.ui.define([
 				"OfferID": offer.OfferID,
 				"DistributorID" : offer.DistributorID,
 				"SUPPLY_UPDATE": 0,
-				"PAYMENT_UPDATE": 0
+				"PAYMENT_UPDATE": 0,
+				"VOLUME_UOM_UPDATE": 0
 			}
 
 			//get values to check product validity
