@@ -4007,7 +4007,10 @@ sap.ui.define([
 				//Description: https://trello.com/c/np1g69g7
 				var oOffer = Services.getLoadedOffer(sOfferID);
 				var iApprovals_sent = oOffer.APPROVALS_SENT + 1;
-				Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+				Services.saveOfferApprovalSent(iApprovals_sent).then((result) => {
+					const offer = result && result.data;
+					Services.getFastAppDataModel().setProperty("/EditOffer/APPROVALS_SENT", offer.APPROVALS_SENT);
+				}).catch(function (oError) {
 					//Error during save
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
@@ -5398,7 +5401,8 @@ sap.ui.define([
 				"OfferID": offer.OfferID,
 				"DistributorID" : offer.DistributorID,
 				"SUPPLY_UPDATE": 0,
-				"PAYMENT_UPDATE": 0
+				"PAYMENT_UPDATE": 0,
+				"VOLUME_UOM_UPDATE": 0
 			}
 
 			//get values to check product validity

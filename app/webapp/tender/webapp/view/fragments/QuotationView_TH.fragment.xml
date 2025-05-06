@@ -277,7 +277,7 @@
                                                         <core:Item key="DKSH Quotation Office" text="DKSH Quotation Office"/>
                                                         <core:Item key="Send to Bayer" text="Send to Bayer"/>
                                                         <core:Item key="Email" text="Email"/>
-                                                        <core:Item key="Fax" text="Fax"/>
+                                                        <core:Item key="Bayer Representative" text="Bayer Representative"/>
                                                         <core:Item key="Customer" text="Customer"/>
                                                     </m:Select>
                                                     <m:Input enabled="{fastAppData>/isQuotationDeliveryEnabled}" value="{fastAppData>QuotationRecipientname}" />
