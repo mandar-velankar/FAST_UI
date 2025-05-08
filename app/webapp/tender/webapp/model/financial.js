@@ -152,6 +152,17 @@ sap.ui.define([
 					
 					return FOCUpdate;
 				},
+
+				checkPriceDeductionsUpdate: function(oOriginalPrices, oNewPrices, oProduct){
+					var iApprovals_sent = this._oServices.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
+
+					const MEAApprovalUpdatedFields = {
+						Price: oNewPrices.OfferPrice >= oOriginalPrices.OfferPrice  ? oProduct.MEAApprovalUpdatedFields_Price : iApprovals_sent,
+						Deductions: Number(oOriginalPrices.Deductions) === Number(oNewPrices.Deductions) ? oProduct.MEAApprovalUpdatedFields_Deductions : iApprovals_sent,
+
+					}
+					return MEAApprovalUpdatedFields;
+				},
 				
 				//check if all product prices are set for offer
 				checkAllProductPricesSet: function (oOffer){

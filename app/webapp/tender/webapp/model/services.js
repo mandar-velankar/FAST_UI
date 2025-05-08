@@ -6894,6 +6894,8 @@ sap.ui.define([
 				MEAApprovalUpdatedFields_Volume: data.MEAApprovalUpdatedFields_Volume,
 				MEAApprovalUpdatedFields_UOM: data.MEAApprovalUpdatedFields_UOM,
 				MEAApprovalUpdatedFields_FOC: data.MEAApprovalUpdatedFields_FOC,
+				MEAApprovalUpdatedFields_Price: data.MEAApprovalUpdatedFields_Price,
+				MEAApprovalUpdatedFields_Deductions: data.MEAApprovalUpdatedFields_Deductions,
 			};
 
 			//path of offer that is selected
