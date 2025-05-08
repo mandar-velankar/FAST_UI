@@ -5402,7 +5402,12 @@ sap.ui.define([
 				"DistributorID" : offer.DistributorID,
 				"SUPPLY_UPDATE": 0,
 				"PAYMENT_UPDATE": 0,
-				"VOLUME_UOM_UPDATE": 0
+				"VOLUME_UOM_UPDATE": 0,
+				"MEAApprovalUpdatedFields": {
+					Volume: 0,
+					UOM: 0,
+					FOC: 0,
+				}
 			}
 
 			//get values to check product validity
@@ -8538,11 +8543,13 @@ sap.ui.define([
 
 						//convert price to save
 						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
+						let MEAApprovalUpdatedFields_FOC = 0;
 
 						//if oOriginalPrices = false, they were not found, and we are creating new
 						if (oOriginalPrices !== false) {
 							//otherwise they were found and the check results for price update should be used
 							oPriceToSave.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+							MEAApprovalUpdatedFields_FOC = Financial.checkFOCUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
 						}
 
 						if (pricePath !== null) {
@@ -8636,6 +8643,13 @@ sap.ui.define([
 										//Error during save
 										Services.showErrorMessage(oError, "Background saving for approvals sent field");
 									});
+									Services.saveOfferProductMEAApprovalUpdatedFields({
+										MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC
+									}, oProduct.ProductCode).then(() => {
+										//refresh master data
+										const oTendersMasterTable = Services.getTendersMasterTable();
+										oTendersMasterTable && oTendersMasterTable.getBinding("items").refresh();
+									})
 								});
 							});
 
