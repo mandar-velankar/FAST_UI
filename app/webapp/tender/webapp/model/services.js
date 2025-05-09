@@ -2894,7 +2894,7 @@ sap.ui.define([
 				},
 				sorter: aSorter,
 				success: function (oData, oResponse) {
-
+					// oFastAppDataModel.oData.EditTender.Country.Region
 					if (oData.results) { //if offers are found add them to the Model
 						if (countrycode == 'ES' && oFastAppDataModel.oData.EditOffer.Division == 'Pharma') {
                             var ApproverTypeCount = oData.results;
@@ -2954,7 +2954,7 @@ sap.ui.define([
 								//for waiting & notification sent, it would be forced to "no"
 								if (
 									oApprover.ApprovalStatus === 'Waiting' ||
-									oApprover.ApprovalStatus === "Notification Sent" ||
+									(oApprover.ApprovalStatus === "Notification Sent" && oFastAppDataModel.oData.Tender.Country.Region !== 'MEA') ||
 									oApprover.ApprovalStatus === "Processing" ||
 									oApprover.ApprovalStatus === "Cancelling"
 								) {
