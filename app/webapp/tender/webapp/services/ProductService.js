@@ -269,6 +269,7 @@ sap.ui.define([
 			oProductToSave.DEFAULT_COMMISSION_RATE = oProductSaveInfo.DEFAULT_COMMISSION_RATE;
 			oProductToSave.SUPPLY_UPDATE = (oProductSaveInfo.SUPPLY_UPDATE) ? Number(oProductSaveInfo.SUPPLY_UPDATE) : null;
 			oProductToSave.PAYMENT_UPDATE = (oProductSaveInfo.PAYMENT_UPDATE) ? Number(oProductSaveInfo.PAYMENT_UPDATE) : null;
+			oProductToSave.VOLUME_UOM_UPDATE = (oProductSaveInfo.VOLUME_UOM_UPDATE) ? Number(oProductSaveInfo.VOLUME_UOM_UPDATE) : null;
 			oProductToSave.Line = oProductSaveInfo.Line;
 			oProductToSave.PricingPolicyCluster = oProductSaveInfo.PricingPolicyCluster;
 			oProductToSave.MinInvoiceAmount = oProductSaveInfo.MinInvoiceAmount ? Number(oProductSaveInfo.MinInvoiceAmount) : 0;
@@ -281,6 +282,9 @@ sap.ui.define([
 			oProductToSave.IbizWorkflowID = oProductSaveInfo.IbizWorkflowID;
 			oProductToSave.WorkflowProductID = oProductSaveInfo.WorkflowProductID;
 			oProductToSave.Custom_Integer_1 = oProductSaveInfo.Custom_Integer_1;
+			oProductToSave.MEAApprovalUpdatedFields_Volume = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.Volume ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.Volume) : null;
+			oProductToSave.MEAApprovalUpdatedFields_UOM = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.UOM ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.UOM) : null;
+			oProductToSave.MEAApprovalUpdatedFields_FOC = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.FOC ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.FOC) : null;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;

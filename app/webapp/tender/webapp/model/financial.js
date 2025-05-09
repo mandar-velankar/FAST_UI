@@ -131,6 +131,38 @@ sap.ui.define([
 					
 					return oNewPrices.PRICE_UPDATE;
 				},
+
+				checkFOCUpdate: function(oOriginalPrices, oNewPrices, oProduct){
+					var that = this;
+					let FOCUpdate = 0;
+					if(
+						oOriginalPrices.FOCType === oNewPrices.FOCType
+						&& oOriginalPrices.FOC_ABS_PCT === oNewPrices.FOC_ABS_PCT
+						&& this.floatComparison(oOriginalPrices.FOC, oNewPrices.FOC)
+						&& this.floatComparison(oOriginalPrices.FOCProduct_Bundled_1, oNewPrices.FOCProduct_Bundled_1)
+						&& oOriginalPrices.FOC_ABS_PCT_Bundled_1 === oNewPrices.FOC_ABS_PCT_Bundled_1
+						&& Number(oOriginalPrices.FOC_Bundled_1) === Number(oNewPrices.FOC_Bundled_1)
+					){
+						FOCUpdate = oProduct.MEAApprovalUpdatedFields_FOC;
+					}else{
+						//if prices have changed, we take the current value
+						var iApprovals_sent = that._oServices.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
+						FOCUpdate = iApprovals_sent;
+					}
+					
+					return FOCUpdate;
+				},
+
+				checkPriceDeductionsUpdate: function(oOriginalPrices, oNewPrices, oProduct){
+					var iApprovals_sent = this._oServices.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
+
+					const MEAApprovalUpdatedFields = {
+						Price: oNewPrices.OfferPrice >= oOriginalPrices.OfferPrice  ? oProduct.MEAApprovalUpdatedFields_Price : iApprovals_sent,
+						Deductions: Number(oOriginalPrices.Deductions) === Number(oNewPrices.Deductions) ? oProduct.MEAApprovalUpdatedFields_Deductions : iApprovals_sent,
+
+					}
+					return MEAApprovalUpdatedFields;
+				},
 				
 				//check if all product prices are set for offer
 				checkAllProductPricesSet: function (oOffer){

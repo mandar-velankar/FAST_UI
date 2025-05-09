@@ -2894,7 +2894,7 @@ sap.ui.define([
 				},
 				sorter: aSorter,
 				success: function (oData, oResponse) {
-
+					// oFastAppDataModel.oData.EditTender.Country.Region
 					if (oData.results) { //if offers are found add them to the Model
 						if (countrycode == 'ES' && oFastAppDataModel.oData.EditOffer.Division == 'Pharma') {
                             var ApproverTypeCount = oData.results;
@@ -2954,7 +2954,7 @@ sap.ui.define([
 								//for waiting & notification sent, it would be forced to "no"
 								if (
 									oApprover.ApprovalStatus === 'Waiting' ||
-									oApprover.ApprovalStatus === "Notification Sent" ||
+									(oApprover.ApprovalStatus === "Notification Sent" && oFastAppDataModel.oData.Tender.Country.Region !== 'MEA') ||
 									oApprover.ApprovalStatus === "Processing" ||
 									oApprover.ApprovalStatus === "Cancelling"
 								) {
@@ -4602,6 +4602,12 @@ sap.ui.define([
 											oProductToSave.OfferID = oOfferToSave.OfferID;
 											oProductToSave.SUPPLY_UPDATE = 0;
 											oProductToSave.PAYMENT_UPDATE = 0;
+											oProductToSave.VOLUME_UOM_UPDATE = 0;
+											oProductToSave.MEAApprovalUpdatedFields = {
+												Volume: 0,
+												UOM: 0,
+												FOC: 0,
+											}
 
 											//get values to check product validity
 											var sProductCode = oProductToSave.ProductCode;
@@ -5530,6 +5536,12 @@ sap.ui.define([
 								//the update fields should be 0 (https://trello.com/c/np1g69g7)
 								oCopyExistingOfferInfo.Product.results[index].SUPPLY_UPDATE = 0;
 								oCopyExistingOfferInfo.Product.results[index].PAYMENT_UPDATE = 0;
+								oCopyExistingOfferInfo.Product.results[index].VOLUME_UOM_UPDATE = 0;
+								oCopyExistingOfferInfo.Product.results[index].MEAApprovalUpdatedFields = {
+									Volume: 0,
+									UOM: 0,
+									FOC: 0,
+								};
 								
 								//set price update to 0 if prices exist
 								if (oCopyExistingOfferInfo.Product.results[index].Prices && oCopyExistingOfferInfo.Product.results[index].Prices.results) {
@@ -5962,6 +5974,35 @@ sap.ui.define([
 			}
 
 			return oNewProductInfo.SUPPLY_UPDATE;
+		},
+
+		checkApprovalVolumeUomUpdate: function (oOriginalProductInfo, oNewProductInfo) {
+			var that = this;
+			if (
+				oOriginalProductInfo.RequestedVolume === oNewProductInfo.RequestedVolume && oOriginalProductInfo.UnitPerPack === oNewProductInfo.UnitPerPack
+			) {
+				oNewProductInfo.VOLUME_UOM_UPDATE = oOriginalProductInfo.VOLUME_UOM_UPDATE;
+
+			} else {
+				var iApprovals_sent = that.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
+				oNewProductInfo.VOLUME_UOM_UPDATE = iApprovals_sent; 
+			}
+
+			return oNewProductInfo.VOLUME_UOM_UPDATE;
+		},
+
+		checkMEAApprovalSupplyPaymentFieldUpdate: function (oOriginalProductInfo, oNewProductInfo) {
+			var that = this;
+			var iApprovals_sent = that.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
+
+			const MEAApprovalUpdatedFields = {
+				Volume: oOriginalProductInfo.RequestedVolume === oNewProductInfo.RequestedVolume ? oNewProductInfo.MEAApprovalUpdatedFields_Volume : iApprovals_sent,
+				UOM: oOriginalProductInfo.UnitPerPack === oNewProductInfo.UnitPerPack ? oNewProductInfo.MEAApprovalUpdatedFields_UOM : iApprovals_sent,
+				FOC: oNewProductInfo.MEAApprovalUpdatedFields_FOC,
+
+			}
+
+			return MEAApprovalUpdatedFields;
 		},
 
 		getCurrentOfferStatus: function(sTenderID, sOfferID){ 
@@ -6842,6 +6883,34 @@ sap.ui.define([
 
 		},
 
+		saveOfferProductMEAApprovalUpdatedFields: function (data, productCode) {
+
+			//that is this
+			var that = this;
+			var oModel = that.getDefaultModel();
+
+			//get save info for offer Appr
+			var oOfferSaveInfo = {
+				MEAApprovalUpdatedFields_Volume: data.MEAApprovalUpdatedFields_Volume,
+				MEAApprovalUpdatedFields_UOM: data.MEAApprovalUpdatedFields_UOM,
+				MEAApprovalUpdatedFields_FOC: data.MEAApprovalUpdatedFields_FOC,
+				MEAApprovalUpdatedFields_Price: data.MEAApprovalUpdatedFields_Price,
+				MEAApprovalUpdatedFields_Deductions: data.MEAApprovalUpdatedFields_Deductions,
+			};
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/PT_TMOFPR", {
+				OfferID: that.getSelectedOfferID(),
+				ProductCode: productCode,
+				Active: 1,
+				LotID: 1
+			});
+
+			//Update Offer
+			return that.odata(sPath).put(oOfferSaveInfo);
+
+		},
+
 		//add All products as a batch to the database
 		saveProductInfo: function () {
 
@@ -6901,6 +6970,10 @@ sap.ui.define([
 						var iApprovals_sent = that.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
 						oProductToSave.SUPPLY_UPDATE = iApprovals_sent;
 						oProductToSave.PAYMENT_UPDATE = iApprovals_sent;
+						oProductToSave.VOLUME_UOM_UPDATE = iApprovals_sent;
+						oProductToSave.MEAApprovalUpdatedFields_Volume = iApprovals_sent;
+						oProductToSave.MEAApprovalUpdatedFields_UOM = iApprovals_sent;
+						oProductToSave.MEAApprovalUpdatedFields_FOC = iApprovals_sent;
 
 						//Create Product
 						promises.push(that.getService('Product').createProduct(oProductToSave).catch(function (oError) {
@@ -6926,6 +6999,14 @@ sap.ui.define([
 								//check ApprovalPaymentUpdate
 								oOriginalProductInfo._NewProductInfo.PAYMENT_UPDATE = that.checkApprovalPaymentUpdate(oOriginalProductInfo,
 									oOriginalProductInfo._NewProductInfo);
+
+								//check ApprovalVolumeUomUpdate
+								oOriginalProductInfo._NewProductInfo.VOLUME_UOM_UPDATE = that.checkApprovalVolumeUomUpdate(oOriginalProductInfo,
+									oOriginalProductInfo._NewProductInfo);
+								
+								oOriginalProductInfo._NewProductInfo.MEAApprovalUpdatedFields_Volume = that.checkMEAApprovalSupplyPaymentFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo).Volume;
+								oOriginalProductInfo._NewProductInfo.MEAApprovalUpdatedFields_UOM = that.checkMEAApprovalSupplyPaymentFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo).UOM;
+								oOriginalProductInfo._NewProductInfo.MEAApprovalUpdatedFields_FOC = that.checkMEAApprovalSupplyPaymentFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo).FOC;
 
 							}
 
