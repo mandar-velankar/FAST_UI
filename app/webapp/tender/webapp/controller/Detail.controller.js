@@ -4016,6 +4016,11 @@ sap.ui.define([
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
 
+				Services.saveOfferPreviousApprovalInfo({
+					PreviousApprovalHasAddedProduct: false,
+					PreviousApprovalHasDeletedProduct: false
+				})
+
 			});
 
 		},

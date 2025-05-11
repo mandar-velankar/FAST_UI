@@ -6883,6 +6883,25 @@ sap.ui.define([
 
 		},
 
+		// Saving MEA specific field after updating approved offer
+		saveOfferPreviousApprovalInfo: function (data) {
+
+			//that is this
+			var that = this;
+			var oModel = that.getDefaultModel();
+
+			//get save info for offer Appr
+			var oOfferSaveInfo = {};
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/PT_TMOFRS", {
+				OfferID: that.getSelectedOfferID()
+			});
+
+			//Update Offer
+			return that.odata(sPath).put(data);
+
+		},
 		saveOfferProductMEAApprovalUpdatedFields: function (data, productCode) {
 
 			//that is this
@@ -6912,7 +6931,7 @@ sap.ui.define([
 		},
 
 		//add All products as a batch to the database
-		saveProductInfo: function () {
+		saveProductInfo: async function () {
 
 			//lets work with callbacks:
 			var oDeferred = $.Deferred();
@@ -6927,6 +6946,10 @@ sap.ui.define([
 
 			var OfferProducts = this.getFinancialModel();
 			var oModel = that.getDefaultModel(); //new sap.ui.model.odata.ODataModel(this._connectionString);
+
+			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
+			const { STATUS: offerStatus } = await that.checkOfferStatus();
 
 			//saving all products, not only the newly added or removed whitch are already in getProductsSaveInfo
 			that.addAlreadyExistingProductsToSave();
@@ -6982,6 +7005,14 @@ sap.ui.define([
 							//whole promises batch may fail when a product fails
 							throw new Error(oError);
 						}));
+
+						// MEA specific logic which is used to revert back offer status from approved to created when new product is being added
+						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+							promises.push(that.saveOfferPreviousApprovalInfo({
+								PreviousApprovalHasAddedProduct: true,
+								PreviousApprovalHasDeletedProduct: offer.PreviousApprovalHasDeletedProduct
+							}));
+						}
 
 						break;
 					case "PUT":
