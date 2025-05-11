@@ -7061,6 +7061,14 @@ sap.ui.define([
 								throw new Error(oError);
 							}));
 						}
+
+						// MEA specific logic which is used to revert back offer status from approved to created when product deleted
+						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+							promises.push(that.saveOfferPreviousApprovalInfo({
+								PreviousApprovalHasAddedProduct: offer.PreviousApprovalHasAddedProduct,
+								PreviousApprovalHasDeletedProduct: true
+							}));
+						}
 						
 						break;
 
