@@ -3996,6 +3996,7 @@ sap.ui.define([
 			$.when(Services.saveApprovals(sApprovalStatus, sOfferStatus)).done(function (oDataTenderOffer) {
 
 				var sOfferID = Services.getSelectedOfferID();
+				const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 
 				//when saving is finished
 				$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
@@ -4015,12 +4016,15 @@ sap.ui.define([
 					//Error during save
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
-
-				Services.saveOfferPreviousApprovalInfo({
-					PreviousApprovalHasAddedProduct: false,
-					PreviousApprovalHasDeletedProduct: false
-				})
-
+				
+				if (tenderCountryRegion === "MEA") {
+					Services.saveOfferPreviousApprovalInfo({
+						PreviousApprovalHasAddedProduct: false,
+						PreviousApprovalHasDeletedProduct: false
+					});
+	
+					oOffer.Product.results.forEach(pr => Services.saveOfferProductPreviousApprovalInfo({IsProductAddedForPreviousApproval: false}, pr.ProductCode));
+				} 
 			});
 
 		},

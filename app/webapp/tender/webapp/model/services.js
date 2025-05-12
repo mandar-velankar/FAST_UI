@@ -6902,6 +6902,25 @@ sap.ui.define([
 			return that.odata(sPath).put(data);
 
 		},
+
+		saveOfferProductPreviousApprovalInfo: function (data, productCode) {
+
+			//that is this
+			var that = this;
+			var oModel = that.getDefaultModel();
+
+			var sPath = oModel.createKey("/PT_TMOFPR", {
+				OfferID: that.getSelectedOfferID(),
+				ProductCode: productCode,
+				Active: 1,
+				LotID: 1
+			});
+
+			//Update Offer product
+			return that.odata(sPath).put(data);
+
+		},
+
 		saveOfferProductMEAApprovalUpdatedFields: function (data, productCode) {
 
 			//that is this
@@ -6998,6 +7017,17 @@ sap.ui.define([
 						oProductToSave.MEAApprovalUpdatedFields_UOM = iApprovals_sent;
 						oProductToSave.MEAApprovalUpdatedFields_FOC = iApprovals_sent;
 
+						// MEA specific logic which is used to revert back offer status from approved to created when new product is being added
+						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+
+							oProductToSave.IsProductAddedForPreviousApproval = true;
+
+							promises.push(that.saveOfferPreviousApprovalInfo({
+								PreviousApprovalHasAddedProduct: true,
+								PreviousApprovalHasDeletedProduct: offer.PreviousApprovalHasDeletedProduct
+							}));
+						}
+
 						//Create Product
 						promises.push(that.getService('Product').createProduct(oProductToSave).catch(function (oError) {
 							//show error message
@@ -7005,14 +7035,6 @@ sap.ui.define([
 							//whole promises batch may fail when a product fails
 							throw new Error(oError);
 						}));
-
-						// MEA specific logic which is used to revert back offer status from approved to created when new product is being added
-						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
-							promises.push(that.saveOfferPreviousApprovalInfo({
-								PreviousApprovalHasAddedProduct: true,
-								PreviousApprovalHasDeletedProduct: offer.PreviousApprovalHasDeletedProduct
-							}));
-						}
 
 						break;
 					case "PUT":
