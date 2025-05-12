@@ -6883,6 +6883,44 @@ sap.ui.define([
 
 		},
 
+		// Saving MEA specific field after updating approved offer
+		saveOfferPreviousApprovalInfo: function (data) {
+
+			//that is this
+			var that = this;
+			var oModel = that.getDefaultModel();
+
+			//get save info for offer Appr
+			var oOfferSaveInfo = {};
+
+			//path of offer that is selected
+			var sPath = oModel.createKey("/PT_TMOFRS", {
+				OfferID: that.getSelectedOfferID()
+			});
+
+			//Update Offer
+			return that.odata(sPath).put(data);
+
+		},
+
+		saveOfferProductPreviousApprovalInfo: function (data, productCode) {
+
+			//that is this
+			var that = this;
+			var oModel = that.getDefaultModel();
+
+			var sPath = oModel.createKey("/PT_TMOFPR", {
+				OfferID: that.getSelectedOfferID(),
+				ProductCode: productCode,
+				Active: 1,
+				LotID: 1
+			});
+
+			//Update Offer product
+			return that.odata(sPath).put(data);
+
+		},
+
 		saveOfferProductMEAApprovalUpdatedFields: function (data, productCode) {
 
 			//that is this
@@ -6912,7 +6950,7 @@ sap.ui.define([
 		},
 
 		//add All products as a batch to the database
-		saveProductInfo: function () {
+		saveProductInfo: async function () {
 
 			//lets work with callbacks:
 			var oDeferred = $.Deferred();
@@ -6927,6 +6965,10 @@ sap.ui.define([
 
 			var OfferProducts = this.getFinancialModel();
 			var oModel = that.getDefaultModel(); //new sap.ui.model.odata.ODataModel(this._connectionString);
+
+			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
+			const { STATUS: offerStatus } = await that.checkOfferStatus();
 
 			//saving all products, not only the newly added or removed whitch are already in getProductsSaveInfo
 			that.addAlreadyExistingProductsToSave();
@@ -6974,6 +7016,17 @@ sap.ui.define([
 						oProductToSave.MEAApprovalUpdatedFields_Volume = iApprovals_sent;
 						oProductToSave.MEAApprovalUpdatedFields_UOM = iApprovals_sent;
 						oProductToSave.MEAApprovalUpdatedFields_FOC = iApprovals_sent;
+
+						// MEA specific logic which is used to revert back offer status from approved to created when new product is being added
+						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+
+							oProductToSave.IsProductAddedForPreviousApproval = true;
+
+							promises.push(that.saveOfferPreviousApprovalInfo({
+								PreviousApprovalHasAddedProduct: true,
+								PreviousApprovalHasDeletedProduct: offer.PreviousApprovalHasDeletedProduct
+							}));
+						}
 
 						//Create Product
 						promises.push(that.getService('Product').createProduct(oProductToSave).catch(function (oError) {
@@ -7059,6 +7112,14 @@ sap.ui.define([
 								//show error message
 								that.showErrorMessage(oError, "Removing of price");
 								throw new Error(oError);
+							}));
+						}
+
+						// MEA specific logic which is used to revert back offer status from approved to created when product deleted
+						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+							promises.push(that.saveOfferPreviousApprovalInfo({
+								PreviousApprovalHasAddedProduct: offer.PreviousApprovalHasAddedProduct,
+								PreviousApprovalHasDeletedProduct: true
 							}));
 						}
 						
