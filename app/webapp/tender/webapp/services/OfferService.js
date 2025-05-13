@@ -180,6 +180,7 @@ sap.ui.define([
 			oOfferToSave.PreviousApprovalHasAddedProduct = oOfferSaveInfo.PreviousApprovalHasAddedProduct;
 			oOfferToSave.PreviousApprovalHasDeletedProduct = oOfferSaveInfo.PreviousApprovalHasAddedProduct;
 			oOfferToSave.PreviousApprovalHasDeclinedProduct = oOfferSaveInfo.PreviousApprovalHasDeclinedProduct;
+			oOfferToSave.PreviousApprovalHas_Deleted_DeclinedProduct = oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct;
 			return oOfferToSave;
 
 		},

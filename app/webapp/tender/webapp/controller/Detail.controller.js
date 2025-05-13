@@ -4020,10 +4020,10 @@ sap.ui.define([
 					Services.saveOfferPreviousApprovalInfo({
 						PreviousApprovalHasAddedProduct: false,
 						PreviousApprovalHasDeletedProduct: false,
-						PreviousApprovalHasDeclinedProduct: false
+						PreviousApprovalHasDeclinedProduct: false,
 					});
 	
-					oOffer.Product.results.forEach(pr => Services.saveOfferProductPreviousApprovalInfo({IsProductAddedForPreviousApproval: false}, pr.ProductCode));
+					// oOffer.Product.results.forEach(pr => Services.saveOfferProductPreviousApprovalInfo({IsProductAddedForPreviousApproval: false}, pr.ProductCode));
 				} 
 			});
 
@@ -6833,6 +6833,7 @@ sap.ui.define([
 				oOfferSaveInfo.PreviousApprovalHasAddedProduct = oOffer.PreviousApprovalHasAddedProduct;
 				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = oOffer.PreviousApprovalHasAddedProduct;
 				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = oOffer.PreviousApprovalHasDeclinedProduct;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = oOffer.PreviousApprovalHas_Deleted_DeclinedProduct;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";

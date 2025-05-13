@@ -6597,6 +6597,7 @@ sap.ui.define([
 			if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
 				const hasOfferDeclinedProduct = offer.Product.results.some(pr => pr.ActiveProduct == 2);
 				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = hasOfferDeclinedProduct;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = hasOfferDeclinedProduct;
 			}
 			var oOfferToSave = that.getService('Offer').getConvertOfferToSave(oOfferSaveInfo);
 
@@ -7130,7 +7131,8 @@ sap.ui.define([
 						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
 							promises.push(that.saveOfferPreviousApprovalInfo({
 								PreviousApprovalHasAddedProduct: offer.PreviousApprovalHasAddedProduct,
-								PreviousApprovalHasDeletedProduct: true
+								PreviousApprovalHasDeletedProduct: true,
+								PreviousApprovalHas_Deleted_DeclinedProduct: true,
 							}));
 						}
 						
