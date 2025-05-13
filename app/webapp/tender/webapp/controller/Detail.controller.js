@@ -4019,7 +4019,8 @@ sap.ui.define([
 				if (tenderCountryRegion === "MEA") {
 					Services.saveOfferPreviousApprovalInfo({
 						PreviousApprovalHasAddedProduct: false,
-						PreviousApprovalHasDeletedProduct: false
+						PreviousApprovalHasDeletedProduct: false,
+						PreviousApprovalHasDeclinedProduct: false
 					});
 	
 					oOffer.Product.results.forEach(pr => Services.saveOfferProductPreviousApprovalInfo({IsProductAddedForPreviousApproval: false}, pr.ProductCode));
@@ -6829,6 +6830,9 @@ sap.ui.define([
 				oOfferSaveInfo.Comment = oOffer.Comment;
 				oOfferSaveInfo.Custom_String_1 = oOffer.Custom_String_1;
 				oOfferSaveInfo.Custom_Integer_1 = oOffer.Custom_Integer_1;
+				oOfferSaveInfo.PreviousApprovalHasAddedProduct = oOffer.PreviousApprovalHasAddedProduct;
+				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = oOffer.PreviousApprovalHasAddedProduct;
+				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = oOffer.PreviousApprovalHasDeclinedProduct;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
