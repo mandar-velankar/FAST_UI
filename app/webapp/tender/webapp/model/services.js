@@ -6588,6 +6588,16 @@ sap.ui.define([
 
 			//get offer to be saved
 			var oOfferSaveInfo = this.getOfferSaveInfo();
+
+			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
+			const { STATUS: offerStatus } = await that.checkOfferStatus();
+
+			// needed to revert status back from approved to created when user declines product of the approved offer
+			if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+				const hasOfferDeclinedProduct = offer.Product.results.some(pr => pr.ActiveProduct == 2);
+				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = hasOfferDeclinedProduct;
+			}
 			var oOfferToSave = that.getService('Offer').getConvertOfferToSave(oOfferSaveInfo);
 
 			//Check if offer button is pressed: reviewed or continued new offer button (or clone button pressed)
@@ -7024,7 +7034,8 @@ sap.ui.define([
 
 							promises.push(that.saveOfferPreviousApprovalInfo({
 								PreviousApprovalHasAddedProduct: true,
-								PreviousApprovalHasDeletedProduct: offer.PreviousApprovalHasDeletedProduct
+								PreviousApprovalHasDeletedProduct: offer.PreviousApprovalHasDeletedProduct,
+								PreviousApprovalHasDeclinedProduct: offer.PreviousApprovalHasDeclinedProduct,
 							}));
 						}
 

@@ -179,6 +179,7 @@ sap.ui.define([
 			oOfferToSave.Custom_Integer_1 = oOfferSaveInfo.Custom_Integer_1
 			oOfferToSave.PreviousApprovalHasAddedProduct = oOfferSaveInfo.PreviousApprovalHasAddedProduct;
 			oOfferToSave.PreviousApprovalHasDeletedProduct = oOfferSaveInfo.PreviousApprovalHasAddedProduct;
+			oOfferToSave.PreviousApprovalHasDeclinedProduct = oOfferSaveInfo.PreviousApprovalHasDeclinedProduct;
 			return oOfferToSave;
 
 		},
