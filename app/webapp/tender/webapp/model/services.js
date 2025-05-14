@@ -6916,19 +6916,16 @@ sap.ui.define([
 
 		getOfferPreviousApprovalStatus: function () {
 			var that = this;
-			const offerId = that.getSelectedOfferID();
-			if (!offerId) return;
 
 			var oModel = that.getDefaultModel();
 
-			var sPath = oModel.createKey("/OfferLatestApprovalStatusView", {
-				OfferID: that.getSelectedOfferID()
-			});
 			return new Promise((resolve, reject) => {
-				oModel.read(sPath, {
-					success: function (oData, oResponse) {
-						//let the callback be triggered
-						resolve(oData);
+				oModel.read("/OfferLatestApprovalStatusView", {
+					filters: [
+						new Filter("OfferID", "EQ", that.getSelectedOfferID())
+					],
+					success: function (res) {
+						resolve(res?.results[0])
 					},
 					error: function (oError) {
 	
