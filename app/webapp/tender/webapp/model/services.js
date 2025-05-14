@@ -6591,10 +6591,10 @@ sap.ui.define([
 
 			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
-			const { STATUS: offerStatus } = await that.checkOfferStatus();
+			const previousApprovalStatus = await that.getOfferPreviousApprovalStatus();
 
 			// needed to revert status back from approved to created when user declines product of the approved offer
-			if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+			if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 				const hasOfferDeclinedProduct = offer.Product.results.some(pr => pr.ActiveProduct == 2);
 				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = hasOfferDeclinedProduct;
 				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = hasOfferDeclinedProduct;
@@ -6914,6 +6914,33 @@ sap.ui.define([
 
 		},
 
+		getOfferPreviousApprovalStatus: function () {
+			var that = this;
+			const offerId = that.getSelectedOfferID();
+			if (!offerId) return;
+
+			var oModel = that.getDefaultModel();
+
+			var sPath = oModel.createKey("/OfferLatestApprovalStatusView", {
+				OfferID: that.getSelectedOfferID()
+			});
+			return new Promise((resolve, reject) => {
+				oModel.read(sPath, {
+					success: function (oData, oResponse) {
+						//let the callback be triggered
+						resolve(oData);
+					},
+					error: function (oError) {
+	
+						//let the callback be triggered
+						reject(oError);
+	
+					}
+				});
+			})
+
+		},
+
 		saveOfferProductPreviousApprovalInfo: function (data, productCode) {
 
 			//that is this
@@ -6979,7 +7006,7 @@ sap.ui.define([
 
 			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
-			const { STATUS: offerStatus } = await that.checkOfferStatus();
+			const previousApprovalStatus = await that.getOfferPreviousApprovalStatus();
 
 			//saving all products, not only the newly added or removed whitch are already in getProductsSaveInfo
 			that.addAlreadyExistingProductsToSave();
@@ -7029,7 +7056,7 @@ sap.ui.define([
 						oProductToSave.MEAApprovalUpdatedFields_FOC = iApprovals_sent;
 
 						// MEA specific logic which is used to revert back offer status from approved to created when new product is being added
-						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+						if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 
 							oProductToSave.IsProductAddedForPreviousApproval = true;
 
@@ -7073,7 +7100,13 @@ sap.ui.define([
 								oOriginalProductInfo._NewProductInfo.MEAApprovalUpdatedFields_UOM = that.checkMEAApprovalSupplyPaymentFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo).UOM;
 								oOriginalProductInfo._NewProductInfo.MEAApprovalUpdatedFields_FOC = that.checkMEAApprovalSupplyPaymentFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo).FOC;
 
+								if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
+
+									oProductToSave.IsProductAddedForPreviousApproval = false;
+								}
 							}
+
+							
 
 							//Create Product (push pending to promises as well)
 							return that.getService('Product').updateProduct(oProductToSave, sOperation)
@@ -7128,7 +7161,7 @@ sap.ui.define([
 						}
 
 						// MEA specific logic which is used to revert back offer status from approved to created when product deleted
-						if (tenderCountryRegion === "MEA" && offerStatus === "Offer Approved") {
+						if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 							promises.push(that.saveOfferPreviousApprovalInfo({
 								PreviousApprovalHasAddedProduct: offer.PreviousApprovalHasAddedProduct,
 								PreviousApprovalHasDeletedProduct: true,
