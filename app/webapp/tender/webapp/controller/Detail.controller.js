@@ -4021,6 +4021,7 @@ sap.ui.define([
 						PreviousApprovalHasAddedProduct: false,
 						PreviousApprovalHasDeletedProduct: false,
 						PreviousApprovalHasDeclinedProduct: false,
+						PreviousApprovalHas_Deleted_DeclinedProduct: false
 					});
 	
 					// oOffer.Product.results.forEach(pr => Services.saveOfferProductPreviousApprovalInfo({IsProductAddedForPreviousApproval: false}, pr.ProductCode));
@@ -8282,7 +8283,26 @@ sap.ui.define([
 				//screen is updated
 
 			});
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			if (tenderCountryRegion === "MEA") {
+				const actions = {
+					_idOfferPrice: "PRICE_DEDUCTIONS_UPDATED",
+					_idFocAbsPct: "VOLUME_UOM_FOC_UPDATED",
+					_idFoc: "VOLUME_UOM_FOC_UPDATED",
+					_idDeduction: "PRICE_DEDUCTIONS_UPDATED"
+				};
+				const sourceId = oEvent.getSource().getId();
 
+				let matchedKey;
+				for (const key in actions) {
+					if (sourceId.includes(key)) {
+						matchedKey = key;
+						break;
+					}
+				}
+
+				this.onChangeMEAPriceFocValues(actions[matchedKey]);
+			}
 			//price is changed
 			//Financial.setPricingChanged(true);               
 		},
@@ -8662,15 +8682,30 @@ sap.ui.define([
 										//Error during save
 										Services.showErrorMessage(oError, "Background saving for approvals sent field");
 									});
-									Services.saveOfferProductMEAApprovalUpdatedFields({
-										MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
-										MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
-										MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions
-									}, oProduct.ProductCode).then(() => {
-										//refresh master data
-										const oTendersMasterTable = Services.getTendersMasterTable();
-										oTendersMasterTable && oTendersMasterTable.getBinding("items").refresh();
-									})
+
+									const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+
+									if (tenderCountryRegion === "MEA") {
+										const productPath = Services.getSelectedProductPath();
+										const product = oDefaultModel.getProperty(productPath);
+										const MEAApprovalLatestUpdatedProductPriceField = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`) || product.MEAApprovalLatestUpdatedField;
+										const PreviousApprovalHas_Deleted_DeclinedProduct = Services.getFastAppDataModel().getProperty(`/PreviousApprovalHas_Deleted_DeclinedProduct`) || false;
+
+										Services.saveOfferProductMEAApprovalUpdatedFields({
+											MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
+											MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
+											MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions,
+											MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField
+										}, oProduct.ProductCode).then(() => {
+											//refresh master data
+											const oTendersMasterTable = Services.getTendersMasterTable();
+											oTendersMasterTable && oTendersMasterTable.getBinding("items").refresh();
+										})
+
+										Services.saveOfferPreviousApprovalInfo({
+											PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
+										});
+									}
 								});
 							});
 
@@ -12032,7 +12067,7 @@ sap.ui.define([
 			//get cells from same row as oOutcomeDrop
 			var aCells = oDecline.getParent().getCells();
 			if (sDecline === "1") {
-				aCells[14].setValue("");
+				aCells[16].setValue("");
 			}
 		},
 	//EHQUT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
@@ -12954,6 +12989,41 @@ sap.ui.define([
 		},
 		onCancelNotificationMailForTH: function () {
 			this.byId("SendNotificationMailDialog").destroy();
+		},
+
+		onChangeMEASupplyPaymentValues: function (event, action) {
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const Action = action;
+			const source = event?.getSource();
+			const offerId = Services.getSelectedOfferID();
+			if (!source) return
+			const path = source.getBindingContext("fastAppData").getPath();
+			if (tenderCountryRegion === "MEA") {
+				offerId && Services.getOfferPreviousApprovalStatus().then((data) => {
+					if (data && data.approvedStatus === 2) {
+						Services.getFastAppDataModel().setProperty(`${path}/MEAApprovalLatestUpdatedField`, Action);
+						// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
+					}
+				});
+			}
+		},
+
+		onChangeMEAPriceFocValues: async function (action) {
+			const oDefaultModel = Services.getDefaultModel();
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+
+			if (tenderCountryRegion === "MEA") {
+				const offerId = Services.getSelectedOfferID();
+				const previousApprovalStatus = offerId && await Services.getOfferPreviousApprovalStatus();
+				if (previousApprovalStatus && previousApprovalStatus.approvedStatus === 2) {
+					const productPath = Services.getSelectedProductPath();
+					const product = oDefaultModel.getProperty(productPath);
+					const loadedProduct = product && await Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID)
+					if (!loadedProduct.IsProductAddedForPreviousApproval) {
+						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, action);
+					}
+				}
+			}
 		},
 	});
 });
