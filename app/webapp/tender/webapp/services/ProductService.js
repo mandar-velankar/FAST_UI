@@ -285,6 +285,7 @@ sap.ui.define([
 			oProductToSave.MEAApprovalUpdatedFields_Volume = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.Volume ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.Volume) : 0;
 			oProductToSave.MEAApprovalUpdatedFields_UOM = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.UOM ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.UOM) : 0;
 			oProductToSave.MEAApprovalUpdatedFields_FOC = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.FOC ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.FOC) : 0;
+			oProductToSave.MEAApprovalLatestUpdatedField = oProductSaveInfo.MEAApprovalLatestUpdatedField;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;
