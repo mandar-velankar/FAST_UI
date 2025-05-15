@@ -6623,7 +6623,7 @@ sap.ui.define([
 			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
 			const offerId = that.getSelectedOfferID();
 			const previousApprovalStatus = offerId && await that.getOfferPreviousApprovalStatus();
-
+			that.getFastAppDataModel().setProperty("/PreviousApprovalStatus", previousApprovalStatus);
 			// needed to revert status back from approved to created when user declines product of the approved offer
 			if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 				const hasOfferDeclinedProduct = offer.Product.results.some(pr => pr.ActiveProduct == 2);
@@ -7010,7 +7010,7 @@ sap.ui.define([
 		},
 
 		//add All products as a batch to the database
-		saveProductInfo: async function () {
+		saveProductInfo: function () {
 
 			//lets work with callbacks:
 			var oDeferred = $.Deferred();
@@ -7028,8 +7028,7 @@ sap.ui.define([
 
 			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
-			const offerId = that.getSelectedOfferID();
-			const previousApprovalStatus = offerId && await that.getOfferPreviousApprovalStatus();
+			const previousApprovalStatus = that.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
 
 			//saving all products, not only the newly added or removed whitch are already in getProductsSaveInfo
 			that.addAlreadyExistingProductsToSave();
