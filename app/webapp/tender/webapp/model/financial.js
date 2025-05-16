@@ -163,6 +163,26 @@ sap.ui.define([
 					}
 					return MEAApprovalUpdatedFields;
 				},
+
+				checkMEAProductPriceFOCUpdate: function (oOriginalPrices, oNewPrices, oProduct) {
+					let result = oProduct.hasUpdatedSupplyPaymentPriceValues;
+					if (
+						oOriginalPrices.FOCType === oNewPrices.FOCType
+						&& oOriginalPrices.FOC_ABS_PCT === oNewPrices.FOC_ABS_PCT
+						&& this.floatComparison(oOriginalPrices.FOC, oNewPrices.FOC)
+						&& this.floatComparison(oOriginalPrices.FOCProduct_Bundled_1, oNewPrices.FOCProduct_Bundled_1)
+						&& oOriginalPrices.FOC_ABS_PCT_Bundled_1 === oNewPrices.FOC_ABS_PCT_Bundled_1
+						&& Number(oOriginalPrices.FOC_Bundled_1) === Number(oNewPrices.FOC_Bundled_1)
+						&& oNewPrices.OfferPrice >= oOriginalPrices.OfferPrice
+						&& Number(oOriginalPrices.Deductions) === Number(oNewPrices.Deductions)
+					) {
+						result = false;
+					} else {
+						result = true;
+					}
+
+					return result;
+				},
 				
 				//check if all product prices are set for offer
 				checkAllProductPricesSet: function (oOffer){
