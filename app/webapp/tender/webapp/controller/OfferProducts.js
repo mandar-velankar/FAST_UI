@@ -1087,6 +1087,8 @@ sap.ui.define([
 			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL' ? await that.getStandardDiscount(sCountryCode, sChannelName, sProductPackID, sDistributorID, sBrandID) : "";
 			let iAdditionalDiscount = (oProduct && oProduct.Price && oProduct.Price.AdditionalDiscount) || 0;
 
+			const previousApprovalStatus = sOfferID && await Services.getOfferPreviousApprovalStatus();
+
 			//selected offer currency on screen
 			var offerCurrency = oDetailController.byId("idCurrency").getSelectedKey();
 
@@ -1413,7 +1415,8 @@ sap.ui.define([
 
 					// Only for MEA region saving copy of origibal prices to show correct approval types
 					const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
-					if (tenderCountryRegion === "MEA") {
+					
+					if (tenderCountryRegion === "MEA" && previousApprovalStatus && previousApprovalStatus.approvedStatus === 2) {
 						const SelectedProductPriceCopy = Services.getFastAppDataModel().getProperty(`/SelectedProductPriceCopy`) || [];
 					
 						if (!SelectedProductPriceCopy.find(el => el.OfferID === sOfferID && el.ProductCode === sProductCode)) {

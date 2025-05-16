@@ -6008,7 +6008,7 @@ sap.ui.define([
 		checkMEAProductPriceFieldUpdate: function (oOriginalProductInfo, oNewProductInfo, originalProductToSave) {
 			const originalProductPrices = this.getFastAppDataModel().getProperty("/SelectedProductPriceCopy");
 			const originalProductPrice = originalProductPrices?.find(el => el.OfferID === oOriginalProductInfo.OfferID && el.ProductCode === oOriginalProductInfo.ProductCode);
-			let result = oNewProductInfo.MEAApprovalLatestUpdatedField;
+			let result = oNewProductInfo.hasUpdatedSupplyPaymentPriceValues; 
 			if (
 				oOriginalProductInfo.RequestedVolume === oNewProductInfo.RequestedVolume 
 				&& oOriginalProductInfo.UnitPerPack === oNewProductInfo.UnitPerPack
@@ -6024,12 +6024,14 @@ sap.ui.define([
 					&& Financial.floatComparison(originalProductPrice.foc, originalProductToSave.Price.FOC)
 					&& Financial.floatComparison(originalProductPrice.focProduct_bund1, originalProductToSave.Price.FOCProduct_Bundled_1)
 					&& originalProductPrice.focAbsPct_bund1 === originalProductToSave.Price.FOC_ABS_PCT_Bundled_1
-					&& Number(originalProductPrice.foc_bund1) === Number(originalProductToSave.Price.FOC_Bundled_1))
+					&& Number(originalProductPrice.foc_bund1) === Number(originalProductToSave.Price.FOC_Bundled_1)
 					&& originalProductToSave.Price.OfferPrice >= originalProductPrice.offerPrice 
-					&& Number(originalProductPrice.deductions) === Number(originalProductToSave.Price.Deductions)
+					&& Number(originalProductPrice.deductions) === Number(originalProductToSave.Price.Deductions))
 				)
 			) {
-				result = "";
+				result = false;
+			}else {
+				result = true;
 			}
 
 			return result;
@@ -7082,7 +7084,7 @@ sap.ui.define([
 						if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 
 							oProductToSave.IsProductAddedForPreviousApproval = true;
-							oProductToSave.MEAApprovalLatestUpdatedField = "IS_NEW_PRODUCT";
+							// oProductToSave.MEAApprovalLatestUpdatedField = "IS_NEW_PRODUCT";
 
 							promises.push(that.saveOfferPreviousApprovalInfo({
 								PreviousApprovalHasAddedProduct: true,
@@ -7127,8 +7129,13 @@ sap.ui.define([
 
 								if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 
-									oProductToSave.IsProductAddedForPreviousApproval = false;
-									oProductToSave.MEAApprovalLatestUpdatedField = that.checkMEAProductPriceFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo, originalProductToSave);
+									// If new add product is not approved yet don't mark it as updated even if user updates supply fields
+									if (!oOriginalProductInfo._NewProductInfo.IsProductAddedForPreviousApproval) {
+										oProductToSave.MEAApprovalLatestUpdatedField = oOriginalProductInfo._NewProductInfo.MEAApprovalLatestUpdatedField;
+										oProductToSave.hasUpdatedSupplyPaymentPriceValues = that.checkMEAProductPriceFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo, originalProductToSave);
+									}
+
+									that.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, "");
 								}
 							}
 

@@ -3339,6 +3339,8 @@ sap.ui.define([
 					that.getView().setModel(oFastAppDataModel, "fastAppData");
 					Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false)
 					Services.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, "");
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, "")
 				});
 
 			}
@@ -4024,8 +4026,21 @@ sap.ui.define([
 						PreviousApprovalHasDeclinedProduct: false,
 						PreviousApprovalHas_Deleted_DeclinedProduct: false
 					});
-	
-					// oOffer.Product.results.forEach(pr => Services.saveOfferProductPreviousApprovalInfo({IsProductAddedForPreviousApproval: false}, pr.ProductCode));
+					
+					// reseting following fields to apply new approvals after user update supply fields
+					
+					oOffer.Product.results.forEach(product => {
+						Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID).then(lpr => {
+							Services.saveOfferProductPreviousApprovalInfo({
+								IsProductAddedForPreviousApproval: false,
+								MEAApprovalLatestUpdatedField: "",
+								MEAApprovalLatestUpdatedFieldPreviousState: lpr.MEAApprovalLatestUpdatedField,
+								hasUpdatedSupplyPaymentPriceValues: false,
+							}, 
+							lpr.ProductCode
+						)
+						})
+					});
 				} 
 			});
 
@@ -8581,6 +8596,7 @@ sap.ui.define([
 						let MEAApprovalUpdatedFields_FOC = 0;
 						let MEAApprovalUpdatedFields_Price = 0;
 						let MEAApprovalUpdatedFields_Deductions = 0;
+						let hasUpdatedSupplyPaymentPriceValues = false;
 
 						//if oOriginalPrices = false, they were not found, and we are creating new
 						if (oOriginalPrices !== false) {
@@ -8590,6 +8606,7 @@ sap.ui.define([
 							MEAApprovalUpdatedFields_FOC = Financial.checkFOCUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
 							MEAApprovalUpdatedFields_Price = checkPriceDeductionsUpdate.Price;
 							MEAApprovalUpdatedFields_Deductions = checkPriceDeductionsUpdate.Deductions;
+							hasUpdatedSupplyPaymentPriceValues = Financial.checkMEAProductPriceFOCUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
 						}
 
 						if (pricePath !== null) {
@@ -8691,21 +8708,25 @@ sap.ui.define([
 										const product = oDefaultModel.getProperty(productPath);
 										const MEAApprovalLatestUpdatedProductPriceField = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`) || product.MEAApprovalLatestUpdatedField;
 										const PreviousApprovalHas_Deleted_DeclinedProduct = Services.getFastAppDataModel().getProperty(`/PreviousApprovalHas_Deleted_DeclinedProduct`) || false;
-
-										Services.saveOfferProductMEAApprovalUpdatedFields({
-											MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
-											MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
-											MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions,
-											MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField
-										}, oProduct.ProductCode).then(() => {
+										const products =  Services.getFastAppDataModel().getProperty("/EditOffer/Product/results");
+										Promise.all([
+											...products.map(pr => Services.saveOfferProductMEAApprovalUpdatedFields({
+													MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
+													MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
+													MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions,
+													MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField,
+													hasUpdatedSupplyPaymentPriceValues: hasUpdatedSupplyPaymentPriceValues
+												}, 
+												pr.ProductCode)), 
+											Services.saveOfferPreviousApprovalInfo({
+												PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
+											})]
+										).then(() => {
+											Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, "");
 											//refresh master data
 											const oTendersMasterTable = Services.getTendersMasterTable();
 											oTendersMasterTable && oTendersMasterTable.getBinding("items").refresh();
 										})
-
-										Services.saveOfferPreviousApprovalInfo({
-											PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
-										});
 									}
 								});
 							});
@@ -12998,10 +13019,19 @@ sap.ui.define([
 			const offerId = Services.getSelectedOfferID();
 			if (!source) return
 			const path = source.getBindingContext("fastAppData").getPath();
+			const product = source.getBindingContext("fastAppData").getObject();
 			if (tenderCountryRegion === "MEA") {
 				offerId && Services.getOfferPreviousApprovalStatus().then((data) => {
 					if (data && data.approvedStatus === 2) {
-						Services.getFastAppDataModel().setProperty(`${path}/MEAApprovalLatestUpdatedField`, Action);
+						Services.loadProduct(offerId, 1, product.ProductCode, product, product.LotID).then(pr => {
+							if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`)) {
+								Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, pr.MEAApprovalLatestUpdatedField);
+							}
+							const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`);
+							const newActions = [Action, updates].filter(Boolean).join(',');
+							Services.getFastAppDataModel().setProperty(`${path}/MEAApprovalLatestUpdatedField`, newActions);
+							Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, newActions);
+						});
 						// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
 					}
 				});
@@ -13018,9 +13048,13 @@ sap.ui.define([
 				if (previousApprovalStatus && previousApprovalStatus.approvedStatus === 2) {
 					const productPath = Services.getSelectedProductPath();
 					const product = oDefaultModel.getProperty(productPath);
-					const loadedProduct = product && await Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID)
+					const loadedProduct = product && await Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID);
+					if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`)) {
+						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, loadedProduct?.MEAApprovalLatestUpdatedField);
+					}
 					if (!loadedProduct.IsProductAddedForPreviousApproval) {
-						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, action);
+						const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`);
+						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, [action, updates].filter(Boolean).join(','));
 					}
 				}
 			}
