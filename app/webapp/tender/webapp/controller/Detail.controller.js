@@ -2708,7 +2708,7 @@ sap.ui.define([
 								oSelectCompanyStamp.setEnabled(false);
 							}
 							else{
-								ooSelectCompanyStamp.setEnabled(true);
+								oSelectCompanyStamp.setEnabled(true);
 							}
 						}
 						let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
