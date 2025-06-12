@@ -8710,14 +8710,14 @@ sap.ui.define([
 										const PreviousApprovalHas_Deleted_DeclinedProduct = Services.getFastAppDataModel().getProperty(`/PreviousApprovalHas_Deleted_DeclinedProduct`) || false;
 										const products =  Services.getFastAppDataModel().getProperty("/EditOffer/Product/results");
 										Promise.all([
-											...products.map(pr => Services.saveOfferProductMEAApprovalUpdatedFields({
-													MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
-													MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
-													MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions,
-													MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField,
-													hasUpdatedSupplyPaymentPriceValues: hasUpdatedSupplyPaymentPriceValues
-												}, 
-												pr.ProductCode)), 
+											Services.saveOfferProductMEAApprovalUpdatedFields({
+												MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
+												MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
+												MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions,
+												MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField,
+												hasUpdatedSupplyPaymentPriceValues: hasUpdatedSupplyPaymentPriceValues
+											}, 
+											pr.ProductCode),
 											Services.saveOfferPreviousApprovalInfo({
 												PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
 											})]
