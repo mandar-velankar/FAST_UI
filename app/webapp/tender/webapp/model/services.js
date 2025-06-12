@@ -7084,7 +7084,7 @@ sap.ui.define([
 						if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 
 							oProductToSave.IsProductAddedForPreviousApproval = true;
-							// oProductToSave.MEAApprovalLatestUpdatedField = "IS_NEW_PRODUCT";
+							oProductToSave.MEAApprovalLatestUpdatedField = "IS_NEW_PRODUCT";
 
 							promises.push(that.saveOfferPreviousApprovalInfo({
 								PreviousApprovalHasAddedProduct: true,
