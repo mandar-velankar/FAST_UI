@@ -2708,7 +2708,7 @@ sap.ui.define([
 								oSelectCompanyStamp.setEnabled(false);
 							}
 							else{
-								ooSelectCompanyStamp.setEnabled(true);
+								oSelectCompanyStamp.setEnabled(true);
 							}
 						}
 						let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
@@ -3338,6 +3338,8 @@ sap.ui.define([
 					that.getView().setModel(oFastAppDataModel, "fastAppData");
 					Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false)
 					Services.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, "");
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, "")
 				});
 
 			}
@@ -3995,6 +3997,7 @@ sap.ui.define([
 			$.when(Services.saveApprovals(sApprovalStatus, sOfferStatus)).done(function (oDataTenderOffer) {
 
 				var sOfferID = Services.getSelectedOfferID();
+				const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 
 				//when saving is finished
 				$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
@@ -4007,11 +4010,37 @@ sap.ui.define([
 				//Description: https://trello.com/c/np1g69g7
 				var oOffer = Services.getLoadedOffer(sOfferID);
 				var iApprovals_sent = oOffer.APPROVALS_SENT + 1;
-				Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+				Services.saveOfferApprovalSent(iApprovals_sent).then((result) => {
+					const offer = result && result.data;
+					Services.getFastAppDataModel().setProperty("/EditOffer/APPROVALS_SENT", offer.APPROVALS_SENT);
+				}).catch(function (oError) {
 					//Error during save
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
-
+				
+				if (tenderCountryRegion === "MEA") {
+					Services.saveOfferPreviousApprovalInfo({
+						PreviousApprovalHasAddedProduct: false,
+						PreviousApprovalHasDeletedProduct: false,
+						PreviousApprovalHasDeclinedProduct: false,
+						PreviousApprovalHas_Deleted_DeclinedProduct: false
+					});
+					
+					// reseting following fields to apply new approvals after user update supply fields
+					
+					oOffer.Product.results.forEach(product => {
+						Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID).then(lpr => {
+							Services.saveOfferProductPreviousApprovalInfo({
+								IsProductAddedForPreviousApproval: false,
+								MEAApprovalLatestUpdatedField: "",
+								MEAApprovalLatestUpdatedFieldPreviousState: lpr.MEAApprovalLatestUpdatedField,
+								hasUpdatedSupplyPaymentPriceValues: false,
+							}, 
+							lpr.ProductCode
+						)
+						})
+					});
+				} 
 			});
 
 		},
@@ -5398,7 +5427,13 @@ sap.ui.define([
 				"OfferID": offer.OfferID,
 				"DistributorID" : offer.DistributorID,
 				"SUPPLY_UPDATE": 0,
-				"PAYMENT_UPDATE": 0
+				"PAYMENT_UPDATE": 0,
+				"VOLUME_UOM_UPDATE": 0,
+				"MEAApprovalUpdatedFields": {
+					Volume: 0,
+					UOM: 0,
+					FOC: 0,
+				}
 			}
 
 			//get values to check product validity
@@ -6811,6 +6846,10 @@ sap.ui.define([
 				oOfferSaveInfo.Comment = oOffer.Comment;
 				oOfferSaveInfo.Custom_String_1 = oOffer.Custom_String_1;
 				oOfferSaveInfo.Custom_Integer_1 = oOffer.Custom_Integer_1;
+				oOfferSaveInfo.PreviousApprovalHasAddedProduct = oOffer.PreviousApprovalHasAddedProduct;
+				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = oOffer.PreviousApprovalHasAddedProduct;
+				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = oOffer.PreviousApprovalHasDeclinedProduct;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = oOffer.PreviousApprovalHas_Deleted_DeclinedProduct;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
@@ -8259,7 +8298,26 @@ sap.ui.define([
 				//screen is updated
 
 			});
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			if (tenderCountryRegion === "MEA") {
+				const actions = {
+					_idOfferPrice: "PRICE_DEDUCTIONS_UPDATED",
+					_idFocAbsPct: "VOLUME_UOM_FOC_UPDATED",
+					_idFoc: "VOLUME_UOM_FOC_UPDATED",
+					_idDeduction: "PRICE_DEDUCTIONS_UPDATED"
+				};
+				const sourceId = oEvent.getSource().getId();
 
+				let matchedKey;
+				for (const key in actions) {
+					if (sourceId.includes(key)) {
+						matchedKey = key;
+						break;
+					}
+				}
+
+				this.onChangeMEAPriceFocValues(actions[matchedKey]);
+			}
 			//price is changed
 			//Financial.setPricingChanged(true);               
 		},
@@ -8534,11 +8592,20 @@ sap.ui.define([
 
 						//convert price to save
 						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
+						let MEAApprovalUpdatedFields_FOC = 0;
+						let MEAApprovalUpdatedFields_Price = 0;
+						let MEAApprovalUpdatedFields_Deductions = 0;
+						let hasUpdatedSupplyPaymentPriceValues = false;
 
 						//if oOriginalPrices = false, they were not found, and we are creating new
 						if (oOriginalPrices !== false) {
+							const checkPriceDeductionsUpdate = Financial.checkPriceDeductionsUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
 							//otherwise they were found and the check results for price update should be used
 							oPriceToSave.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+							MEAApprovalUpdatedFields_FOC = Financial.checkFOCUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
+							MEAApprovalUpdatedFields_Price = checkPriceDeductionsUpdate.Price;
+							MEAApprovalUpdatedFields_Deductions = checkPriceDeductionsUpdate.Deductions;
+							hasUpdatedSupplyPaymentPriceValues = Financial.checkMEAProductPriceFOCUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
 						}
 
 						if (pricePath !== null) {
@@ -8632,6 +8699,34 @@ sap.ui.define([
 										//Error during save
 										Services.showErrorMessage(oError, "Background saving for approvals sent field");
 									});
+
+									const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+
+									if (tenderCountryRegion === "MEA") {
+										const productPath = Services.getSelectedProductPath();
+										const product = oDefaultModel.getProperty(productPath);
+										const MEAApprovalLatestUpdatedProductPriceField = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`) || product.MEAApprovalLatestUpdatedField;
+										const PreviousApprovalHas_Deleted_DeclinedProduct = Services.getFastAppDataModel().getProperty(`/PreviousApprovalHas_Deleted_DeclinedProduct`) || false;
+										const products =  Services.getFastAppDataModel().getProperty("/EditOffer/Product/results");
+										Promise.all([
+											Services.saveOfferProductMEAApprovalUpdatedFields({
+												MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
+												MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
+												MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions,
+												MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField,
+												hasUpdatedSupplyPaymentPriceValues: hasUpdatedSupplyPaymentPriceValues
+											}, 
+											pr.ProductCode),
+											Services.saveOfferPreviousApprovalInfo({
+												PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
+											})]
+										).then(() => {
+											Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, "");
+											//refresh master data
+											const oTendersMasterTable = Services.getTendersMasterTable();
+											oTendersMasterTable && oTendersMasterTable.getBinding("items").refresh();
+										})
+									}
 								});
 							});
 
@@ -11993,7 +12088,7 @@ sap.ui.define([
 			//get cells from same row as oOutcomeDrop
 			var aCells = oDecline.getParent().getCells();
 			if (sDecline === "1") {
-				aCells[14].setValue("");
+				aCells[16].setValue("");
 			}
 		},
 	//EHQUT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
@@ -12915,6 +13010,54 @@ sap.ui.define([
 		},
 		onCancelNotificationMailForTH: function () {
 			this.byId("SendNotificationMailDialog").destroy();
+		},
+
+		onChangeMEASupplyPaymentValues: function (event, action) {
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const Action = action;
+			const source = event?.getSource();
+			const offerId = Services.getSelectedOfferID();
+			if (!source) return
+			const path = source.getBindingContext("fastAppData").getPath();
+			const product = source.getBindingContext("fastAppData").getObject();
+			if (tenderCountryRegion === "MEA") {
+				offerId && Services.getOfferPreviousApprovalStatus().then((data) => {
+					if (data && data.approvedStatus === 2) {
+						Services.loadProduct(offerId, 1, product.ProductCode, product, product.LotID).then(pr => {
+							if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`)) {
+								Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, pr.MEAApprovalLatestUpdatedField);
+							}
+							const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`);
+							const newActions = [Action, updates].filter(Boolean).join(',');
+							Services.getFastAppDataModel().setProperty(`${path}/MEAApprovalLatestUpdatedField`, newActions);
+							Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, newActions);
+						});
+						// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
+					}
+				});
+			}
+		},
+
+		onChangeMEAPriceFocValues: async function (action) {
+			const oDefaultModel = Services.getDefaultModel();
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+
+			if (tenderCountryRegion === "MEA") {
+				const offerId = Services.getSelectedOfferID();
+				const previousApprovalStatus = offerId && await Services.getOfferPreviousApprovalStatus();
+				if (previousApprovalStatus && previousApprovalStatus.approvedStatus === 2) {
+					const productPath = Services.getSelectedProductPath();
+					const product = oDefaultModel.getProperty(productPath);
+					const loadedProduct = product && await Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID);
+					if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`)) {
+						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, loadedProduct?.MEAApprovalLatestUpdatedField);
+					}
+					if (!loadedProduct.IsProductAddedForPreviousApproval) {
+						const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`);
+						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, [action, updates].filter(Boolean).join(','));
+					}
+				}
+			}
 		},
 	});
 });
