@@ -282,9 +282,12 @@ sap.ui.define([
 			oProductToSave.IbizWorkflowID = oProductSaveInfo.IbizWorkflowID;
 			oProductToSave.WorkflowProductID = oProductSaveInfo.WorkflowProductID;
 			oProductToSave.Custom_Integer_1 = oProductSaveInfo.Custom_Integer_1;
-			oProductToSave.MEAApprovalUpdatedFields_Volume = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.Volume ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.Volume) : null;
-			oProductToSave.MEAApprovalUpdatedFields_UOM = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.UOM ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.UOM) : null;
-			oProductToSave.MEAApprovalUpdatedFields_FOC = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.FOC ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.FOC) : null;
+			oProductToSave.MEAApprovalUpdatedFields_Volume = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.Volume ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.Volume) : 0;
+			oProductToSave.MEAApprovalUpdatedFields_UOM = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.UOM ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.UOM) : 0;
+			oProductToSave.MEAApprovalUpdatedFields_FOC = oProductSaveInfo.MEAApprovalUpdatedFields && oProductSaveInfo.MEAApprovalUpdatedFields.FOC ? Number(oProductSaveInfo.MEAApprovalUpdatedFields.FOC) : 0;
+			oProductToSave.MEAApprovalLatestUpdatedField = oProductSaveInfo.MEAApprovalLatestUpdatedField;
+			oProductToSave.MEAApprovalLatestUpdatedFieldPreviousState = oProductSaveInfo.MEAApprovalLatestUpdatedFieldPreviousState;
+			oProductToSave.hasUpdatedSupplyPaymentPriceValues = oProductSaveInfo.hasUpdatedSupplyPaymentPriceValues;
 			//oProductToSave.SKU = oProductSaveInfo.SKU;
 
 			return oProductToSave;
