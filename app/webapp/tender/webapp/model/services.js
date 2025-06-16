@@ -7182,6 +7182,10 @@ sap.ui.define([
 							throw new Error(oError);
 						}));
 
+						const originalOffer = that.getFastAppDataModel().getProperty("/EditOffer");
+						const deletedProductNucleus = originalOffer.PreviousApprovalHas_Deleted_Products_PTL.split(",");
+						deletedProductNucleus.push(oProductSaveInfo.SKU.Nucleus);
+
 						// If product has price remove it
 						const oProductPrice = oProductSaveInfo.Price;
 						if (oProductPrice) {
@@ -7199,6 +7203,7 @@ sap.ui.define([
 								PreviousApprovalHasAddedProduct: offer.PreviousApprovalHasAddedProduct,
 								PreviousApprovalHasDeletedProduct: true,
 								PreviousApprovalHas_Deleted_DeclinedProduct: true,
+								PreviousApprovalHas_Deleted_Products_PTL: deletedProductNucleus.join(",")
 							}));
 						}
 						
