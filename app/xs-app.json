@@ -20,6 +20,20 @@
       "csrfProtection": true
     },
     {
+      "source": "/app/ccma/odata/(.*)$",
+      "target": "/odata/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-ccma-api",
+      "csrfProtection": true
+    },
+    {
+      "source": "/ccma/odata/(.*)$",
+      "target": "/odata/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-ccma-api",
+      "csrfProtection": true
+    },
+    {
       "source": "/v4/(.*)$",
       "target": "$1",
       "authenticationType": "xsuaa",
