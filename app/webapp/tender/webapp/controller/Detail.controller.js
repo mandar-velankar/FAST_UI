@@ -4023,7 +4023,8 @@ sap.ui.define([
 						PreviousApprovalHasAddedProduct: false,
 						PreviousApprovalHasDeletedProduct: false,
 						PreviousApprovalHasDeclinedProduct: false,
-						PreviousApprovalHas_Deleted_DeclinedProduct: false
+						PreviousApprovalHas_Deleted_DeclinedProduct: false,
+						PreviousApprovalHas_Deleted_Products_PTL: ""
 					});
 					
 					// reseting following fields to apply new approvals after user update supply fields
@@ -8716,7 +8717,7 @@ sap.ui.define([
 												MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField,
 												hasUpdatedSupplyPaymentPriceValues: hasUpdatedSupplyPaymentPriceValues
 											}, 
-											pr.ProductCode),
+											product.ProductCode),
 											Services.saveOfferPreviousApprovalInfo({
 												PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
 											})]

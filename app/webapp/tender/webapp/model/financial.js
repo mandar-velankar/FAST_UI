@@ -84,7 +84,7 @@ sap.ui.define([
 				},
 				
 				floatComparison: function(sValueX, sValueY){
-					if( Math.round(parseFloat(Number(sValueX))) * 10000000 === Math.round(parseFloat(Number(sValueY))) * 10000000 ){
+					if( Math.round(parseFloat(Number(sValueX)) * 10000000) === Math.round(parseFloat(Number(sValueY)) * 10000000) ){
 						return true;
 					} else {
 						return false;
