@@ -4019,12 +4019,18 @@ sap.ui.define([
 				});
 				
 				if (tenderCountryRegion === "MEA") {
-					Services.saveOfferPreviousApprovalInfo({
-						PreviousApprovalHasAddedProduct: false,
-						PreviousApprovalHasDeletedProduct: false,
-						PreviousApprovalHasDeclinedProduct: false,
-						PreviousApprovalHas_Deleted_DeclinedProduct: false,
-						PreviousApprovalHas_Deleted_Products_PTL: ""
+					Services.loadOffer(sOfferID).then(data => {
+						Services.saveOfferPreviousApprovalInfo({
+							PreviousApprovalHasAddedProduct: false,
+							PreviousApprovalHasDeletedProduct: false,
+							PreviousApprovalHasDeclinedProduct: false,
+							PreviousApprovalHas_Deleted_DeclinedProduct: false,
+							PreviousApprovalHas_Deleted_Products_PTL: "",
+							ApprovalHasDeletedProduct_Previous_State: data.PreviousApprovalHasDeletedProduct,
+							ApprovalHasDeclinedProduct_Previous_State: data.PreviousApprovalHasDeclinedProduct,
+							ApprovalHas_Deleted_DeclinedProduct_Previous_State: data.PreviousApprovalHas_Deleted_DeclinedProduct,
+							ApprovalHas_Deleted_Products_PTL_Previous_State: data.PreviousApprovalHas_Deleted_Products_PTL || ""
+						});
 					});
 					
 					// reseting following fields to apply new approvals after user update supply fields
