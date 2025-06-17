@@ -7161,7 +7161,7 @@ sap.ui.define([
 
 									// If new add product is not approved yet don't mark it as updated even if user updates supply fields
 									if (!oOriginalProductInfo.IsProductAddedForPreviousApproval) {
-										oProductToSave.MEAApprovalLatestUpdatedField = oOriginalProductInfo.MEAApprovalLatestUpdatedField;
+										oProductToSave.MEAApprovalLatestUpdatedField = oOriginalProductInfo._NewProductInfo.MEAApprovalLatestUpdatedField;
 										oProductToSave.hasUpdatedSupplyPaymentPriceValues = that.checkMEAProductPriceFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo, originalProductToSave);
 									}
 
