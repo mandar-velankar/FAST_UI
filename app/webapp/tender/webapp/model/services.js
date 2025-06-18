@@ -2786,6 +2786,9 @@ sap.ui.define([
 			var oFastDataCalls = that.getDefaultModel();
 
 			oFastDataCalls.read(sPath, {
+				urlParameters: {
+					"$expand": "SKU"
+				},
 				success: function (oData, oResponse) {
 					//TODO temp solution
 					oData._NewProductInfo = oNewProductInfo;
@@ -6648,19 +6651,19 @@ sap.ui.define([
 			//get offer to be saved
 			var oOfferSaveInfo = this.getOfferSaveInfo();
 
-			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
-			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
+			// const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			// const offer = that.getFastAppDataModel().getProperty("/EditOffer");
 			const offerId = that.getSelectedOfferID();
 			const previousApprovalStatus = offerId && await that.getOfferPreviousApprovalStatus();
 			that.getFastAppDataModel().setProperty("/PreviousApprovalStatus", previousApprovalStatus);
-			// needed to revert status back from approved to created when user declines product of the approved offer
-			if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
-				const declinedProducts = offer.Product.results.filter(pr => pr.ActiveProduct == 2);
-				const declinedProductsNucleus = declinedProducts.map(pr => pr.SKU.Nucleus).filter(Boolean).join(",");
-				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = declinedProducts.length > 0;
-				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = declinedProducts.length > 0;
-				oOfferSaveInfo.PreviousApprovalHas_Deleted_Products_PTL = declinedProductsNucleus;
-			}
+			// // needed to revert status back from approved to created when user declines product of the approved offer
+			// if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
+			// 	const declinedProducts = offer.Product.results.filter(pr => pr.ActiveProduct == 2);
+			// 	const declinedProductsNucleus = declinedProducts.map(pr => pr.SKU.Nucleus).filter(Boolean).join(",");
+			// 	oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = declinedProducts.length > 0;
+			// 	oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = declinedProducts.length > 0;
+			// 	oOfferSaveInfo.PreviousApprovalHas_Deleted_Products_PTL = declinedProductsNucleus;
+			// }
 			var oOfferToSave = that.getService('Offer').getConvertOfferToSave(oOfferSaveInfo);
 
 			//Check if offer button is pressed: reviewed or continued new offer button (or clone button pressed)
@@ -7061,6 +7064,8 @@ sap.ui.define([
 			let offer = that.getFastAppDataModel().getProperty("/EditOffer");
 			const previousApprovalStatus = that.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
 
+			that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", offer.PreviousApprovalHas_Deleted_Products_PTL ? offer.PreviousApprovalHas_Deleted_Products_PTL.split(",") : []);
+			
 			that.loadOffer(offer.OfferID).then(data => offer = data);
 			//saving all products, not only the newly added or removed whitch are already in getProductsSaveInfo
 			that.addAlreadyExistingProductsToSave();
@@ -7161,8 +7166,22 @@ sap.ui.define([
 
 									// If new add product is not approved yet don't mark it as updated even if user updates supply fields
 									if (!oOriginalProductInfo.IsProductAddedForPreviousApproval) {
-										oProductToSave.MEAApprovalLatestUpdatedField = oOriginalProductInfo._NewProductInfo.MEAApprovalLatestUpdatedField;
-										oProductToSave.hasUpdatedSupplyPaymentPriceValues = that.checkMEAProductPriceFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo, originalProductToSave);
+										const isProductUpdated = that.checkMEAProductPriceFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo, originalProductToSave);
+
+										oProductToSave.MEAApprovalLatestUpdatedField = isProductUpdated ? oOriginalProductInfo._NewProductInfo.MEAApprovalLatestUpdatedField : oOriginalProductInfo.MEAApprovalLatestUpdatedField;
+										oProductToSave.hasUpdatedSupplyPaymentPriceValues = isProductUpdated
+									}
+
+									if (oProductToSave.ActiveProduct == 2 && oOriginalProductInfo.ActiveProduct == 1) {
+										const deletedProductNucleus = that.getFastAppDataModel().getProperty("/Deleted_Declined_Product_PTL");
+										deletedProductNucleus.push(oOriginalProductInfo.SKU.Nucleus);
+										that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", deletedProductNucleus)
+
+										promises.push(that.saveOfferPreviousApprovalInfo({
+											PreviousApprovalHasDeclinedProduct: true,
+											PreviousApprovalHas_Deleted_DeclinedProduct: true,
+											PreviousApprovalHas_Deleted_Products_PTL: deletedProductNucleus.join(",")
+										}));
 									}
 
 									that.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, "");
@@ -7212,8 +7231,9 @@ sap.ui.define([
 							throw new Error(oError);
 						}));
 
-						const deletedProductNucleus = offer.PreviousApprovalHas_Deleted_Products_PTL ? offer.PreviousApprovalHas_Deleted_Products_PTL.split(",") : [];
+						const deletedProductNucleus = that.getFastAppDataModel().getProperty("/Deleted_Declined_Product_PTL");
 						deletedProductNucleus.push(oProductSaveInfo.SKU.Nucleus);
+						that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", deletedProductNucleus)
 
 						// If product has price remove it
 						const oProductPrice = oProductSaveInfo.Price;
@@ -7413,8 +7433,10 @@ sap.ui.define([
 						that.showErrorMessage(oError, "Background saving for approvals sent field");
 					});
 
-				}).catch(function (oError) {
+					that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", []);
 
+				}).catch(function (oError) {
+					that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", []);
 					//error message
 					that.showErrorMessage(oError, "Saving of product info");
 
