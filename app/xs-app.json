@@ -34,13 +34,6 @@
       "csrfProtection": true
     },
     {
-      "source": "/ccmabasic/odata/(.*)$",
-      "target": "/odata/$1",
-      "authenticationType": "basic",
-      "destination": "fast-ccma-api",
-      "csrfProtection": true
-    },
-    {
       "source": "/v4/(.*)$",
       "target": "$1",
       "authenticationType": "xsuaa",
