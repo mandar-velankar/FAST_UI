@@ -38,7 +38,7 @@
       "target": "/odata/$1",
       "authenticationType": "basic",
       "destination": "fast-ccma-api",
-      "csrfProtection": true
+      "csrfProtection": false
     },
     {
       "source": "/v4/(.*)$",
