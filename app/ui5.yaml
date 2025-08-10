@@ -56,6 +56,12 @@ server:
     afterMiddleware: compression
     configuration:
       paths:
+        - path: /ccma
+          src: ../../F_TNDR_CAG_FAST_CCMA/webapp
+  - name: fiori-tools-servestatic
+    afterMiddleware: compression
+    configuration:
+      paths:
         - path: /whc
           src: ../../F_TNDR_CAG_FAST_WHC/app/whcapp/webapp
   - name: fiori-tools-servestatic

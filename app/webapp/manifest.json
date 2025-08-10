@@ -128,6 +128,12 @@
 				"componentData": {},
 				"lazy": true
 			},
+			"conditioncontractComponent": {
+				"name": "com.bayer.tender.ccma",
+				"settings": {},
+				"componentData": {},
+				"lazy": true
+			},
 			"whcComponent": {
 				"name": "com.bayer.tender.whcapp",
 				"settings": {},
@@ -152,6 +158,7 @@
 			"com.bayer.tender.priceagreements": "./priceagreements",
 			"com.bayer.tender.brazilcontracting": "./brazilcontracting",
 			"com.bayer.tender.statenderapp": "./standardtender",
+			"com.bayer.tender.ccma":"./ccma",
 			"com.bayer.tender.whcapp": "./whc",
 			"com.bayer.tender.claims": "./claims",
 			"FAST_NS0FAST0": "./tender/webapp",
@@ -314,6 +321,14 @@
 					}			
 				},
 				{
+					"name": "conditioncontract",
+					"pattern": "conditioncontract",
+					"target": {
+						"name": "conditioncontract",
+						"prefix": "ccma"
+					}			
+				},
+				{
 					"name": "whc",
 					"pattern": "whc",
 					"target": {
@@ -381,6 +396,10 @@
 				"standardtender": {
 					"type": "Component",
 					"usage": "standardtenderComponent"
+				},
+				"conditioncontract": {
+					"type": "Component",
+					"usage": "conditioncontractComponent"
 				},
 				"whc": {
 					"type": "Component",
