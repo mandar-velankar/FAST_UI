@@ -302,7 +302,8 @@
 										   required="{fastAppData>/permissions/tables/editofferProductId/Requested/required}"/>
 									<t:template>
 										<HBox>
-											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}"/>
+											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
+											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}" change=".onChangeMEASupplyPaymentValues($event, 'VOLUME_UOM_FOC_UPDATED')" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}"/>
 											<Button icon="sap-icon://edit" press="onPressEditRequestedVolume" visible="{= ${fastAppData>/Tender/GroupPurchasing} === 2 ? true : false}"/>
 										</HBox>
 									</t:template>
@@ -314,15 +315,26 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/Unitpack/required}"/>
 									<t:template>
-										<Select selectedKey="{fastAppData>UnitPerPack}">
-											<items>
-												<core:Item text="Unit" key="Unit"/>
-												<core:Item text="Pack" key="Pack"/>
-											</items>
-											<layoutData>
-												<l:GridData span="L6 M6 S6"/>
-											</layoutData>
-										</Select>
+										<HBox>
+											<Select selectedKey="{fastAppData>UnitPerPack}" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}">
+												<items>
+													<core:Item text="Unit" key="Unit"/>
+													<core:Item text="Pack" key="Pack"/>
+												</items>
+												<layoutData>
+													<l:GridData span="L6 M6 S6"/>
+												</layoutData>
+											</Select>
+											<Select selectedKey="{fastAppData>UnitPerPack}" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'VOLUME_UOM_FOC_UPDATED')">
+												<items>
+													<core:Item text="Unit" key="Unit"/>
+													<core:Item text="Pack" key="Pack"/>
+												</items>
+												<layoutData>
+													<l:GridData span="L6 M6 S6"/>
+												</layoutData>
+											</Select>
+										</HBox>
 									</t:template>
 								</t:Column>
 								<t:Column width="300px" visible="{fastAppData>/permissions/tables/editofferProductId/SapNo/visible}">
@@ -451,7 +463,10 @@
 									       wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/FirstShipment/required}"/>
 									<t:template>
-										<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/Country/Region} === 'SEWA' ? false : true }"/>
+										<HBox>
+											<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/Country/Region} === 'SEWA' ? false : true }" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
+											<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/Country/Region} === 'SEWA' ? false : true }" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+										</HBox>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/NoLots/visible}">
@@ -461,7 +476,10 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/NoLots/required}"/>
 									<t:template>
-										<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true"/>
+										<HBox>
+											<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
+											<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+										</HBox>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/visible}">
@@ -471,7 +489,10 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/IntervalBetweenShipments/required}"/>
 									<t:template>
-										<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true"/>
+										<HBox>
+											<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
+											<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+										</HBox>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/PaymentTerms/visible}">
@@ -481,7 +502,10 @@
 										   wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/PaymentTerms/required}"/>
 									<t:template>
-										<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true"/>
+										<HBox>
+											<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
+											<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'CREDIT_MANAGER_APPROVED')"/>
+										</HBox>
 									</t:template>
 								</t:Column>
 								<t:Column width="150px" visible="{fastAppData>/permissions/tables/editofferProductId/INCOTerms/visible}">
@@ -491,7 +515,10 @@
 									       wrapping="true" 
 										   required="{fastAppData>/permissions/tables/editofferProductId/INCOTerms/required}"/>
 									<t:template>
-										<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true"/>
+										<VBox>
+											<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
+											<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+										</VBox>
 									</t:template>
 								</t:Column>
 								<t:Column width="200px" visible="{fastAppData>/permissions/tables/editofferProductId/Decline/visible}">
