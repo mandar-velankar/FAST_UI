@@ -3978,6 +3978,15 @@ sap.ui.define([
 				sState = iValueLength > iMaxLength ? "Warning" : "None";
 
 			oTextArea.setValueState(sState);
+			
+			const fastAppDataModel = Services.getFastAppDataModel();
+			const source = oEvent.getSource();
+			const ctxBindingPath = source.getBindingContext("fastAppData").getPath();
+			const controlBindingPath = source?.getBinding("value")?.getPath();
+
+			if (controlBindingPath && controlBindingPath.toLowerCase().includes('sendercomment')) {
+				fastAppDataModel.setProperty(`${ctxBindingPath}/${controlBindingPath}`, oEvent.getParameter('newValue'));
+			}
 		},
 
 		//send approvals = save to database & change status
