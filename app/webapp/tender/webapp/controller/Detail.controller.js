@@ -3891,19 +3891,19 @@ sap.ui.define([
 											new sap.m.Button({
 												id: "btnSendApproval",
 												text: bundle.getText("SendApprReq"),
-												tap: [that.onSendApprovals, that],
+												press: [that.onSendApprovals, that],
 												enabled: bSendApprovalEnabled
 											}),
 											new sap.m.Button({
 												id: "btnCancelApproval",
 												text: bundle.getText("CancelApprReq"),
-												tap: [that.onCancelApprovals, that],
+												press: [that.onCancelApprovals, that],
 												enabled: bCancelEnabled
 											}),
 											new sap.m.Button("btnCloseApproval", {
 												id: "btnCloseApproval",
 												text: bundle.getText("Close"),
-												tap: [that.onCloseApprovalsDialog, that]
+												press: [that.onCloseApprovalsDialog, that]
 											})
 										],
 										//content with all fields that need to be filled
