@@ -4019,11 +4019,18 @@ sap.ui.define([
 				});
 				
 				if (tenderCountryRegion === "MEA") {
-					Services.saveOfferPreviousApprovalInfo({
-						PreviousApprovalHasAddedProduct: false,
-						PreviousApprovalHasDeletedProduct: false,
-						PreviousApprovalHasDeclinedProduct: false,
-						PreviousApprovalHas_Deleted_DeclinedProduct: false
+					Services.loadOffer(sOfferID).then(data => {
+						Services.saveOfferPreviousApprovalInfo({
+							PreviousApprovalHasAddedProduct: false,
+							PreviousApprovalHasDeletedProduct: false,
+							PreviousApprovalHasDeclinedProduct: false,
+							PreviousApprovalHas_Deleted_DeclinedProduct: false,
+							PreviousApprovalHas_Deleted_Products_PTL: "",
+							ApprovalHasDeletedProduct_Previous_State: data.PreviousApprovalHasDeletedProduct,
+							ApprovalHasDeclinedProduct_Previous_State: data.PreviousApprovalHasDeclinedProduct,
+							ApprovalHas_Deleted_DeclinedProduct_Previous_State: data.PreviousApprovalHas_Deleted_DeclinedProduct,
+							ApprovalHas_Deleted_Products_PTL_Previous_State: data.PreviousApprovalHas_Deleted_Products_PTL || ""
+						});
 					});
 					
 					// reseting following fields to apply new approvals after user update supply fields
@@ -6847,7 +6854,7 @@ sap.ui.define([
 				oOfferSaveInfo.Custom_String_1 = oOffer.Custom_String_1;
 				oOfferSaveInfo.Custom_Integer_1 = oOffer.Custom_Integer_1;
 				oOfferSaveInfo.PreviousApprovalHasAddedProduct = oOffer.PreviousApprovalHasAddedProduct;
-				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = oOffer.PreviousApprovalHasAddedProduct;
+				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = oOffer.PreviousApprovalHasDeletedProduct;
 				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = oOffer.PreviousApprovalHasDeclinedProduct;
 				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = oOffer.PreviousApprovalHas_Deleted_DeclinedProduct;
 			}else{
@@ -8717,7 +8724,7 @@ sap.ui.define([
 												MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField,
 												hasUpdatedSupplyPaymentPriceValues: hasUpdatedSupplyPaymentPriceValues
 											}, 
-											pr.ProductCode),
+											product.ProductCode),
 											Services.saveOfferPreviousApprovalInfo({
 												PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
 											})]

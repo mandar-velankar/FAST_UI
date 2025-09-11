@@ -2786,10 +2786,40 @@ sap.ui.define([
 			var oFastDataCalls = that.getDefaultModel();
 
 			oFastDataCalls.read(sPath, {
+				urlParameters: {
+					"$expand": "SKU"
+				},
 				success: function (oData, oResponse) {
 					//TODO temp solution
 					oData._NewProductInfo = oNewProductInfo;
 
+					//let the callback be triggered
+					oDeferred.resolve(oData);
+
+				},
+				error: function fnError(oError) {
+					//resolve, beceause we check on false to continue in correct way, if no results found
+					oDeferred.resolve(false);
+				}
+			});
+
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+		},
+
+		loadOffer: function (sOfferID) { 
+
+			//Load product data
+			var sPath = "/PT_TMOFRS(OfferID='" + sOfferID + "')";
+
+			var oDeferred = $.Deferred();
+			var that = this;
+
+			//get fast data calls
+			var oFastDataCalls = that.getDefaultModel();
+
+			oFastDataCalls.read(sPath, {
+				success: function (oData, oResponse) {
 					//let the callback be triggered
 					oDeferred.resolve(oData);
 
@@ -6621,17 +6651,19 @@ sap.ui.define([
 			//get offer to be saved
 			var oOfferSaveInfo = this.getOfferSaveInfo();
 
-			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
-			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
+			// const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			// const offer = that.getFastAppDataModel().getProperty("/EditOffer");
 			const offerId = that.getSelectedOfferID();
 			const previousApprovalStatus = offerId && await that.getOfferPreviousApprovalStatus();
 			that.getFastAppDataModel().setProperty("/PreviousApprovalStatus", previousApprovalStatus);
-			// needed to revert status back from approved to created when user declines product of the approved offer
-			if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
-				const hasOfferDeclinedProduct = offer.Product.results.some(pr => pr.ActiveProduct == 2);
-				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = hasOfferDeclinedProduct;
-				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = hasOfferDeclinedProduct;
-			}
+			// // needed to revert status back from approved to created when user declines product of the approved offer
+			// if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
+			// 	const declinedProducts = offer.Product.results.filter(pr => pr.ActiveProduct == 2);
+			// 	const declinedProductsNucleus = declinedProducts.map(pr => pr.SKU.Nucleus).filter(Boolean).join(",");
+			// 	oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = declinedProducts.length > 0;
+			// 	oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = declinedProducts.length > 0;
+			// 	oOfferSaveInfo.PreviousApprovalHas_Deleted_Products_PTL = declinedProductsNucleus;
+			// }
 			var oOfferToSave = that.getService('Offer').getConvertOfferToSave(oOfferSaveInfo);
 
 			//Check if offer button is pressed: reviewed or continued new offer button (or clone button pressed)
@@ -7029,9 +7061,12 @@ sap.ui.define([
 			var oModel = that.getDefaultModel(); //new sap.ui.model.odata.ODataModel(this._connectionString);
 
 			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
-			const offer = that.getFastAppDataModel().getProperty("/EditOffer");
+			let offer = that.getFastAppDataModel().getProperty("/EditOffer");
 			const previousApprovalStatus = that.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
 
+			that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", offer.PreviousApprovalHas_Deleted_Products_PTL ? offer.PreviousApprovalHas_Deleted_Products_PTL.split(",") : []);
+			
+			that.loadOffer(offer.OfferID).then(data => offer = data);
 			//saving all products, not only the newly added or removed whitch are already in getProductsSaveInfo
 			that.addAlreadyExistingProductsToSave();
 
@@ -7130,9 +7165,23 @@ sap.ui.define([
 								if (tenderCountryRegion === "MEA" && previousApprovalStatus?.approvedStatus === 2) {
 
 									// If new add product is not approved yet don't mark it as updated even if user updates supply fields
-									if (!oOriginalProductInfo._NewProductInfo.IsProductAddedForPreviousApproval) {
-										oProductToSave.MEAApprovalLatestUpdatedField = oOriginalProductInfo._NewProductInfo.MEAApprovalLatestUpdatedField;
-										oProductToSave.hasUpdatedSupplyPaymentPriceValues = that.checkMEAProductPriceFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo, originalProductToSave);
+									if (!oOriginalProductInfo.IsProductAddedForPreviousApproval) {
+										const isProductUpdated = that.checkMEAProductPriceFieldUpdate(oOriginalProductInfo, oOriginalProductInfo._NewProductInfo, originalProductToSave);
+
+										oProductToSave.MEAApprovalLatestUpdatedField = isProductUpdated ? oOriginalProductInfo._NewProductInfo.MEAApprovalLatestUpdatedField : oOriginalProductInfo.MEAApprovalLatestUpdatedField;
+										oProductToSave.hasUpdatedSupplyPaymentPriceValues = isProductUpdated
+									}
+
+									if (oProductToSave.ActiveProduct == 2 && oOriginalProductInfo.ActiveProduct == 1) {
+										const deletedProductNucleus = that.getFastAppDataModel().getProperty("/Deleted_Declined_Product_PTL");
+										deletedProductNucleus.push(oOriginalProductInfo.SKU.Nucleus);
+										that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", deletedProductNucleus)
+
+										promises.push(that.saveOfferPreviousApprovalInfo({
+											PreviousApprovalHasDeclinedProduct: true,
+											PreviousApprovalHas_Deleted_DeclinedProduct: true,
+											PreviousApprovalHas_Deleted_Products_PTL: deletedProductNucleus.join(",")
+										}));
 									}
 
 									that.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, "");
@@ -7182,6 +7231,10 @@ sap.ui.define([
 							throw new Error(oError);
 						}));
 
+						const deletedProductNucleus = that.getFastAppDataModel().getProperty("/Deleted_Declined_Product_PTL");
+						deletedProductNucleus.push(oProductSaveInfo.SKU.Nucleus);
+						that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", deletedProductNucleus)
+
 						// If product has price remove it
 						const oProductPrice = oProductSaveInfo.Price;
 						if (oProductPrice) {
@@ -7199,6 +7252,7 @@ sap.ui.define([
 								PreviousApprovalHasAddedProduct: offer.PreviousApprovalHasAddedProduct,
 								PreviousApprovalHasDeletedProduct: true,
 								PreviousApprovalHas_Deleted_DeclinedProduct: true,
+								PreviousApprovalHas_Deleted_Products_PTL: deletedProductNucleus.join(",")
 							}));
 						}
 						
@@ -7379,8 +7433,10 @@ sap.ui.define([
 						that.showErrorMessage(oError, "Background saving for approvals sent field");
 					});
 
-				}).catch(function (oError) {
+					that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", []);
 
+				}).catch(function (oError) {
+					that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", []);
 					//error message
 					that.showErrorMessage(oError, "Saving of product info");
 
