@@ -7059,11 +7059,16 @@ sap.ui.define([
 
 			var OfferProducts = this.getFinancialModel();
 			var oModel = that.getDefaultModel(); //new sap.ui.model.odata.ODataModel(this._connectionString);
+			const oFastAppDataModel = that.getFastAppDataModel();
 
 			const tenderCountryRegion = that.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 			let offer = that.getFastAppDataModel().getProperty("/EditOffer");
 			const previousApprovalStatus = that.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
 
+			const bContinuedOrRevised = !that.getNewOfferPressed() && (
+				that.getContinuedOfferPressed() || that.getReviewedOfferPressed() || oFastAppDataModel.getProperty(
+					"/EditOffer/RevisedOfferNo") !== 0 || oFastAppDataModel.getProperty("/EditOffer/ContinuationOfferNo") !== 0
+			);
 			that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", offer.PreviousApprovalHas_Deleted_Products_PTL ? offer.PreviousApprovalHas_Deleted_Products_PTL.split(",") : []);
 			
 			that.loadOffer(offer.OfferID).then(data => offer = data);
@@ -7108,6 +7113,13 @@ sap.ui.define([
 
 						//when we add a product, this will need approval, so we set supply update field to approval sent value of offer
 						var iApprovals_sent = that.getFastAppDataModel().getProperty("/EditOffer/APPROVALS_SENT");
+						const MEAOfferToBeSaved = {
+							PreviousApprovalHasAddedProduct: bContinuedOrRevised ? false : true,
+							PreviousApprovalHasDeletedProduct: !bContinuedOrRevised ? offer?.PreviousApprovalHasDeletedProduct : false,
+							PreviousApprovalHasDeclinedProduct: !bContinuedOrRevised ? offer?.PreviousApprovalHasDeclinedProduct : false,
+							PreviousApprovalHas_Deleted_DeclinedProduct: false,
+						};
+
 						oProductToSave.SUPPLY_UPDATE = iApprovals_sent;
 						oProductToSave.PAYMENT_UPDATE = iApprovals_sent;
 						oProductToSave.VOLUME_UOM_UPDATE = iApprovals_sent;
@@ -7121,12 +7133,19 @@ sap.ui.define([
 							oProductToSave.IsProductAddedForPreviousApproval = true;
 							oProductToSave.MEAApprovalLatestUpdatedField = "IS_NEW_PRODUCT";
 
-							promises.push(that.saveOfferPreviousApprovalInfo({
-								PreviousApprovalHasAddedProduct: true,
-								PreviousApprovalHasDeletedProduct: offer.PreviousApprovalHasDeletedProduct,
-								PreviousApprovalHasDeclinedProduct: offer.PreviousApprovalHasDeclinedProduct,
-								PreviousApprovalHas_Deleted_DeclinedProduct: false
-							}));
+							promises.push(that.saveOfferPreviousApprovalInfo(MEAOfferToBeSaved));
+						}
+
+						if (bContinuedOrRevised) {
+							oProductToSave.SUPPLY_UPDATE = 0;
+							oProductToSave.PAYMENT_UPDATE = 0;
+							oProductToSave.VOLUME_UOM_UPDATE = 0;
+							oProductToSave.MEAApprovalUpdatedFields_Volume = 0;
+							oProductToSave.MEAApprovalUpdatedFields_UOM = 0;
+							oProductToSave.MEAApprovalUpdatedFields_FOC = 0;
+							oProductToSave.IsProductAddedForPreviousApproval = false;
+							oProductToSave.MEAApprovalLatestUpdatedField = null;
+							oProductToSave.MEAApprovalLatestUpdatedFieldPreviousState = null;
 						}
 
 						//Create Product
@@ -7311,6 +7330,7 @@ sap.ui.define([
 												oProductPrice.COGS = (oUpToDatePrices.COGS === null) ? null : oUpToDatePrices.COGS.toString();
 												oProductPrice.SpotRate = (oUpToDatePrices.SpotRate === null) ? null : oUpToDatePrices.SpotRate.toString();
 												oProductPrice.BudgetRate = (oUpToDatePrices.BudgetRate === null) ? null : oUpToDatePrices.BudgetRate.toString();
+												oProductPrice.PRICE_UPDATE = 0; //when copying we set price update to 0, becasue price is copied from original offer
 
 												//add creation of price to batch operation
 												that.getService('Price').createPrice(oProductPrice).catch(function (oError) {

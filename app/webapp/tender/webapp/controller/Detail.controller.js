@@ -6903,6 +6903,18 @@ sap.ui.define([
 			if (bContinuedOrRevised) {
 				//revised offer or continued offer (creation modus or edit modus)
 				var checkDueDate = oOfferSaveInfo.NewOfferDueDate;
+				oOfferSaveInfo.APPROVALS_SENT = 0;
+				oOfferSaveInfo.PreviousApprovalHasAddedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_Products_PTL = "";
+				oOfferSaveInfo.ApprovalHasDeletedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHasDeclinedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHas_Deleted_DeclinedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHas_Deleted_Products_PTL_Previous_State = "";
+
+				oFastAppDataModel.setProperty("/EditOffer/APPROVALS_SENT", 0);
 			} else {
 				//creating a new offer or changing an existing offer that is not revised or continued
 				var checkDueDate = bidDueDate;
