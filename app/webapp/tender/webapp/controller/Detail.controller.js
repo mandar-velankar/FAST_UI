@@ -112,7 +112,33 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
 			Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
 			Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", false);
-			Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);	
+			Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);
+			
+			//when navigating from master to detail page or refresh the page :samePage: --> true optional parameter prevents application to load tender
+			//to make it work replacing :samePage: false or empty text
+			let routePattern = this.oRouter.getRoute("detail").getPattern()
+			let hash = this.oRouter.getHashChanger().getHash()
+			let replacedHash = this.normalizeHash(routePattern, hash, { removeSamePage: true });
+
+			!!replacedHash && this.oRouter.getHashChanger().replaceHash(replacedHash);
+		},
+
+		 normalizeHash(routePattern, hash, options = {}) {
+			const aPatternParts = routePattern.split("/");
+			const aHashParts = hash.split("/");
+			if (aPatternParts.length !== aHashParts.length) return "";
+
+			return aPatternParts.map((part, i) => {
+				if (part.includes(":samePage:")) {
+					// Drop it if requested
+					if (options.removeSamePage) {
+						return "";
+					}
+					// Or replace it
+					return options.samePageValue ?? aHashParts[i];
+				}
+				return aHashParts[i];
+			}).join("/");
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -224,7 +250,7 @@ sap.ui.define([
 			}
 
 			//when we enter or exit fullscreen for a page, we stay on the same page so nothing needs to be reloaded, only view layout changes
-			if (!bSamePage) {
+			if (!JSON.parse(bSamePage)) {
 
 				//build image model to show images on the view (binding the source)
 				var oRootPath = jQuery.sap.getModulePath("FAST_NS0FAST0.images");
