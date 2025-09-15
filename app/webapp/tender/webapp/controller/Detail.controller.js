@@ -112,7 +112,33 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
 			Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
 			Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", false);
-			Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);	
+			Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);
+			
+			//when navigating from master to detail page or refresh the page :samePage: --> true optional parameter prevents application to load tender
+			//to make it work replacing :samePage: false or empty text
+			let routePattern = this.oRouter.getRoute("detail").getPattern()
+			let hash = this.oRouter.getHashChanger().getHash()
+			let replacedHash = this.normalizeHash(routePattern, hash, { removeSamePage: true });
+
+			!!replacedHash && this.oRouter.getHashChanger().replaceHash(replacedHash);
+		},
+
+		 normalizeHash(routePattern, hash, options = {}) {
+			const aPatternParts = routePattern.split("/");
+			const aHashParts = hash.split("/");
+			if (aPatternParts.length !== aHashParts.length) return "";
+
+			return aPatternParts.map((part, i) => {
+				if (part.includes(":samePage:")) {
+					// Drop it if requested
+					if (options.removeSamePage) {
+						return "";
+					}
+					// Or replace it
+					return options.samePageValue ?? aHashParts[i];
+				}
+				return aHashParts[i];
+			}).join("/");
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -224,7 +250,7 @@ sap.ui.define([
 			}
 
 			//when we enter or exit fullscreen for a page, we stay on the same page so nothing needs to be reloaded, only view layout changes
-			if (!bSamePage) {
+			if (!JSON.parse(bSamePage)) {
 
 				//build image model to show images on the view (binding the source)
 				var oRootPath = jQuery.sap.getModulePath("FAST_NS0FAST0.images");
@@ -3891,19 +3917,19 @@ sap.ui.define([
 											new sap.m.Button({
 												id: "btnSendApproval",
 												text: bundle.getText("SendApprReq"),
-												tap: [that.onSendApprovals, that],
+												press: [that.onSendApprovals, that],
 												enabled: bSendApprovalEnabled
 											}),
 											new sap.m.Button({
 												id: "btnCancelApproval",
 												text: bundle.getText("CancelApprReq"),
-												tap: [that.onCancelApprovals, that],
+												press: [that.onCancelApprovals, that],
 												enabled: bCancelEnabled
 											}),
 											new sap.m.Button("btnCloseApproval", {
 												id: "btnCloseApproval",
 												text: bundle.getText("Close"),
-												tap: [that.onCloseApprovalsDialog, that]
+												press: [that.onCloseApprovalsDialog, that]
 											})
 										],
 										//content with all fields that need to be filled
@@ -3977,6 +4003,15 @@ sap.ui.define([
 				sState = iValueLength > iMaxLength ? "Warning" : "None";
 
 			oTextArea.setValueState(sState);
+			
+			const fastAppDataModel = Services.getFastAppDataModel();
+			const source = oEvent.getSource();
+			const ctxBindingPath = source.getBindingContext("fastAppData").getPath();
+			const controlBindingPath = source?.getBinding("value")?.getPath();
+
+			if (controlBindingPath && controlBindingPath.toLowerCase().includes('sendercomment')) {
+				fastAppDataModel.setProperty(`${ctxBindingPath}/${controlBindingPath}`, oEvent.getParameter('newValue'));
+			}
 		},
 
 		//send approvals = save to database & change status
@@ -6902,6 +6937,18 @@ sap.ui.define([
 			if (bContinuedOrRevised) {
 				//revised offer or continued offer (creation modus or edit modus)
 				var checkDueDate = oOfferSaveInfo.NewOfferDueDate;
+				oOfferSaveInfo.APPROVALS_SENT = 0;
+				oOfferSaveInfo.PreviousApprovalHasAddedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_Products_PTL = "";
+				oOfferSaveInfo.ApprovalHasDeletedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHasDeclinedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHas_Deleted_DeclinedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHas_Deleted_Products_PTL_Previous_State = "";
+
+				oFastAppDataModel.setProperty("/EditOffer/APPROVALS_SENT", 0);
 			} else {
 				//creating a new offer or changing an existing offer that is not revised or continued
 				var checkDueDate = bidDueDate;

@@ -708,14 +708,17 @@ sap.ui.define([
 
 			var oFastAppData = Services.getFastAppDataModel();
 
+			const oRouter = this.getOwnerComponent().getRouter();
+    		const aRouterParams = oRouter.getHashChanger().getHash().split("/") || [];
+			const sCountryCode = aRouterParams[1];
+
 
         ////EHQUT-199068-Italy – Tender search by Region
 		//EHQUT-CountryCode NA
 			//get possible filters
 
 			let sSelectedCountry = Services.getSelectedCountry() || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
-			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
-
+			var oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : sCountryCode || oFastAppData.getProperty("/UserCountries/results/0/COUNTRY_CODE");
 			Services.setSelectedCountry(oCountry);
 			//this.oRouter.getHashChanger().setHash(oCountry + Services.getLayoutType() || "/OneColumn")
 			//EHQUT-167493-Thailand - Filter of Offer’s Creator and Institute in ‘Existing Offers’ Page
