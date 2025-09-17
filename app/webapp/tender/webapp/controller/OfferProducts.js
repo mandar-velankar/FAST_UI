@@ -1790,7 +1790,11 @@ sap.ui.define([
 				oFastDataCalls.read(sPath, {
 					groupId: "OfferProducts-CountryRegisteredPrice",
 					success: function (oData, oResponse) {
-						resolve(oData);
+						if ("ActiveRecord" in oData) {
+							resolve(oData);
+						}else {
+							resolve(false);
+						}
 					},
 					error: function (oError) {
 						//resolve, beceause we check on false to continue in correct way, if no results found
