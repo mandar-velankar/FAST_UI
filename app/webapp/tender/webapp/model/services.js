@@ -2819,6 +2819,9 @@ sap.ui.define([
 			var oFastDataCalls = that.getDefaultModel();
 
 			oFastDataCalls.read(sPath, {
+				urlParameters: {
+					"$expand": "Product"
+				},
 				success: function (oData, oResponse) {
 					//let the callback be triggered
 					oDeferred.resolve(oData);
@@ -7087,7 +7090,7 @@ sap.ui.define([
 			);
 			that.getFastAppDataModel().setProperty("/Deleted_Declined_Product_PTL", offer.PreviousApprovalHas_Deleted_Products_PTL ? offer.PreviousApprovalHas_Deleted_Products_PTL.split(",") : []);
 			
-			that.loadOffer(offer.OfferID).then(data => offer = data);
+			that.loadOffer(that.getSelectedOfferID()).then(data => offer = data);
 			//saving all products, not only the newly added or removed whitch are already in getProductsSaveInfo
 			that.addAlreadyExistingProductsToSave();
 

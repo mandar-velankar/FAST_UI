@@ -222,6 +222,17 @@ sap.ui.define([
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
 				// TODO:
 			});
+
+			if (sOfferID) {
+				Services.getOfferPreviousApprovalStatus().then((data => {
+					Services.getFastAppDataModel().setProperty("/PreviousApprovalStatus", data)
+				}));
+
+				Services.loadOffer(sOfferID).then(offer => {
+					Services.getFastAppDataModel().setProperty("/MEAOfferProducts", offer?.Product?.results);
+				});
+			}
+			
 			oFastAppDataModel.refresh();
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
@@ -6938,6 +6949,12 @@ sap.ui.define([
 			if (bContinuedOrRevised) {
 				//revised offer or continued offer (creation modus or edit modus)
 				var checkDueDate = oOfferSaveInfo.NewOfferDueDate;
+			} else {
+				//creating a new offer or changing an existing offer that is not revised or continued
+				var checkDueDate = bidDueDate;
+			}
+
+			if (Services.getContinuedOfferPressed() === true || Services.getReviewedOfferPressed() === true) {
 				oOfferSaveInfo.APPROVALS_SENT = 0;
 				oOfferSaveInfo.PreviousApprovalHasAddedProduct = false;
 				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = false;
@@ -6950,9 +6967,6 @@ sap.ui.define([
 				oOfferSaveInfo.ApprovalHas_Deleted_Products_PTL_Previous_State = "";
 
 				oFastAppDataModel.setProperty("/EditOffer/APPROVALS_SENT", 0);
-			} else {
-				//creating a new offer or changing an existing offer that is not revised or continued
-				var checkDueDate = bidDueDate;
 			}
 
 			//check if internal date is not after due date
@@ -13089,46 +13103,42 @@ sap.ui.define([
 			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 			const Action = action;
 			const source = event?.getSource();
-			const offerId = Services.getSelectedOfferID();
 			if (!source) return
 			const path = source.getBindingContext("fastAppData").getPath();
 			const product = source.getBindingContext("fastAppData").getObject();
-			if (tenderCountryRegion === "MEA") {
-				offerId && Services.getOfferPreviousApprovalStatus().then((data) => {
-					if (data && data.approvedStatus === 2) {
-						Services.loadProduct(offerId, 1, product.ProductCode, product, product.LotID).then(pr => {
-							if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`)) {
-								Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, pr.MEAApprovalLatestUpdatedField);
-							}
-							const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`);
-							const newActions = [Action, updates].filter(Boolean).join(',');
-							Services.getFastAppDataModel().setProperty(`${path}/MEAApprovalLatestUpdatedField`, newActions);
-							Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, newActions);
-						});
-						// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
-					}
-				});
+			const previousApprovalStatus = Services.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
+			const loadedProducts = Services.getFastAppDataModel().getProperty("/MEAOfferProducts") || [];
+			const loadedProduct = loadedProducts.find(pr => pr.OfferID === product.OfferID && pr.ProductCode === product.ProductCode);
+
+			if (tenderCountryRegion === "MEA" && previousApprovalStatus.approvedStatus === 2) {
+				if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`)) {
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, loadedProduct.MEAApprovalLatestUpdatedField);
+				}
+				const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`);
+				const newActions = [Action, updates].filter(Boolean).join(',');
+				Services.getFastAppDataModel().setProperty(`${path}/MEAApprovalLatestUpdatedField`, newActions);
+				Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, newActions);
+				// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
 			}
 		},
 
 		onChangeMEAPriceFocValues: async function (action) {
 			const oDefaultModel = Services.getDefaultModel();
 			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const previousApprovalStatus = Services.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
+			const loadedProducts = Services.getFastAppDataModel().getProperty("/MEAOfferProducts") || [];
 
-			if (tenderCountryRegion === "MEA") {
-				const offerId = Services.getSelectedOfferID();
-				const previousApprovalStatus = offerId && await Services.getOfferPreviousApprovalStatus();
-				if (previousApprovalStatus && previousApprovalStatus.approvedStatus === 2) {
-					const productPath = Services.getSelectedProductPath();
-					const product = oDefaultModel.getProperty(productPath);
-					const loadedProduct = product && await Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID);
-					if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`)) {
-						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, loadedProduct?.MEAApprovalLatestUpdatedField);
-					}
-					if (!loadedProduct.IsProductAddedForPreviousApproval) {
-						const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`);
-						Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, [action, updates].filter(Boolean).join(','));
-					}
+			if (tenderCountryRegion === "MEA" && previousApprovalStatus.approvedStatus === 2) {
+				const productPath = Services.getSelectedProductPath();
+				const product = oDefaultModel.getProperty(productPath);
+				const loadedProduct = loadedProducts.find(pr => pr.OfferID === product.OfferID && pr.ProductCode === product.ProductCode);
+
+				if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`)) {
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, loadedProduct?.MEAApprovalLatestUpdatedField);
+				}
+				if (!loadedProduct.IsProductAddedForPreviousApproval) {
+					const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`);
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, [action, updates].filter(Boolean).join(','));
 				}
 			}
 		},
