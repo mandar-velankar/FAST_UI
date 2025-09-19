@@ -461,7 +461,7 @@
                                                         showSecondaryValues="true"
                                                         selectedKey="{fastAppData>/OfferValidation/SELLING_COMPANY_AS1}" 
                                                         enabled="false" 
-                                                            items="{ path: 'fastAppData>/EditOffer/Signatories/results'}">
+                                                            items="{ path: 'fastAppData>/IssuedByItems'}">
                                                         <core:ListItem text="{fastAppData>NAME}" additionalText="{fastAppData>TITLE}" key="{fastAppData>AUTHORIZED_SIGNATORY}"/>
                                                     </m:Select>
                                                 </m:items>
@@ -476,7 +476,7 @@
                                                         showSecondaryValues="true"
                                                         selectedKey="{fastAppData>/OfferValidation/SELLING_COMPANY_AS2}" 
                                                         enabled="false" 
-                                                        items="{ path: 'fastAppData>/EditOffer/Signatories/results'}">
+                                                        items="{ path: 'fastAppData>/CompanyStampItems'}">
                                                             <core:ListItem text="{fastAppData>NAME}" additionalText="{fastAppData>TITLE}" key="{fastAppData>AUTHORIZED_SIGNATORY}"/>
                                                     </m:Select>
                                                 </m:items>
