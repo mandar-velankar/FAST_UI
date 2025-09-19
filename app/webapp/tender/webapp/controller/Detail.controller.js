@@ -9330,7 +9330,17 @@ sap.ui.define([
 
 			//Selected offer
 			var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+			let oTender = oFastAppDataModel.getProperty("/EditTender");
 			oFastAppDataModel.setProperty("/EditOffer/", oOffer);
+
+			if (oOffer && oTender) {
+				const signatories = oOffer?.Signatories?.results ?? [];
+				const MEAIssuedByItems = signatories.filter(el => el.SIGNATORY === 1); 
+				const MEACompanyStampItems = signatories.filter(el => el.SIGNATORY === 2); 
+
+				oFastAppDataModel.setProperty("/IssuedByItems", oTender?.Country?.Region === "MEA" ? MEAIssuedByItems : oOffer?.Signatories?.results);
+				oFastAppDataModel.setProperty("/CompanyStampItems", oTender?.Country?.Region === "MEA" ? MEACompanyStampItems : oOffer?.Signatories?.results);
+			}
 
 			//at this point no product should be selected.
 			Services.setSelectedProductID("");
@@ -9432,6 +9442,7 @@ sap.ui.define([
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
 				var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
+				const region = oFastAppDataModel.getProperty("/EditTender/Country/Region");
 
 				//enable or disable download button 
 				var enableDownload = false;
@@ -9448,6 +9459,14 @@ sap.ui.define([
 				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) ) {
 						enableSubmit = true;
 				}
+
+				//disabling Save button
+				//Save button set Updated field 1, which prevents PDF regeneration for MEA countries 
+				if (region === "MEA" && !("sResult" in oData)) {
+					that.byId("btnSaveQuotation").setEnabled(false);
+					enableSubmit = true;
+				}
+
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 			});
 
