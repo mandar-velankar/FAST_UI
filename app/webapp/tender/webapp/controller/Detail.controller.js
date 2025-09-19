@@ -9442,6 +9442,7 @@ sap.ui.define([
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
 				var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
+				const region = oFastAppDataModel.getProperty("/EditTender/Country/Region");
 
 				//enable or disable download button 
 				var enableDownload = false;
@@ -9458,6 +9459,14 @@ sap.ui.define([
 				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) ) {
 						enableSubmit = true;
 				}
+
+				//disabling Save button
+				//Save button set Updated field 1, which prevents PDF regeneration for MEA countries 
+				if (region === "MEA" && !("sResult" in oData)) {
+					that.byId("btnSaveQuotation").setEnabled(false);
+					enableSubmit = true;
+				}
+
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 			});
 
