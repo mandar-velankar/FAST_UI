@@ -9331,7 +9331,17 @@ sap.ui.define([
 
 			//Selected offer
 			var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+			let oTender = oFastAppDataModel.getProperty("/EditTender");
 			oFastAppDataModel.setProperty("/EditOffer/", oOffer);
+
+			if (oOffer && oTender) {
+				const signatories = oOffer?.Signatories?.results ?? [];
+				const MEAIssuedByItems = signatories.filter(el => el.SIGNATORY === 1); 
+				const MEACompanyStampItems = signatories.filter(el => el.SIGNATORY === 2); 
+
+				oFastAppDataModel.setProperty("/IssuedByItems", oTender?.Country?.Region === "MEA" ? MEAIssuedByItems : oOffer?.Signatories?.results);
+				oFastAppDataModel.setProperty("/CompanyStampItems", oTender?.Country?.Region === "MEA" ? MEACompanyStampItems : oOffer?.Signatories?.results);
+			}
 
 			//at this point no product should be selected.
 			Services.setSelectedProductID("");
