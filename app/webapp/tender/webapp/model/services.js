@@ -2975,6 +2975,8 @@ sap.ui.define([
 
 						//add send default No accept for mandatory approver types
 						if (oData.results) {
+							const hasRejectedApproval = oData.results.some(approver => approver.ApprovalStatus === 'Rejected');
+							const offerStatus = oFastAppDataModel.oData?.SelectedOffer?.OfferStatus?.STATUS || oFastAppDataModel.oData?.EditOffer?.OfferStatus?.STATUS;
 							oData.results.forEach(function (oApprover, index) {
 
 								//if(oApprover.ApproverType === "Country Business" || oApprover.ApproverType === "Supply Chain") {
@@ -2992,6 +2994,20 @@ sap.ui.define([
 									oApprover.ApprovalStatus === "Cancelling"
 								) {
 									oApprover.send = 'No';
+								}
+
+								if (
+									oFastAppDataModel.oData.Tender.Country.Region === 'MEA' &&
+									oApprover.ApprovalStatus === 'Waiting' && 
+									(
+										offerStatus === 'Offer Rejected' ||
+										(
+											offerStatus === 'Offer Created' &&
+											hasRejectedApproval
+										)
+									)
+								) {
+									oApprover.send = 'Yes';
 								}
 
 							});
