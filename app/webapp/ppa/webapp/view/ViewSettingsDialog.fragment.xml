@@ -17,12 +17,19 @@
 				id="filterCountryItems"
 				text="{i18n>Country}"
 				multiSelect="false"
-				items="{path: 'ppa>/countries'}">
+				items="{path: 'ppa>/countries', 
+								filters: {
+									filters: [
+										{ path: 'Application', operator: 'EQ', value1: 'PPA' },
+										{ path: 'Application', operator: 'EQ', value1: 'ALL' }
+									],
+									and: false
+						}}">
 				<items>
 					<ViewSettingsItem 
-						selected="{= ${ppa>countryCode} === 'TH'}"
-						key="{ppa>countryCode}"
-						text="{ppa>countryName}" 
+						selected="{= ${ppa>country/countryCode} === 'TH'}"
+						key="{ppa>country/countryCode}"
+						text="{ppa>country/countryName}" 
 					/>
 				</items>
 			</ViewSettingsFilterItem>

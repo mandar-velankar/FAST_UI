@@ -387,7 +387,8 @@ sap.ui.define([
 			this.setProperty("countries", []);
 			return this.getService().getUserCountries().then(response => {
 				const results = response.data.results;
-				const countries = results.map(country => new Country(country.Country));
+				const countries = results.map(country => ({country: new Country(country.Country),
+				Application: country.Application}));
 				this.setProperty("countries", countries);
 				return this.getProperty("countries");
 			});

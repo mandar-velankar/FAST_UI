@@ -68,7 +68,10 @@ sap.ui.define([
 			});
 			return this.odata(sPath).delete()
 			
-		}
+		},
+		getMailTemplate:function(templateId){
+			return this.odata("/MailTemplateFiles").get({filters:[new Filter({path:"templateId",operator:FilterOperator.EQ,value1:templateId})]});
+		},
 	});
 	return QuotationService;
 });

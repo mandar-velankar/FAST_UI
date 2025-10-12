@@ -72,7 +72,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this.oRouter = this.oOwnerComponent.getRouter();
 			this.oModel = this.oOwnerComponent.getModel();
-
+			this.oDefaultModel = this.oOwnerComponent.getModel('fastData')
 			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
 			
@@ -112,7 +112,33 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/CreateContractButtonEnabled_BR", false);
 			Services.getFastAppDataModel().setProperty("/CreateContractFromOfferEnabled_BR", true);
 			Services.getFastAppDataModel().setProperty("/SetAllProductsWonLostButtonEnabled", false);
-			Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);	
+			Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false);
+			
+			//when navigating from master to detail page or refresh the page :samePage: --> true optional parameter prevents application to load tender
+			//to make it work replacing :samePage: false or empty text
+			let routePattern = this.oRouter.getRoute("detail").getPattern()
+			let hash = this.oRouter.getHashChanger().getHash()
+			let replacedHash = this.normalizeHash(routePattern, hash, { removeSamePage: true });
+
+			!!replacedHash && this.oRouter.getHashChanger().replaceHash(replacedHash);
+		},
+
+		 normalizeHash(routePattern, hash, options = {}) {
+			const aPatternParts = routePattern.split("/");
+			const aHashParts = hash.split("/");
+			if (aPatternParts.length !== aHashParts.length) return "";
+
+			return aPatternParts.map((part, i) => {
+				if (part.includes(":samePage:")) {
+					// Drop it if requested
+					if (options.removeSamePage) {
+						return "";
+					}
+					// Or replace it
+					return options.samePageValue ?? aHashParts[i];
+				}
+				return aHashParts[i];
+			}).join("/");
 		},
 
 		_FOCProdBund1UpdateFinished: function () {
@@ -196,6 +222,17 @@ sap.ui.define([
 			$.when(Quotation.loadTenderBankGuarantee(sTenderID)).done(function (oData) {
 				// TODO:
 			});
+
+			if (sOfferID) {
+				Services.getOfferPreviousApprovalStatus().then((data => {
+					Services.getFastAppDataModel().setProperty("/PreviousApprovalStatus", data)
+				}));
+
+				Services.loadOffer(sOfferID).then(offer => {
+					Services.getFastAppDataModel().setProperty("/MEAOfferProducts", offer?.Product?.results);
+				});
+			}
+			
 			oFastAppDataModel.refresh();
 
 			//bind data from model to view (=tender info) (expand institute so its still shown)
@@ -224,7 +261,7 @@ sap.ui.define([
 			}
 
 			//when we enter or exit fullscreen for a page, we stay on the same page so nothing needs to be reloaded, only view layout changes
-			if (!bSamePage) {
+			if (!JSON.parse(bSamePage)) {
 
 				//build image model to show images on the view (binding the source)
 				var oRootPath = jQuery.sap.getModulePath("FAST_NS0FAST0.images");
@@ -2708,7 +2745,7 @@ sap.ui.define([
 								oSelectCompanyStamp.setEnabled(false);
 							}
 							else{
-								ooSelectCompanyStamp.setEnabled(true);
+								oSelectCompanyStamp.setEnabled(true);
 							}
 						}
 						let oDelayInSubmission = that.getView().byId("idDelayInSubmission");
@@ -2722,7 +2759,6 @@ sap.ui.define([
 						if(oBtnDownloadQuotation){
 							oBtnDownloadQuotation.setEnabled(false);
 						}
-
 						that.getView().byId("btnSubmitQuotation").setVisible(false);
 						break;
 					case Services.getTenderResultsPageSectionID():
@@ -3339,6 +3375,8 @@ sap.ui.define([
 					that.getView().setModel(oFastAppDataModel, "fastAppData");
 					Services.getFastAppDataModel().setProperty("/isQuotationDeliveryEnabled", false)
 					Services.getFastAppDataModel().setProperty("/RemoveQuotationRow",[]);
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, "");
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, "")
 				});
 
 			}
@@ -3890,19 +3928,19 @@ sap.ui.define([
 											new sap.m.Button({
 												id: "btnSendApproval",
 												text: bundle.getText("SendApprReq"),
-												tap: [that.onSendApprovals, that],
+												press: [that.onSendApprovals, that],
 												enabled: bSendApprovalEnabled
 											}),
 											new sap.m.Button({
 												id: "btnCancelApproval",
 												text: bundle.getText("CancelApprReq"),
-												tap: [that.onCancelApprovals, that],
+												press: [that.onCancelApprovals, that],
 												enabled: bCancelEnabled
 											}),
 											new sap.m.Button("btnCloseApproval", {
 												id: "btnCloseApproval",
 												text: bundle.getText("Close"),
-												tap: [that.onCloseApprovalsDialog, that]
+												press: [that.onCloseApprovalsDialog, that]
 											})
 										],
 										//content with all fields that need to be filled
@@ -3976,6 +4014,15 @@ sap.ui.define([
 				sState = iValueLength > iMaxLength ? "Warning" : "None";
 
 			oTextArea.setValueState(sState);
+			
+			const fastAppDataModel = Services.getFastAppDataModel();
+			const source = oEvent.getSource();
+			const ctxBindingPath = source.getBindingContext("fastAppData").getPath();
+			const controlBindingPath = source?.getBinding("value")?.getPath();
+
+			if (controlBindingPath && controlBindingPath.toLowerCase().includes('sendercomment')) {
+				fastAppDataModel.setProperty(`${ctxBindingPath}/${controlBindingPath}`, oEvent.getParameter('newValue'));
+			}
 		},
 
 		//send approvals = save to database & change status
@@ -3996,6 +4043,7 @@ sap.ui.define([
 			$.when(Services.saveApprovals(sApprovalStatus, sOfferStatus)).done(function (oDataTenderOffer) {
 
 				var sOfferID = Services.getSelectedOfferID();
+				const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 
 				//when saving is finished
 				$.when(Services.loadApprovalsForOffer(sOfferID)).done(function (oData) {
@@ -4008,11 +4056,44 @@ sap.ui.define([
 				//Description: https://trello.com/c/np1g69g7
 				var oOffer = Services.getLoadedOffer(sOfferID);
 				var iApprovals_sent = oOffer.APPROVALS_SENT + 1;
-				Services.saveOfferApprovalSent(iApprovals_sent).catch(function (oError) {
+				Services.saveOfferApprovalSent(iApprovals_sent).then((result) => {
+					const offer = result && result.data;
+					Services.getFastAppDataModel().setProperty("/EditOffer/APPROVALS_SENT", offer.APPROVALS_SENT);
+				}).catch(function (oError) {
 					//Error during save
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
-
+				
+				if (tenderCountryRegion === "MEA") {
+					Services.loadOffer(sOfferID).then(data => {
+						Services.saveOfferPreviousApprovalInfo({
+							PreviousApprovalHasAddedProduct: false,
+							PreviousApprovalHasDeletedProduct: false,
+							PreviousApprovalHasDeclinedProduct: false,
+							PreviousApprovalHas_Deleted_DeclinedProduct: false,
+							PreviousApprovalHas_Deleted_Products_PTL: "",
+							ApprovalHasDeletedProduct_Previous_State: data.PreviousApprovalHasDeletedProduct,
+							ApprovalHasDeclinedProduct_Previous_State: data.PreviousApprovalHasDeclinedProduct,
+							ApprovalHas_Deleted_DeclinedProduct_Previous_State: data.PreviousApprovalHas_Deleted_DeclinedProduct,
+							ApprovalHas_Deleted_Products_PTL_Previous_State: data.PreviousApprovalHas_Deleted_Products_PTL || ""
+						});
+					});
+					
+					// reseting following fields to apply new approvals after user update supply fields
+					
+					oOffer.Product.results.forEach(product => {
+						Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID).then(lpr => {
+							Services.saveOfferProductPreviousApprovalInfo({
+								IsProductAddedForPreviousApproval: false,
+								MEAApprovalLatestUpdatedField: "",
+								MEAApprovalLatestUpdatedFieldPreviousState: lpr.MEAApprovalLatestUpdatedField,
+								hasUpdatedSupplyPaymentPriceValues: false,
+							}, 
+							lpr.ProductCode
+						)
+						})
+					});
+				} 
 			});
 
 		},
@@ -5399,7 +5480,13 @@ sap.ui.define([
 				"OfferID": offer.OfferID,
 				"DistributorID" : offer.DistributorID,
 				"SUPPLY_UPDATE": 0,
-				"PAYMENT_UPDATE": 0
+				"PAYMENT_UPDATE": 0,
+				"VOLUME_UOM_UPDATE": 0,
+				"MEAApprovalUpdatedFields": {
+					Volume: 0,
+					UOM: 0,
+					FOC: 0,
+				}
 			}
 
 			//get values to check product validity
@@ -6812,6 +6899,10 @@ sap.ui.define([
 				oOfferSaveInfo.Comment = oOffer.Comment;
 				oOfferSaveInfo.Custom_String_1 = oOffer.Custom_String_1;
 				oOfferSaveInfo.Custom_Integer_1 = oOffer.Custom_Integer_1;
+				oOfferSaveInfo.PreviousApprovalHasAddedProduct = oOffer.PreviousApprovalHasAddedProduct;
+				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = oOffer.PreviousApprovalHasDeletedProduct;
+				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = oOffer.PreviousApprovalHasDeclinedProduct;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = oOffer.PreviousApprovalHas_Deleted_DeclinedProduct;
 			}else{
 				oOfferSaveInfo.FOCType = "";
 				oOfferSaveInfo.DEFAULT_FOC_ABS_PCT = "";
@@ -6860,6 +6951,21 @@ sap.ui.define([
 			} else {
 				//creating a new offer or changing an existing offer that is not revised or continued
 				var checkDueDate = bidDueDate;
+			}
+
+			if (Services.getContinuedOfferPressed() === true || Services.getReviewedOfferPressed() === true) {
+				oOfferSaveInfo.APPROVALS_SENT = 0;
+				oOfferSaveInfo.PreviousApprovalHasAddedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHasDeletedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHasDeclinedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_DeclinedProduct = false;
+				oOfferSaveInfo.PreviousApprovalHas_Deleted_Products_PTL = "";
+				oOfferSaveInfo.ApprovalHasDeletedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHasDeclinedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHas_Deleted_DeclinedProduct_Previous_State = false;
+				oOfferSaveInfo.ApprovalHas_Deleted_Products_PTL_Previous_State = "";
+
+				oFastAppDataModel.setProperty("/EditOffer/APPROVALS_SENT", 0);
 			}
 
 			//check if internal date is not after due date
@@ -8260,7 +8366,26 @@ sap.ui.define([
 				//screen is updated
 
 			});
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			if (tenderCountryRegion === "MEA") {
+				const actions = {
+					_idOfferPrice: "PRICE_DEDUCTIONS_UPDATED",
+					_idFocAbsPct: "VOLUME_UOM_FOC_UPDATED",
+					_idFoc: "VOLUME_UOM_FOC_UPDATED",
+					_idDeduction: "PRICE_DEDUCTIONS_UPDATED"
+				};
+				const sourceId = oEvent.getSource().getId();
 
+				let matchedKey;
+				for (const key in actions) {
+					if (sourceId.includes(key)) {
+						matchedKey = key;
+						break;
+					}
+				}
+
+				this.onChangeMEAPriceFocValues(actions[matchedKey]);
+			}
 			//price is changed
 			//Financial.setPricingChanged(true);               
 		},
@@ -8535,11 +8660,20 @@ sap.ui.define([
 
 						//convert price to save
 						var oPriceToSave = Services.getService('Price').getConvertPriceToSave(oNewPriceInfo);
+						let MEAApprovalUpdatedFields_FOC = 0;
+						let MEAApprovalUpdatedFields_Price = 0;
+						let MEAApprovalUpdatedFields_Deductions = 0;
+						let hasUpdatedSupplyPaymentPriceValues = false;
 
 						//if oOriginalPrices = false, they were not found, and we are creating new
 						if (oOriginalPrices !== false) {
+							const checkPriceDeductionsUpdate = Financial.checkPriceDeductionsUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
 							//otherwise they were found and the check results for price update should be used
 							oPriceToSave.PRICE_UPDATE = Financial.checkPriceUpdate(oOriginalPrices, oNewPriceInfo);
+							MEAApprovalUpdatedFields_FOC = Financial.checkFOCUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
+							MEAApprovalUpdatedFields_Price = checkPriceDeductionsUpdate.Price;
+							MEAApprovalUpdatedFields_Deductions = checkPriceDeductionsUpdate.Deductions;
+							hasUpdatedSupplyPaymentPriceValues = Financial.checkMEAProductPriceFOCUpdate(oOriginalPrices, oNewPriceInfo, oProduct);
 						}
 
 						if (pricePath !== null) {
@@ -8633,6 +8767,34 @@ sap.ui.define([
 										//Error during save
 										Services.showErrorMessage(oError, "Background saving for approvals sent field");
 									});
+
+									const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+
+									if (tenderCountryRegion === "MEA") {
+										const productPath = Services.getSelectedProductPath();
+										const product = oDefaultModel.getProperty(productPath);
+										const MEAApprovalLatestUpdatedProductPriceField = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`) || product.MEAApprovalLatestUpdatedField;
+										const PreviousApprovalHas_Deleted_DeclinedProduct = Services.getFastAppDataModel().getProperty(`/PreviousApprovalHas_Deleted_DeclinedProduct`) || false;
+										const products =  Services.getFastAppDataModel().getProperty("/EditOffer/Product/results");
+										Promise.all([
+											Services.saveOfferProductMEAApprovalUpdatedFields({
+												MEAApprovalUpdatedFields_FOC: MEAApprovalUpdatedFields_FOC,
+												MEAApprovalUpdatedFields_Price: MEAApprovalUpdatedFields_Price,
+												MEAApprovalUpdatedFields_Deductions: MEAApprovalUpdatedFields_Deductions,
+												MEAApprovalLatestUpdatedField: MEAApprovalLatestUpdatedProductPriceField,
+												hasUpdatedSupplyPaymentPriceValues: hasUpdatedSupplyPaymentPriceValues
+											}, 
+											product.ProductCode),
+											Services.saveOfferPreviousApprovalInfo({
+												PreviousApprovalHas_Deleted_DeclinedProduct: PreviousApprovalHas_Deleted_DeclinedProduct
+											})]
+										).then(() => {
+											Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, "");
+											//refresh master data
+											const oTendersMasterTable = Services.getTendersMasterTable();
+											oTendersMasterTable && oTendersMasterTable.getBinding("items").refresh();
+										})
+									}
 								});
 							});
 
@@ -9168,7 +9330,17 @@ sap.ui.define([
 
 			//Selected offer
 			var oOffer = Services.getLoadedOffer(sSelectedOfferID);
+			let oTender = oFastAppDataModel.getProperty("/EditTender");
 			oFastAppDataModel.setProperty("/EditOffer/", oOffer);
+
+			if (oOffer && oTender) {
+				const signatories = oOffer?.Signatories?.results ?? [];
+				const MEAIssuedByItems = signatories.filter(el => el.SIGNATORY === 1); 
+				const MEACompanyStampItems = signatories.filter(el => el.SIGNATORY === 2); 
+
+				oFastAppDataModel.setProperty("/IssuedByItems", oTender?.Country?.Region === "MEA" ? MEAIssuedByItems : oOffer?.Signatories?.results);
+				oFastAppDataModel.setProperty("/CompanyStampItems", oTender?.Country?.Region === "MEA" ? MEACompanyStampItems : oOffer?.Signatories?.results);
+			}
 
 			//at this point no product should be selected.
 			Services.setSelectedProductID("");
@@ -9270,6 +9442,7 @@ sap.ui.define([
 
 				var oQuotation = oFastAppDataModel.getProperty("/QuotationSelectedOffer");
 				var oBankGuarantee = oFastAppDataModel.getProperty("/newBankGuarantee");
+				const region = oFastAppDataModel.getProperty("/EditTender/Country/Region");
 
 				//enable or disable download button 
 				var enableDownload = false;
@@ -9286,8 +9459,15 @@ sap.ui.define([
 				if (sOfferStatus === "Offer Approved" && (oQuotation && oQuotation.UPDATED === 1) ) {
 						enableSubmit = true;
 				}
-				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 
+				//disabling Save button
+				//Save button set Updated field 1, which prevents PDF regeneration for MEA countries 
+				if (region === "MEA" && !("sResult" in oData)) {
+					that.byId("btnSaveQuotation").setEnabled(false);
+					enableSubmit = true;
+				}
+
+				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
 			});
 
 		},
@@ -11995,7 +12175,7 @@ sap.ui.define([
 			//get cells from same row as oOutcomeDrop
 			var aCells = oDecline.getParent().getCells();
 			if (sDecline === "1") {
-				aCells[14].setValue("");
+				aCells[16].setValue("");
 			}
 		},
 	//EHQUT-405676-Spain-for Consumer Health to always show "Outcome" in "Results" without having to add the word "Won"
@@ -12496,6 +12676,7 @@ sap.ui.define([
 			let oEditor = sap.ui.getCore().byId("idEditor");
             let aRAMs = [];
 
+
             const oFastAppDataModel = Services.getFastAppDataModel();
             const sDivision = oFastAppDataModel.getProperty('/SelectedOffer/Division');
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
@@ -12558,6 +12739,7 @@ sap.ui.define([
                 return "'" + oValue + "' is not a valid e-mail address";
             }
         },
+
 
 
 		onSendNotificationMail: function(evt){
@@ -12762,6 +12944,203 @@ sap.ui.define([
 			oModel.setProperty("/QuotationDataResult", filtredQuotationData);
 			oModel.setProperty("/RemoveQuotationRow", itemsToBeRemoved);
 			oTable.removeSelections()
+		},
+		
+		onOpenNotificationForTH: async function () {
+			const that = this;
+		
+			Fragment.load({
+				id: that.getView().getId(),
+				name: "FAST_NS0FAST0.view.fragments.NotificationMail",
+				controller: that,
+			}).then(async function (oDialog) {
+				oDialog.setModel(that.getView().getModel());
+				oDialog.setModel(that.getView().getModel('messages'), 'messages');
+				try {
+					await that.getNotificationForTH();
+					oDialog.open(); 
+				} catch (error) {
+					MessageBox.error("Error loading notification" + error.message);
+				}
+			});
+		},
+		
+		getNotificationForTH: function () {
+			const that = this;
+		
+			return new Promise((resolve, reject) => {
+				that.oDefaultModel.callFunction("/getTHNotificationMailTemplate", {
+					method: "GET",
+					urlParameters: {
+						offerID: Services.getSelectedOfferID(),
+						tenderId: Services.getSelectedTenderID(),
+						CountryCode: Services.getSelectedCountry(),
+						templateId: "THNotificationMail",
+					},
+					success: function (data) {
+						that.getNotificationMailForTHSuccess(data);
+						that.NotificationMailFormBinding(data)
+						resolve(); 
+					},
+					error: function (error) {
+						that.onSendNotificationMailForTHError(error);
+						reject(error); 
+					}
+				});
+			});
+		},
+		getNotificationMailForTHSuccess: function (data) {
+			if (data.mappedData) {
+				const htmlContent = data.mappedData;
+				const oRichTextEditor = this.byId('idRichTextEditor');
+				if (oRichTextEditor) {
+					oRichTextEditor.setValue(htmlContent);
+				} else {
+					MessageBox.error("RichTextEditor not found!");
+				}
+			} else {
+				MessageBox.error("Mail template data is empty!");
+			}
+			BusyIndicator.hide();
+		},
+		NotificationMailFormBinding: function (data) {
+			let oSender = this.byId("idFrom");
+			let Recipients = this.byId("idTo");
+			let userEmail = UserInfo.getUserEmail();
+			let subject = this.byId("idSubject");
+			let RecipientCC = this.byId("idRecipientCC");
+			let offerId = Services.getSelectedOfferID()
+			subject.setValue(`${data.TenderClassification} request form ${offerId}`);
+		
+			oSender.setTokens([new Token({ text: userEmail, key: userEmail })]);
+		
+			Recipients.setTokens([new Token({ text: data.Recipients, key: data.Recipients })]);
+		
+			RecipientCC.removeAllTokens();
+		
+			let uniqueEmails = new Set([userEmail]);
+		
+			if (data.approverList && Array.isArray(data.approverList)) {
+				data.approverList.forEach(approver => {
+					if (approver.ApproverEmailID) {
+						uniqueEmails.add(approver.ApproverEmailID);
+					}
+				});
+			}
+		
+			uniqueEmails.forEach(email => {
+				RecipientCC.addToken(
+					new sap.m.Token({
+						key: email,
+						text: email
+					})
+				);
+			});
+		
+		},
+		onRecipientChange: function(oEvent) {
+			let RecipientCC = this.byId("idRecipientCC");
+			let customValue = oEvent.getParameter("value");
+		
+			if (customValue && customValue.trim() !== "") {
+				let existingTokens = RecipientCC.getTokens();
+				let existingValues = existingTokens.map(token => token.getText());
+		
+				if (!existingValues.includes(customValue)) {
+					RecipientCC.addToken(
+						new sap.m.Token({
+							key: customValue,
+							text: customValue
+						})
+					);
+				}
+		
+				RecipientCC.setValue("");
+			}
+		},
+		
+		onSendNotificationMailForTHError: function(error){
+			let errorMessage = error?.message ? error?.message : JSON.parse(error?.responseText)?.error?.message?.value
+			MessageBox.error(errorMessage);
+			BusyIndicator.hide();
+		},
+		onSubmitToDistributorTH: function () {
+			let Recipients = this.byId("idTo")?.getTokens().map(token => token.getText()).join(", ") || "";
+			let subject = this.byId("idSubject")?.getValue() || "";
+			let mailBody = this.byId('idRichTextEditor')?.getValue() || ""; 
+			let recipientCC = this.byId("idRecipientCC")?.getTokens().map(token => token.getText()).join(", ") || "";
+			let oMail = {
+				"CountryCode": Services.getSelectedCountry(),
+				"TenderID": Services.getSelectedTenderID(),
+				"OfferID": Services.getSelectedOfferID(),
+				"Sender": UserInfo.getUserEmail(),
+				"Recipients": Recipients,
+				"Subject": subject,
+				"MailBody": mailBody,
+				"RecipientCC": recipientCC,
+				"Sent": false,
+			}
+			Services.sendMail(oMail)
+				.then(() => {
+					this.byId("SendNotificationMailDialog").destroy();
+					// Services.getOfferCompositeMessages().push({
+					// 	type: 'Success',
+					// 	title: 'Mail sent successfully',
+					// 	description: 'Mail sent successfully'
+					// });
+					// Services.showMessageCompositeView("Success", Services.getOfferCompositeMessages(), 'Success');
+				})
+				.catch(function (oError) {
+					Services.showErrorMessage(oError, "Sending mail");
+				});
+			this.onSubmitQuotation()
+		},
+		onCancelNotificationMailForTH: function () {
+			this.byId("SendNotificationMailDialog").destroy();
+		},
+
+		onChangeMEASupplyPaymentValues: function (event, action) {
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const Action = action;
+			const source = event?.getSource();
+			if (!source) return
+			const path = source.getBindingContext("fastAppData").getPath();
+			const product = source.getBindingContext("fastAppData").getObject();
+			const previousApprovalStatus = Services.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
+			const loadedProducts = Services.getFastAppDataModel().getProperty("/MEAOfferProducts") || [];
+			const loadedProduct = loadedProducts.find(pr => pr.OfferID === product.OfferID && pr.ProductCode === product.ProductCode);
+
+			if (tenderCountryRegion === "MEA" && previousApprovalStatus.approvedStatus === 2) {
+				if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`)) {
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, loadedProduct.MEAApprovalLatestUpdatedField);
+				}
+				const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`);
+				const newActions = [Action, updates].filter(Boolean).join(',');
+				Services.getFastAppDataModel().setProperty(`${path}/MEAApprovalLatestUpdatedField`, newActions);
+				Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, newActions);
+				// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
+			}
+		},
+
+		onChangeMEAPriceFocValues: async function (action) {
+			const oDefaultModel = Services.getDefaultModel();
+			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+			const previousApprovalStatus = Services.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
+			const loadedProducts = Services.getFastAppDataModel().getProperty("/MEAOfferProducts") || [];
+
+			if (tenderCountryRegion === "MEA" && previousApprovalStatus.approvedStatus === 2) {
+				const productPath = Services.getSelectedProductPath();
+				const product = oDefaultModel.getProperty(productPath);
+				const loadedProduct = loadedProducts.find(pr => pr.OfferID === product.OfferID && pr.ProductCode === product.ProductCode);
+
+				if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`)) {
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, loadedProduct?.MEAApprovalLatestUpdatedField);
+				}
+				if (!loadedProduct.IsProductAddedForPreviousApproval) {
+					const updates = Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedProductPriceField`);
+					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedProductPriceField`, [action, updates].filter(Boolean).join(','));
+				}
+			}
 		},
 	});
 });

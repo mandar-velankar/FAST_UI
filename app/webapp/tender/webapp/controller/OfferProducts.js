@@ -150,7 +150,8 @@ sap.ui.define([
 				value: formatter.priceTwoOrFour(price.offerPrice, undefined, price.uom),
 				description: price.offerCurrency,
 				enabled: sCountryCode === 'AR' || sCountryCode === 'CL' ? false : forEdit,
-				submit: oDetailController.onEditFinancialOffer.bind(oDetailController)
+				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
+				change: oDetailController.onChangeMEAPriceFocValues.bind(oDetailController, "PRICE_DEDUCTIONS_UPDATED")
 			}));
 
 			//Standard Discount
@@ -218,6 +219,7 @@ sap.ui.define([
 				enabled: forEdit,
 				description: (price.focAbsPct === "PCT") ? "%" : price.uom,
 				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
+				change: oDetailController.onChangeMEAPriceFocValues.bind(oDetailController, "VOLUME_UOM_FOC_UPDATED"),
 				visible: sCountryCode === "CL" ? false : true
 			}));
 			//FOCValue
@@ -271,6 +273,7 @@ sap.ui.define([
 				description: "%",
 				enabled: (forEdit && !forScenario),
 				submit: oDetailController.onEditFinancialOffer.bind(oDetailController),
+				change: oDetailController.onChangeMEAPriceFocValues.bind(oDetailController, "PRICE_DEDUCTIONS_UPDATED"),
 				visible: sCountryCode === "CL" ? false : true
 			}));
         }else{
@@ -1084,6 +1087,8 @@ sap.ui.define([
 			let iStandardDiscount = sCountryCode === 'BR' || sCountryCode === 'AR' || sCountryCode === 'CL' ? await that.getStandardDiscount(sCountryCode, sChannelName, sProductPackID, sDistributorID, sBrandID) : "";
 			let iAdditionalDiscount = (oProduct && oProduct.Price && oProduct.Price.AdditionalDiscount) || 0;
 
+			const previousApprovalStatus = sOfferID && await Services.getOfferPreviousApprovalStatus();
+
 			//selected offer currency on screen
 			var offerCurrency = oDetailController.byId("idCurrency").getSelectedKey();
 
@@ -1408,6 +1413,23 @@ sap.ui.define([
 
 					oDetailController._productCode = skuValues.PRODUCTPACKID;
 
+					// Only for MEA region saving copy of origibal prices to show correct approval types
+					const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
+					
+					if (tenderCountryRegion === "MEA" && previousApprovalStatus && previousApprovalStatus.approvedStatus === 2) {
+						const SelectedProductPriceCopy = Services.getFastAppDataModel().getProperty(`/SelectedProductPriceCopy`) || [];
+					
+						if (!SelectedProductPriceCopy.find(el => el.OfferID === sOfferID && el.ProductCode === sProductCode)) {
+							Services.getFastAppDataModel().setProperty(`/SelectedProductPriceCopy`, [
+								...SelectedProductPriceCopy,
+								{
+									...price,
+									OfferID: sOfferID,
+									ProductCode: sProductCode
+								}
+							]);
+						}
+					}
 				}
 
 				//hide waiting screen
@@ -1768,7 +1790,11 @@ sap.ui.define([
 				oFastDataCalls.read(sPath, {
 					groupId: "OfferProducts-CountryRegisteredPrice",
 					success: function (oData, oResponse) {
-						resolve(oData);
+						if ("ActiveRecord" in oData) {
+							resolve(oData);
+						}else {
+							resolve(false);
+						}
 					},
 					error: function (oError) {
 						//resolve, beceause we check on false to continue in correct way, if no results found
