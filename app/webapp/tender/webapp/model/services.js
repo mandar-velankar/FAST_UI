@@ -4652,11 +4652,11 @@ sap.ui.define([
 											oProductToSave.SUPPLY_UPDATE = 0;
 											oProductToSave.PAYMENT_UPDATE = 0;
 											oProductToSave.VOLUME_UOM_UPDATE = 0;
-											oProductToSave.MEAApprovalUpdatedFields = {
-												Volume: 0,
-												UOM: 0,
-												FOC: 0,
-											}
+											// oProductToSave.MEAApprovalUpdatedFields = {
+											// 	Volume: 0,
+											// 	UOM: 0,
+											// 	FOC: 0,
+											// }
 
 											//get values to check product validity
 											var sProductCode = oProductToSave.ProductCode;

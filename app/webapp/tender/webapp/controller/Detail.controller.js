@@ -72,7 +72,7 @@ sap.ui.define([
 			//keep router and model locally in this controller
 			this.oRouter = this.oOwnerComponent.getRouter();
 			this.oModel = this.oOwnerComponent.getModel();
-
+			this.oDefaultModel = this.oOwnerComponent.getModel('fastData')
 			this.oDeliveryTrackingView = this.getView().byId("deliveryTrackingViewId");
 			this.oDeliveryTrackingController = this.oDeliveryTrackingView.getController();
 			
@@ -2759,7 +2759,6 @@ sap.ui.define([
 						if(oBtnDownloadQuotation){
 							oBtnDownloadQuotation.setEnabled(false);
 						}
-
 						that.getView().byId("btnSubmitQuotation").setVisible(false);
 						break;
 					case Services.getTenderResultsPageSectionID():
@@ -9469,7 +9468,6 @@ sap.ui.define([
 				}
 
 				that.byId("btnSubmitQuotation").setEnabled(enableSubmit);
-
 			});
 
 		},
@@ -12678,6 +12676,7 @@ sap.ui.define([
 			let oEditor = sap.ui.getCore().byId("idEditor");
             let aRAMs = [];
 
+
             const oFastAppDataModel = Services.getFastAppDataModel();
             const sDivision = oFastAppDataModel.getProperty('/SelectedOffer/Division');
 			const sRecipient = oFastAppDataModel.getProperty('/SelectedOffer/Distributor/CONTACT_EMAIL');
@@ -12740,6 +12739,7 @@ sap.ui.define([
                 return "'" + oValue + "' is not a valid e-mail address";
             }
         },
+
 
 
 		onSendNotificationMail: function(evt){
