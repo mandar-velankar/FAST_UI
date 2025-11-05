@@ -3095,6 +3095,10 @@ sap.ui.define([
 			if (moment(oTenderToClone.TerminationDate).year() < 1900) {
 				oTenderToClone.TerminationDate = null;
 			}
+
+			// The FoldersCreated field should be set to null to ensure the SharePoint document is created.
+ 			oTenderToClone.FoldersCreated = null
+
 			//check if original data is valid (could be invalid due to data inconcistancy)
 			//if data of origanal clone is not valid, end-user should fix original Tender data first
 			var oTenderToCheck = Services.getService('Tender').getConvertTenderToSave(oTenderToClone);
