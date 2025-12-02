@@ -24,30 +24,30 @@ sap.ui.define([
             this.NspPricePercDiff = {
 				CDH_Clinic: "0%",
 				CDH_Government: "0%",
-				CDH_OTC: "0%",
+				CDH_Retail: "0%",
 				CDH_Private: "0%",
 				PoHCEH_Clinic: "0%",
 				PoHCEH_Government: "0%",
-				PoHCEH_OTC: "0%",
+				PoHCEH_Retail: "0%",
 				PoHCEH_Private: "0%",
 				SMPCEA_Clinic: "0%",
 				SMPCEA_Government: "0%",
-				SMPCEA_OTC: "0%",
+				SMPCEA_Retail: "0%",
 				SMPCEA_Private: "0%",
 			};
 
 			this.MspPricePercDiff = {
 				CDH_Clinic: "0%",
 				CDH_Government: "0%",
-				CDH_OTC: "0%",
+				CDH_Retail: "0%",
 				CDH_Private: "0%",
 				PoHCEH_Clinic: "0%",
 				PoHCEH_Government: "0%",
-				PoHCEH_OTC: "0%",
+				PoHCEH_Retail: "0%",
 				PoHCEH_Private: "0%",
 				SMPCEA_Clinic: "0%",
 				SMPCEA_Government: "0%",
-				SMPCEA_OTC: "0%",
+				SMPCEA_Retail: "0%",
 				SMPCEA_Private: "0%",
 			};
         }

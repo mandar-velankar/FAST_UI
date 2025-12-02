@@ -534,13 +534,13 @@
 										</HBox>
 									</VBox>
 
-									<!-- OTC -->
+									<!-- Retail -->
 									<VBox>
-										<Text text="OTC" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<Text text="Retail" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
-                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                        <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
-												fieldGroupIds="MSP,OTC"
+												fieldGroupIds="MSP,Retail"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/SMPCEA_Drugstore', 
@@ -550,9 +550,9 @@
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
-												<Label text="{ppa>/selectedProduct/MspPricePercDiff/SMPCEA_OTC}" />
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/SMPCEA_Retail}" />
 											</VBox>
-                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                            <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/SMPCEA_Drugstore', 
@@ -564,9 +564,9 @@
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
 										<HBox>
-                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                        <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input
-												fieldGroupIds="MSP,OTC" 
+												fieldGroupIds="MSP,Retail" 
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PoHCEH_Drugstore', 
@@ -576,9 +576,9 @@
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
-												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PoHCEH_OTC}" />
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PoHCEH_Retail}" />
 											</VBox>
-                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                            <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PoHCEH_Drugstore', 
@@ -590,9 +590,9 @@
 											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
 										</HBox>
 										<HBox>
-                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                        <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
-												fieldGroupIds="MSP,OTC"
+												fieldGroupIds="MSP,Retail"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Drugstore', 
@@ -602,9 +602,9 @@
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
-												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_OTC}" />
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Retail}" />
 											</VBox>
-                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                            <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Drugstore', 
@@ -898,13 +898,13 @@
 										</HBox>
 									</VBox>
 
-									<!-- OTC -->
+									<!-- Retail -->
 									<VBox>
-										<Text text="OTC" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<Text text="Retail" textAlign="Center" class="sapUiMediumMarginEnd"/>
 										<HBox>
-                                        <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                        <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
-												fieldGroupIds="NSP,OTC"
+												fieldGroupIds="NSP,Retail"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/SMPCEA_Drugstore', 
@@ -914,7 +914,7 @@
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
-												<Label text="{ppa>/selectedProduct/NspPricePercDiff/SMPCEA_OTC}" />
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/SMPCEA_Retail}" />
 											</VBox>
 											<Input 
 												value="{
@@ -932,7 +932,7 @@
 										
 										 channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
-												fieldGroupIds="NSP,OTC"
+												fieldGroupIds="NSP,Retail"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PoHCEH_Drugstore', 
@@ -942,9 +942,9 @@
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
-												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PoHCEH_OTC}" />
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PoHCEH_Retail}" />
 											</VBox>
-                                            <!-- EHQUT-202292-Thailand -pricing for OTC channel was removed for all products.It is not show in 'Pricing Policy app -->
+                                            <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
 													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PoHCEH_Drugstore', 
@@ -957,7 +957,7 @@
 										</HBox>
 										<HBox>
 											<Input 
-												fieldGroupIds="NSP,OTC"
+												fieldGroupIds="NSP,Retail"
 												liveChange="validatePrice"
 												value="{
 													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Drugstore', 
@@ -967,7 +967,7 @@
 												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
 											/>
 											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
-												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_OTC}"/>
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Retail}"/>
 											</VBox>
 											<Input 
 												value="{
