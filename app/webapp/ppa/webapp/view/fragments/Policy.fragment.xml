@@ -543,7 +543,7 @@
 												fieldGroupIds="MSP,Retail"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/SMPCEA_Drugstore', 
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/SMPCEA_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
@@ -555,7 +555,7 @@
                                             <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/SMPCEA_Drugstore', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/SMPCEA_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -569,7 +569,7 @@
 												fieldGroupIds="MSP,Retail" 
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PoHCEH_Drugstore', 
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PoHCEH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
@@ -581,7 +581,7 @@
                                             <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PoHCEH_Drugstore', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PoHCEH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -595,7 +595,7 @@
 												fieldGroupIds="MSP,Retail"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Drugstore', 
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
@@ -607,7 +607,7 @@
                                             <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Drugstore', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -907,7 +907,7 @@
 												fieldGroupIds="NSP,Retail"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/SMPCEA_Drugstore', 
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/SMPCEA_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
@@ -918,7 +918,7 @@
 											</VBox>
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/SMPCEA_Drugstore', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/SMPCEA_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -935,7 +935,7 @@
 												fieldGroupIds="NSP,Retail"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PoHCEH_Drugstore', 
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PoHCEH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
@@ -947,7 +947,7 @@
                                             <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PoHCEH_Drugstore', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PoHCEH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
@@ -960,7 +960,7 @@
 												fieldGroupIds="NSP,Retail"
 												liveChange="validatePrice"
 												value="{
-													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Drugstore', 
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
@@ -971,7 +971,7 @@
 											</VBox>
 											<Input 
 												value="{
-													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Drugstore', 
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Retail', 
 													type: '.customTypes.Price'
 												}"
 												editable="false"
