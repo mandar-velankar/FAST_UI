@@ -1,0 +1,349 @@
+<!-- Fragment for policy tab -->
+<core:FragmentDefinition 
+	xmlns:u="sap.uxap" 	
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:l="sap.ui.layout"
+	xmlns:form="sap.ui.layout.form">
+
+	<!-- MSP panel -->
+		<Panel  expandable="true" width="100%">
+
+			<!-- Toolbar for MSP panel -->
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="{i18n>mspPricingPolicy}"/>
+					<ToolbarSpacer />
+					<Button id="idPharmaBtnEditMspPolicy" text="Edit" visible="true" 
+							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom}) }"
+							press=".onEditModeMSP($event, 'idPharmaBtnEditMspPolicy')"
+					/>
+				</OverflowToolbar>
+			</headerToolbar>
+
+			<content>
+			
+				
+				<form:SimpleForm  editable="true" title="" layout="ResponsiveGridLayout" 
+						labelSpanL="1" labelSpanM="1" labelSpanS="1"
+						columnsXL="1" columnsL="1" columnsM="1"
+						adjustLabelSpan="false" 
+						singleContainerFullSize="false">
+						
+						<form:content>
+							<VBox>
+
+								<!-- Input table for MSP :TODO make dynamic in next sprint -->
+								<HBox >
+
+									<!-- Labels -->
+									<VBox width="250px">
+										<Text text=""/>
+										<Text text="PM/PCEA" />
+									</VBox>
+
+									<!-- Government -->
+									<VBox >
+										<Text text="Goverment" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Government"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PMPCEA_Government', 
+													type: '.customTypes.Price'
+												}" 
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PMPCEA_Government}"/>
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PMPCEA_Government', 
+													type: '.customTypes.Price'
+												}" 
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Private -->
+									<VBox>
+										<Text text="Private" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Private"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PMPCEA_Private}"/>
+											</VBox>													
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Clinic -->
+									<VBox>
+										<Text text="Clinic" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Clinic"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PMPCEA_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Retail -->
+									<VBox>
+										<Text text="Retail" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+                                        <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												fieldGroupIds="MSP,Retail"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PMPCEA_Retail}" />
+											</VBox>
+                                            <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+								</HBox>	
+								
+								<!-- Save & Cancel buttons -->
+								<HBox>
+									<!--<Label text="" width="250px"/>-->
+									<HBox width="100%">
+										<Button id="idPharmaBtnSaveMSP" text="Save" type="Accept" press="onSaveMSP($event, 'idPharmaBtnEditMspPolicy', 'idPharmaBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} : false }" class="sapUiTinyMarginEnd"/>
+										<Button text="Cancel" type="Reject" press="onCancelMSP($event, 'idPharmaBtnEditMspPolicy', 'idPharmaBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} : false }" />	
+									</HBox>	
+								</HBox>
+							</VBox>
+						</form:content>
+	
+				</form:SimpleForm>
+
+			</content>
+
+		</Panel>
+
+		<!-- NSP Panel -->
+		<Panel  expandable="true" width="100%">
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="{i18n>nspPricingPolicy}"/>
+					<ToolbarSpacer />
+					<Button id="idPharmaBtnEditNspPolicy" text="Edit" visible="true" 
+							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom}) }"
+							press=".onEditModeNSP($event, 'idPharmaBtnEditNspPolicy')"
+					/>
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+				<form:SimpleForm  editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="1" labelSpanL="1" labelSpanM="1" labelSpanS="1"
+								 adjustLabelSpan="false" columnsXL="1" columnsL="1" columnsM="1"
+								 singleContainerFullSize="false">
+						
+						<form:content>
+							<VBox>
+
+								<!-- Input table for NSP :TODO make dynamic in next sprint -->
+								<HBox >
+
+									<!-- Labels -->
+									<VBox width="250px">
+										<Text text=""/>
+										<Text text="PM/PCEA" />
+									</VBox>
+
+									<!-- Government -->
+									<VBox>
+										<Text text="Goverment" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Government"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PMPCEA_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PMPCEA_Government}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PMPCEA_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Private -->
+									<VBox>
+										<Text text="Private" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Private"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PMPCEA_Private}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Clinic -->
+									<VBox>
+										<Text text="Clinic" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Clinic"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PMPCEA_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Retail -->
+									<VBox>
+										<Text text="Retail" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+                                        <!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												fieldGroupIds="NSP,Retail"
+												liveChange="validatePrice($event, 'idPharmaBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PMPCEA_Retail}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+								</HBox>
+
+								<!-- Save & Cancel buttons -->
+								<HBox>
+									<!-- <Label text="" width="250px"/> -->
+									<HBox width="100%" alignItems="left">
+										<Button id="idPharmaBtnSaveNSP" text="Save" type="Accept" press="onSaveNSP($event, 'idPharmaBtnEditMspPolicy', 'idPharmaBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} : false }" class="sapUiTinyMarginEnd"/>
+										<Button text="Cancel" type="Reject" press="onCancelNSP($event, 'idPharmaBtnEditMspPolicy', 'idPharmaBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} : false }" />	
+									</HBox>
+								</HBox>
+
+							</VBox>
+						</form:content>
+	
+				</form:SimpleForm>
+			</content>
+
+		</Panel>
+
+</core:FragmentDefinition>

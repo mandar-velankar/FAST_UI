@@ -35,7 +35,33 @@ sap.ui.define([
 			
 			var oDateModel = new sap.ui.model.json.JSONModel({
 				minDate: new Date(),
-				enabled: false
+				enabled: false,
+				fragmentBtnIDs: {
+					msp: {
+						edit: {
+							RadiologyApproverPosition: "idRadBtnEditMspPolicy",
+							PharmaApproverPosition: "idPharmaBtnEditMspPolicy",
+							PharmaApproverPositionWithExclusions: "idPharmaWithExclBtnEditMspPolicy"
+						},
+						save: {
+							RadiologyApproverPosition: "idRadBtnSaveMSP",
+							PharmaApproverPosition: "idPharmaBtnSaveMSP",
+							PharmaApproverPositionWithExclusions: "idPharmaWithExclBtnSaveMSP"
+						}
+					},
+					nsp: {
+						edit: {
+							RadiologyApproverPosition: "idRadBtnEditNspPolicy",
+							PharmaApproverPosition: "idPharmaBtnEditNspPolicy",
+							PharmaApproverPositionWithExclusions: "idPharmaWithExclBtnEditNspPolicy"
+						},
+						save: {
+							RadiologyApproverPosition: "idRadBtnSaveNSP",
+							PharmaApproverPosition: "idPharmaBtnSaveNSP",
+							PharmaApproverPositionWithExclusions: "idPharmaWithExclBtnSaveNSP"
+						}
+					}
+				}
 			});	
 			this.getView().setModel(oDateModel, "dateModel");
 		},
@@ -734,28 +760,27 @@ sap.ui.define([
 			this.ppaState.setEditMode(true);
 		},
 
-		onEditModeMSP: function(oEvent){
-
+		onEditModeMSP: function(oEvent, btnId){
 			if(this.checkEffectiveDateChanged()){
 				if(!this.ppaState.isEmpty(this.ppaState.getSelectedProduct().draftProductPolicy)){
 					this.setMspEditMode(true);
 					this.setNspEditMode(false);
 					this.ppaState.setMspPanelExpanded(true);
-					this.byId("idBtnEditMspPolicy").setEnabled(false);
-					this.byId("idBtnEditNspPolicy").setEnabled(false);
+					this.byId(btnId).setEnabled(false);
+					this.byId(btnId).setEnabled(false);
 				}
 			}
 		},
 
-		onEditModeNSP: function(oEvent){
+		onEditModeNSP: function(oEvent, btnId){
 
 			if(this.checkEffectiveDateChanged()){
 				if(!this.ppaState.isEmpty(this.ppaState.getSelectedProduct().draftProductPolicy)){
 					this.setMspEditMode(false);
 					this.setNspEditMode(true);
 					this.ppaState.setNspPanelExpanded(true);
-					this.byId("idBtnEditMspPolicy").setEnabled(false);
-					this.byId("idBtnEditNspPolicy").setEnabled(false);
+					this.byId(btnId).setEnabled(false);
+					this.byId(btnId).setEnabled(false);
 				}
 			}
 		},
@@ -775,7 +800,7 @@ sap.ui.define([
       
 		},
 
-		onCancelMSP: function(oEvent){
+		onCancelMSP: function(oEvent, mspEditBtnId, nspEditBtnId){
 			// reload the corresponding Product Policy
 			const policyId = this.ppaState.getSelectedProduct().draftProductPolicy.iD;
 
@@ -784,8 +809,8 @@ sap.ui.define([
 
 			this.ppaState.getProductPolicy(policyId).then(() => {
 				this.setMspEditMode(false);
-				this.byId("idBtnEditNspPolicy").setEnabled(true);
-				this.byId("idBtnEditMspPolicy").setEnabled(true);
+				this.byId(mspEditBtnId).setEnabled(true);
+				this.byId(nspEditBtnId).setEnabled(true);
 
 				// clear the input values states which are in error
 				this.clearPricingPolicyValueStates("MSP");
@@ -798,7 +823,7 @@ sap.ui.define([
 			
 		},
 
-		onCancelNSP: function(oEvent){
+		onCancelNSP: function(oEvent, mspEditBtnId, nspEditBtnId){
 			// reload the corresponding Product Policy
 			const policyId = this.ppaState.getSelectedProduct().draftProductPolicy.iD;
 
@@ -807,8 +832,8 @@ sap.ui.define([
 
 			this.ppaState.getProductPolicy(policyId).then(() => {
 				this.setNspEditMode(false);
-				this.byId("idBtnEditNspPolicy").setEnabled(true);
-				this.byId("idBtnEditMspPolicy").setEnabled(true);
+				this.byId(mspEditBtnId).setEnabled(true);
+				this.byId(nspEditBtnId).setEnabled(true);
 
 				// clear the input values states which are in error
 				this.clearPricingPolicyValueStates("NSP");
@@ -848,7 +873,7 @@ sap.ui.define([
 		 * Save Prices MSP
 		 * @param {} oEvent 
 		 */
-		onSaveMSP: function(oEvent){
+		onSaveMSP: function(oEvent, mspEditBtnId, nspEditBtnId){
 
 			//show loading screen
 			this.getView().setBusy(true);
@@ -867,8 +892,8 @@ sap.ui.define([
 
 				//Display mode MSP
 				this.setMspEditMode(false);
-				this.byId("idBtnEditMspPolicy").setEnabled(true);
-				this.byId("idBtnEditNspPolicy").setEnabled(true);
+				this.byId(mspEditBtnId).setEnabled(true);
+				this.byId(nspEditBtnId).setEnabled(true);
 				
 				//Close panels 
 				this.ppaState.setMspPanelExpanded(false);
@@ -888,7 +913,7 @@ sap.ui.define([
 		 * Save Prices NSP
 		 * @param {*} oEvent 
 		 */
-		onSaveNSP:  function(oEvent){
+		onSaveNSP:  function(oEvent, mspEditBtnId, nspEditBtnId){
 
 			//show loading screen
 			this.getView().setBusy(true);
@@ -907,8 +932,8 @@ sap.ui.define([
 				
 				//Display mode NSP
 				this.setNspEditMode(false);
-				this.byId("idBtnEditNspPolicy").setEnabled(true);
-				this.byId("idBtnEditMspPolicy").setEnabled(true);
+				this.byId(mspEditBtnId).setEnabled(true);
+				this.byId(nspEditBtnId).setEnabled(true);
 
 				//Close panels 
 				this.ppaState.setMspPanelExpanded(false);
@@ -1116,7 +1141,7 @@ sap.ui.define([
 			this.byId("idBtnCancelEffctvDate").setVisible(bEnabled);
 		},
 
-		validatePrice: function(oEvent){
+		validatePrice: function(oEvent, saveBtnId){
 
 			const sPath = oEvent.getSource().getBindingPath("value").split("/").pop();
 			const sChannel  = oEvent.getSource().getBindingPath("value").split("/").pop().split("_").pop();
@@ -1126,8 +1151,8 @@ sap.ui.define([
 			// const vBox = oEvent.getSource().getParent();
 			// const aVboxInputObjects = vBox.getItems().filter(oInput => oInput.getMetadata()._sClassName.indexOf("sap.m.Input") > -1);
 			// const sPanel = oEvent.getSource().getBindingPath("value").split("/")[3];
-			const aInputObjects = this.getView().getControlsByFieldGroupId([sSection,sChannel]);
-			const oSaveBtn = sPanel.indexOf("mspPrices") > -1 ? this.byId("idBtnSaveMSP") : this.byId("idBtnSaveNSP");
+			const aInputObjects = this.getView().getControlsByFieldGroupId([sSection,sChannel]).filter(input => input instanceof sap.m.Input);
+			const oSaveBtn = sPanel.indexOf("mspPrices") > -1 ? this.byId(saveBtnId) : this.byId(saveBtnId);
 			
 			let bValid = true;
 			let aValidations = aInputObjects.map(oInput => this.validateInput(oInput));
