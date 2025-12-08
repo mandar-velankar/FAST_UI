@@ -197,7 +197,8 @@ sap.ui.define([
 					const data = {
 						...aggregatedObj,
 						LatestApprovedPolicy: approved && approved.data,
-						DraftPolicy: draft && draft.data
+						DraftPolicy: draft && draft.data,
+						brandRolesInfo: this.getHardCodedRoles()
 					};
 
 					this.setProperty("aggregatedBrandPolicy", new AggregatedBrandPolicy(data));				
@@ -246,7 +247,7 @@ sap.ui.define([
 
 			if(sProductPolicyId){
 				return this.getService().getProductPolicy(sProductPolicyId).then((PolicyResponse) => {
-					let oPolicy = new Policy(PolicyResponse.data);
+					let oPolicy = new Policy({...PolicyResponse.data, brandRolesInfo: {brandRoles: this.data.brandRoles, ActiveApproverPositions: this.data.ActiveApproverPositions}});
 					oPolicy.setChannels(this.data.channels);
 
 					this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oPolicy);
@@ -271,7 +272,7 @@ sap.ui.define([
 					channels : this.data.channels
 				}
 
-				let oNewPolicy = new Policy(oPolicy);
+				let oNewPolicy = new Policy({...oPolicy, brandRolesInfo: {brandRoles: this.data.brandRoles, ActiveApproverPositions: this.data.ActiveApproverPositions}});
 
 				// set the new policy
 				this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oNewPolicy);
@@ -717,7 +718,49 @@ sap.ui.define([
 					return false;
 			}
 			return true;
-		}
+		},
+
+		getHardCodedRoles: function (){
+            const brand = this.getProperty("brand");
+			let activeApproverPositions = "";
+			let aRoles = [];
+			if (!brand) {
+				this.setProperty("brandRoles", aRoles);
+				return aRoles;
+			}
+
+            if (brand.division === 'Radiology') {
+                aRoles = [
+                    "SM",
+                    "PM",
+                    "CDH"
+                ]
+				activeApproverPositions = 'RadiologyApproverPosition';
+            }
+
+            if (brand.division === 'Pharma') {
+                aRoles = [
+                    "PM/PCEA"
+                ]
+				activeApproverPositions = 'PharmaApproverPosition';
+            }
+            
+            if (brand.division === 'Pharma' && ["Eylea", "Nubeqa", "Stivarga", "Xofigo"].includes(brand.brandName)) {
+                aRoles = [
+                    "CE Coach",
+                    "PM",
+                    "Head of Focus Brands and Market Access"
+                ]
+				activeApproverPositions = 'PharmaApproverPositionWithExclusions';
+            }
+			this.setProperty("brandRoles", aRoles);
+			this.setProperty("ActiveApproverPositions", activeApproverPositions);
+
+            return {
+				brandRoles: this.getProperty("brandRoles"),
+				ActiveApproverPositions: this.getProperty("ActiveApproverPositions")
+			};
+        },
     
 	});
 
