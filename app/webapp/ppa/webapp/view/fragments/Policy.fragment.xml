@@ -265,14 +265,7 @@
 			</content>
 		</Panel>
 
-		<VBox visible="{= ${ppa>/ActiveApproverPositions} === 'RadiologyApproverPosition'}">
-			<core:Fragment fragmentName="com.bayer.tender.ppa.view.fragments.ApproverPositions.RadiologyApproverPositions" type="XML"/>
-		</VBox>
-		<VBox visible="{= ${ppa>/ActiveApproverPositions} === 'PharmaApproverPosition'}">
-			<core:Fragment fragmentName="com.bayer.tender.ppa.view.fragments.ApproverPositions.PharmaApproverPositions" type="XML"/>
-		</VBox>
-		<VBox visible="{= ${ppa>/ActiveApproverPositions} === 'PharmaApproverPositionWithExclusions'}">
-			<core:Fragment fragmentName="com.bayer.tender.ppa.view.fragments.ApproverPositions.PharmaApproverPositionsWithExclusions" type="XML"/>
+		<VBox id="idProductPricingFragment">
 		</VBox>
 	</VBox>
 

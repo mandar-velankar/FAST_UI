@@ -68,24 +68,25 @@ sap.ui.define([
                 let oMspPrices = this.getEmptyPriceStructure();
                 let oNspPrices = this.getEmptyPriceStructure();
                 const {ActiveApproverPositions} = this.getBrandRolesInfo();
+                let isProductPharmaWithoutExclusions = ActiveApproverPositions === 'PharmaApproverPositions';
 
                 //Fill MSP & NSP objects with prices for each role/channelname combination
                 aPolicyPrices.map((oPolicyPrice) => {
 
-                    oPolicyPrice.role = this.normalizeRoleNames(oPolicyPrice.role, ActiveApproverPositions);
+                    // oPolicyPrice.role = this.normalizeRoleNames(oPolicyPrice.role, ActiveApproverPositions);
 
                     switch(oPolicyPrice.pricingPolicyName) {
                         case 'MSP':
                           //attribute_name
                           let sMspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oMspPrices[sMspAttributeName] = oPolicyPrice.price;
+                          oMspPrices[sMspAttributeName] = isProductPharmaWithoutExclusions ? oPolicyPrice.role == 'NSM/SM/FM' ? oPolicyPrice.price : 0 : oPolicyPrice.price;
                           break;
                         case 'NSP':
                           //attribute_name
                           let sNspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oNspPrices[sNspAttributeName] = oPolicyPrice.price;
+                          oNspPrices[sNspAttributeName] = isProductPharmaWithoutExclusions ? oPolicyPrice.role == 'NSM/SM/FM' ? oPolicyPrice.price : 0 : oPolicyPrice.price;
                           break;
                         default:
                           // code block
@@ -125,23 +126,24 @@ sap.ui.define([
 			let oNspPrices = this.getNspPrices();
             let aPolicyPrices = this.getPolicyPrices();
             const {ActiveApproverPositions} = this.getBrandRolesInfo();
+            let isProductPharmaWithoutExclusions = ActiveApproverPositions === 'PharmaApproverPositions';
             
             //Fill MSP & NSP objects with prices for each role/channelname combination
             aPolicyPrices.map((oPolicyPrice) => {
-                oPolicyPrice.role = this.normalizeRoleNames(oPolicyPrice.role, ActiveApproverPositions);
+                // oPolicyPrice.role = this.normalizeRoleNames(oPolicyPrice.role, ActiveApproverPositions);
 
                 switch(oPolicyPrice.pricingPolicyName) {
                     case 'MSP':
                           //attribute_name
                           let sMspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oPolicyPrice.price = oMspPrices[sMspAttributeName];
+                          oPolicyPrice.price = isProductPharmaWithoutExclusions ? oPolicyPrice.role === 'NSM/SM/FM' ? oMspPrices[sMspAttributeName] : 0 : oMspPrices[sMspAttributeName];
                           break;
                     case 'NSP':
                           //attribute_name
                           let sNspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oPolicyPrice.price =oNspPrices[sNspAttributeName];
+                          oPolicyPrice.price = isProductPharmaWithoutExclusions ? oPolicyPrice.role === 'NSM/SM/FM' ? oNspPrices[sNspAttributeName] : 0 : oNspPrices[sNspAttributeName];
                           break;
                     default:
                           // code block

@@ -5,8 +5,9 @@ sap.ui.define([
 	"../model/datatypes/Price",
 	"sap/m/library",
 	"sap/ui/model/Filter",
-	"sap/ui/model/Sorter"
-], function (BaseController, JSONModel, formatter, Price, mobileLibrary,  Filter, Sorter) {
+	"sap/ui/model/Sorter",
+	"sap/ui/core/Fragment",
+], function (BaseController, JSONModel, formatter, Price, mobileLibrary,  Filter, Sorter, Fragment) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -162,7 +163,8 @@ sap.ui.define([
 						brand["brandPolicyId"] = this.ppaState.data.brandPolicy.iD;
 
 						this.ppaState.getApprovalRequest(brand);
-						this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+						await this.getAggregatedBrandPolicy(this.currentCountryCode, this.currentBrandId, this.currentDivision);
+						this.loadProductPricingFragment();
 					});
 					
 					this.getProducts(this.currentCountryCode, this.currentBrandId, this.currentDivision);
@@ -1478,9 +1480,23 @@ sap.ui.define([
 				sState = iValueLength > iMaxLength ? "Error" : "None";
 		
 			oTextArea.setValueState(sState);
-		}
+		},
 
+		loadProductPricingFragment: function(){
+			const ppaModel = this.getView().getModel('ppa');
+			const activeApproversPosition = ppaModel.getProperty("/ActiveApproverPositions");
+			const vbox = this.byId("idProductPricingFragment");
 
+			vbox.destroyItems();
+			return Fragment.load({
+				id: this.getView().getId(),
+				name: `com.bayer.tender.ppa.view.fragments.ApproverPositions.${activeApproversPosition}`,
+				controller: this
+			}).then(function (form) {
+				vbox.addItem(form);
+				return form;
+			}.bind(this));
+		},
     
 	});
 

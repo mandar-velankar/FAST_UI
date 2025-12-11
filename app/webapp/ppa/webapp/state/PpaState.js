@@ -735,14 +735,14 @@ sap.ui.define([
                     "PM",
                     "CDH"
                 ]
-				activeApproverPositions = 'RadiologyApproverPosition';
+				activeApproverPositions = 'RadiologyApproverPositions';
             }
 
             if (brand.division === 'Pharma') {
                 aRoles = [
                     "PM/PCEA"
                 ]
-				activeApproverPositions = 'PharmaApproverPosition';
+				activeApproverPositions = 'PharmaApproverPositions';
             }
             
             if (brand.division === 'Pharma' && ["Eylea", "Nubeqa", "Stivarga", "Xofigo"].includes(brand.brandName)) {
@@ -751,7 +751,7 @@ sap.ui.define([
                     "PM",
                     "Head of Focus Brands and Market Access"
                 ]
-				activeApproverPositions = 'PharmaApproverPositionWithExclusions';
+				activeApproverPositions = 'PharmaApproverPositionsWithExclusions';
             }
 			this.setProperty("brandRoles", aRoles);
 			this.setProperty("ActiveApproverPositions", activeApproverPositions);
