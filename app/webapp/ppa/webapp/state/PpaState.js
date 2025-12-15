@@ -729,29 +729,61 @@ sap.ui.define([
 				return aRoles;
 			}
 
-            if (brand.division === 'Radiology') {
-                aRoles = [
-                    "SM",
-                    "PM",
-                    "CDH"
-                ]
+            if (brand.division.toLowerCase().trim() === 'radiology') {
+                aRoles = [{
+					name: "SM",
+					type: "nsm",
+					policyPriceRole: "SM/PCEA"
+				},
+				{
+					name: "PM",
+					type: "hbu",
+					policyPriceRole: "PoH/CEH"			
+				},
+				{
+					name: "CDH",
+					type: "cdh",
+					policyPriceRole: "CDH"		
+				}]
 				activeApproverPositions = 'RadiologyApproverPositions';
             }
 
-            if (brand.division === 'Pharma') {
-                aRoles = [
-                    "PM/PCEA"
-                ]
-				activeApproverPositions = 'PharmaApproverPositions';
-            }
-            
-            if (brand.division === 'Pharma' && ["Eylea", "Nubeqa", "Stivarga", "Xofigo"].includes(brand.brandName)) {
-                aRoles = [
-                    "CE Coach",
-                    "PM",
-                    "Head of Focus Brands and Market Access"
-                ]
-				activeApproverPositions = 'PharmaApproverPositionsWithExclusions';
+            if (brand.division.toLowerCase().trim() === 'pharma') {
+				if (this.isExcludedBrand(brand.brandName)) {
+					aRoles = [{
+						name: "CE Coach",
+						type: "nsm",
+						policyPriceRole: "SM/PCEA"
+					},
+					{
+						name: "PM",
+						type: "hbu",
+						policyPriceRole: "PoH/CEH"			
+					},
+					{
+						name: "Head of Focus Brands and Market Access",
+						type: "cdh",
+						policyPriceRole: "CDH"		
+					}]
+					activeApproverPositions = 'PharmaApproverPositionsWithExclusions';
+				}else {
+					aRoles = [{
+						name: "PM/PCEA",
+						type: "nsm",
+						policyPriceRole: "SM/PCEA"
+					},
+					{
+						name: "PoH/CEH",
+						type: "hbu",
+						policyPriceRole: "PoH/CEH"			
+					},
+					{
+						name: "CDH",
+						type: "cdh",
+						policyPriceRole: "CDH"		
+					}]
+					activeApproverPositions = 'PharmaApproverPositions';
+				}
             }
 			this.setProperty("brandRoles", aRoles);
 			this.setProperty("ActiveApproverPositions", activeApproverPositions);
@@ -761,6 +793,12 @@ sap.ui.define([
 				ActiveApproverPositions: this.getProperty("ActiveApproverPositions")
 			};
         },
+
+		isExcludedBrand (brandName) {
+			const brands = ["eylea", "nubeqa", "stivarga", "xofigo"];
+			const normalized = brandName.toLowerCase().trim();
+			return brands.some(brand => normalized.includes(brand));
+		}
     
 	});
 
