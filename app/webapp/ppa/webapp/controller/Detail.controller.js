@@ -1244,20 +1244,24 @@ sap.ui.define([
 			let msg = "";
 
 			const oChannelPrices = this.ppaState.getSelectedProduct().draftProductPolicy.getPricesForChannelByPriceType(sPriceType,sChannel);
+			const aRoles = this.getView().getModel('ppa').getProperty("/brandRoles") || [];
+			const currentNSMRole = aRoles.find(role => role.type === 'nsm');
+			const currentHBURole = aRoles.find(role => role.type === 'hbu');
+			const currentCDHRole = aRoles.find(role => role.type === 'cdh');
 
 			switch(sRole){
 				case "CDH":
 					if(oChannelPrices["CDH"] > oChannelPrices["PoHCEH"]){
-						msg = "CDH price must be lower than the PoH/CEH price";
+						msg = `${currentCDHRole.name} price must be lower than the ${currentHBURole?.name} price`;
 						bValid = false;
 					}else if(oChannelPrices["CDH"] > oChannelPrices["SMPCEA"]){
-						msg = "CDH price must be lower than the SM/PCEA price";
+						msg = `${currentCDHRole.name} price must be lower than the ${currentNSMRole?.name} price`;
 						bValid = false;
 					}
 					break;
 				case "PoHCEH":
 					if(oChannelPrices["PoHCEH"] > oChannelPrices["SMPCEA"]){
-						msg = "PoH/CEH price must be lower than the SM/PCEA price";
+						msg = `${currentHBURole?.name} price must be lower than the ${currentNSMRole?.name} price`;
 						bValid = false;
 					}
 					break;
