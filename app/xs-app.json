@@ -20,6 +20,27 @@
       "csrfProtection": true
     },
     {
+      "source": "/app/ccma/odata/(.*)$",
+      "target": "/odata/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-ccma-api",
+      "csrfProtection": true
+    },
+    {
+      "source": "/ccma/odata/(.*)$",
+      "target": "/odata/$1",
+      "authenticationType": "xsuaa",
+      "destination": "fast-ccma-api",
+      "csrfProtection": true
+    },
+    {
+      "source": "/ccmabasic/odata/(.*)$",
+      "target": "/odata/$1",
+      "authenticationType": "basic",
+      "destination": "fast-ccma-api",
+      "csrfProtection": false
+    },
+    {
       "source": "/v4/(.*)$",
       "target": "$1",
       "authenticationType": "xsuaa",
@@ -105,6 +126,16 @@
     {
       "source": "^/app/standardtender/(.*)",
       "target": "/combayertenderstatenderapp/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/ccma/(.*)",
+      "target": "/combayertenderccma/$1",
+      "service": "html5-apps-repo-rt"
+    },
+    {
+      "source": "^/app/ccma/(.*)",
+      "target": "/combayertenderccma/$1",
       "service": "html5-apps-repo-rt"
     },
     {

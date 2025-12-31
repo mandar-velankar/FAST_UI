@@ -14,6 +14,10 @@ sap.ui.define([
                 this.setChannels(data.channels);
             }
 
+            if(data && data.brandRolesInfo){
+                this.setBrandRolesInfo(data.brandRolesInfo);
+            }
+
             //ID is not existing we should go to creation
             if (data && data.ID) { 
                 
@@ -63,27 +67,26 @@ sap.ui.define([
                 
                 let oMspPrices = this.getEmptyPriceStructure();
                 let oNspPrices = this.getEmptyPriceStructure();
+                const {ActiveApproverPositions} = this.getBrandRolesInfo();
+                let isProductPharmaWithoutExclusions = ActiveApproverPositions === 'PharmaApproverPositions';
 
                 //Fill MSP & NSP objects with prices for each role/channelname combination
                 aPolicyPrices.map((oPolicyPrice) => {
 
-                    if (oPolicyPrice.role === "NSM/SM/FM") {
-                        oPolicyPrice.role = "SM/PCEA";
-                    } else if (oPolicyPrice.role === "HBU") {
-                        oPolicyPrice.role = "PoH/CEH";
-                    }
+                    // oPolicyPrice.role = this.normalizeRoleNames(oPolicyPrice.role, ActiveApproverPositions);
+
                     switch(oPolicyPrice.pricingPolicyName) {
                         case 'MSP':
                           //attribute_name
-                          let sMspAttributeName = oPolicyPrice.role.replaceAll('/', '') + '_' + oPolicyPrice.channel.channelName;
+                          let sMspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oMspPrices[sMspAttributeName] = oPolicyPrice.price;
+                          oMspPrices[sMspAttributeName] = isProductPharmaWithoutExclusions ? oPolicyPrice.role == 'SM/PCEA' ? oPolicyPrice.price : 0 : oPolicyPrice.price;
                           break;
                         case 'NSP':
                           //attribute_name
-                          let sNspAttributeName = oPolicyPrice.role.replaceAll('/', '') + '_' + oPolicyPrice.channel.channelName;
+                          let sNspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oNspPrices[sNspAttributeName] = oPolicyPrice.price;
+                          oNspPrices[sNspAttributeName] = isProductPharmaWithoutExclusions ? oPolicyPrice.role == 'SM/PCEA' ? oPolicyPrice.price : 0 : oPolicyPrice.price;
                           break;
                         default:
                           // code block
@@ -107,6 +110,13 @@ sap.ui.define([
             }
         },
 
+        setBrandRolesInfo: function (brandRolesInfo) {
+            this.brandRolesInfo = brandRolesInfo;
+        },
+
+        getBrandRolesInfo: function () {
+            return this.brandRolesInfo;
+        },
         
 		//match prices from UI structured object again to the actual price object
 		matchPrices: function (){
@@ -115,26 +125,25 @@ sap.ui.define([
             let oMspPrices = this.getMspPrices();
 			let oNspPrices = this.getNspPrices();
             let aPolicyPrices = this.getPolicyPrices();
+            const {ActiveApproverPositions} = this.getBrandRolesInfo();
+            let isProductPharmaWithoutExclusions = ActiveApproverPositions === 'PharmaApproverPositions';
             
             //Fill MSP & NSP objects with prices for each role/channelname combination
             aPolicyPrices.map((oPolicyPrice) => {
-                if (oPolicyPrice.role === "NSM/SM/FM") {
-                    oPolicyPrice.role = "SM/PCEA";
-                } else if (oPolicyPrice.role === "HBU") {
-                    oPolicyPrice.role = "PoH/CEH";
-                }
+                // oPolicyPrice.role = this.normalizeRoleNames(oPolicyPrice.role, ActiveApproverPositions);
+
                 switch(oPolicyPrice.pricingPolicyName) {
                     case 'MSP':
                           //attribute_name
-                          let sMspAttributeName = oPolicyPrice.role.replaceAll('/', '') + '_' + oPolicyPrice.channel.channelName;
+                          let sMspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oPolicyPrice.price = oMspPrices[sMspAttributeName];
+                          oPolicyPrice.price = isProductPharmaWithoutExclusions ? oPolicyPrice.role === 'SM/PCEA' ? oMspPrices[sMspAttributeName] : 0 : oMspPrices[sMspAttributeName];
                           break;
                     case 'NSP':
                           //attribute_name
-                          let sNspAttributeName = oPolicyPrice.role.replaceAll('/', '') + '_' + oPolicyPrice.channel.channelName;
+                          let sNspAttributeName = oPolicyPrice.role.replaceAll(/[/ ]/g, '') + '_' + oPolicyPrice.channel.channelName;
                           //set price
-                          oPolicyPrice.price =oNspPrices[sNspAttributeName];
+                          oPolicyPrice.price = isProductPharmaWithoutExclusions ? oPolicyPrice.role === 'SM/PCEA' ? oNspPrices[sNspAttributeName] : 0 : oNspPrices[sNspAttributeName];
                           break;
                     default:
                           // code block
@@ -288,7 +297,7 @@ sap.ui.define([
         getEmptyPriceStructure: function (){
 
             //get roles & channels
-            let aRoles    = this.getHardCodedRoles();
+            let {brandRoles: aRoles}    = this.getBrandRolesInfo();
             let aChannels = this.getChannels(); //this.getHardCodedChannels();
 
             //emptyPrice
@@ -296,10 +305,10 @@ sap.ui.define([
 
             //Build structure dynamically
             aRoles.map(function(sRole){
-                
+                if (!sRole.policyPriceRole) return; 
                 aChannels.map(function (oChannel) {
                     //Based on the combination of every rol with every channel
-                    let sMspAttributeName = sRole.replaceAll('/', '') + '_' + oChannel.channelName;
+                    let sMspAttributeName = sRole.policyPriceRole.replaceAll(/[/ ]/g, '') + '_' + oChannel.channelName;
                     oEmptyPrice[sMspAttributeName] = '';
                 });
 
@@ -314,7 +323,7 @@ sap.ui.define([
         getEmptyPriceObjects: function(){
 
             //get roles & channels
-            let aRoles    = this.getHardCodedRoles();
+            let {brandRoles: aRoles}    = this.getBrandRolesInfo();
             let aChannels = this.getChannels(); //this.getHardCodedChannels();
             let oPrice = new Price();
             let oEmptyPriceObject = oPrice.getEmptyPriceObject();
@@ -322,13 +331,13 @@ sap.ui.define([
 
             //Build structure dynamically
             aRoles.map(function(sRole){
-                
+                if (!sRole.policyPriceRole) return; 
                 aChannels.map(function (oChannel){
                     
                     //Object NSP
                     //oEmptyPriceObject.iD = ""; 
                     oEmptyPriceObject.pricingPolicyName = "NSP"; 
-                    oEmptyPriceObject.role = sRole; 
+                    oEmptyPriceObject.role = sRole.policyPriceRole; 
                     oEmptyPriceObject.channel_ID = oChannel.iD;
                     oEmptyPriceObject.Channel = {
                         channelCountry: "TH",
@@ -417,6 +426,7 @@ sap.ui.define([
             return expandedObj;
 
         },
+
 
         // getJSON: function () {
         //     return this.getJSONObject(["CountryCode", "CountryName"]);
