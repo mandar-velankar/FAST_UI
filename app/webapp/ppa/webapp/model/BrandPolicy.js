@@ -16,7 +16,7 @@ sap.ui.define([
 
             if (data) {
                 //copy array's manually to objects
-                data.ProductPolicies && this.setProductPolicies(data.ProductPolicies.results);
+                data.ProductPolicies && this.setProductPolicies(data.ProductPolicies.results, data.brandRolesInfo);
             }
         },
 
@@ -38,12 +38,12 @@ sap.ui.define([
             }
         },
 
-        setProductPolicies: function (productPolicy) {
+        setProductPolicies: function (productPolicy, brandRolesInfo) {
             if(productPolicy){
                 this.productPolicies = productPolicy.map(policy => {
                     //set channels on policy
                     policy["channels"] = this.getChannels();
-                    return new Policy(policy);
+                    return new Policy({...policy, brandRolesInfo});
                 });
             }
         },

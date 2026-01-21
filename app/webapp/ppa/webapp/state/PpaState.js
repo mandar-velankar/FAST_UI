@@ -197,7 +197,8 @@ sap.ui.define([
 					const data = {
 						...aggregatedObj,
 						LatestApprovedPolicy: approved && approved.data,
-						DraftPolicy: draft && draft.data
+						DraftPolicy: draft && draft.data,
+						brandRolesInfo: this.getHardCodedRoles()
 					};
 
 					this.setProperty("aggregatedBrandPolicy", new AggregatedBrandPolicy(data));				
@@ -246,7 +247,7 @@ sap.ui.define([
 
 			if(sProductPolicyId){
 				return this.getService().getProductPolicy(sProductPolicyId).then((PolicyResponse) => {
-					let oPolicy = new Policy(PolicyResponse.data);
+					let oPolicy = new Policy({...PolicyResponse.data, brandRolesInfo: {brandRoles: this.data.brandRoles, ActiveApproverPositions: this.data.ActiveApproverPositions}});
 					oPolicy.setChannels(this.data.channels);
 
 					this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oPolicy);
@@ -271,7 +272,7 @@ sap.ui.define([
 					channels : this.data.channels
 				}
 
-				let oNewPolicy = new Policy(oPolicy);
+				let oNewPolicy = new Policy({...oPolicy, brandRolesInfo: {brandRoles: this.data.brandRoles, ActiveApproverPositions: this.data.ActiveApproverPositions}});
 
 				// set the new policy
 				this.data.aggregatedBrandPolicy.getDraftBrandPolicy().setProductPolicy(oNewPolicy);
@@ -717,6 +718,86 @@ sap.ui.define([
 					return false;
 			}
 			return true;
+		},
+
+		getHardCodedRoles: function (){
+            const brand = this.getProperty("brand");
+			let activeApproverPositions = "";
+			let aRoles = [];
+			if (!brand) {
+				this.setProperty("brandRoles", aRoles);
+				return aRoles;
+			}
+
+            if (brand.division.toLowerCase().trim() === 'radiology') {
+                aRoles = [{
+					name: "SM",
+					type: "nsm",
+					policyPriceRole: "SM/PCEA"
+				},
+				{
+					name: "PM",
+					type: "hbu",
+					policyPriceRole: "PoH/CEH"			
+				},
+				{
+					name: "CDH",
+					type: "cdh",
+					policyPriceRole: "CDH"		
+				}]
+				activeApproverPositions = 'RadiologyApproverPositions';
+            }
+
+            if (brand.division.toLowerCase().trim() === 'pharma') {
+				if (this.isExcludedBrand(brand.brandName)) {
+					aRoles = [{
+						name: "CE Coach",
+						type: "nsm",
+						policyPriceRole: "SM/PCEA"
+					},
+					{
+						name: "PM",
+						type: "hbu",
+						policyPriceRole: "PoH/CEH"			
+					},
+					{
+						name: "Head of Focus Brands and Market Access",
+						type: "cdh",
+						policyPriceRole: "CDH"		
+					}]
+					activeApproverPositions = 'PharmaApproverPositionsWithExclusions';
+				}else {
+					aRoles = [{
+						name: "PM/PCEA",
+						type: "nsm",
+						policyPriceRole: "SM/PCEA"
+					},
+					{
+						name: "PoH/CEH",
+						type: "hbu",
+						policyPriceRole: "PoH/CEH"			
+					},
+					{
+						name: "CDH",
+						type: "cdh",
+						policyPriceRole: "CDH"		
+					}]
+					activeApproverPositions = 'PharmaApproverPositions';
+				}
+            }
+			this.setProperty("brandRoles", aRoles);
+			this.setProperty("ActiveApproverPositions", activeApproverPositions);
+
+            return {
+				brandRoles: this.getProperty("brandRoles"),
+				ActiveApproverPositions: this.getProperty("ActiveApproverPositions")
+			};
+        },
+
+		isExcludedBrand (brandName) {
+			const brands = ["eylea", "nubeqa", "stivarga", "xofigo"];
+			const normalized = brandName.toLowerCase().trim();
+			return brands.some(brand => normalized.includes(brand));
 		}
     
 	});

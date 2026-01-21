@@ -10,8 +10,8 @@ sap.ui.define([
             BaseObject.call(this, data);
             if (data) {
                 //copy array's manually to objects
-                data.LatestApprovedPolicy && this.setApprovedBrandPolicy(data.LatestApprovedPolicy);
-                data.DraftPolicy && this.setDraftBrandPolicy(data.DraftPolicy);
+                data.LatestApprovedPolicy && this.setApprovedBrandPolicy(data.LatestApprovedPolicy, data.brandRolesInfo);
+                data.DraftPolicy && this.setDraftBrandPolicy(data.DraftPolicy, data.brandRolesInfo);
             }
         },
 
@@ -26,9 +26,9 @@ sap.ui.define([
          * Set approvedBrandPolicy
          * @param {*} policy 
          */
-        setApprovedBrandPolicy: function (policy) {
+        setApprovedBrandPolicy: function (policy, brandRolesInfo) {
             if(policy){
-                this.approvedBrandPolicy = new BrandPolicy(policy);
+                this.approvedBrandPolicy = new BrandPolicy({...policy, brandRolesInfo});
             }
         },
 
@@ -43,9 +43,9 @@ sap.ui.define([
          * Set draftBrandPolicy
          * @param {*} policy 
          */
-        setDraftBrandPolicy: function (policy) {
+        setDraftBrandPolicy: function (policy, brandRolesInfo) {
             if(policy){
-                this.draftBrandPolicy = new BrandPolicy(policy);
+                this.draftBrandPolicy = new BrandPolicy({...policy, brandRolesInfo});
             }
         },
 

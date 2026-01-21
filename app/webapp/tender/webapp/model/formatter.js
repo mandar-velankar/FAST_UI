@@ -707,8 +707,10 @@ sap.ui.define([
 			return result;
 		},
 		calculateFOCValue: function  (product) {
+			if (!product) return 0;
 			if(!Number(product?.Price?.FOC)) return 0;
-			let regPrice = product.RegisteredPrice.results[0].REGISTERED_PRICE;
+			
+			let regPrice = product?.Price?.RegPrice / (product.UnitPerPack === "Unit" ? product?.SKU?.PACKFACTOR : 1);
 			let focValue;
 			switch(product.Price.FOC_ABS_PCT){
 				case "ABS":

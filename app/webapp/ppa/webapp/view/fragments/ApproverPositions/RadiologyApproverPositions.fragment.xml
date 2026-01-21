@@ -1,0 +1,748 @@
+<!-- Fragment for policy tab -->
+<core:FragmentDefinition 
+	xmlns:u="sap.uxap" 	
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:l="sap.ui.layout"
+	xmlns:form="sap.ui.layout.form">
+
+	<VBox >
+		<!-- MSP panel -->
+		<Panel  expandable="true" width="100%">
+
+			<!-- Toolbar for MSP panel -->
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="{i18n>mspPricingPolicy}"/>
+					<ToolbarSpacer />
+					<Button id="idRadBtnEditMspPolicy" text="Edit" visible="true" 
+							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom}) }"
+							press=".onEditModeMSP($event, 'idRadBtnEditMspPolicy')"
+					/>
+				</OverflowToolbar>
+			</headerToolbar>
+
+			<content>
+			
+				
+				<form:SimpleForm  editable="true" title="" layout="ResponsiveGridLayout" 
+						labelSpanL="1" labelSpanM="1" labelSpanS="1"
+						columnsXL="1" columnsL="1" columnsM="1"
+						adjustLabelSpan="false" 
+						singleContainerFullSize="false">
+						
+						<form:content>
+							<VBox>
+
+								<!-- Input table for MSP :TODO make dynamic in next sprint -->
+								<HBox >
+
+									<!-- Labels -->
+									<VBox width="250px">
+										<Text text=""/>
+										<Text text="SM" />
+										<Text text="PM" />
+										<Text text="CDH" />
+									</VBox>
+
+									<!-- Government -->
+									<VBox >
+										<Text text="Goverment" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Government"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/SMPCEA_Government', 
+													type: '.customTypes.Price'
+												}" 
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/SMPCEA_Government}"/>
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/SMPCEA_Government', 
+													type: '.customTypes.Price'
+												}" 
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Government"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PoHCEH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PoHCEH_Government}"/>
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PoHCEH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Government"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Government}"/>
+											</VBox>									
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Private -->
+									<VBox>
+										<Text text="Private" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Private"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/SMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/SMPCEA_Private}"/>
+											</VBox>													
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/SMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Private"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PoHCEH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PoHCEH_Private}"/>
+											</VBox>	
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PoHCEH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Private"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Private}"/>
+											</VBox>												
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Clinic -->
+									<VBox>
+										<Text text="Clinic" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Clinic"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/SMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/SMPCEA_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/SMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Clinic"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PoHCEH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PoHCEH_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PoHCEH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="MSP,Clinic"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Retail -->
+									<VBox>
+										<Text text="Retail" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+										<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												fieldGroupIds="MSP,Retail"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/SMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/SMPCEA_Retail}" />
+											</VBox>
+											<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/SMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+										<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input
+												fieldGroupIds="MSP,Retail" 
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/PoHCEH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/PoHCEH_Retail}" />
+											</VBox>
+											<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/PoHCEH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+										<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												fieldGroupIds="MSP,Retail"
+												liveChange="validatePrice($event, 'idRadBtnSaveMSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/mspPrices/CDH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/mspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/MspPricePercDiff/CDH_Retail}" />
+											</VBox>
+											<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/mspPrices/CDH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+								</HBox>	
+								
+								<!-- Save & Cancel buttons -->
+								<HBox>
+									<!--<Label text="" width="250px"/>-->
+									<HBox width="100%">
+										<Button id="idRadBtnSaveMSP" text="Save" type="Accept" press="onSaveMSP($event, 'idRadBtnEditMspPolicy', 'idRadBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} : false }" class="sapUiTinyMarginEnd"/>
+										<Button text="Cancel" type="Reject" press="onCancelMSP($event, 'idRadBtnEditMspPolicy', 'idRadBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/mspEditMode} : false }" />	
+									</HBox>	
+								</HBox>
+							</VBox>
+						</form:content>
+
+				</form:SimpleForm>
+
+			</content>
+
+		</Panel>
+
+		<!-- NSP Panel -->
+		<Panel  expandable="true" width="100%">
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="{i18n>nspPricingPolicy}"/>
+					<ToolbarSpacer />
+					<Button id="idRadBtnEditNspPolicy" text="Edit" visible="true" 
+							enabled="{= ${ppa>/approvalRequest/status} !== 'Awaiting Approval' &amp;&amp; (${ppa>/brandPolicy/status} === 'Approved' ? false : !!${ppa>/brand/validFrom}) }"
+							press=".onEditModeNSP($event, 'idRadBtnEditNspPolicy')"
+					/>
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+				<form:SimpleForm  editable="true" title="" layout="ResponsiveGridLayout" labelSpanXL="1" labelSpanL="1" labelSpanM="1" labelSpanS="1"
+									adjustLabelSpan="false" columnsXL="1" columnsL="1" columnsM="1"
+									singleContainerFullSize="false">
+						
+						<form:content>
+							<VBox>
+
+								<!-- Input table for NSP :TODO make dynamic in next sprint -->
+								<HBox >
+
+									<!-- Labels -->
+									<VBox width="250px">
+										<Text text=""/>
+										<Text text="SM" />
+										<Text text="PM" />
+										<Text text="CDH" />
+									</VBox>
+
+									<!-- Government -->
+									<VBox>
+										<Text text="Goverment" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Government"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/SMPCEA_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/SMPCEA_Government}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/SMPCEA_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Government"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PoHCEH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PoHCEH_Government}"/>
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PoHCEH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Government"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Government}"/>
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Government', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Private -->
+									<VBox>
+										<Text text="Private" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Private"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/SMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/SMPCEA_Private}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/SMPCEA_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Private"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PoHCEH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PoHCEH_Private}"/>
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PoHCEH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Private"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Private}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Private', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Clinic -->
+									<VBox>
+										<Text text="Clinic" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Clinic"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/SMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/SMPCEA_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/SMPCEA_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Clinic"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PoHCEH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PoHCEH_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PoHCEH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Clinic"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Clinic}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Clinic', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+									<!-- Retail -->
+									<VBox>
+										<Text text="Retail" textAlign="Center" class="sapUiMediumMarginEnd"/>
+										<HBox>
+										<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												fieldGroupIds="NSP,Retail"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/SMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/SMPCEA_Retail}" />
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/SMPCEA_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+										<!-- EHQUT-202292-Thailand -pricing for 
+										
+										
+											channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												fieldGroupIds="NSP,Retail"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/PoHCEH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/PoHCEH_Retail}" />
+											</VBox>
+											<!-- EHQUT-202292-Thailand -pricing for Retail channel was removed for all products.It is not show in 'Pricing Policy app -->
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/PoHCEH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+										<HBox>
+											<Input 
+												fieldGroupIds="NSP,Retail"
+												liveChange="validatePrice($event, 'idRadBtnSaveNSP')"
+												value="{
+													path:'ppa>/selectedProduct/draftProductPolicy/nspPrices/CDH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="{= !!${ppa>/selectedProduct/draftProductPolicy/nspEditMode} }"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Draft Price' : '' }"
+											/>
+											<VBox class="sapUiSmallMarginEnd sapUiSmallMarginBegin" justifyContent="Center">
+												<Label text="{ppa>/selectedProduct/NspPricePercDiff/CDH_Retail}"/>
+											</VBox>
+											<Input 
+												value="{
+													path:'ppa>/selectedProduct/approvedProductPolicy/nspPrices/CDH_Retail', 
+													type: '.customTypes.Price'
+												}"
+												editable="false"
+												tooltip="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} === false ? 'Approved Price' : '' }"
+											/>
+											<Label text="" class="sapUiSmallMarginEnd sapUiSmallMarginBegin"/>
+										</HBox>
+									</VBox>
+
+								</HBox>
+
+								<!-- Save & Cancel buttons -->
+								<HBox>
+									<!-- <Label text="" width="250px"/> -->
+									<HBox width="100%" alignItems="left">
+										<Button id="idRadBtnSaveNSP" text="Save" type="Accept" press="onSaveNSP($event, 'idRadBtnEditMspPolicy', 'idRadBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} : false }" class="sapUiTinyMarginEnd"/>
+										<Button text="Cancel" type="Reject" press="onCancelNSP($event, 'idRadBtnEditMspPolicy', 'idRadBtnEditNspPolicy')" visible="{= ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} ? ${ppa>/selectedProduct/draftProductPolicy/nspEditMode} : false }" />	
+									</HBox>
+								</HBox>
+
+							</VBox>
+						</form:content>
+
+				</form:SimpleForm>
+			</content>
+
+		</Panel>
+	</VBox>
+
+</core:FragmentDefinition>
