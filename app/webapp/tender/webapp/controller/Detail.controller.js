@@ -4068,36 +4068,6 @@ sap.ui.define([
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
 				
-				if (tenderCountryRegion === "MEA") {
-					Services.loadOffer(sOfferID).then(data => {
-						Services.saveOfferPreviousApprovalInfo({
-							PreviousApprovalHasAddedProduct: false,
-							PreviousApprovalHasDeletedProduct: false,
-							PreviousApprovalHasDeclinedProduct: false,
-							PreviousApprovalHas_Deleted_DeclinedProduct: false,
-							PreviousApprovalHas_Deleted_Products_PTL: "",
-							ApprovalHasDeletedProduct_Previous_State: data.PreviousApprovalHasDeletedProduct,
-							ApprovalHasDeclinedProduct_Previous_State: data.PreviousApprovalHasDeclinedProduct,
-							ApprovalHas_Deleted_DeclinedProduct_Previous_State: data.PreviousApprovalHas_Deleted_DeclinedProduct,
-							ApprovalHas_Deleted_Products_PTL_Previous_State: data.PreviousApprovalHas_Deleted_Products_PTL || ""
-						});
-					});
-					
-					// reseting following fields to apply new approvals after user update supply fields
-					
-					oOffer.Product.results.forEach(product => {
-						Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID).then(lpr => {
-							Services.saveOfferProductPreviousApprovalInfo({
-								IsProductAddedForPreviousApproval: false,
-								MEAApprovalLatestUpdatedField: "",
-								MEAApprovalLatestUpdatedFieldPreviousState: lpr.MEAApprovalLatestUpdatedField,
-								hasUpdatedSupplyPaymentPriceValues: false,
-							}, 
-							lpr.ProductCode
-						)
-						})
-					});
-				} 
 			});
 
 		},
