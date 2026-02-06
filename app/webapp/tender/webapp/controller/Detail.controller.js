@@ -4068,6 +4068,18 @@ sap.ui.define([
 					Services.showErrorMessage(oError, "Background saving for approvals sent field");
 				});
 				
+				if (tenderCountryRegion === "MEA") {
+					oOffer.Product.results.forEach(product => {
+						Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID).then(lpr => {
+							Services.saveOfferProductPreviousApprovalInfo({
+								MEAApprovalLatestUpdatedField: "",
+								MEAApprovalLatestUpdatedFieldPreviousState: lpr.MEAApprovalLatestUpdatedField,
+							}, 
+							lpr.ProductCode
+						)
+						})
+					});
+				} 
 			});
 
 		},
