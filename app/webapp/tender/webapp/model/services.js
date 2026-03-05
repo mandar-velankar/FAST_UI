@@ -8862,6 +8862,38 @@ sap.ui.define([
 				that.getFastAppDataModel().setProperty('/QuotationDataResult', results);
 			});
 		},
+
+		loadSelectedCountryInfo: function (sCountryCode) {
+			if(!sCountryCode || ["NA", "OneColumn"].includes(sCountryCode)){
+				return;
+			}
+
+			var oDeferred = $.Deferred();
+			var oFastDataCalls = this.getDefaultModel();
+			var oFastAppDataModel = this.getFastAppDataModel();
+
+			var that = this;
+
+			var sCountryChannelsPath = oFastDataCalls.createKey("/PT_TMCTRY", {
+				CountryCode: sCountryCode
+			});
+
+         	oFastDataCalls.read(sCountryChannelsPath, {
+				success: function (result, oResponse) {
+					oFastAppDataModel.setProperty("/SelectedCountry", result);
+					oDeferred.resolve(oCountry);
+				},
+				error: function (oError) {
+					//show error message
+					that.showErrorMessage(oError, "Loading of country");
+					//let the callback be triggered
+					oDeferred.reject(oError);
+
+				}
+			});
+			//return promise so the function can check if execution is done
+			return oDeferred.promise();
+		},
 	});
 
 	return new Service();
