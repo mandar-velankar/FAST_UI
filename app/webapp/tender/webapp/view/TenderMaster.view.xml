@@ -179,7 +179,7 @@
 					<!-- value -->
 					<Column minScreenWidth="920px" width="5rem">
 						<header>
-							<ObjectIdentifier title="{i18n>Value}" titleActive="true" titlePress="onClick"/>
+							<ObjectIdentifier title="{= ${fastAppData>/SelectedCountry/Region} === 'MEA' ? ${i18n>NetPriceValue} : ${i18n>Value}}" titleActive="true" titlePress="onClick"/>
 						</header>
 					</Column>
 					
