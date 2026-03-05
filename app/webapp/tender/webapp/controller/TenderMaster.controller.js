@@ -1154,6 +1154,7 @@ sap.ui.define([
 				Services.loadCountryPermissions(oCountry);
 				this.loadCountryChannels(oCountry);
 				Services.loadAppConfig(oCountry, sEnvironment);
+				Services.loadSelectedCountryInfo(oCountry);
 			}
 
 			oMercadoPublicoRef.setVisible(oCountry === 'CL');
