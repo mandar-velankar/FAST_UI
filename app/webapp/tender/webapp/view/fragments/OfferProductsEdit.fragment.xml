@@ -303,7 +303,7 @@
 									<t:template>
 										<HBox>
 											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
-											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}" change=".onChangeMEASupplyPaymentValues($event, 'VOLUME_UOM_FOC_UPDATED')" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}"/>
+											<Input type="Number" value="{fastAppData>RequestedVolume}" placeholder="{i18n>Requested}"  required="true" enabled="{= ${fastAppData>/Tender/GroupPurchasing} !== 2 ? true : false}" liveChange=".onChangeMEASupplyPaymentValues($event, 'VOLUME_UOM_FOC_UPDATED')" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}"/>
 											<Button icon="sap-icon://edit" press="onPressEditRequestedVolume" visible="{= ${fastAppData>/Tender/GroupPurchasing} === 2 ? true : false}"/>
 										</HBox>
 									</t:template>
@@ -465,7 +465,7 @@
 									<t:template>
 										<HBox>
 											<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/Country/Region} === 'SEWA' ? false : true }" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
-											<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/Country/Region} === 'SEWA' ? false : true }" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+											<Input type="Text" value="{fastAppData>FirstShipment}" placeholder="{i18n>FirstShipment}" editable="true" required="true" enabled="{= ${fastAppData>/Tender/Country/Region} === 'SEWA' ? false : true }" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" liveChange=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
 										</HBox>
 									</t:template>
 								</t:Column>
@@ -478,7 +478,7 @@
 									<t:template>
 										<HBox>
 											<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
-											<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+											<Input type="Number" value="{fastAppData>NoofLots}" placeholder="{i18n>NoLots}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" liveChange=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
 										</HBox>
 									</t:template>
 								</t:Column>
@@ -491,7 +491,7 @@
 									<t:template>
 										<HBox>
 											<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
-											<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+											<Input type="Number" value="{fastAppData>IntervalBetweenShipments}" placeholder="{i18n>inshipmnths}" editable="true" required="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" liveChange=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
 										</HBox>
 									</t:template>
 								</t:Column>
@@ -504,7 +504,7 @@
 									<t:template>
 										<HBox>
 											<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
-											<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'CREDIT_MANAGER_APPROVED')"/>
+											<Input type="Text" value="{fastAppData>PaymentTerms}" placeholder="{i18n>PaymentTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" liveChange=".onChangeMEASupplyPaymentValues($event, 'CREDIT_MANAGER_APPROVED')"/>
 										</HBox>
 									</t:template>
 								</t:Column>
@@ -517,7 +517,7 @@
 									<t:template>
 										<VBox>
 											<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} !== 'MEA'}"/>
-											<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" change=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
+											<Input type="Text" value="{fastAppData>INCOTerms}" placeholder="{i18n>INCOTerms}" editable="true" visible="{= ${fastAppData>/EditTender/Country/Region} === 'MEA'}" liveChange=".onChangeMEASupplyPaymentValues($event, 'INCO_TERM_SUPPLY_UPDATED')"/>
 										</VBox>
 									</t:template>
 								</t:Column>
