@@ -13107,13 +13107,15 @@ sap.ui.define([
 			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 			const Action = action;
 			const source = event?.getSource();
+			const isInput = source instanceof sap.m.Input
 			if (!source) return
 			const path = source.getBindingContext("fastAppData").getPath();
 			const product = source.getBindingContext("fastAppData").getObject();
 			const previousApprovalStatus = Services.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
 			const loadedProducts = Services.getFastAppDataModel().getProperty("/MEAOfferProducts") || [];
 			const loadedProduct = loadedProducts.find(pr => pr.OfferID === product.OfferID && pr.ProductCode === product.ProductCode);
-
+			const sourceBindingPath = isInput ? source.getBindingPath('value') : source.getBindingPath('selectedKey');
+			const value = isInput ? event.getParameter('newValue') : event.getParameter('selectedItem').getKey();
 			if (tenderCountryRegion === "MEA" && previousApprovalStatus.approvedStatus === 2) {
 				if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`)) {
 					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, loadedProduct.MEAApprovalLatestUpdatedField);
@@ -13124,6 +13126,7 @@ sap.ui.define([
 				Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, newActions);
 				// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
 			}
+			Services.getFastAppDataModel().setProperty(`${path}/${sourceBindingPath}`, value);
 		},
 
 		onChangeMEAPriceFocValues: async function (action) {
