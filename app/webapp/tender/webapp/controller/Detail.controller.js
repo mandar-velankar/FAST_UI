@@ -4079,6 +4079,16 @@ sap.ui.define([
 						)
 						})
 					});
+					Services.saveOfferPreviousApprovalInfo({
+						ApprovalHasDeletedProduct_Previous_State: oOffer.PreviousApprovalHasDeletedProduct,
+						ApprovalHasDeclinedProduct_Previous_State: oOffer.PreviousApprovalHasDeclinedProduct,
+						ApprovalHas_Deleted_DeclinedProduct_Previous_State: oOffer.PreviousApprovalHas_Deleted_DeclinedProduct,
+						ApprovalHas_Deleted_Products_PTL_Previous_State: oOffer.PreviousApprovalHas_Deleted_Products_PTL,
+						PreviousApprovalHasDeclinedProduct: false,
+						PreviousApprovalHasDeletedProduct: false,
+						PreviousApprovalHas_Deleted_DeclinedProduct: false,
+						PreviousApprovalHas_Deleted_Products_PTL: ""
+					})
 				} 
 			});
 
