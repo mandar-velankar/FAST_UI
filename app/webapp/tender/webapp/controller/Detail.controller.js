@@ -4302,6 +4302,7 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
 				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
+				oSaveBasicInfo.Remarks = oTender.Remarks
 
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
@@ -4478,7 +4479,7 @@ sap.ui.define([
 			oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 			oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
 			oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
-			oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
+			oSaveBasicInfo.Remarks = oTender.Remarks
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
 			oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
