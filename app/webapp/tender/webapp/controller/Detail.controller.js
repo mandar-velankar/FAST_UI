@@ -473,7 +473,19 @@ sap.ui.define([
             
 			var sCountryCode = Services.getSelectedCountry();
 			var aFilter = [];
+			let countryProcurementFilter = []
 			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+			countryProcurementFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+
+			if (sCountryCode === 'TH') {
+				countryProcurementFilter.push(new Filter({
+					filters: [
+						new Filter("SORTER", FilterOperator.GE, 1),
+						new Filter("SORTER", FilterOperator.LE, 5)
+					],
+					and: true
+				}));
+			}
 
 			let oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 
@@ -484,7 +496,7 @@ sap.ui.define([
 			oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
-				filters: aFilter,
+				filters: countryProcurementFilter,
 				sorter: new sap.ui.model.Sorter("SORTER"),
 				template: new sap.ui.core.Item({
 					text: "{fastData>PROCUREMENT_METHOD_ID}",
@@ -12390,7 +12402,13 @@ sap.ui.define([
 			let sCountry = this._country;
 			let sClassificationId = oEvent.getSource().getSelectedItem().data("classificationId");
             let sKey =  oEvent.getSource().getSelectedItem().getKey();
+			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
+			const procurementBinding = oProcurementMethod.getBinding("items");
+			let aFilters = [
+				new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountry)
+			];
 
+			let oSorterFilter;
 			this._initializeCountrySpecificFields();
 			
 			if(sClassificationId){                 
@@ -12477,7 +12495,31 @@ sap.ui.define([
 						this.byId("idPeriodOfBankGauranteeEndEdit").setVisible(true)
 						this.byId("idBGValueBahtLabelEdit").setVisible(true)
 						this.byId("idBGValueBahtEdit").setVisible(true)
-					}       
+
+						oSorterFilter = new Filter({
+							filters: [
+								new Filter("SORTER", FilterOperator.GE, 6),
+								new Filter("SORTER", FilterOperator.LE, 11)
+							],
+							and: true
+						});
+
+					} else if (sCountry === "TH" && (!!sKey || sKey !== "Tender")) {
+						 oSorterFilter = new Filter({
+							filters: [
+								new Filter("SORTER", FilterOperator.GE, 1),
+								new Filter("SORTER", FilterOperator.LE, 5)
+							],
+							and: true
+						});
+					}   
+					aFilters.push(oSorterFilter);
+
+					// clear old application filters
+					procurementBinding.filter([], sap.ui.model.FilterType.Application);
+
+					// apply new filters
+					procurementBinding.filter(aFilters, sap.ui.model.FilterType.Application);
                     //EHQUT-INC0184560-Issue in offer creation
 				} catch(err) {
 					console.log(err);
