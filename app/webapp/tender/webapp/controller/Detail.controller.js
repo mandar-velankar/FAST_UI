@@ -876,6 +876,25 @@ sap.ui.define([
 				if (Services.getSelectedCountry() === "TH" || Services.getSelectedCountry() === "BR"){
 					Services.getWordTemplates(Services.getSelectedCountry());
                 }
+
+				if (Services.getSelectedCountry() === "TH") {
+					const tender = oFastAppDataModel.getProperty('/Tender');
+					
+
+					if (tender) {
+						Services.getDefaultModel().metadataLoaded().then(() => {
+							const radioGroup = that.getView().byId("idRepresentativeOfTenderSubmissionGroup");
+							if (!radioGroup) return;
+							const buttons = radioGroup.getButtons();
+
+							const index = buttons.findIndex(
+								button => button.getText() === tender.Custom_String_6
+							);
+
+							radioGroup.setSelectedIndex(index);
+						});
+					}
+				}
 			
 
 				//vanaf hier 
@@ -10727,7 +10746,10 @@ sap.ui.define([
                     OfferID: Services.getSelectedOfferID()
                 }))
             }
-			Services.getSelectedCountry() === "TH" && Services.onSaveQuotationDeleveryInfo()
+			if (Services.getSelectedCountry() === "TH") { 
+				Services.onSaveQuotationDeleveryInfo()
+				Services.onSaveRepresentativeOfTenderSubmission()
+			}
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
 				//Refresh (beceause offer is reselected in onRefresh as well)
@@ -13184,5 +13206,20 @@ sap.ui.define([
 				}
 			}
 		},
+
+		onChangeRepresentativeOfTenderSubmission(oEvent) {
+			const oGroup = oEvent.getSource();
+
+			const selectedIndex = oGroup.getSelectedIndex();
+
+			const selectedButton = oGroup.getButtons()[selectedIndex];
+
+			const selectedText = selectedButton.getText();
+
+			Services.getFastAppDataModel().setProperty(
+				"/representativeOfTenderSubmission",
+				selectedText
+			);
+		}
 	});
 });

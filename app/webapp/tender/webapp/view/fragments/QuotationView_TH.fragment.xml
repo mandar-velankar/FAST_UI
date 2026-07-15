@@ -241,6 +241,30 @@
                                             </m:items>
                                         </m:VBox> 
                                     </m:HBox>
+                                    <m:HBox class="sapUiSmallMarginTop">
+                                        <m:VBox>
+                                            <m:Label labelFor="idRepresentativeOfTenderSubmission​Group" text="{i18n>representativeOfTenderSubmission​}" design="Bold"/>
+                                            <m:RadioButtonGroup
+                                                id="idRepresentativeOfTenderSubmissionGroup"
+                                                width="100%"
+                                                select=".onChangeRepresentativeOfTenderSubmission"
+                                                enabled="{fastAppData>/isQuotationDeliveryEnabled}">
+
+                                                <m:RadioButton 
+                                                    id="RB1-1"
+                                                    text="Bayer Representative (ผู้แทนดำเนินการเอง)" />
+
+                                                <m:RadioButton 
+                                                    id="RB1-2"
+                                                    text="DKSH Field Force Services (ขอบริการเจ้าหน้าที่ Field Force Services)" />
+
+                                                <m:RadioButton 
+                                                    id="RB1-3"
+                                                    text="POA (ผู้มีอำนาจของบริษัทฯ ลงนาม)" />
+
+                                            </m:RadioButtonGroup>
+                                        </m:VBox>
+                                    </m:HBox>
                                     <m:Table 
                                         id="quotationTable"
                                         items="{fastAppData>/QuotationDataResult}"
