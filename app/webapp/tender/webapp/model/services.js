@@ -8855,14 +8855,6 @@ sap.ui.define([
 			})
 			
 		},
-		onSaveRepresentativeOfTenderSubmission: function() {
-			const representativeOfTenderSubmission = this.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
-			const tenderId = this.getSelectedTenderID();
-			this.getService("Tender").updateTender({
-				TenderID: tenderId,
-				Custom_String_6: representativeOfTenderSubmission
-			}, "MERGE")
-		},
 		getQuotationDeleveryData: function(){
 			const that = this
 			const offerID = this.getSelectedOfferID()

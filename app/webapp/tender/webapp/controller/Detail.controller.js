@@ -883,7 +883,7 @@ sap.ui.define([
 
 					if (tender) {
 						Services.getDefaultModel().metadataLoaded().then(() => {
-							const radioGroup = that.getView().byId("idRepresentativeOfTenderSubmissionGroup");
+							const radioGroup = that.getView().byId("idRepresentativeOfTenderSubmissionGroupView");
 							if (!radioGroup) return;
 							const buttons = radioGroup.getButtons();
 
@@ -891,7 +891,8 @@ sap.ui.define([
 								button => button.getText() === tender.Custom_String_6
 							);
 
-							radioGroup.setSelectedIndex(index);
+							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmission", tender.Custom_String_6);
+							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", index);
 						});
 					}
 				}
@@ -4333,6 +4334,7 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
 				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
+				oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
 				oSaveBasicInfo.Remarks = oTender.Remarks
 
 				//Check if data is correct
@@ -10748,7 +10750,6 @@ sap.ui.define([
             }
 			if (Services.getSelectedCountry() === "TH") { 
 				Services.onSaveQuotationDeleveryInfo()
-				Services.onSaveRepresentativeOfTenderSubmission()
 			}
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
@@ -13220,6 +13221,8 @@ sap.ui.define([
 				"/representativeOfTenderSubmission",
 				selectedText
 			);
+
+			Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", selectedIndex);
 		}
 	});
 });

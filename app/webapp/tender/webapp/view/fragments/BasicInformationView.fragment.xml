@@ -225,6 +225,38 @@
 
 				<Label text="{i18n>BGValueBaht}" design="Bold" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH'  &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>
 				<Input id="input19" value="{path: 'fastAppData>/Tender/Custom_Double_1', type:'.types.customDecimal'}" enabled="false" visible="{= ${fastAppData>/Tender/CountryCode} === 'TH'   &amp;&amp; ${fastAppData>/Tender/Classification} === 'Tender'}"/>
+				
+				<Label 
+					labelFor="idRepresentativeOfTenderSubmission​Group" 
+					text="{i18n>representativeOfTenderSubmission​}" 
+					design="Bold" 
+					visible="{= 
+						${fastAppData>/Tender/CountryCode} === 'TH'
+					}"
+				/>
+				<RadioButtonGroup
+					id="idRepresentativeOfTenderSubmissionGroupView"
+					width="100%"
+					enabled="false"
+					selectedIndex="{fastAppData>/representativeOfTenderSubmissionIndex}"
+					visible="{= 
+						${fastAppData>/Tender/CountryCode} === 'TH'
+					}"
+				>
+
+					<RadioButton 
+						id="RB1-1-view"
+						text="Bayer Representative (ผู้แทนดำเนินการเอง)" />
+
+					<RadioButton 
+						id="RB1-2-view"
+						text="DKSH Field Force Services (ขอบริการเจ้าหน้าที่ Field Force Services)" />
+
+					<RadioButton 
+						id="RB1-3-view"
+						text="POA (ผู้มีอำนาจของบริษัทฯ ลงนาม)" />
+
+				</RadioButtonGroup>
 				<!-- End of Thailand Changes-->
 
 				<!-- Brazil only -->
