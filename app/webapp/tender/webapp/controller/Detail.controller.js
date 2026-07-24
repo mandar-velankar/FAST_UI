@@ -4332,6 +4332,7 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
 				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+				oSaveBasicInfo.Custom_Integer_2 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmissionIndex") + 1;
 				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
 				oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
