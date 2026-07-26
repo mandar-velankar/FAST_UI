@@ -876,6 +876,26 @@ sap.ui.define([
 				if (Services.getSelectedCountry() === "TH" || Services.getSelectedCountry() === "BR"){
 					Services.getWordTemplates(Services.getSelectedCountry());
                 }
+
+				if (Services.getSelectedCountry() === "TH") {
+					const tender = oFastAppDataModel.getProperty('/Tender');
+					
+
+					if (tender) {
+						Services.getDefaultModel().metadataLoaded().then(() => {
+							const radioGroup = that.getView().byId("idRepresentativeOfTenderSubmissionGroupView");
+							if (!radioGroup) return;
+							const buttons = radioGroup.getButtons();
+
+							const index = buttons.findIndex(
+								button => button.getText() === tender.Custom_String_6
+							);
+
+							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmission", tender.Custom_String_6);
+							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", index);
+						});
+					}
+				}
 			
 
 				//vanaf hier 
@@ -4312,8 +4332,10 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
 				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+				oSaveBasicInfo.Custom_Integer_2 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmissionIndex") + 1;
 				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
+				oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
 				oSaveBasicInfo.Remarks = oTender.Remarks
 
 				//Check if data is correct
@@ -10727,7 +10749,9 @@ sap.ui.define([
                     OfferID: Services.getSelectedOfferID()
                 }))
             }
-			Services.getSelectedCountry() === "TH" && Services.onSaveQuotationDeleveryInfo()
+			if (Services.getSelectedCountry() === "TH") { 
+				Services.onSaveQuotationDeleveryInfo()
+			}
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
 				//Refresh (beceause offer is reselected in onRefresh as well)
@@ -13184,5 +13208,22 @@ sap.ui.define([
 				}
 			}
 		},
+
+		onChangeRepresentativeOfTenderSubmission(oEvent) {
+			const oGroup = oEvent.getSource();
+
+			const selectedIndex = oGroup.getSelectedIndex();
+
+			const selectedButton = oGroup.getButtons()[selectedIndex];
+
+			const selectedText = selectedButton.getText();
+
+			Services.getFastAppDataModel().setProperty(
+				"/representativeOfTenderSubmission",
+				selectedText
+			);
+
+			Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", selectedIndex);
+		}
 	});
 });

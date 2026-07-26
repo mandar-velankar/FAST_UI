@@ -134,8 +134,10 @@ sap.ui.define([
 			oTenderToSave.Custom_Date_2 = oTenderSaveInfo.Custom_Date_2
 			oTenderToSave.Custom_Double_1 = oTenderSaveInfo.Custom_Double_1
 			oTenderToSave.Custom_Integer_1 = oTenderSaveInfo.Custom_Integer_1
+			oTenderToSave.Custom_Integer_2 = oTenderSaveInfo.Custom_Integer_2
 			oTenderToSave.Custom_String_4 = oTenderSaveInfo.Custom_String_4
 			oTenderToSave.Custom_String_5 = oTenderSaveInfo.Custom_String_5
+			oTenderToSave.Custom_String_6 = oTenderSaveInfo.Custom_String_6
 			oTenderToSave.Remarks = oTenderSaveInfo.Remarks
 			/* End of Thailand */
             /* Spain */
