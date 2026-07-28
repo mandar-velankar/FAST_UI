@@ -62,8 +62,16 @@
 							<m:Label text="{i18n>InvoiceNo}" wrapping="true"/>
 						</m:Column>
          <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
-                        <m:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"> 
+                        <m:Column width="6rem" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' &amp;&amp; ${fastAppData>/Tender/Country/Region} !== 'MEA' ? true : false}"> 
                     	<m:Label text="{i18n>LocalDeliveryNoteNo}" wrapping="true"/>
+						</m:Column>
+
+						<m:Column width="6rem" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}"> 
+                    	<m:Label text="{i18n>BatchNumber}" wrapping="true"/>
+						</m:Column>
+						
+						<m:Column width="6rem" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}"> 
+                    	<m:Label text="{i18n>CCReference}" wrapping="true"/>
 						</m:Column>
         <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
 						<m:Column width="5.5rem">
@@ -129,7 +137,11 @@
 								<m:Input value="{fastAppData>PO}" enabled="false"/>
 								<m:Input value="{fastAppData>InvoiceNo}" enabled="false"/>
          <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
-                                <m:Input value="{fastAppData>LocalDeliveryNoteNo}" enabled="false" required="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' ? true : false}"/> 
+                                <m:Input value="{fastAppData>LocalDeliveryNoteNo}" enabled="false" required="true" visible="{= ${fastAppData>/Tender/CountryCode} !== 'AR' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'CL' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'MX' &amp;&amp; ${fastAppData>/Tender/CountryCode} !== 'TH' &amp;&amp; ${fastAppData>/Tender/Country/Region} !== 'MEA' ? true : false}"/> 
+                                
+								<m:Input value="{fastAppData>BatchNumber}" enabled="false" required="true" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}"/> 
+                                
+								<m:Input value="{fastAppData>CCReference}" enabled="false" required="true" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}"/> 
           <!-- EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab -->
 								<m:Select selectedKey="{fastAppData>Penalty}" change="onChangePenalty" enabled="false">
 									<m:items>

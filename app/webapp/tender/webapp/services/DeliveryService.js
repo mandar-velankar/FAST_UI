@@ -85,6 +85,8 @@ sap.ui.define([
             oDeliverieToSave.ActualDeliveredProduct=oDeliverySaveInfo.ActualDeliveredProduct;
             oDeliverieToSave.ActualDeliveredProductQty=oDeliverySaveInfo.ActualDeliveredProductQty;
             oDeliverieToSave.LocalDeliveryNoteNo=oDeliverySaveInfo.LocalDeliveryNoteNo;
+            oDeliverieToSave.BatchNumber=oDeliverySaveInfo.BatchNumber;
+            oDeliverieToSave.CCReference=oDeliverySaveInfo.CCReference;
     // EHQUT OTT - 105262-Adding new 3 fields for delivery tracking tab 
             oDeliverieToSave.Penalty = oDeliverySaveInfo.Penalty;
 			oDeliverieToSave.PenaltyValue = oDeliverySaveInfo.PenaltyValue;
@@ -139,6 +141,8 @@ sap.ui.define([
                 ActualDeliveredProduct:null,
                 ActualDeliveredProductQty:null,
                 LocalDeliveryNoteNo:null,
+                BatchNumber:null,
+                CCReference:null,
 				Penalty: "No",
 				PenaltyValue: null,
 				Currency: null,
