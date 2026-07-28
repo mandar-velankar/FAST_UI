@@ -473,7 +473,19 @@ sap.ui.define([
             
 			var sCountryCode = Services.getSelectedCountry();
 			var aFilter = [];
+			let countryProcurementFilter = []
 			aFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+			countryProcurementFilter.push(new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountryCode));
+
+			if (sCountryCode === 'TH') {
+				countryProcurementFilter.push(new Filter({
+					filters: [
+						new Filter("SORTER", FilterOperator.GE, 1),
+						new Filter("SORTER", FilterOperator.LE, 5)
+					],
+					and: true
+				}));
+			}
 
 			let oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 
@@ -484,7 +496,7 @@ sap.ui.define([
 			oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
 			oProcurementMethod.bindItems({
 				path: "fastData>/CountryProcurementMethod",
-				filters: aFilter,
+				filters: countryProcurementFilter,
 				sorter: new sap.ui.model.Sorter("SORTER"),
 				template: new sap.ui.core.Item({
 					text: "{fastData>PROCUREMENT_METHOD_ID}",
@@ -864,6 +876,26 @@ sap.ui.define([
 				if (Services.getSelectedCountry() === "TH" || Services.getSelectedCountry() === "BR"){
 					Services.getWordTemplates(Services.getSelectedCountry());
                 }
+
+				if (Services.getSelectedCountry() === "TH") {
+					const tender = oFastAppDataModel.getProperty('/Tender');
+					
+
+					if (tender) {
+						Services.getDefaultModel().metadataLoaded().then(() => {
+							const radioGroup = that.getView().byId("idRepresentativeOfTenderSubmissionGroupView");
+							if (!radioGroup) return;
+							const buttons = radioGroup.getButtons();
+
+							const index = buttons.findIndex(
+								button => button.getText() === tender.Custom_String_6
+							);
+
+							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmission", tender.Custom_String_6);
+							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", index);
+						});
+					}
+				}
 			
 
 				//vanaf hier 
@@ -4069,34 +4101,26 @@ sap.ui.define([
 				});
 				
 				if (tenderCountryRegion === "MEA") {
-					Services.loadOffer(sOfferID).then(data => {
-						Services.saveOfferPreviousApprovalInfo({
-							PreviousApprovalHasAddedProduct: false,
-							PreviousApprovalHasDeletedProduct: false,
-							PreviousApprovalHasDeclinedProduct: false,
-							PreviousApprovalHas_Deleted_DeclinedProduct: false,
-							PreviousApprovalHas_Deleted_Products_PTL: "",
-							ApprovalHasDeletedProduct_Previous_State: data.PreviousApprovalHasDeletedProduct,
-							ApprovalHasDeclinedProduct_Previous_State: data.PreviousApprovalHasDeclinedProduct,
-							ApprovalHas_Deleted_DeclinedProduct_Previous_State: data.PreviousApprovalHas_Deleted_DeclinedProduct,
-							ApprovalHas_Deleted_Products_PTL_Previous_State: data.PreviousApprovalHas_Deleted_Products_PTL || ""
-						});
-					});
-					
-					// reseting following fields to apply new approvals after user update supply fields
-					
 					oOffer.Product.results.forEach(product => {
 						Services.loadProduct(product.OfferID, 1, product.ProductCode, product, product.LotID).then(lpr => {
 							Services.saveOfferProductPreviousApprovalInfo({
-								IsProductAddedForPreviousApproval: false,
 								MEAApprovalLatestUpdatedField: "",
 								MEAApprovalLatestUpdatedFieldPreviousState: lpr.MEAApprovalLatestUpdatedField,
-								hasUpdatedSupplyPaymentPriceValues: false,
 							}, 
 							lpr.ProductCode
 						)
 						})
 					});
+					Services.saveOfferPreviousApprovalInfo({
+						ApprovalHasDeletedProduct_Previous_State: oOffer.PreviousApprovalHasDeletedProduct,
+						ApprovalHasDeclinedProduct_Previous_State: oOffer.PreviousApprovalHasDeclinedProduct,
+						ApprovalHas_Deleted_DeclinedProduct_Previous_State: oOffer.PreviousApprovalHas_Deleted_DeclinedProduct,
+						ApprovalHas_Deleted_Products_PTL_Previous_State: oOffer.PreviousApprovalHas_Deleted_Products_PTL,
+						PreviousApprovalHasDeclinedProduct: false,
+						PreviousApprovalHasDeletedProduct: false,
+						PreviousApprovalHas_Deleted_DeclinedProduct: false,
+						PreviousApprovalHas_Deleted_Products_PTL: ""
+					})
 				} 
 			});
 
@@ -4308,8 +4332,11 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Date_2 =  oTender.Custom_Date_2
 				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
+				oSaveBasicInfo.Custom_Integer_2 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmissionIndex") + 1;
 				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
+				oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
+				oSaveBasicInfo.Remarks = oTender.Remarks
 
 				//Check if data is correct
 				if (Services.checkBasicInfo(oSaveBasicInfo)) {
@@ -4486,7 +4513,7 @@ sap.ui.define([
 			oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 			oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
 			oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
-			oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
+			oSaveBasicInfo.Remarks = oTender.Remarks
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
 			oSaveBasicInfo.ExpiryDate = (oTender.ExpiryDate) ? oTender.ExpiryDate : null;
@@ -10723,7 +10750,9 @@ sap.ui.define([
                     OfferID: Services.getSelectedOfferID()
                 }))
             }
-			Services.getSelectedCountry() === "TH" && Services.onSaveQuotationDeleveryInfo()
+			if (Services.getSelectedCountry() === "TH") { 
+				Services.onSaveQuotationDeleveryInfo()
+			}
 			//do the save of the quotation
 			$.when(Quotation.saveQuotation(quotationFields, 0)).done(function (oSaveStatus) {
 				//Refresh (beceause offer is reselected in onRefresh as well)
@@ -12398,7 +12427,13 @@ sap.ui.define([
 			let sCountry = this._country;
 			let sClassificationId = oEvent.getSource().getSelectedItem().data("classificationId");
             let sKey =  oEvent.getSource().getSelectedItem().getKey();
+			let oProcurementMethod = this.getView().byId("idSelectProcurementMethodEdit");
+			const procurementBinding = oProcurementMethod.getBinding("items");
+			let aFilters = [
+				new Filter("COUNTRY_CODE", FilterOperator.EQ, sCountry)
+			];
 
+			let oSorterFilter;
 			this._initializeCountrySpecificFields();
 			
 			if(sClassificationId){                 
@@ -12485,7 +12520,31 @@ sap.ui.define([
 						this.byId("idPeriodOfBankGauranteeEndEdit").setVisible(true)
 						this.byId("idBGValueBahtLabelEdit").setVisible(true)
 						this.byId("idBGValueBahtEdit").setVisible(true)
-					}       
+
+						oSorterFilter = new Filter({
+							filters: [
+								new Filter("SORTER", FilterOperator.GE, 6),
+								new Filter("SORTER", FilterOperator.LE, 11)
+							],
+							and: true
+						});
+
+					} else if (sCountry === "TH" && (!!sKey || sKey !== "Tender")) {
+						 oSorterFilter = new Filter({
+							filters: [
+								new Filter("SORTER", FilterOperator.GE, 1),
+								new Filter("SORTER", FilterOperator.LE, 5)
+							],
+							and: true
+						});
+					}   
+					aFilters.push(oSorterFilter);
+
+					// clear old application filters
+					procurementBinding.filter([], sap.ui.model.FilterType.Application);
+
+					// apply new filters
+					procurementBinding.filter(aFilters, sap.ui.model.FilterType.Application);
                     //EHQUT-INC0184560-Issue in offer creation
 				} catch(err) {
 					console.log(err);
@@ -13108,13 +13167,15 @@ sap.ui.define([
 			const tenderCountryRegion = Services.getFastAppDataModel().getProperty("/EditTender/Country/Region");
 			const Action = action;
 			const source = event?.getSource();
+			const isInput = source instanceof sap.m.Input
 			if (!source) return
 			const path = source.getBindingContext("fastAppData").getPath();
 			const product = source.getBindingContext("fastAppData").getObject();
 			const previousApprovalStatus = Services.getFastAppDataModel().getProperty("/PreviousApprovalStatus");
 			const loadedProducts = Services.getFastAppDataModel().getProperty("/MEAOfferProducts") || [];
 			const loadedProduct = loadedProducts.find(pr => pr.OfferID === product.OfferID && pr.ProductCode === product.ProductCode);
-
+			const sourceBindingPath = isInput ? source.getBindingPath('value') : source.getBindingPath('selectedKey');
+			const value = isInput ? event.getParameter('newValue') : event.getParameter('selectedItem').getKey();
 			if (tenderCountryRegion === "MEA" && previousApprovalStatus.approvedStatus === 2) {
 				if (!Services.getFastAppDataModel().getProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`)) {
 					Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, loadedProduct.MEAApprovalLatestUpdatedField);
@@ -13125,6 +13186,7 @@ sap.ui.define([
 				Services.getFastAppDataModel().setProperty(`/MEAApprovalLatestUpdatedSupplyPaymentField`, newActions);
 				// Services.getFastAppDataModel().setProperty(`/EditOffer/PreviousApprovalHas_Deleted_DeclinedProduct`, false);
 			}
+			Services.getFastAppDataModel().setProperty(`${path}/${sourceBindingPath}`, value);
 		},
 
 		onChangeMEAPriceFocValues: async function (action) {
@@ -13147,5 +13209,22 @@ sap.ui.define([
 				}
 			}
 		},
+
+		onChangeRepresentativeOfTenderSubmission(oEvent) {
+			const oGroup = oEvent.getSource();
+
+			const selectedIndex = oGroup.getSelectedIndex();
+
+			const selectedButton = oGroup.getButtons()[selectedIndex];
+
+			const selectedText = selectedButton.getText();
+
+			Services.getFastAppDataModel().setProperty(
+				"/representativeOfTenderSubmission",
+				selectedText
+			);
+
+			Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", selectedIndex);
+		}
 	});
 });
