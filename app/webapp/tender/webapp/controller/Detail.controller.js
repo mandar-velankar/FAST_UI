@@ -485,6 +485,11 @@ sap.ui.define([
 					],
 					and: true
 				}));
+
+				oFastAppDataModel.setProperty("/representativeOfTenderSubmission", null);
+				oFastAppDataModel.setProperty("/representativeOfTenderSubmissionIndex", null);
+				oFastAppDataModel.setProperty("/goodsExchangeLetter", null);
+				oFastAppDataModel.setProperty("/goodsExchangeLetterIndex", null);
 			}
 
 			let oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
@@ -883,16 +888,8 @@ sap.ui.define([
 
 					if (tender) {
 						Services.getDefaultModel().metadataLoaded().then(() => {
-							const radioGroup = that.getView().byId("idRepresentativeOfTenderSubmissionGroupView");
-							if (!radioGroup) return;
-							const buttons = radioGroup.getButtons();
-
-							const index = buttons.findIndex(
-								button => button.getText() === tender.Custom_String_6
-							);
-
-							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmission", tender.Custom_String_6);
-							Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", index);
+							that.initRepresentativeOfTenderSubmissionIndex(tender);
+							that.initGoodsExchangeLetterIndex(tender);
 						});
 					}
 				}
@@ -4333,9 +4330,11 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
 				oSaveBasicInfo.Custom_Integer_2 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmissionIndex") + 1;
+				oSaveBasicInfo.Custom_Integer_3 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetterIndex") + 1;
 				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
 				oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
+				oSaveBasicInfo.Custom_String_7 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetter");
 				oSaveBasicInfo.Remarks = oTender.Remarks
 
 				//Check if data is correct
@@ -4513,6 +4512,10 @@ sap.ui.define([
 			oSaveBasicInfo.Custom_Double_1 =  oTender.Custom_Double_1
 			oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
 			oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
+			oSaveBasicInfo.Custom_Integer_2 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmissionIndex") + 1;
+			oSaveBasicInfo.Custom_Integer_3 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetterIndex") + 1;
+			oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
+			oSaveBasicInfo.Custom_String_7 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetter");
 			oSaveBasicInfo.Remarks = oTender.Remarks
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
@@ -13224,6 +13227,49 @@ sap.ui.define([
 			);
 
 			Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", selectedIndex);
+		},
+
+		onChangeGoodsExchangeLetterIndex(oEvent) {
+			const oGroup = oEvent.getSource();
+
+			const selectedIndex = oGroup.getSelectedIndex();
+
+			const selectedButton = oGroup.getButtons()[selectedIndex];
+
+			const selectedText = selectedButton.getText();
+
+			Services.getFastAppDataModel().setProperty(
+				"/goodsExchangeLetter",
+				selectedText
+			);
+
+			Services.getFastAppDataModel().setProperty("/goodsExchangeLetterIndex", selectedIndex);
+		},
+
+		initRepresentativeOfTenderSubmissionIndex (tender) {
+			const radioGroup = this.getView().byId("idRepresentativeOfTenderSubmissionGroupView");
+			if (!radioGroup) return;
+			const buttons = radioGroup.getButtons();
+
+			const index = buttons.findIndex(
+				button => button.getText() === tender.Custom_String_6
+			);
+
+			Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmission", tender.Custom_String_6);
+			Services.getFastAppDataModel().setProperty("/representativeOfTenderSubmissionIndex", index);
+		},
+
+		initGoodsExchangeLetterIndex (tender) {
+			const radioGroup = this.getView().byId("idGoodsExchangeLetterView");
+			if (!radioGroup) return;
+			const buttons = radioGroup.getButtons();
+
+			const index = buttons.findIndex(
+				button => button.getText() === tender.Custom_String_7
+			);
+
+			Services.getFastAppDataModel().setProperty("/goodsExchangeLetter", tender.Custom_String_7);
+			Services.getFastAppDataModel().setProperty("/goodsExchangeLetterIndex", index);
 		}
 	});
 });

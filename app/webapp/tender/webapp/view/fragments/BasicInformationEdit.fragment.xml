@@ -286,6 +286,34 @@
 						text="POA (ผู้มีอำนาจของบริษัทฯ ลงนาม)" />
 
 				</RadioButtonGroup>
+
+				<Label 
+					labelFor="idGoodsExchangeLetter" 
+					text="{i18n>goodsExchangeLetter}" 
+					design="Bold"
+					visible="{= 
+						${fastAppData>/EditTender/CountryCode} === 'TH'
+					}"
+				/>
+				<RadioButtonGroup
+					id="idGoodsExchangeLetter"
+					width="100%"
+					select=".onChangeGoodsExchangeLetterIndex"
+					selectedIndex="{fastAppData>/goodsExchangeLetterIndex}"
+					visible="{= 
+						${fastAppData>/EditTender/CountryCode} === 'TH'
+					}"
+				>
+
+					<RadioButton 
+						id="RB-goodsExchangeLetter-1"
+						text="ไม่มี​" />
+
+					<RadioButton 
+						id="RB-goodsExchangeLetter-2"
+						text="มี ________ days/ months" />
+
+				</RadioButtonGroup>
 				<!-- End of Thailand Changes-->
 
 				<!-- Brazil only -->
