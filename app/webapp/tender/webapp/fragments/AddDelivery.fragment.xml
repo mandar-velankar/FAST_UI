@@ -283,6 +283,28 @@
 							<l:GridData span="L6 M6 S6"/>
 						</layoutData>
 					</Select>
+
+					<Label text="{i18n>BatchNumber}" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Input value="{fastAppData>/EditDelivery/BatchNumber}" id="idBatchNumber" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Input>
+
+					<Label text="{i18n>CCReference}" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}">
+						<layoutData>
+							<l:GridData span="L4 M4 S4"/>
+						</layoutData>
+					</Label>
+					<Input value="{fastAppData>/EditDelivery/CCReference}" id="idCCReference" visible="{= ${fastAppData>/Tender/Country/Region} === 'MEA' ? true : false}">
+						<layoutData>
+							<l:GridData span="L6 M6 S6"/>
+						</layoutData>
+					</Input>
 	
 				</l:content>
 			</l:form.SimpleForm>

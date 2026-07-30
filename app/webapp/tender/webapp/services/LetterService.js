@@ -33,7 +33,7 @@ sap.ui.define([
 				OFFERID: oLetterToSave.OFFERID,
 				SKUCODE: oLetterToSave.SKUCODE,
 				SNO: oLetterToSave.SNO,
-				LOTID: oLetterToSave.LotID
+				LOTID: oLetterToSave.LotID || oLetterToSave.LOTID
 			});
 
 			//Update
@@ -49,7 +49,7 @@ sap.ui.define([
 				OFFERID: oLetterToSave.OFFERID,
 				SKUCODE: oLetterToSave.SKUCODE,
 				SNO: oLetterToSave.SNO,
-				LOTID: oLetterToSave.LotID
+				LOTID: oLetterToSave.LotID || oLetterToSave.LOTID
 			});
 
 			//Update
@@ -81,7 +81,7 @@ sap.ui.define([
 			oLetterToSave.RETURNDATE = oLetterSaveInfo.RETURNDATE;
 			oLetterToSave.RETURNEDQTY = Number(oLetterSaveInfo.RETURNEDQTY.toString());
 			oLetterToSave.UOM = oLetterSaveInfo.UOM;
-			oLetterToSave.LOTID = oLetterSaveInfo.LotID;
+			oLetterToSave.LOTID = oLetterSaveInfo.LotID || oLetterSaveInfo.LOTID;
 
 
 			return oLetterToSave;
