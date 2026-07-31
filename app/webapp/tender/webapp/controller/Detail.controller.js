@@ -490,6 +490,8 @@ sap.ui.define([
 				oFastAppDataModel.setProperty("/representativeOfTenderSubmissionIndex", null);
 				oFastAppDataModel.setProperty("/goodsExchangeLetter", null);
 				oFastAppDataModel.setProperty("/goodsExchangeLetterIndex", null);
+				oFastAppDataModel.setProperty("/tenderSubmissionProcess", null);
+				oFastAppDataModel.setProperty("/tenderSubmissionProcessIndex", null);
 			}
 
 			let oProducrementReason = oDetailController.getView().byId("idProcurementReasonEdit");
@@ -890,6 +892,7 @@ sap.ui.define([
 						Services.getDefaultModel().metadataLoaded().then(() => {
 							that.initRepresentativeOfTenderSubmissionIndex(tender);
 							that.initGoodsExchangeLetterIndex(tender);
+							that.initTenderSubmissionProcessIndex(tender);
 						});
 					}
 				}
@@ -4331,10 +4334,12 @@ sap.ui.define([
 				oSaveBasicInfo.Custom_Integer_1 = oTender.Custom_Integer_1
 				oSaveBasicInfo.Custom_Integer_2 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmissionIndex") + 1;
 				oSaveBasicInfo.Custom_Integer_3 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetterIndex") + 1;
+				oSaveBasicInfo.Custom_Integer_4 = Services.getFastAppDataModel().getProperty("/tenderSubmissionProcessIndex") + 1;
 				oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 				oSaveBasicInfo.Custom_String_5 = oTender.Custom_String_5
 				oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
 				oSaveBasicInfo.Custom_String_7 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetter");
+				oSaveBasicInfo.Custom_String_8 = Services.getFastAppDataModel().getProperty("/tenderSubmissionProcess");
 				oSaveBasicInfo.Remarks = oTender.Remarks
 
 				//Check if data is correct
@@ -4514,8 +4519,10 @@ sap.ui.define([
 			oSaveBasicInfo.Custom_String_4 = oTender.Custom_String_4
 			oSaveBasicInfo.Custom_Integer_2 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmissionIndex") + 1;
 			oSaveBasicInfo.Custom_Integer_3 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetterIndex") + 1;
+			oSaveBasicInfo.Custom_Integer_4 = Services.getFastAppDataModel().getProperty("/tenderSubmissionProcessIndex") + 1;
 			oSaveBasicInfo.Custom_String_6 = Services.getFastAppDataModel().getProperty("/representativeOfTenderSubmission");
 			oSaveBasicInfo.Custom_String_7 = Services.getFastAppDataModel().getProperty("/goodsExchangeLetter");
+			oSaveBasicInfo.Custom_String_8 = Services.getFastAppDataModel().getProperty("/tenderSubmissionProcess");
 			oSaveBasicInfo.Remarks = oTender.Remarks
 			//CR1
 			oSaveBasicInfo.EffectiveDate = (oTender.EffectiveDate) ? oTender.EffectiveDate : null;
@@ -13246,6 +13253,23 @@ sap.ui.define([
 			Services.getFastAppDataModel().setProperty("/goodsExchangeLetterIndex", selectedIndex);
 		},
 
+		onChangeTenderSubmissionProcessIndex(oEvent) {
+			const oGroup = oEvent.getSource();
+
+			const selectedIndex = oGroup.getSelectedIndex();
+
+			const selectedButton = oGroup.getButtons()[selectedIndex];
+
+			const selectedText = selectedButton.getText();
+
+			Services.getFastAppDataModel().setProperty(
+				"/tenderSubmissionProcess",
+				selectedText
+			);
+
+			Services.getFastAppDataModel().setProperty("/tenderSubmissionProcessIndex", selectedIndex);
+		},
+
 		initRepresentativeOfTenderSubmissionIndex (tender) {
 			const radioGroup = this.getView().byId("idRepresentativeOfTenderSubmissionGroupView");
 			if (!radioGroup) return;
@@ -13270,6 +13294,19 @@ sap.ui.define([
 
 			Services.getFastAppDataModel().setProperty("/goodsExchangeLetter", tender.Custom_String_7);
 			Services.getFastAppDataModel().setProperty("/goodsExchangeLetterIndex", index);
+		},
+
+		initTenderSubmissionProcessIndex (tender) {
+			const radioGroup = this.getView().byId("idTenderSubmissionProcessView");
+			if (!radioGroup) return;
+			const buttons = radioGroup.getButtons();
+
+			const index = buttons.findIndex(
+				button => button.getText() === tender.Custom_String_8
+			);
+
+			Services.getFastAppDataModel().setProperty("/tenderSubmissionProcess", tender.Custom_String_8);
+			Services.getFastAppDataModel().setProperty("/tenderSubmissionProcessIndex", index);
 		}
 	});
 });

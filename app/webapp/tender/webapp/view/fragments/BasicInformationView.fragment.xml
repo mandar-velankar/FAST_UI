@@ -285,6 +285,38 @@
 						text="มี ________ days/ months" />
 
 				</RadioButtonGroup>
+
+				<Label 
+					labelFor="idTenderSubmissionProcessView" 
+					text="{i18n>tenderSubmissionProcess}" 
+					design="Bold"
+					visible="{= 
+						${fastAppData>/EditTender/CountryCode} === 'TH'
+					}"
+				/>
+				<RadioButtonGroup
+					id="idTenderSubmissionProcessView"
+					width="100%"
+					selectedIndex="{fastAppData>/tenderSubmissionProcessIndex}"
+					visible="{= 
+						${fastAppData>/EditTender/CountryCode} === 'TH'
+					}"
+					enabled="false"
+				>
+
+					<RadioButton 
+						id="RB-tenderSubmissionProcess-1-view"
+						text="ับซอง/ ซื้อซอง (ต้องแนบหน้าประกาศ)​​" />
+
+					<RadioButton 
+						id="RB-tenderSubmissionProcess-2-view"
+						text="ยื่นซอง (ต้องแนบชุดเอกสารครบชุดจาก รพ.)​" />
+					
+					<RadioButton 
+						id="RB-tenderSubmissionProcess-3-view"
+						text="เอกสารต่อรองราคา (ขอเอกสารมอบอำนาจเพื่อให้ผู้แทนเข้าต่อรองราคา)​" />
+
+				</RadioButtonGroup>
 				<!-- End of Thailand Changes-->
 
 				<!-- Brazil only -->
